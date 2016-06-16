@@ -882,144 +882,129 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	  }
 	}
       }else{
-	GHashTable *line_table;
-
 	xmlChar *str;
 
-	GValue *line_value;
-	
 	nodeset = xpathObj->nodesetval;
 	
 	size = (nodeset != NULL) ? nodeset->nodeNr: 0;
-	line_table = g_hash_table_new_full(g_str_hash, g_str_equal,
-					   NULL,
-					   (GDestroyNotify) g_free);
-
+ 
 	for(i = 0; i < size; i++){
 	  control_name = xmlGetProp(nodeset->nodeTab[i],
 				    "control-name");
 
 	  /* get line */
 	  line = 0;
-	  line_value = g_hash_table_lookup(line_table,
-					   control_name);
+	  str  = xmlGetProp(nodeset->nodeTab[i],
+			    "line");
 
-	  if(line_value == NULL){
-	    line_value = g_new0(GValue,
-				1);
-	    g_value_init(line_value,
-			 G_TYPE_UINT);
-
-	    g_hash_table_insert(line_table,
-				control_name,
-				line_value);
-	  }else{
-	    line = g_value_get_uint(line_value);
+	  if(str != NULL){
+	    line = g_ascii_strtoull(str,
+				    NULL,
+				    10);
 	  }
-
-	  g_value_set_uint(line_value,
-			   line++);
-
+	  
 	  /*  */
 	  automation = automation_editor->selected_machine->audio->automation;
-	  automation = ags_automation_find_specifier_with_type_and_line(automation,
-									control_name,
-									channel_type,
-									line);
+
+	  while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									       control_name,
+									       channel_type,
+									       line)) != NULL){
 	  
-	  if(paste_from_position){
-	    xmlNode *child;
+	    if(paste_from_position){
+	      xmlNode *child;
 	    
-	    guint x_boundary;
+	      guint x_boundary;
 
-	    ags_automation_insert_from_clipboard(automation->data,
-						 nodeset->nodeTab[i],
-						 TRUE, position_x,
-						 FALSE, 0.0);
+	      ags_automation_insert_from_clipboard(automation->data,
+						   nodeset->nodeTab[i],
+						   TRUE, position_x,
+						   FALSE, 0.0);
 	    
-	    /* get boundaries */
-	    child = nodeset->nodeTab[i]->children;
-	    current_x = 0;
+	      /* get boundaries */
+	      child = nodeset->nodeTab[i]->children;
+	      current_x = 0;
 	  
-	    while(child != NULL){
-	      if(child->type == XML_ELEMENT_NODE){
-		if(!xmlStrncmp(child->name,
-			       "acceleration\0",
-			       5)){
-		  guint tmp;
+	      while(child != NULL){
+		if(child->type == XML_ELEMENT_NODE){
+		  if(!xmlStrncmp(child->name,
+				 "acceleration\0",
+				 5)){
+		    guint tmp;
 
-		  tmp = g_ascii_strtoull(xmlGetProp(child,
-						    "x\0"),
-					 NULL,
-					 10);
+		    tmp = g_ascii_strtoull(xmlGetProp(child,
+						      "x\0"),
+					   NULL,
+					   10);
 
-		  if(tmp > current_x){
-		    current_x = tmp;
+		    if(tmp > current_x){
+		      current_x = tmp;
+		    }
 		  }
 		}
+
+		child = child->next;
 	      }
 
-	      child = child->next;
-	    }
+	      x_boundary = g_ascii_strtoull(xmlGetProp(nodeset->nodeTab[i],
+						       "x-boundary\0"),
+					    NULL,
+					    10);
 
-	    x_boundary = g_ascii_strtoull(xmlGetProp(nodeset->nodeTab[i],
-						     "x-boundary\0"),
-					  NULL,
-					  10);
-
-	    if(first_x == -1 || x_boundary < first_x){
-	      first_x = x_boundary;
-	    }
+	      if(first_x == -1 || x_boundary < first_x){
+		first_x = x_boundary;
+	      }
 	  
-	    if(position_x > x_boundary){
-	      current_x += (position_x - x_boundary);
+	      if(position_x > x_boundary){
+		current_x += (position_x - x_boundary);
+	      }else{
+		current_x -= (x_boundary - position_x);
+	      }
+	  
+	      if(current_x > last_x){
+		last_x = current_x;
+	      }
 	    }else{
-	      current_x -= (x_boundary - position_x);
-	    }
-	  
-	    if(current_x > last_x){
-	      last_x = current_x;
-	    }
-	  }else{
-	    xmlNode *child;
+	      xmlNode *child;
 	    
-	    ags_automation_insert_from_clipboard(automation->data,
-						 nodeset->nodeTab[i],
-						 FALSE, 0.0,
-						 FALSE, 0.0);
+	      ags_automation_insert_from_clipboard(automation->data,
+						   nodeset->nodeTab[i],
+						   FALSE, 0.0,
+						   FALSE, 0.0);
 
 
-	    child = nodeset->nodeTab[i]->children;
-	    current_x = 0;
+	      child = nodeset->nodeTab[i]->children;
+	      current_x = 0;
 	  
-	    while(child != NULL){
-	      if(child->type == XML_ELEMENT_NODE){
-		if(!xmlStrncmp(child->name,
-			       "acceleration\0",
-			       5)){
-		  guint tmp;
+	      while(child != NULL){
+		if(child->type == XML_ELEMENT_NODE){
+		  if(!xmlStrncmp(child->name,
+				 "acceleration\0",
+				 5)){
+		    guint tmp;
 
-		  tmp = g_ascii_strtoull(xmlGetProp(child,
-						    "x\0"),
-					 NULL,
-					 10);
+		    tmp = g_ascii_strtoull(xmlGetProp(child,
+						      "x\0"),
+					   NULL,
+					   10);
 
-		  if(tmp > current_x){
-		    current_x = tmp;
+		    if(tmp > current_x){
+		      current_x = tmp;
+		    }
 		  }
 		}
+
+		child = child->next;
 	      }
 
-	      child = child->next;
+	      if(current_x > last_x){
+		last_x = current_x;
+	      }
 	    }
 
-	    if(current_x > last_x){
-	      last_x = current_x;
-	    }
+	    automation = automation->next;
 	  }
 	}
-	
-	g_object_unref(line_table);
       }
 
       xmlXPathFreeObject(xpathObj);
@@ -1112,7 +1097,15 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 
     /* reset cursor */
     if(paste_from_position){
-      current_edit_widget->edit_x = (16.0 * AGS_AUTOMATION_EDIT_DEFAULT_WIDTH) * ceil((double) last_x / (16.0 * AGS_AUTOMATION_EDIT_DEFAULT_WIDTH));
+      double tact_factor, zoom_factor;
+      double tact;
+
+      zoom_factor = 1.0 / 4.0;
+
+      tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+      tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
+
+      current_edit_widget->edit_x = (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH * ceil((double) last_x / AGS_AUTOMATION_EDIT_DEFAULT_WIDTH)) / tact;
     }
 
     xmlFreeDoc(clipboard); 
@@ -1202,9 +1195,10 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 									     channel_type,
 									     0)) != NULL){
 	  automation_node = ags_automation_copy_selection(automation->data);
-	  xmlAddChild(audio_node,
-		      automation_node);
-
+	  ags_automation_merge_clipboard(audio_node,
+					 automation_node);
+	  xmlFreeNode(automation_node);
+	  
 	  automation = automation->next;
 	}
 
@@ -1223,8 +1217,9 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 									       channel_type,
 									       line)) != NULL){
 	    automation_node = ags_automation_copy_selection(automation->data);
-	    xmlAddChild(audio_node,
-			automation_node);
+	    ags_automation_merge_clipboard(audio_node,
+					   automation_node);
+	    xmlFreeNode(automation_node);
 	  
 	    automation = automation->next;
 	  }
@@ -1238,6 +1233,9 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
     
     g_list_free(list_start);
 
+    /* remove duplicated */
+    //TODO:JK: implement me
+    
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
@@ -1328,8 +1326,9 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 									     channel_type,
 									     0)) != NULL){
 	  automation_node = ags_automation_cut_selection(automation->data);
-	  xmlAddChild(audio_node,
-		      automation_node);
+	  ags_automation_merge_clipboard(audio_node,
+					 automation_node);
+	  xmlFreeNode(automation_node);
 	  
 	  automation = automation->next;
 	}
@@ -1349,8 +1348,9 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 									       channel_type,
 									       line)) != NULL){
 	    automation_node = ags_automation_cut_selection(automation->data);
-	    xmlAddChild(audio_node,
-			automation_node);
+	    ags_automation_merge_clipboard(audio_node,
+					   automation_node);
+	    xmlFreeNode(automation_node);
 	  
 	    automation = automation->next;
 	  }

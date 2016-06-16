@@ -139,6 +139,8 @@ void ags_automation_add_all_to_selection(AgsAutomation *automation);
 
 xmlNode* ags_automation_copy_selection(AgsAutomation *automation);
 xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
+void ags_automation_merge_clipboard(xmlNode *audio_node,
+				    xmlNode *automation_node);
 
 void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 					  xmlNodePtr content,
