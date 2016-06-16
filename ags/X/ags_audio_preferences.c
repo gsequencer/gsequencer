@@ -143,6 +143,8 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   GtkLabel *label;
   GtkCellRenderer *cell_renderer;
 
+  gchar *str;
+  
   g_signal_connect_after((GObject *) audio_preferences, "parent_set\0",
 			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
 
@@ -164,23 +166,13 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  audio_preferences->card = (GtkComboBox *) gtk_combo_box_new();
+  audio_preferences->card = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_table_attach(table,
 		   GTK_WIDGET(audio_preferences->card),
 		   1, 2,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  cell_renderer = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(audio_preferences->card),
-			     cell_renderer,
-			     FALSE); 
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(audio_preferences->card),
-				 cell_renderer,
-				 "text\0", 1,
-				 NULL);
-  gtk_combo_box_set_active(audio_preferences->card, 0);
   
   /* audio channels */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -246,66 +238,81 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		   0, 0);
 
   /* JACK */
-  audio_preferences->enable_jack = (GtkCheckButton *) gtk_check_button_new_with_label("Enable JACK\0");
-  gtk_table_attach(table,
-		   GTK_WIDGET(audio_preferences->enable_jack),
-		   0, 2,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  label = gtk_label_new("JACK driver\0");
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   5, 6,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  audio_preferences->jack_driver = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(audio_preferences->jack_driver),
-		   1, 2,
-		   5, 6,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  str = ags_config_get_value(ags_config_get_instance(),
+			     AGS_CONFIG_GENERIC,
+			     "disable-feature\0");
   
-  label = gtk_label_new("JACK server\0");
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   6, 7,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+  if(!g_ascii_strncasecmp(str,
+			  "experimental\0",
+			  13)){
+    audio_preferences->enable_jack = NULL;
+    audio_preferences->jack_driver = NULL;
+    audio_preferences->start_jack = NULL;
+    audio_preferences->stop_jack = NULL;
+  }else{
+    audio_preferences->enable_jack = (GtkCheckButton *) gtk_check_button_new_with_label("Enable JACK\0");
+    gtk_table_attach(table,
+		     GTK_WIDGET(audio_preferences->enable_jack),
+		     0, 2,
+		     4, 5,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
 
-  hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(hbox),
-		   1, 2,
-		   6, 7,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
+    label = gtk_label_new("JACK driver\0");
+    gtk_table_attach(table,
+		     GTK_WIDGET(label),
+		     0, 1,
+		     5, 6,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
 
-  audio_preferences->start_jack = (GtkButton *) gtk_button_new_with_label("start\0");
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(audio_preferences->start_jack),
-		     FALSE, FALSE,
-		     0);
-
-  audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label("stop\0");
-  gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(audio_preferences->stop_jack),
-		     FALSE, FALSE,
-		     0);
+    audio_preferences->jack_driver = (GtkComboBoxText *) gtk_combo_box_text_new();
+    gtk_table_attach(table,
+		     GTK_WIDGET(audio_preferences->jack_driver),
+		     1, 2,
+		     5, 6,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
   
-  /* set default insensitive */
-  gtk_widget_set_sensitive(audio_preferences->jack_driver,
-			   FALSE);
+    label = gtk_label_new("JACK server\0");
+    gtk_table_attach(table,
+		     GTK_WIDGET(label),
+		     0, 1,
+		     6, 7,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
+
+    hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
+    gtk_table_attach(table,
+		     GTK_WIDGET(hbox),
+		     1, 2,
+		     6, 7,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
+
+    audio_preferences->start_jack = (GtkButton *) gtk_button_new_with_label("start\0");
+    gtk_box_pack_start(GTK_BOX(hbox),
+		       GTK_WIDGET(audio_preferences->start_jack),
+		       FALSE, FALSE,
+		       0);
+
+    audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label("stop\0");
+    gtk_box_pack_start(GTK_BOX(hbox),
+		       GTK_WIDGET(audio_preferences->stop_jack),
+		       FALSE, FALSE,
+		       0);
   
-  gtk_widget_set_sensitive(audio_preferences->start_jack,
-			   FALSE);
-  gtk_widget_set_sensitive(audio_preferences->stop_jack,
-			   FALSE);
+    /* set default insensitive */
+    gtk_widget_set_sensitive(audio_preferences->jack_driver,
+			     FALSE);
+  
+    gtk_widget_set_sensitive(audio_preferences->start_jack,
+			     FALSE);
+    gtk_widget_set_sensitive(audio_preferences->stop_jack,
+			     FALSE);
+  }
+
+  g_free(str);
 }
 
 void
@@ -313,19 +320,32 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 {
   AgsAudioPreferences *audio_preferences;
 
+  gchar *str;
+  
   audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
 
   g_signal_connect(G_OBJECT(audio_preferences->card), "changed\0",
 		   G_CALLBACK(ags_audio_preferences_card_changed_callback), audio_preferences);
 
-  g_signal_connect(G_OBJECT(audio_preferences->enable_jack), "clicked\0",
-		   G_CALLBACK(ags_audio_preferences_enable_jack_callback), audio_preferences);
 
-  g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked\0",
-		   G_CALLBACK(ags_audio_preferences_start_jack_callback), audio_preferences);
+  str = ags_config_get_value(ags_config_get_instance(),
+			     AGS_CONFIG_GENERIC,
+			     "disable-feature\0");
+  
+  if(g_ascii_strncasecmp(str,
+			 "experimental\0",
+			 13)){
+    g_signal_connect(G_OBJECT(audio_preferences->enable_jack), "clicked\0",
+		     G_CALLBACK(ags_audio_preferences_enable_jack_callback), audio_preferences);
 
-  g_signal_connect(G_OBJECT(audio_preferences->stop_jack), "clicked\0",
-		   G_CALLBACK(ags_audio_preferences_stop_jack_callback), audio_preferences);
+    g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked\0",
+		     G_CALLBACK(ags_audio_preferences_start_jack_callback), audio_preferences);
+
+    g_signal_connect(G_OBJECT(audio_preferences->stop_jack), "clicked\0",
+		     G_CALLBACK(ags_audio_preferences_stop_jack_callback), audio_preferences);
+  }
+
+  free(str);
 }
 
 void
@@ -351,16 +371,20 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences; 
+
   AgsConfig *config;
+
   GList *card_id, *card_name;
   GtkListStore *model;
   GtkTreeIter current;
-  GValue value =  {0,};
+
   char *device, *str;
   int card_num;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
+
+  GValue value =  {0,};
 
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
 
@@ -431,7 +455,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   GtkTreeIter current;
   GList *card_id, *card_name;
 
-  char *device, *str, *tmp;
+  char *device, *str, *tmp, *selected_device;
   guint nth;
   gboolean found_card;
   int card_num;
@@ -454,6 +478,9 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
   /* refresh */
+  card_id = NULL;
+  card_name = NULL;
+  
   ags_soundcard_list_cards(soundcard,
 			   &card_id, &card_name);    
   str = ags_config_get_value(config,
@@ -462,9 +489,12 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 #ifdef AGS_DEBUG
   g_message("configured soundcard: %s\0", str);
 #endif
-  
+
+  selected_device = NULL;
   nth = 0;
   found_card = FALSE;
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(audio_preferences->card)));
 
   while(card_id != NULL){
     //FIXME:JK: work-around for alsa-handle
@@ -472,10 +502,12 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			  card_id->data);
     if(!g_ascii_strcasecmp(tmp,
 			   str)){
+      selected_device = g_strdup(card_id->data);
       found_card = TRUE;
     }
 
-    g_free(tmp);
+    gtk_combo_box_text_append_text(audio_preferences->card,
+				   tmp);
     
     if(!found_card){
       nth++;
@@ -492,8 +524,10 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   gtk_combo_box_set_active(audio_preferences->card,
 			   nth);
   
-  g_list_free(card_id);
-  g_list_free(card_name);
+  g_list_free_full(card_id,
+		   g_free);
+  g_list_free_full(card_name,
+		   g_free);
 
   /*  */
   device = ags_soundcard_get_device(soundcard);
@@ -512,22 +546,9 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  model = gtk_combo_box_get_model(audio_preferences->card);
-
-  if(!(gtk_combo_box_get_active_iter(audio_preferences->card,
-				     &current))){
-    return;
-  }
-
-  gtk_tree_model_get_value(model,
-			   &current,
-			   0,
-			   &value);
-  str = g_strdup(g_value_get_string(&value));
-
   error = NULL;
   ags_soundcard_pcm_info(soundcard,
-			 str,
+			 selected_device,
 			 &channels_min, &channels_max,
 			 &rate_min, &rate_max,
 			 &buffer_size_min, &buffer_size_max,

@@ -145,6 +145,8 @@ ags_preferences_init(AgsPreferences *preferences)
   GtkNotebook *notebook;
   GtkButton *button;
 
+  gchar *str;
+  
   preferences->flags = 0;
 
   preferences->window = NULL;
@@ -176,11 +178,21 @@ ags_preferences_init(AgsPreferences *preferences)
 			   GTK_WIDGET(preferences->performance_preferences),
 			   gtk_label_new("performance\0"));
 
-  preferences->server_preferences = ags_server_preferences_new();
-  gtk_notebook_append_page(notebook,
-			   GTK_WIDGET(preferences->server_preferences),
-			   gtk_label_new("server\0"));
-
+  str = ags_config_get_value(ags_config_get_instance(),
+			     AGS_CONFIG_GENERIC,
+			     "disable-feature\0");
+  
+  if(!g_ascii_strncasecmp(str,
+			  "experimental\0",
+			  13)){
+    preferences->server_preferences = NULL;
+  }else{
+    preferences->server_preferences = ags_server_preferences_new();
+    gtk_notebook_append_page(notebook,
+			     GTK_WIDGET(preferences->server_preferences),
+			     gtk_label_new("server\0"));
+  }
+  
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
 			       gtk_button_new_from_stock(GTK_STOCK_APPLY),
 			       GTK_RESPONSE_APPLY);
@@ -204,8 +216,11 @@ ags_preferences_connect(AgsConnectable *connectable)
   ags_connectable_connect(preferences->generic_preferences);
   ags_connectable_connect(preferences->audio_preferences);
   ags_connectable_connect(preferences->performance_preferences);
-  ags_connectable_connect(preferences->server_preferences);
 
+  if(preferences->server_preferences != NULL){
+    ags_connectable_connect(preferences->server_preferences);
+  }
+  
   g_signal_connect_after(G_OBJECT(preferences), "response\0",
 			 G_CALLBACK(ags_preferences_response_callback), NULL);
 }
@@ -226,7 +241,10 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
   ags_applicable_set_update(AGS_APPLICABLE(preferences->generic_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->audio_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->performance_preferences), update);
-  ags_applicable_set_update(AGS_APPLICABLE(preferences->server_preferences), update);
+
+  if(preferences->server_preferences != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(preferences->server_preferences), update);
+  }
 }
 
 void
@@ -253,8 +271,11 @@ ags_preferences_apply(AgsApplicable *applicable)
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
-  ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
 
+  if(preferences->server_preferences != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
+  }
+  
   ags_config_save(config);
 
   uid = getuid();
@@ -310,7 +331,10 @@ ags_preferences_reset(AgsApplicable *applicable)
   ags_applicable_reset(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->performance_preferences));
-  ags_applicable_reset(AGS_APPLICABLE(preferences->server_preferences));
+
+  if(preferences->server_preferences != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(preferences->server_preferences));
+  }
 }
 
 static void

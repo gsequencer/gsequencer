@@ -36,7 +36,7 @@ struct _AgsAudioPreferences
 {
   GtkVBox vbox;
   
-  GtkComboBox *card;
+  GtkComboBoxText *card;
   GtkSpinButton *audio_channels;
   GtkSpinButton *samplerate;
   GtkSpinButton *buffer_size;

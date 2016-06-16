@@ -3,10 +3,12 @@ ags (0.7.34)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed disapearing automation caused by missing tact factor appliance
 	* fixed y value in ags_automation.c to gdouble because it was y previously
+	* fixed missing souncard identifier in audio preferences
 	* improved remove of notes by specify number of attempts until giving up
 	* implemented cursor in automation editor
 	* implemented copy, cut and paste in AgsAutomationEditor
-	* ...
+	* implemented key-strokes in ags_automation_edit_callbacks.c
+	* introduced new config key disable-feature because you don't want experimental code in production
 
 ags (0.7.33)
 
