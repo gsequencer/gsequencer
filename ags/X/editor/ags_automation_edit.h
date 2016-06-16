@@ -47,12 +47,13 @@ typedef struct _AgsAutomationEdit AgsAutomationEdit;
 typedef struct _AgsAutomationEditClass AgsAutomationEditClass;
 
 typedef enum{
-  AGS_AUTOMATION_EDIT_RESETING_VERTICALLY         = 1,
-  AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY       = 1 <<  1,
-  AGS_AUTOMATION_EDIT_POSITION_CURSOR             = 1 <<  2,
-  AGS_AUTOMATION_EDIT_ADDING_ACCELERATION         = 1 <<  3,
-  AGS_AUTOMATION_EDIT_DELETING_ACCELERATION       = 1 <<  4,
-  AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS     = 1 <<  5,
+  AGS_AUTOMATION_EDIT_CONNECTED                   = 1,
+  AGS_AUTOMATION_EDIT_RESETING_VERTICALLY         = 1 <<  1,
+  AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY       = 1 <<  2,
+  AGS_AUTOMATION_EDIT_POSITION_CURSOR             = 1 <<  3,
+  AGS_AUTOMATION_EDIT_ADDING_ACCELERATION         = 1 <<  4,
+  AGS_AUTOMATION_EDIT_DELETING_ACCELERATION       = 1 <<  5,
+  AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS     = 1 <<  6,
 }AgsAutomationEditFlags;
 
 typedef enum{
@@ -62,12 +63,21 @@ typedef enum{
   AGS_AUTOMATION_EDIT_RESET_HEIGHT       = 1 <<  3, // reserved
 }AgsAutomationEditResetFlags;
 
+typedef enum{
+  AGS_AUTOMATION_EDIT_KEY_L_CONTROL       = 1,
+  AGS_AUTOMATION_EDIT_KEY_R_CONTROL       = 1 <<  1,
+  AGS_AUTOMATION_EDIT_KEY_L_SHIFT         = 1 <<  2,
+  AGS_AUTOMATION_EDIT_KEY_R_SHIFT         = 1 <<  3,
+}AgsAutomationEditKeyMask;
+
 struct _AgsAutomationEdit
 {
   GtkTable table;
 
   guint flags;
 
+  guint key_mask;
+  
   GType scope;
   
   guint map_width;

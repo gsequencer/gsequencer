@@ -36,6 +36,7 @@
 #include <ags/X/machine/ags_ffplayer.h>
 
 #include <math.h>
+#include <gdk/gdkkeysyms.h>
 
 gboolean
 ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event,
@@ -116,8 +117,8 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     gdouble upper, lower, range, step;
     gdouble c_upper, c_lower, c_range;
 
-    guint line;
     guint i;
+    guint line;
     gboolean is_audio, is_output, is_input;
   
     if(automation_edit == automation_editor->current_audio_automation_edit){
@@ -141,7 +142,6 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     list =
       list_start = g_list_reverse(g_list_copy(automation_edit->automation_area));
     i = 0;
-    line = 0;
     
     while(list != NULL){
       if(i + AGS_AUTOMATION_AREA(list->data)->height > y){
@@ -158,7 +158,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     if(list == NULL){
       return;
     }
-      
+    
     /* match specifier */
     if(channel_type == G_TYPE_NONE){
       automation = automation_editor->selected_machine->audio->automation;
@@ -384,9 +384,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     gdouble upper, lower, range, step;
     gdouble c_upper, c_lower, c_range;
 
-    guint line;
     guint n_attempts;
     guint i, n, m;
+    guint line;
     gboolean is_audio, is_output, is_input;
     
     if(automation_edit == automation_editor->current_audio_automation_edit){
@@ -794,6 +794,572 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
   }
   
   return(FALSE);
+}
+
+gboolean
+ags_automation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event,
+						 AgsAutomationEdit *automation_edit)
+{
+  AgsAutomationEditor *automation_editor;
+
+  AgsMachine *machine;
+
+  gboolean retval;
+  
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
+  }
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  machine = automation_editor->selected_machine;
+  
+  if(machine != NULL){
+    switch(event->keyval){
+    case GDK_KEY_Control_L:
+      {
+	automation_edit->key_mask |= AGS_AUTOMATION_EDIT_KEY_L_CONTROL;
+      }
+      break;
+    case GDK_KEY_Control_R:
+      {
+	automation_edit->key_mask |= AGS_AUTOMATION_EDIT_KEY_R_CONTROL;
+      }
+      break;
+    case GDK_KEY_Shift_L:
+      {
+	automation_edit->key_mask |= AGS_AUTOMATION_EDIT_KEY_L_SHIFT;
+      }
+      break;
+    case GDK_KEY_Shift_R:
+      {
+	automation_edit->key_mask |= AGS_AUTOMATION_EDIT_KEY_R_SHIFT;
+      }
+      break;
+    case GDK_KEY_a:
+      {
+	/* select all notes */
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	  ags_automation_editor_select_all(automation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_c:
+      {
+	/* copy notes */
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	  ags_automation_editor_copy(automation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_v:
+      {
+	/* paste notes */
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	  ags_automation_editor_paste(automation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_x:
+      {
+	/* cut notes */
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & (automation_edit->key_mask)) != 0 || (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & (automation_edit->key_mask)) != 0){
+	  ags_automation_editor_cut(automation_editor);
+	}
+      }
+      break;
+    }
+  }
+
+  return(retval);
+}
+
+gboolean
+ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event,
+						   AgsAutomationEdit *automation_edit)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
+
+  GList *list, *list_start;
+  
+  double tact_factor, zoom_factor;
+  double tact;
+  guint x, y;
+  gboolean retval;
+
+  auto void ags_automation_edit_drawing_area_key_release_event_iterate(guint x, guint y,
+								       gboolean position_cursor,
+								       gboolean add_acceleration,
+								       gboolean remove_acceleration);
+
+  void ags_automation_edit_drawing_area_key_release_event_iterate(guint x, guint y,
+								  gboolean position_cursor,
+								  gboolean add_acceleration,
+								  gboolean remove_acceleration){
+    AgsNotebook *notebook;
+
+    AgsAcceleration *current_acceleration, *acceleration;
+
+    GList *list, *list_start;
+    GList *automation;
+
+    GType channel_type;
+
+    gdouble gui_y, acceleration_y;
+
+    gdouble val;
+    gdouble upper, lower, range, step;
+    gdouble c_upper, c_lower, c_range;
+
+    guint n_attempts;
+    guint i, n, m;
+    guint line;
+    gboolean is_audio, is_output, is_input;
+
+    if(automation_edit == automation_editor->current_audio_automation_edit){
+      notebook = NULL;
+      channel_type = G_TYPE_NONE;
+
+      is_audio = TRUE;
+    }else if(automation_edit == automation_editor->current_output_automation_edit){
+      notebook = automation_editor->current_output_notebook;
+      channel_type = AGS_TYPE_OUTPUT;
+      
+      is_output = TRUE;
+    }else if(automation_edit == automation_editor->current_input_automation_edit){
+      notebook = automation_editor->current_input_notebook;
+      channel_type = AGS_TYPE_INPUT;
+      
+      is_input = TRUE;
+    }
+
+    if(position_cursor){
+      automation_edit->edit_x = x;
+      automation_edit->edit_y = y;
+    }
+    
+    /* find automation area */
+    list =
+      list_start = g_list_reverse(g_list_copy(automation_edit->automation_area));
+    i = 0;
+    
+    while(list != NULL){
+      if(i + AGS_AUTOMATION_AREA(list->data)->height > y){
+	automation_edit->current_area = AGS_AUTOMATION_AREA(list->data);
+	break;
+      }
+
+      i = i + AGS_AUTOMATION_AREA(list->data)->height + AGS_AUTOMATION_EDIT_DEFAULT_MARGIN;
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+
+    if(list == NULL){
+      return;
+    }
+
+    n_attempts = 3;
+
+    /* match specifier */
+    if(channel_type == G_TYPE_NONE){
+      automation = automation_editor->selected_machine->audio->automation;
+
+      while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									   automation_edit->current_area->control_name,
+									   channel_type,
+									   0)) != NULL){
+	upper = AGS_AUTOMATION(automation->data)->upper;
+	lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	range = upper - lower;
+
+	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	  c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   upper,
+					   FALSE);
+	  c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   lower,
+					   FALSE);
+	  c_range = c_upper - c_lower;
+	}else{
+	  c_upper = upper;
+	  c_lower = lower;
+
+	  c_range = range;
+	}
+
+	if(range == 0.0){
+	  automation = automation->next;
+	  g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	
+	  continue;
+	}
+
+	/* check steps */
+	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
+	acceleration_y = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
+	/* conversion */
+	val = acceleration_y;
+
+	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+				       val,
+				       TRUE);
+	}	
+
+	/* add acceleration */
+	if(add_acceleration){
+	  /* find existing */
+	  current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
+							   x, val,
+							   FALSE);
+
+	  /* add acceleration */
+	  if(current_acceleration == NULL){
+	    acceleration = ags_acceleration_new();
+	    acceleration->x = x;
+	    acceleration->y = val;
+      
+	    ags_automation_add_acceleration(automation->data,
+					    acceleration,
+					    FALSE);
+	  }
+	}
+
+	/* remove acceleration */
+	if(remove_acceleration){
+	  if(!ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+							     x, val)){
+	  
+	    for(m = 0; m < tact * n_attempts; m++){
+	      for(n = 0; n < n_attempts; n++){
+		if(m % 2 == 1){
+		  if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								    x - (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		    goto remove_SUCCESS_0;
+		  }
+		}else{
+		  if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								    x + (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		    goto remove_SUCCESS_0;
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+
+      remove_SUCCESS_0:		
+	automation = automation->next;
+      }
+    }else{
+      line = 0;
+    
+      while((line = ags_notebook_next_active_tab(notebook,
+						 line)) != -1){
+	automation = automation_editor->selected_machine->audio->automation;
+
+	while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									     automation_edit->current_area->control_name,
+									     channel_type,
+									     line)) != NULL){
+	  upper = AGS_AUTOMATION(automation->data)->upper;
+	  lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	  range = upper - lower;
+
+	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	    c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					     upper,
+					     FALSE);
+	    c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					     lower,
+					     FALSE);
+	    c_range = c_upper - c_lower;
+	  }else{
+	    c_upper = upper;
+	    c_lower = lower;
+
+	    c_range = range;
+	  }
+
+	  if(range == 0.0){
+	    automation = automation->next;
+	    g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	
+	    continue;
+	  }
+
+	  /* check steps */
+	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
+	  acceleration_y = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
+	  /* conversion */
+	  val = acceleration_y;
+
+	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					 val,
+					 TRUE);
+	  }
+
+	  /* add acceleration */
+	  if(add_acceleration){	
+	    /* find existing */
+	    current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
+							     x, val,
+							     FALSE);
+
+	    /* add acceleration */
+	    if(current_acceleration == NULL){
+	      acceleration = ags_acceleration_new();
+	      acceleration->x = x;
+	      acceleration->y = val;
+      
+	      ags_automation_add_acceleration(automation->data,
+					      acceleration,
+					      FALSE);
+	    }
+	  }
+
+	  /* remove acceleration */
+	  if(remove_acceleration){
+	    if(!ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+							       x, val)){
+	  
+	      for(m = 0; m < tact * n_attempts; m++){
+		for(n = 0; n < n_attempts; n++){
+		  if(m % 2 == 1){
+		    if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								      x - (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		      goto remove_SUCCESS_1;
+		    }
+		  }else{
+		    if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								      x + (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		      goto remove_SUCCESS_1;
+		    }
+		  }
+		}
+	      }
+	    }
+	  }
+	  
+	remove_SUCCESS_1:	  
+	  automation = automation->next;
+	}
+
+	line++;
+      }
+    }    
+  }
+    
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
+  }
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  machine = automation_editor->selected_machine;
+  
+  if(machine == NULL){
+    return(retval);
+  }
+
+  zoom_factor = 1.0 / 4.0;
+  
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
+  
+  switch(event->keyval){
+  case GDK_KEY_Control_L:
+    {
+      automation_edit->key_mask &= (~AGS_AUTOMATION_EDIT_KEY_L_CONTROL);
+    }
+    break;
+  case GDK_KEY_Control_R:
+    {
+      automation_edit->key_mask &= (~AGS_AUTOMATION_EDIT_KEY_R_CONTROL);
+    }
+    break;
+  case GDK_KEY_Shift_L:
+    {
+      automation_edit->key_mask &= (~AGS_AUTOMATION_EDIT_KEY_L_SHIFT);
+    }
+    break;
+  case GDK_KEY_Shift_R:
+    {
+      automation_edit->key_mask &= (~AGS_AUTOMATION_EDIT_KEY_R_SHIFT);
+    }
+    break;
+  case GDK_KEY_Left:
+  case GDK_KEY_leftarrow:
+    {
+      if((AGS_AUTOMATION_EDIT_KEY_L_SHIFT & automation_edit->key_mask) != 0 ||
+	 (AGS_AUTOMATION_EDIT_KEY_R_SHIFT & automation_edit->key_mask) != 0){
+	x = automation_edit->edit_x + (1.0 * tact_factor);
+	y = automation_edit->edit_y;
+      }else{
+	x = automation_edit->edit_x + (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH * tact_factor);
+	y = automation_edit->edit_y;
+      }
+      
+      ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+								 TRUE,
+								 FALSE,
+								 FALSE);
+    }
+    break;
+  case GDK_KEY_Right:
+  case GDK_KEY_rightarrow:
+    {
+      if((AGS_AUTOMATION_EDIT_KEY_L_SHIFT & automation_edit->key_mask) != 0 ||
+	 (AGS_AUTOMATION_EDIT_KEY_R_SHIFT & automation_edit->key_mask) != 0){
+	if(automation_edit->edit_x > (1.0 * tact_factor)){
+	  x = automation_edit->edit_x - (1.0 * tact_factor);
+	}else{
+	  x = 0;
+	}
+	
+	y = automation_edit->edit_y;
+      }else{
+	if(automation_edit->edit_x > (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH * tact_factor)){
+	  x = automation_edit->edit_x - (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH * tact_factor);
+	}else{
+	  x = 0;
+	}
+
+	y = automation_edit->edit_y;
+      }
+
+      ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+								 TRUE,
+								 FALSE,
+								 FALSE);
+    }
+    break;
+  case GDK_KEY_Up:
+  case GDK_KEY_uparrow:
+    {
+      list =
+	list_start = g_list_reverse(g_list_copy(automation_edit->automation_area));
+
+      /* current automation area */
+      while(list != NULL){
+	if(AGS_AUTOMATION_AREA(list->data)->y < automation_edit->edit_y &&
+	   AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y){
+	  break;
+	}
+	  
+	list = list->next;
+      }
+
+      if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & automation_edit->key_mask) != 0 ||
+	 (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & automation_edit->key_mask) != 0){
+	/* goto prev available automation area */
+	if(list != NULL &&
+	   list->prev != NULL){
+	  y = AGS_AUTOMATION_AREA(list->prev->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
+							  (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+	}
+      }else{
+	/* move acceleration position y up */
+	if(AGS_AUTOMATION_AREA(list->data)->y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) > automation_edit->edit_y){
+	  y = automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	}
+      }
+
+      ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+								 TRUE,
+								 FALSE,
+								 FALSE);
+
+      g_list_free(list_start);
+    }
+    break;
+  case GDK_KEY_Down:
+  case GDK_KEY_downarrow:
+    {
+      guint tmp_y;
+      
+      list =
+	list_start = g_list_reverse(g_list_copy(automation_edit->automation_area));
+
+      /* current automation area */
+      while(list != NULL){
+	if(AGS_AUTOMATION_AREA(list->data)->y < automation_edit->edit_y &&
+	   AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y){
+	  break;
+	}
+	  
+	list = list->next;
+      }
+
+      if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & automation_edit->key_mask) != 0 ||
+	 (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & automation_edit->key_mask) != 0){
+	/* goto next available automation area */
+	if(list != NULL &&
+	   list->next != NULL){
+	  y = AGS_AUTOMATION_AREA(list->next->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
+							  (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+	}
+      }else{
+	/* move acceleration position y down */
+	if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height < automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
+	  y = automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	}
+      }
+
+      ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+								 TRUE,
+								 FALSE,
+								 FALSE);
+
+      g_list_free(list_start);
+    }
+    break;
+  case GDK_KEY_space:
+    {
+      ags_automation_edit_drawing_area_key_release_event_iterate(automation_edit->edit_x, automation_edit->edit_y,
+								 TRUE,
+								 TRUE,
+								 FALSE);
+    }
+    break;
+  case GDK_KEY_Delete:
+    {
+      ags_automation_edit_drawing_area_key_release_event_iterate(automation_edit->edit_x, automation_edit->edit_y,
+								 TRUE,
+								 FALSE,
+								 TRUE);
+    }
+    break;
+  }
+
+  return(retval);
 }
 
 void
