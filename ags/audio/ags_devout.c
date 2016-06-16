@@ -1300,7 +1300,11 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     }
 
     str = g_strdup_printf("hw:%d\0", card_num);
-    g_message("%s\0", str);
+
+#ifdef AGS_DEBUG
+    g_message("found soundcard - %s\0", str);
+#endif
+    
     error = snd_ctl_open(&card_handle, str, 0);
 
     if(error < 0){

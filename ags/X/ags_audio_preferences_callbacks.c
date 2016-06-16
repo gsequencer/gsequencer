@@ -65,7 +65,6 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 
   AgsSoundcard *soundcard;
   AgsSetOutputDevice *set_output_device;
-  GtkListStore *model;
   GtkTreeIter current;
 
   AgsMutexManager *mutex_manager;
@@ -104,20 +103,11 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  /*  */
-  model = gtk_combo_box_get_model(audio_preferences->card);
-
-  if(!gtk_combo_box_get_active_iter(audio_preferences->card,
-				    &current)){
-    return;
-  }
-
-  gtk_tree_model_get_value(model,
-			   &current,
-			   0,
-			   &value);
-  
-  str = g_strdup(g_value_get_string(&value));
+  /*  */  
+  str = gtk_combo_box_text_get_active_text(audio_preferences->card);
+  str = g_strndup(str,
+		  index(str,
+			',') - str);
   
   /* create set output device task */
   set_output_device = ags_set_output_device_new((GObject *) soundcard,

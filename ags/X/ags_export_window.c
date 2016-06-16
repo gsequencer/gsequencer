@@ -177,6 +177,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   GtkTable *table;
   GtkLabel *label;
 
+  gchar *str;
+  
   export_window->flags = 0;
 
   g_object_set(export_window,
@@ -188,14 +190,28 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_container_add(GTK_CONTAINER(export_window),
 		    GTK_WIDGET(vbox));
 
-  export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label("live export\0");
-  gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
-			       TRUE);
-  gtk_box_pack_start(GTK_BOX(vbox),
-		     GTK_WIDGET(export_window->live_export),
-		     FALSE, FALSE,
-		     0);
+  /* live export */
+  str = ags_config_get_value(ags_config_get_instance(),
+			     AGS_CONFIG_GENERIC,
+			     "disable-feature\0");
+  
+  if(!g_ascii_strncasecmp(str,
+			  "experimental\0",
+			  13)){
+    export_window->live_export = NULL;
+  }else{
+    export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label("live export\0");
+    gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
+				 TRUE);
+    gtk_box_pack_start(GTK_BOX(vbox),
+		       GTK_WIDGET(export_window->live_export),
+		       FALSE, FALSE,
+		       0);
+  }
 
+  g_free(str);
+  
+  /* exclude sequencer */
   export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers\0");
   gtk_toggle_button_set_active((GtkToggleButton *) export_window->exclude_sequencer,
 			       TRUE);
@@ -211,7 +227,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
-  /*  */
+  /* filename */
   label = (GtkLabel *) gtk_label_new("file\0");
   g_object_set(G_OBJECT(label),
 	       "xalign\0", 0.0,
@@ -246,7 +262,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     TRUE, TRUE,
 		     0);
 
-  /*  */
+  /* mode */
   label = (GtkLabel *) gtk_label_new("mode\0");
   g_object_set(G_OBJECT(label),
 	       "xalign\0", 0.0,
@@ -273,7 +289,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  /*  */
+  /* tact */
   label = (GtkLabel *) gtk_label_new("tact\0");
   g_object_set(G_OBJECT(label),
 	       "xalign\0", 0.0,
@@ -323,7 +339,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
-  /*  */
+  /* output format */
   label = (GtkLabel *) gtk_label_new("output format\0");
   g_object_set(G_OBJECT(label),
 	       "xalign\0", 0.0,

@@ -157,8 +157,12 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     }
 
     /* get some preferences */
-    live_performance = gtk_toggle_button_get_active((GtkToggleButton *) export_window->live_export);
-
+    if(export_window->live_export != NULL){
+      live_performance = gtk_toggle_button_get_active((GtkToggleButton *) export_window->live_export);
+    }else{
+      live_performance = TRUE;
+    }
+    
     machines_start = 
       machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
