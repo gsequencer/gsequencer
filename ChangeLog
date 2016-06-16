@@ -1,3 +1,8 @@
+ags (0.7.35)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented selection of automation editor
+
 ags (0.7.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

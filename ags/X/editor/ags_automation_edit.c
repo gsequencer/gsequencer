@@ -142,6 +142,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 			| GDK_CONTROL_MASK
 			| GDK_KEY_PRESS_MASK
 			| GDK_KEY_RELEASE_MASK);
+  gtk_widget_set_can_focus(automation_edit->drawing_area,
+			   TRUE);
     
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->drawing_area,

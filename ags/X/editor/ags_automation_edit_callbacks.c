@@ -316,6 +316,8 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     x = (guint) (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + (guint) event->x) / tact;
     y = (guint) GTK_RANGE(automation_edit->vscrollbar)->adjustment->value + (guint) event->y;
 
+    gtk_widget_grab_focus(automation_edit->drawing_area);
+
     if(automation_toolbar->selected_edit_mode == automation_toolbar->position){
       automation_edit->flags |= AGS_AUTOMATION_EDIT_POSITION_CURSOR;
 
@@ -365,10 +367,10 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
   double tact;
   guint x, y;
 
-  auto void ags_automation_edit_drawing_area_button_press_event_delete_point(cairo_t *cr);
-  auto void ags_automation_edit_drawing_area_button_press_event_select(cairo_t *cr);
+  auto void ags_automation_edit_drawing_area_button_release_event_delete_point(cairo_t *cr);
+  auto void ags_automation_edit_drawing_area_button_release_event_select(cairo_t *cr);
 
-  void ags_automation_edit_drawing_area_button_press_event_delete_point(cairo_t *cr){
+  void ags_automation_edit_drawing_area_button_release_event_delete_point(cairo_t *cr){
     AgsNotebook *notebook;
     
     AgsAcceleration *current_acceleration, *acceleration;
@@ -584,8 +586,156 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     }    
   }
 
-  void ags_automation_edit_drawing_area_button_press_event_select(cairo_t *cr){
-    //TODO:JK: implement me
+  void ags_automation_edit_drawing_area_button_release_event_select(cairo_t *cr){
+    AgsNotebook *notebook;
+    
+    GList *list, *list_start;
+    GList *automation;
+
+    GType channel_type;
+
+    gdouble gui_y;
+
+    gdouble c_y0, c_y1;
+    gdouble upper, lower, range, step;
+    gdouble c_upper, c_lower, c_range;
+
+    guint x0, x1;
+    guint y0, y1;
+    guint line;
+    gboolean is_audio, is_output, is_input;
+
+    if(automation_edit == automation_editor->current_audio_automation_edit){
+      notebook = NULL;
+      channel_type = G_TYPE_NONE;
+
+      is_audio = TRUE;
+    }else if(automation_edit == automation_editor->current_output_automation_edit){
+      notebook = automation_editor->current_output_notebook;
+      channel_type = AGS_TYPE_OUTPUT;
+      
+      is_output = TRUE;
+    }else if(automation_edit == automation_editor->current_input_automation_edit){
+      notebook = automation_editor->current_input_notebook;
+      channel_type = AGS_TYPE_INPUT;
+      
+      is_input = TRUE;
+    }
+
+    /* get boundaries */
+    if(automation_edit->select_x0 > automation_edit->select_x1){
+      x0 = automation_edit->select_x1;
+      x1 = automation_edit->select_x0;
+    }else{
+      x0 = automation_edit->select_x0;
+      x1 = automation_edit->select_x1;
+    }
+
+    if(automation_edit->select_y0 > automation_edit->select_y1){
+      y0 = automation_edit->select_y1;
+      y1 = automation_edit->select_y0;
+    }else{
+      y0 = automation_edit->select_y0;
+      y1 = automation_edit->select_y1;
+    }
+    
+    /* find automation area */
+    list =
+      list_start = g_list_reverse(g_list_copy(automation_edit->automation_area));
+
+    while(list != NULL){
+      if(AGS_AUTOMATION_AREA(list->data)->y > y1){
+	break;
+      }
+
+      if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > y0){
+	line = 0;
+	
+	while((line = ags_notebook_next_active_tab(notebook,
+						   line)) != -1){
+	  automation = automation_editor->selected_machine->audio->automation;
+
+	  while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									       AGS_AUTOMATION_AREA(list->data)->control_name,
+									       channel_type,
+									       line)) != NULL){
+
+	    upper = AGS_AUTOMATION(automation->data)->upper;
+	    lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	    range = upper - lower;
+
+	    if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	      c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					       upper,
+					       FALSE);
+	      c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					       lower,
+					       FALSE);
+	      c_range = c_upper - c_lower;
+	    }else{
+	      c_upper = upper;
+	      c_lower = lower;
+	      
+	      c_range = range;
+	    }
+
+	    if(range == 0.0){
+	      automation = automation->next;
+	      g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	      
+	      continue;
+	    }
+
+	    /* check steps */
+	    if(AGS_AUTOMATION_AREA(list->data)->y > y0){
+	      gui_y = AGS_AUTOMATION(automation->data)->steps;
+	    }else{
+	      gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y0));
+	    }
+	    
+	    c_y0 = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
+	    /* conversion */
+	    if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	      c_y0 = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					    c_y0,
+					    TRUE);
+	    }
+
+	    /* check steps */
+	    if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height < automation_edit->select_y1){
+	      gui_y = 0;
+	    }else{
+	      gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y1 - (AGS_AUTOMATION_AREA(list->data)->y)));
+	    }
+	    
+	    c_y1 = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
+	    /* conversion */
+	    if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	      c_y1 = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					    c_y1,
+					    TRUE);
+	    }
+
+	    /* select */
+	    ags_automation_add_region_to_selection(automation->data,
+						   x0, c_y0,
+						   x1, c_y1,
+						   TRUE);
+
+	    automation = automation->next;
+	  }
+
+	  line++;
+	}
+      }
+
+      list = list->next;
+    }
+
+    g_list_free(list_start);
   }
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
@@ -611,12 +761,19 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_ADDING_ACCELERATION);
     }else if((AGS_AUTOMATION_EDIT_DELETING_ACCELERATION & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_DELETING_ACCELERATION);
-      ags_automation_edit_drawing_area_button_press_event_delete_point(cr);
+
+      ags_automation_edit_drawing_area_button_release_event_delete_point(cr);
+      
       gtk_widget_queue_draw(automation_edit->drawing_area);
     }else if((AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS);
 
-      //TODO:JK: implement me
+      automation_edit->select_x1 = x;
+      automation_edit->select_y1 = y;
+
+      ags_automation_edit_drawing_area_button_release_event_select(cr);
+      
+      gtk_widget_queue_draw(automation_edit->drawing_area);
     }
   }
   
@@ -1277,25 +1434,26 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 	list = list->next;
       }
 
-      if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & automation_edit->key_mask) != 0 ||
-	 (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & automation_edit->key_mask) != 0){
-	/* goto prev available automation area */
-	if(list != NULL &&
-	   list->prev != NULL){
-	  y = AGS_AUTOMATION_AREA(list->prev->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
-							  (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+      if(list != NULL){      
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & automation_edit->key_mask) != 0 ||
+	   (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & automation_edit->key_mask) != 0){
+	  /* goto prev available automation area */
+	  if(list->prev != NULL){
+	    y = AGS_AUTOMATION_AREA(list->prev->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
+							    (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+	  }
+	}else{
+	  /* move acceleration position y up */
+	  if(AGS_AUTOMATION_AREA(list->data)->y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) > automation_edit->edit_y){
+	    y = automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	  }
 	}
-      }else{
-	/* move acceleration position y up */
-	if(AGS_AUTOMATION_AREA(list->data)->y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) > automation_edit->edit_y){
-	  y = automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
-	}
-      }
 
-      ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
-								 TRUE,
-								 FALSE,
-								 FALSE);
+	ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+								   TRUE,
+								   FALSE,
+								   FALSE);
+      }
 
       g_list_free(list_start);
     }
@@ -1318,26 +1476,27 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 	list = list->next;
       }
 
-      if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & automation_edit->key_mask) != 0 ||
-	 (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & automation_edit->key_mask) != 0){
-	/* goto next available automation area */
-	if(list != NULL &&
-	   list->next != NULL){
-	  y = AGS_AUTOMATION_AREA(list->next->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
-							  (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+      if(list != NULL){
+	if((AGS_AUTOMATION_EDIT_KEY_L_CONTROL & automation_edit->key_mask) != 0 ||
+	   (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & automation_edit->key_mask) != 0){
+	  /* goto next available automation area */
+	  if(list->next != NULL){
+	    y = AGS_AUTOMATION_AREA(list->next->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
+							    (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+	  }
+	}else{
+	  /* move acceleration position y down */
+	  if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height < automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
+	    y = automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	  }
 	}
-      }else{
-	/* move acceleration position y down */
-	if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height < automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
-	  y = automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
-	}
+
+	ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+								   TRUE,
+								   FALSE,
+								   FALSE);
       }
-
-      ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
-								 TRUE,
-								 FALSE,
-								 FALSE);
-
+      
       g_list_free(list_start);
     }
     break;

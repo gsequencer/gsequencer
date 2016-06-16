@@ -999,6 +999,14 @@ ags_automation_find_region(AgsAutomation *automation,
   GList *acceleration;
   GList *region;
 
+  if(y0 > y1){
+    gdouble tmp_y;
+
+    tmp_y = y0;
+    y0 = y1;
+    y1 = tmp_y;
+  }
+  
   if(use_selection_list){
     acceleration = automation->selection;
   }else{

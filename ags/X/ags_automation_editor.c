@@ -1139,7 +1139,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
   xmlChar *buffer;
 
   guint current_page;
-  guint line;
+  gint line;
   int size;
   gboolean is_audio, is_output, is_input;
 
@@ -1229,7 +1229,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 	    automation = automation->next;
 	  }
 	  
-	  line = line++;
+	  line++;
 	}
 
 	list = list->next;
