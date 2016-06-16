@@ -36,6 +36,10 @@ gboolean ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget
 							       AgsAutomationEdit *automation_edit);
 gboolean ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
 							      AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event,
+							  AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event,
+							    AgsAutomationEdit *automation_edit);
 
 void ags_automation_edit_vscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);
 void ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);

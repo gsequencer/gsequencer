@@ -107,6 +107,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   automation_edit->flags = 0;
 
+  automation_edit->key_mask = 0;
+
   automation_edit->scope = G_TYPE_NONE;
   
   automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS;
@@ -137,7 +139,9 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 			| GDK_BUTTON_RELEASE_MASK
 			| GDK_POINTER_MOTION_MASK
 			| GDK_POINTER_MOTION_HINT_MASK
-			);
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK);
     
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->drawing_area,
@@ -192,6 +196,12 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   
   g_signal_connect((GObject *) automation_edit->drawing_area, "motion_notify_event\0",
 		   G_CALLBACK (ags_automation_edit_drawing_area_motion_notify_event), (gpointer) automation_edit);
+
+  g_signal_connect((GObject *) automation_edit->drawing_area, "key_press_event\0",
+		   G_CALLBACK(ags_automation_edit_drawing_area_key_press_event), (gpointer) automation_edit);
+
+  g_signal_connect((GObject *) automation_edit->drawing_area, "key_release_event\0",
+		   G_CALLBACK(ags_automation_edit_drawing_area_key_release_event), (gpointer) automation_edit);
 
   /*  */
   g_signal_connect_after((GObject *) automation_edit->vscrollbar, "value-changed\0",
