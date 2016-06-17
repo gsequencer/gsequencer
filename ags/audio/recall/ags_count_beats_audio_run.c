@@ -625,7 +625,7 @@ ags_count_beats_audio_run_finalize(GObject *gobject)
 
 void
 ags_count_beats_audio_run_connect(AgsConnectable *connectable)
-{
+{  
   if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
     return;
   }

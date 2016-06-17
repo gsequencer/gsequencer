@@ -3481,13 +3481,22 @@ ags_channel_play(AgsChannel *channel,
       continue;
     }
 
-    if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_context != recall_id->recycling_context ||
-       AGS_IS_RECALL_CHANNEL(recall)){
+    if(AGS_IS_RECALL_CHANNEL(recall)){
+      /* run automation*/
+      if(stage == 0){
+	ags_recall_automate(recall);
+      }
+
       list = list_next;
       continue;
     }
 
+    if(recall->recall_id == NULL ||
+       recall->recall_id->recycling_context != recall_id->recycling_context){
+      list = list_next;
+      continue;
+    }
+    
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
 #ifdef AGS_DEBUG
       g_message("%s play channel %x:%d @%x -> %x\0", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);

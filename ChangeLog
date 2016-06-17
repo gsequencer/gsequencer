@@ -6,7 +6,14 @@ ags (0.7.35)
 	* fixed clipped selection
 	* fixed reset automation editor position
 	* fixed ruler widget because the previous code obviously did wrong use of ceil()
+	* implemented Atk interfaces in ags_automation_edit.c
 	* implemented selection of automation editor
+	* implemented ags_soundcard_get_loop(), ags_soundcard_set_loop() and ags_soundcard_get_loop_offset()
+	* improved loop mode
+	* TODO fix automate
+	* TODO line member port
+	* TODO line member editor hide bulk
+	* TODO mutices automation editor
 
 ags (0.7.34)
 

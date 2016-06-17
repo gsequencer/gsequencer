@@ -93,6 +93,12 @@ struct _AgsDevout
   guint tic_counter; // in the range of default period
 
   guint note_offset;
+
+  guint loop_left;
+  guint loop_right;
+  gboolean do_loop;
+  
+  guint loop_offset;
   
   union{
     struct _AgsOss{

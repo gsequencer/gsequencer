@@ -306,18 +306,30 @@ ags_navigation_loop_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
+
   AgsAudio *audio;
   AgsRecall *recall;
+
   GList *machines, *machines_start;
   GList *list, *list_start;
-  GValue value = {0,};
+
+  guint loop_left, loop_right;
+  
+  GValue do_loop_value = {0,};
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
-  g_value_set_boolean(&value,
+  loop_left = 16 * navigation->loop_left_tact->adjustment->value;
+  loop_right = 16 * navigation->loop_right_tact->adjustment->value;
+  
+  ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
+			 loop_left, loop_right,
+			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+			 
+  g_value_init(&do_loop_value, G_TYPE_BOOLEAN);
+  g_value_set_boolean(&do_loop_value,
 		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 
   while(machines != NULL){
@@ -335,7 +347,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
 	recall = AGS_RECALL(list->data);
 	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->notation_loop,
-			    &value);
+			    &do_loop_value);
 
 	list = list->next;
       }
@@ -401,24 +413,36 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
+
   AgsAudio *audio;
   AgsRecall *recall;
+
   GList *machines, *machines_start;
   GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+
+  guint loop_left, loop_right;
+
   GValue value = {0,};
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
+  loop_left = 16 * navigation->loop_left_tact->adjustment->value;
+  loop_right = 16 * navigation->loop_right_tact->adjustment->value;
+  
+  ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
+			 loop_left, loop_right,
+			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+
   g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_boolean(&value,
-		      gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
+  g_value_set_double(&value,
+		     loop_left);
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       g_message("found machine to loop!\n\0");
 
@@ -448,24 +472,36 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
+
   AgsAudio *audio;
   AgsRecall *recall;
+
   GList *machines, *machines_start;
   GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+
+  guint loop_left, loop_right;
+
   GValue value = {0,};
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
+  loop_left = 16 * navigation->loop_left_tact->adjustment->value;
+  loop_right = 16 * navigation->loop_right_tact->adjustment->value;
+  
+  ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
+			 loop_left, loop_right,
+			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
+
   g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_boolean(&value,
-		      gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
+  g_value_set_double(&value,
+		     loop_right);
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       g_message("found machine to loop!\n\0");
 

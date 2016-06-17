@@ -1584,9 +1584,6 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
   /* lock ports */
   ags_recall_lock_port(recall);
-  
-  /* run automation*/
-  ags_recall_automate(recall);
 
   /* run */
   list = recall->children;

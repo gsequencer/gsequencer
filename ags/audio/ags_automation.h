@@ -157,9 +157,9 @@ GList* ags_automation_find_specifier_with_type_and_line(GList *automation,
 							GType channel_type,
 							guint line);
 
-void ags_automation_get_value(AgsAutomation *automation,
-			      guint x,
-			      GValue *value);
+guint ags_automation_get_value(AgsAutomation *automation,
+			       guint x,
+			       GValue *value);
 
 AgsAutomation* ags_automation_new(GObject *audio,
 				  guint line,

@@ -489,8 +489,15 @@ ags_recall_channel_automate(AgsRecall *recall)
 
   gdouble delay;
   guint note_offset, delay_counter;
-  guint x;
   
+  guint loop_left, loop_right;
+  guint loop_offset;
+  gboolean do_loop;
+
+  guint offset;
+  double x, step;
+  guint ret_x;
+
   audio = AGS_CHANNEL(AGS_RECALL_CHANNEL(recall)->source)->audio;
   soundcard = audio->soundcard;
 
@@ -498,26 +505,48 @@ ags_recall_channel_automate(AgsRecall *recall)
   port = recall->port;
 
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
-
+  
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
   delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
-  
-  x = 64 * note_offset + (guint) floor((1.0 / 64.0) * ((gdouble) delay_counter / delay));
-  
+
+  /* retrieve loop information */
+  loop_offset = ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
+				       &loop_left, &loop_right,
+				       &do_loop);
+
+  loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(soundcard));
+
+  if(do_loop &&
+     loop_offset <= note_offset){
+    offset = note_offset - loop_offset;
+
+    offset = offset % (loop_right - loop_left);
+  }else{
+    offset = note_offset;
+  }
+
+  /*  */
+  x = ((double) offset + (delay_counter / delay)) / ((1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH) * AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH);
+  step = (1.0 / delay) / ((1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH) * AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH);
+
   while(port != NULL){
     automation = audio->automation;
     automation = ags_automation_find_port(automation,
 					  port->data);
-    
+
     if(automation != NULL &&
        (AGS_AUTOMATION_BYPASS & (AGS_AUTOMATION(automation->data)->flags)) == 0){
       GValue value = {0,};
 
-      ags_automation_get_value(automation->data,
-			       x,
-			       &value);
-      ags_port_safe_write(port->data,
-			  &value);
+      ret_x = ags_automation_get_value(automation->data,
+				       x,
+				       &value);
+
+      if(ret_x >= floor(x) &&
+	 ret_x < ceil(x + step)){
+	ags_port_safe_write(port->data,
+			    &value);
+      }
     }
 
     port = port->next;

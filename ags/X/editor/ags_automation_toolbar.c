@@ -415,12 +415,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     found_input = FALSE;
     
     while((list = ags_automation_find_specifier(list,
-						control_name)) != NULL &&
-	  (!found_audio || !found_output || !found_input)){
+						control_name)) != NULL){
+      AGS_AUTOMATION(list->data)->flags &= (~AGS_AUTOMATION_BYPASS);
+
       if(AGS_AUTOMATION(list->data)->channel_type == G_TYPE_NONE &&
 	 !found_audio){
-	AGS_AUTOMATION(list->data)->flags &= AGS_AUTOMATION_BYPASS;
-	
 	scale_area = ags_scale_area_new(automation_editor->current_audio_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
@@ -443,8 +442,6 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_OUTPUT &&
 	 !found_output){
-	AGS_AUTOMATION(list->data)->flags &= AGS_AUTOMATION_BYPASS;
-	
 	scale_area = ags_scale_area_new(automation_editor->current_output_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
@@ -467,8 +464,6 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_INPUT &&
 	 !found_input){
-	AGS_AUTOMATION(list->data)->flags &= AGS_AUTOMATION_BYPASS;
-	
 	scale_area = ags_scale_area_new(automation_editor->current_input_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
@@ -514,8 +509,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
     /* set bypass */
     while((list = ags_automation_find_specifier(list,
-						control_name)) != NULL &&
-	  (!found_audio || !found_output || !found_input)){
+						control_name)) != NULL){
       AGS_AUTOMATION(list->data)->flags |= AGS_AUTOMATION_BYPASS;
       
       list = list->next;
