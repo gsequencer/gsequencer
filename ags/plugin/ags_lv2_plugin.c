@@ -467,6 +467,16 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     while(port_list != NULL){
       port = ags_port_descriptor_alloc();
       found_port = FALSE;
+
+      g_value_init(port->upper_value,
+		   G_TYPE_FLOAT);
+      g_value_init(port->lower_value,
+		   G_TYPE_FLOAT);
+      g_value_init(port->default_value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(port->upper_value,
+			0.0);
       
       port_node = (xmlNode *) port_list->data;
 
@@ -727,8 +737,6 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	lower_value = g_ascii_strtod(xmlNodeGetContent(current),
 				     NULL);
 	
-	g_value_init(port->lower_value,
-		     G_TYPE_FLOAT);
 	g_value_set_float(port->lower_value,
 			  lower_value);
 
@@ -747,8 +755,6 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	upper_value = g_ascii_strtod(xmlNodeGetContent(current),
 				     NULL);
 	
-	g_value_init(port->upper_value,
-		     G_TYPE_FLOAT);
 	g_value_set_float(port->upper_value,
 			  upper_value);
 
@@ -778,8 +784,6 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
-	g_value_init(port->default_value,
-		     G_TYPE_FLOAT);
 	g_value_set_float(port->default_value,
 			  g_ascii_strtod(xmlNodeGetContent(current),
 					 NULL));

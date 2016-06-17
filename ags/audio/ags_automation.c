@@ -505,6 +505,8 @@ ags_automation_set_property(GObject *gobject,
 	automation->upper = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->upper_value);
 
 	if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
+	  automation->lower = 0.0;
+	  automation->upper = 1.0;
 	  automation->steps = 1;
 	}else if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
 	  automation->steps = AGS_PORT_DESCRIPTOR(port->port_descriptor)->scale_steps;
