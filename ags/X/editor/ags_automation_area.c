@@ -472,7 +472,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 
   zoom_factor = 1.0 / 4.0;
 
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
   /*  */
@@ -764,7 +764,7 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   
   zoom_factor = 1.0 / 4.0;
 
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;

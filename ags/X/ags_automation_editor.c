@@ -1232,9 +1232,6 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
     }
     
     g_list_free(list_start);
-
-    /* remove duplicated */
-    //TODO:JK: implement me
     
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
