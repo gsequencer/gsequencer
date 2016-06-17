@@ -1365,10 +1365,20 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
     {
       if((AGS_AUTOMATION_EDIT_KEY_L_SHIFT & automation_edit->key_mask) != 0 ||
 	 (AGS_AUTOMATION_EDIT_KEY_R_SHIFT & automation_edit->key_mask) != 0){
-	x = automation_edit->edit_x + (1.0 * tact_factor);
+	if(automation_edit->edit_x > (1.0 / tact)){
+	  x = automation_edit->edit_x - (1.0 / tact);
+	}else{
+	  x = 0;
+	}
+	
 	y = automation_edit->edit_y;
       }else{
-	x = automation_edit->edit_x + (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH * tact_factor);
+	if(automation_edit->edit_x > (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH / tact)){
+	  x = automation_edit->edit_x - (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH / tact);
+	}else{
+	  x = 0;
+	}
+
 	y = automation_edit->edit_y;
       }
       
@@ -1376,6 +1386,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								 TRUE,
 								 FALSE,
 								 FALSE);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
     }
     break;
   case GDK_KEY_Right:
@@ -1383,27 +1394,18 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
     {
       if((AGS_AUTOMATION_EDIT_KEY_L_SHIFT & automation_edit->key_mask) != 0 ||
 	 (AGS_AUTOMATION_EDIT_KEY_R_SHIFT & automation_edit->key_mask) != 0){
-	if(automation_edit->edit_x > (1.0 * tact_factor)){
-	  x = automation_edit->edit_x - (1.0 * tact_factor);
-	}else{
-	  x = 0;
-	}
-	
+	x = automation_edit->edit_x + (1.0 / tact);
 	y = automation_edit->edit_y;
       }else{
-	if(automation_edit->edit_x > (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH * tact_factor)){
-	  x = automation_edit->edit_x - (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH * tact_factor);
-	}else{
-	  x = 0;
-	}
-
+	x = automation_edit->edit_x + (AGS_AUTOMATION_EDIT_DEFAULT_WIDTH / tact);
 	y = automation_edit->edit_y;
       }
 
-      ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+      ags_automation_edit_drawing_area_key_release_event_iterate(x, 0,
 								 TRUE,
 								 FALSE,
 								 FALSE);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
     }
     break;
   case GDK_KEY_Up:
@@ -1414,8 +1416,8 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
       /* current automation area */
       while(list != NULL){
-	if(AGS_AUTOMATION_AREA(list->data)->y < automation_edit->edit_y &&
-	   AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y){
+	if(AGS_AUTOMATION_AREA(list->data)->y <= automation_edit->edit_y &&
+	   AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height >= automation_edit->edit_y){
 	  break;
 	}
 	  
@@ -1429,18 +1431,23 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 	  if(list->prev != NULL){
 	    y = AGS_AUTOMATION_AREA(list->prev->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
 							    (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+	  }else{
+	    y = automation_edit->edit_y;
 	  }
 	}else{
 	  /* move acceleration position y up */
-	  if(AGS_AUTOMATION_AREA(list->data)->y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) > automation_edit->edit_y){
+	  if(AGS_AUTOMATION_AREA(list->data)->y <= automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
 	    y = automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	  }else{
+	    y = AGS_AUTOMATION_AREA(list->data)->y;
 	  }
 	}
 
-	ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+	ags_automation_edit_drawing_area_key_release_event_iterate(automation_edit->edit_x, 0,
 								   TRUE,
 								   FALSE,
 								   FALSE);
+	gtk_widget_queue_draw(automation_edit->drawing_area);
       }
 
       g_list_free(list_start);
@@ -1456,8 +1463,8 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
       /* current automation area */
       while(list != NULL){
-	if(AGS_AUTOMATION_AREA(list->data)->y < automation_edit->edit_y &&
-	   AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y){
+	if(AGS_AUTOMATION_AREA(list->data)->y <= automation_edit->edit_y &&
+	   AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height >= automation_edit->edit_y){
 	  break;
 	}
 	  
@@ -1469,20 +1476,25 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 	   (AGS_AUTOMATION_EDIT_KEY_R_CONTROL & automation_edit->key_mask) != 0){
 	  /* goto next available automation area */
 	  if(list->next != NULL){
-	    y = AGS_AUTOMATION_AREA(list->next->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->prev->data)->height) *
+	    y = AGS_AUTOMATION_AREA(list->next->data)->y + ((AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA(list->next->data)->height) *
 							    (automation_edit->edit_y - AGS_AUTOMATION_AREA(list->data)->y));
+	  }else{
+	    y = automation_edit->edit_y;
 	  }
 	}else{
 	  /* move acceleration position y down */
-	  if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height < automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
+	  if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
 	    y = automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	  }else{
+	    y =  automation_edit->edit_y + AGS_AUTOMATION_AREA(list->data)->height;
 	  }
 	}
 
-	ags_automation_edit_drawing_area_key_release_event_iterate(x, y,
+	ags_automation_edit_drawing_area_key_release_event_iterate(automation_edit->edit_x, y,
 								   TRUE,
 								   FALSE,
 								   FALSE);
+	gtk_widget_queue_draw(automation_edit->drawing_area);
       }
       
       g_list_free(list_start);
@@ -1494,6 +1506,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								 TRUE,
 								 TRUE,
 								 FALSE);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
     }
     break;
   case GDK_KEY_Delete:
@@ -1502,6 +1515,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								 TRUE,
 								 FALSE,
 								 TRUE);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
     }
     break;
   }
