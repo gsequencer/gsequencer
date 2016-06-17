@@ -52,6 +52,9 @@
 
 #define AGS_SOUNDCARD_DEFAULT_PERIOD (64.0)
 
+#define AGS_SOUNDCARD_DEFAULT_LOOP_LEFT (0)
+#define AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT (64)
+
 typedef void AgsSoundcard;
 typedef struct _AgsSoundcardInterface AgsSoundcardInterface;
 
@@ -139,6 +142,15 @@ struct _AgsSoundcardInterface
 			  guint note_offset);
   guint (*get_note_offset)(AgsSoundcard *soundcard);
 
+  void (*set_loop)(AgsSoundcard *soundcard,
+		   gdouble loop_left, gdouble loop_right,
+		   gboolean do_loop);
+  void (*get_loop)(AgsSoundcard *soundcard,
+		   gdouble *loop_left, gdouble *loop_right,
+		   gboolean *do_loop);
+
+  guint (*get_loop_offset)(AgsSoundcard *soundcard);
+
   void (*set_audio)(AgsSoundcard *soundcard,
 		    GList *audio);
   GList* (*get_audio)(AgsSoundcard *soundcard);
@@ -216,6 +228,15 @@ guint ags_soundcard_get_delay_counter(AgsSoundcard *soundcard);
 void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 				   guint note_offset);
 guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_loop(AgsSoundcard *soundcard,
+			    guint loop_left, guint loop_right,
+			    gboolean loop);
+guint ags_soundcard_get_loop(AgsSoundcard *soundcard,
+			     guint *loop_left, guint *loop_right,
+			     gboolean *do_loop);
+
+guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_audio(AgsSoundcard *soundcard,
 			     GList *audio);

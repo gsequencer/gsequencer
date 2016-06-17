@@ -841,7 +841,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
       GValue value = {0,};
 
       port = AGS_BULK_PORT(list->data)->port;
-
+      
       pthread_mutex_lock(port->mutex);
 
       if(!port->port_value_is_pointer){
@@ -890,7 +890,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	    if(success){
 	      range = upper - lower;
-	      step = range / val;
 
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   val,
@@ -902,7 +901,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 					       lower,
 					       FALSE);
 	      c_range = c_upper - c_lower;
-
+	      step = c_range / val;
 	    
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   c_lower + (c_range / step),
@@ -943,7 +942,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	    if(success){
 	      range = upper - lower;
-	      step = range / val;
 
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   val,
@@ -955,7 +953,8 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 					       lower,
 					       FALSE);
 	      c_range = c_upper - c_lower;
-	    
+	      step = c_range / val;
+
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   c_lower + (c_range / step),
 					   TRUE);
@@ -1012,8 +1011,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				     AGS_TYPE_TASK_THREAD);
   
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
-    GList *list;
-
     ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);
 
     if((AGS_BULK_MEMBER_APPLY_RECALL & (bulk_member->flags)) != 0){
@@ -1069,9 +1066,6 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   AgsChannel *channel;
   AgsPort *audio_port, *channel_port;
   AgsPort *recall_audio_port, *recall_channel_port;
-
-  GList *recall;
-  GList *port;
   
   gchar *specifier;
 
@@ -1119,7 +1113,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   if(specifier == NULL){
     return;
   }
-  
+
   effect_bulk = gtk_widget_get_ancestor(GTK_WIDGET(bulk_member),
 					AGS_TYPE_EFFECT_BULK);
 
@@ -1130,8 +1124,6 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   
   recall_audio_port = NULL;
   recall_channel_port = NULL;
-
-  port = NULL;
   
   /* search channels */
   channel = NULL;
@@ -1143,8 +1135,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   }
 
   while(channel != NULL){
-    recall = channel->play;
-    channel_port = ags_bulk_member_find_specifier(recall);
+    channel_port = ags_bulk_member_find_specifier(channel->play);
 
     if(channel_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, channel_port) == NULL){
@@ -1152,8 +1143,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 					      ags_bulk_port_alloc(channel_port));
     }
 
-    recall = channel->recall;
-    recall_channel_port = ags_bulk_member_find_specifier(recall);
+    recall_channel_port = ags_bulk_member_find_specifier(channel->recall);
     
     if(recall_channel_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_channel_port) == NULL){
@@ -1167,17 +1157,15 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   /* search audio */
   if(channel_port == NULL &&
      recall_channel_port == NULL){
-    recall = audio->play;
-    audio_port = ags_bulk_member_find_specifier(recall);
+    audio_port = ags_bulk_member_find_specifier(audio->play);
 
     if(audio_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, audio_port) == NULL){
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
 					      ags_bulk_port_alloc(audio_port));
     }
-
-    recall = audio->recall;
-    recall_audio_port = ags_bulk_member_find_specifier(recall);
+    
+    recall_audio_port = ags_bulk_member_find_specifier(audio->recall);
     
     if(recall_audio_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_audio_port) == NULL){

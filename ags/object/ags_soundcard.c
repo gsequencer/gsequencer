@@ -754,6 +754,28 @@ ags_soundcard_get_delay_counter(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_set_note_offset:
+ * @soundcard: an #AgsSoundcard
+ * @note_offset: the note offset to set
+ *
+ * Set current playback note offset. 
+ *
+ * Since: 0.4.2
+ */
+void
+ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
+			      guint note_offset)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_note_offset);
+  soundcard_interface->set_note_offset(soundcard,
+				       note_offset);
+}
+
+/**
  * ags_soundcard_get_note_offset:
  * @soundcard: an #AgsSoundcard
  *
@@ -776,25 +798,65 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
 }
 
 /**
- * ags_soundcard_set_note_offset:
- * @soundcard: an #AgsSoundcard
- * @note_offset: the note offset to set
+ * ags_soundcard_set_loop:
  *
- * Set current playback note offset. 
- *
- * Since: 0.4.2
+ * Since: 0.7.35
  */
 void
-ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
-			      guint note_offset)
+ags_soundcard_set_loop(AgsSoundcard *soundcard,
+		       guint loop_left, guint loop_right,
+		       gboolean loop)
 {
   AgsSoundcardInterface *soundcard_interface;
 
   g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_note_offset);
-  soundcard_interface->set_note_offset(soundcard,
-				       note_offset);
+  g_return_if_fail(soundcard_interface->set_loop);
+  soundcard_interface->set_loop(soundcard,
+				loop_left, loop_right,
+				loop);
+}
+
+/**
+ * ags_soundcard_get_loop:
+ *
+ * Since: 0.7.35
+ */
+guint
+ags_soundcard_get_loop(AgsSoundcard *soundcard,
+		       guint *loop_left, guint *loop_right,
+		       gboolean *do_loop)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_loop, G_MAXUINT);
+  soundcard_interface->get_loop(soundcard,
+				loop_left, loop_right,
+				do_loop);
+}
+
+/**
+ * ags_soundcard_get_loop_offset:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get current playback loop offset. 
+ *
+ * Returns: offset
+ *
+ * Since: 0.7.35
+ */
+guint
+ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_loop_offset, G_MAXUINT);
+
+  return(soundcard_interface->get_loop_offset(soundcard));
 }
 
 /**

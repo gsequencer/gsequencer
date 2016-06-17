@@ -3892,25 +3892,35 @@ ags_audio_play(AgsAudio *audio,
       continue;
     }
 
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
-       recall->recall_id == NULL ||
-       (recall->recall_id->recycling_context != recall_id->recycling_context) ||
-       AGS_IS_RECALL_AUDIO(recall)){
+    if(AGS_IS_RECALL_AUDIO(recall)){
+      if(stage == 0){
+	ags_recall_automate(recall);
+      }
+
       list = list_next;
 
       continue;
     }
-    
-    if((AGS_RECALL_HIDE & (recall->flags)) == 0){
-      if(stage == 0){
-	ags_recall_run_pre(recall);
-      }else if(stage == 1){
-	ags_recall_run_inter(recall);
-      }else{
-	ags_recall_run_post(recall);
-      }
+
+    if(recall->recall_id == NULL ||
+       (recall->recall_id->recycling_context != recall_id->recycling_context)){
+      list = list_next;
+
+      continue;
     }
 
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
+      if((AGS_RECALL_HIDE & (recall->flags)) == 0){
+	if(stage == 0){
+	  ags_recall_run_pre(recall);
+	}else if(stage == 1){
+	  ags_recall_run_inter(recall);
+	}else{
+	  ags_recall_run_post(recall);
+	}
+      }
+    }
+    
     list = list_next;
   }
   

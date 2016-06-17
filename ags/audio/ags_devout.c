@@ -139,6 +139,15 @@ void ags_devout_set_note_offset(AgsSoundcard *soundcard,
 				guint note_offset);
 guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
 
+void ags_devout_set_loop(AgsSoundcard *soundcard,
+			 guint loop_left, guint loop_right,
+			 gboolean loop);
+guint ags_devout_get_loop(AgsSoundcard *soundcard,
+			  guint *loop_left, guint *loop_right,
+			  gboolean *do_loop);
+
+guint ags_devout_get_loop_offset(AgsSoundcard *soundcard);
+
 void ags_devout_set_audio(AgsSoundcard *soundcard,
 			  GList *audio);
 GList* ags_devout_get_audio(AgsSoundcard *soundcard);
@@ -522,6 +531,11 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->set_note_offset = ags_devout_set_note_offset;
   soundcard->get_note_offset = ags_devout_get_note_offset;
 
+  soundcard->set_loop = ags_devout_set_loop;
+  soundcard->get_loop = ags_devout_get_loop;
+
+  soundcard->get_loop_offset = ags_devout_get_loop_offset;
+
   soundcard->set_audio = ags_devout_set_audio;
   soundcard->get_audio = ags_devout_get_audio;
 }
@@ -648,11 +662,17 @@ ags_devout_init(AgsDevout *devout)
   ags_devout_adjust_delay_and_attack(devout);
   
   /* counters */
-  devout->note_offset = 0;
   devout->tact_counter = 0.0;
   devout->delay_counter = 0;
   devout->tic_counter = 0;
 
+  devout->note_offset = 0;
+
+  devout->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
+  devout->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
+
+  devout->do_loop = FALSE;
+  
   /* parent */
   devout->application_context = NULL;
   devout->application_mutex = NULL;
@@ -1958,6 +1978,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_BUFFER3 |
 		      AGS_DEVOUT_PLAY |
 		      AGS_DEVOUT_INITIALIZED));
+
+  devout->note_offset = 0;
 }
 
 void
@@ -2135,6 +2157,44 @@ guint
 ags_devout_get_note_offset(AgsSoundcard *soundcard)
 {
   return(AGS_DEVOUT(soundcard)->note_offset);
+}
+
+void
+ags_devout_set_loop(AgsSoundcard *soundcard,
+		    guint loop_left, guint loop_right,
+		    gboolean do_loop)
+{
+  AGS_DEVOUT(soundcard)->loop_left = loop_left;
+  AGS_DEVOUT(soundcard)->loop_right = loop_right;
+  AGS_DEVOUT(soundcard)->do_loop = do_loop;
+
+  if(do_loop){
+    AGS_DEVOUT(soundcard)->loop_offset = AGS_DEVOUT(soundcard)->note_offset;
+  }
+}
+
+guint
+ags_devout_get_loop(AgsSoundcard *soundcard,
+		    guint *loop_left, guint *loop_right,
+		    gboolean *do_loop)
+{
+  if(loop_left != NULL){
+    *loop_left = AGS_DEVOUT(soundcard)->loop_left;
+  }
+
+  if(loop_right != NULL){
+    *loop_right = AGS_DEVOUT(soundcard)->loop_right;
+  }
+
+  if(do_loop != NULL){
+    *do_loop = AGS_DEVOUT(soundcard)->do_loop;
+  }
+}
+
+guint
+ags_devout_get_loop_offset(AgsSoundcard *soundcard)
+{
+  return(AGS_DEVOUT(soundcard)->loop_offset);
 }
 
 void

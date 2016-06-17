@@ -267,17 +267,20 @@ ags_update_bulk_member_launch(AgsTask *task)
 	    port = AGS_RECALL(play->data)->port;
 
 	    while(port != NULL){
-	      bulk_port = ags_bulk_port_alloc(port->data);
-
-	      if(k != 0){
-		update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
-									   bulk_port,
-									   k);
-	      }else{
-		update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
-									    bulk_port);
-	      }
+	      if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+			    update_bulk_member->bulk_member->specifier)){
+		bulk_port = ags_bulk_port_alloc(port->data);
 		
+		if(k != 0){
+		  update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
+									     bulk_port,
+									     k);
+		}else{
+		  update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
+									      bulk_port);
+		}
+	      }
+	      
 	      k++;
 	      port = port->next;
 	    }
@@ -335,17 +338,20 @@ ags_update_bulk_member_launch(AgsTask *task)
 	    recall_port = AGS_RECALL(recall->data)->port;
 
 	    while(port != NULL){
-	      recall_bulk_port = ags_bulk_port_alloc(recall_port->data);
+	      if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+			    update_bulk_member->bulk_member->specifier)){
+		recall_bulk_port = ags_bulk_port_alloc(recall_port->data);
 
-	      if(k != 0){
-		update_bulk_member->bulk_member->recall_bulk_port = g_list_insert(update_bulk_member->bulk_member->recall_bulk_port,
-										  recall_bulk_port,
-										  k);
-	      }else{
-		update_bulk_member->bulk_member->recall_bulk_port = g_list_prepend(update_bulk_member->bulk_member->recall_bulk_port,
-										   recall_bulk_port);
+		if(k != 0){
+		  update_bulk_member->bulk_member->recall_bulk_port = g_list_insert(update_bulk_member->bulk_member->recall_bulk_port,
+										    recall_bulk_port,
+										    k);
+		}else{
+		  update_bulk_member->bulk_member->recall_bulk_port = g_list_prepend(update_bulk_member->bulk_member->recall_bulk_port,
+										     recall_bulk_port);
+		}
 	      }
-		
+	      
 	      k++;
 	      recall_port = recall_port->next;
 	    }

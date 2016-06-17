@@ -1771,7 +1771,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
   return(automation);
 }
 
-void
+guint
 ags_automation_get_value(AgsAutomation *automation,
 			 guint x,
 			 GValue *value)
@@ -1779,22 +1779,24 @@ ags_automation_get_value(AgsAutomation *automation,
   AgsPort *port;
 
   GList *acceleration;
+
+  guint ret_x;
   
   port = automation->port;
   acceleration = automation->acceleration;
 
+  ret_x = 0;
+  
   if(acceleration != NULL){
-    while(acceleration->next != NULL){
+    while(acceleration != NULL){
       if(AGS_ACCELERATION(acceleration->data)->x >= x){
 	break;
       }
 
       acceleration = acceleration->next;
     }
-    
-    if(AGS_ACCELERATION(acceleration->data)->x >= x){
-      acceleration = acceleration->prev;
-    }
+
+    ret_x = AGS_ACCELERATION(acceleration->data)->x;
   }
   
   if(!port->port_value_is_pointer){
@@ -1997,6 +1999,8 @@ ags_automation_get_value(AgsAutomation *automation,
   }else{
     g_warning("ags_automation.c - unsupported value type pointer\0");
   }
+
+  return(ret_x);
 }
 
 /**

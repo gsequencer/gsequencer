@@ -737,7 +737,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 {
   AgsWindow *window;
   AgsBulkMember *bulk_member;
-  AgsUpdateBulkMember *update_bulk_member;
 
   GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
@@ -1080,18 +1079,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
       gtk_widget_show_all(effect_bulk->table);
 
-      /* find ports */
-      ags_bulk_member_find_port(bulk_member);
-
-      /* update ports */
-      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-						      bulk_member,
-						      pads,
-						      0,
-						      TRUE);
-      task = g_list_prepend(task,
-			    update_bulk_member);
-
       x++;
     }
 
@@ -1115,8 +1102,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 {
   AgsWindow *window;
   AgsBulkMember *bulk_member;
-  AgsUpdateBulkMember *update_bulk_member;
-  
+   
   GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
   
@@ -1490,18 +1476,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
       gtk_widget_show_all(effect_bulk->table);
 
-      /* find ports */
-      ags_bulk_member_find_port(bulk_member);
-
-      /* update ports */
-      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-						      bulk_member,
-						      pads,
-						      0,
-						      TRUE);
-      task = g_list_prepend(task,
-			    update_bulk_member);
-
       x++;
     }
 
@@ -1525,7 +1499,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 {
   AgsWindow *window;
   AgsBulkMember *bulk_member;
-  AgsUpdateBulkMember *update_bulk_member;
   
   GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
@@ -1852,18 +1825,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 		       0, 0);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
       gtk_widget_show_all(effect_bulk->table);
-
-      /* find ports */
-      ags_bulk_member_find_port(bulk_member);
-
-      /* update ports */
-      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-						      bulk_member,
-						      pads,
-						      0,
-						      TRUE);
-      task = g_list_prepend(task,
-			    update_bulk_member);
 
       x++;
     }
