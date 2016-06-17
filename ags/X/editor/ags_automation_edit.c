@@ -310,8 +310,6 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
     automation_edit->ruler->factor = tact_factor;
     automation_edit->ruler->precision = tact;
     automation_edit->ruler->scale_precision = 1.0 / tact;
-
-    gtk_widget_queue_draw(automation_edit->ruler);
   }
 
   //  g_message("%d\0",
@@ -322,6 +320,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
     
     GtkAdjustment *hadjustment;
     
+    gdouble prev_value, prev_upper;
     guint width;
 
     widget = GTK_WIDGET(automation_edit->drawing_area);
@@ -329,11 +328,24 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
 
     if(automation_edit->map_width > widget->allocation.width){
       width = widget->allocation.width;
+
+      /* reset hscrollbar */
+      prev_value = hadjustment->value;
+      prev_upper = hadjustment->upper;
       
       gtk_adjustment_set_upper(hadjustment,
 			       (gdouble) (automation_edit->map_width - width));
+      gtk_adjustment_set_value(hadjustment,
+			       prev_value / (prev_upper / hadjustment->upper));
+
+      /* reset ruler */
+      prev_value = automation_edit->ruler->adjustment->value;
+      prev_upper = automation_edit->ruler->adjustment->upper;
+
       gtk_adjustment_set_upper(automation_edit->ruler->adjustment,
 			       (gdouble) (automation_edit->map_width - width) / AGS_AUTOMATION_EDIT_DEFAULT_WIDTH);
+      gtk_adjustment_set_value(automation_edit->ruler->adjustment,
+			       prev_value / (prev_upper / automation_edit->ruler->adjustment->upper));
       
       if(hadjustment->value > hadjustment->upper){
 	gtk_adjustment_set_value(hadjustment, hadjustment->upper);
@@ -356,6 +368,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
   }
 
   gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw(automation_edit->ruler);
 }
 
 /**
