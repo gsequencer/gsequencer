@@ -313,18 +313,37 @@ ags_ruler_draw(AgsRuler *ruler)
 {
   GtkWidget *widget;
 
-  PangoLayout *layout;
-  PangoFontDescription *desc;
   cairo_t *cr;
-  
+
   gchar *str;
+
   gdouble tact_factor, zoom_factor;
   gdouble tact;
-  gdouble step;
-  gdouble offset;
-  guint i, j, j_set;
+
+  guint offset;
+  guint step;
+  guint x0;
   guint z;
-  gboolean omit_scales;
+  guint i, i_stop;
+
+  auto void ags_ruler_draw_string(cairo_t *cr, gchar *str);
+
+  void ags_ruler_draw_string(cairo_t *cr, gchar *str){
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout, str, -1);
+    desc = pango_font_description_copy_static(NULL); //pango_font_description_from_string("Georgia Bold 11");
+    pango_layout_set_font_description(layout, desc);
+    pango_font_description_free(desc);
+
+    pango_cairo_update_layout(cr, layout);
+    pango_cairo_show_layout(cr, layout);
+
+    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+    g_object_unref(layout);
+  }
   
   widget = GTK_WIDGET(ruler);
 
@@ -332,18 +351,11 @@ ags_ruler_draw(AgsRuler *ruler)
   
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
-  
-  //  cairo_select_font_face(cr, "Georgia\0",
-  //			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  //  cairo_set_font_size(cr, (gdouble) ruler->font_size);
 
-  /* draw ruler and scale */
-  zoom_factor = 0.25;
-
-  tact_factor = ruler->factor;
+  /* calculate base step */
   tact = ruler->precision;
 
-  step = ruler->step * zoom_factor * tact_factor * tact;
+  step = ruler->step * 0.25 * ruler->factor * ruler->precision;
 
   /* draw bg */
   cairo_set_source_rgba(cr, 0.0, 0.0, 0.125, 1.0);
@@ -360,96 +372,70 @@ ags_ruler_draw(AgsRuler *ruler)
   cairo_set_line_width(cr,
 		       1.25);
 
-  offset = ruler->adjustment->value;
-
-  i = ((guint) floor((double) offset * step)) % (guint) floor(step);
-
-  if(i != 0){
-    i = step - i;
-  }
-
-  z = 0;
-
-  if(i < widget->allocation.width &&
-     tact > 1.0){
-    j_set = (guint) ceil(offset) % (guint) (tact);
-
-    if(j_set != 0){
-      j = j_set;
-      goto ags_ruler_draw_scale0;
-    }
-  }
-
-  for(; i < widget->allocation.width; ){
-    /* draw large step */
+  /* draw scale */
+  offset = (ruler->adjustment->value * step);
+  x0 = offset % step;
+  
+  z = (guint) floor((offset - x0) / step);
+  
+  i_stop = (guint) ceil((double) (widget->allocation.width + (step + x0)) / (double) step);
+  
+  for(i = 0; i < i_stop; i++, z++){
     cairo_move_to(cr,
-		  (double) (i),
+		  (double) (i * step - x0),
 		  (double) (widget->allocation.height));
-
-    cairo_set_line_width(cr,
-			 1.75);
-
-    cairo_line_to(cr,
-		  (double) (i),
-		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
-
-    cairo_stroke(cr);
-
-    /* draw scale */
-    cairo_move_to(cr,
-		  (double) (i),
-		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
-
-    if(ruler->scale_precision < 1.0){
-      guint val;
-      
-      str = g_strdup_printf("%.0f\0",
-			    floor(offset + z) * ruler->scale_precision + (((val = i % (guint) step) > 0 && val < 2) ? 1: 0));
-    }else{
-      str = g_strdup_printf("%.0f\0",
-			    floor(offset + z) * ruler->scale_precision + ((i % (guint) step != 0) ? 1 * ruler->scale_precision: 0));
-    }
-
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_copy_static(NULL); //pango_font_description_from_string("Georgia Bold 11");
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
-
-    pango_cairo_update_layout(cr, layout);
-    pango_cairo_show_layout(cr, layout);
-    //    cairo_show_text(cr,
-    //		    str);
-
-    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-    g_object_unref(layout);
-    g_free(str);
-
-
-    i += step;
-    z++;
-
-    /* reset line width */
-    for(j = 1; i < widget->allocation.width && j < tact; j++){
-    ags_ruler_draw_scale0:
+    
+    if(tact < 1.0){
       /* draw large step */
-      cairo_move_to(cr,
-		    (double) (i),
-		    (double) (widget->allocation.height));
-
       cairo_set_line_width(cr,
-			   1.25);
+			   1.75);
 
       cairo_line_to(cr,
-		    (double) (i),
-		    (double) (widget->allocation.height - AGS_RULER_SMALL_STEP));
+		    (double) (i * step - x0),
+		    (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
 
-      cairo_stroke(cr);
+      /* draw scale step */
+      cairo_move_to(cr,
+		    (double) (i * step - x0),
+		    (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
+      
+      str = g_strdup_printf("%u\0",
+			    (guint) ((gdouble) z / tact));
+      ags_ruler_draw_string(cr, str);
+      
+      g_free(str);
+    }else{
+      if(z % (guint) floor(tact) == 0){
+	/* draw large step */
+	cairo_set_line_width(cr,
+			     1.75);
 
+	cairo_line_to(cr,
+		      (double) (i * step - x0),
+		      (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
 
-      i += step;
-      z++;
+	/* draw scale step */
+	cairo_move_to(cr,
+		      (double) (i * step - x0),
+		      (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
+
+	str = g_strdup_printf("%u\0",
+			      (guint) ((gdouble) z / tact));
+	ags_ruler_draw_string(cr, str);
+      
+	g_free(str);
+      }else{
+	/* draw small step */
+	cairo_set_line_width(cr,
+			     1.25);
+
+	cairo_line_to(cr,
+		      (double) (i * step - x0),
+		      (double) (widget->allocation.height - AGS_RULER_SMALL_STEP));
+      }
     }
+
+    cairo_stroke(cr);
   }
 
   cairo_pop_group_to_source(cr);

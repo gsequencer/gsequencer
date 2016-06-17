@@ -2,6 +2,10 @@ ags (0.7.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed clip-board by merging values since automation ports can occur multiple times
+	* fixed map width of automation editor
+	* fixed clipped selection
+	* fixed reset automation editor position
+	* fixed ruler widget because the previous code obviously did wrong use of ceil()
 	* implemented selection of automation editor
 
 ags (0.7.34)
