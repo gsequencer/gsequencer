@@ -1435,11 +1435,21 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 	    y = automation_edit->edit_y;
 	  }
 	}else{
-	  /* move acceleration position y up */
-	  if(AGS_AUTOMATION_AREA(list->data)->y <= automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
-	    y = automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	  if((AGS_AUTOMATION_EDIT_KEY_L_SHIFT & automation_edit->key_mask) != 0 ||
+	     (AGS_AUTOMATION_EDIT_KEY_R_SHIFT & automation_edit->key_mask) != 0){
+	    /* move acceleration position y relative up */
+	    if(AGS_AUTOMATION_AREA(list->data)->y <= automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) - ((automation_edit->edit_y % AGS_AUTOMATION_AREA_DEFAULT_PRECISION) / 2.0)){
+	      y = automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) - ((automation_edit->edit_y % AGS_AUTOMATION_AREA_DEFAULT_PRECISION) / 2.0);
+	    }else{
+	      y = AGS_AUTOMATION_AREA(list->data)->y;
+	    }
 	  }else{
-	    y = AGS_AUTOMATION_AREA(list->data)->y;
+	    /* move acceleration position y up */
+	    if(AGS_AUTOMATION_AREA(list->data)->y <= automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
+	      y = automation_edit->edit_y - (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	    }else{
+	      y = AGS_AUTOMATION_AREA(list->data)->y;
+	    }
 	  }
 	}
 
@@ -1482,14 +1492,24 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 	    y = automation_edit->edit_y;
 	  }
 	}else{
-	  /* move acceleration position y down */
-	  if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
-	    y = automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	  if((AGS_AUTOMATION_EDIT_KEY_L_SHIFT & automation_edit->key_mask) != 0 ||
+	     (AGS_AUTOMATION_EDIT_KEY_R_SHIFT & automation_edit->key_mask) != 0){
+	    /* move acceleration position y relative down */
+	    if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) + ((automation_edit->edit_y % AGS_AUTOMATION_AREA_DEFAULT_PRECISION) / 2.0)){
+	      y = automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION) + ((automation_edit->edit_y % AGS_AUTOMATION_AREA_DEFAULT_PRECISION) / 2.0);
+	    }else{
+	      y =  automation_edit->edit_y + AGS_AUTOMATION_AREA(list->data)->height;
+	    }
 	  }else{
-	    y =  automation_edit->edit_y + AGS_AUTOMATION_AREA(list->data)->height;
+	    /* move acceleration position y down */
+	    if(AGS_AUTOMATION_AREA(list->data)->y + AGS_AUTOMATION_AREA(list->data)->height > automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION)){
+	      y = automation_edit->edit_y + (AGS_AUTOMATION_AREA(list->data)->height / AGS_AUTOMATION_AREA_DEFAULT_PRECISION);
+	    }else{
+	      y =  automation_edit->edit_y + AGS_AUTOMATION_AREA(list->data)->height;
+	    }
 	  }
 	}
-
+	
 	ags_automation_edit_drawing_area_key_release_event_iterate(automation_edit->edit_x, y,
 								   TRUE,
 								   FALSE,
