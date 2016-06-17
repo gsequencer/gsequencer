@@ -26,14 +26,36 @@
 
 #include <ags/X/editor/ags_automation_edit.h>
 
+#include <gdk/gdkkeysyms.h>
+#include <atk/atk.h>
+
 #include <cairo.h>
 #include <math.h>
 
+static GType ags_accessible_automation_edit_get_type(void);
 void ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit);
+void ags_accessible_automation_edit_class_init(AtkObject *object);
+void ags_accessible_automation_edit_action_interface_init(AtkActionIface *action);
 void ags_automation_edit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_edit_init(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
+
+AtkObject* ags_automation_edit_get_accessible(GtkWidget *widget);
+
+gboolean ags_accessible_automation_edit_do_action(AtkAction *action,
+						  gint i);
+gint ags_accessible_automation_edit_get_n_actions(AtkAction *action);
+const gchar* ags_accessible_automation_edit_get_description(AtkAction *action,
+							    gint i);
+const gchar* ags_accessible_automation_edit_get_name(AtkAction *action,
+						     gint i);
+const gchar* ags_accessible_automation_edit_get_keybinding(AtkAction *action,
+							   gint i);
+gboolean ags_accessible_automation_edit_set_description(AtkAction *action,
+							gint i);
+gchar* ags_accessible_automation_edit_get_localized_name(AtkAction *action,
+							 gint i);
 
 /**
  * SECTION:ags_automation_edit
@@ -48,6 +70,8 @@ void ags_automation_edit_disconnect(AgsConnectable *connectable);
 static gpointer ags_automation_edit_parent_class = NULL;
 
 GtkStyle *automation_edit_style;
+
+static GQuark quark_accessible_object = 0;
 
 GType
 ags_automation_edit_get_type(void)
@@ -85,6 +109,51 @@ ags_automation_edit_get_type(void)
   return(ags_type_automation_edit);
 }
 
+static GType
+ags_accessible_automation_edit_get_type(void)
+{
+  static GType ags_type_accessible_automation_edit = 0;
+
+  if(!ags_type_accessible_automation_edit){
+    const GTypeInfo ags_accesssible_automation_edit_info = {
+      sizeof(GtkAccessibleClass),
+      NULL,           /* base_init */
+      NULL,           /* base_finalize */
+      (GClassInitFunc) ags_accessible_automation_edit_class_init,
+      NULL,           /* class_finalize */
+      NULL,           /* class_data */
+      sizeof(GtkAccessible),
+      0,             /* n_preallocs */
+      NULL, NULL
+    };
+
+    static const GInterfaceInfo atk_action_interface_info = {
+      (GInterfaceInitFunc) ags_accessible_automation_edit_action_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_accessible_automation_edit = g_type_register_static(GTK_TYPE_ACCESSIBLE,
+								 "AgsAccessibleAutomationEdit\0", &ags_accesssible_automation_edit_info,
+								 0);
+
+    g_type_add_interface_static(ags_type_accessible_automation_edit,
+				ATK_TYPE_ACTION,
+				&atk_action_interface_info);
+  }
+  
+  return(ags_type_accessible_automation_edit);
+}
+
+
+void
+ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
+{
+  ags_automation_edit_parent_class = g_type_class_peek_parent(automation_edit);
+
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+}
+
 void
 ags_automation_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 {
@@ -95,9 +164,21 @@ ags_automation_edit_connectable_interface_init(AgsConnectableInterface *connecta
 }
 
 void
-ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
+ags_accessible_automation_edit_class_init(AtkObject *object)
 {
-  ags_automation_edit_parent_class = g_type_class_peek_parent(automation_edit);
+  /* empty */
+}
+
+void
+ags_accessible_automation_edit_action_interface_init(AtkActionIface *action)
+{
+  action->do_action = ags_accessible_automation_edit_do_action;
+  action->get_n_actions = ags_accessible_automation_edit_get_n_actions;
+  action->get_description = ags_accessible_automation_edit_get_description;
+  action->get_name = ags_accessible_automation_edit_get_name;
+  action->get_keybinding = ags_accessible_automation_edit_get_keybinding;
+  action->set_description = ags_accessible_automation_edit_set_description;
+  action->get_localized_name = ags_accessible_automation_edit_get_localized_name;
 }
 
 void
@@ -223,6 +304,346 @@ void
 ags_automation_edit_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
+}
+
+AtkObject*
+ags_automation_edit_get_accessible(GtkWidget *widget)
+{
+  AtkObject* accessible;
+
+  accessible = g_object_get_qdata(G_OBJECT(widget),
+				  quark_accessible_object);
+  
+  if(!accessible){
+    accessible = g_object_new(ags_accessible_automation_edit_get_type(),
+			      NULL);
+    
+    g_object_set_qdata(G_OBJECT(widget),
+		       quark_accessible_object,
+		       accessible);
+    gtk_accessible_set_widget(accessible,
+			      widget);
+  }
+  
+  return(accessible);
+}
+
+gboolean
+ags_accessible_automation_edit_do_action(AtkAction *action,
+					 gint i)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  GdkEventKey *key_press, *key_release;
+  GdkEventKey *modifier_press, *modifier_release;
+  GdkEventKey *second_level_press, *second_level_release;
+  
+  if(!(i >= 0 && i < 15)){
+    return(FALSE);
+  }
+
+  automation_edit = gtk_accessible_get_widget(ATK_OBJECT(action));
+  
+  key_press = gdk_event_new(GDK_KEY_PRESS);
+  key_release = gdk_event_new(GDK_KEY_RELEASE);
+
+  /* create modifier */
+  modifier_press = gdk_event_new(GDK_KEY_PRESS);
+  modifier_release = gdk_event_new(GDK_KEY_RELEASE);
+  
+  modifier_press->keyval =
+    modifier_release->keyval = GDK_KEY_Control_R;
+
+  /* create second level */
+  second_level_press = gdk_event_new(GDK_KEY_PRESS);
+  second_level_release = gdk_event_new(GDK_KEY_RELEASE);
+  
+  second_level_press->keyval =
+    second_level_release->keyval = GDK_KEY_Shift_R;
+
+  switch(i){
+  case 0:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+    }
+    break;
+  case 1:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+    }
+    break;
+  case 2:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+    
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+    }
+    break;
+  case 3:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+    }
+    break;    
+  case 4:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, modifier_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, modifier_release);
+    }
+    break;
+  case 5:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, modifier_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, modifier_release);
+    }
+    break;
+  case 6:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, second_level_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+    }
+    break;
+  case 7:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, second_level_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+    }
+    break;
+  case 8:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, second_level_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+    }
+    break;
+  case 9:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, second_level_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+    }
+    break;
+  case 10:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_space;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+    }
+    break;
+  case 11:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Delete;
+      
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+    }
+    break;
+  case 12:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_c;
+
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, modifier_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, modifier_release);      
+    }    
+    break;
+  case 13:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_x;
+
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, modifier_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, modifier_release);      
+    }
+    break;
+  case 14:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_v;
+
+      /* send event */
+      gtk_widget_event(automation_edit->drawing_area, modifier_press);
+      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event(automation_edit->drawing_area, modifier_release);      
+    }
+    break;
+  }
+
+  return(TRUE);
+}
+
+gint
+ags_accessible_automation_edit_get_n_actions(AtkAction *action)
+{
+  return(15);
+}
+
+const gchar*
+ags_accessible_automation_edit_get_description(AtkAction *action,
+					       gint i)
+{
+  static const gchar **actions = {
+    "move cursor left\0",
+    "move cursor right\0",
+    "move cursor up\0",
+    "move cursor down\0",
+    "move automation prev\0",
+    "move automation next\0",
+    "move cursor relative up\0",
+    "move cursor relative down\0",
+    "move cursor small left\0",
+    "move cursor small right\0",
+    "add acceleration\0",
+    "remove acceleration\0",
+    "copy automation to clipboard\0",
+    "cut automation to clipbaord\0",
+    "paste automation from clipboard\0",
+  };
+
+  if(i >= 0 && i < 15){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_automation_edit_get_name(AtkAction *action,
+					gint i)
+{
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "prev\0",
+    "next\0",
+    "small-left\0",
+    "small-right\0",
+    "relative-up\0",
+    "relative-down\0",
+    "add\0",
+    "remove\0",
+    "copy\0",
+    "cut\0",
+    "paste\0",
+  };
+  
+  if(i >= 0 && i < 15){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_automation_edit_get_keybinding(AtkAction *action,
+					      gint i)
+{
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "Ctrl+up",
+    "Ctrl+down",
+    "Shft+Left\0",
+    "Shft+Right\0",
+    "Shft+up\0",
+    "Schft+down\0",
+    "space",
+    "Del\0"
+    "Ctrl+c"
+    "Ctrl+x",
+    "Ctrl+v",
+  };
+  
+  if(i >= 0 && i < 15){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+gboolean
+ags_accessible_automation_edit_set_description(AtkAction *action,
+					       gint i)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+gchar*
+ags_accessible_automation_edit_get_localized_name(AtkAction *action,
+						  gint i)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
