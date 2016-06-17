@@ -304,7 +304,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
   if((AGS_AUTOMATION_EDIT_RESET_WIDTH & flags) != 0){
-    automation_edit->map_width = (guint) ((double) (64 * AGS_AUTOMATION_EDIT_MAX_CONTROLS) * zoom_factor * tact);
+    automation_edit->map_width = (guint) ((double) AGS_AUTOMATION_EDIT_MAX_CONTROLS * tact);
     
     /* reset ruler */
     automation_edit->ruler->factor = tact_factor;
@@ -333,7 +333,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
       gtk_adjustment_set_upper(hadjustment,
 			       (gdouble) (automation_edit->map_width - width));
       gtk_adjustment_set_upper(automation_edit->ruler->adjustment,
-			       (gdouble) (automation_edit->map_width - width) / 64.0);
+			       (gdouble) (automation_edit->map_width - width) / AGS_AUTOMATION_EDIT_DEFAULT_WIDTH);
       
       if(hadjustment->value > hadjustment->upper){
 	gtk_adjustment_set_value(hadjustment, hadjustment->upper);

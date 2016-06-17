@@ -1412,7 +1412,11 @@ ags_automation_merge_clipboard(xmlNode *audio_node,
 	if(!xmlStrcmp(xmlGetProp(find_automation,
 				 "line\0"),
 		      xmlGetProp(automation_node,
-				 "line"))){
+				 "line")) &&
+	   !xmlStrcmp(xmlGetProp(find_automation,
+				 "control-name\0"),
+		      xmlGetProp(automation_node,
+				 "control-name"))){
 	  break;
 	}
       }
