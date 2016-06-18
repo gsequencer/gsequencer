@@ -545,15 +545,14 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 				       current->y,
 				       FALSE);
-	  y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
+	  y = (automation_area->height / (1.0 / AGS_AUTOMATION(automation->data)->steps)) * ((val / AGS_AUTOMATION(automation->data)->steps) - (c_lower / AGS_AUTOMATION(automation->data)->steps));
 	    
 	  prev_x = prev->x;
-
 	    
 	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 				       prev->y,
 				       FALSE);
-	  prev_y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
+	  prev_y = (automation_area->height / (1.0 / AGS_AUTOMATION(automation->data)->steps)) * ((val / AGS_AUTOMATION(automation->data)->steps) - (c_lower / AGS_AUTOMATION(automation->data)->steps));
 
 	  if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
 	    if(n_tab == 0){
@@ -658,14 +657,14 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 					 current->y,
 					 FALSE);
-	    y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
+	    y = (automation_area->height / (1.0 / AGS_AUTOMATION(automation->data)->steps)) * ((val / AGS_AUTOMATION(automation->data)->steps) - (c_lower / AGS_AUTOMATION(automation->data)->steps));
 	    
 	    prev_x = prev->x;
 	    
 	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 					 prev->y,
 					 FALSE);
-	    prev_y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
+	    prev_y = (automation_area->height / (1.0 / AGS_AUTOMATION(automation->data)->steps)) * ((val / AGS_AUTOMATION(automation->data)->steps) - (c_lower / AGS_AUTOMATION(automation->data)->steps));
 
 	    if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
 	      if(n_tab == 0){

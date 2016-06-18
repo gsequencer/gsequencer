@@ -143,10 +143,10 @@ struct _AgsSoundcardInterface
   guint (*get_note_offset)(AgsSoundcard *soundcard);
 
   void (*set_loop)(AgsSoundcard *soundcard,
-		   gdouble loop_left, gdouble loop_right,
+		   guint loop_left, guint loop_right,
 		   gboolean do_loop);
   void (*get_loop)(AgsSoundcard *soundcard,
-		   gdouble *loop_left, gdouble *loop_right,
+		   guint *loop_left, guint *loop_right,
 		   gboolean *do_loop);
 
   guint (*get_loop_offset)(AgsSoundcard *soundcard);
@@ -232,9 +232,9 @@ guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
 void ags_soundcard_set_loop(AgsSoundcard *soundcard,
 			    guint loop_left, guint loop_right,
 			    gboolean loop);
-guint ags_soundcard_get_loop(AgsSoundcard *soundcard,
-			     guint *loop_left, guint *loop_right,
-			     gboolean *do_loop);
+void ags_soundcard_get_loop(AgsSoundcard *soundcard,
+			    guint *loop_left, guint *loop_right,
+			    gboolean *do_loop);
 
 guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
 

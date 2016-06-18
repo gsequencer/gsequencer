@@ -373,6 +373,9 @@ ags_recall_audio_load_automation(AgsRecall *recall,
 		   NULL);
       ags_audio_add_automation(audio,
 			       current);
+
+      //TODO:JK: property
+      AGS_PORT(automation_port->data)->automation = current;
     }
     
     automation_port = automation_port->next;
@@ -414,7 +417,7 @@ ags_recall_audio_automate(AgsRecall *recall)
   GObject *soundcard;
   AgsAudio *audio;
 
-  GList *automation;
+  AgsAutomation *automation;
   GList *port;
 
   gdouble delay;
@@ -435,15 +438,13 @@ ags_recall_audio_automate(AgsRecall *recall)
   x = 64 * note_offset + (guint) floor((1.0 / 64.0) * ((gdouble) delay_counter / delay));
   
   while(port != NULL){
-    automation = audio->automation;
-    automation = ags_automation_find_port(automation,
-					  port->data);
+    automation = AGS_PORT(port->data)->automation;
     
     if(automation != NULL &&
-       (AGS_AUTOMATION_BYPASS & (AGS_AUTOMATION(automation->data)->flags)) == 0){
+       (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){
       GValue value = {0,};
 
-      ags_automation_get_value(automation->data,
+      ags_automation_get_value(automation,
 			       x,
 			       &value);
       ags_port_safe_write(port->data,

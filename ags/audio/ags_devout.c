@@ -672,6 +672,8 @@ ags_devout_init(AgsDevout *devout)
   devout->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
 
   devout->do_loop = FALSE;
+
+  devout->loop_offset = 0;
   
   /* parent */
   devout->application_context = NULL;

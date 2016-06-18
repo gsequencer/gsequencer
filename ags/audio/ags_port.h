@@ -66,6 +66,8 @@ struct _AgsPort
 
   gpointer port_descriptor;
   AgsConversion *conversion;
+
+  GObject *automation;
   
   union _AgsPortValue{
     gboolean ags_port_boolean;
