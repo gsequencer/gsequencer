@@ -822,16 +822,16 @@ ags_soundcard_set_loop(AgsSoundcard *soundcard,
  *
  * Since: 0.7.35
  */
-guint
+void
 ags_soundcard_get_loop(AgsSoundcard *soundcard,
 		       guint *loop_left, guint *loop_right,
 		       gboolean *do_loop)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_loop, G_MAXUINT);
+  g_return_if_fail(soundcard_interface->get_loop);
   soundcard_interface->get_loop(soundcard,
 				loop_left, loop_right,
 				do_loop);
@@ -852,9 +852,9 @@ ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_loop_offset, G_MAXUINT);
+  g_return_val_if_fail(soundcard_interface->get_loop_offset, 0);
 
   return(soundcard_interface->get_loop_offset(soundcard));
 }

@@ -374,6 +374,8 @@ ags_port_init(AgsPort *port)
 
   port->port_descriptor = NULL;
   port->conversion = ags_conversion_new();
+
+  port->automation = NULL;
 }
 
 void

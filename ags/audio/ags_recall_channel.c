@@ -434,6 +434,9 @@ ags_recall_channel_load_automation(AgsRecall *recall,
 		   NULL);
       ags_audio_add_automation(channel->audio,
 			       current);
+
+      //TODO:JK: property
+      AGS_PORT(automation_port->data)->automation = current;
     }
     
     automation_port = automation_port->next;
@@ -484,7 +487,7 @@ ags_recall_channel_automate(AgsRecall *recall)
   GObject *soundcard;
   AgsAudio *audio;
 
-  GList *automation;
+  AgsAutomation *automation;
   GList *port;
 
   gdouble delay;
@@ -510,9 +513,9 @@ ags_recall_channel_automate(AgsRecall *recall)
   delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
 
   /* retrieve loop information */
-  loop_offset = ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
-				       &loop_left, &loop_right,
-				       &do_loop);
+  ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
+			 &loop_left, &loop_right,
+			 &do_loop);
 
   loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(soundcard));
 
@@ -526,19 +529,17 @@ ags_recall_channel_automate(AgsRecall *recall)
   }
 
   /*  */
-  x = ((double) offset + (delay_counter / delay)) / ((1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH) * AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH);
-  step = (1.0 / delay) / ((1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH) * AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH);
+  x = ((double) offset + (delay_counter / delay)) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+  step = (1.0 / delay) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   while(port != NULL){
-    automation = audio->automation;
-    automation = ags_automation_find_port(automation,
-					  port->data);
+    automation = AGS_PORT(port->data)->automation;
 
     if(automation != NULL &&
-       (AGS_AUTOMATION_BYPASS & (AGS_AUTOMATION(automation->data)->flags)) == 0){
+       (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){
       GValue value = {0,};
 
-      ret_x = ags_automation_get_value(automation->data,
+      ret_x = ags_automation_get_value(automation,
 				       x,
 				       &value);
 
