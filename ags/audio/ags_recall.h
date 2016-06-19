@@ -208,7 +208,7 @@ void ags_recall_add_child(AgsRecall *parent, AgsRecall *child);
 GList* ags_recall_get_children(AgsRecall *recall);
 
 GList* ags_recall_get_by_effect(GList *list, gchar *filename, gchar *effect);
-GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect);
+GList* ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect);
 
 GList* ags_recall_find_type(GList *recall_i, GType type);
 GList* ags_recall_find_template(GList *recall_i);

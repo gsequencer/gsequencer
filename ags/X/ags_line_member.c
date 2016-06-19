@@ -829,6 +829,14 @@ ags_line_member_connect(AgsConnectable *connectable)
 
   line_member = AGS_LINE_MEMBER(connectable);
 
+  if((AGS_LINE_MEMBER_CONNECTED & (line_member->flags)) != 0){
+    return;
+  }
+
+  line_member->flags |= AGS_LINE_MEMBER_CONNECTED;
+
+  ags_line_member_find_port(line_member);
+  
   control = gtk_bin_get_child(GTK_BIN(line_member));
 
   /* widget callback */

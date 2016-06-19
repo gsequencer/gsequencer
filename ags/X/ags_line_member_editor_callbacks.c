@@ -192,15 +192,24 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	if(line != NULL){
 	  AgsAddEffect *add_effect;
-	  
-	  ags_line_member_editor_plugin_browser_response_create_entry();
-	
-	  /* add effect */
-	  add_effect = ags_add_effect_new(line->channel,
-					  filename,
-					  effect);
-	  ags_task_thread_append_task(task_thread,
-				      add_effect);
+
+	  if(ags_recall_find_recall_id_with_effect(line->channel->play,
+						   NULL,
+						   filename,
+						   effect) == NULL &&
+	     ags_recall_find_recall_id_with_effect(line->channel->recall,
+						   NULL,
+						   filename,
+						   effect) == NULL){
+	    ags_line_member_editor_plugin_browser_response_create_entry();
+	    
+	    /* add effect */
+	    add_effect = ags_add_effect_new(line->channel,
+					    filename,
+					    effect);
+	    ags_task_thread_append_task(task_thread,
+					add_effect);
+	  }
 	}
       }else{
 	AgsEffectBridge *effect_bridge;
@@ -247,14 +256,23 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	if(effect_line != NULL){
 	  AgsAddEffect *add_effect;
 	  
-	  ags_line_member_editor_plugin_browser_response_create_entry();
+	  if(ags_recall_find_recall_id_with_effect(effect_line->channel->play,
+						   NULL,
+						   filename,
+						   effect) == NULL &&
+	     ags_recall_find_recall_id_with_effect(effect_line->channel->recall,
+						   NULL,
+						   filename,
+						   effect) == NULL){
+	    ags_line_member_editor_plugin_browser_response_create_entry();
 
-	  /* add effect */
-	  add_effect = ags_add_effect_new(effect_line->channel,
-					  filename,
-					  effect);
-	  ags_task_thread_append_task(task_thread,
-				      add_effect);
+	    /* add effect */
+	    add_effect = ags_add_effect_new(effect_line->channel,
+					    filename,
+					    effect);
+	    ags_task_thread_append_task(task_thread,
+					add_effect);
+	  }
 	}
       }
     }
