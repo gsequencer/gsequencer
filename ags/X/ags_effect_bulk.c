@@ -2206,26 +2206,51 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
+  AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
   
   GList *task;
   GList *effect_bulk_plugin;
   GList *list;
+
   guint pads;
   guint i, j;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);
   
   application_context = window->application_context;
 
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /*  */
+  pthread_mutex_lock(application_mutex);
+
   main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
 
   task_thread = ags_thread_find_type(main_loop,
 				     AGS_TYPE_TASK_THREAD);
   
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) effect_bulk->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* retrieve channel */
+  pthread_mutex_lock(audio_mutex);
+
   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
     current = effect_bulk->audio->output;
     
@@ -2235,6 +2260,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
     pads = effect_bulk->audio->input_pads;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 
   if(pads == 0){
     return;
@@ -2265,7 +2292,16 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
     for(i = 0; i < pads; i++){
       current = ags_channel_nth(current,
 				old_size);
-    
+
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) current);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /*  */      
       for(j = old_size; j < new_size; j++){
 	effect_bulk_plugin = effect_bulk->plugin;
 
@@ -2277,7 +2313,12 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 	  effect_bulk_plugin = effect_bulk_plugin->next;
 	}
 
+	/* iterate */
+	pthread_mutex_lock(channel_mutex);
+	
 	current = current->next;
+
+	pthread_mutex_unlock(channel_mutex);
       }
     }
   }
@@ -2315,39 +2356,65 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
+  AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
   
   GList *task;
   GList *effect_bulk_plugin;
   GList *list;
+
   guint audio_channels;
   guint i, j;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);
   
   application_context = window->application_context;
 
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /*  */
+  pthread_mutex_lock(application_mutex);
+
   main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
 
   task_thread = ags_thread_find_type(main_loop,
 				     AGS_TYPE_TASK_THREAD);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) effect_bulk->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* retrieve channel */
+  pthread_mutex_lock(audio_mutex);
   
   audio_channels = effect_bulk->audio->audio_channels;
 
-  if(audio_channels == 0){
-    return;
-  }
-
-  
-  /* retrieve channel */
   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
     current = effect_bulk->audio->output;
   }else{
     current = effect_bulk->audio->input;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
+  if(audio_channels == 0){
+    return;
+  }
+  
   /* collect bulk member */
   task = NULL;
 
@@ -2374,6 +2441,15 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
     current = ags_channel_pad_nth(current,
 				  old_size);
 
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) current);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /*  */
     for(i = old_size; i < new_size; i++){
       for(j = 0; j < audio_channels; j++){    
 	effect_bulk_plugin = effect_bulk->plugin;
@@ -2386,7 +2462,12 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 	  effect_bulk_plugin = effect_bulk_plugin->next;
 	}
 
+	/* iterate */
+	pthread_mutex_lock(channel_mutex);
+	
 	current = current->next;
+
+	pthread_mutex_unlock(channel_mutex);
       }
     }
   }

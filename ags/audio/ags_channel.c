@@ -2213,7 +2213,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
-  long effect_index;
+  unsigned long effect_index;
 
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
@@ -2418,7 +2418,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
-  long effect_index;
+  unsigned long effect_index;
 
   /* load plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
@@ -2634,7 +2634,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   /* find plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
-  effect_index = AGS_BASE_PLUGIN(lv2_plugin);
+  effect_index = AGS_BASE_PLUGIN(lv2_plugin)->effect_index;
   uri = lv2_plugin->uri;
   
   /* lv2 play */
@@ -2901,71 +2901,79 @@ ags_channel_real_remove_effect(AgsChannel *channel,
 
   AgsApplicationContext *application_context;
   
-  GList *play_ladspa, *recall_ladspa;
+  GList *play, *recall;
   GList *task;
 
+  guint nth_effect;
+  
   application_context = ags_soundcard_get_application_context(AGS_AUDIO(channel->audio)->soundcard);
   main_loop = application_context->main_loop;
   task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  play_ladspa = ags_recall_template_find_type(channel->play,
-					      AGS_TYPE_RECALL_LADSPA);
-  
-  recall_ladspa = ags_recall_template_find_type(channel->recall,
-						AGS_TYPE_RECALL_LADSPA);
+  /* play */
+  play = channel->play;
+  nth_effect = 0;
+
+  while((play = ags_recall_template_find_all_type(play,
+						  AGS_TYPE_RECALL_LADSPA,
+						  AGS_TYPE_RECALL_LV2,
+						  G_TYPE_NONE)) != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(play->data)->flags)) != 0){
+      nth_effect++;
+    }
+
+    if(nth_effect == nth + 1){
+      break;
+    }
+    
+    play = play->next;
+  }
+
+  /* recall */
+  recall = channel->recall;
+  nth_effect = 0;
+
+  while((recall = ags_recall_template_find_all_type(recall,
+						    AGS_TYPE_RECALL_LADSPA,
+						    AGS_TYPE_RECALL_LV2,
+						    G_TYPE_NONE)) != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall->data)->flags)) != 0){
+      nth_effect++;
+    }
+
+    if(nth_effect == nth + 1){
+      break;
+    }
+    
+    recall = recall->next;
+  }
   
   task = NULL;
 
   /* play context */
-  remove_recall = ags_remove_recall_new(channel,
-					g_list_nth(play_ladspa,
-						   nth)->data,
-					TRUE,
-					TRUE);
-  task = g_list_prepend(task,
-			remove_recall);
+  ags_channel_remove_recall(channel,
+			    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(play->data)->container)->recall_channel_run)->data,
+			    TRUE);
 
-  remove_recall = ags_remove_recall_new(channel,
-					ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(play_ladspa,
-													    nth)->data)->container)->recall_channel_run)->data,
-					TRUE,
-					TRUE);
-  task = g_list_prepend(task,
-			remove_recall);
+  ags_audio_remove_recall_container(channel->audio,
+				    AGS_RECALL(play->data)->container);
 
-  remove_recall_container = ags_remove_recall_container_new(channel->audio,
-							    AGS_RECALL(g_list_nth(play_ladspa,
-										  nth)->data)->container);
-  task = g_list_prepend(task,
-			remove_recall_container);
+  ags_channel_remove_recall(channel,
+			    play->data,
+			    TRUE);
 
   /* recall context */
-  remove_recall = ags_remove_recall_new(channel,
-					g_list_nth(recall_ladspa,
-						   nth)->data,
-					FALSE,
-					TRUE);
-  task = g_list_prepend(task,
-			remove_recall);
+  ags_channel_remove_recall(channel,
+			    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run)->data,
+			    TRUE);
 
-  remove_recall = ags_remove_recall_new(channel,
-					ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(recall_ladspa,
-													    nth)->data)->container)->recall_channel_run)->data,
-					FALSE,
-					TRUE);
-  task = g_list_prepend(task,
-			remove_recall);
+  ags_audio_remove_recall_container(channel->audio,
+				    AGS_RECALL(recall->data)->container);
 
-  remove_recall_container = ags_remove_recall_container_new(channel->audio,
-							    AGS_RECALL(g_list_nth(recall_ladspa,
-										  nth)->data)->container);
-  task = g_list_prepend(task,
-			remove_recall_container);
-
-  /* launch task */
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_channel_remove_recall(channel,
+			    recall->data,
+			    TRUE);
 }
 
 void

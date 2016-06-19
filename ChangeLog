@@ -16,6 +16,7 @@ ags (0.7.35)
 	* improved AgsPad mutices in ags_pad_init_channel_launch_callback()
 	* improved remove line effect and effect line effect
 	* improved remove effect bulk effect
+	* improved ags_channel_remove_effect() to work with LADSPA and Lv2 because it was only usable with LADSPA
 	* added mutices automation editor
 	* added missing mutices to ags_navigation_callbacks.c
 	* added mutices in ags_effect_bulk.c

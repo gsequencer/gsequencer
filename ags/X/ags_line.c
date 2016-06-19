@@ -1190,7 +1190,7 @@ ags_line_real_remove_effect(AgsLine *line,
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) line->channel);
   
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_unlock(application_mutex);
   
   /* get nth_effect */
   pthread_mutex_lock(channel_mutex);
@@ -1211,13 +1211,22 @@ ags_line_real_remove_effect(AgsLine *line,
       n_bulk++;
     }
 
-    if(nth_effect - n_bulk == nth){
+    if(nth_effect - n_bulk == nth + 1){
       break;
     }
     
     recall = recall->next;
   }
 
+  if(recall == NULL){
+    g_message("bu\0");
+    pthread_mutex_unlock(channel_mutex);
+
+    return;
+  }
+  
+  nth_effect--;
+  
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
     
