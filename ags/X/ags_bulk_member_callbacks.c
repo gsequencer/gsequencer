@@ -35,7 +35,6 @@ ags_bulk_member_dial_changed_callback(GtkWidget *dial, AgsBulkMember *bulk_membe
     return;
   }
 
-  g_message(" !! %x %x\0", bulk_member, dial);
   g_object_get(dial,
 	       "adjustment\0", &adjustment,
 	       NULL);

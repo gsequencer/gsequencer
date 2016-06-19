@@ -890,6 +890,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	    if(success){
 	      range = upper - lower;
+	      step = range / val;
 
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   val,
@@ -901,7 +902,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 					       lower,
 					       FALSE);
 	      c_range = c_upper - c_lower;
-	      step = c_range / val;
 	    
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   c_lower + (c_range / step),
@@ -942,6 +942,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	    if(success){
 	      range = upper - lower;
+	      step = range / val;
 
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   val,
@@ -953,7 +954,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 					       lower,
 					       FALSE);
 	      c_range = c_upper - c_lower;
-	      step = c_range / val;
 
 	      val = ags_conversion_convert(bulk_member->conversion,
 					   c_lower + (c_range / step),

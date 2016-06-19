@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/ags_automation.h>
@@ -1773,7 +1774,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 
 guint
 ags_automation_get_value(AgsAutomation *automation,
-			 guint x,
+			 guint x, guint x_end,
 			 GValue *value)
 {
   AgsPort *port;
@@ -1789,13 +1790,22 @@ ags_automation_get_value(AgsAutomation *automation,
   
   if(acceleration != NULL){
     while(acceleration != NULL){
-      if(AGS_ACCELERATION(acceleration->data)->x >= x){
+      if(AGS_ACCELERATION(acceleration->data)->x >= x &&
+	 AGS_ACCELERATION(acceleration->data)->x < x_end){
 	break;
+      }
+
+      if(AGS_ACCELERATION(acceleration->data)->x > x_end){
+	return(G_MAXUINT);
       }
 
       acceleration = acceleration->next;
     }
-
+    
+    if(acceleration == NULL){
+      return(G_MAXUINT);
+    }
+    
     ret_x = AGS_ACCELERATION(acceleration->data)->x;
   }
   
@@ -1821,37 +1831,8 @@ ags_automation_get_value(AgsAutomation *automation,
 			  current);
     }else if(port->port_value_type == G_TYPE_INT64){
       gint64 current;
-
-      current = 0;
       
-      if(acceleration == NULL){
-	current = automation->default_value;
-      }else{
-	gdouble y1, y2;
-	gdouble x1, x2;
-	gdouble y;
-	
-	if(acceleration->next != NULL){
-	  x1 = AGS_ACCELERATION(acceleration->data)->x;
-	  y1 = AGS_ACCELERATION(acceleration->data)->y;
-
-	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
-	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
-
-	  /*  */
-	  //TODO:JK: verify me
-	  x2 -= x1;
-	  x1 = 0;
-
-	  y2 -= y1;
-	    
-	  y = (x2 / x * y2) + y1;
-	}else{
-	  y = AGS_ACCELERATION(acceleration->data)->y;
-	}
-
-	current = floor(y);
-      }
+      current = floor(AGS_ACCELERATION(acceleration->data)->y);
 
       g_value_init(value,
 		   G_TYPE_INT64);
@@ -1860,36 +1841,7 @@ ags_automation_get_value(AgsAutomation *automation,
     }else if(port->port_value_type == G_TYPE_UINT64){
       guint64 current;
 
-      current = 0;
-      
-      if(acceleration == NULL){
-	current = automation->default_value;
-      }else{
-	gdouble y1, y2;
-	gdouble x1, x2;
-	gdouble y;
-	
-	if(acceleration->next != NULL){
-	  x1 = AGS_ACCELERATION(acceleration->data)->x;
-	  y1 = AGS_ACCELERATION(acceleration->data)->y;
-
-	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
-	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
-
-	  /*  */
-	  //TODO:JK: verify me
-	  x2 -= x1;
-	  x1 = 0;
-
-	  y2 -= y1;
-	    
-	  y = (x2 / x * y2) + y1;
-	}else{
-	  y = AGS_ACCELERATION(acceleration->data)->y;
-	}
-
-	current = floor(y);
-      }
+      current = floor(AGS_ACCELERATION(acceleration->data)->y);
       
       g_value_init(value,
 		   G_TYPE_UINT64);
@@ -1897,46 +1849,8 @@ ags_automation_get_value(AgsAutomation *automation,
 			 current);
     }else if(port->port_value_type == G_TYPE_FLOAT){
       gfloat current;
-
-      current = 0.0;
-      
-      if(acceleration == NULL){
-	current = automation->default_value;
-      }else{
-	gdouble range;
-	gdouble y1, y2;
-	gdouble x1, x2;
-	gdouble y;
 	
-	if(acceleration->next != NULL){
-	  x1 = AGS_ACCELERATION(acceleration->data)->x;
-	  y1 = AGS_ACCELERATION(acceleration->data)->y;
-
-	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
-	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
-
-	  /*  */
-	  //TODO:JK: verify me
-	  x2 -= x1;
-	  x1 = 0;
-
-	  y2 -= y1;
-	    
-	  y = (x2 / x * y2) + y1;
-	}else{
-	  y = AGS_ACCELERATION(acceleration->data)->y;
-	}
-
-	if(automation->lower < 0.0 && automation->upper < 0.0){
-	  range = -1.0 * (automation->lower - automation->upper);
-	}else if(automation->lower < 0.0){
-	  range = (-1.0 * automation->lower) + automation->upper;
-	}else{
-	  range = automation->upper -automation->lower;
-	}
-	
-	current = automation->lower + (range * y / (gdouble) automation->steps);
-      }
+      current = AGS_ACCELERATION(acceleration->data)->y;
       
       g_value_init(value,
 		   G_TYPE_FLOAT);
@@ -1945,46 +1859,8 @@ ags_automation_get_value(AgsAutomation *automation,
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       gdouble current;
 
-      current = 0.0;
+      current = AGS_ACCELERATION(acceleration->data)->y;
       
-      if(acceleration == NULL){
-	current = automation->default_value;
-      }else{
-	gdouble range;
-	gdouble y1, y2;
-	gdouble x1, x2;
-	gdouble y;
-	
-	if(acceleration->next != NULL){
-	  x1 = AGS_ACCELERATION(acceleration->data)->x;
-	  y1 = AGS_ACCELERATION(acceleration->data)->y;
-
-	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
-	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
-
-	  /*  */
-	  //TODO:JK: verify me
-	  x2 -= x1;
-	  x1 = 0;
-
-	  y2 -= y1;
-	    
-	  y = (x2 / x * y2) + y1;
-	}else{
-	  y = AGS_ACCELERATION(acceleration->data)->y;
-	}
-
-	if(automation->lower < 0.0 && automation->upper < 0.0){
-	  range = -1.0 * (automation->lower - automation->upper);
-	}else if(automation->lower < 0.0){
-	  range = (-1.0 * automation->lower) + automation->upper;
-	}else{
-	  range = automation->upper -automation->lower;
-	}
-	
-	current = automation->lower + (range * y / (gdouble) automation->steps);
-      }
-  
       g_value_init(value,
 		   G_TYPE_DOUBLE);
       g_value_set_double(value,

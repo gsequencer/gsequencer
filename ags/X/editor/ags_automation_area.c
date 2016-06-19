@@ -657,14 +657,22 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 					 current->y,
 					 FALSE);
-	    y = (automation_area->height / (1.0 / AGS_AUTOMATION(automation->data)->steps)) * ((val / AGS_AUTOMATION(automation->data)->steps) - (c_lower / AGS_AUTOMATION(automation->data)->steps));
+	    if(val - c_lower != 0.0){
+	      y = (automation_area->height) * ((1.0 / c_range) / (1.0 / (val - c_lower)));
+	    }else{
+	      y = 0.0;
+	    }
 	    
 	    prev_x = prev->x;
 	    
 	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 					 prev->y,
 					 FALSE);
-	    prev_y = (automation_area->height / (1.0 / AGS_AUTOMATION(automation->data)->steps)) * ((val / AGS_AUTOMATION(automation->data)->steps) - (c_lower / AGS_AUTOMATION(automation->data)->steps));
+	    if(val - c_lower != 0.0){
+	      prev_y = (automation_area->height) * ((1.0 / c_range) / (1.0 / (val - c_lower)));
+	    }else{
+	      prev_y = 0.0;
+	    }
 
 	    if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
 	      if(n_tab == 0){

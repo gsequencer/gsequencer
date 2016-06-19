@@ -195,14 +195,10 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	}
 
 	/* check steps */
-	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	val = lower + (range * (gui_y / AGS_AUTOMATION(automation->data)->steps));
-	step = c_range / val;
-	acceleration_y = (gdouble) c_lower + (c_range / step);
+	gui_y = (AGS_AUTOMATION(automation->data)->steps) * (AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i)));
+	val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
 
 	/* conversion */
-	val = acceleration_y;
-
 	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
 	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 				       val,
@@ -267,20 +263,17 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	  }
 
 	  /* check steps */
-	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	  val = lower + (range * (gui_y / AGS_AUTOMATION(automation->data)->steps));
-	  step = c_range / val;
-	  acceleration_y = (gdouble) c_lower + (c_range / step);
+	  gui_y = (AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i)));
+	  val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
 
 	  /* conversion */
-	  val = acceleration_y;
 
 	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
 	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 					 val,
 					 TRUE);
 	  }
-	
+
 	  /* add acceleration */
 	  current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
 							   x, val,
@@ -472,13 +465,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
 	/* check steps */
 	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	val = lower + (range * (gui_y / AGS_AUTOMATION(automation->data)->steps));
-	step = c_range / val;
-	acceleration_y = (gdouble) c_lower + (c_range / step);
+	val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
 
 	/* conversion */
-	val = acceleration_y;
-
 	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
 	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 				       val,
@@ -550,13 +539,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
 	  /* check steps */
 	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	  val = lower + (range * (gui_y / AGS_AUTOMATION(automation->data)->steps));
-	  step = c_range / val;
-	  acceleration_y = (gdouble) c_lower + (c_range / step);
+	  val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
 
 	  /* conversion */
-	  val = acceleration_y;
-
 	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
 	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 					 val,
@@ -702,9 +687,8 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	      gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / AGS_AUTOMATION_AREA(list->data)->height) * (gdouble) (y0 - AGS_AUTOMATION_AREA(list->data)->y));
 	    }
 
-	    val = lower + (range * (gui_y / AGS_AUTOMATION(automation->data)->steps));
-	    step = c_range / val;
-	    c_y0 = (gdouble) c_lower + (c_range / step);
+	    val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
+	    c_y0 = val;
 
 	    /* conversion */
 	    if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
@@ -720,9 +704,8 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	      gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / AGS_AUTOMATION_AREA(list->data)->height) * (gdouble) (y1 - AGS_AUTOMATION_AREA(list->data)->y));
 	    }
 
-	    val = lower + (range * (gui_y / AGS_AUTOMATION(automation->data)->steps));
-	    step = c_range / val;
-	    c_y1 = (gdouble) c_lower + (c_range / step);
+	    val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
+	    c_y1 = val;
 
 	    /* conversion */
 	    if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
@@ -1167,13 +1150,9 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	/* check steps */
 	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	val = lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
-	step = c_range / val;
-	acceleration_y = (gdouble) c_lower + (c_range / step);
+	val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
 
 	/* conversion */
-	val = acceleration_y;
-
 	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
 	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 				       val,
@@ -1265,13 +1244,9 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	  /* check steps */
 	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	  val = lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
-	  step = c_range / val;
-	  acceleration_y = (gdouble) c_lower + (c_range / step);
+	  val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(automation->data)->steps));
 
 	  /* conversion */
-	  val = acceleration_y;
-
 	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
 	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 					 val,
