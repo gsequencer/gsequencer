@@ -23,6 +23,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -400,11 +402,17 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 {
   AgsMachine *machine_old;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_start;
   GList *child;
-  
+
+  guint output_lines, input_lines;
   guint pads;
   guint i;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   if(automation_editor->selected_machine == machine){
     return;
@@ -457,6 +465,26 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     return;
   }
 
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get audio properties */
+  pthread_mutex_lock(audio_mutex);
+
+  output_lines = machine->audio->output_lines;
+  input_lines = machine->audio->input_lines;
+  
+  pthread_mutex_unlock(audio_mutex);
+  
   /* instantiate automation edit */
   if(child == NULL){
     AgsAutomationEditorChild *automation_editor_child;
@@ -505,7 +533,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 		     GTK_FILL|GTK_EXPAND, GTK_FILL,
 		     0, 0);
 
-    for(i = 0; i < machine->audio->output_lines; i++){
+    for(i = 0; i < output_lines; i++){
       ags_notebook_insert_tab(automation_editor_child->output_notebook,
 			      i);
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->output_notebook->tabs->data)->toggle,
@@ -548,7 +576,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 		     GTK_FILL|GTK_EXPAND, GTK_FILL,
 		     0, 0);
 
-    for(i = 0; machine != NULL && i < machine->audio->input_lines; i++){
+    for(i = 0; machine != NULL && i < input_lines; i++){
       ags_notebook_insert_tab(automation_editor_child->input_notebook,
 			      i);
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->input_notebook->tabs->data)->toggle,
@@ -636,6 +664,8 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_start;
   GList *automation;
   
@@ -644,6 +674,9 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
   guint current_page;
   guint line;
   gboolean is_audio, is_output, is_input;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
 
@@ -683,9 +716,25 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
   /*  */
   if(automation_editor->selected_machine != NULL &&
      current_edit_widget != NULL &&
-     current_edit_widget->automation_area != NULL){    
+     current_edit_widget->automation_area != NULL){
+    /* get mutex manager and application mutex */
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) automation_editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get automation area */
     list =
       list_start = g_list_reverse(g_list_copy(current_edit_widget->automation_area));
+
+    /* select all */
+    pthread_mutex_lock(audio_mutex);
     
     if(channel_type == G_TYPE_NONE){
       automation = automation_editor->selected_machine->audio->automation;
@@ -726,6 +775,8 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
       }
     }
 
+    pthread_mutex_unlock(audio_mutex);
+    
     gtk_widget_queue_draw(current_edit_widget);
     
     g_list_free(list_start);
@@ -738,6 +789,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
 
+  AgsMutexManager *mutex_manager;
+  
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_node;
   
@@ -751,6 +804,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
   gint first_x, last_x;
   gboolean is_audio, is_output, is_input;
   gboolean paste_from_position;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   auto gint ags_automation_editor_paste_read_automation();
 
@@ -1059,7 +1115,19 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
   if(automation_editor->selected_machine != NULL &&
      current_edit_widget != NULL &&
      current_edit_widget->automation_area != NULL){
+    /* get mutex manager and application mutex */
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) automation_editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* edit mode */
     if(automation_editor->automation_toolbar->selected_edit_mode == automation_editor->automation_toolbar->position){
       last_x = 0;
       paste_from_position = TRUE;
@@ -1081,6 +1149,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     if(first_x == -1){
       first_x = 0;
     }
+
+    pthread_mutex_lock(audio_mutex);
     
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
@@ -1094,6 +1164,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       
       audio_node = audio_node->next;
     }    
+
+    pthread_mutex_unlock(audio_mutex);
 
     /* reset cursor */
     if(paste_from_position){
@@ -1121,6 +1193,8 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
 
+  AgsMutexManager *mutex_manager;
+
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_node;
 
@@ -1135,6 +1209,9 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
   gint line;
   int size;
   gboolean is_audio, is_output, is_input;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
 
@@ -1182,10 +1259,24 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
     audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
     xmlDocSetRootElement(clipboard, audio_node);
 
+    /* get mutex manager and application mutex */
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) automation_editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
     /* find automation to copy */
     list =
       list_start = g_list_reverse(g_list_copy(current_edit_widget->automation_area));
-    
+
+    pthread_mutex_lock(audio_mutex);
+
     if(channel_type == G_TYPE_NONE){
       automation = automation_editor->selected_machine->audio->automation;
 
@@ -1230,6 +1321,8 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 	list = list->next;
       }
     }
+
+    pthread_mutex_unlock(audio_mutex);
     
     g_list_free(list_start);
     
@@ -1249,6 +1342,8 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
 
+  AgsMutexManager *mutex_manager;
+
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_node;
 
@@ -1263,6 +1358,9 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
   guint line;
   int size;
   gboolean is_audio, is_output, is_input;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
 
@@ -1310,9 +1408,23 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
     audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
     xmlDocSetRootElement(clipboard, audio_node);
 
-    /* find automation to copy */
+    /* get mutex manager and application mutex */
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) automation_editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* find automation to cut */
     list =
       list_start = g_list_reverse(g_list_copy(current_edit_widget->automation_area));
+
+    pthread_mutex_lock(audio_mutex);
     
     if(channel_type == G_TYPE_NONE){
       automation = automation_editor->selected_machine->audio->automation;
@@ -1358,7 +1470,9 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 	list = list->next;
       }
     }
-    
+
+    pthread_mutex_unlock(audio_mutex);
+
     g_list_free(list_start);
 
     /* write to clipboard */

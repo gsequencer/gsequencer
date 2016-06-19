@@ -19,6 +19,8 @@
 
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -92,12 +94,17 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
   AgsAutomationEditor *automation_editor;
   AgsAutomationToolbar *automation_toolbar;
 
+  AgsMutexManager *mutex_manager;
+
   double tact_factor, zoom_factor;
   double tact;
   
   cairo_t *cr;
   
   guint x, y;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   auto void ags_automation_edit_drawing_area_button_press_event_add_point();
 
@@ -314,6 +321,19 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     x = (guint) (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + (guint) event->x) / tact;
     y = (guint) GTK_RANGE(automation_edit->vscrollbar)->adjustment->value + (guint) event->y;
 
+    /* get mutex manager and application mutex */
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) automation_editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* do it so */    
     if(automation_toolbar->selected_edit_mode == automation_toolbar->position){
       automation_edit->flags |= AGS_AUTOMATION_EDIT_POSITION_CURSOR;
 
@@ -326,8 +346,15 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 
       cr = gdk_cairo_create(widget->window);
       cairo_push_group(cr);
-    
+
+      /* add acceleration */
+      pthread_mutex_lock(audio_mutex);
+
       ags_automation_edit_drawing_area_button_press_event_add_point();
+
+      pthread_mutex_unlock(audio_mutex);
+
+      /* redraw */
       ags_automation_edit_paint(automation_edit,
 				cr);
       
@@ -357,11 +384,16 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
   AgsAutomationToolbar *automation_toolbar;
   AgsNotebook *notebook;
 
+  AgsMutexManager *mutex_manager;
+
   cairo_t *cr;
   
   double tact_factor, zoom_factor;
   double tact;
   guint x, y;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   auto void ags_automation_edit_drawing_area_button_release_event_delete_point(cairo_t *cr);
   auto void ags_automation_edit_drawing_area_button_release_event_select(cairo_t *cr);
@@ -755,6 +787,19 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     x = (guint) (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + (guint) event->x) / tact;
     y = (guint) GTK_RANGE(automation_edit->vscrollbar)->adjustment->value + (guint) event->y;
 
+    /* get mutex manager and application mutex */
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) automation_editor->selected_machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* do it so */
     if((AGS_AUTOMATION_EDIT_POSITION_CURSOR & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_POSITION_CURSOR);
 
@@ -764,8 +809,14 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     }else if((AGS_AUTOMATION_EDIT_DELETING_ACCELERATION & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_DELETING_ACCELERATION);
 
+      /* delete acceleration */
+      pthread_mutex_lock(audio_mutex);
+
       ags_automation_edit_drawing_area_button_release_event_delete_point(cr);
-      
+
+      pthread_mutex_unlock(audio_mutex);
+
+      /* redraw */
       gtk_widget_queue_draw(automation_edit->drawing_area);
     }else if((AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS);
@@ -773,8 +824,14 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       automation_edit->select_x1 = x;
       automation_edit->select_y1 = y;
 
-      ags_automation_edit_drawing_area_button_release_event_select(cr);
+      /* select acceleration */
+      pthread_mutex_lock(audio_mutex);
       
+      ags_automation_edit_drawing_area_button_release_event_select(cr);
+
+      pthread_mutex_unlock(audio_mutex);
+
+      /* redraw */
       gtk_widget_queue_draw(automation_edit->drawing_area);
     }
   }
@@ -1032,12 +1089,17 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
   AgsAutomationEditor *automation_editor;
   AgsMachine *machine;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_start;
   
   double tact_factor, zoom_factor;
   double tact;
   guint x, y;
   gboolean retval;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   auto void ags_automation_edit_drawing_area_key_release_event_iterate(guint x, guint y,
 								       gboolean position_cursor,
@@ -1114,6 +1176,8 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
     n_attempts = 3;
 
     /* match specifier */
+    pthread_mutex_lock(audio_mutex);
+    
     if(channel_type == G_TYPE_NONE){
       automation = automation_editor->selected_machine->audio->automation;
 
@@ -1301,7 +1365,9 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	line++;
       }
-    }    
+    }
+
+    pthread_mutex_unlock(audio_mutex);
   }
     
   if(event->keyval == GDK_KEY_Tab ||
@@ -1330,7 +1396,20 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
   
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) automation_editor->selected_machine->audio);
   
+  pthread_mutex_unlock(application_mutex);
+
+  /* do it so */
   switch(event->keyval){
   case GDK_KEY_Control_L:
     {
