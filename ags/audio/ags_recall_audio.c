@@ -422,8 +422,15 @@ ags_recall_audio_automate(AgsRecall *recall)
 
   gdouble delay;
   guint note_offset, delay_counter;
-  guint x;
   
+  guint loop_left, loop_right;
+  guint loop_offset;
+  gboolean do_loop;
+
+  guint offset;
+  double x, step;
+  guint ret_x;
+
   audio = AGS_RECALL_AUDIO(recall)->audio;
   soundcard = audio->soundcard;
 
@@ -431,24 +438,45 @@ ags_recall_audio_automate(AgsRecall *recall)
   port = recall->port;
 
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
-
+  
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
   delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
-  
-  x = 64 * note_offset + (guint) floor((1.0 / 64.0) * ((gdouble) delay_counter / delay));
-  
+
+  /* retrieve loop information */
+  ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
+			 &loop_left, &loop_right,
+			 &do_loop);
+
+  loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(soundcard));
+
+  if(do_loop &&
+     loop_offset <= note_offset){
+    offset = note_offset - loop_offset;
+
+    offset = offset % (loop_right - loop_left);
+  }else{
+    offset = note_offset;
+  }
+
+  /*  */
+  x = ((double) offset + (delay_counter / delay)) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+  step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+
   while(port != NULL){
     automation = AGS_PORT(port->data)->automation;
-    
+
     if(automation != NULL &&
        (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){
       GValue value = {0,};
 
-      ags_automation_get_value(automation,
-			       x,
-			       &value);
-      ags_port_safe_write(port->data,
-			  &value);
+      ret_x = ags_automation_get_value(automation,
+				       floor(x), ceil(x + step),
+				       &value);
+
+      if(ret_x != G_MAXUINT){
+	ags_port_safe_write(port->data,
+			    &value);
+      }
     }
 
     port = port->next;

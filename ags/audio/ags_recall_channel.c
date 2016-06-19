@@ -423,8 +423,8 @@ ags_recall_channel_load_automation(AgsRecall *recall,
   }
   
   while(automation_port != NULL){
-    if(ags_automation_find_port(automation,
-				automation_port->data) == NULL){
+    if((automation = ags_automation_find_port(automation,
+					      automation_port->data)) == NULL){
       current = ags_automation_new(channel->audio,
 				   channel->line,
 				   channel_type,
@@ -437,6 +437,9 @@ ags_recall_channel_load_automation(AgsRecall *recall,
 
       //TODO:JK: property
       AGS_PORT(automation_port->data)->automation = current;
+    }else{
+      //TODO:JK: property
+      AGS_PORT(automation_port->data)->automation = automation->data;
     }
     
     automation_port = automation_port->next;
@@ -530,7 +533,7 @@ ags_recall_channel_automate(AgsRecall *recall)
 
   /*  */
   x = ((double) offset + (delay_counter / delay)) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
-  step = (1.0 / delay) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+  step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   while(port != NULL){
     automation = AGS_PORT(port->data)->automation;
@@ -540,11 +543,10 @@ ags_recall_channel_automate(AgsRecall *recall)
       GValue value = {0,};
 
       ret_x = ags_automation_get_value(automation,
-				       x,
+				       floor(x), ceil(x + step),
 				       &value);
 
-      if(ret_x >= floor(x) &&
-	 ret_x < ceil(x + step)){
+      if(ret_x != G_MAXUINT){
 	ags_port_safe_write(port->data,
 			    &value);
       }
