@@ -453,7 +453,7 @@ ags_recall_audio_automate(AgsRecall *recall)
      loop_offset <= note_offset){
     offset = note_offset - loop_offset;
 
-    offset = offset % (loop_right - loop_left);
+    offset = loop_offset + (offset % (loop_right - loop_left));
   }else{
     offset = note_offset;
   }

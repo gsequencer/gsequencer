@@ -221,6 +221,12 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 						    AGS_TYPE_RECALL_LADSPA,
 						    AGS_TYPE_RECALL_LV2,
 						    G_TYPE_NONE)) != NULL){
+    if((AGS_RECALL_BULK_MODE & (AGS_RECALL(recall->data)->flags)) != 0){
+      recall = recall->next;
+
+      continue;
+    }
+    
     g_object_get(G_OBJECT(recall->data),
 		 "filename\0", &filename,
 		 NULL);

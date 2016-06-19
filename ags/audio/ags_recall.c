@@ -2310,9 +2310,9 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 }
 
 /**
- * ags_recall_find_by_effect:
+ * ags_recall_find_recall_id_with_effect:
  * @list: a #GList with recalls
- * @recall_id: an #AgsRecallId
+ * @recall_id: an #AgsRecallId, may be %NULL
  * @filename: the filename containing @effect or %NULL
  * @effect: the effect name
  *
