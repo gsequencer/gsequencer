@@ -310,10 +310,15 @@ ags_navigation_loop_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsMutexManager *mutex_manager;
+
   GList *machines, *machines_start;
   GList *list, *list_start;
 
   guint loop_left, loop_right;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   GValue do_loop_value = {0,};
   
@@ -341,6 +346,21 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
       audio = machine->audio;
 
+      /* get mutex manager and application mutex */
+      mutex_manager = ags_mutex_manager_get_instance();
+      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+      /* get audio mutex */
+      pthread_mutex_lock(application_mutex);
+
+      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) audio);
+  
+      pthread_mutex_lock(application_mutex);
+
+      /* do it so */
+      pthread_mutex_lock(audio_mutex);
+      
       list = audio->play;
 
       while((list = ags_recall_find_type(list,
@@ -351,6 +371,8 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
 	list = list->next;
       }
+
+      pthread_mutex_unlock(audio_mutex);
     }
 
     machines = machines->next;
@@ -417,10 +439,15 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsMutexManager *mutex_manager;
+
   GList *machines, *machines_start;
   GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
   guint loop_left, loop_right;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   GValue value = {0,};
 
@@ -447,6 +474,21 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
       g_message("found machine to loop!\n\0");
 
       audio = machine->audio;
+      
+      /* get mutex manager and application mutex */
+      mutex_manager = ags_mutex_manager_get_instance();
+      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+      /* get audio mutex */
+      pthread_mutex_lock(application_mutex);
+
+      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) audio);
+  
+      pthread_mutex_lock(application_mutex);
+
+      /* do it so */
+      pthread_mutex_lock(audio_mutex);      
 
       list = audio->play;
 
@@ -458,6 +500,8 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
 	list = list->next;
       }
+
+      pthread_mutex_unlock(audio_mutex);
     }
 
     machines = machines->next;
@@ -476,10 +520,15 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsMutexManager *mutex_manager;
+
   GList *machines, *machines_start;
   GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
   guint loop_left, loop_right;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   GValue value = {0,};
 
@@ -506,7 +555,22 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
       g_message("found machine to loop!\n\0");
 
       audio = machine->audio;
+      
+      /* get mutex manager and application mutex */
+      mutex_manager = ags_mutex_manager_get_instance();
+      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+      /* get audio mutex */
+      pthread_mutex_lock(application_mutex);
+
+      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) audio);
+  
+      pthread_mutex_lock(application_mutex);
+
+      /* do it so */
+      pthread_mutex_lock(audio_mutex);
+      
       list = audio->play;
 
       while((list = ags_recall_find_type(list,
@@ -517,6 +581,8 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
 	list = list->next;
       }
+
+      pthread_mutex_unlock(audio_mutex);
     }
 
     machines = machines->next;

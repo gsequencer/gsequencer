@@ -32,10 +32,12 @@
 #else
 #include <ags/thread/ags_thread-posix.h>
 #endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_lv2.h>
 
 #include <ags/widget/ags_dial.h>
 
@@ -484,6 +486,8 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   GtkAdjustment *adjustment;
 
   AgsLadspaPlugin *ladspa_plugin;
+
+  AgsMutexManager *mutex_manager;
   
   GList *list, *list_start;
   GList *recall, *recall_start;
@@ -494,6 +498,9 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   guint port_count;
   guint x, y;
   guint k;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
   
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
@@ -513,7 +520,21 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
     list = list->next;
   }
 
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) effect_line->channel);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* find ports */
+  pthread_mutex_lock(channel_mutex);
+
   recall_start =
     recall = ags_recall_get_by_effect(effect_line->channel->play,
 				      filename,
@@ -531,6 +552,8 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
   recall_port = AGS_RECALL(recall->data)->port;
   g_list_free(recall_start);
+
+  pthread_mutex_unlock(channel_mutex);
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -641,6 +664,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
   AgsLv2Plugin *lv2_plugin;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_start;
   GList *recall, *recall_start;
   GList *port, *recall_port;
@@ -651,6 +676,9 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   guint x, y;
   guint k;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
@@ -669,7 +697,21 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
     list = list->next;
   }
 
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) effect_line->channel);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* find ports */
+  pthread_mutex_lock(channel_mutex);
+  
   recall_start =
     recall = ags_recall_get_by_effect(effect_line->channel->play,
 				      filename,
@@ -688,7 +730,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   recall_port = AGS_RECALL(recall->data)->port;
   g_list_free(recall_start);
 
-
+  pthread_mutex_unlock(channel_mutex);
+  
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
@@ -844,16 +887,57 @@ void
 ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 				   guint nth)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *control;
-  GList *play_ladspa;
+  GList *recall;
   GList *port;
 
-  play_ladspa = ags_recall_template_find_type(effect_line->channel->play,
-					      AGS_TYPE_RECALL_LADSPA);
+  guint nth_effect, n_bulk;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) effect_line->channel);
+  
+  pthread_mutex_lock(application_mutex);
+  
+  /* get nth_effect */
+  pthread_mutex_lock(channel_mutex);
+  
+  recall = effect_line->channel->play;
+  nth_effect = 0;
+  n_bulk = 0;
+  
+  while((recall = ags_recall_template_find_all_type(recall,
+						    AGS_TYPE_RECALL_LADSPA,
+						    AGS_TYPE_RECALL_LV2,
+						    G_TYPE_NONE)) != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall->data)->flags)) != 0){
+      nth_effect++;
+    }
+
+    if((AGS_RECALL_BULK_MODE & (AGS_RECALL(recall->data)->flags)) != 0){
+      n_bulk++;
+    }
+
+    if(nth_effect - n_bulk == nth){
+      break;
+    }
+    
+    recall = recall->next;
+  }
 
   /* destroy controls */
-  port = AGS_RECALL(g_list_nth(play_ladspa,
-			       nth)->data)->port;
+  port = AGS_RECALL(recall->data)->port;
     
   while(port != NULL){
     control = gtk_container_get_children(effect_line->table);
@@ -870,6 +954,8 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
       
     port = port->next;
   }
+
+  pthread_mutex_unlock(channel_mutex);
 
   /* remove recalls */
   ags_channel_remove_effect(effect_line->channel,

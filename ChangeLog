@@ -14,8 +14,12 @@ ags (0.7.35)
 	* implemented ags_soundcard_get_loop(), ags_soundcard_set_loop() and ags_soundcard_get_loop_offset()
 	* improved loop mode
 	* improved AgsPad mutices in ags_pad_init_channel_launch_callback()
+	* improved remove line effect and effect line effect
+	* improved remove effect bulk effect
 	* added mutices automation editor
-	* TODO mutices in effect bulk
+	* added missing mutices to ags_navigation_callbacks.c
+	* added mutices in ags_effect_bulk.c
+	* added mutices in ags_line.c and ags_effect_line.c
 
 ags (0.7.34)
 
