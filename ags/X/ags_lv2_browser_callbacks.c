@@ -157,7 +157,7 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 				0, 1,
 				y, y + 1);
       
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	gtk_table_attach_defaults(table,
 				  GTK_WIDGET(ags_lv2_browser_combo_box_boolean_controls_new()),
 				  1, 2,
@@ -173,6 +173,8 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
       
       port_descriptor = port_descriptor->next;
     }
+    
+    gtk_widget_show_all(table);
   }else{
     /* update ui - empty */
     label = GTK_LABEL(list->data);

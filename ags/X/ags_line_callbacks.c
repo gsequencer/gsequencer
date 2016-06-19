@@ -164,6 +164,8 @@ ags_line_add_effect_callback(AgsChannel *channel,
 				    AGS_TYPE_MACHINE);
   machine_editor = machine->properties;
 
+  control_type_name = NULL;  
+
   if(machine_editor != NULL){
     pad_editor_start = 
       pad_editor = gtk_container_get_children(machine_editor->input_editor->child);
@@ -181,8 +183,6 @@ ags_line_add_effect_callback(AgsChannel *channel,
       line_editor = NULL;
     }
 
-    control_type_name = NULL;
-  
     if(line_editor != NULL){
       line_member_editor = AGS_LINE_EDITOR(line_editor->data)->member_editor;
 

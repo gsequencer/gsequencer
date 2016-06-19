@@ -908,7 +908,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) effect_line->channel);
   
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_unlock(application_mutex);
   
   /* get nth_effect */
   pthread_mutex_lock(channel_mutex);
@@ -936,6 +936,12 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
     recall = recall->next;
   }
 
+  if(recall == NULL){
+    pthread_mutex_unlock(channel_mutex);
+    
+    return;
+  }
+  
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
     

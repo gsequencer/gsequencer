@@ -2286,15 +2286,10 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 	list = g_list_prepend(list,
 			      current);
       }else if(AGS_IS_RECALL_LV2(current) &&
-	       !g_strcmp0(AGS_RECALL_LV2(current)->filename, filename)){
-	gchar *uri;
-	
-	uri = effect;
-	
-	if(!g_strcmp0(AGS_RECALL_LV2(current)->uri, uri)){
-	  list = g_list_prepend(list,
-				current);
-	}
+	       !g_strcmp0(AGS_RECALL_LV2(current)->filename, filename) &&
+	       !g_strcmp0(AGS_RECALL_LV2(current)->effect, effect)){
+	list = g_list_prepend(list,
+			      current);
       }else  if(!g_strcmp0(current->effect, effect)){
 	list = g_list_prepend(list,
 			      current);
