@@ -1006,6 +1006,12 @@ ags_channel_connect(AgsConnectable *connectable)
   
   channel = AGS_CHANNEL(connectable);
 
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    return;
+  }
+
+  channel->flags |= AGS_CHANNEL_CONNECTED;
+  
 #ifdef AGS_DEBUG
   g_message("connecting channel\0");
 #endif
@@ -2234,8 +2240,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 
   /* load */
   ags_recall_ladspa_load(recall_ladspa);
-  port = ags_recall_ladspa_load_ports(recall_ladspa);
-  
+  port = ags_recall_ladspa_load_ports(recall_ladspa);  
   
   /* dummy */
   recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
@@ -2259,7 +2264,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
     ags_connectable_connect(AGS_CONNECTABLE(recall_container));
     ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
     ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-
+    
     recall_id = channel->recall_id;
     
     while(recall_id != NULL){

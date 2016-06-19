@@ -200,10 +200,10 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	    description = gtk_container_get_children(AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
 	}else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children(AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
 	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children(AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
 	}else{
 	  g_message("ags_line_callbacks.c unsupported plugin browser\0");
 	}

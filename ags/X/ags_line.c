@@ -945,6 +945,13 @@ ags_line_add_lv2_effect(AgsLine *line,
     recall = ags_recall_get_by_effect(line->channel->play,
 				      filename,
 				      effect);
+
+  if(recall == NULL){
+    pthread_mutex_unlock(channel_mutex);
+    
+    return;
+  }
+  
   recall = g_list_last(recall);
   port = AGS_RECALL(recall->data)->port;
 
