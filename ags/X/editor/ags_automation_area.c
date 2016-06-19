@@ -22,6 +22,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_automation.h>
@@ -420,23 +422,30 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 
   AgsAcceleration *current, *prev;
 
+  AgsMutexManager *mutex_manager;
+
   GList *automation;
   GList *list;
 
   GType channel_type;
 
+  double tact_factor, zoom_factor;
+  double tact;
+
+  gdouble upper, lower, range;
+  gdouble c_upper, c_lower, c_range;
+  gdouble val;
+
   guint line;
   guint width;
   gdouble x0, x1;
-  gdouble val;
   guint n_tab;
   gdouble *tab_x, *tab_y;
   gdouble *prev_tab_x, *prev_tab_y;
-  gdouble upper, lower, range;
-  gdouble c_upper, c_lower, c_range;
-  double tact_factor, zoom_factor;
-  double tact;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
   auto gboolean ags_automation_area_draw_automation_find_tab(gdouble x, gdouble y, gdouble prev_x, gdouble prev_y);
 
   gboolean ags_automation_area_draw_automation_find_tab(gdouble x, gdouble y, gdouble prev_x, gdouble prev_y){
@@ -487,7 +496,21 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
   tab_x = NULL;
   tab_y = NULL;
 
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) automation_editor->selected_machine->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* match specifier */
+  pthread_mutex_lock(audio_mutex);
+  
   if(channel_type == G_TYPE_NONE){
     automation = automation_area->audio->automation;
 
@@ -723,6 +746,8 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
     }
   }
 
+  pthread_mutex_unlock(audio_mutex);
+  
   if(n_tab != 0){
     free(tab_x);
     free(tab_y);

@@ -13,7 +13,9 @@ ags (0.7.35)
 	* implemented selection of automation editor
 	* implemented ags_soundcard_get_loop(), ags_soundcard_set_loop() and ags_soundcard_get_loop_offset()
 	* improved loop mode
-	* TODO mutices automation editor
+	* improved AgsPad mutices in ags_pad_init_channel_launch_callback()
+	* added mutices automation editor
+	* TODO mutices in effect bulk
 
 ags (0.7.34)
 
