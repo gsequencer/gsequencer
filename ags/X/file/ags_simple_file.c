@@ -1491,7 +1491,7 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 
     gtk_window_set_title((GtkWindow *) gobject, g_strconcat("GSequencer - \0", gobject->name, NULL));
   }
-
+  
   /* connect */
   ags_connectable_connect(AGS_CONNECTABLE(gobject));
   
@@ -1564,11 +1564,14 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 
   /* loop */
   str = xmlGetProp(file_launch->node,
-		   "bpm\0");
+		   "loop\0");
 
   if(str != NULL){
-    if(g_strcmp0(str,
-		 "false\0")){
+    if(!g_strcmp0(str,
+		  "false\0")){
+      gtk_toggle_button_set_active(window->navigation->loop,
+				   FALSE);
+    }else{
       gtk_toggle_button_set_active(window->navigation->loop,
 				   TRUE);
     }
@@ -1579,10 +1582,10 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 		   "loop-start\0");
   
   if(str != NULL){
-    bpm = g_ascii_strtod(str,
-			 NULL);
+    loop_start = g_ascii_strtod(str,
+				NULL);
     gtk_adjustment_set_value(window->navigation->loop_left_tact->adjustment,
-			     bpm);
+			     loop_start);
   }
 
   /* loop end */
@@ -1590,10 +1593,10 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 		   "loop-end\0");
 
   if(str != NULL){
-    bpm = g_ascii_strtod(str,
-			 NULL);
+    loop_end = g_ascii_strtod(str,
+			      NULL);
     gtk_adjustment_set_value(window->navigation->loop_right_tact->adjustment,
-			     bpm);
+			     loop_end);
   }
 }
 
@@ -2091,6 +2094,21 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       gtk_toggle_button_set_active(drum->loop_button,
 				   TRUE);
     }
+
+    /* length */
+    str = xmlGetProp(node,
+		     "length\0");
+
+    if(str != NULL){
+      guint length;
+
+      length = g_ascii_strtoull(str,
+				NULL,
+				10);
+      
+      gtk_adjustment_set_value(drum->length_spin->adjustment,
+			       (gdouble) length);
+    }
   }
   
   void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix){
@@ -2122,6 +2140,21 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 		 "false\0")){
       gtk_toggle_button_set_active(matrix->loop_button,
 				   TRUE);
+    }
+
+    /* length */
+    str = xmlGetProp(node,
+		     "length\0");
+
+    if(str != NULL){
+      guint length;
+
+      length = g_ascii_strtoull(str,
+				NULL,
+				10);
+      
+      gtk_adjustment_set_value(matrix->length_spin->adjustment,
+			       (gdouble) length);
     }
   }
 
@@ -4467,7 +4500,7 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 
   xmlNewProp(node,
 	     "loop\0",
-	     (gtk_toggle_button_get_active(window->navigation->loop) ? g_strdup("true\0"): g_strdup("false\0")));
+	     ((gtk_toggle_button_get_active(window->navigation->loop)) ? g_strdup("true\0"): g_strdup("false\0")));
 
   xmlNewProp(node,
 	     "loop-start\0",
@@ -4850,6 +4883,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "loop\0",
 		 "true\0");
     }
+
+    xmlNewProp(node,
+	       "length\0",
+	       g_strdup_printf("%u\0", (guint) drum->length_spin->adjustment->value));
   }else if(AGS_IS_MATRIX(machine)){
     AgsMatrix *matrix;
 
@@ -4860,6 +4897,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "loop\0",
 		 "true\0");
     }    
+
+    xmlNewProp(node,
+	       "length\0",
+	       g_strdup_printf("%u\0", (guint) matrix->length_spin->adjustment->value));
   }else if(AGS_IS_FFPLAYER(machine)){
     AgsFFPlayer *ffplayer;
 
@@ -5303,7 +5344,7 @@ ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GLi
     if(ags_simple_file_write_line(simple_file,
 				  node,
 				  line->data) != NULL){
-      found_content;
+      found_content = TRUE;
     }
 
     line = line->next;

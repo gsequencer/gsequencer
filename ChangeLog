@@ -4,6 +4,7 @@ ags (0.7.37)
 	* fixed infinite loop in ags_automation_editor.c - line = line++
 	* fixed restore of controls
 	* fixed AgsNavigation set bpm
+	* optimized XML file output
 
 ags (0.7.36)
 
