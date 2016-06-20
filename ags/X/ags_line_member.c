@@ -38,6 +38,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+#include <ags/X/ags_effect_pad.h>
+#include <ags/X/ags_effect_line.h>
 
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -1173,7 +1175,6 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
     AgsWindow *window;
-    AgsLine *line;
 
     AgsMutexManager *mutex_manager;
     AgsThread *audio_loop;
@@ -1183,11 +1184,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
     AgsApplicationContext *application_context;
 
     pthread_mutex_t *application_mutex;
-    
-    line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-					       AGS_TYPE_LINE);
 
-    window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
+    window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line_member,
 						    AGS_TYPE_WINDOW);
   
     application_context = window->application_context;
@@ -1241,7 +1239,7 @@ GList*
 ags_line_member_real_find_port(AgsLineMember *line_member)
 {
   AgsMachine *machine;
-  AgsLine *line;
+  GtkWidget *parent;
 
   AgsAudio *audio;
   AgsChannel *channel;
@@ -1296,13 +1294,26 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     return(NULL);
   }
 
-  line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-					     AGS_TYPE_LINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+						   AGS_TYPE_MACHINE);
+  parent = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+				   AGS_TYPE_LINE);
 
-  audio = AGS_AUDIO(line->channel->audio);
+  audio = machine->audio;
+  
+  if(parent != NULL){
+    channel = AGS_LINE(parent)->channel;
+  }else{
+    parent = gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+				     AGS_TYPE_EFFECT_LINE);
 
-  machine = AGS_MACHINE(audio->machine);
-
+    if(parent != NULL){
+      channel = AGS_EFFECT_LINE(parent)->channel;
+    }else{
+      return;
+    }
+  }    
+  
   audio_port = NULL;
   channel_port = NULL;
   
@@ -1312,8 +1323,6 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
   port = NULL;
     
   /* search channels */
-  channel = line->channel;
-
   recall = channel->play;
   channel_port = ags_line_member_find_specifier(recall);
 

@@ -25,7 +25,11 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_ladspa_plugin.h>
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
+#include <ags/plugin/ags_lv2_conversion.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
@@ -78,17 +82,21 @@ gchar* ags_effect_line_get_build_id(AgsPlugin *plugin);
 void ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 GList* ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
+					 GList *control_type_name,
 					 gchar *filename,
 					 gchar *effect);
 GList* ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
+				      GList *control_type_name,
 				      gchar *filename,
 				      gchar *effect);
 GList* ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
+				       GList *control_type_name,
 				       gchar *filename,
 				       gchar *effect);
 void ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 					guint nth);
-void ags_effect_line_real_map_recall(AgsEffectLine *effect_line);
+void ags_effect_line_real_map_recall(AgsEffectLine *effect_line,
+				     guint output_pad_start);
 GList* ags_effect_line_real_find_port(AgsEffectLine *effect_line);
 
 /**
@@ -205,6 +213,8 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   /**
    * AgsEffectLine::add-effect:
    * @effect_line: the #AgsEffectLine to modify
+   * @control_type_name: 
+   * @filename: 
    * @effect: the effect's name
    *
    * The ::add-effect signal notifies about added effect.
@@ -215,8 +225,9 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectLineClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING,
-		 G_TYPE_POINTER, 2,
+		 g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING,
+		 G_TYPE_POINTER, 3,
+		 G_TYPE_POINTER,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
@@ -240,6 +251,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   /**
    * AgsEffectLine::map-recall:
    * @effect_line: the #AgsEffectLine
+   * @output_pad_start: 
    *
    * The ::map-recall should be used to add the effect_line's default recall.
    */
@@ -250,7 +262,8 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 G_STRUCT_OFFSET (AgsEffectLineClass, map_recall),
                  NULL, NULL,
                  g_cclosure_marshal_VOID__UINT,
-                 G_TYPE_NONE, 0);
+                 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
   /**
    * AgsEffectLine::find-port:
@@ -349,6 +362,12 @@ ags_effect_line_set_property(GObject *gobject,
 
       if(channel != NULL){
 	g_object_ref(channel);
+
+	g_signal_connect_after(channel, "add-effect\0",
+			       G_CALLBACK(ags_effect_line_add_effect_callback), effect_line);
+	
+	//	g_signal_connect_after(channel, "remove-effect\0",
+	//		       G_CALLBACK(ags_effect_line_remove_effect_callback), effect_line);
       }
 
       effect_line->channel = channel;
@@ -392,10 +411,17 @@ ags_effect_line_connect(AgsConnectable *connectable)
   if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) != 0){
     return;
   }
-  
-  /* channel */
-  g_signal_connect_after((GObject *) effect_line->channel, "add-effect\0",
-			 G_CALLBACK(ags_effect_line_add_effect_callback), effect_line);
+
+  effect_line->flags |= AGS_EFFECT_LINE_CONNECTED;
+
+  if((AGS_EFFECT_LINE_PREMAPPED_RECALL & (effect_line->flags)) == 0){
+    if((AGS_EFFECT_LINE_MAPPED_RECALL & (effect_line->flags)) == 0){
+      ags_effect_line_map_recall(effect_line,
+				 0);
+    }
+  }else{
+    ags_effect_line_find_port(effect_line);
+  }
 
   /* connect line members */
   list_start = 
@@ -478,6 +504,7 @@ ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
 
 GList*
 ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
+				  GList *control_type_name,
 				  gchar *filename,
 				  gchar *effect)
 {
@@ -564,9 +591,13 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
-      
+
+      AgsLadspaConversion *ladspa_conversion;
+
       GType widget_type;
-      
+
+      guint step_count;
+
       if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
 	x = 0;
 	y++;
@@ -580,6 +611,18 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      if(control_type_name != NULL){
+	widget_type = g_type_from_name(control_type_name->data);
+
+	control_type_name = control_type_name->next;
+      }
+      
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
+      
       /* add line member */
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type\0", widget_type,
@@ -591,8 +634,58 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
+
+      /* ladspa conversion */
+      ladspa_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+      }
+      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+    
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+      }
+
+      line_member->conversion = ladspa_conversion;
+
+      /* child widget */
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_INTEGER;
+      }
       
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
@@ -611,11 +704,11 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
@@ -655,6 +748,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
 GList*
 ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
+			       GList *control_type_name,
 			       gchar *filename,
 			       gchar *effect)
 {
@@ -742,8 +836,12 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 	port != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
-	  
+
+      AgsLv2Conversion *lv2_conversion;
+      
       GType widget_type;
+
+      guint step_count;
 
       if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
 	x = 0;
@@ -758,6 +856,18 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      if(control_type_name != NULL){
+	widget_type = g_type_from_name(control_type_name->data);
+
+	control_type_name = control_type_name->next;
+      }
+      
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
+
       /* add line member */
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type\0", widget_type,
@@ -769,8 +879,32 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
+
+      /* lv2 conversion */
+      lv2_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(lv2_conversion == NULL ||
+	   !AGS_IS_LV2_CONVERSION(lv2_conversion)){
+	  lv2_conversion = ags_lv2_conversion_new();
+	}
+    
+	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
+      }
+
+      line_member->conversion = lv2_conversion;
+
+      /* child widget */
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_INTEGER;
+      }
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
@@ -790,11 +924,11 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
@@ -834,6 +968,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
 GList*
 ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
+				GList *control_type_name,
 				gchar *filename,
 				gchar *effect)
 {
@@ -841,6 +976,8 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   AgsLv2Plugin *lv2_plugin;
   
   GList *port;
+  
+  g_message("hi\0");
 
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
@@ -848,6 +985,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   
   if(ladspa_plugin != NULL){
     port = ags_effect_line_add_ladspa_effect(effect_line,
+					     control_type_name,
 					     filename,
 					     effect);
   }else{
@@ -855,6 +993,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
     
     if(lv2_plugin != NULL){
       port = ags_effect_line_add_lv2_effect(effect_line,
+					    control_type_name,
 					    filename,
 					    effect);
     }
@@ -865,6 +1004,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 
 GList*
 ags_effect_line_add_effect(AgsEffectLine *effect_line,
+			   GList *control_type_name,
 			   gchar *filename,
 			   gchar *effect)
 {
@@ -875,6 +1015,7 @@ ags_effect_line_add_effect(AgsEffectLine *effect_line,
   g_object_ref((GObject *) effect_line);
   g_signal_emit(G_OBJECT(effect_line),
 		effect_line_signals[ADD_EFFECT], 0,
+		control_type_name,
 		filename,
 		effect,
 		&port);
@@ -929,7 +1070,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
       n_bulk++;
     }
 
-    if(nth_effect - n_bulk == nth){
+    if(nth_effect - n_bulk == nth + 1){
       break;
     }
     
@@ -941,6 +1082,8 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
     
     return;
   }
+
+  nth_effect--;
   
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
@@ -965,7 +1108,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 
   /* remove recalls */
   ags_channel_remove_effect(effect_line->channel,
-			    nth);
+			    nth_effect);
 }
 
 void
@@ -982,7 +1125,8 @@ ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 }
 
 void
-ags_effect_line_real_map_recall(AgsEffectLine *effect_line)
+ags_effect_line_real_map_recall(AgsEffectLine *effect_line,
+				guint ouput_pad_start)
 {
   if((AGS_EFFECT_LINE_MAPPED_RECALL & (effect_line->flags)) != 0){
     return;
@@ -996,17 +1140,20 @@ ags_effect_line_real_map_recall(AgsEffectLine *effect_line)
 /**
  * ags_effect_line_map_recall:
  * @effect_line: the #AgsEffectLine to add its default recall.
+ * @output_pad_start: 
  *
  * You may want the @effect_line to add its default recall.
  */
 void
-ags_effect_line_map_recall(AgsEffectLine *effect_line)
+ags_effect_line_map_recall(AgsEffectLine *effect_line,
+			   guint output_pad_start)
 {
   g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
 
   g_object_ref((GObject *) effect_line);
   g_signal_emit((GObject *) effect_line,
-		effect_line_signals[MAP_RECALL], 0);
+		effect_line_signals[MAP_RECALL], 0,
+		output_pad_start);
   g_object_unref((GObject *) effect_line);
 }
 

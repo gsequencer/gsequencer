@@ -2126,6 +2126,8 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 
     pthread_mutex_unlock(channel_mutex);
   }
+
+  nth_effect--;
   
   /* destroy control */
   list = gtk_container_get_children(effect_bulk->table);

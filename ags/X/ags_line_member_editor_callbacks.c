@@ -219,6 +219,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	effect_bridge = machine->bridge;
 	effect_line = NULL;
 	
+	/* find effect pad and effect line */
 	if(is_output){
 	  pad_start = 
 	    pad = gtk_container_get_children(effect_bridge->output);
@@ -389,6 +390,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	
     effect_bridge = machine->bridge;
 	
+    /* retrieve effect line and effect pad */
     if(is_output){
       pad_start = 
 	pad = gtk_container_get_children(effect_bridge->output);
