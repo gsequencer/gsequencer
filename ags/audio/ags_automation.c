@@ -970,7 +970,10 @@ ags_automation_find_point(AgsAutomation *automation,
     acceleration = acceleration->next;
   }
 
-  if(acceleration == NULL || AGS_ACCELERATION(acceleration->data)->x != x){
+  if(acceleration == NULL ||
+     acceleration->prev == NULL ||
+     acceleration->next == NULL ||
+     AGS_ACCELERATION(acceleration->data)->x != x){
     return(NULL);
   }else{
     return(acceleration->data);
@@ -1023,7 +1026,9 @@ ags_automation_find_region(AgsAutomation *automation,
   region = NULL;
 
   while(acceleration != NULL && (current = AGS_ACCELERATION(acceleration->data))->x < x1){
-    if(current->y >= y0 && current->y < y1){
+    if(acceleration->prev != NULL &&
+       acceleration->next != NULL &&
+       current->y >= y0 && current->y < y1){
       region = g_list_prepend(region, current);
     }
 

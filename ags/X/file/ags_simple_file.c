@@ -2760,6 +2760,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     xmlChar *str;
     
     gdouble val;
+
+    line_member->flags |= AGS_LINE_MEMBER_APPLY_INITIAL;
     
     str = xmlGetProp(node,
 		     "control-type\0");
@@ -4286,11 +4288,19 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 	  acceleration->y = g_ascii_strtod(str,
 					   NULL);
 	}
-	
-	/* add */
-	ags_automation_add_acceleration(gobject,
-					acceleration,
-					FALSE);
+
+	if((acceleration->x == 0 &&
+	    acceleration->y == 0.0) ||
+	   (acceleration->x == AGS_AUTOMATION_DEFAULT_LENGTH &&
+	    acceleration->y == 0.0)){
+	  /* no need for default */
+	  g_object_unref(acceleration);
+	}else{
+	  /* add */
+	  ags_automation_add_acceleration(gobject,
+					  acceleration,
+					  FALSE);
+	}
       }
     }
 
@@ -4525,23 +4535,28 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   gchar *id;
   xmlChar *str;
   
-  auto xmlNode* ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
+  auto gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
   auto xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member);
   auto xmlNode* ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk);
   auto xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, gchar **automation_port);
   
-  xmlNode* ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel){
+  gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel){
     AgsChannel *next_pad;
 
     xmlNode *pad;
     xmlNode *line_list;
     xmlNode *line;
+
+    gboolean found_pad_content, found_line_content;
     
     if(channel == NULL){
       return;
     }
+
+    found_pad_content = FALSE;
     
     while(channel != NULL){
+      
       next_pad = channel->next_pad;
 
       pad = xmlNewNode(NULL,
@@ -4554,10 +4569,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
       line_list = xmlNewNode(NULL,
 			     "ags-sf-line-list\0");
+      found_line_content = FALSE;
 
       while(channel != next_pad){
 	gchar *id;
-  
+	
 	id = ags_id_generator_create_uuid();
 	  
 	line = xmlNewNode(NULL,
@@ -4567,13 +4583,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		   "id\0",
 		   id);
 
-	ags_simple_file_add_id_ref(simple_file,
-				   g_object_new(AGS_TYPE_FILE_ID_REF,
-						"application-context\0", simple_file->application_context,
-						"file\0", simple_file,
-						"node\0", line,
-						"reference\0", channel,
-						NULL));
+	if(channel->link != NULL){
+	  ags_simple_file_add_id_ref(simple_file,
+				     g_object_new(AGS_TYPE_FILE_ID_REF,
+						  "application-context\0", simple_file->application_context,
+						  "file\0", simple_file,
+						  "node\0", line,
+						  "reference\0", channel,
+						  NULL));
+
+	  found_line_content = TRUE;
+	}
 
 	xmlNewProp(line,
 		   "nth-line\0",
@@ -4602,16 +4622,27 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	channel = channel->next;
       }
 
-      /* add to parent */
-      xmlAddChild(pad,
-		  line_list);
-
-      /* add to parent */
-      xmlAddChild(parent,
-		  pad);
+      if(found_line_content){
+	found_pad_content = TRUE;
+	
+	/* add to parent */
+	xmlAddChild(pad,
+		    line_list);
+      
+	/* add to parent */
+	xmlAddChild(parent,
+		    pad);
+      }else{
+	xmlFreeNode(line_list);
+	xmlFreeNode(pad);
+      }
     }
 
-    return(pad);
+    if(found_pad_content){
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
   }
 
   xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member){
@@ -4914,13 +4945,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "is-output\0",
 		 g_strdup("false\0"));
 
-      ags_simple_file_write_machine_inline_pad(simple_file,
-					       pad_list,
-					       channel);
-            
-      /* add to parent */
-      xmlAddChild(node,
-		  pad_list);
+      if(ags_simple_file_write_machine_inline_pad(simple_file,
+						  pad_list,
+						  channel)){
+	/* add to parent */
+	xmlAddChild(node,
+		    pad_list);
+      }else{
+	xmlFreeNode(pad_list);
+      }
     }
   }
   
@@ -4948,13 +4981,15 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "is-output\0",
 		 g_strdup("true\0"));
 
-      ags_simple_file_write_machine_inline_pad(simple_file,
-					       pad_list,
-					       channel);
-            
-      /* add to parent */
-      xmlAddChild(node,
-		  pad_list);
+      if(ags_simple_file_write_machine_inline_pad(simple_file,
+						  pad_list,
+						  channel)){            
+	/* add to parent */
+	xmlAddChild(node,
+		    pad_list);
+      }else{
+	xmlFreeNode(pad_list);
+      }
     }
   }
 
@@ -5134,23 +5169,35 @@ xmlNode*
 ags_simple_file_write_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *pad)
 {
   xmlNode *node;
+
+  gboolean found_content;
+
+  found_content = FALSE;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-pad-list\0");
 
   while(pad != NULL){
-    ags_simple_file_write_pad(simple_file,
-			      node,
-			      pad->data);
+    if(ags_simple_file_write_pad(simple_file,
+				 node,
+				 pad->data) != NULL){
+      found_content = TRUE;
+    }
 
     pad = pad->next;
   }
 
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
 
-  return(node);
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 xmlNode*
@@ -5161,6 +5208,10 @@ ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *p
   GList *list;
 
   gchar *id;
+
+  gboolean found_content;
+
+  found_content = FALSE;
   
   id = ags_id_generator_create_uuid();
 
@@ -5180,6 +5231,7 @@ ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *p
     xmlNewProp(node,
 	       "group\0",
 	       g_strdup("false\0"));
+    found_content = TRUE;
   }else{
     xmlNewProp(node,
 	       "group\0",
@@ -5195,6 +5247,7 @@ ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *p
     xmlNewProp(node,
 	       "mute\0",
 	       g_strdup("true\0"));
+    found_content = TRUE;
   }
 
   /* solo */
@@ -5206,46 +5259,67 @@ ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *p
     xmlNewProp(node,
 	       "solo\0",
 	       g_strdup("true\0"));
+    found_content = TRUE;
   }
 
   /* children */
   if(pad->expander_set != NULL){
     list = gtk_container_get_children(pad->expander_set);
-    ags_simple_file_write_line_list(simple_file,
-				    node,
-				    g_list_reverse(list));
+    
+    if(ags_simple_file_write_line_list(simple_file,
+				       node,
+				       g_list_reverse(list)) != NULL){
+      found_content = TRUE;
+    }
 
     g_list_free(list);
   }
-  
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
 
-  return(node);
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 xmlNode*
 ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *line)
 {
   xmlNode *node;
+
+  gboolean found_content;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-line-list\0");
-
+  found_content = FALSE;
+  
   while(line != NULL){
-    ags_simple_file_write_line(simple_file,
-			       node,
-			       line->data);
+    if(ags_simple_file_write_line(simple_file,
+				  node,
+				  line->data) != NULL){
+      found_content;
+    }
 
     line = line->next;
   }
 
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
 
-  return(node);
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 xmlNode*
@@ -5261,6 +5335,8 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 
   gchar *id;
 
+  gboolean found_content;
+  
   auto void ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
   auto void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
 
@@ -5373,13 +5449,19 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 	     (xmlChar *) AGS_FILE_ID_PROP,
 	     (xmlChar *) id);
 
-  ags_simple_file_add_id_ref(simple_file,
-			     g_object_new(AGS_TYPE_FILE_ID_REF,
-					  "application-context\0", simple_file->application_context,
-					  "file\0", simple_file,
-					  "node\0", node,
-					  "reference\0", line->channel,
-					  NULL));
+  found_content = FALSE;
+
+  if(line->channel->link != NULL){
+    ags_simple_file_add_id_ref(simple_file,
+			       g_object_new(AGS_TYPE_FILE_ID_REF,
+					    "application-context\0", simple_file->application_context,
+					    "file\0", simple_file,
+					    "node\0", node,
+					    "reference\0", line->channel,
+					    NULL));
+
+    found_content = TRUE;
+  }
   
   xmlNewProp(node,
 	     "nth-line\0",
@@ -5390,6 +5472,8 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     xmlNewProp(node,
 	       "is-grouped\0",
 	       g_strdup("false\0"));
+
+    found_content = TRUE;
   }else{
     xmlNewProp(node,
 	       "is-grouped\0",
@@ -5417,6 +5501,8 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     xmlNewProp(node,
 	       "file-channel\0",
 	       g_strdup_printf("%d\0", AGS_AUDIO_FILE_LINK(AGS_INPUT(line->channel)->file_link)->audio_channel));
+
+    found_content = TRUE;
   }
 
   /* machine specific */
@@ -5424,6 +5510,7 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     ags_simple_file_write_oscillator(simple_file,
 				     node,
 				     AGS_SYNTH_INPUT_LINE(line)->oscillator);
+    found_content = TRUE;
   }
   
   /* effect list */
@@ -5478,6 +5565,8 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
       }else{
 	ags_simple_file_write_control(simple_file, effect_node, list->data);
       }
+
+      found_content = TRUE;
     }
     
     list = list->next;
@@ -5492,12 +5581,18 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     xmlAddChild(node,
 		effect_list_node);
   }
-    
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
 
-  return(node);
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 void
@@ -5525,23 +5620,35 @@ xmlNode*
 ags_simple_file_write_effect_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_pad)
 {
   xmlNode *node;
+
+  gboolean found_content;
+
+  found_content = FALSE;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-effect-pad-list\0");
 
   while(effect_pad != NULL){
-    ags_simple_file_write_effect_pad(simple_file,
-				     node,
-				     effect_pad->data);
+    if(ags_simple_file_write_effect_pad(simple_file,
+					node,
+					effect_pad->data) != NULL){
+      found_content = TRUE;
+    }
 
     effect_pad = effect_pad->next;
   }
 
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+    
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 xmlNode*
@@ -5552,6 +5659,10 @@ ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   GList *list;
 
   gchar *id;
+
+  gboolean found_content;
+
+  found_content = FALSE;
   
   id = ags_id_generator_create_uuid();
 
@@ -5562,34 +5673,66 @@ ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 	     (xmlChar *) AGS_FILE_ID_PROP,
 	     (xmlChar *) id);
 
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
 
-  return(node);
+  /* children */
+  if(effect_pad->table != NULL){
+    list = gtk_container_get_children(effect_pad->table);
+
+    if(ags_simple_file_write_effect_line_list(simple_file,
+					      node,
+					      list) != NULL){
+      found_content = TRUE;
+    }
+
+    g_list_free(list);
+  }
+
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+
+    return(node);
+  }else{
+    xmlFreeNode(node);
+
+    return(NULL);
+  }
 }
 
 xmlNode*
 ags_simple_file_write_effect_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_line)
 {
   xmlNode *node;
+
+  gboolean found_content;
+
+  found_content = FALSE;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-effect-line-list\0");
 
   while(effect_line != NULL){
-    ags_simple_file_write_effect_line(simple_file,
-				      node,
-				      effect_line->data);
-
+    if(ags_simple_file_write_effect_line(simple_file,
+					 node,
+					 effect_line->data) != NULL){
+      found_content = TRUE;
+    }
+    
     effect_line = effect_line->next;
   }
-
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
-
-  return(node);
+  
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+    
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 xmlNode*
@@ -5605,6 +5748,8 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
 
   gchar *id;
 
+  gboolean found_content;
+  
   auto void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
   
   void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member){
@@ -5657,8 +5802,10 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
 		control_node);
   }
 
-  id = ags_id_generator_create_uuid();
+  found_content = FALSE;
 
+  id = ags_id_generator_create_uuid();
+  
   node = xmlNewNode(NULL,
 		    "ags-sf-effect-line\0");
   
@@ -5710,6 +5857,8 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
       }else{
 	ags_simple_file_write_control(simple_file, effect_node, list->data);
       }
+      
+      found_content = TRUE;
     }
     
     list = list->next;
@@ -5724,12 +5873,18 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
   }
   
   g_list_free(list_start);
-  
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
 
-  return(node);
+  if(found_content){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 
@@ -6052,23 +6207,35 @@ xmlNode*
 ags_simple_file_write_automation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation)
 {
   xmlNode *node;
+
+  gboolean found_node;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-automation-list\0");
 
+  found_node = FALSE;
+  
   while(automation != NULL){
-    ags_simple_file_write_automation(simple_file,
-				     node,
-				     automation->data);
+    if(ags_simple_file_write_automation(simple_file,
+					node,
+					automation->data) != NULL){
+      found_node = TRUE;
+    }
 
     automation = automation->next;
   }
 
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
+  if(found_node){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
 
-  return(node);
+    return(node);
+  }else{
+    xmlFreeNode(node);
+
+    return(NULL);
+  }
 }
 
 xmlNode*
@@ -6079,6 +6246,8 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   
   GList *list;
 
+  gboolean found_automation;
+  
   node = xmlNewNode(NULL,
 		    "ags-sf-automation\0");
 
@@ -6095,8 +6264,20 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 	     g_strdup(automation->control_name));
 
   list = automation->acceleration;
-
+  found_automation = FALSE;
+  
   while(list != NULL){
+    /* skip default */
+    if((AGS_ACCELERATION(list->data)->x == 0 &&
+	AGS_ACCELERATION(list->data)->y == 0.0) ||
+       (AGS_ACCELERATION(list->data)->x == AGS_AUTOMATION_DEFAULT_LENGTH &&
+	AGS_ACCELERATION(list->data)->y == 0.0)){
+      list = list->next;
+
+      continue;
+    }
+
+    found_automation = TRUE;
     child = xmlNewNode(NULL,
 		       "ags-sf-acceleration\0");
 
@@ -6116,12 +6297,18 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
     list = list->next;
   }
-  
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
 
-  return(node);
+  if(found_automation){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
 }
 
 AgsSimpleFile*

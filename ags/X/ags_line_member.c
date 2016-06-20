@@ -839,6 +839,37 @@ ags_line_member_connect(AgsConnectable *connectable)
   
   control = gtk_bin_get_child(GTK_BIN(line_member));
 
+  if((AGS_LINE_MEMBER_APPLY_INITIAL & (line_member->flags)) != 0){
+    GtkAdjustment *adjustment;
+
+    gboolean is_toggled;
+    
+    adjustment = NULL;
+    is_toggled = FALSE;
+    
+    if(AGS_IS_DIAL(control)){
+      adjustment = AGS_DIAL(control)->adjustment;
+    }else if(GTK_IS_RANGE(control)){
+      adjustment = GTK_RANGE(control)->adjustment;
+    }else if(GTK_IS_SPIN_BUTTON(control)){
+      adjustment = GTK_SPIN_BUTTON(control)->adjustment;
+    }else if(GTK_IS_TOGGLE_BUTTON(control)){
+      line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) control);
+
+      is_toggled = TRUE;
+    }
+
+    if(is_toggled){
+      ags_line_member_change_port(line_member,
+				  &(line_member->active));
+    }else if(adjustment != NULL){
+      ags_line_member_change_port(line_member,
+				  &(adjustment->value));
+    }
+    
+    line_member->flags &= (~AGS_LINE_MEMBER_APPLY_INITIAL);
+  }
+  
   /* widget callback */
   if(line_member->widget_type == AGS_TYPE_DIAL){
     g_signal_connect(GTK_WIDGET(control), "value-changed\0",
