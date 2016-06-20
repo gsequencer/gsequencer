@@ -1,3 +1,8 @@
+ags (0.7.37)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed infinite loop in ags_automation_editor.c - line = line++
+
 ags (0.7.36)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
