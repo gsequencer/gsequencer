@@ -768,7 +768,7 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 	    automation = automation->next;
 	  }
 	  
-	  line = line++;
+	  line++;
 	}
 
 	list = list->next;
@@ -1464,7 +1464,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 	    automation = automation->next;
 	  }
 	  
-	  line = line++;
+	  line++;
 	}
 
 	list = list->next;
