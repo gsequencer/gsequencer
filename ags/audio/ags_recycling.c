@@ -1042,7 +1042,12 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       k += n_frames;
 
       if(k % template->buffer_size == 0){
-	template_stream = template_stream->next;
+	if(template_stream->next != NULL){
+	  template_stream = template_stream->next;
+	}else{
+	  /* premature end */
+	  break;
+	}
 	
 	hit_template_stream = TRUE;
       }

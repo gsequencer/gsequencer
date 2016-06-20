@@ -434,7 +434,8 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }
 
   if(audio_signal->stream_current == NULL ||
-     AGS_NOTE(recall_lv2_run->note)->x[1] <= count_beats_audio_run->notation_counter){
+     AGS_NOTE(recall_lv2_run->note)->x[1] <= count_beats_audio_run->notation_counter ||
+     AGS_NOTE(recall_lv2_run->note)->x[0] > count_beats_audio_run->notation_counter){
     //    g_message("done\0");
 
     ags_recall_done(recall);

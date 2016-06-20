@@ -2134,10 +2134,12 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 
     str = xmlGetProp(node,
 		     "filename\0");
-
+    
     ags_ffplayer_open_filename(ffplayer,
 			       str);
 
+    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);    
+    
     /* preset */
     model = gtk_combo_box_get_model(ffplayer->preset);
 
@@ -2160,6 +2162,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 				      &iter));
     }
 
+    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
+
     /* instrument */
     model = gtk_combo_box_get_model(ffplayer->instrument);
 
@@ -2181,6 +2185,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
+
+    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
   }
 
   void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge){

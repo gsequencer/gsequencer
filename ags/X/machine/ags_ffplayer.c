@@ -241,13 +241,15 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   ags_machine_popup_add_connection_options(ffplayer,
 					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
-  
+
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
 
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
 			 G_CALLBACK(ags_ffplayer_set_pads), NULL);
 
+  ffplayer->flags = 0;
+  
   ffplayer->mapped_input_pad = 0;
   ffplayer->mapped_output_pad = 0;
 
@@ -1187,7 +1189,7 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
     
     AgsIpatch *ipatch;
     AgsPlayable *playable;
-    gchar **preset;
+
     GError *error;
 
     window = gtk_widget_get_toplevel(ffplayer);
@@ -1211,25 +1213,65 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 			      0, filename,
 			      &error);
 
-    /* select first preset */
-    ipatch->nth_level = 1;
-    preset = ags_playable_sublevel_names(playable);
+    ags_ffplayer_load_preset(ffplayer);
+    ags_ffplayer_load_instrument(ffplayer);
+  }
+}
 
-    error = NULL;
-    ags_playable_level_select(playable,
-			      1, *preset,
-			      &error);
+void
+ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
+{
+  AgsPlayable *playable;
 
-    /* fill ffplayer->preset */
-    while(preset != NULL && preset[0] != NULL){
-      gtk_combo_box_text_append_text(ffplayer->preset,
-				     *preset);
+  gchar **preset;
 
-      preset++;
-    }
+  GError *error;
 
-    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
-			     0);
+  playable = AGS_PLAYABLE(ffplayer->ipatch);
+
+  /* select first preset */
+  ffplayer->ipatch->nth_level = 1;
+  preset = ags_playable_sublevel_names(playable);
+
+  error = NULL;
+  ags_playable_level_select(playable,
+			    1, *preset,
+			    &error);
+
+  /* fill ffplayer->preset */
+  while(preset != NULL && preset[0] != NULL){
+    gtk_combo_box_text_append_text(ffplayer->preset,
+				   *preset);
+    
+    preset++;
+  }
+}
+
+void
+ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
+{
+  AgsPlayable *playable;
+
+  gchar **instrument;
+
+  GError *error;
+  
+  playable = AGS_PLAYABLE(ffplayer->ipatch);
+
+  ffplayer->ipatch->nth_level = 2;
+  instrument = ags_playable_sublevel_names(playable);
+  
+  error = NULL;
+  ags_playable_level_select(playable,
+			    2, *instrument,
+			    &error);
+  
+  /* fill ffplayer->instrument */
+  while(instrument != NULL && instrument[0] != NULL){
+    gtk_combo_box_text_append_text(ffplayer->instrument,
+				   *instrument);
+
+    instrument++;
   }
 }
 

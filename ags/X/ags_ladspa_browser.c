@@ -164,7 +164,6 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   ladspa_browser->path = NULL;
 
-  ags_ladspa_manager_load_default_directory();
   filenames =
     filenames_start = ags_ladspa_manager_get_filenames();
 
