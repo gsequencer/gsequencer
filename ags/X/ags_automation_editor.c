@@ -397,6 +397,165 @@ ags_automation_editor_child_alloc(AgsMachine *machine,
   return(automation_editor_child);
 }
 
+/**
+ * ags_automation_editor_reset_port:
+ * @automation_toolbar: an #AgsAutomationToolbar
+ * @machine: the #AgsMachine
+ * @channel_type: G_TYPE_NONE, AGS_TYPE_OUTPUT or AGS_TYPE_INPUT
+ * @remove_specifier: the specifiers to remove
+ *
+ * Reset port if removed automation.
+ *
+ * Since: 0.7.38
+ */
+void
+ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
+				 AgsMachine *machine,
+				 GType channel_type,
+				 gchar **remove_specifier)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  AgsMachine *selected_machine;
+
+  GList *editor_child;
+  
+  gchar **specifier, **new_automation_port, **unique_specifier;
+
+  guint i;
+
+  selected_machine = automation_editor->selected_machine;
+
+  editor_child = automation_editor->automation_editor_child;
+
+  while(editor_child != NULL){
+    if(AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->machine == machine){
+      break;
+    }
+    
+    editor_child = editor_child->next;
+  }
+
+  specifier = machine->automation_port;
+  unique_specifier = ags_automation_get_specifier_unique(machine->audio->automation);
+
+  //TODO:JK: mutex
+  new_automation_port = NULL;
+  i = 0;
+  
+  if(machine->automation_port != NULL){
+    for(; *specifier != NULL; specifier++){      
+      /* create specifier array */
+      if(g_strv_contains(remove_specifier,
+			 *specifier)){
+	if(editor_child != NULL){
+	  AgsScale *scale;
+	  GList *scale_area;
+	  GList *automation_area;
+
+	  /* remove audio port */
+	  if(channel_type == G_TYPE_NONE){
+	    automation_edit = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->audio_automation_edit;
+	    scale = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->audio_scale;
+
+	    scale_area = ags_scale_area_find_specifier(scale->scale_area,
+						       *specifier);
+    
+	    if(scale_area != NULL){
+	      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
+								   *specifier);
+	    
+	      ags_scale_remove_area(scale,
+				    scale_area->data);
+	      gtk_widget_queue_draw(scale);
+
+	      ags_automation_edit_remove_area(automation_edit,
+					      automation_area->data);
+	    
+	      if(machine == selected_machine){
+		gtk_widget_queue_draw(automation_edit->drawing_area);
+	      }
+	    }
+	  }
+	  
+	  /* remove output port */
+	  if(channel_type == AGS_TYPE_OUTPUT){
+	    automation_edit = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->output_automation_edit;
+	    scale = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->output_scale;
+
+	    scale_area = ags_scale_area_find_specifier(scale->scale_area,
+						       *specifier);
+    
+	    if(scale_area != NULL){
+	      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
+								   *specifier);
+	    
+	      ags_scale_remove_area(scale,
+				    scale_area->data);
+	      gtk_widget_queue_draw(scale);
+
+	      ags_automation_edit_remove_area(automation_edit,
+					      automation_area->data);
+	    
+	      if(machine == selected_machine){
+		gtk_widget_queue_draw(automation_edit->drawing_area);
+	      }
+	    }
+	  }
+	  
+	  /* remove input port */
+	  if(channel_type == AGS_TYPE_INPUT){
+	    automation_edit = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->input_automation_edit;
+	    scale = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->input_scale;
+
+	    scale_area = ags_scale_area_find_specifier(scale->scale_area,
+						       *specifier);
+    
+	    if(scale_area != NULL){
+	      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
+								   *specifier);
+	    
+	      ags_scale_remove_area(scale,
+				    scale_area->data);
+	      gtk_widget_queue_draw(scale);
+
+	      ags_automation_edit_remove_area(automation_edit,
+					      automation_area->data);
+	    
+	      if(machine == selected_machine){
+		gtk_widget_queue_draw(automation_edit->drawing_area);
+	      }
+	    }
+	  }
+	}
+      }else{
+	if(g_strv_contains(unique_specifier,
+			   *specifier)){
+	  if(new_automation_port == NULL){
+	    new_automation_port = (gchar **) malloc(2 * sizeof(gchar *));
+	  }else{
+	    new_automation_port = (gchar **) realloc(new_automation_port,
+						     (i + 2) * sizeof(gchar *));
+	  }
+
+	  new_automation_port[i] = *specifier;
+	  i++;
+	}
+      }
+    }
+    
+    if(new_automation_port != NULL){
+      new_automation_port[i] = NULL;
+    }
+    
+    machine->automation_port = new_automation_port;
+  }
+
+  if(machine == selected_machine){
+    ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
+  }
+}
+
 void
 ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
 {

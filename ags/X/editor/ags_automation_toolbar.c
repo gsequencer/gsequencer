@@ -310,12 +310,14 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   gtk_combo_box_set_model(automation_toolbar->port,
 			  GTK_TREE_MODEL(list_store));
 
+  //TODO:JK: mutex
   specifier = ags_automation_get_specifier_unique(machine->audio->automation);
   
   for(; *specifier != NULL; specifier++){
     gtk_list_store_append(list_store, &iter);
     gtk_list_store_set(list_store, &iter,
-		       0, g_strv_contains(machine->automation_port, *specifier),
+		       0, ((machine->automation_port != NULL &&
+			    g_strv_contains(machine->automation_port, *specifier)) ? : TRUE, FALSE),
 		       1, g_strdup(*specifier),
 		       -1);
   }
@@ -407,6 +409,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     gboolean found_audio, found_output, found_input;
     
     audio = machine->audio;
+    
+    //TODO:JK: mutex
     list = audio->automation;
     
     /* add port */

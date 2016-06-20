@@ -120,6 +120,11 @@ AgsAutomationEditorChild* ags_automation_editor_child_alloc(AgsMachine *machine,
 							    AgsNotebook *output_notebook, AgsScale *output_scale, AgsAutomationEdit *output_automation_edit,
 							    AgsNotebook *input_notebook, AgsScale *input_scale, AgsAutomationEdit *input_automation_edit);
 
+void ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
+				      AgsMachine *machine,
+				      GType channel_type,
+				      gchar **remove_specifier);
+
 void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor,
 					   AgsMachine *machine);
 

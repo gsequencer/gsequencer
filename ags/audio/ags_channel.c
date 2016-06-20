@@ -2201,19 +2201,42 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			      gchar *filename,
 			      gchar *effect)
 {
+  GObject *soundcard;
+  AgsAudio *audio;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLadspa *recall_ladspa;
+
   AgsLadspaPlugin *ladspa_plugin;
-  AgsAddRecallContainer *add_recall_container;
-  AgsAddRecall *add_recall;
   
+  AgsMutexManager *mutex_manager;
+
   GList *port;
 
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
   unsigned long effect_index;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(channel_mutex);
+
+  soundcard = channel->soundcard;
+  audio = channel->audio;
+  
+  pthread_mutex_unlock(channel_mutex);
 
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
@@ -2230,7 +2253,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					effect,
 					effect_index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "soundcard\0", channel->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -2248,7 +2271,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard\0", channel->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_ladspa,
 	       NULL);
@@ -2257,6 +2280,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			 TRUE);
   
   /* check if connected or running */
+  pthread_mutex_lock(channel_mutex);
+
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
     AgsRecall *current;
     GList *recall_id;
@@ -2308,6 +2333,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
     }
   }
 
+  pthread_mutex_unlock(channel_mutex);
+
   /* ladspa recall */
   recall_container = ags_recall_container_new();
   ags_channel_add_recall_container(channel,
@@ -2318,7 +2345,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					effect,
 					effect_index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   ags_channel_add_recall(channel,
@@ -2339,7 +2366,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_ladspa,
 	       NULL);
@@ -2347,6 +2374,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			 recall_channel_run_dummy,
 			 FALSE);  
   
+  pthread_mutex_lock(channel_mutex);
+
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
     AgsRecall *current;
     GList *recall_id;
@@ -2398,6 +2427,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
     }
   }
 
+  pthread_mutex_unlock(channel_mutex);
+
   return(port);
 }
 
@@ -2406,19 +2437,42 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 			    gchar *filename,
 			    gchar *effect)
 {
+  GObject *soundcard;
+  AgsAudio *audio;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallDssi *recall_dssi;
+
   AgsDssiPlugin *dssi_plugin;
-  AgsAddRecallContainer *add_recall_container;
-  AgsAddRecall *add_recall;
   
+  AgsMutexManager *mutex_manager;
+
   GList *port;
 
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
   unsigned long effect_index;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(channel_mutex);
+
+  soundcard = channel->soundcard;
+  audio = channel->audio;
+  
+  pthread_mutex_unlock(channel_mutex);
 
   /* load plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
@@ -2435,7 +2489,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 				    effect,
 				    effect_index);
   g_object_set(G_OBJECT(recall_dssi),
-	       "soundcard\0", channel->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
@@ -2454,7 +2508,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_DSSI_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard\0", channel->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_dssi,
 	       NULL);
@@ -2463,6 +2517,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 			 TRUE);
   
   /* check if connected or running */
+  pthread_mutex_lock(channel_mutex);
+
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
     AgsRecall *current;
     GList *recall_id;
@@ -2514,6 +2570,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
     }
   }
 
+  pthread_mutex_unlock(channel_mutex);
+
   /* dssi recall */
   recall_container = ags_recall_container_new();
   ags_channel_add_recall_container(channel,
@@ -2524,7 +2582,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 				    effect,
 				    effect_index);
   g_object_set(G_OBJECT(recall_dssi),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   ags_channel_add_recall(channel,
@@ -2545,7 +2603,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_DSSI_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_dssi,
 	       NULL);
@@ -2553,6 +2611,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 			 recall_channel_run_dummy,
 			 FALSE);  
   
+  pthread_mutex_lock(channel_mutex);
+
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
     AgsRecall *current;
     GList *recall_id;
@@ -2604,6 +2664,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
     }
   }
 
+  pthread_mutex_unlock(channel_mutex);
+
   return(port);
 }
 
@@ -2612,13 +2674,15 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 			   gchar *filename,
 			   gchar *effect)
 {
+  GObject *soundcard;
+  AgsAudio *audio;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLv2 *recall_lv2;
-  AgsAddRecallContainer *add_recall_container;
-  AgsAddRecall *add_recall;
   
   AgsLv2Plugin *lv2_plugin;
+
+  AgsMutexManager *mutex_manager;
 
   GList *uri_node;
   GList *port;
@@ -2630,6 +2694,26 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
   uint32_t effect_index;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(channel_mutex);
+
+  soundcard = channel->soundcard;
+  audio = channel->audio;
+  
+  pthread_mutex_unlock(channel_mutex);
 
   /* find plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
@@ -2667,7 +2751,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LV2_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_lv2,
 	       NULL);
@@ -2676,6 +2760,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 			 TRUE);
   
   /* check if connected or running */
+  pthread_mutex_lock(channel_mutex);
+
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
     AgsRecall *current;
     GList *recall_id;
@@ -2727,6 +2813,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
     }
   }
 
+  pthread_mutex_unlock(channel_mutex);
+
   /* lv2 recall */
   recall_container = ags_recall_container_new();
   ags_channel_add_recall_container(channel,
@@ -2739,7 +2827,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 				  uri,
 				  effect_index);
   g_object_set(G_OBJECT(recall_lv2),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   ags_channel_add_recall(channel,
@@ -2760,7 +2848,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LV2_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_lv2,
 	       NULL);
@@ -2768,6 +2856,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 			 recall_channel_run_dummy,
 			 FALSE);  
   
+  pthread_mutex_lock(channel_mutex);
+
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
     AgsRecall *current;
     GList *recall_id;
@@ -2819,6 +2909,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
     }
   }
 
+  pthread_mutex_unlock(channel_mutex);
+
   return(port);
 }
 
@@ -2830,9 +2922,9 @@ ags_channel_real_add_effect(AgsChannel *channel,
   AgsLadspaPlugin *ladspa_plugin;
   AgsDssiPlugin *dssi_plugin;
   AgsLv2Plugin *lv2_plugin;
-  
-  GList *port;
 
+  GList *port;
+  
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
   port = NULL;
@@ -2893,21 +2985,55 @@ void
 ags_channel_real_remove_effect(AgsChannel *channel,
 			       guint nth)
 {
+  AgsAudio *audio;
   AgsRecall *recall_channel, *recall_channel_run;
   AgsRecallContainer *recall_container;
-  
-  GList *list, *list_next;
 
-  AgsApplicationContext *application_context;
+  AgsMutexManager *mutex_manager;
+
+  GList *automation, *automation_next;
+  GList *port;
+  GList *list, *list_next;
   
   GList *play, *recall;
   GList *task;
 
-  guint nth_effect;
+  gchar *specifier;
   
-  application_context = ags_soundcard_get_application_context(AGS_AUDIO(channel->audio)->soundcard);
+  guint nth_effect;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(channel_mutex);
+
+  audio = channel->audio;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /*  */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 audio);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* play */
+  pthread_mutex_lock(channel_mutex);
+
   play = channel->play;
   nth_effect = 0;
 
@@ -2926,7 +3052,11 @@ ags_channel_real_remove_effect(AgsChannel *channel,
     play = play->next;
   }
 
+  pthread_mutex_unlock(channel_mutex);
+
   /* recall */
+  pthread_mutex_lock(channel_mutex);
+  
   recall = channel->recall;
   nth_effect = 0;
 
@@ -2944,10 +3074,53 @@ ags_channel_real_remove_effect(AgsChannel *channel,
     
     recall = recall->next;
   }
-  
-  task = NULL;
-  
+    
+  pthread_mutex_unlock(channel_mutex);
+
   /* play context */
+  /* automation */
+  pthread_mutex_lock(channel_mutex);
+
+  port = AGS_RECALL(play->data)->port;
+
+  pthread_mutex_unlock(channel_mutex);
+  
+  while(port != NULL){
+    pthread_mutex_lock(channel_mutex);
+
+    specifier = AGS_PORT(port->data)->specifier;
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    /* find specifier and remove */
+    pthread_mutex_lock(audio_mutex);
+
+    automation = audio->automation;
+    
+    while((automation = ags_automation_find_specifier(automation,
+						      specifier)) != NULL){
+      automation_next = automation->next;
+      
+      ags_audio_remove_automation(audio,
+				  automation->data);
+      
+      
+      automation = automation_next;
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    port = port->next;
+    
+    pthread_mutex_unlock(channel_mutex);
+  }  
+
+  /* remove recall */
+  pthread_mutex_lock(channel_mutex);
+
   recall_container = AGS_RECALL(play->data)->container;
   recall_channel = play->data;
   recall_channel_run = ags_recall_find_template(recall_container->recall_channel_run)->data;
@@ -2967,10 +3140,56 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   ags_channel_remove_recall(channel,
 			    (GObject *) recall_channel,
 			    TRUE);
-  ags_audio_remove_recall_container(channel->audio,
-				    recall_container);
+
+  pthread_mutex_unlock(channel_mutex);
+
+  ags_channel_remove_recall_container(channel,
+				      recall_container);
 
   /* recall context */
+  /* automation */
+  pthread_mutex_lock(channel_mutex);
+
+  port = AGS_RECALL(recall->data)->port;
+
+  pthread_mutex_unlock(channel_mutex);
+  
+  while(port != NULL){
+    pthread_mutex_lock(channel_mutex);
+
+    specifier = AGS_PORT(port->data)->specifier;
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    /* find specifier and remove */
+    pthread_mutex_lock(audio_mutex);
+
+    automation = audio->automation;
+    
+    while((automation = ags_automation_find_specifier(automation,
+						      specifier)) != NULL){
+      automation_next = automation->next;
+      
+      ags_audio_remove_automation(audio,
+				  automation->data);
+      
+      
+      automation = automation_next;
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    port = port->next;
+    
+    pthread_mutex_unlock(channel_mutex);
+  }
+
+  /* remove recall */
+  pthread_mutex_lock(channel_mutex);
+
   recall_container = AGS_RECALL(recall->data)->container;
   recall_channel = recall->data;
   recall_channel_run = ags_recall_find_template(recall_container->recall_channel_run)->data;
@@ -2990,8 +3209,11 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   ags_channel_remove_recall(channel,
 			    (GObject *) recall_channel,
 			    FALSE);
-  ags_audio_remove_recall_container(channel->audio,
-				    recall_container);
+
+  pthread_mutex_unlock(channel_mutex);
+  
+  ags_channel_remove_recall_container(channel,
+				      recall_container);
 }
 
 void
