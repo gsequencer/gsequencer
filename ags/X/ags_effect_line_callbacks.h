@@ -28,8 +28,14 @@
 
 #include <ags/X/ags_effect_line.h>
 
-GList* ags_effect_line_add_effect_callback(AgsChannel *channel,
-					   gchar *filename, gchar *effect,
-					   AgsEffectLine *effect_line);
+void ags_effect_line_remove_recall_callback(AgsRecall *recall, AgsEffectLine *effect_line);
+
+void ags_effect_line_add_effect_callback(AgsChannel *channel,
+					 gchar *filename,
+					 gchar *effect,
+					 AgsEffectLine *effect_line);
+void ags_effect_line_remove_effect_callback(AgsChannel *channel,
+					    guint nth,
+					    AgsEffectLine *effect_line);
 
 #endif /*__AGS_EFFECT_LINE_CALLBACKS_H__*/

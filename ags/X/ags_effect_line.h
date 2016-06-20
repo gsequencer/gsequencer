@@ -41,9 +41,9 @@ typedef struct _AgsEffectLine AgsEffectLine;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
 
 typedef enum{
-  AGS_EFFECT_LINE_MAPPED_RECALL       = 1,
-  AGS_EFFECT_LINE_PREMAPPED_RECALL    = 1 <<  1,
-  AGS_EFFECT_LINE_CONNECTED           = 1 <<  2,
+  AGS_EFFECT_LINE_CONNECTED           = 1,
+  AGS_EFFECT_LINE_MAPPED_RECALL       = 1 <<  1,
+  AGS_EFFECT_LINE_PREMAPPED_RECALL    = 1 <<  2,
 }AgsEffectLineFlags;
 
 struct _AgsEffectLine
@@ -71,12 +71,14 @@ struct _AgsEffectLineClass
   void (*set_channel)(AgsEffectLine *effect_line, AgsChannel *channel);
 
   GList* (*add_effect)(AgsEffectLine *effect_line,
+		       GList *control_type_name,
 		       gchar *filename,
 		       gchar *effect);
   void (*remove_effect)(AgsEffectLine *effect_line,
 			guint nth);
 
-  void (*map_recall)(AgsEffectLine *effect_line);
+  void (*map_recall)(AgsEffectLine *effect_line,
+		     guint output_pad_start);
   GList* (*find_port)(AgsEffectLine *effect_line);
 };
 
@@ -85,12 +87,14 @@ GType ags_effect_line_get_type(void);
 void ags_effect_line_set_channel(AgsEffectLine *effect_line, AgsChannel *channel);
 
 GList* ags_effect_line_add_effect(AgsEffectLine *effect_line,
+				  GList *control_type_name,
 				  gchar *filename,
 				  gchar *effect);
 void ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 				   guint nth);
 
-void ags_effect_line_map_recall(AgsEffectLine *effect_line);
+void ags_effect_line_map_recall(AgsEffectLine *effect_line,
+				guint output_pad_start);
 GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);

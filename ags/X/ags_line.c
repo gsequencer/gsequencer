@@ -265,6 +265,8 @@ ags_line_class_init(AgsLineClass *line)
   /**
    * AgsLine::add-effect:
    * @line: the #AgsLine to modify
+   * @control_type_name: 
+   * @filename: 
    * @effect: the effect's name
    *
    * The ::add-effect signal notifies about added effect.
@@ -301,6 +303,7 @@ ags_line_class_init(AgsLineClass *line)
   /**
    * AgsLine::map-recall:
    * @line: the #AgsLine
+   * @output_pad_start: 
    *
    * The ::map-recall as recalls should be mapped.
    */
@@ -582,8 +585,8 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 
     line->add_effect_handler = g_signal_connect_after(channel, "add-effect\0",
 						      G_CALLBACK(ags_line_add_effect_callback), line);
-    line->remove_effect_handler = g_signal_connect_after(channel, "remove-effect\0",
-							 G_CALLBACK(ags_line_remove_effect_callback), line);
+    //    line->remove_effect_handler = g_signal_connect_after(channel, "remove-effect\0",
+    //							 G_CALLBACK(ags_line_remove_effect_callback), line);
   }
 
   if(line->channel != NULL){
@@ -1219,7 +1222,6 @@ ags_line_real_remove_effect(AgsLine *line,
   }
 
   if(recall == NULL){
-    g_message("bu\0");
     pthread_mutex_unlock(channel_mutex);
 
     return;
@@ -1278,7 +1280,7 @@ ags_line_remove_effect(AgsLine *line,
 
 void
 ags_line_real_map_recall(AgsLine *line,
-			 guint ouput_pad_start)
+			 guint output_pad_start)
 {
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0){
     return;

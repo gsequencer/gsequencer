@@ -2893,11 +2893,10 @@ void
 ags_channel_real_remove_effect(AgsChannel *channel,
 			       guint nth)
 {
-  AgsRemoveRecallContainer *remove_recall_container;
-  AgsRemoveRecall *remove_recall;
-
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsRecall *recall_channel, *recall_channel_run;
+  AgsRecallContainer *recall_container;
+  
+  GList *list, *list_next;
 
   AgsApplicationContext *application_context;
   
@@ -2907,9 +2906,6 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   guint nth_effect;
   
   application_context = ags_soundcard_get_application_context(AGS_AUDIO(channel->audio)->soundcard);
-  main_loop = application_context->main_loop;
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
 
   /* play */
   play = channel->play;
@@ -2950,30 +2946,52 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   }
   
   task = NULL;
-
+  
   /* play context */
-  ags_channel_remove_recall(channel,
-			    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(play->data)->container)->recall_channel_run)->data,
-			    TRUE);
+  recall_container = AGS_RECALL(play->data)->container;
+  recall_channel = play->data;
+  recall_channel_run = ags_recall_find_template(recall_container->recall_channel_run)->data;
+  
+  list = recall_container->recall_channel_run;
 
+  while(list != NULL){
+    list_next = list->next;
+    
+    ags_channel_remove_recall(channel,
+			      (GObject *) list->data,
+			      TRUE);
+	  
+    list = list_next;
+  }
+
+  ags_channel_remove_recall(channel,
+			    (GObject *) recall_channel,
+			    TRUE);
   ags_audio_remove_recall_container(channel->audio,
-				    AGS_RECALL(play->data)->container);
-
-  ags_channel_remove_recall(channel,
-			    play->data,
-			    TRUE);
+				    recall_container);
 
   /* recall context */
-  ags_channel_remove_recall(channel,
-			    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run)->data,
-			    TRUE);
+  recall_container = AGS_RECALL(recall->data)->container;
+  recall_channel = recall->data;
+  recall_channel_run = ags_recall_find_template(recall_container->recall_channel_run)->data;
+  
+  list = recall_container->recall_channel_run;
 
+  while(list != NULL){
+    list_next = list->next;
+    
+    ags_channel_remove_recall(channel,
+			      (GObject *) list->data,
+			      FALSE);
+	  
+    list = list_next;
+  }
+
+  ags_channel_remove_recall(channel,
+			    (GObject *) recall_channel,
+			    FALSE);
   ags_audio_remove_recall_container(channel->audio,
-				    AGS_RECALL(recall->data)->container);
-
-  ags_channel_remove_recall(channel,
-			    recall->data,
-			    TRUE);
+				    recall_container);
 }
 
 void
