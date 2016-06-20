@@ -40,6 +40,8 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_lv2.h>
 
@@ -972,12 +974,18 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 				gchar *filename,
 				gchar *effect)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+
   AgsLadspaPlugin *ladspa_plugin;
   AgsLv2Plugin *lv2_plugin;
   
   GList *port;
+
+  window = gtk_widget_get_toplevel(effect_line);
+  machine = gtk_widget_get_ancestor(effect_line,
+				    AGS_TYPE_MACHINE);
   
-  g_message("hi\0");
 
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
@@ -998,6 +1006,9 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 					    effect);
     }
   }
+
+  /*  */
+  ags_automation_toolbar_load_port(window->automation_window->automation_editor->automation_toolbar);
   
   return(port);
 }
@@ -1028,16 +1039,26 @@ void
 ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 				   guint nth)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+
   AgsMutexManager *mutex_manager;
 
   GList *control;
   GList *recall;
   GList *port;
 
-  guint nth_effect, n_bulk;
+  gchar **remove_specifier;
 
+  guint nth_effect, n_bulk;
+  guint i;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
+
+  window = gtk_widget_get_toplevel(effect_line);
+  machine = gtk_widget_get_ancestor(effect_line,
+				    AGS_TYPE_MACHINE);
 
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1087,14 +1108,29 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
-    
+  remove_specifier = NULL;
+  i = 0;
+  
   while(port != NULL){
     control = gtk_container_get_children(effect_line->table);
       
     while(control != NULL){
       if(AGS_IS_LINE_MEMBER(control->data) &&
 	 AGS_LINE_MEMBER(control->data)->port == port->data){
+	/* collect specifier */
+	if(remove_specifier == NULL){
+	  remove_specifier = (gchar **) malloc(2 * sizeof(gchar *));
+	}else{
+	  remove_specifier = (gchar **) realloc(remove_specifier,
+						(i + 2) * sizeof(gchar *));
+	}	
+	
+	remove_specifier[i] = g_strdup(AGS_LINE_MEMBER(control->data)->specifier);
+	i++;
+
+	/* remove widget */
 	gtk_widget_destroy(control->data);
+	
 	break;
       }
 	
@@ -1106,9 +1142,19 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 
   pthread_mutex_unlock(channel_mutex);
 
+  if(remove_specifier != NULL){
+    remove_specifier[i] = NULL;
+  }
+
   /* remove recalls */
   ags_channel_remove_effect(effect_line->channel,
 			    nth_effect);
+
+  /* reset automation editor */
+  ags_automation_editor_reset_port(window->automation_window->automation_editor,
+				   machine,
+				   (AGS_IS_OUTPUT(effect_line->channel) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT),
+				   remove_specifier);
 }
 
 void

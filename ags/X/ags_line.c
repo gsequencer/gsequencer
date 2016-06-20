@@ -41,6 +41,8 @@
 #include <ags/plugin/ags_lv2_conversion.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_lv2.h>
 
@@ -574,8 +576,8 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   if(line->channel != NULL){
     g_signal_handler_disconnect(line->channel,
 				line->add_effect_handler);
-    g_signal_handler_disconnect(line->channel,
-				line->remove_effect_handler);
+    //    g_signal_handler_disconnect(line->channel,
+    //				line->remove_effect_handler);
     
     g_object_unref(G_OBJECT(line->channel));
   }
@@ -1107,10 +1109,18 @@ ags_line_real_add_effect(AgsLine *line,
 			 gchar *filename,
 			 gchar *effect)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+
   AgsLadspaPlugin *ladspa_plugin;
   AgsLv2Plugin *lv2_plugin;
   
   GList *port;
+
+  window = gtk_widget_get_toplevel(line);
+  machine = gtk_widget_get_ancestor(line,
+				    AGS_TYPE_MACHINE);
+  
 
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
@@ -1131,7 +1141,10 @@ ags_line_real_add_effect(AgsLine *line,
 				     effect);
     }
   }
-  
+
+  /*  */
+  ags_automation_toolbar_load_port(window->automation_window->automation_editor->automation_toolbar);
+
   return(port);
 }
 
@@ -1172,17 +1185,27 @@ void
 ags_line_real_remove_effect(AgsLine *line,
 			    guint nth)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+  
   AgsMutexManager *mutex_manager;
 
   GList *control;
   GList *recall;
   GList *port;
 
+  gchar **remove_specifier;
+  
   guint nth_effect, n_bulk;
-
+  guint i;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
+  window = gtk_widget_get_toplevel(line);
+  machine = gtk_widget_get_ancestor(line,
+				    AGS_TYPE_MACHINE);
+  
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -1231,15 +1254,30 @@ ags_line_real_remove_effect(AgsLine *line,
   
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
-    
+  remove_specifier = NULL;
+  i = 0;
+  
   while(port != NULL){
     control = gtk_container_get_children(line->expander->table);
       
     while(control != NULL){
       if(AGS_IS_LINE_MEMBER(control->data) &&
 	 AGS_LINE_MEMBER(control->data)->port == port->data){
+	/* collect specifier */
+	if(remove_specifier == NULL){
+	  remove_specifier = (gchar **) malloc(2 * sizeof(gchar *));
+	}else{
+	  remove_specifier = (gchar **) realloc(remove_specifier,
+						(i + 2) * sizeof(gchar *));
+	}	
+	
+	remove_specifier[i] = g_strdup(AGS_LINE_MEMBER(control->data)->specifier);
+	i++;
+
+	/* remove widget */
 	ags_expander_remove(line->expander,
 			    control->data);
+
 	break;
       }
 	
@@ -1251,9 +1289,19 @@ ags_line_real_remove_effect(AgsLine *line,
 
   pthread_mutex_unlock(channel_mutex);
 
+  if(remove_specifier != NULL){
+    remove_specifier[i] = NULL;
+  }
+  
   /* remove recalls */
   ags_channel_remove_effect(line->channel,
 			    nth_effect);
+
+  /* reset automation editor */
+  ags_automation_editor_reset_port(window->automation_window->automation_editor,
+				   machine,
+				   (AGS_IS_OUTPUT(line->channel) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT),
+				   remove_specifier);
 }
 
 /**
