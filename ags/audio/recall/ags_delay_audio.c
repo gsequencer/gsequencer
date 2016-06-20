@@ -777,6 +777,8 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
   g_value_set_double(&value, notation_delay * (old_bpm / new_bpm));
   ags_port_safe_write(delay_audio->notation_delay, &value);
 
+  g_message("bpm = %f\0", notation_delay * (old_bpm / new_bpm));
+  
   /* sequencer-delay */
   g_value_reset(&value);
 
