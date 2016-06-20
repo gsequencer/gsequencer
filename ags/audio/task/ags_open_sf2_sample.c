@@ -257,6 +257,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
   audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   ags_recycling_add_audio_signal(channel->first_recycling,
 				 audio_signal); 
+
+  g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex);
 }
 
 /**

@@ -1,3 +1,13 @@
+ags (0.7.36)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash in ags_recycling_create_audio_signal_with_frame_count() because premature end wasn't handled
+	* fixed dead-lock caused by AgsNavigation callbacks
+	* fixed missing AgsThreadPool for AgsLv2WorkerManager in ags_setup()
+	* fixed unlock libinstpatch mutices in ags_ipatch.c because else ending in dead-lock
+	* fixed looped AgsRecallDssiRun and AgsRecallLv2Run
+	* improved AgsLadspaBrowser and AgsLv2Browser to not load default directory every time
+
 ags (0.7.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -357,6 +357,8 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     /* load samples */
     ipatch->samples = (IpatchList *) ipatch_container_get_children(IPATCH_CONTAINER(ipatch->base),
 								  IPATCH_TYPE_SF2_SAMPLE);
+    
+    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex) != 0);
   }else if(IPATCH_IS_GIG_FILE(ipatch->handle->file)){
     ipatch->flags |= AGS_IPATCH_GIG;
 
@@ -437,6 +439,8 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
 	ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
 						    IPATCH_TYPE_SF2_PRESET);
 
+	while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch_sf2_reader->sf2))->mutex) != 0);
+	
 	if(ipatch_list != NULL){
 	  list = ipatch_list->items;
 	}else{
@@ -574,6 +578,8 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	/* preset */
 	ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
 						    IPATCH_TYPE_SF2_PRESET);
+
+	while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch_sf2_reader->sf2))->mutex) != 0);
 
 	if(ipatch_list == NULL){
 	  ipatch->iter = NULL;

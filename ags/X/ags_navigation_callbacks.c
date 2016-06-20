@@ -356,7 +356,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
       audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) audio);
   
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_unlock(application_mutex);
 
       /* do it so */
       pthread_mutex_lock(audio_mutex);
@@ -485,7 +485,7 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
       audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) audio);
   
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_unlock(application_mutex);
 
       /* do it so */
       pthread_mutex_lock(audio_mutex);      
@@ -566,7 +566,7 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
       audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) audio);
   
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_unlock(application_mutex);
 
       /* do it so */
       pthread_mutex_lock(audio_mutex);

@@ -39,10 +39,16 @@
 typedef struct _AgsFFPlayer AgsFFPlayer;
 typedef struct _AgsFFPlayerClass AgsFFPlayerClass;
 
+typedef enum{
+  AGS_FFPLAYER_NO_LOAD          = 1,
+};
+
 struct _AgsFFPlayer
 {
   AgsMachine machine;
 
+  guint flags;
+  
   guint mapped_output_pad;
   guint mapped_input_pad;
 
@@ -75,6 +81,9 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
 void ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 				gchar *filename);
+
+void ags_ffplayer_load_preset(AgsFFPlayer *ffplayer);
+void ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer);
 
 AgsFFPlayer* ags_ffplayer_new(GObject *soundcard);
 

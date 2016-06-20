@@ -158,14 +158,17 @@ ags_setup(int argc, char **argv)
   dssi_manager = ags_dssi_manager_get_instance();
 
   lv2_manager = ags_lv2_manager_get_instance();
+
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();
-  
+    
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
   application_context = ags_xorg_application_context_new();
   application_context->argc = argc;
   application_context->argv = argv;
 
+  lv2_worker_manager->thread_pool = AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool;
+  
   /* parse rc file */
   rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
 				pw->pw_dir,

@@ -122,14 +122,16 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 {
   AgsPlayable *playable;
   AgsIpatch *ipatch;
+
   gchar *preset_name;
-  gchar **instrument;
+
   GError *error;
 
   playable = AGS_PLAYABLE(ffplayer->ipatch);
   ipatch = ffplayer->ipatch;
 
-  if(ipatch == NULL){
+  if(ipatch == NULL ||
+     (AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
     return;
   }
   
@@ -144,24 +146,10 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   /* select first instrument */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->instrument)));
 
-  ipatch->nth_level = 2;
-  instrument = ags_playable_sublevel_names(playable);
+  ags_ffplayer_load_instrument(ffplayer);
   
-  error = NULL;
-  ags_playable_level_select(playable,
-			    2, *instrument,
-			    &error);
-  
-  /* fill ffplayer->instrument */
-  while(instrument != NULL && instrument[0] != NULL){
-    gtk_combo_box_text_append_text(ffplayer->instrument,
-				   *instrument);
-
-    instrument++;
-  }
-
   gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
-			   0);
+  			   0);
 }
 
 void
@@ -203,6 +191,10 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
+  if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
+    return;
+  }
+  
   window = (AgsWindow *) gtk_widget_get_toplevel(ffplayer);
   application_context = window->application_context;
   audio = AGS_MACHINE(ffplayer)->audio;
