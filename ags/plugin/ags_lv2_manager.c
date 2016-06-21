@@ -356,6 +356,8 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 			 lv2_path,
 			 filename);
 
+  g_message("%s\0", path);
+
   xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
   effect_list = ags_turtle_find_xpath(turtle,
 				      xpath);
@@ -409,7 +411,6 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 	      uri = g_strndup(uri + 1,
 			      strlen(uri) - 2);
 	    }
-
 	    break;
 	  }else if(!g_ascii_strncasecmp(child->name,
 					"rdf-prefixed-name\0",
@@ -435,6 +436,8 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 	      pname_node = pname_node->next;
 	    }
 
+	    uri = pname;
+	    
 	    if(pname != NULL){
 	      gchar *suffix, *prefix;
 	      gchar *offset;
@@ -450,7 +453,7 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 		prefix = g_strndup(pname,
 				   offset - pname);
 
-		str = g_strdup_printf("//rdf-pname-ns[text()='%s']/following-sibling::rdf-iriref",
+		str = g_strdup_printf("//rdf-pname-ns[text()='%s']/following-sibling::*[self::rdf-iriref][1]\0",
 				      prefix);
 		prefix_node = ags_turtle_find_xpath(turtle,
 						    str);
@@ -467,10 +470,9 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 		    
 		      tmp = g_strndup(iriref + 1,
 				      strlen(iriref) - 2);
-		      uri = g_strdup_printf("%s/%s\0",
+		      uri = g_strdup_printf("%s%s\0",
 					    tmp,
 					    suffix);
-
 		      free(tmp);
 		    }
 		  
@@ -523,11 +525,11 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 	  if(ags_base_plugin_find_effect(lv2_manager->lv2_plugin,
 					 path,
 					 effect) == NULL){
-	    g_message("ags_lv2_manager.c loading - %s::%s as %s\0",
+	    g_message("ags_lv2_manager.c loading - %s %s as %s\0",
 		      path,
 		      turtle->filename,
 		      effect);
-	    
+
 	    lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
 				      "turtle\0", turtle,
 				      "filename\0", path,
@@ -695,8 +697,6 @@ ags_lv2_manager_load_default_directory()
 	  }
 
 	  /* load turtle doc */
-	  g_message("%s\0", turtle_path);
-
 	  if((turtle = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
 					       turtle_path)) == NULL){
 	    turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",

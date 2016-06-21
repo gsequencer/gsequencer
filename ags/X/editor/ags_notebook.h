@@ -61,6 +61,8 @@ struct _AgsNotebook
   GtkVBox vbox;
 
   guint flags;
+
+  gchar *prefix;
   
   GtkViewport *viewport;
   GtkButton *scroll_prev;

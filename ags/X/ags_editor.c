@@ -429,6 +429,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 					      "homogeneous\0", FALSE,
 					      "spacing\0", 0,
 					      NULL);
+    editor_child->notebook->prefix = g_strdup("channel\0");
     g_object_ref(editor_child->notebook);
     gtk_table_attach(editor->table, (GtkWidget *) editor_child->notebook,
 		     0, 3, y, y + 1,

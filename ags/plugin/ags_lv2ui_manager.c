@@ -307,11 +307,10 @@ ags_lv2ui_manager_load_default_directory()
 	}
 
 	/* load turtle doc */
-	g_message("%s\0", turtle_path);
-
 	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
 						plugin_path,
 						turtle_path));
+	g_message("%s\0", turtle->filename);
 	ags_turtle_load(turtle,
 			NULL);
 

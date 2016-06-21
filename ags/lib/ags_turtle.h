@@ -40,10 +40,7 @@ typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
 
 typedef enum{
-  AGS_TURTLE_READ_SUBJECT    = 1,
-  AGS_TURTLE_READ_VERB       = 1 << 1,
-  AGS_TURTLE_READ_OBJECT     = 1 << 2,
-  AGS_TURTLE_TRIPLE_END      = 1 << 3,
+  AGS_TURTLE_TOLOWER    = 1,
 }AgsTurtleFlags;
 
 struct _AgsTurtle
@@ -135,6 +132,8 @@ GList* ags_turtle_find_xpath(AgsTurtle *turtle,
 GList* ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
 					       gchar *xpath,
 					       xmlNode *context_node);
+
+gchar* ags_turtle_string_convert(AgsTurtle *turtle, gchar *str);
 
 xmlDoc* ags_turtle_load(AgsTurtle *turtle,
 			GError **error);

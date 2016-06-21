@@ -418,12 +418,30 @@ ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
   
   AgsMachine *selected_machine;
 
+  AgsMutexManager *mutex_manager;
+
   GList *editor_child;
   
   gchar **specifier, **new_automation_port, **unique_specifier;
 
   guint i;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
   selected_machine = automation_editor->selected_machine;
 
   editor_child = automation_editor->automation_editor_child;
@@ -437,9 +455,13 @@ ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
   }
 
   specifier = machine->automation_port;
-  unique_specifier = ags_automation_get_specifier_unique(machine->audio->automation);
 
-  //TODO:JK: mutex
+  pthread_mutex_lock(audio_mutex);
+  
+  unique_specifier = ags_automation_get_specifier_unique(machine->audio->automation);
+  
+  pthread_mutex_unlock(audio_mutex);
+
   new_automation_port = NULL;
   i = 0;
   
@@ -686,6 +708,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 								"homogeneous\0", FALSE,
 								"spacing\0", 0,
 								NULL);
+    automation_editor_child->output_notebook->prefix = g_strdup("line\0");
     g_object_ref(automation_editor_child->output_notebook);
     gtk_table_attach(automation_editor->output_table, (GtkWidget *) automation_editor_child->output_notebook,
 		     0, 3, y, y + 1,
@@ -729,6 +752,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 							       "homogeneous\0", FALSE,
 							       "spacing\0", 0,
 							       NULL);
+    automation_editor_child->input_notebook->prefix = g_strdup("line\0");
     g_object_ref(automation_editor_child->input_notebook);
     gtk_table_attach(automation_editor->input_table, (GtkWidget *) automation_editor_child->input_notebook,
 		     0, 3, y, y + 1,
