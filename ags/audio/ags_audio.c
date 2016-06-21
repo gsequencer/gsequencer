@@ -1847,6 +1847,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   auto void ags_audio_set_audio_channels_shrink();
   auto void ags_audio_set_audio_channels_grow_notation();
   auto void ags_audio_set_audio_channels_shrink_notation();
+  auto void ags_audio_set_audio_channels_shrink_automation();
   
   void ags_audio_set_audio_channels_init_parameters(GType type){
     if(type == AGS_TYPE_OUTPUT){
@@ -2198,6 +2199,26 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       list = list_next;
     }
   }
+
+  void ags_audio_set_audio_channels_shrink_automation(){
+    GList *automation, *automation_next;
+
+    automation = audio->automation;
+
+    while(automation != NULL){
+      automation_next = automation->next;
+
+      if(AGS_AUTOMATION(automation->data)->channel_type != G_TYPE_NONE){
+	if(audio_channels == 0 ||
+	   AGS_AUTOMATION(automation->data)->line % audio_channels_old >= audio_channels){
+	  ags_audio_remove_automation(audio,
+				      automation->data);
+	}
+      }
+
+      automation = automation_next;
+    }
+  }
   
   /* entry point */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -2252,6 +2273,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     guint i, j;
     
     /* shrink audio channels */
+    ags_audio_set_audio_channels_shrink_automation();
+    
     if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0)
       ags_audio_set_audio_channels_shrink_notation();
 
@@ -2357,7 +2380,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
   auto void ags_audio_set_pads_free_notation();
   auto void ags_audio_set_pads_add_notes();
   auto void ags_audio_set_pads_remove_notes();
-
+  auto void ags_audio_set_pads_shrink_automation();
+  
   void ags_audio_set_pads_init_parameters(){
     alloc_recycling = FALSE;
     link_recycling = FALSE;
@@ -2665,6 +2689,25 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
   }
 
+  void ags_audio_set_pads_shrink_automation(){
+    GList *automation, *automation_next;
+
+    automation = audio->automation;
+
+    while(automation != NULL){
+      automation_next = automation->next;
+
+      if(AGS_AUTOMATION(automation->data)->channel_type == type){
+	if(AGS_AUTOMATION(automation->data)->line >= pads * audio->audio_channels){
+	  ags_audio_remove_automation(audio,
+				      automation->data);
+	}
+      }
+      
+      automation = automation_next;
+    }
+  }
+  
   /* entry point */
   ags_audio_set_pads_init_parameters();
 
@@ -2717,6 +2760,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}
       }
     }else if(pads == 0){      
+      ags_audio_set_pads_shrink_automation();      
+
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	 audio->notation != NULL){
 	ags_audio_set_pads_free_notation();
@@ -2739,6 +2784,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       guint i;
       
+      ags_audio_set_pads_shrink_automation();      
       ags_audio_set_pads_remove_notes();
 
       channel = ags_channel_pad_nth(channel,
@@ -2791,6 +2837,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
       /* grow channels */
       ags_audio_set_pads_grow();
     }else if(pads < pads_old){
+      ags_audio_set_pads_shrink_automation();
+      
       if(pads == 0){
 	channel = audio->input;
 	

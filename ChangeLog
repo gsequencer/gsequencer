@@ -3,6 +3,7 @@ ags (0.7.38)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed remove of effects because refactoring broke it
 	* fixed remove of automation as removing effect because before it was left there
+	* fixed remove automation as shrink audio channels or pads
 	* implemented update automation editor on add/remove effect
 
 ags (0.7.37)
