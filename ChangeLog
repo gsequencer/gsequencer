@@ -4,7 +4,11 @@ ags (0.7.38)
 	* fixed remove of effects because refactoring broke it
 	* fixed remove of automation as removing effect because before it was left there
 	* fixed remove automation as shrink audio channels or pads
-	* implemented update automation editor on add/remove effect
+	* fixed XPath and xmlNode names of turtles to lower-case
+	* fixed XPath expressions in ags_lv2_plugin.c to access plugin correctly because it returned all plugins instead of one
+	* implemented update automation editor on add/remove effect look at ags_automation_editor_reset_port(), it is new
+	* implemented prefix of AgsNotebook now for automation line and notation channel
+	* added mutices to ags_toolbar.c
 
 ags (0.7.37)
 
