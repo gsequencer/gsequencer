@@ -102,6 +102,8 @@ ags_notebook_init(AgsNotebook *notebook)
     
   notebook->flags = 0;
 
+  notebook->prefix = NULL;
+  
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start(GTK_BOX(notebook),
 		     GTK_WIDGET(hbox),
@@ -237,7 +239,8 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 				  tab);
   tab_index = g_list_length(notebook->tabs);
 
-  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
+  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d\0",
+										     notebook->prefix,
 										     tab_index));
   g_object_set(tab->toggle,
 	       "xalign\0", 0.0,
@@ -313,7 +316,8 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 				 tab,
 				 length - position);
 
-  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
+  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d\0",
+										     notebook->prefix,
 										     position + 1));
   g_object_set(tab->toggle,
 	       "xalign\0", 0.0,

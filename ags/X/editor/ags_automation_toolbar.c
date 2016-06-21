@@ -22,6 +22,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -292,8 +294,13 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   GtkListStore *list_store;
   GtkTreeIter iter;
 
+  AgsMutexManager *mutex_manager;
+
   gchar **specifier;
-  
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
   automation_editor = gtk_widget_get_ancestor(automation_toolbar,
 					      AGS_TYPE_AUTOMATION_EDITOR);
   machine = automation_editor->selected_machine;
@@ -303,16 +310,32 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
     return;
   }
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
   
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
   list_store = gtk_list_store_new(2,
 				  G_TYPE_BOOLEAN,
 				  G_TYPE_STRING);
   gtk_combo_box_set_model(automation_toolbar->port,
 			  GTK_TREE_MODEL(list_store));
 
-  //TODO:JK: mutex
-  specifier = ags_automation_get_specifier_unique(machine->audio->automation);
+  pthread_mutex_lock(audio_mutex);
   
+  specifier = ags_automation_get_specifier_unique(machine->audio->automation);
+
+  pthread_mutex_unlock(audio_mutex);
+
   for(; *specifier != NULL; specifier++){
     gtk_list_store_append(list_store, &iter);
     gtk_list_store_set(list_store, &iter,
@@ -342,15 +365,32 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  AgsMutexManager *mutex_manager;
+
   gchar **specifier, *current;
   guint length;
   gboolean is_active;
-  
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
   automation_editor = gtk_widget_get_ancestor(automation_toolbar,
 					      AGS_TYPE_AUTOMATION_EDITOR);
   machine = automation_editor->selected_machine;
 
   model = gtk_combo_box_get_model(automation_toolbar->port);
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* create specifier array */
   specifier = NULL;
@@ -410,7 +450,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     
     audio = machine->audio;
     
-    //TODO:JK: mutex
+    pthread_mutex_lock(audio_mutex);
+    
     list = audio->automation;
     
     /* add port */
@@ -490,6 +531,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       
       list = list->next;
     }
+
+    pthread_mutex_unlock(audio_mutex);
   }else{
     AgsAutomationEdit *automation_edit;
     AgsScale *scale;
