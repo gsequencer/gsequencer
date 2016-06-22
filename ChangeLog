@@ -1,3 +1,12 @@
+ags (0.7.40)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed zero-length notes in ags_note_duplicate() and return NULL
+	* fixed negative-length notes in ags_note_duplicate() by swapping x values
+	* fixed encoding special char of strings in ags_turtle.c
+	* improved regexp to read string literals in ags_turtle.c
+	* improved AgsLineMember and AgsBulkMember to escape their strings
+
 ags (0.7.39)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

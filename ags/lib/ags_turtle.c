@@ -789,7 +789,7 @@ ags_turtle_read_string_literal_quote(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
   
-  static const char *string_literal_double_quote_pattern = "^(\"([^\"]*)\")\0";
+  static const char *string_literal_double_quote_pattern = "^(\"((([\\\\]['])|[^\"])*)\")\0";
 
   static const size_t max_matches = 1;
 
@@ -836,7 +836,7 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
   
-  static const char *string_literal_single_quote_pattern = "^('([^']*)')\0";
+  static const char *string_literal_single_quote_pattern = "^('((([\\\\]['])|[^'])*)')\0";
 
   static const size_t max_matches = 1;
     
@@ -881,8 +881,11 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
   
   if(g_str_has_prefix(offset,
 		      "\"\"\"\0")){
-    end = strstr(offset + 3,
-		 "\"\"\"\0");
+    while((end = strstr(offset + 3,
+			"\"\"\"\0")) != NULL &&
+	  end - 1 == '\\'){
+      offset++;
+    }
 
     if(end != NULL){
       str = g_strndup(offset,
@@ -914,8 +917,11 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
   
   if(g_str_has_prefix(offset,
 		      "'''\0")){
-    end = strstr(offset + 3,
-		 "'''\0");
+    while((end = strstr(offset + 3,
+			"'''\0")) != NULL &&
+	  end - 1 == '\\'){
+      offset++;
+    }
 
     if(end != NULL){
       str = g_strndup(offset,
@@ -1947,7 +1953,8 @@ ags_turtle_load(AgsTurtle *turtle,
       node = xmlNewNode(NULL,
 			"rdf-string\0");
       xmlNodeSetContent(node,
-			str);
+			xmlEncodeSpecialChars(doc,
+					      str));
 
 #ifdef AGS_DEBUG
       g_message("string - %s\0", str);

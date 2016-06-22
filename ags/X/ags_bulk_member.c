@@ -846,7 +846,7 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 					    "wrap\0", TRUE,
 					    "wrap-mode\0", PANGO_WRAP_CHAR,
 					    "use-markup\0", TRUE,
-					    "label", g_strdup_printf("<small>%s</small>", label),
+					    "label", g_markup_printf_escaped("<small>%s</small>", label),
 					    NULL));
   }
 
