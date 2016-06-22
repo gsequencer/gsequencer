@@ -1,3 +1,12 @@
+ags (0.7.39)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsLv2Worker to return from AgsReturnableThread
+	* fixed some memory leaks in ags_recall_lv2_run.c
+	* fixed annoying painting mistake in ags_meter.c missing padding caused ugly effect on top
+	* fixed AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING and AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO are removed from ags_automation_editor.c because it is not supported
+	* improved AgsThreadPool to take from the end of the list because previously it took the ones just instantiated
+
 ags (0.7.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

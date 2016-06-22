@@ -103,7 +103,18 @@ ags_lv2_worker_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_lv2_worker_init(AgsLv2Worker *lv2_worker)
 {
+  g_atomic_int_set(&(lv2_worker->flags),
+		   0);
+
+  lv2_worker->handle = NULL;
+  lv2_worker->worker_interface = NULL;
+
+  lv2_worker->work_size = 0;
+  lv2_worker->work_data = NULL;
+
+  lv2_worker->response_data = NULL;
   
+  lv2_worker->returnable_thread = NULL;
 }
 
 void
@@ -230,6 +241,7 @@ ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
 
 /**
  * ags_lv2_worker_new:
+ * @returnable_thread: an #AgsReturnableThread
  *
  * Create a new #AgsLv2Worker.
  *
@@ -238,13 +250,13 @@ ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
  * Since: 0.4
  */ 
 AgsLv2Worker*
-ags_lv2_worker_new()
+ags_lv2_worker_new(AgsThread *returnable_thread)
 {
   AgsLv2Worker *lv2_worker;
 
   lv2_worker = (AgsLv2Worker *) g_object_new(AGS_TYPE_LV2_WORKER,
 					     NULL);
-
+  lv2_worker->returnable_thread = returnable_thread;
 
   return(lv2_worker);
 }

@@ -465,7 +465,6 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     port_descriptor_list = NULL;
 
     while(port_list != NULL){
-      g_message(".. port\0");
       port = ags_port_descriptor_alloc();
       found_port = FALSE;
 
@@ -1080,7 +1079,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 
   snd_midi_event_t *midi_event;
   
-  unsigned char midi_buffer[8];
+  char midi_buffer[8];
 
   guint count, size;
   guint padded_size;
@@ -1132,7 +1131,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
       aev->body.type = ags_lv2_urid_manager_map(NULL,
 						LV2_MIDI__MidiEvent);
 
-      memcpy(LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(unsigned char));
+      memcpy(LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(char));
 
       aseq->atom.size += ((count + 7) & (~7));
       

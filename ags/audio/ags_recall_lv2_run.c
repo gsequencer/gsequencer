@@ -175,6 +175,8 @@ ags_recall_lv2_run_init(AgsRecallLv2Run *recall_lv2_run)
   
   recall_lv2_run->note = NULL;
   recall_lv2_run->route_lv2_audio_run = NULL;
+
+  recall_lv2_run->worker_handle = NULL;
 }
 
 void
@@ -198,6 +200,8 @@ ags_recall_lv2_run_finalize(GObject *gobject)
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
 
+  free(recall_lv2_run->lv2_handle);
+
   if(recall_lv2_run->feature != NULL){
     guint i;
 
@@ -208,12 +212,40 @@ ags_recall_lv2_run_finalize(GObject *gobject)
     
     free(recall_lv2_run->feature);
   }
-  
-  free(recall_lv2_run->output);
-  free(recall_lv2_run->input);
 
+  if(recall_lv2_run->output != NULL){
+    free(recall_lv2_run->output);
+  }
+
+  if(recall_lv2_run->input != NULL){
+    free(recall_lv2_run->input);
+  }
+  
   AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi,
 											  recall_lv2_run->note);
+
+  if(recall_lv2_run->atom_port != NULL){
+    free(recall_lv2_run->atom_port);
+  }
+
+  if(recall_lv2_run->event_port != NULL){
+    free(recall_lv2_run->event_port);
+  }
+
+  if(recall_lv2_run->event_buffer != NULL){
+    free(recall_lv2_run->event_buffer);
+  }
+
+  if(recall_lv2_run->event_count != NULL){
+    free(recall_lv2_run->event_count);
+  }
+
+  g_atomic_int_and(&(AGS_RETURNABLE_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
+		   (~AGS_RETURNABLE_THREAD_IN_USE));
+  g_atomic_int_and(&(AGS_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
+		   (~AGS_THREAD_RUNNING));
+  g_object_unref(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread);
+  g_object_unref(recall_lv2_run->worker_handle);
   
   /* call parent */
   G_OBJECT_CLASS(ags_recall_lv2_run_parent_class)->finalize(gobject);
@@ -233,7 +265,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   LV2_URI_Map_Feature *uri_map_feature;
   
-  LV2_Worker_Schedule_Handle worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
+  LV2_Worker_Schedule_Handle worker_handle;
   LV2_Worker_Schedule *worker_schedule;
 
   LV2_Log_Log *log_feature;
@@ -268,6 +300,9 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   feature[0]->data = uri_map_feature;
 
   /* worker feature */
+  recall_lv2_run->worker_handle = 
+    worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
+  
   worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
   worker_schedule->handle = worker_handle;
   worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
@@ -437,6 +472,15 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
      AGS_NOTE(recall_lv2_run->note)->x[1] <= count_beats_audio_run->notation_counter ||
      AGS_NOTE(recall_lv2_run->note)->x[0] > count_beats_audio_run->notation_counter){
     //    g_message("done\0");
+    /* deactivate */
+    if(recall_lv2->plugin_descriptor->deactivate != NULL){
+      recall_lv2->plugin_descriptor->deactivate(recall_lv2_run->lv2_handle[0]);
+    }
+
+    /* cleanup */
+    if(recall_lv2->plugin_descriptor->cleanup != NULL){
+      recall_lv2->plugin_descriptor->cleanup(recall_lv2_run->lv2_handle[0]);
+    }
 
     ags_recall_done(recall);
     return;

@@ -94,6 +94,6 @@ LV2_Worker_Status ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle
 
 void ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data);
 
-AgsLv2Worker* ags_lv2_worker_new();
+AgsLv2Worker* ags_lv2_worker_new(AgsThread *returnable_thread);
 
 #endif /*__AGS_LV2_WORKER_H__*/

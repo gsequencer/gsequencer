@@ -487,7 +487,7 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
     }
   }
 
-  list = g_atomic_pointer_get(&(thread_pool->returnable_thread));
+  list = g_list_last(g_atomic_pointer_get(&(thread_pool->returnable_thread)));
   returnable_thread = list->data;
   g_atomic_pointer_set(&(thread_pool->returnable_thread),
 		       g_list_remove(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
