@@ -132,7 +132,7 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    *
    * The dynamic run context belonging to.
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_object("recycling-context\0",
 				   "assigned recycling context\0",
@@ -369,7 +369,7 @@ ags_recall_id_add(GList *recall_id_list,
  *
  * Returns: Matching recall id.
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecallID*
 ags_recall_id_find_recycling_context(GList *recall_id_list,
@@ -399,7 +399,7 @@ ags_recall_id_find_recycling_context(GList *recall_id_list,
  *
  * Returns: Matching recall id.
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecallID*
 ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
@@ -410,7 +410,8 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
   while(recall_id_list != NULL){
     recall_id = AGS_RECALL_ID(recall_id_list->data);
 
-    if(recall_id->recycling_context->parent == parent_recycling_context){
+    if(recall_id->recycling_context != NULL &&
+       recall_id->recycling_context->parent == parent_recycling_context){
       return(recall_id);
     }
 

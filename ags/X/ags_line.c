@@ -62,6 +62,7 @@ void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_line_init(AgsLine *line);
+void ags_line_finalize(GObject *gobject);
 void ags_line_set_property(GObject *gobject,
 			   guint prop_id,
 			   const GValue *value,
@@ -127,6 +128,8 @@ enum{
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
 
+GHashTable *ags_indicator_queue_draw = NULL;
+
 GType
 ags_line_get_type(void)
 {
@@ -187,6 +190,8 @@ ags_line_class_init(AgsLineClass *line)
   gobject->set_property = ags_line_set_property;
   gobject->get_property = ags_line_get_property;
 
+  gobject->finalize = ags_line_finalize;
+  
   /* properties */
   /**
    * AgsLine:pad:
@@ -365,6 +370,12 @@ ags_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_line_init(AgsLine *line)
 {
+  if(ags_indicator_queue_draw == NULL){
+    ags_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						     NULL,
+						     NULL);
+  }
+  
   g_signal_connect_after((GObject *) line, "parent_set\0",
 			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
 
@@ -402,6 +413,23 @@ ags_line_init(AgsLine *line)
 		     GTK_WIDGET(line->expander),
 		     TRUE, TRUE,
 		     0);
+  
+  line->indicator = NULL;
+}
+
+void
+ags_line_finalize(GObject *gobject)
+{
+  AgsLine *line;
+
+  line = AGS_LINE(gobject);
+  
+  if(line->indicator != NULL){
+    g_hash_table_remove(ags_indicator_queue_draw,
+			line->indicator);
+  }
+  
+  G_OBJECT_CLASS(ags_line_parent_class)->finalize(gobject);
 }
 
 void
@@ -1449,9 +1477,14 @@ ags_line_find_next_grouped(GList *line)
 gboolean
 ags_line_indicator_queue_draw(GtkWidget *widget)
 {
-  gtk_widget_queue_draw(widget);
-  
-  return(TRUE);
+  if(g_hash_table_lookup(ags_indicator_queue_draw,
+			 widget) != NULL){
+    gtk_widget_queue_draw(widget);
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**
