@@ -39,9 +39,7 @@ ags_notebook_scroll_prev_callback(GtkWidget *button,
 			     0.0);
   }
 
-  gdk_window_invalidate_rect(gtk_viewport_get_view_window(notebook->viewport),
-			     &(GTK_WIDGET(notebook->hbox)->allocation),
-			     TRUE);
+  gtk_widget_show_all(notebook->hbox);
 }
 
 void
@@ -64,8 +62,6 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
 			     adjustment->upper - adjustment->page_size);
   }
 
-  gdk_window_invalidate_rect(gtk_viewport_get_view_window(notebook->viewport),
-			     &(GTK_WIDGET(notebook->hbox)->allocation),
-			     TRUE);
+  gtk_widget_show_all(notebook->hbox);
 }
 
