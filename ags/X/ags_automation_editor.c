@@ -209,9 +209,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 						     "homogeneous\0", FALSE,
 						     "spacing\0", 0,
 						     NULL);
-  automation_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
-						 AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO |
-						 AGS_MACHINE_SELECTOR_AUTOMATION);
+  automation_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_AUTOMATION);
   gtk_label_set_label(automation_editor->machine_selector->label,
 		      "automation\0");
   

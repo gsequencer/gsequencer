@@ -59,6 +59,8 @@ struct _AgsRecallLv2Run
   
   GObject *route_lv2_audio_run;
   GObject *note;
+
+  GObject *worker_handle;
 };
 
 struct _AgsRecallLv2RunClass

@@ -262,7 +262,7 @@ ags_meter_paint(AgsMeter *meter)
     if(((1 << j0) & bitmap) != 0){
       cairo_set_source_rgb(cr, 0.2, 0.2, 0.2);
 
-      cairo_rectangle(cr, 0.0, 0.0, 2.0 / 3.0 * (double) widget->allocation.width, (double) y[0] + border_top);
+      cairo_rectangle(cr, 0.0, border_top, 2.0 / 3.0 * (double) widget->allocation.width, (double) y[0]);
       cairo_fill(cr); 	
 
       cairo_set_source_rgb(cr, 0.68, 0.68, 0.68);
@@ -273,17 +273,17 @@ ags_meter_paint(AgsMeter *meter)
 	cairo_stroke(cr);
       }
 
-      cairo_move_to(cr, (double) widget->allocation.width, border_top);
+      cairo_move_to(cr, (double) widget->allocation.width, (double) y[0] + border_top);
       cairo_line_to(cr, (double) widget->allocation.width, (double) y[0] + border_top);
       cairo_stroke(cr);
     }else{
       if(((1 << (j0 + 1)) & bitmap) == 0){
-	cairo_move_to(cr, 0.0, (double) y[0]);
+	cairo_move_to(cr, 0.0, (double) y[0] + border_top);
 	cairo_line_to(cr, (double) widget->allocation.width, (double) y[0] + border_top);
 	cairo_stroke(cr);
       }
 
-      cairo_move_to(cr, (double) widget->allocation.width,  border_top);
+      cairo_move_to(cr, (double) widget->allocation.width,  (double) y[0] + border_top);
       cairo_line_to(cr, (double) widget->allocation.width, (double) y[0] + border_top);
       cairo_stroke(cr);
     }

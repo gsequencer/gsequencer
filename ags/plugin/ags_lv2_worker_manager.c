@@ -140,8 +140,7 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
   AgsThread *thread;
 
   thread = ags_thread_pool_pull(worker_manager->thread_pool);
-  lv2_worker = ags_lv2_worker_new(thread,
-				  NULL);
+  lv2_worker = ags_lv2_worker_new(thread);
   
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 

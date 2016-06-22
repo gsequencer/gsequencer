@@ -685,7 +685,6 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   GList *list_recall;
   GList *list;
   
-  snd_midi_event_t *parser = NULL;
   snd_seq_event_t *seq_event;
 
   gchar *str;
@@ -759,9 +758,6 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   /* prepend note */
   route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
 						  note);
-  
-  snd_midi_event_new(10, &parser);  //  snd_midi_event_init(parser);
-  snd_midi_event_reset_encode(parser);
   
   if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
     selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
@@ -862,8 +858,6 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
       channel_dummy = channel_dummy->next;
     }
   }
-
-  snd_midi_event_free(parser);
 }
 
 void
