@@ -503,6 +503,7 @@ ags_recall_channel_automate(AgsRecall *recall)
   guint offset;
   double x, step;
   guint ret_x;
+  gboolean return_prev_on_failure;
 
   audio = AGS_CHANNEL(AGS_RECALL_CHANNEL(recall)->source)->audio;
   soundcard = audio->soundcard;
@@ -522,11 +523,17 @@ ags_recall_channel_automate(AgsRecall *recall)
 
   loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(soundcard));
 
+  return_prev_on_failure = FALSE;
+  
   if(do_loop &&
      loop_offset <= note_offset){
     offset = note_offset - loop_offset;
 
     offset = loop_offset + (offset % (loop_right - loop_left));
+
+    if(offset == loop_offset){
+      return_prev_on_failure = TRUE;
+    }
   }else{
     offset = note_offset;
   }
@@ -544,6 +551,7 @@ ags_recall_channel_automate(AgsRecall *recall)
 
       ret_x = ags_automation_get_value(automation,
 				       floor(x), ceil(x + step),
+				       return_prev_on_failure,
 				       &value);
 
       if(ret_x != G_MAXUINT){

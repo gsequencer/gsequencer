@@ -1777,9 +1777,17 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
   return(automation);
 }
 
+/**
+ * ags_automation_get_value:
+ *
+ *
+ *
+ * Since: 0.7.32
+ */
 guint
 ags_automation_get_value(AgsAutomation *automation,
 			 guint x, guint x_end,
+			 gboolean use_prev_on_failure,
 			 GValue *value)
 {
   AgsPort *port;
@@ -1801,7 +1809,13 @@ ags_automation_get_value(AgsAutomation *automation,
       }
 
       if(AGS_ACCELERATION(acceleration->data)->x > x_end){
-	return(G_MAXUINT);
+	if(use_prev_on_failure){
+	  acceleration = acceleration->prev;
+
+	  break;
+	}else{
+	  return(G_MAXUINT);
+	}
       }
 
       acceleration = acceleration->next;

@@ -119,6 +119,9 @@ void ags_window_decrement_machine_counter(AgsWindow *window,
 AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
 					     GType machine_type, guint initial_value);
 
+void ags_window_show_error(AgsWindow *window,
+			   gchar *message);
+
 AgsWindow* ags_window_new(GObject *application_context);
 
 #endif /*__AGS_WINDOW_H__*/

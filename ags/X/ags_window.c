@@ -547,6 +547,23 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
   return(machine_counter);
 }
 
+void
+ags_window_show_error(AgsWindow *window,
+		      gchar *message)
+{
+  GtkDialog *dialog;
+
+  dialog = gtk_message_dialog_new(window,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_ERROR,
+				  GTK_BUTTONS_OK,
+				  message);
+  gtk_widget_show_all(dialog);
+
+  g_signal_connect(dialog, "response\0",
+		   G_CALLBACK(gtk_main_quit), NULL);
+}
+
 /**
  * ags_window_new:
  * @application_context: the application object.

@@ -5,9 +5,11 @@ ags (0.7.40)
 	* fixed negative-length notes in ags_note_duplicate() by swapping x values
 	* fixed encoding special char of strings in ags_turtle.c
 	* fixed AgsNotebook fixed width to resizeable
+	* fixed use of previous value on reenter loop in automation
 	* improved regexp to read string literals in ags_turtle.c
 	* improved AgsLineMember and AgsBulkMember to escape their strings
 	* implemented resize of AgsNotebook previously it was fixed size
+	* implemented abort on not present plugin during file open since you will damage your file
 
 ags (0.7.39)
 
