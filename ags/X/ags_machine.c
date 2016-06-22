@@ -724,11 +724,44 @@ static void
 ags_machine_finalize(GObject *gobject)
 {
   AgsMachine *machine;
+
+  GObject *soundcard;
+  
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_start;
+
   char *str;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
 
   machine = (AgsMachine *) gobject;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard = machine->audio->soundcard;  
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove from soundcard */
+  pthread_mutex_lock(soundcard_mutex);
+  
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
+			  g_list_remove(list,
+					machine->audio));
+
+  pthread_mutex_unlock(soundcard_mutex);
+  
+  //TODO:JK: better clean-up of audio
+  
   if(machine->properties != NULL){
     gtk_widget_destroy(machine->properties);
   }

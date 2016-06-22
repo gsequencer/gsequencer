@@ -273,10 +273,18 @@ ags_lv2ui_manager_load_default_directory()
       
       GList *ttl_list, *gtkui_list, *binary_list;
 
+      gchar *manifest_filename;
       gchar *turtle_path, *filename;
+
+      manifest_filename = g_strdup_printf("%s/manifest.ttl\0",
+					  plugin_path);
       
-      manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
-						plugin_path));
+      if(!g_file_test(manifest_filename,
+		      G_FILE_TEST_EXISTS)){
+	continue;
+      }
+	
+      manifest = ags_turtle_new(manifest_filename);
       ags_turtle_load(manifest,
 		      NULL);
   

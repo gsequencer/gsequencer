@@ -681,6 +681,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
   
+  if((guint) floor(delay) != 0){
+    return;
+  }
+
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
   delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;

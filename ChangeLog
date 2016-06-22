@@ -1,3 +1,13 @@
+ags (0.7.41)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ommiting delayed playback in ags_play_notation_audio_run.c
+	* fixed crash during load of lv2 directories without manifest.ttl
+	* fixed don't queue draw destroyed widgets
+	* fixed remove audio from soundcard as destroying AgsMachine
+	* fixed crash during playback after destroy of AgsMachine NOTE: see below
+	* NOTE: you have to do proper clean the audio tree
+
 ags (0.7.40)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

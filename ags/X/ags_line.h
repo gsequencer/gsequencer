@@ -70,6 +70,8 @@ struct _AgsLine
   GtkToggleButton *group;
 
   AgsExpander *expander;
+
+  GtkWidget *indicator;
 };
 
 struct _AgsLineClass
