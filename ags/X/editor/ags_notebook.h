@@ -63,10 +63,12 @@ struct _AgsNotebook
   guint flags;
 
   gchar *prefix;
-  
-  GtkViewport *viewport;
+
+  GtkHBox *navigation;
   GtkButton *scroll_prev;
   GtkButton *scroll_next;
+  
+  GtkViewport *viewport;
 
   gulong scroll_prev_handler;
   gulong scroll_next_handler;
