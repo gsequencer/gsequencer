@@ -679,12 +679,22 @@ ags_note_duplicate(AgsNote *note)
 {
   AgsNote *copy;
 
+  if(note->x[0] == note->x[1]){
+    return(NULL);
+  }
+  
   copy = ags_note_new();
 
   copy->flags = 0;
 
-  copy->x[0] = note->x[0];
-  copy->x[1] = note->x[1];
+  if(note->x[0] < note->x[1]){
+    copy->x[0] = note->x[0];
+    copy->x[1] = note->x[1];
+  }else{
+    copy->x[0] = note->x[1];
+    copy->x[1] = note->x[0];
+  }
+  
   copy->y = note->y;
 
   copy->stream_delay = note->stream_delay;
