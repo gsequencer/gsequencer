@@ -37,6 +37,7 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
@@ -301,6 +302,19 @@ ags_ladspa_bridge_set_property(GObject *gobject,
 	g_free(ladspa_bridge->filename);
       }
 
+      if(filename != NULL){
+	if(!g_file_test(filename,
+			G_FILE_TEST_EXISTS)){
+	  AgsWindow *window;
+
+	  window = gtk_widget_get_toplevel(ladspa_bridge);
+
+	  ags_window_show_error(window,
+				g_strdup_printf("Plugin file not present %s\0",
+						filename));
+	}
+      }
+      
       ladspa_bridge->filename = g_strdup(filename);
     }
     break;

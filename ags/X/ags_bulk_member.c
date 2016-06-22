@@ -504,6 +504,23 @@ ags_bulk_member_set_property(GObject *gobject,
 	return;
       }
 
+      if(bulk_member->filename != NULL){
+	g_free(bulk_member->filename);
+      }
+
+      if(filename != NULL){
+	if(!g_file_test(filename,
+			G_FILE_TEST_EXISTS)){
+	  AgsWindow *window;
+
+	  window = gtk_widget_get_toplevel(bulk_member);
+
+	  ags_window_show_error(window,
+				g_strdup_printf("Plugin file not present %s\0",
+						filename));
+	}
+      }
+
       bulk_member->filename = g_strdup(filename);
     }
     break;

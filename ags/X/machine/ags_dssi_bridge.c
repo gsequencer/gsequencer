@@ -390,6 +390,19 @@ ags_dssi_bridge_set_property(GObject *gobject,
 	g_free(dssi_bridge->filename);
       }
 
+      if(filename != NULL){
+	if(!g_file_test(filename,
+			G_FILE_TEST_EXISTS)){
+	  AgsWindow *window;
+
+	  window = gtk_widget_get_toplevel(dssi_bridge);
+
+	  ags_window_show_error(window,
+				g_strdup_printf("Plugin file not present %s\0",
+						filename));
+	}
+      }
+
       dssi_bridge->filename = g_strdup(filename);
     }
     break;

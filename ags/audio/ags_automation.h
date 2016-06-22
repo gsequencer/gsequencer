@@ -160,6 +160,7 @@ GList* ags_automation_find_specifier_with_type_and_line(GList *automation,
 
 guint ags_automation_get_value(AgsAutomation *automation,
 			       guint x, guint x_end,
+			       gboolean use_prev_on_failure,
 			       GValue *value);
 
 AgsAutomation* ags_automation_new(GObject *audio,
