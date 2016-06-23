@@ -756,10 +756,6 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   channel = ags_channel_nth(audio->input,
 			    audio_channel);
 
-  /* prepend note */
-  route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
-						  note);
-  
   if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
     selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
   }else{
@@ -818,6 +814,10 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	    recall_lv2_run = AGS_RECALL_LV2_RUN(lv2->data);
 	    
 	    if(recall_lv2_run->note == NULL){
+	      /* prepend note */
+	      route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
+							      note);
+  
 	      recall_lv2_run->route_lv2_audio_run = route_lv2_audio_run;
 	      
 	      /* key on */
@@ -891,6 +891,11 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+
+  if((guint) floor(delay) != 0){
+    //    g_message("d %f\0", delay);
+    return;
+  }
 
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(route_lv2_audio_run)->recall_audio);
 

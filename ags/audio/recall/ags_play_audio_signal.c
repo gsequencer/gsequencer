@@ -165,7 +165,7 @@ void
 ags_play_audio_signal_finalize(GObject *gobject)
 {
   /* empty */
-
+  
   /* call parent */
   G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
 }

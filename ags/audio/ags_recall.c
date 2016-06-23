@@ -1271,12 +1271,28 @@ ags_recall_finalize(GObject *gobject)
 {
   AgsRecall *recall;
 
+  guint *ids;
+  guint i, n_ids;
+  
   recall = AGS_RECALL(gobject);
 
 #ifdef AGS_DEBUG
   g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 #endif
 
+  ids = g_signal_list_ids(AGS_TYPE_RECALL,
+			  &n_ids);
+  
+  for(i = 0; i < n_ids; i++){
+    g_signal_handlers_disconnect_matched(gobject,
+					 G_SIGNAL_MATCH_ID,
+					 ids[i],
+					 0,
+					 NULL,
+					 NULL,
+					 NULL);
+  }
+  
   if(recall->soundcard != NULL){
     g_object_unref(recall->soundcard);
   }
@@ -1854,7 +1870,7 @@ ags_recall_real_remove(AgsRecall *recall)
   if(recall == NULL){
     return;
   }
-
+  
   g_object_ref(recall);
 
   if(recall->parent == NULL){
@@ -2155,7 +2171,7 @@ ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
   recall->children = g_list_remove(recall->children,
 				   child);
   child->parent = NULL;
-  
+
   g_object_unref(recall);
   g_object_unref(child);
 }

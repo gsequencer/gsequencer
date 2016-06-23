@@ -2,6 +2,7 @@ ags (0.7.42)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed dead-lock caused by adjusting buffer size or samplerate as reading config from file
+	* fixed really bad memory leak during playback of audio signal on AgsInput because of missing g_object_unref()
 
 ags (0.7.41)
 
