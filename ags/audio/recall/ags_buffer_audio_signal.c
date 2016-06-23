@@ -156,12 +156,6 @@ ags_buffer_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectable
 void
 ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal)
 {
-  AGS_RECALL(buffer_audio_signal)->name = "ags-buffer\0";
-  AGS_RECALL(buffer_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(buffer_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(buffer_audio_signal)->xml_type = "ags-buffer-audio-signal\0";
-  AGS_RECALL(buffer_audio_signal)->port = NULL;
-
   AGS_RECALL(buffer_audio_signal)->child_type = G_TYPE_NONE;
 }
 

@@ -243,6 +243,7 @@ ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_ru
   play_notation_audio_run->count_beats_audio_run = NULL;
 
   play_notation_audio_run->notation = NULL;
+  play_notation_audio_run->offset = NULL;
 }
 
 void
@@ -775,9 +776,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   current_position = notation->notes; // start_loop
   notation_counter = play_notation_audio_run->count_beats_audio_run->notation_counter;
-  
-  pthread_mutex_unlock(audio_mutex);
 
+  if(play_notation_audio_run->offset != NULL &&
+     notation_counter >= AGS_NOTE(play_notation_audio_run->offset->data)->x[0]){
+    current_position = play_notation_audio_run->offset;
+  }
+
+  pthread_mutex_unlock(audio_mutex);
+  
   while(current_position != NULL){
     AgsRecallID *child_recall_id;
     GList *list;
@@ -877,7 +883,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			       &value);
 
 	    notation_delay = g_value_get_double(&value);
-	    
+	    g_value_unset(&value);
+		
 	    ags_recycling_create_audio_signal_with_frame_count(recycling,
 							       audio_signal,
 							       ((double) samplerate / notation_delay) * (note->x[1] - note->x[0]),
@@ -910,6 +917,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     current_position = current_position->next;
 
     pthread_mutex_unlock(audio_mutex);
+  }
+
+  if(current_position != NULL){
+    play_notation_audio_run->offset = current_position->prev;
   }
 }
 

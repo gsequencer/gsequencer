@@ -929,7 +929,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 {
   AgsRecycling *destination_recycling, *source_recycling;
   AgsRecallRecycling *recall_recycling;
-  GList *list, *list_next;
+  GList *list, *list_next, *list_start;
 
   if(recall_channel_run->source == NULL ||
      AGS_RECALL(recall_channel_run)->child_type == G_TYPE_NONE ||
@@ -947,7 +947,8 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     source_recycling = old_start_changed_region;
 
     while(source_recycling != old_end_changed_region->next){
-      list = ags_recall_get_children(AGS_RECALL(recall_channel_run));
+      list_start = 
+	list = ags_recall_get_children(AGS_RECALL(recall_channel_run));
 
       while(list != NULL){
 	list_next = list->next;
@@ -964,6 +965,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	list = list_next;
       }
 
+      g_list_free(list_start);
       source_recycling = source_recycling->next;
     }
   }
@@ -995,7 +997,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 {
   AgsRecycling *destination_recycling, *source_recycling;
   AgsRecallRecycling *recall_recycling;
-  GList *list;
+  GList *list, *list_start;
 
   if(recall_channel_run->source == NULL ||
      AGS_RECALL(recall_channel_run)->child_type == G_TYPE_NONE ||
@@ -1013,7 +1015,8 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
     destination_recycling = old_start_changed_region;
     
     while(destination_recycling != old_end_changed_region->next){
-      list = ags_recall_get_children(AGS_RECALL(recall_channel_run));
+      list_start = 
+	list = ags_recall_get_children(AGS_RECALL(recall_channel_run));
 
       while(list != NULL){
 	if(AGS_RECALL_RECYCLING(list->data)->destination == destination_recycling){
@@ -1025,6 +1028,8 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	list = list->next;
       }
 
+      g_list_free(list_start);
+      
       destination_recycling = destination_recycling->next;
     }
   }

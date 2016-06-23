@@ -55,6 +55,7 @@ struct _AgsPlayNotationAudioRun
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   AgsNotation *notation;
+  GList *offset;
 };
 
 struct _AgsPlayNotationAudioRunClass

@@ -396,7 +396,7 @@ ags_channel_thread_run(AgsThread *thread)
 		    AGS_THREAD_RT_SETUP);
   }
 
-  if(ags_thread_recursive_initial_sync(g_atomic_pointer_get(&(thread->parent)))){
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
   }
 

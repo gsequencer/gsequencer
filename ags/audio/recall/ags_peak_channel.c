@@ -446,6 +446,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
   ags_port_safe_write(peak_channel->peak,
 		      &value);
+  g_value_unset(&value);
 
   /* free buffer */
   free(buffer);

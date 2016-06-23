@@ -42,6 +42,8 @@ struct _AgsRecallLadspaRun
 {
   AgsRecallAudioSignal recall_audio_signal;
 
+  unsigned long audio_channels;
+  
   LADSPA_Handle *ladspa_handle;
 
   LADSPA_Data *input;

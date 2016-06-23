@@ -295,6 +295,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 		       &muted_value);
 
     muted = g_value_get_boolean(&muted_value);
+    g_value_unset(&muted_value);
 
     if(muted){
       pthread_mutex_unlock(soundcard_mutex);
@@ -306,6 +307,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 		       &audio_channel_value);
 
     audio_channel = g_value_get_uint64(&audio_channel_value);
+    g_value_unset(&audio_channel_value);
   }
 
   buffer_size = source->buffer_size;

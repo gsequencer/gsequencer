@@ -285,6 +285,8 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 	  ags_audio_signal_add_stream(AGS_RECALL_AUDIO_SIGNAL(recall)->source);
 	}
       }
+
+      g_value_unset(&value);
     }
 
     //g_message("stream %x %x\0", AGS_RECALL_AUDIO_SIGNAL(recall)->source, AGS_RECALL_ID(AGS_RECALL_AUDIO_SIGNAL(recall)->source->recall_id)->recycling_container);
