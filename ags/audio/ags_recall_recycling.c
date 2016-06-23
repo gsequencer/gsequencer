@@ -281,8 +281,8 @@ void
 ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
 {
   recall_recycling->flags = 0;
-  recall_recycling->flags = (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
-  			     AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
+  recall_recycling->flags = (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION  |
+			     AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 
   recall_recycling->audio_channel = 0;
 
@@ -795,7 +795,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
   AgsMutexManager *mutex_manager;
 
-  GList *list;
+  GList *list, *list_start;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -866,7 +866,8 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
   soundcard = AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->soundcard;
 
-  list = ags_recall_get_children(recall);
+  list_start = 
+    list = ags_recall_get_children(recall);
 
   while(list != NULL){
     recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(list->data);
@@ -884,6 +885,8 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     if(g_list_find(recall_recycling->child_source,
@@ -1006,7 +1009,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 
   AgsMutexManager *mutex_manager;
 
-  GList *list;
+  GList *list, *list_start;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -1070,7 +1073,8 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 
   soundcard = AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->soundcard;
 
-  list = ags_recall_get_children(AGS_RECALL(recall_recycling));
+  list_start = 
+    list = ags_recall_get_children(AGS_RECALL(recall_recycling));
 
   while(list != NULL){
     recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(list->data);
@@ -1087,6 +1091,8 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
     list = list->next;
   }
 
+  g_list_free(list_start);
+  
   if((AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION & (recall_recycling->flags)) != 0){
     if(recall_recycling->child_destination == audio_signal){
       g_object_set(G_OBJECT(recall_recycling),

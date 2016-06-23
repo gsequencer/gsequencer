@@ -548,7 +548,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 	  if(streamer != NULL){
 	    play_channel_run_master->streamer = g_list_remove(play_channel_run_master->streamer,
 							      streamer->data);
-
+	    ags_play_channel_run_master_streamer_free(streamer->data);
 	  }
 
 	  list = list->next;
@@ -624,10 +624,17 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 
   play_channel_run_master->streamer = g_list_remove(play_channel_run_master->streamer,
   						    streamer);
+  ags_play_channel_run_master_streamer_free(streamer);
 
   if(play_channel_run_master->streamer == NULL){
     //    play_channel_run_master->flags |= AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING;
   }
+}
+
+void
+ags_play_channel_run_master_streamer_free(AgsPlayChannelRunMasterStreamer *streamer)
+{
+  free(streamer);
 }
 
 AgsPlayChannelRunMasterStreamer*

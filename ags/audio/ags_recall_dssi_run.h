@@ -44,6 +44,8 @@ struct _AgsRecallDssiRun
 
   LADSPA_Handle *ladspa_handle;
 
+  unsigned long audio_channels;
+  
   LADSPA_Data *input;
   LADSPA_Data *output;
 

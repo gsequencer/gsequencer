@@ -147,6 +147,8 @@ ags_recall_ladspa_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_ladspa_run_init(AgsRecallLadspaRun *recall_ladspa_run)
 {
+  recall_ladspa_run->audio_channels = 0;
+
   recall_ladspa_run->input = NULL;
   recall_ladspa_run->output = NULL;
 }
@@ -171,6 +173,8 @@ ags_recall_ladspa_run_finalize(GObject *gobject)
   unsigned long i;
 
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(gobject);
+
+  free(recall_ladspa_run->ladspa_handle);
 
   free(recall_ladspa_run->output);
   free(recall_ladspa_run->input);
@@ -217,6 +221,8 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   }else{
     i_stop = recall_ladspa->input_lines;
   }
+
+  recall_ladspa_run->audio_channels = i_stop;
   
   for(i = 0; i < i_stop; i++){
     /* instantiate ladspa */

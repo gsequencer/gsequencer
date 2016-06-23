@@ -404,8 +404,7 @@ ags_audio_thread_run(AgsThread *thread)
 		    AGS_THREAD_RT_SETUP);
   }
 
-  /* avoid dead-lock */
-  if(ags_thread_recursive_initial_sync(thread)){
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
   }
   

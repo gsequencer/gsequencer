@@ -157,11 +157,7 @@ ags_peak_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableIn
 void
 ags_peak_audio_signal_init(AgsPeakAudioSignal *peak_audio_signal)
 {
-  AGS_RECALL(peak_audio_signal)->name = "ags-peak\0";
-  AGS_RECALL(peak_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(peak_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(peak_audio_signal)->xml_type = "ags-peak-audio-signal\0";
-  AGS_RECALL(peak_audio_signal)->port = NULL;
+  AGS_RECALL(peak_audio_signal)->child_type = G_TYPE_NONE;
 }
 
 void
@@ -228,11 +224,6 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsPeakChannel *peak_channel;
-    signed short *buffer;
-    gdouble peak;
-    guint buffer_size;
-    guint i;
-    GValue value = {0,};
 
     peak_channel = AGS_PEAK_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 

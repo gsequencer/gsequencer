@@ -739,6 +739,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   ags_port_safe_read(delay_audio->notation_delay, &value);
 
   notation_delay = g_value_get_double(&value);
+  g_value_unset(&value);
 
   /* get audio and channel */
   audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio;
@@ -1014,6 +1015,7 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
   ags_port_safe_read(delay_audio->notation_delay, &value);
 
   notation_delay = g_value_get_double(&value);
+  g_value_unset(&value);
 
   /*  */
   x = (((count_beats_audio_run->notation_counter * notation_delay) + delay_audio_run->notation_counter) * buffer_length);

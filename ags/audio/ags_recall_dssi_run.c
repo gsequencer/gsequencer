@@ -151,6 +151,8 @@ ags_recall_dssi_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run)
 {
+  recall_dssi_run->audio_channels = 0;
+  
   recall_dssi_run->ladspa_handle = NULL;
 
   recall_dssi_run->input = NULL;
@@ -240,7 +242,8 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   }else{
     i_stop = recall_dssi->input_lines;
   }
-
+  
+  recall_dssi_run->audio_channels = i_stop;
   recall_dssi_run->ladspa_handle = (LADSPA_Handle *) malloc(i_stop *
 							    sizeof(LADSPA_Handle));
 
@@ -357,7 +360,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   
   unsigned long buffer_size;
   unsigned long i, i_stop;
-
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_pre(recall);
   

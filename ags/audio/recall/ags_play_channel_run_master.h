@@ -72,6 +72,7 @@ struct _AgsPlayChannelRunMasterStreamer
 
 GType ags_play_channel_run_master_get_type();
 
+void ags_play_channel_run_master_streamer_free(AgsPlayChannelRunMasterStreamer *streamer);
 AgsPlayChannelRunMasterStreamer* ags_play_channel_run_master_streamer_alloc(AgsPlayChannelRunMaster *play_channel_run_master,
 									    AgsStreamChannelRun *stream_channel_run);
 GList* ags_play_channel_run_master_find_streamer(GList *list,

@@ -262,6 +262,8 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     for(; i < buffer_size; i++){
       buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
     }
+
+    g_value_unset(&value);
   }else{
     ags_recall_done(recall);
   }
