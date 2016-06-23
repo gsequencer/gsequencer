@@ -682,6 +682,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   pthread_mutex_t *recycling_mutex;
   
   if((guint) floor(delay) != 0){
+    //    g_message("d %f\0", delay);
     return;
   }
 

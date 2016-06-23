@@ -1146,6 +1146,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	GObject *soundcard;
 	AgsConfig *config;
 
+	AgsThread *thread;
+	
 	gchar *str;
 	
 	guint dsp_channels;
@@ -1166,7 +1168,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 	buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
-	/* read config */
+	/* read config soundcard */
 	config = ags_config_get_instance();
 
 
@@ -1207,6 +1209,20 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 				  samplerate,
 				  buffer_size,
 				  format);
+
+	/* calculate frequency of audio loop */
+	AGS_THREAD(application_context->main_loop)->tic_delay = 0;
+	AGS_THREAD(application_context->main_loop)->freq = ceil(samplerate / buffer_size);
+
+	thread = ags_thread_find_type(AGS_THREAD(application_context->main_loop),
+				      AGS_TYPE_SOUNDCARD_THREAD);
+      	thread->tic_delay = 0;
+	thread->freq = ceil(samplerate / buffer_size);
+
+      	thread = ags_thread_find_type(AGS_THREAD(application_context->main_loop),
+				      AGS_TYPE_EXPORT_THREAD);
+      	thread->tic_delay = 0;
+	thread->freq = ceil(samplerate / buffer_size);
       }else if(!xmlStrncmp("ags-sf-window\0",
 			   child->name,
 			   14)){

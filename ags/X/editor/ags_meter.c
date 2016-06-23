@@ -163,6 +163,14 @@ ags_meter_paint(AgsMeter *meter)
   guint control_height;
 
   widget = (GtkWidget *) meter;
+
+  if(!gtk_widget_get_visible(widget) ||
+     !gtk_widget_is_drawable(widget) ||
+     !gtk_widget_get_mapped(widget) ||
+     !gtk_widget_get_realized(widget)){
+    return;
+  }
+  
   editor = (AgsEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_EDITOR);
 
   border_top = 24; // see ags_ruler.c
@@ -181,6 +189,8 @@ ags_meter_paint(AgsMeter *meter)
     j = (guint) ceil(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->vscrollbar)->adjustment->value / (double) control_height);
 
     y[0] = (guint) round(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->vscrollbar)->adjustment->value) % control_height;
+  }else{
+    return;
   }
 
   base_note = AGS_NOTATION(editor->selected_machine->audio->notation->data)->base_note;
@@ -249,6 +259,10 @@ ags_meter_paint(AgsMeter *meter)
 
   cr = gdk_cairo_create(widget->window);
 
+  if(cr == NULL){
+    return;
+  }
+  
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
   cairo_rectangle(cr, 0.0, (double) border_top, (double) widget->allocation.width, (double) widget->allocation.height - border_top);
   cairo_fill(cr);
