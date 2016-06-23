@@ -778,10 +778,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   notation_counter = play_notation_audio_run->count_beats_audio_run->notation_counter;
 
   if(play_notation_audio_run->offset != NULL &&
-     notation_counter >= AGS_NOTE(play_notation_audio_run->offset->data)->x[0]){
+     notation_counter > AGS_NOTE(play_notation_audio_run->offset->data)->x[0]){
     current_position = play_notation_audio_run->offset;
   }
-
+  
   pthread_mutex_unlock(audio_mutex);
   
   while(current_position != NULL){
@@ -919,9 +919,13 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     pthread_mutex_unlock(audio_mutex);
   }
 
+  pthread_mutex_lock(audio_mutex);
+
   if(current_position != NULL){
     play_notation_audio_run->offset = current_position->prev;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

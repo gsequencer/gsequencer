@@ -321,7 +321,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   g_message("creating destination\0");
 #endif
   g_object_unref(destination);
-
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre(recall);
 }

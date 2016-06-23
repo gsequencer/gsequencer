@@ -748,10 +748,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   channel = ags_channel_nth(audio->input,
 			    audio_channel);
 
-  /* prepend note */
-  route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
-						   note);
-  
+  /*  */  
   snd_midi_event_new(10, &parser);  //  snd_midi_event_init(parser);
   snd_midi_event_reset_encode(parser);
   
@@ -812,6 +809,10 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	    recall_dssi_run = AGS_RECALL_DSSI_RUN(dssi->data);
 	    
 	    if(recall_dssi_run->event_buffer == NULL){
+	      /* prepend note */
+	      route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
+							       note);
+	      
 	      recall_dssi_run->route_dssi_audio_run = route_dssi_audio_run;
 	      
 	      /* key on */
@@ -913,6 +914,11 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+
+  if((guint) floor(delay) != 0){
+    //    g_message("d %f\0", delay);
+    return;
+  }
 
   route_dssi_audio = AGS_ROUTE_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(route_dssi_audio_run)->recall_audio);
 

@@ -837,6 +837,9 @@ ags_audio_signal_finalize(GObject *gobject)
 {
   AgsAudioSignal *audio_signal;
 
+  guint *ids;
+  guint i, n_ids;
+
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
 #ifdef AGS_DEBUG
@@ -845,6 +848,19 @@ ags_audio_signal_finalize(GObject *gobject)
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
     g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
+  }
+  
+  ids = g_signal_list_ids(AGS_TYPE_AUDIO_SIGNAL,
+			  &n_ids);
+  
+  for(i = 0; i < n_ids; i++){
+    g_signal_handlers_disconnect_matched(gobject,
+					 G_SIGNAL_MATCH_ID,
+					 ids[i],
+					 0,
+					 NULL,
+					 NULL,
+					 NULL);
   }
 
   if(audio_signal->soundcard != NULL)
