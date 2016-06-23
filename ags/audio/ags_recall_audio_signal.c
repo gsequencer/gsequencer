@@ -384,7 +384,7 @@ ags_recall_audio_signal_finalize(GObject *gobject)
   AgsRecallAudioSignal *recall_audio_signal;
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
-
+  
   if(recall_audio_signal->destination != NULL){
     g_object_unref(recall_audio_signal->destination);
     recall_audio_signal->destination = NULL;

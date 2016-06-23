@@ -546,9 +546,12 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 							       AGS_STREAM_CHANNEL_RUN(AGS_RECALL_DEPENDENCY(list->data)->dependency));
 
 	  if(streamer != NULL){
+	    gpointer ptr;
+
+	    ptr = streamer->data;
 	    play_channel_run_master->streamer = g_list_remove(play_channel_run_master->streamer,
 							      streamer->data);
-	    ags_play_channel_run_master_streamer_free(streamer->data);
+	    ags_play_channel_run_master_streamer_free(ptr);
 	  }
 
 	  list = list->next;
