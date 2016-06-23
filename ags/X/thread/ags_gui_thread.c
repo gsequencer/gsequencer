@@ -226,6 +226,10 @@ ags_gui_thread_run(AgsThread *thread)
     g_list_free(list_start);
   }
 
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    return;
+  }
+  
   gui_thread = AGS_GUI_THREAD(thread);
 
   /*  */

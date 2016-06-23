@@ -421,12 +421,17 @@ ags_thread_init(AgsThread *thread)
   thread->suspend_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(thread->suspend_mutex, NULL);
 
+#ifdef AGS_USE_TIMER
   thread->timer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(thread->timer_mutex, NULL);
 
   thread->timer_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(thread->timer_cond, NULL);
-
+#else
+  thread->timer_mutex = NULL;
+  thread->timer_cond = NULL;
+#endif
+  
   /* tree */
   g_atomic_pointer_set(&(thread->parent),
 		       NULL);
@@ -552,6 +557,8 @@ ags_thread_finalize(GObject *gobject)
     ags_thread_remove_child(g_atomic_pointer_get(&(thread->parent)),
 			    thread);
   }
+
+  free(thread->computing_time);
   
   /*  */
   pthread_attr_getstack(&(thread->thread_attr),
@@ -566,11 +573,24 @@ ags_thread_finalize(GObject *gobject)
   pthread_cond_destroy(thread->cond);
   free(thread->cond);
 
-  pthread_mutex_destroy(thread->start_mutex);
-  free(thread->start_mutex);
+  /*  */
+  free(thread->barrier[0]);
+  free(thread->barrier[1]);
+
+  free(thread->barrier);
+
+  /*  */
+  pthread_mutex_lock(thread->start_mutex);
+
   pthread_cond_destroy(thread->start_cond);
   free(thread->start_cond);
-  
+
+  pthread_mutex_unlock(thread->start_mutex);
+
+  pthread_mutex_destroy(thread->start_mutex);
+  free(thread->start_mutex);
+
+  /*  */
   pthread_mutex_destroy(thread->timelock_mutex);
   free(thread->timelock_mutex);
   
@@ -582,13 +602,17 @@ ags_thread_finalize(GObject *gobject)
   
   pthread_cond_destroy(thread->greedy_cond);
   free(thread->greedy_cond);
-  
+
   pthread_mutex_destroy(thread->suspend_mutex);
   free(thread->suspend_mutex);
 
+#ifdef AGS_USE_TIMER
   pthread_mutex_destroy(thread->timer_mutex);
+  free(thread->timer_mutex);
+  
   pthread_cond_destroy(thread->timer_cond);
   free(thread->timer_cond);
+#endif
   
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
@@ -670,9 +694,9 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   sync_flags = g_atomic_int_get(&(thread->sync_flags));
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    pthread_mutex_unlock(thread->mutex);
+    //    pthread_mutex_unlock(thread->mutex);
     
-    return;
+    //    return;
   }
   
   switch(tic){
@@ -762,8 +786,40 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 {
   AgsThread *main_loop;
 
+  auto void ags_thread_set_sync_all_recursive_wait_initial(AgsThread *thread);
   auto void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
 
+  void ags_thread_set_sync_all_recursive_wait_initial(AgsThread *thread){
+    AgsThread *child;
+
+    /*  */
+    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      if(g_atomic_pointer_get(&(thread->parent)) != NULL){
+	AgsThread *chaos_tree;
+
+	chaos_tree = ags_thread_chaos_tree(thread);
+	thread->tic_delay = chaos_tree->tic_delay;
+      }
+      
+      g_atomic_int_and(&(thread->flags),
+		       (~AGS_THREAD_INITIAL_RUN));
+    }
+
+    /*  */    
+    g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_WAIT_INITIAL));
+    
+    child = g_atomic_pointer_get(&(thread->children));
+
+    while(child != NULL){
+      ags_thread_set_sync_all_recursive_wait_initial(child);
+      
+      child = g_atomic_pointer_get(&(child->next));
+    }
+  }
+  
   void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic){
     AgsThread *child;
 
@@ -780,6 +836,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 
   main_loop = ags_thread_get_toplevel(thread);
 
+  ags_thread_set_sync_all_recursive_wait_initial(main_loop);
   ags_thread_set_sync_all_recursive(main_loop, tic);
 }
 
@@ -1258,9 +1315,9 @@ ags_thread_is_current_ready(AgsThread *current,
   }
 
   if((AGS_THREAD_INITIAL_RUN & flags) != 0){
-    pthread_mutex_unlock(current->mutex);
+    //    pthread_mutex_unlock(current->mutex);
 
-    return(FALSE);
+    //    return(FALSE);
   }
 
   if((AGS_THREAD_READY & flags) != 0){
@@ -1335,9 +1392,9 @@ ags_thread_is_tree_ready(AgsThread *thread,
     }
 
     if((AGS_THREAD_INITIAL_RUN & flags) != 0){
-      pthread_mutex_unlock(current->mutex);
+      //      pthread_mutex_unlock(current->mutex);
 
-      return(FALSE);
+      //      return(FALSE);
     }
 
     if((AGS_THREAD_READY & flags) != 0){
@@ -1999,7 +2056,7 @@ ags_thread_real_clock(AgsThread *thread)
   AgsThread *main_loop, *async_queue;
   AgsMutexManager *mutex_manager;
   
-  struct timespec time_now;
+  struct timespec time_prev, time_now;
 
   gdouble main_loop_delay;
   gdouble delay_per_hertz;
@@ -2019,20 +2076,6 @@ ags_thread_real_clock(AgsThread *thread)
 
     /* sync */
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
-
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-      thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-      if(g_atomic_pointer_get(&(thread->parent)) != NULL){
-	AgsThread *chaos_tree;
-
-	chaos_tree = ags_thread_chaos_tree(thread);
-	thread->tic_delay = chaos_tree->tic_delay;
-      }
-      
-      g_atomic_int_and(&(thread->flags),
-		       (~AGS_THREAD_INITIAL_RUN));
-    }
 
     /* thread tree */
     current_tic = thread->current_tic;
@@ -2186,11 +2229,13 @@ ags_thread_real_clock(AgsThread *thread)
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
      (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-    clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
-
+    if(g_atomic_pointer_get(&(thread->parent)) == NULL){
+      clock_gettime(CLOCK_MONOTONIC, &time_prev);
+    }
+      
     g_atomic_int_and(&(thread->flags),
 		     (~AGS_THREAD_INITIAL_SYNC));
-
+    
     return(1);
   }
   
@@ -2218,48 +2263,32 @@ ags_thread_real_clock(AgsThread *thread)
   }
 #else
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
-    long time_spent, time_cycle;
+    long time_spent;
 
-    gboolean skip_sleep;
-    
     static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
 
-    skip_sleep = FALSE;
-    
-    if(thread->tic_delay == thread->delay){
-      skip_sleep = TRUE;
-      
-      clock_gettime(CLOCK_MONOTONIC, &time_now);
+    clock_gettime(CLOCK_MONOTONIC, &time_now);
+
+    if(time_now.tv_sec > time_prev.tv_sec){
+      time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - time_prev.tv_nsec);
+    }else{
+      time_spent = time_now.tv_nsec - time_prev.tv_nsec;
     }
 
-    if(!skip_sleep){
-      if(time_now.tv_sec > thread->computing_time->tv_sec){
-	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
-      }else{
-	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
-      }
+    if(time_spent < time_unit){
+      struct timespec timed_sleep = {
+	0,
+	0,
+      };
 
-      time_cycle = time_spent / (thread->tic_delay + 1);
-    
-      if(time_cycle < time_unit){
-	struct timespec timed_sleep = {
-	  0,
-	  0,
-	};
+      if(time_spent < time_unit){
+	timed_sleep.tv_nsec = time_unit - time_spent;
 
-	timed_sleep.tv_nsec = time_unit - time_cycle;
-
-	//	g_message("%d\0", timed_sleep.tv_nsec);
-      
 	nanosleep(&timed_sleep, NULL);
       }
-      
-      if(thread->delay == 0 ||
-	 thread->tic_delay == thread->delay - 1){
-	thread->computing_time->tv_sec = time_now.tv_sec;
-	thread->computing_time->tv_nsec = time_now.tv_nsec;
-      }
     }
+
+    clock_gettime(CLOCK_MONOTONIC, &time_prev);
   }
 #endif
   
@@ -3240,6 +3269,44 @@ ags_thread_chaos_tree(AgsThread *thread)
   }
 
   return(thread);
+}
+
+gboolean
+ags_thread_recursive_initial_sync(AgsThread *thread)
+{
+  AgsThread *child;
+
+  ags_thread_lock(thread);
+
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 ||
+     (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0 ||
+     (AGS_THREAD_WAIT_INITIAL & (g_atomic_int_get(&(thread->flags)))) != 0){
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_WAIT_INITIAL);
+
+    ags_thread_unlock(thread);
+
+    return(TRUE);   
+  }
+  
+  child = g_atomic_pointer_get(&(thread->children));
+
+  while(child != NULL){
+    if(ags_thread_recursive_initial_sync(child)){
+      g_atomic_int_or(&(thread->flags),
+		      AGS_THREAD_WAIT_INITIAL);
+
+      ags_thread_unlock(thread);
+
+      return(TRUE);
+    }
+    
+    child = g_atomic_pointer_get(&(child->next));
+  }
+
+  ags_thread_unlock(thread);
+  
+  return(FALSE);
 }
 
 /**
