@@ -311,7 +311,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
       
       ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(recall->parent)->source,
 					AGS_RECALL_AUDIO_SIGNAL(recall)->source);
-
+      
       pthread_mutex_unlock(recycling_mutex);
     }
 
