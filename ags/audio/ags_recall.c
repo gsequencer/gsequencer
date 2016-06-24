@@ -1292,6 +1292,8 @@ ags_recall_finalize(GObject *gobject)
 					 NULL,
 					 NULL);
   }
+
+  g_free(ids);
   
   if(recall->soundcard != NULL){
     g_object_unref(recall->soundcard);
@@ -1964,7 +1966,8 @@ ags_recall_real_duplicate(AgsRecall *recall,
 				 NULL);
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
-
+  g_free(parameter);
+  
   ags_recall_set_flags(copy,
 		       (recall->flags & (~ (AGS_RECALL_TEMPLATE |
 					    AGS_RECALL_RUN_INITIALIZED |

@@ -5801,7 +5801,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     if(audio->input == NULL){
       return(NULL);
     }
-
+    
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
       input = ags_channel_nth(audio->input, output->audio_channel);
 
@@ -6042,7 +6042,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 										   FALSE);
     if(input_recall_id != NULL){
       //FIXME:JK: memory leak
-      //      free(input_recall_id);
+      free(input_recall_id);
     }
 
     return(default_recall_id);

@@ -47,7 +47,6 @@ void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 enum{
   PROP_0,
-  PROP_MONOTONIC,
 };
 
 static gpointer ags_play_notation_audio_parent_class = NULL;

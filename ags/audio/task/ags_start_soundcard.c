@@ -137,9 +137,27 @@ ags_start_soundcard_disconnect(AgsConnectable *connectable)
 void
 ags_start_soundcard_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_start_soundcard_parent_class)->finalize(gobject);
+  AgsAudioLoop *audio_loop;
+  AgsSoundcardThread *soundcard_thread;
 
-  /* empty */
+  AgsApplicationContext *application_context;
+  AgsSoundcard *soundcard;
+
+  soundcard = AGS_SOUNDCARD(AGS_START_SOUNDCARD(gobject)->soundcard);
+
+  application_context = ags_soundcard_get_application_context(soundcard);
+  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+
+  soundcard_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_SOUNDCARD_THREAD);
+
+  if(soundcard_thread->error != NULL){
+    g_error_free(soundcard_thread->error);
+
+    soundcard_thread->error = NULL;
+  }
+
+  G_OBJECT_CLASS(ags_start_soundcard_parent_class)->finalize(gobject);
 }
 
 void

@@ -708,7 +708,10 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
   
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
+  
+  if(delay_audio->sequencer_duration->port_value.ags_port_double != 0.0){
+    seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
+  }
   
   if(move_forward){
     count_beats_audio_run->notation_counter += steps;

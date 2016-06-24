@@ -282,15 +282,18 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 
       destination = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(recall_audio_signal->destination == destination)
+      if(recall_audio_signal->destination == destination){
 	return;
+      }
 
-      if(recall_audio_signal->destination != NULL)
+      if(recall_audio_signal->destination != NULL){
 	g_object_unref(recall_audio_signal->destination);
-
-      if(destination != NULL)
+      }
+      
+      if(destination != NULL){
 	g_object_ref(G_OBJECT(destination));
-
+      }
+      
       recall_audio_signal->destination = destination;
     }
     break;
@@ -300,15 +303,18 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 
       source = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(recall_audio_signal->source == source)
+      if(recall_audio_signal->source == source){
 	return;
+      }
 
-      if(recall_audio_signal->source != NULL)
+      if(recall_audio_signal->source != NULL){
 	g_object_unref(recall_audio_signal->source);
-
-      if(source != NULL)
+      }
+      
+      if(source != NULL){
 	g_object_ref(G_OBJECT(source));
-
+      }
+      
       recall_audio_signal->source = source;
     }
     break;

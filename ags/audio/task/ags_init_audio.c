@@ -163,7 +163,7 @@ ags_init_audio_launch(AgsTask *task)
   AgsApplicationContext *application_context;
   
   GList *playback;
-  GList *list;
+  GList *list, *list_start;
 
   init_audio = AGS_INIT_AUDIO(task);
 
@@ -181,9 +181,10 @@ ags_init_audio_launch(AgsTask *task)
 		    AGS_PLAYBACK_DOMAIN_PLAYBACK);
 
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-    
-    list = ags_audio_recursive_play_init(audio,
-					 TRUE, FALSE, FALSE);
+
+    list_start = 
+      list = ags_audio_recursive_play_init(audio,
+					   TRUE, FALSE, FALSE);
     
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
@@ -192,6 +193,8 @@ ags_init_audio_launch(AgsTask *task)
 
       playback = playback->next;
     }
+
+    g_list_free(list_start);
   }
 
   if(init_audio->do_sequencer){    
@@ -200,8 +203,9 @@ ags_init_audio_launch(AgsTask *task)
 
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
-    list = ags_audio_recursive_play_init(audio,
-					 FALSE, TRUE, FALSE);
+    list_start = 
+      list = ags_audio_recursive_play_init(audio,
+					   FALSE, TRUE, FALSE);
 
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
@@ -210,6 +214,8 @@ ags_init_audio_launch(AgsTask *task)
       
       playback = playback->next;
     }
+
+    g_list_free(list_start);
   }
 
   if(init_audio->do_notation){    
@@ -218,8 +224,9 @@ ags_init_audio_launch(AgsTask *task)
 
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
-    list = ags_audio_recursive_play_init(audio,
-					 FALSE, FALSE, TRUE);
+    list_start = 
+      list = ags_audio_recursive_play_init(audio,
+					   FALSE, FALSE, TRUE);
 
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
@@ -228,6 +235,8 @@ ags_init_audio_launch(AgsTask *task)
 
       playback = playback->next;
     }
+
+    g_list_free(list_start);
   }
 }
 

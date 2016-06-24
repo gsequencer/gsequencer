@@ -436,6 +436,11 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 			      G_KEY_FILE_NONE,
 			      &error);
 
+    if(error != NULL){
+      g_warning(error->message);
+
+      g_error_free(error);
+    }
 
     groups =
       groups_start = g_key_file_get_groups(key_file,
@@ -509,6 +514,12 @@ ags_config_load_from_data(AgsConfig *config,
 			      buffer_length,
 			      G_KEY_FILE_NONE,
 			      &error);
+
+    if(error != NULL){
+      g_warning(error->message);
+
+      g_error_free(error);
+    }
 
     groups =
       groups_start = g_key_file_get_groups(key_file,

@@ -276,7 +276,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   jack_enabled = (str != NULL && !g_ascii_strncasecmp(str, "enabled\0", 8)) ? TRUE: FALSE;
 
   if(str != NULL){
-    free(str);
+    g_free(str);
   }
 
   /* distributed manager */
@@ -363,20 +363,31 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 
   /* AgsAutosaveThread */
   audio_application_context->autosave_thread = NULL;
-  
-  if(!g_strcmp0(ags_config_get_value(AGS_APPLICATION_CONTEXT(audio_application_context)->config,
-				     AGS_CONFIG_GENERIC,
-				     "autosave-thread\0"),
-	       "true\0")){
-    if(g_strcmp0(ags_config_get_value(AGS_APPLICATION_CONTEXT(audio_application_context)->config,
-				      AGS_CONFIG_GENERIC,
-				      "simple-file\0"),
-		 "false\0")){
-      audio_application_context->autosave_thread = ags_autosave_thread_new(audio_application_context);
-      ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				    audio_application_context->autosave_thread,
-				    TRUE, TRUE);
+
+  str = ags_config_get_value(AGS_APPLICATION_CONTEXT(audio_application_context)->config,
+			     AGS_CONFIG_GENERIC,
+			     "autosave-thread\0");
+  if(str != NULL){
+    if(!g_strcmp0(str,
+		  "true\0")){
+      str = ags_config_get_value(AGS_APPLICATION_CONTEXT(audio_application_context)->config,
+				 AGS_CONFIG_GENERIC,
+				 "simple-file\0");
+
+      if(str != NULL){
+	if(g_strcmp0(str,
+		     "false\0")){
+	  audio_application_context->autosave_thread = ags_autosave_thread_new(audio_application_context);
+	  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+					audio_application_context->autosave_thread,
+					TRUE, TRUE);
+	}
+
+	free(str);
+      }
     }
+
+    free(str);
   }
   
   /* AgsThreadPool */

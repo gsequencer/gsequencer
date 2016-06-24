@@ -468,7 +468,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   task = AGS_TASK(g_atomic_pointer_get(&(append->data)));
 
-  //  free(append);
+  free(append);
 
   /* lock */
   pthread_mutex_lock(task_thread->read_mutex);
@@ -549,7 +549,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   list = (GList *) g_atomic_pointer_get(&(append->data));
 
-  //  free(append);
+  free(append);
 
   /* lock */
   pthread_mutex_lock(task_thread->read_mutex);

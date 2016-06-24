@@ -582,15 +582,18 @@ ags_audio_signal_set_property(GObject *gobject,
 
       recycling = g_value_get_object(value);
 
-      if(audio_signal->recycling == recycling)
+      if(audio_signal->recycling == recycling){
 	return;
+      }
 
-      if(audio_signal->recycling != NULL)
+      if(audio_signal->recycling != NULL){
 	g_object_unref(audio_signal->recycling);
-
-      if(recycling != NULL)
+      }
+      
+      if(recycling != NULL){
 	g_object_ref(recycling);
-
+      }
+      
       audio_signal->recycling = recycling;
     }
     break;
@@ -863,6 +866,8 @@ ags_audio_signal_finalize(GObject *gobject)
 					 NULL);
   }
 
+  g_free(ids);
+  
   if(audio_signal->soundcard != NULL)
     g_object_unref(audio_signal->soundcard);
 
@@ -874,7 +879,7 @@ ags_audio_signal_finalize(GObject *gobject)
 
   if(audio_signal->stream_beginning != NULL){
     g_list_free_full(audio_signal->stream_beginning,
-		     free);
+		     ags_stream_free);
   }
 
   /* call parent */
@@ -912,6 +917,12 @@ ags_stream_alloc(guint buffer_size)
   memset(buffer, 0, buffer_size * sizeof(signed short));
 
   return(buffer);
+}
+
+void
+ags_stream_free(signed short *buffer)
+{
+  free(buffer);
 }
 
 /**

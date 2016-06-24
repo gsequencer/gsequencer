@@ -82,6 +82,7 @@ struct _AgsAudioSignalClass
 GType ags_audio_signal_get_type();
 
 signed short* ags_stream_alloc(guint buffer_size);
+void ags_stream_free(signed short *buffer);
 
 guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
 

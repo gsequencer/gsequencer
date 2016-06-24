@@ -162,10 +162,6 @@ ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal)
 void
 ags_buffer_audio_signal_finalize(GObject *gobject)
 {
-  g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
-
-  g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->destination);
-
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_audio_signal_parent_class)->finalize(gobject); 
 }
@@ -311,6 +307,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   pthread_mutex_lock(recycling_mutex);
   
   AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
+  g_object_ref(destination);
+  
   ags_recycling_add_audio_signal(recycling,
 				 destination);
 
@@ -320,7 +318,6 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   g_message("buffer %x to %x\0", destination, parent_recall_id);
   g_message("creating destination\0");
 #endif
-  g_object_unref(destination);
   
   /* call parent */
   AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre(recall);
