@@ -1297,14 +1297,6 @@ ags_recall_finalize(GObject *gobject)
     g_object_unref(recall->soundcard);
   }
 
-  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
-    //    ags_connectable_disconnect(AGS_CONNECTABLE(recall));
-  }
-
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) != 0){
-    //    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
-  }
-
   //  if(recall->name != NULL){
     //    g_free(recall->name);
   //  }
@@ -2166,6 +2158,14 @@ ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
      child == NULL ||
      child->parent != recall){
     return;
+  }
+
+  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+    ags_connectable_disconnect(AGS_CONNECTABLE(child));
+  }
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) != 0){
+    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(child));
   }
   
   recall->children = g_list_remove(recall->children,

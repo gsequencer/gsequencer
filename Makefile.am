@@ -191,7 +191,8 @@ check_PROGRAMS = \
 	ags_audio_signal_test \
 	ags_recall_test \
 	ags_pattern_test \
-	ags_notation_test
+	ags_notation_test \
+	ags_functional_audio_test
 
 TESTS = $(check_PROGRAMS)
 
@@ -204,6 +205,11 @@ ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
 ags_audio_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_test_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_audio_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
+
+ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
+ags_functional_audio_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_functional_audio_test_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_functional_audio_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 
 ags_channel_test_SOURCES = ags/test/audio/ags_channel_test.c
 ags_channel_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
