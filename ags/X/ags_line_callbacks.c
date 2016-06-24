@@ -341,7 +341,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
-
+  
   gdk_threads_enter();
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,

@@ -37,6 +37,8 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_thread_pool.h>
 
+#include <ags/server/ags_server.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
@@ -71,11 +73,14 @@ struct _AgsAudioApplicationContext
   gchar *version;
   gchar *build_id;
 
-  AgsThread *autosave_thread;
   AgsThreadPool *thread_pool;
 
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
+
+  AgsThread *autosave_thread;
+
+  AgsServer *server;
 
   GList *soundcard;
   GList *sequencer;

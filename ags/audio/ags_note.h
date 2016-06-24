@@ -103,6 +103,6 @@ AgsNote* ags_note_duplicate(AgsNote *note);
 AgsNote* ags_note_new();
 AgsNote* ags_note_new_with_offset(guint x0, guint x1,
 				  guint y,
-				  gdouble stream_delay, gdouble stream_attack);
+				  gdouble stream_delay, guint stream_attack);
 
 #endif /*__AGS_NOTE_H__*/

@@ -917,5 +917,3 @@ ags_xorg_application_context_new()
 
   return(xorg_application_context);
 }
-
-

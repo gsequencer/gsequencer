@@ -61,6 +61,7 @@ enum{
   PROP_DECAY,
   PROP_SUSTAIN,
   PROP_RELEASE,
+  PROP_RATIO,
 };
 
 GType
@@ -268,6 +269,22 @@ ags_note_class_init(AgsNoteClass *note)
   g_object_class_install_property(gobject,
 				  PROP_RELEASE,
 				  param_spec);
+
+  /**
+   * AgsNote:ratio:
+   *
+   * Envelope ratio.
+   * 
+   * Since: 0.7.42
+   */
+  param_spec = g_param_spec_boxed("ratio\0",
+				  "envelope's ratio\0",
+				  "The envelope's ratio\0",
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RATIO,
+				  param_spec);
 }
 
 void
@@ -323,6 +340,130 @@ ags_note_set_property(GObject *gobject,
 		      const GValue *value,
 		      GParamSpec *param_spec)
 {
+  AgsNote *note;
+
+  note = AGS_NOTE(gobject);
+
+  switch(prop_id){
+  case PROP_X0:
+    {
+      note->x[0] = g_value_get_uint(value);
+    }
+    break;
+  case PROP_X1:
+    {
+      note->x[1] = g_value_get_uint(value);
+    }
+    break;
+  case PROP_Y:
+    {
+      note->y = g_value_get_uint(value);
+    }
+    break;
+  case PROP_STREAM_DELAY:
+    {
+      note->stream_delay = g_value_get_double(value);
+    }
+    break;
+  case PROP_STREAM_ATTACK:
+    {
+      note->stream_attack = g_value_get_uint(value);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      AgsComplex *attack;
+
+      attack = (AgsComplex *) g_value_get_boxed(value);
+
+      if(note->attack == attack){
+	return;
+      }
+
+      if(note->attack != NULL){
+	ags_complex_free(note->attack);
+      }
+
+      ags_complex_set(note->attack,
+		      ags_complex_get(attack));
+    }
+    break;
+  case PROP_SUSTAIN:
+    {
+      AgsComplex *sustain;
+
+      sustain = (AgsComplex *) g_value_get_boxed(value);
+
+      if(note->sustain == sustain){
+	return;
+      }
+
+      if(note->sustain != NULL){
+	ags_complex_free(note->sustain);
+      }
+
+      ags_complex_set(note->sustain,
+		      ags_complex_get(sustain));
+    }
+    break;
+  case PROP_DECAY:
+    {
+      AgsComplex *decay;
+
+      decay = (AgsComplex *) g_value_get_boxed(value);
+
+      if(note->decay == decay){
+	return;
+      }
+
+      if(note->decay != NULL){
+	ags_complex_free(note->decay);
+      }
+
+      ags_complex_set(note->decay,
+		      ags_complex_get(decay));
+    }
+    break;
+  case PROP_RELEASE:
+    {
+      AgsComplex *release;
+
+      release = (AgsComplex *) g_value_get_boxed(value);
+
+      if(note->release == release){
+	return;
+      }
+
+      if(note->release != NULL){
+	ags_complex_free(note->release);
+      }
+
+      ags_complex_set(note->release,
+		      ags_complex_get(release));
+    }
+    break;
+  case PROP_RATIO:
+    {
+      AgsComplex *ratio;
+
+      ratio = (AgsComplex *) g_value_get_boxed(value);
+
+      if(note->ratio == ratio){
+	return;
+      }
+
+      if(note->ratio != NULL){
+	ags_complex_free(note->ratio);
+      }
+
+      ags_complex_set(note->ratio,
+		      ags_complex_get(ratio));
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -331,6 +472,45 @@ ags_note_get_property(GObject *gobject,
 		      GValue *value,
 		      GParamSpec *param_spec)
 {
+  AgsNote *note;
+
+  note = AGS_NOTE(gobject);
+
+  switch(prop_id){
+  case PROP_X0:
+    g_value_set_uint(value, note->x[0]);
+    break;
+  case PROP_X1:
+    g_value_set_uint(value, note->x[1]);
+    break;
+  case PROP_Y:
+    g_value_set_uint(value, note->y);
+    break;
+  case PROP_STREAM_DELAY:
+    g_value_set_double(value, note->stream_delay);
+    break;
+  case PROP_STREAM_ATTACK:
+    g_value_set_uint(value, note->stream_attack);
+    break;
+  case PROP_ATTACK:
+    g_value_set_boxed(value, note->attack);
+    break;
+  case PROP_SUSTAIN:
+    g_value_set_boxed(value, note->sustain);
+    break;
+  case PROP_DECAY:
+    g_value_set_boxed(value, note->decay);
+    break;
+  case PROP_RELEASE:
+    g_value_set_boxed(value, note->release);
+    break;
+  case PROP_RATIO:
+    g_value_set_boxed(value, note->ratio);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -749,7 +929,7 @@ ags_note_new()
 AgsNote*
 ags_note_new_with_offset(guint x0, guint x1,
 			 guint y,
-			 gdouble stream_delay, gdouble stream_attack)
+			 gdouble stream_delay, guint stream_attack)
 {
   AgsNote *note;
 
