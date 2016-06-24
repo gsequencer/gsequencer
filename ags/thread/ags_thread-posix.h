@@ -115,7 +115,7 @@ struct _AgsThread
   struct timespec *computing_time;
   
   pthread_t *thread;
-  pthread_attr_t thread_attr;
+  pthread_attr_t *thread_attr;
 
   gdouble freq;
 

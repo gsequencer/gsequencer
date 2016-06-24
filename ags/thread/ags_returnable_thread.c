@@ -153,7 +153,7 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 
   thread = AGS_THREAD(returnable_thread);
 
-  pthread_attr_setdetachstate(&(thread->thread_attr),
+  pthread_attr_setdetachstate(thread->thread_attr,
 			      PTHREAD_CREATE_DETACHED);
 
   g_atomic_int_or(&(thread->flags),
