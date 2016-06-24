@@ -266,10 +266,10 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->duration_time = (GtkLabel *) gtk_label_new(NULL);
   g_object_set(navigation->duration_time,
-	       "label\0", g_strdup("0000:00.000\0"),
+	       "label\0", "0000:00.000\0",
 	       NULL);
-  gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
 
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -772,6 +772,18 @@ ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 			   enabled);
   gtk_widget_set_sensitive((GtkWidget *) navigation->forward,
 			   enabled);
+}
+
+gboolean
+ags_navigation_duration_time_queue_draw(GtkWidget *widget)
+{
+  gdk_threads_enter();
+
+  gtk_widget_queue_draw(AGS_NAVIGATION(widget)->duration_time);
+
+  gdk_threads_leave();
+
+  return(TRUE);
 }
 
 /**
