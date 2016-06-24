@@ -354,8 +354,8 @@ ags_thread_init(AgsThread *thread)
   /* thread, mutex and cond */
   thread->thread = (pthread_t *) malloc(sizeof(pthread_t));
 
-  //  thread->thread_attr = (pthread_attr_t *) malloc(sizeof(pthread_attr_t));
-  pthread_attr_init(&(thread->thread_attr));
+  thread->thread_attr = (pthread_attr_t *) malloc(sizeof(pthread_attr_t));
+  pthread_attr_init(thread->thread_attr);
 
   thread->freq = AGS_THREAD_DEFAULT_JIFFIE;
     
@@ -539,21 +539,11 @@ ags_thread_finalize(GObject *gobject)
 
   thread = AGS_THREAD(gobject);
 
-  thread_attr = &(thread->thread_attr);
+  thread_attr = thread->thread_attr;
   thread_ptr = thread->thread;
-  
-  /*  */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
 
-  ags_mutex_manager_remove(mutex_manager,
-			   (GObject *) thread);
-  
-  pthread_mutex_unlock(application_mutex);
+  g_message("fin %s\0", G_OBJECT_TYPE_NAME(gobject));
 
-  /*  */
   if((parent = g_atomic_pointer_get(&(thread->parent))) != NULL){
     pthread_mutex_lock(parent->start_mutex);
 
@@ -567,6 +557,16 @@ ags_thread_finalize(GObject *gobject)
 			    thread);
   }
 
+  /*  */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_remove(mutex_manager,
+			   (GObject *) thread);
+  
+  /*  */
   free(thread->computing_time);
 
   /*  */
@@ -622,13 +622,18 @@ ags_thread_finalize(GObject *gobject)
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
   
-  pthread_attr_destroy(thread_attr);
-  //  free(thread_attr);
-
   pthread_detach(thread_ptr);
-  free(thread_ptr);
 
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_attr_destroy(thread_attr);
+  free(thread_attr);
+
+  //  free(*thread_ptr);
+  free(thread_ptr);
   free(stackaddr);
+
+  pthread_exit(NULL);
 }
 
 void
@@ -2404,7 +2409,7 @@ ags_thread_real_start(AgsThread *thread)
   }
 
   /*  */
-  pthread_create(thread->thread, &(thread->thread_attr),
+  pthread_create(thread->thread, thread->thread_attr,
 		 &ags_thread_loop, thread);
 }
 
@@ -2839,7 +2844,7 @@ ags_thread_loop(void *ptr)
   
   g_object_ref(thread);
   
-    /* exit thread */
+  /* exit thread */
   pthread_exit(NULL);
 }
 
