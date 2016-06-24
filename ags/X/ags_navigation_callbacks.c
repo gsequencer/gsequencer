@@ -595,46 +595,30 @@ void
 ags_navigation_tic_callback(GObject *soundcard,
 			    AgsNavigation *navigation)
 {
-  AgsWindow *window;
-
-  AgsChangeTact *change_tact;
-  AgsDisplayTact *display_tact;
-
-  AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
+  gchar *timestr;
+  gdouble delay, tact;
 
   if((AGS_NAVIGATION_BLOCK_TIC & (navigation->flags)) != 0){
     navigation->flags &= (~AGS_NAVIGATION_BLOCK_TIC);
     return;
   }
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) != navigation->note_offset){
+    gdk_threads_enter();
+    
+    navigation->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+    tact = navigation->note_offset - navigation->start_tact;
 
-  if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) != navigation->note_offset){
-    application_context = window->application_context;
+    gdk_window_flush(GTK_WIDGET(navigation->duration_time)->window);
+    timestr = ags_navigation_absolute_tact_to_time_string(tact,
+							  ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard)),
+							  ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard)));
+  
+    gtk_label_set_label(navigation->duration_time, timestr);
+    gtk_widget_queue_draw(navigation->duration_time);
+    g_free(timestr);
 
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get audio loop */
-    pthread_mutex_lock(application_mutex);
-
-    audio_loop = application_context->main_loop;
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* get task thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
-							 AGS_TYPE_TASK_THREAD);
-
-    display_tact = ags_display_tact_new((GtkWidget *) navigation);
-    ags_task_thread_append_task(task_thread,
-				display_tact);
+    gdk_threads_leave();
   }
 }
 

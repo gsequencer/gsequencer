@@ -1304,8 +1304,11 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
 {
   snd_ctl_t *card_handle;
   snd_ctl_card_info_t *card_info;
+
   char *name;
   gchar *str;
+  gchar *str_err;
+  
   int card_num;
   int device;
   int error;
@@ -1318,7 +1321,10 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     error = snd_card_next(&card_num);
 
     if(card_num < 0 || error < 0){
-      g_message("Can't get the next card number: %s\0", snd_strerror(error));
+      str_err = snd_strerror(error);
+      g_message("Can't get the next card number: %s\0", str_err);
+
+      free(str_err);
       
       break;
     }
@@ -1375,12 +1381,16 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 		    guint *buffer_size_min, guint *buffer_size_max,
 		    GError **error)
 {
-  int rc;
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *params;
+
+  gchar *str;
+
   unsigned int val;
   int dir;
   snd_pcm_uframes_t frames;
+
+  int rc;
   int err;
 
   /* Open PCM device for playback. */
@@ -1389,15 +1399,18 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
   rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
   if(rc < 0) {
-    g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
+    str = snd_strerror(rc);
+    g_message("unable to open pcm device: %s\n\0", str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
 		  "unable to open pcm device: %s\n\0",
-		  snd_strerror(rc));
+		  str);
     }
+    
+    free(str);
     
     return;
   }
@@ -1470,6 +1483,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   snd_pcm_hw_params_t *hwparams;
   snd_pcm_sw_params_t *swparams;
 
+  gchar *str;
+  
   int rc;
   unsigned int val;
   snd_pcm_uframes_t frames;
@@ -1563,16 +1578,20 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Playback open error: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Playback open error: %s\n", str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
 		  "unable to open pcm device: %s\n\0",
-		  snd_strerror(err));
+		  str);
     }
     
+    free(str);
+
     return;
   }
 
@@ -1583,7 +1602,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_any(handle, hwparams);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Broken configuration for playback: no configurations available: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1591,7 +1615,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 1);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Resampling setup failed for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Resampling setup failed for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1599,7 +1628,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Access type not available for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Access type not available for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1607,7 +1641,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_set_format(handle, hwparams, format);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Sample format not available for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Sample format not available for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1616,7 +1655,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Channels count (%i) not available for playbacks: %s\n", channels, snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Channels count (%i) not available for playbacks: %s\n", channels, str);
+
+    free(str);
+    
     return;
   }
 
@@ -1626,7 +1670,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Rate %iHz not available for playback: %s\n", rate, str);
+
+    free(str);
+    
     return;
   }
 
@@ -1642,7 +1691,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to set buffer size %i for playback: %s\n", size, snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to set buffer size %i for playback: %s\n", size, str);
+
+    free(str);
+    
     return;
   }
 
@@ -1654,14 +1708,24 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to set period time %i for playback: %s\n", period_time, str);
+
+    free(str);
+    
     return;
   }
 
   err = snd_pcm_hw_params_get_period_size(hwparams, &size, &dir);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to get period size for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to get period size for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
   period_size = size;
@@ -1670,7 +1734,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params(handle, hwparams);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to set hw params for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to set hw params for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1678,7 +1747,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_sw_params_current(handle, swparams);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to determine current swparams for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1687,7 +1761,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to set start threshold mode for playback: %s\n", str);
+    
+    free(str);
+    
     return;
   }
 
@@ -1696,7 +1775,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to set avail min for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to set avail min for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1704,7 +1788,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_sw_params(handle, swparams);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
-    g_warning("Unable to set sw params for playback: %s\n", snd_strerror(err));
+
+    str = snd_strerror(err);
+    g_warning("Unable to set sw params for playback: %s\n", str);
+
+    free(str);
+    
     return;
   }
 
@@ -1732,6 +1821,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   AgsApplicationContext *application_context;
 
+  gchar *str;
+  
   guint word_size;
   
   pthread_mutex_t *mutex;
@@ -1823,7 +1914,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}
       }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+	str = snd_strerror(devout->out.alsa.rc);
+	g_message("error from writei: %s\0", str);
+
+	free(str);
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
 	g_message("short write, write %d frames\0", devout->out.alsa.rc);
       }
@@ -1858,7 +1952,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}
       }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+	str = snd_strerror(devout->out.alsa.rc);
+	g_message("error from writei: %s\0", str);
+
+	free(str);
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
 	g_message("short write, write %d frames\0", devout->out.alsa.rc);
       }
@@ -1893,7 +1990,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}
       }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+	str = snd_strerror(devout->out.alsa.rc);
+	g_message("error from writei: %s\0", str);
+
+	free(str);
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
 	g_message("short write, write %d frames\0", devout->out.alsa.rc);
       }
@@ -1927,7 +2027,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}
       }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+	str = snd_strerror(devout->out.alsa.rc);
+	g_message("error from writei: %s\0", str);
+
+	free(str);
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
 	g_message("short write, write %d frames\0", devout->out.alsa.rc);
       }
