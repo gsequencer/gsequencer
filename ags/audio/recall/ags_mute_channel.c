@@ -182,7 +182,7 @@ ags_mute_channel_init(AgsMuteChannel *mute_channel)
   port = NULL;
 
   mute_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", g_strdup("ags-mute\0"),
+				     "plugin-name\0", "ags-mute\0",
 				     "specifier\0", "./muted[0]\0",
 				     "control-port\0", "1/1\0",
 				     "port-value-is-pointer\0", FALSE,

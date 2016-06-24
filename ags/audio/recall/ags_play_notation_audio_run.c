@@ -681,7 +681,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
-  
+
   if((guint) floor(delay) != 0){
     //    g_message("d %f\0", delay);
     return;
@@ -887,7 +887,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 		
 	    ags_recycling_create_audio_signal_with_frame_count(recycling,
 							       audio_signal,
-							       ((double) samplerate / notation_delay) * (note->x[1] - note->x[0]),
+							       (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0])),
 							       delay, attack);
 	  }
 	  

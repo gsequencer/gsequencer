@@ -757,9 +757,9 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 #endif
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
-    g_object_set(G_OBJECT(recall_recycling),
-		 "child-source\0", audio_signal,
-		 NULL);
+    //    g_object_set(G_OBJECT(recall_recycling),
+    //		 "child-source\0", audio_signal,
+    //		 NULL);
   }
 
 
@@ -891,9 +891,9 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     if(g_list_find(recall_recycling->child_source,
 		   audio_signal) != NULL){
-      recall_recycling->child_source = g_list_remove(recall_recycling->child_source,
-						     audio_signal);
-      g_object_unref(audio_signal);
+      //      recall_recycling->child_source = g_list_remove(recall_recycling->child_source,
+      //					     audio_signal);
+      //      g_object_unref(audio_signal);
     }
   }
 
@@ -980,9 +980,9 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
   g_message(" -- g_object_set -- child_destination@%llx\0", (long long unsigned int) audio_signal);
 #endif
     
-  g_object_set(G_OBJECT(recall_recycling),
-	       "child_destination\0", audio_signal,
-	       NULL);
+  //  g_object_set(G_OBJECT(recall_recycling),
+  //	       "child_destination\0", audio_signal,
+  //	       NULL);
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     if(recall_recycling->child_source != NULL){
@@ -990,7 +990,7 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
       //	       g_object_unref);
     }
     
-    recall_recycling->child_source = NULL;
+    //    recall_recycling->child_source = NULL;
   }
 
   pthread_mutex_unlock(mutex);
@@ -1095,18 +1095,18 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
   
   if((AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION & (recall_recycling->flags)) != 0){
     if(recall_recycling->child_destination == audio_signal){
-      g_object_set(G_OBJECT(recall_recycling),
-		   "child_destination\0", NULL,
-		   NULL);
+      //      g_object_set(G_OBJECT(recall_recycling),
+      //	   "child_destination\0", NULL,
+      //	   NULL);
     }
   }
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     if(recall_recycling->child_source != NULL){
-      recall_recycling->child_source = NULL;
+      //      recall_recycling->child_source = NULL;
     }
 
-    recall_recycling->child_source = NULL;
+    //    recall_recycling->child_source = NULL;
   }
 
   pthread_mutex_unlock(mutex);

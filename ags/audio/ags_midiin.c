@@ -462,9 +462,9 @@ ags_midiin_set_property(GObject *gobject,
 
 	//  midiin->in.oss.device = NULL;
 	midiin->in.alsa.handle = NULL;
-	midiin->in.alsa.device = g_strdup(ags_config_get_value(config,
-							       AGS_CONFIG_SEQUENCER,
-							       "alsa-midi-handle\0"));
+	midiin->in.alsa.device = ags_config_get_value(config,
+						      AGS_CONFIG_SEQUENCER,
+						      "alsa-midi-handle\0");
       }else{
 	midiin->application_mutex = NULL;
       }

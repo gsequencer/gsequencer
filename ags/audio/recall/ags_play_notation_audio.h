@@ -38,8 +38,6 @@ typedef struct _AgsPlayNotationAudioClass AgsPlayNotationAudioClass;
 struct _AgsPlayNotationAudio
 {
   AgsRecallAudio recall_audio;
-
-  AgsPort *monotonic;
 };
 
 struct _AgsPlayNotationAudioClass

@@ -514,7 +514,7 @@ ags_drum_map_recall(AgsMachine *machine)
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-  }
+  }    
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -538,7 +538,7 @@ ags_drum_map_recall(AgsMachine *machine)
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
+		      (guint) window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
 		      TRUE);
   }
 

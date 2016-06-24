@@ -764,9 +764,9 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 {  
   recycling->audio_signal = g_list_remove(recycling->audio_signal,
 					  (gpointer) audio_signal);
-  g_object_set(audio_signal,
-	       "recycling\0", NULL,
-	       NULL);
+  audio_signal->recycling = NULL;
+  g_object_unref(audio_signal);
+  g_object_unref(recycling);
 }
 
 /**

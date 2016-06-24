@@ -742,6 +742,10 @@ ags_notation_add_note(AgsNotation *notation,
   auto gint ags_notation_add_note_compare_function(gpointer a, gpointer b);
 
   gint ags_notation_add_note_compare_function(gpointer a, gpointer b){
+    if(a == NULL || b == NULL){
+      return(0);
+    }
+    
     if(AGS_NOTE(a)->x[0] == AGS_NOTE(b)->x[0]){
       if(AGS_NOTE(a)->y == AGS_NOTE(b)->y){
 	return(0);
