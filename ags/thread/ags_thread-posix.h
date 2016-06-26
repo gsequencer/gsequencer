@@ -107,9 +107,10 @@ struct _AgsThread
   
   sigset_t wait_mask;
 
+  guint current_tic;
+
   guint delay;
   guint tic_delay;
-  guint current_tic;
 
   guint cycle_iteration;
   struct timespec *computing_time;
