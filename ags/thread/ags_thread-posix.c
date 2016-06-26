@@ -2260,9 +2260,6 @@ ags_thread_real_clock(AgsThread *thread)
     gdouble time_spent, relative_time_spent;
     gdouble time_cycle, time_absolute;
 
-    static const gdouble time_max = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
-    static const gdouble time_precision = AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION;
-    
     if(thread->tic_delay == thread->delay){
       struct timespec timed_sleep = {
 	0,
@@ -2271,23 +2268,21 @@ ags_thread_real_clock(AgsThread *thread)
 
       clock_gettime(CLOCK_MONOTONIC, &time_now);
       
-      time_absolute = time_max * time_precision;
-      
-      if(time_now.tv_sec + 1 == thread->computing_time->tv_sec){
+      if(time_now.tv_sec == thread->computing_time->tv_sec + 1){
 	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
-      }else if(time_now.tv_sec + 1 > thread->computing_time->tv_sec){
+      }else if(time_now.tv_sec > thread->computing_time->tv_sec + 1){
 	time_spent = (time_now.tv_sec - thread->computing_time->tv_sec) * NSEC_PER_SEC;
 	time_spent += (time_now.tv_nsec - thread->computing_time->tv_nsec);
       }else{
 	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
       }
 
-      time_cycle = thread->delay * time_absolute;
-      relative_time_spent = time_cycle - time_spent - time_absolute;
-      
-      if(relative_time_spent > 0 &&
-	 relative_time_spent < time_cycle){
-	timed_sleep.tv_nsec = relative_time_spent;
+      time_cycle = (NSEC_PER_SEC) * (1.0 / thread->freq);
+      relative_time_spent = time_cycle - time_spent;
+
+      //FIXME:JK: do optimization
+      if(relative_time_spent - (AGS_THREAD_MAX_PRECISION * thread->freq * (NSEC_PER_SEC / (AGS_THREAD_HERTZ_JIFFIE * AGS_THREAD_HERTZ_JIFFIE))) > 0){
+	timed_sleep.tv_nsec = relative_time_spent - (AGS_THREAD_MAX_PRECISION * thread->freq * (NSEC_PER_SEC / (AGS_THREAD_HERTZ_JIFFIE * AGS_THREAD_HERTZ_JIFFIE)));
 	
 	nanosleep(&timed_sleep, NULL);
       }
