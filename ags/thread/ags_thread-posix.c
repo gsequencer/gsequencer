@@ -2226,7 +2226,7 @@ ags_thread_real_clock(AgsThread *thread)
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
      (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
     clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
-
+    
     g_atomic_int_and(&(thread->flags),
 		     (~AGS_THREAD_INITIAL_SYNC));
 
@@ -2257,47 +2257,42 @@ ags_thread_real_clock(AgsThread *thread)
   }
 #else
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
-    long time_spent, time_cycle;
+    gdouble time_spent, relative_time_spent;
+    gdouble time_cycle, time_absolute;
 
-    gboolean skip_sleep;
-    
-    static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
-
-    skip_sleep = FALSE;
+    static const gdouble time_max = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
+    static const gdouble time_precision = AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION;
     
     if(thread->tic_delay == thread->delay){
-      skip_sleep = TRUE;
-      
-      clock_gettime(CLOCK_MONOTONIC, &time_now);
-    }
+      struct timespec timed_sleep = {
+	0,
+	0,
+      };
 
-    if(!skip_sleep){
-      if(time_now.tv_sec > thread->computing_time->tv_sec){
+      clock_gettime(CLOCK_MONOTONIC, &time_now);
+      
+      time_absolute = time_max * time_precision;
+      
+      if(time_now.tv_sec + 1 == thread->computing_time->tv_sec){
 	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
+      }else if(time_now.tv_sec + 1 > thread->computing_time->tv_sec){
+	time_spent = (time_now.tv_sec - thread->computing_time->tv_sec) * NSEC_PER_SEC;
+	time_spent += (time_now.tv_nsec - thread->computing_time->tv_nsec);
       }else{
 	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
       }
 
-      time_cycle = time_spent / (thread->tic_delay + 1);
-    
-      if(time_cycle < time_unit){
-	struct timespec timed_sleep = {
-	  0,
-	  0,
-	};
-
-	timed_sleep.tv_nsec = time_unit - time_cycle;
-
-	//	g_message("%d\0", timed_sleep.tv_nsec);
+      time_cycle = thread->delay * time_absolute;
+      relative_time_spent = time_cycle - time_spent - time_absolute;
       
+      if(relative_time_spent > 0 &&
+	 relative_time_spent < time_cycle){
+	timed_sleep.tv_nsec = relative_time_spent;
+	
 	nanosleep(&timed_sleep, NULL);
       }
-      
-      if(thread->delay == 0 ||
-	 thread->tic_delay == thread->delay - 1){
-	thread->computing_time->tv_sec = time_now.tv_sec;
-	thread->computing_time->tv_nsec = time_now.tv_nsec;
-      }
+
+      clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
     }
   }
 #endif
