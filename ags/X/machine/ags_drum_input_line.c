@@ -56,8 +56,6 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
 
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>
@@ -413,8 +411,6 @@ ags_drum_input_line_map_recall(AgsLine *line,
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
-  AgsBufferChannel *buffer_channel;
-  AgsBufferChannelRun *buffer_channel_run;
   AgsStreamChannelRun *stream_channel_run;
 
   GList *list;

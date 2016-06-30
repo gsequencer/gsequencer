@@ -203,7 +203,7 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 				   NULL,
 				   10);
 
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size);
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
   }
 
   g_free(str0);

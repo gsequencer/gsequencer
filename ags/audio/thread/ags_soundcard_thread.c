@@ -159,10 +159,40 @@ void
 ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
 {
   AgsThread *thread;
+
+  AgsConfig *config;
+  
+  gchar *str0, *str1;
   
   thread = AGS_THREAD(soundcard_thread);
   
-  thread->freq = AGS_SOUNDCARD_THREAD_DEFAULT_JIFFIE;
+  config = ags_config_get_instance();
+  
+  str0 = ags_config_get_value(config,
+			AGS_CONFIG_SOUNDCARD,
+			"samplerate\0");
+  str1 = ags_config_get_value(config,
+			AGS_CONFIG_SOUNDCARD,
+			"buffer-size\0");
+
+  if(str0 == NULL || str1 == NULL){
+    thread->freq = AGS_SOUNDCARD_THREAD_DEFAULT_JIFFIE;
+  }else{
+    guint samplerate;
+    guint buffer_size;
+
+    samplerate = g_ascii_strtoull(str0,
+				  NULL,
+				  10);
+    buffer_size = g_ascii_strtoull(str1,
+				   NULL,
+				   10);
+
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  }
+
+  g_free(str0);
+  g_free(str1);
 
   soundcard_thread->soundcard = NULL;
 

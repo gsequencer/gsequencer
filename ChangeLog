@@ -1,3 +1,11 @@
+ags (0.7.43)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed timing issue of toplevel AgsThread limit nanosleep() to band
+	* fixed missing read of config values in ags_soundcard_thread() to calculate its frequency
+	* improved ref/unref AgsAudioSignal because it wasn't properly done
+	* modified ags_recall_recycling.c to not cache AgsAudioSignal
+
 ags (0.7.42)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

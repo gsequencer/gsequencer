@@ -303,7 +303,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 				   NULL,
 				   10);
 
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size);
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
   }
 
   g_free(str0);

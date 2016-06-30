@@ -295,7 +295,7 @@ ags_functional_audio_test_playback()
   }
   
   void ags_functional_audio_test_playback_add_playback(AgsAudio *audio){
-    AgsChannel *channel;
+    AgsChannel *channel, *input;
 
     AgsDelayAudio *play_delay_audio;
     AgsDelayAudioRun *play_delay_audio_run;
@@ -303,6 +303,8 @@ ags_functional_audio_test_playback()
     AgsCountBeatsAudioRun *play_count_beats_audio_run;
     AgsPlayNotationAudio *recall_notation_audio;
     AgsPlayNotationAudioRun *recall_notation_audio_run;
+    AgsBufferChannel *buffer_channel;
+    AgsBufferChannelRun *buffer_channel_run;
 
     GList *list;
 
@@ -454,12 +456,30 @@ ags_functional_audio_test_playback()
 				"ags-stream\0",
 				channel->audio_channel, channel->audio_channel + 1, 
 				channel->pad, channel->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
+				(AGS_RECALL_FACTORY_OUTPUT |
 				 AGS_RECALL_FACTORY_PLAY |
 				 AGS_RECALL_FACTORY_RECALL | 
 				 AGS_RECALL_FACTORY_ADD),
 				0);
-  
+      
+      input = ags_channel_pad_nth(audio->input,
+				  channel->pad);
+
+      while(input != NULL){
+	/* ags-buffer */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-buffer\0",
+				  0, audio->audio_channels, 
+				  input->pad, input->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	input = input->next_pad;
+      }
+
       channel = channel->next;
     }
 
