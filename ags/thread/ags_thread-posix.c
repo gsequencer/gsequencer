@@ -801,7 +801,31 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 {
   AgsThread *main_loop;
 
+  auto void ags_thread_set_sync_all_recursive_initial_sync(AgsThread *thread, guint tic);
   auto void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
+
+  void ags_thread_set_sync_all_recursive_initial_sync(AgsThread *thread, guint tic){
+    AgsThread *child;
+
+    if(thread->tic_delay == G_MAXUINT){
+      thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+      
+      if(g_atomic_pointer_get(&(thread->parent)) != NULL){
+	AgsThread *chaos_tree;
+	
+	chaos_tree = ags_thread_chaos_tree(thread);
+	thread->tic_delay = chaos_tree->tic_delay;
+      }
+    }
+
+    child = g_atomic_pointer_get(&(thread->children));
+
+    while(child != NULL){
+      ags_thread_set_sync_all_recursive(child, tic);
+      
+      child = g_atomic_pointer_get(&(child->next));
+    }
+  }
 
   void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic){
     AgsThread *child;
@@ -819,7 +843,11 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 
   main_loop = ags_thread_get_toplevel(thread);
 
-  ags_thread_set_sync_all_recursive(main_loop, tic);
+  ags_thread_set_sync_all_recursive_initial_sync(thread,
+						 tic);
+  
+  ags_thread_set_sync_all_recursive(main_loop,
+				    tic);
 }
 
 /**
@@ -1301,7 +1329,7 @@ ags_thread_is_current_ready(AgsThread *current,
 
     return(FALSE);
   }
-
+  
   if((AGS_THREAD_READY & flags) != 0){
     retval = TRUE;
   }
@@ -2061,16 +2089,9 @@ ags_thread_real_clock(AgsThread *thread)
 
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
       thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-      if(g_atomic_pointer_get(&(thread->parent)) != NULL){
-	AgsThread *chaos_tree;
-
-	chaos_tree = ags_thread_chaos_tree(thread);
-	thread->tic_delay = chaos_tree->tic_delay;
-      }
       
       g_atomic_int_and(&(thread->flags),
-		       (~AGS_THREAD_INITIAL_RUN));
+		       (~AGS_THREAD_INITIAL_RUN)); 
     }
 
     /* thread tree */
@@ -2387,16 +2408,20 @@ ags_thread_real_start(AgsThread *thread)
 
   main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
   
-  /* get run flags */
+  /* set initial tic and run flags */
+  thread->tic_delay = G_MAXUINT;
+  
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_RUNNING |
 		   AGS_THREAD_INITIAL_RUN |
 		   AGS_THREAD_INITIAL_SYNC));
 
+  /* unset initialization flags */
   g_atomic_int_and(&(thread->flags),
 		   (~(AGS_THREAD_RT_SETUP |
 		      AGS_THREAD_WAITING)));
 
+  /* unset sync flags */
   g_atomic_int_and(&(thread->sync_flags),
 		   (~(AGS_THREAD_WAIT_0 |
 		      AGS_THREAD_WAIT_1 |
@@ -2781,8 +2806,8 @@ ags_thread_loop(void *ptr)
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0  ||
      (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-    thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));    
-
+    thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+    
     g_atomic_int_and(&(thread->flags),
 		     (~AGS_THREAD_INITIAL_RUN));
 
@@ -2835,7 +2860,7 @@ ags_thread_loop(void *ptr)
 
     ags_thread_set_sync_all(main_loop, thread->current_tic);    
   }
-
+  
   if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
     ags_thread_remove_child(g_atomic_pointer_get(&(thread->parent)),
 			    thread);
@@ -3289,7 +3314,7 @@ ags_thread_chaos_tree(AgsThread *thread)
 
 gboolean
 ags_thread_is_tree_started_and_synced(AgsThread *thread,
-				      guint sync_delay_tic)
+				      guint sync_tic_delay)
 {
   AgsThread *child;
 
@@ -3311,7 +3336,7 @@ ags_thread_is_tree_started_and_synced(AgsThread *thread,
   }
 
   /* check tic */
-  if(thread->tic_delay != sync_delay_tic){
+  if(thread->tic_delay != sync_tic_delay){
     retval = FALSE;
   }
 
@@ -3320,7 +3345,8 @@ ags_thread_is_tree_started_and_synced(AgsThread *thread,
 
   while(child != NULL &&
 	retval){
-    if(!(retval = ags_thread_is_tree_started_and_synced(child))){
+    if(!(retval = ags_thread_is_tree_started_and_synced(child,
+							sync_tic_delay))){
       break;
     }
     
