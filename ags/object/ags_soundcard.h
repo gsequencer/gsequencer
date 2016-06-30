@@ -55,6 +55,8 @@
 #define AGS_SOUNDCARD_DEFAULT_LOOP_LEFT (0)
 #define AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT (64)
 
+#define AGS_SOUNDCARD_DEFAULT_OVERCLOCK (1.0)
+
 typedef void AgsSoundcard;
 typedef struct _AgsSoundcardInterface AgsSoundcardInterface;
 

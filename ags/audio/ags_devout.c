@@ -1504,6 +1504,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   pthread_mutex_t *mutex;
   
   static unsigned int period_time = 100000;
+  static unsigned int buffer_time = 100000;
 
   devout = AGS_DEVOUT(soundcard);
 
@@ -1700,10 +1701,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  buffer_size = size;
-
   /* set the period time */
-  period_time = USEC_PER_SEC / devout->samplerate;
+  period_time = (USEC_PER_SEC / (devout->samplerate)); // - (USEC_PER_SEC / (devout->samplerate * 1000))
   dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {

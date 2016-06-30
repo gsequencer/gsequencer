@@ -2260,6 +2260,10 @@ ags_thread_real_clock(AgsThread *thread)
     gdouble time_spent, relative_time_spent;
     gdouble time_cycle, time_absolute;
 
+    static const gdouble nsec_per_jiffie = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
+    static const gdouble lost_per_jiffie = nsec_per_jiffie * (AGS_THREAD_MAX_PRECISION / AGS_THREAD_HERTZ_JIFFIE);
+    gdouble lost_precision;
+    
     if(thread->tic_delay == thread->delay){
       struct timespec timed_sleep = {
 	0,
@@ -2277,12 +2281,24 @@ ags_thread_real_clock(AgsThread *thread)
 	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
       }
 
-      time_cycle = (NSEC_PER_SEC) * (1.0 / thread->freq);
+      //FIXME:JK: do optimization - the waste land
+      time_cycle = ((gdouble) NSEC_PER_SEC / thread->freq);
+      
       relative_time_spent = time_cycle - time_spent;
 
-      //FIXME:JK: do optimization
-      if(relative_time_spent - (AGS_THREAD_MAX_PRECISION * thread->freq * (NSEC_PER_SEC / (AGS_THREAD_HERTZ_JIFFIE * AGS_THREAD_HERTZ_JIFFIE))) > 0){
-	timed_sleep.tv_nsec = relative_time_spent - (AGS_THREAD_MAX_PRECISION * thread->freq * (NSEC_PER_SEC / (AGS_THREAD_HERTZ_JIFFIE * AGS_THREAD_HERTZ_JIFFIE)));
+      if(relative_time_spent > 0.0 &&
+	 relative_time_spent < time_cycle){
+	timed_sleep.tv_nsec = (long) relative_time_spent;
+
+	/* lost precision * /
+	lost_precision = lost_per_jiffie * (1.0 / thread->freq));
+	
+	if(relative_time_spent + lost_precision > 0.0){
+	  timed_sleep.tv_nsec = (long) (relative_time_spent + lost_precision);
+	}else{
+	  g_warning("ags_thread-posix.c - not optimized tree\0");
+	}
+	*/
 	
 	nanosleep(&timed_sleep, NULL);
       }
@@ -3269,6 +3285,56 @@ ags_thread_chaos_tree(AgsThread *thread)
   }
 
   return(thread);
+}
+
+gboolean
+ags_thread_is_tree_started_and_synced(AgsThread *thread,
+				      guint sync_delay_tic)
+{
+  AgsThread *child;
+
+  gboolean retval;
+  
+  if(thread == NULL){
+    return(TRUE);
+  }
+
+  ags_thread_lock(thread);
+
+  retval = TRUE;
+
+  /* check start flags */
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0 ||
+     (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0 ||
+     (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    retval = FALSE;
+  }
+
+  /* check tic */
+  if(thread->tic_delay != sync_delay_tic){
+    retval = FALSE;
+  }
+
+  /* check recursive */
+  child = g_atomic_pointer_get(&(thread->children));
+
+  while(child != NULL &&
+	retval){
+    if(!(retval = ags_thread_is_tree_started_and_synced(child))){
+      break;
+    }
+    
+    child = g_atomic_pointer_get(&(child->next));
+  }
+
+  if(!retval){
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_TREE_NOT_READY);
+  }
+  
+  ags_thread_unlock(thread);
+  
+  return(retval);
 }
 
 /**

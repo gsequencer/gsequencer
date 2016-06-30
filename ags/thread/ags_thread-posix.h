@@ -43,8 +43,8 @@
 #define AGS_RT_PRIORITY (45)
 
 #define AGS_THREAD_HERTZ_JIFFIE (1000.0)
-#define AGS_THREAD_DEFAULT_JIFFIE (250.0)
-#define AGS_THREAD_MAX_PRECISION (250.0)
+#define AGS_THREAD_DEFAULT_JIFFIE (1000.0)
+#define AGS_THREAD_MAX_PRECISION (1000.0)
 
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
@@ -64,6 +64,7 @@ typedef enum{
   AGS_THREAD_SUSPENDED               = 1 <<  9,
   AGS_THREAD_READY                   = 1 << 10,
   AGS_THREAD_UNREF_ON_EXIT           = 1 << 11,
+  AGS_THREAD_TREE_NOT_READY          = 1 << 12,
 }AgsThreadFlags;
 
 typedef enum{
@@ -245,6 +246,7 @@ void ags_thread_hangcheck(AgsThread *thread);
 AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
 AgsThread* ags_thread_self(void);
 AgsThread* ags_thread_chaos_tree(AgsThread *thread);
+gboolean ags_thread_is_tree_started_and_synced(AgsThread *thread);
 
 AgsThread* ags_thread_new(gpointer data);
 
