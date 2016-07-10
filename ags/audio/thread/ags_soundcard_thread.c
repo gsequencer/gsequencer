@@ -22,8 +22,6 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -164,7 +162,7 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   
   gchar *str0, *str1;
   
-  thread = AGS_THREAD(soundcard_thread);
+  thread = (AgsThread *) soundcard_thread;
   
   config = ags_config_get_instance();
   
@@ -194,6 +192,7 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   g_free(str0);
   g_free(str1);
 
+  /*  */
   soundcard_thread->soundcard = NULL;
 
   soundcard_thread->timestamp_thread = ags_timestamp_thread_new();
@@ -329,8 +328,12 @@ ags_soundcard_thread_start(AgsThread *thread)
 void
 ags_soundcard_thread_run(AgsThread *thread)
 {
-  AgsSoundcard *soundcard;
+  AgsThread *parent;
+  
   AgsSoundcardThread *soundcard_thread;
+
+  AgsSoundcard *soundcard;
+
   long delay;
   GError *error;
 
@@ -338,6 +341,9 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
+  parent = g_atomic_pointer_get(&(thread->parent));
+  g_message("sc %d\0", parent->cycle_iteration);
+  
   if(ags_soundcard_is_playing(soundcard)){
     error = NULL;
     ags_soundcard_play(soundcard,

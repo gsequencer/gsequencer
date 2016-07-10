@@ -382,6 +382,8 @@ ags_audio_thread_run(AgsThread *thread)
   AgsPlayback *playback;
   
   AgsMutexManager *mutex_manager;
+  AgsThread *parent;
+  
   AgsAudioThread *audio_thread;
 
   gint stage;
@@ -404,6 +406,9 @@ ags_audio_thread_run(AgsThread *thread)
 		    AGS_THREAD_RT_SETUP);
   }
 
+  parent = g_atomic_pointer_get(&(thread->parent));
+  g_message("ac %d\0", parent->cycle_iteration);
+  
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
   }
