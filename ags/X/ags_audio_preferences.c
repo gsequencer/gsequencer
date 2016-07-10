@@ -345,7 +345,7 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 		     G_CALLBACK(ags_audio_preferences_stop_jack_callback), audio_preferences);
   }
 
-  free(str);
+  g_free(str);
 }
 
 void
@@ -453,7 +453,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   AgsSoundcard *soundcard;
   GtkListStore *model;
   GtkTreeIter current;
-  GList *card_id, *card_name;
+  GList *card_id, *card_id_start, *card_name, *card_name_start;
 
   char *device, *str, *tmp, *selected_device;
   guint nth;
@@ -482,7 +482,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   card_name = NULL;
   
   ags_soundcard_list_cards(soundcard,
-			   &card_id, &card_name);    
+			   &card_id_start, &card_name_start);
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "alsa-handle\0");
@@ -490,6 +490,9 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   g_message("configured soundcard: %s\0", str);
 #endif
 
+  card_id = card_id_start;
+  card_name = card_name_start;
+  
   selected_device = NULL;
   nth = 0;
   found_card = FALSE;
@@ -524,9 +527,9 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   gtk_combo_box_set_active(audio_preferences->card,
 			   nth);
   
-  g_list_free_full(card_id,
+  g_list_free_full(card_id_start,
 		   g_free);
-  g_list_free_full(card_name,
+  g_list_free_full(card_name_start,
 		   g_free);
 
   /*  */

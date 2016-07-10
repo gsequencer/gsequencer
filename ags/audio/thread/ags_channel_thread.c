@@ -375,8 +375,11 @@ ags_channel_thread_run(AgsThread *thread)
   AgsMutexManager *mutex_manager;
   AgsChannelThread *channel_thread;
   AgsRecallID *current_recall_id;
+
   AgsThread *current_thread;
-  
+
+  AgsThread *parent;  
+
   gint stage;
   
   pthread_mutex_t *application_mutex;
@@ -395,6 +398,9 @@ ags_channel_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
+
+  parent = g_atomic_pointer_get(&(thread->parent));
+  g_message("ch %d\0", parent->cycle_iteration);
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;

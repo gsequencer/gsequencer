@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/object/ags_soundcard.h>
+
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
 #else
@@ -35,7 +37,7 @@
 #define AGS_IS_SEQUENCER_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SEQUENCER_THREAD))
 #define AGS_SEQUENCER_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SEQUENCER_THREAD, AgsSequencerThreadClass))
 
-#define AGS_SEQUENCER_THREAD_DEFAULT_JIFFIE (48.0)
+#define AGS_SEQUENCER_THREAD_DEFAULT_JIFFIE (ceil(AGS_SOUNDCARD_DEFAULT_SAMPLERATE / AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK)
 
 typedef struct _AgsSequencerThread AgsSequencerThread;
 typedef struct _AgsSequencerThreadClass AgsSequencerThreadClass;
