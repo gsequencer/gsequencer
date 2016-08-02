@@ -25,6 +25,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
+#include <ags/object/ags_tactable.h>
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
@@ -53,6 +54,7 @@ void ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterfac
 void ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_count_beats_audio_run_seekable_interface_init(AgsSeekableInterface *seekable);
 void ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *countable);
+void ags_count_beats_audio_run_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_count_beats_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run);
 void ags_count_beats_audio_run_set_property(GObject *gobject,
@@ -76,6 +78,10 @@ guint ags_count_beats_audio_run_get_sequencer_counter(AgsCountable *countable);
 void ags_count_beats_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
+void ags_count_beats_audio_run_notify_soundcard_callback(GObject *gobject,
+							 GParamSpec *pspec,
+							 gpointer user_data);
+
 void ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_count_beats_audio_run_duplicate(AgsRecall *recall,
 					       AgsRecallID *recall_id,
@@ -85,6 +91,11 @@ void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 						 gint count);
 void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
 void ags_count_beats_audio_run_done(AgsRecall *recall);
+
+gdouble ags_count_beats_audio_run_get_bpm(AgsTactable *tactable);
+gdouble ags_count_beats_audio_run_get_tact(AgsTactable *tactable);
+void ags_count_beats_audio_run_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
+void ags_count_beats_audio_run_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
 
 void ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
 							      guint run_order, gdouble delay, guint attack,
@@ -186,6 +197,12 @@ ags_count_beats_audio_run_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_tactable_interface_info = {
+      (GInterfaceInitFunc) ags_count_beats_audio_run_tactable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_count_beats_audio_run_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -212,6 +229,10 @@ ags_count_beats_audio_run_get_type()
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_SEEKABLE,
 				&ags_seekable_interface_info);
+
+    g_type_add_interface_static(ags_type_count_beats_audio_run,
+				AGS_TYPE_TACTABLE,
+				&ags_tactable_interface_info);
 
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_PLUGIN,
@@ -250,6 +271,15 @@ ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *counta
 {
   countable->get_notation_counter = ags_count_beats_audio_run_get_notation_counter;
   countable->get_sequencer_counter = ags_count_beats_audio_run_get_sequencer_counter;
+}
+
+void
+ags_count_beats_audio_run_tactable_interface_init(AgsTactableInterface *tactable)
+{
+  tactable->get_bpm = ags_count_beats_audio_run_get_bpm;
+  tactable->get_tact = ags_count_beats_audio_run_get_tact;
+  tactable->change_bpm = ags_count_beats_audio_run_change_bpm;
+  tactable->change_tact = ags_count_beats_audio_run_change_tact;
 }
 
 void
@@ -471,6 +501,9 @@ ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
   count_beats_audio_run->sequencer_hide_ref_counter = 0;
 
   count_beats_audio_run->delay_audio_run = NULL;
+
+  g_signal_connect_after(count_beats_audio_run, "notify::soundcard",
+			 G_CALLBACK(ags_count_beats_audio_run_notify_soundcard_callback), NULL);
 }
 
 void
@@ -847,6 +880,26 @@ ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugi
 }
 
 void
+ags_count_beats_audio_run_notify_soundcard_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    gpointer user_data)
+{
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  GObject *soundcard;
+  
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(gobject);
+
+  soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
+
+  /* bpm */
+  count_beats_audio_run->bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
+
+  /* tact */
+  count_beats_audio_run->tact = AGS_SOUNDCARD_DEFAULT_TACT;
+}
+
+void
 ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
 {
   AgsRecall *template;
@@ -1167,8 +1220,10 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 							 AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
+
   gboolean loop;
-  GValue value = {0,};  
+  
+  GValue loop_value = {0,};  
 
   if((AGS_RECALL_ID_NOTATION & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
     return;
@@ -1176,18 +1231,21 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->notation_loop, &value);
+  /* loop */
+  g_value_init(&loop_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->notation_loop, &loop_value);
 
-  loop = g_value_get_boolean(&value);
-  g_value_unset(&value);
-  
+  loop = g_value_get_boolean(&loop_value);
+  g_value_unset(&loop_value);
+
+  /* start */
   if(count_beats_audio_run->first_run){
     //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_notation_start(count_beats_audio_run,
 					     run_order);
   }
 
+  /* loop */
   if(!count_beats_audio_run->first_run &&
      count_beats_audio_run->notation_counter == 0){
     /* emit notation signals */
@@ -1207,8 +1265,10 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 							  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
+
   gdouble loop_end;
   gboolean loop;
+
   GValue value = {0,};
   
   if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
@@ -1217,24 +1277,28 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
+  /* loop */
   g_value_init(&value, G_TYPE_BOOLEAN);
   ags_port_safe_read(count_beats_audio->sequencer_loop, &value);
 
   loop = g_value_get_boolean(&value);
   g_value_unset(&value);
 
+  /* loop end */
   g_value_init(&value, G_TYPE_DOUBLE);
   ags_port_safe_read(count_beats_audio->sequencer_loop_end, &value);
 
   loop_end = g_value_get_double(&value);
   g_value_unset(&value);
-  
+
+  /* start */
   if(count_beats_audio_run->first_run){
     //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
 					      run_order);
   }
 
+  /* loop */
   if(!count_beats_audio_run->first_run &&
      count_beats_audio_run->sequencer_counter == 0){
     /* emit sequencer signals */
@@ -1254,9 +1318,11 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
 						  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
+
   gdouble loop_end;
   gboolean loop;
-  GValue value = {0,};
+
+  GValue loop_value = {0,};
   GValue loop_end_value = {0,};  
 
   if((AGS_RECALL_ID_NOTATION & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
@@ -1265,24 +1331,28 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->notation_loop, &value);
+  /* loop */
+  g_value_init(&loop_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->notation_loop, &loop_value);
 
-  loop = g_value_get_boolean(&value);
-  
-  //  g_message("notation %d\0", count_beats_audio_run->notation_counter);
-  ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
-		 AGS_RECALL(count_beats_audio_run)->recall_id);
+  loop = g_value_get_boolean(&loop_value);
+  g_value_unset(&loop_value);
 
-  /* 
-   * Block counter for sequencer and notation counter
-   */
+  /* loop end */
   g_value_init(&loop_end_value, G_TYPE_DOUBLE);
   ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
 
   loop_end = g_value_get_double(&loop_end_value);
-  g_value_unset(&value);
+  g_value_unset(&loop_end_value);
+
+  /* tact signal */
+  //  g_message("notation %d\0", count_beats_audio_run->notation_counter);
+  ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+		 AGS_RECALL(count_beats_audio_run)->recall_id);
   
+  /* 
+   * Block counter for sequencer and notation counter
+   */
   if(loop){
     if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
       count_beats_audio_run->notation_counter = 0;
@@ -1300,9 +1370,11 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 						   AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
+
   gdouble loop_end;
   gboolean loop;
-  GValue value = {0,};  
+
+  GValue loop_value = {0,};  
   GValue loop_end_value = {0,};
   
   if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
@@ -1311,23 +1383,27 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->sequencer_loop, &value);
+  /* loop */
+  g_value_init(&loop_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->sequencer_loop, &loop_value);
 
-  loop = g_value_get_boolean(&value);
-  
-  ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
-		 AGS_RECALL(count_beats_audio_run)->recall_id);
+  loop = g_value_get_boolean(&loop_value);
+  g_value_unset(&loop_value);
 
-  /* 
-   * Block counter for sequencer and notation counter
-   */
+  /* loop end */
   g_value_init(&loop_end_value, G_TYPE_DOUBLE);
   ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
 
   loop_end = g_value_get_double(&loop_end_value);
-  g_value_unset(&value);
+  g_value_unset(&loop_end_value);
+
+  /* tact signal */
+  ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+		 AGS_RECALL(count_beats_audio_run)->recall_id);
   
+  /* 
+   * Block counter for sequencer and notation counter
+   */
   //    g_message("sequencer: tic\0");
   if(count_beats_audio_run->first_run){
     count_beats_audio_run->first_run = FALSE;
@@ -1503,6 +1579,174 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
     //    ags_count_beats_audio_run_done(count_beats_audio_run);
   }
 } 
+
+gdouble
+ags_count_beats_audio_run_get_bpm(AgsTactable *tactable)
+{
+  return(AGS_COUNT_BEATS_AUDIO_RUN(tactable)->bpm);
+}
+
+gdouble
+ags_count_beats_audio_run_get_tact(AgsTactable *tactable)
+{
+  return(AGS_COUNT_BEATS_AUDIO_RUN(tactable)->tact);
+}
+
+void
+ags_count_beats_audio_run_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
+{
+  AgsCountBeatsAudio *count_beats_audio;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  GObject *soundcard;
+
+  gdouble loop_end;
+  gboolean loop;
+  
+  GValue loop_value = {0,};  
+  GValue loop_end_value = {0,};
+  
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(tactable);
+  count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
+  
+  soundcard = AGS_RECALL(count_beats_audio)->soundcard;
+
+  /*
+   * set tact of sequencer
+   */
+  /* loop */
+  g_value_init(&loop_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->sequencer_loop, &loop_value);
+
+  loop = g_value_get_boolean(&loop_value);
+  g_value_unset(&loop_value);
+
+  /* loop end */
+  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
+
+  loop_end = g_value_get_double(&loop_end_value);
+  g_value_unset(&loop_end_value);
+
+  /* bpm */
+  count_beats_audio_run->bpm = new_bpm;
+
+  /* counter */
+  count_beats_audio_run->sequencer_counter *= (new_bpm / old_bpm);
+
+  if(loop){
+    if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
+      count_beats_audio_run->sequencer_counter = 0;
+    }
+  }
+
+  /*
+   * set tact of notation
+   */
+  /* loop */
+  g_value_init(&loop_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->notation_loop, &loop_value);
+
+  loop = g_value_get_boolean(&loop_value);
+  g_value_unset(&loop_value);
+
+  /* loop end */
+  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
+
+  loop_end = g_value_get_double(&loop_end_value);
+  g_value_unset(&loop_end_value);
+
+  /* bpm */
+  count_beats_audio_run->bpm = new_bpm;
+
+  /* counter */
+  count_beats_audio_run->notation_counter *= (new_bpm / old_bpm);
+
+  if(loop){
+    if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
+      count_beats_audio_run->notation_counter = 0;
+    }
+  }
+}
+
+void
+ags_count_beats_audio_run_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
+{
+  AgsCountBeatsAudio *count_beats_audio;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  GObject *soundcard;
+
+  gdouble loop_end;
+  gboolean loop;
+  
+  GValue loop_value = {0,};
+  GValue loop_end_value = {0,};
+  
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(tactable);
+  count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
+  
+  soundcard = AGS_RECALL(count_beats_audio)->soundcard;
+
+  /*
+   * set tact of sequencer
+   */
+  /* loop */
+  g_value_init(&loop_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->sequencer_loop, &loop_value);
+
+  loop = g_value_get_boolean(&loop_value);
+  g_value_unset(&loop_value);
+
+  /* loop end */
+  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
+
+  loop_end = g_value_get_double(&loop_end_value);
+  g_value_unset(&loop_end_value);
+
+  /* tact */
+  count_beats_audio_run->tact = new_tact;
+
+  /* counter */
+  count_beats_audio_run->sequencer_counter *= (new_tact / old_tact);
+
+  if(loop){
+    if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
+      count_beats_audio_run->sequencer_counter = 0;
+    }
+  }
+
+  /*
+   * set tact of notation
+   */
+  /* loop */
+  g_value_init(&loop_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->notation_loop, &loop_value);
+
+  loop = g_value_get_boolean(&loop_value);
+  g_value_unset(&loop_value);
+
+  /* loop end */
+  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
+
+  loop_end = g_value_get_double(&loop_end_value);
+  g_value_unset(&loop_end_value);
+
+  /* tact */
+  count_beats_audio_run->tact = new_tact;
+
+  /* counter */
+  count_beats_audio_run->notation_counter *= (new_tact / old_tact);
+
+  if(loop){
+    if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
+      count_beats_audio_run->notation_counter = 0;
+    }
+  }
+}
 
 /**
  * ags_count_beats_audio_run_new:

@@ -1162,10 +1162,10 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
   
   pthread_mutex_unlock(application_context->mutex);
 
-  g_message("switch - 0x%0x\0", ((AGS_DEVOUT_BUFFER0 |
-				  AGS_DEVOUT_BUFFER1 |
-				  AGS_DEVOUT_BUFFER2 |
-				  AGS_DEVOUT_BUFFER3) & (devout->flags)));
+  //  g_message("switch - 0x%0x\0", ((AGS_DEVOUT_BUFFER0 |
+  //				  AGS_DEVOUT_BUFFER1 |
+  //				  AGS_DEVOUT_BUFFER2 |
+  //				  AGS_DEVOUT_BUFFER3) & (devout->flags)));
   
   /* switch buffer flag */
   pthread_mutex_lock(mutex);
@@ -1892,10 +1892,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     return;
   }
 
-  g_message("play - 0x%0x\0", ((AGS_DEVOUT_BUFFER0 |
-				AGS_DEVOUT_BUFFER1 |
-				AGS_DEVOUT_BUFFER2 |
-				AGS_DEVOUT_BUFFER3) & (devout->flags)));
+  //  g_message("play - 0x%0x\0", ((AGS_DEVOUT_BUFFER0 |
+  //				AGS_DEVOUT_BUFFER1 |
+  //				AGS_DEVOUT_BUFFER2 |
+  //				AGS_DEVOUT_BUFFER3) & (devout->flags)));
 
   /* check buffer flag */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
@@ -2251,10 +2251,10 @@ ags_devout_get_next_buffer(AgsSoundcard *soundcard)
   
   devout = AGS_DEVOUT(soundcard);
 
-  g_message("next - 0x%0x\0", ((AGS_DEVOUT_BUFFER0 |
-				AGS_DEVOUT_BUFFER1 |
-				AGS_DEVOUT_BUFFER2 |
-				AGS_DEVOUT_BUFFER3) & (devout->flags)));
+  //  g_message("next - 0x%0x\0", ((AGS_DEVOUT_BUFFER0 |
+  //				AGS_DEVOUT_BUFFER1 |
+  //				AGS_DEVOUT_BUFFER2 |
+  //				AGS_DEVOUT_BUFFER3) & (devout->flags)));
   
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     buffer = devout->buffer[1];

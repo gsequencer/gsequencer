@@ -120,11 +120,101 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 }
 
 /**
+ * ags_tactable_get_sequencer_duration:
+ * @tactable: an #AgsTactable
+ *
+ * Get sequencer duration.
+ *
+ * Returns: the sequencer duration
+ *
+ * Since: 0.7.43
+ */
+gdouble
+ags_tactable_get_sequencer_duration(AgsTactable *tactable)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_val_if_fail(tactable_interface->get_sequencer_duration, -1.0);
+  
+  return(tactable_interface->get_sequencer_duration(tactable));
+}
+
+/**
+ * ags_tactable_get_notation_duration:
+ * @tactable: an #AgsTactable
+ *
+ * Get notation duration.
+ *
+ * Returns: the notation duration
+ *
+ * Since: 0.7.43
+ */
+gdouble
+ags_tactable_get_notation_duration(AgsTactable *tactable)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_val_if_fail(tactable_interface->get_notation_duration, -1.0);
+  
+  return(tactable_interface->get_notation_duration(tactable));
+}
+
+/**
+ * ags_tactable_get_tact:
+ * @tactable: an #AgsTactable
+ *
+ * Get tact.
+ *
+ * Returns: the tact
+ *
+ * Since: 0.7.43
+ */
+gdouble
+ags_tactable_get_tact(AgsTactable *tactable)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_val_if_fail(tactable_interface->get_tact, -1.0);
+  
+  return(tactable_interface->get_tact(tactable));
+}
+
+/**
+ * ags_tactable_get_bpm:
+ * @tactable: an #AgsTactable
+ *
+ * Get bpm.
+ *
+ * Returns: the bpm
+ *
+ * Since: 0.7.43
+ */
+gdouble
+ags_tactable_get_bpm(AgsTactable *tactable)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_val_if_fail(tactable_interface->get_bpm, -1.0);
+  
+  return(tactable_interface->get_bpm(tactable));
+}
+
+/**
  * ags_tactable_change_sequencer_duration:
  * @tactable: an #AgsTactable
  * @duration: the duration
  *
  * Sequencer duration changed.
+ * 
+ * Since: 0.4.2
  */
 void
 ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
@@ -143,6 +233,8 @@ ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
  * @duration: the duration
  *
  * Notation duration changed.
+ * 
+ * Since: 0.4.2
  */
 void
 ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
@@ -161,16 +253,18 @@ ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
  * @tact: the tact
  *
  * Tact changed.
+ * 
+ * Since: 0.4.2
  */
 void
-ags_tactable_change_tact(AgsTactable *tactable, double tact)
+ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
 {
   AgsTactableInterface *tactable_interface;
 
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
   g_return_if_fail(tactable_interface->change_tact);
-  tactable_interface->change_tact(tactable, tact);
+  tactable_interface->change_tact(tactable, new_tact, old_tact);
 }
 
 /**
@@ -179,14 +273,16 @@ ags_tactable_change_tact(AgsTactable *tactable, double tact)
  * @bpm: the bpm
  *
  * Bpm changed.
+ * 
+ * Since: 0.4.2
  */
 void
-ags_tactable_change_bpm(AgsTactable *tactable, double bpm)
+ags_tactable_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
 {
   AgsTactableInterface *tactable_interface;
 
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
   g_return_if_fail(tactable_interface->change_bpm);
-  tactable_interface->change_bpm(tactable, bpm);
+  tactable_interface->change_bpm(tactable, new_bpm, old_bpm);
 }

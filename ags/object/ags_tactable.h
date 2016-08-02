@@ -36,17 +36,31 @@ struct _AgsTactableInterface
 {
   GTypeInterface interface;
 
+  gdouble (*get_sequencer_duration)(AgsTactable *tactable);
+  gdouble (*get_notation_duration)(AgsTactable *tactable);
+
+  gdouble (*get_tact)(AgsTactable *tactable);
+  gdouble (*get_bpm)(AgsTactable *tactable);
+    
   void (*change_sequencer_duration)(AgsTactable *tactable, gdouble duration);
   void (*change_notation_duration)(AgsTactable *tactable, gdouble duration);
-  void (*change_tact)(AgsTactable *tactable, gdouble tact);
-  void (*change_bpm)(AgsTactable *tactable, gdouble bpm);
+
+  void (*change_tact)(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
+  void (*change_bpm)(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 };
 
 GType ags_tactable_get_type();
 
+gdouble ags_tactable_get_sequencer_duration(AgsTactable *tactable);
+gdouble ags_tactable_get_notation_duration(AgsTactable *tactable);
+
+gdouble ags_tactable_get_tact(AgsTactable *tactable);
+gdouble ags_tactable_get_bpm(AgsTactable *tactable);
+
 void ags_tactable_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
 void ags_tactable_change_notation_duration(AgsTactable *tactable, gdouble duration);
-void ags_tactable_change_tact(AgsTactable *tactable, gdouble tact);
-void ags_tactable_change_bpm(AgsTactable *tactable, gdouble bpm);
+
+void ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
+void ags_tactable_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
 #endif /*__AGS_TACTABLE_H__*/

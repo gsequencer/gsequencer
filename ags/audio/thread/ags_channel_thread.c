@@ -400,7 +400,7 @@ ags_channel_thread_run(AgsThread *thread)
   }
 
   parent = g_atomic_pointer_get(&(thread->parent));
-  g_message("ch %d\0", parent->cycle_iteration);
+  //  g_message("ch %d\0", parent->cycle_iteration);
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;

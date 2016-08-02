@@ -192,7 +192,9 @@ void
 ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall)
 {
   if(AGS_IS_TACTABLE(recall)){
-    ags_tactable_change_bpm(AGS_TACTABLE(recall), apply_bpm->bpm);
+    ags_tactable_change_bpm(AGS_TACTABLE(recall),
+			    ags_tactable_get_bpm(AGS_TACTABLE(recall)),
+			    apply_bpm->bpm);
   }
 }
 
