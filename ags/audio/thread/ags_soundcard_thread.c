@@ -342,7 +342,7 @@ ags_soundcard_thread_run(AgsThread *thread)
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
   parent = g_atomic_pointer_get(&(thread->parent));
-  g_message("sc %d\0", parent->cycle_iteration);
+  //  g_message("sc %d\0", parent->cycle_iteration);
   
   if(ags_soundcard_is_playing(soundcard)){
     error = NULL;

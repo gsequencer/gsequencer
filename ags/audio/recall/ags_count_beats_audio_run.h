@@ -43,6 +43,9 @@ struct _AgsCountBeatsAudioRun
 
   gboolean first_run;
 
+  gdouble bpm;
+  gdouble tact;
+  
   guint notation_counter;
   guint sequencer_counter;
 

@@ -185,7 +185,9 @@ void
 ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall)
 {
   if(AGS_IS_TACTABLE(recall)){
-    ags_tactable_change_tact(AGS_TACTABLE(recall), apply_tact->tact);
+    ags_tactable_change_tact(AGS_TACTABLE(recall),
+			     ags_tactable_get_tact(AGS_TACTABLE(recall)),
+			     apply_tact->tact);
   }
 }
 
