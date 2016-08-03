@@ -278,6 +278,11 @@ ags_count_beats_audio_run_tactable_interface_init(AgsTactableInterface *tactable
 {
   tactable->get_bpm = ags_count_beats_audio_run_get_bpm;
   tactable->get_tact = ags_count_beats_audio_run_get_tact;
+  tactable->get_sequencer_duration = NULL;
+  tactable->get_notation_duration = NULL;
+
+  tactable->change_sequencer_duration = NULL;
+  tactable->change_notation_duration = NULL;
   tactable->change_bpm = ags_count_beats_audio_run_change_bpm;
   tactable->change_tact = ags_count_beats_audio_run_change_tact;
 }
@@ -1595,157 +1600,13 @@ ags_count_beats_audio_run_get_tact(AgsTactable *tactable)
 void
 ags_count_beats_audio_run_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
 {
-  AgsCountBeatsAudio *count_beats_audio;
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-
-  GObject *soundcard;
-
-  gdouble loop_end;
-  gboolean loop;
-  
-  GValue loop_value = {0,};  
-  GValue loop_end_value = {0,};
-  
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(tactable);
-  count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
-  
-  soundcard = AGS_RECALL(count_beats_audio)->soundcard;
-
-  /*
-   * set tact of sequencer
-   */
-  /* loop */
-  g_value_init(&loop_value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->sequencer_loop, &loop_value);
-
-  loop = g_value_get_boolean(&loop_value);
-  g_value_unset(&loop_value);
-
-  /* loop end */
-  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
-  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
-
-  loop_end = g_value_get_double(&loop_end_value);
-  g_value_unset(&loop_end_value);
-
-  /* bpm */
-  count_beats_audio_run->bpm = new_bpm;
-
-  /* counter */
-  count_beats_audio_run->sequencer_counter *= (new_bpm / old_bpm);
-
-  if(loop){
-    if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
-      count_beats_audio_run->sequencer_counter = 0;
-    }
-  }
-
-  /*
-   * set tact of notation
-   */
-  /* loop */
-  g_value_init(&loop_value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->notation_loop, &loop_value);
-
-  loop = g_value_get_boolean(&loop_value);
-  g_value_unset(&loop_value);
-
-  /* loop end */
-  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
-  ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
-
-  loop_end = g_value_get_double(&loop_end_value);
-  g_value_unset(&loop_end_value);
-
-  /* bpm */
-  count_beats_audio_run->bpm = new_bpm;
-
-  /* counter */
-  count_beats_audio_run->notation_counter *= (new_bpm / old_bpm);
-
-  if(loop){
-    if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
-      count_beats_audio_run->notation_counter = 0;
-    }
-  }
+  /* empty */
 }
 
 void
 ags_count_beats_audio_run_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
 {
-  AgsCountBeatsAudio *count_beats_audio;
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-
-  GObject *soundcard;
-
-  gdouble loop_end;
-  gboolean loop;
-  
-  GValue loop_value = {0,};
-  GValue loop_end_value = {0,};
-  
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(tactable);
-  count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
-  
-  soundcard = AGS_RECALL(count_beats_audio)->soundcard;
-
-  /*
-   * set tact of sequencer
-   */
-  /* loop */
-  g_value_init(&loop_value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->sequencer_loop, &loop_value);
-
-  loop = g_value_get_boolean(&loop_value);
-  g_value_unset(&loop_value);
-
-  /* loop end */
-  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
-  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
-
-  loop_end = g_value_get_double(&loop_end_value);
-  g_value_unset(&loop_end_value);
-
-  /* tact */
-  count_beats_audio_run->tact = new_tact;
-
-  /* counter */
-  count_beats_audio_run->sequencer_counter *= (new_tact / old_tact);
-
-  if(loop){
-    if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
-      count_beats_audio_run->sequencer_counter = 0;
-    }
-  }
-
-  /*
-   * set tact of notation
-   */
-  /* loop */
-  g_value_init(&loop_value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->notation_loop, &loop_value);
-
-  loop = g_value_get_boolean(&loop_value);
-  g_value_unset(&loop_value);
-
-  /* loop end */
-  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
-  ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
-
-  loop_end = g_value_get_double(&loop_end_value);
-  g_value_unset(&loop_end_value);
-
-  /* tact */
-  count_beats_audio_run->tact = new_tact;
-
-  /* counter */
-  count_beats_audio_run->notation_counter *= (new_tact / old_tact);
-
-  if(loop){
-    if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
-      count_beats_audio_run->notation_counter = 0;
-    }
-  }
+  /* empty */
 }
 
 /**

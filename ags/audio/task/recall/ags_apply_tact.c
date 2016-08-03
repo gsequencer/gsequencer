@@ -41,6 +41,7 @@ void ags_apply_tact_launch(AgsTask *task);
 void ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall);
 void ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel);
 void ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio);
+void ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard);
 
 /**
  * SECTION:ags_apply_tact
@@ -158,7 +159,13 @@ ags_apply_tact_launch(AgsTask *task)
 
   apply_tact = AGS_APPLY_TACT(task);
 
-  if(AGS_IS_AUDIO(apply_tact->gobject)){
+ if(AGS_IS_SOUNDCARD(apply_tact->gobject)){
+    GObject *soundcard;
+
+    soundcard = apply_tact->gobject;
+
+    ags_apply_tact_soundcard(apply_tact, soundcard);
+ }else if(AGS_IS_AUDIO(apply_tact->gobject)){
     AgsAudio *audio;
 
     audio = AGS_AUDIO(apply_tact->gobject);
@@ -251,6 +258,25 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
     ags_apply_tact_channel(apply_tact, channel);
 
     channel = channel->next;
+  }
+}
+
+
+void
+ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
+{
+  GList *list;
+
+  ags_soundcard_set_delay_factor(AGS_SOUNDCARD(soundcard), apply_tact->tact);
+
+  /* AgsAudio */
+  list = ags_soundcard_get_audio(soundcard);
+
+  while(list != NULL){
+    ags_apply_tact_audio(apply_tact,
+			 AGS_AUDIO(list->data));
+
+    list = list->next;
   }
 }
 

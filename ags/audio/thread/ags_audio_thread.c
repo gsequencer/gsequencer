@@ -191,11 +191,11 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
-			AGS_CONFIG_SOUNDCARD,
-			"samplerate\0");
+			      AGS_CONFIG_SOUNDCARD,
+			      "samplerate\0");
   str1 = ags_config_get_value(config,
-			AGS_CONFIG_SOUNDCARD,
-			"buffer-size\0");
+			      AGS_CONFIG_SOUNDCARD,
+			      "buffer-size\0");
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_AUDIO_THREAD_DEFAULT_JIFFIE;
