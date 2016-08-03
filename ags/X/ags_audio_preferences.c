@@ -406,7 +406,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 			   &value);
   
   //FIXME:JK: work-around for alsa-handle
-  str = g_strdup_printf("%s,0", g_value_get_string(&value));
+  str = g_strdup_printf("%s", g_value_get_string(&value));
   g_message("%s\0", str);
   ags_config_set_value(config,
 		 AGS_CONFIG_SOUNDCARD,
@@ -549,33 +549,42 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  error = NULL;
-  ags_soundcard_pcm_info(soundcard,
-			 selected_device,
-			 &channels_min, &channels_max,
-			 &rate_min, &rate_max,
-			 &buffer_size_min, &buffer_size_max,
-			 &error);
+  if(selected_device != NULL){
+    error = NULL;
+    ags_soundcard_pcm_info(soundcard,
+			   selected_device,
+			   &channels_min, &channels_max,
+			   &rate_min, &rate_max,
+			   &buffer_size_min, &buffer_size_max,
+			   &error);
 
-  if(error != NULL){
-    GtkMessageDialog *dialog;
+    if(error != NULL){
+      GtkMessageDialog *dialog;
 
-    dialog = (GtkMessageDialog *) gtk_message_dialog_new((GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-											       AGS_TYPE_PREFERENCES),
-							 GTK_DIALOG_MODAL,
-							 GTK_MESSAGE_ERROR,
-							 GTK_BUTTONS_CLOSE,
-							 "%s\0", error->message);
-    gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(GTK_WIDGET(dialog));
+      dialog = (GtkMessageDialog *) gtk_message_dialog_new((GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+												 AGS_TYPE_PREFERENCES),
+							   GTK_DIALOG_MODAL,
+							   GTK_MESSAGE_ERROR,
+							   GTK_BUTTONS_CLOSE,
+							   "%s\0", error->message);
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(GTK_WIDGET(dialog));
 
-    gtk_spin_button_set_range(audio_preferences->audio_channels, 0.0, 24.0);
-    gtk_spin_button_set_range(audio_preferences->samplerate, 1.0, 192000.0);
-    gtk_spin_button_set_range(audio_preferences->buffer_size, 1.0, 65535.0);
+      gtk_spin_button_set_range(audio_preferences->audio_channels, 0.0, 24.0);
+      gtk_spin_button_set_range(audio_preferences->samplerate, 1.0, 192000.0);
+      gtk_spin_button_set_range(audio_preferences->buffer_size, 1.0, 65535.0);
 
-    return;
+      return;
+    }
+  }else{
+    channels_min = 0.0;
+    channels_max = 24.0;
+    rate_min = 1.0;
+    rate_max = 192000.0;
+    buffer_size_min = 1.0;
+    buffer_size_max = 65535.0;
   }
-
+  
   gtk_spin_button_set_range(audio_preferences->audio_channels,
 			    channels_min, channels_max);
   gtk_spin_button_set_range(audio_preferences->samplerate,

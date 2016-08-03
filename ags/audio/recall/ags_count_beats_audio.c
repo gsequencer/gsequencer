@@ -154,10 +154,15 @@ ags_count_beats_audio_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable)
 {
+  tactable->get_bpm = NULL;
+  tactable->get_tact = NULL;
+  tactable->get_sequencer_duration = NULL;
+  tactable->get_notation_duration = NULL;
+
   tactable->change_sequencer_duration = ags_count_beats_audio_change_sequencer_duration;
   tactable->change_notation_duration = ags_count_beats_audio_change_notation_duration;
-  tactable->change_tact = NULL;
   tactable->change_bpm = NULL;
+  tactable->change_tact = NULL;
 }
 
 void

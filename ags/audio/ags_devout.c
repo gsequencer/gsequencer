@@ -365,7 +365,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				 "The count of frames a buffer contains\0",
 				 1,
 				 44100,
-				 940,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
