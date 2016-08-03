@@ -3273,6 +3273,16 @@ ags_thread_self(void)
   return((AgsThread *) pthread_getspecific(ags_thread_key));
 }
 
+/**
+ * ags_thread_chaos_tree:
+ * @thread: the #AgsThread
+ *
+ * Escape chaos tree, get syncing point.
+ *
+ * Returns: the first ordered thread
+ *
+ * Since: 0.7.40
+ */
 AgsThread*
 ags_thread_chaos_tree(AgsThread *thread)
 {
@@ -3282,6 +3292,79 @@ ags_thread_chaos_tree(AgsThread *thread)
   }
 
   return(thread);
+}
+
+/**
+ * ags_thread_is_chaos_tree:
+ * @thread: the #AgsThread
+ * @tic_delay: the tic to sync with
+ * @is_chaos_tree: if %TRUE AGS_THREAD_IS_CHAOS_TREE flag is set 
+ *
+ * Check chaos tree and flag threads.
+ *
+ * Returns: %TRUE if tree is in chaos, otherwise %FALSE
+ *
+ * Since: 0.7.43
+ */
+gboolean
+ags_thread_is_chaos_tree(AgsThread *thread,
+			 guint tic_delay,
+			 gboolean is_chaos_tree)
+{
+  AgsThread *child;
+  
+  gboolean retval;
+
+  ags_thread_lock(thread);
+  
+  retval = is_chaos_tree;
+
+  if(!is_chaos_tree){
+    if((AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0 ||
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      retval = TRUE;
+    }
+    
+    if(!retval &&
+       tic_delay != thread->tic_delay){
+      retval = TRUE;
+    }
+
+    if(!retval){
+      child = g_atomic_pointer_get(&(thread->children));
+      
+      while(!retval &&
+	    child != NULL){
+	retval = ags_thread_is_chaos_tree(child,
+					  tic_delay,
+					  FALSE);
+
+	child = g_atomic_pointer_get(&(child->next));
+      }
+    }
+  }
+
+  if(is_chaos_tree ||
+     retval){
+    /* flag thread */
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_IS_CHAOS_TREE);
+    
+    /* apply recursive */
+    child = g_atomic_pointer_get(&(thread->children));
+      
+    while(child != NULL){
+      ags_thread_is_chaos_tree(child,
+			       tic_delay,
+			       TRUE);
+
+      child = g_atomic_pointer_get(&(child->next));
+    }    
+  }
+  
+  ags_thread_unlock(thread);
+
+  return(retval);
 }
 
 /**
