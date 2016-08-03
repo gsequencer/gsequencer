@@ -64,6 +64,7 @@ typedef enum{
   AGS_THREAD_SUSPENDED               = 1 <<  9,
   AGS_THREAD_READY                   = 1 << 10,
   AGS_THREAD_UNREF_ON_EXIT           = 1 << 11,
+  AGS_THREAD_IS_CHAOS_TREE           = 1 << 12,
 }AgsThreadFlags;
 
 typedef enum{
@@ -244,6 +245,10 @@ void ags_thread_hangcheck(AgsThread *thread);
 AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
 AgsThread* ags_thread_self(void);
 AgsThread* ags_thread_chaos_tree(AgsThread *thread);
+
+gboolean ags_thread_is_chaos_tree(AgsThread *thread,
+				  guint tic_delay,
+				  gboolean is_chaos_tree);
 
 AgsThread* ags_thread_new(gpointer data);
 
