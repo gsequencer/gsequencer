@@ -446,6 +446,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
 
+  //  g_message("ags_delay_audio_run_run_pre()\0");
+  
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&

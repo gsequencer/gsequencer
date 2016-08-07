@@ -197,6 +197,7 @@ ags_append_channel_launch(AgsTask *task)
   /* append to AgsDevout */
   ags_audio_loop_add_channel(audio_loop,
 			     channel);
+
   start_queue = NULL;
   
   /**/
