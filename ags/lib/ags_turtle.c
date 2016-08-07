@@ -3034,7 +3034,11 @@ ags_turtle_load(AgsTurtle *turtle,
        sb);
   file = fopen(turtle->filename,
 	       "r\0");
-  
+
+  if(file == NULL){
+    return;
+  }
+
   buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
 
   if(buffer == NULL){

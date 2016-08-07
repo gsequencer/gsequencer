@@ -65,6 +65,7 @@ typedef enum{
   AGS_THREAD_READY                   = 1 << 10,
   AGS_THREAD_UNREF_ON_EXIT           = 1 << 11,
   AGS_THREAD_IS_CHAOS_TREE           = 1 << 12,
+  AGS_THREAD_IMMEDIATE_SYNC          = 1 << 13,
 }AgsThreadFlags;
 
 typedef enum{
@@ -97,6 +98,8 @@ typedef enum{
   AGS_THREAD_SKIP_NON_GREEDY         = 1 << 20,
   AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 21,
   AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 22,
+  AGS_THREAD_START_SYNCED_FREQ       = 1 << 23,
+  AGS_THREAD_SYNCED_FREQ             = 1 << 24,
 }AgsThreadSyncFlags;
 
 struct _AgsThread

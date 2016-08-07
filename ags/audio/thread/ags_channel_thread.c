@@ -181,6 +181,9 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   thread = (AgsThread *) channel_thread;
 
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_START_SYNCED_FREQ));
+  
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
