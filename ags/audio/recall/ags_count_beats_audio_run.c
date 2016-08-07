@@ -1330,6 +1330,10 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   GValue loop_value = {0,};
   GValue loop_end_value = {0,};  
 
+  if((guint) floor(delay) != 0){
+    return;
+  }
+
   if((AGS_RECALL_ID_NOTATION & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
     return;
   }
@@ -1381,7 +1385,11 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
   GValue loop_value = {0,};  
   GValue loop_end_value = {0,};
-  
+
+  if((guint) floor(delay) != 0){
+    return;
+  }
+
   if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
     return;
   }

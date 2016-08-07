@@ -188,6 +188,9 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   
   thread = (AgsThread *) audio_thread;
 
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_START_SYNCED_FREQ));
+  
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
