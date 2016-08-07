@@ -585,6 +585,14 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
       }
       
       g_value_set_double(value, new_value);
+    }else{
+      if(port->port_value_type == G_TYPE_POINTER){
+	data = port->port_value.ags_port_pointer;
+      }else if(port->port_value_type == G_TYPE_OBJECT){
+	data = port->port_value.ags_port_object;
+      }
+
+      g_value_set_pointer(value, data);
     }
   }else{
     if(port->port_value_type == G_TYPE_POINTER){

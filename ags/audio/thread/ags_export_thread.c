@@ -174,6 +174,9 @@ ags_export_thread_init(AgsExportThread *export_thread)
   gchar *str0, *str1;
   
   thread = (AgsThread *) export_thread;
+
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_START_SYNCED_FREQ));  
   
   config = ags_config_get_instance();
   
