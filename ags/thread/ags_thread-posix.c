@@ -708,12 +708,16 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   flags = g_atomic_int_get(&(thread->flags));
   sync_flags = g_atomic_int_get(&(thread->sync_flags));
 
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    pthread_mutex_unlock(thread->mutex);
-    
-    return;
+  /* return if no immediate sync and initial run */
+  if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
+    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      pthread_mutex_unlock(thread->mutex);
+      
+      return;
+    }
   }
-  
+
+  /* get next tic and check waiting */
   switch(tic){
   case 0:
     {
@@ -741,6 +745,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
     break;
   }
 
+  /* unset wait flag */
   switch(tic){
   case 0:
     {
@@ -768,6 +773,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
     break;
   }
 
+  /* signal waiting thread */
   if((AGS_THREAD_WAITING & (g_atomic_int_get(&(thread->flags)))) != 0){
     g_atomic_int_and(&(thread->flags),
 		     (~AGS_THREAD_WAITING));
@@ -801,8 +807,24 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 {
   AgsThread *main_loop;
 
+  auto void ags_thread_set_sync_all_reset(AgsThread *thread);
   auto void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
 
+  void ags_thread_set_sync_all_reset(AgsThread *thread){
+    AgsThread *child;
+
+    g_atomic_int_and(&(thread->flags),
+		    ~AGS_THREAD_IS_CHAOS_TREE);
+
+    child = g_atomic_pointer_get(&(thread->children));
+
+    while(child != NULL){
+      ags_thread_set_sync_all_reset(child);
+      
+      child = g_atomic_pointer_get(&(child->next));
+    }
+  }
+  
   void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic){
     AgsThread *child;
 
@@ -819,6 +841,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 
   main_loop = ags_thread_get_toplevel(thread);
 
+  ags_thread_set_sync_all_reset(main_loop);
   ags_thread_set_sync_all_recursive(main_loop, tic);
 }
 
@@ -1296,12 +1319,14 @@ ags_thread_is_current_ready(AgsThread *current,
     retval = TRUE;
   }
 
-  if((AGS_THREAD_INITIAL_RUN & flags) != 0){
-    pthread_mutex_unlock(current->mutex);
+  if((AGS_THREAD_IMMEDIATE_SYNC & flags) == 0){
+    if((AGS_THREAD_INITIAL_RUN & flags) != 0){
+      pthread_mutex_unlock(current->mutex);
 
-    return(FALSE);
+      return(FALSE);
+    }
   }
-
+  
   if((AGS_THREAD_READY & flags) != 0){
     retval = TRUE;
   }
@@ -1373,12 +1398,14 @@ ags_thread_is_tree_ready(AgsThread *thread,
       retval = TRUE;
     }
 
-    if((AGS_THREAD_INITIAL_RUN & flags) != 0){
-      pthread_mutex_unlock(current->mutex);
-
-      return(FALSE);
+    if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
+      if((AGS_THREAD_INITIAL_RUN & flags) != 0){
+	pthread_mutex_unlock(current->mutex);
+	
+	return(FALSE);
+      }
     }
-
+    
     if((AGS_THREAD_READY & flags) != 0){
       retval = TRUE;
     }
@@ -2062,11 +2089,15 @@ ags_thread_real_clock(AgsThread *thread)
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
       thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
-      if(g_atomic_pointer_get(&(thread->parent)) != NULL){
+      if((AGS_THREAD_START_SYNCED_FREQ & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+	 g_atomic_pointer_get(&(thread->parent)) != NULL){
 	AgsThread *chaos_tree;
-
+	
 	chaos_tree = ags_thread_chaos_tree(thread);
 	thread->tic_delay = chaos_tree->tic_delay;
+
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_SYNCED_FREQ);
       }
       
       g_atomic_int_and(&(thread->flags),
@@ -2223,14 +2254,22 @@ ags_thread_real_clock(AgsThread *thread)
   
   pthread_mutex_unlock(mutex);
 
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
-     (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-    clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
+  /* check initial sync or immediate sync */
+  if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
+    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+      clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
 
-    g_atomic_int_and(&(thread->flags),
-		     (~AGS_THREAD_INITIAL_SYNC));
+      g_atomic_int_and(&(thread->flags),
+		       (~AGS_THREAD_INITIAL_SYNC));
 
-    return(1);
+      return(1);
+    }
+  }else{
+    if((AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+      g_atomic_int_and(&(thread->flags),
+		      (~AGS_THREAD_INITIAL_SYNC));
+    }
   }
   
   /* idle */
@@ -2279,12 +2318,11 @@ ags_thread_real_clock(AgsThread *thread)
 	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
       }
 
-      time_cycle = (thread->delay * nsec_per_jiffie);
+      time_cycle = NSEC_PER_SEC / thread->freq;
       
       relative_time_spent = time_cycle - time_spent;
 
-      if(relative_time_spent > 0.0 &&
-	 relative_time_spent < time_cycle){
+      if(relative_time_spent > 0.0){
 	timed_sleep.tv_nsec = (long) relative_time_spent;
 
 	/* lost precision * /
@@ -2384,7 +2422,7 @@ ags_thread_real_start(AgsThread *thread)
 
   main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
   
-  /* get run flags */
+  /* set/unset run flags */
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_RUNNING |
 		   AGS_THREAD_INITIAL_RUN |
@@ -2398,6 +2436,9 @@ ags_thread_real_start(AgsThread *thread)
 		   (~(AGS_THREAD_WAIT_0 |
 		      AGS_THREAD_WAIT_1 |
 		      AGS_THREAD_WAIT_2)));
+
+  g_atomic_int_and(&(thread->sync_flags),
+		   (~(AGS_THREAD_SYNCED_FREQ)));
 
 #ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
@@ -3326,7 +3367,8 @@ ags_thread_is_chaos_tree(AgsThread *thread,
     }
     
     if(!retval &&
-       tic_delay != thread->tic_delay){
+       (AGS_THREAD_START_SYNCED_FREQ & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+       (AGS_THREAD_SYNCED_FREQ & (g_atomic_int_get(&(thread->flags)))) == 0){
       retval = TRUE;
     }
 
