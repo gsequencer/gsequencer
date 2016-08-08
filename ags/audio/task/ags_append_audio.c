@@ -335,10 +335,10 @@ ags_append_audio_launch(AgsTask *task)
 	pthread_mutex_unlock(audio_thread_mutex);
 
       }
-
-      start_queue = NULL;
       
       /* super threaded setup - audio */
+      start_queue = NULL;
+      
       if(append_audio->do_sequencer){
 	g_atomic_int_or(&(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1])->flags),
 			(AGS_AUDIO_THREAD_WAIT |

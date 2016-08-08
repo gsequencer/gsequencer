@@ -23,9 +23,12 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
@@ -376,16 +379,25 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
+
+  AgsMutexManager *mutex_manager;
+
   gboolean current_bit;
-  GValue offset_value = { 0, };
+
+  GValue pattern_value = { 0, };  
   GValue i_value = { 0, };
   GValue j_value = { 0, };
-  GValue current_bit_value = { 0, };  
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *pattern_mutex;
 
   if((guint) floor(delay) != 0){
     return;
   }
-  
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get AgsCopyPatternAudio */
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run->recall_audio);
 
@@ -400,16 +412,22 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   g_value_init(&j_value, G_TYPE_UINT64);
   ags_port_safe_read(copy_pattern_audio->bank_index_1, &j_value);
+
+  /* get AgsPattern */
+  g_value_init(&pattern_value, G_TYPE_POINTER);
+  ags_port_safe_read(copy_pattern_channel->pattern,
+		     &pattern_value);
+
+  pattern = g_value_get_pointer(&pattern_value);
+
+  pthread_mutex_lock(application_mutex);
   
+  pattern_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) pattern);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* write pattern port - current offset */
-  g_value_init(&offset_value, G_TYPE_UINT);
-  g_value_set_uint(&offset_value,
-		   copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
-  
-  ags_port_safe_set_property(copy_pattern_channel->pattern,
-			     "offset\0", &offset_value);
-  g_value_unset(&offset_value);
-  
   ags_port_safe_set_property(copy_pattern_channel->pattern,
 			     "first-index\0", &i_value);
   g_value_unset(&i_value);
@@ -419,13 +437,17 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   g_value_unset(&j_value);
   
   /* read pattern port - current bit */
-  g_value_init(&current_bit_value, G_TYPE_BOOLEAN);
-  ags_port_safe_get_property(copy_pattern_channel->pattern,
-			     "current-bit\0", &current_bit_value);
-
-  current_bit = g_value_get_boolean(&current_bit_value);
-  g_value_unset(&current_bit_value);
+  pthread_mutex_lock(pattern_mutex);
   
+  current_bit = ags_pattern_get_bit(pattern,
+				    pattern->i,
+				    pattern->j,
+				    copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
+  
+  pthread_mutex_unlock(pattern_mutex);
+
+  g_value_unset(&pattern_value);
+
   /*  */
   if(current_bit){
     GObject *soundcard;
