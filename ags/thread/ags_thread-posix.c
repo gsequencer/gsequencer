@@ -2322,7 +2322,8 @@ ags_thread_real_clock(AgsThread *thread)
       
       relative_time_spent = time_cycle - time_spent;
 
-      if(relative_time_spent > 0.0){
+      if(relative_time_spent > 0.0 &&
+	 relative_time_spent < time_cycle){
 	timed_sleep.tv_nsec = (long) relative_time_spent;
 
 	/* lost precision * /
