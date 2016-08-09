@@ -1149,6 +1149,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	AgsThread *thread;
 	
 	gchar *str;
+
+	gchar *alsa_device;
 	
 	guint dsp_channels;
 	guint samplerate;
@@ -1163,6 +1165,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	/* reset presets of soundcard */
 	soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
 
+	alsa_device = AGS_SOUNDCARD_DEFAULT_DEVICE;
+
 	dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
 	format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 	samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -1171,7 +1175,19 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	/* read config soundcard */
 	config = ags_config_get_instance();
 
+	/* device */
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "alsa-handle\0");
 
+	if(str != NULL){
+	  alsa_device = str;
+	}
+
+	ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+				 alsa_device);
+
+	/* presets */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "dsp-channels\0");
