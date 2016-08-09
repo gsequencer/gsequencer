@@ -391,7 +391,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *pattern_mutex;
 
-  if((guint) floor(delay) != 0){
+  if(delay != 0.0){
     return;
   }
 
