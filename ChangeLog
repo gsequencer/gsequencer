@@ -1,3 +1,10 @@
+ags (0.7.44)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing parsing of alsa-handle key of configuration within AGS simple file
+	* fixed AgsExportThread JIFFIE and AGS_THREAD_START_SYNCED_FREQ flag
+	* fine-tuned performance and thus providing some fixes
+
 ags (0.7.43)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
