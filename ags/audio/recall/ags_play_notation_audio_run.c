@@ -777,10 +777,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   current_position = notation->notes; // start_loop
   notation_counter = play_notation_audio_run->count_beats_audio_run->notation_counter;
 
+  /*
   if(play_notation_audio_run->offset != NULL &&
      notation_counter > AGS_NOTE(play_notation_audio_run->offset->data)->x[0]){
     current_position = play_notation_audio_run->offset;
   }
+  */
   
   pthread_mutex_unlock(audio_mutex);
   
@@ -850,9 +852,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	pthread_mutex_unlock(channel_mutex);
 	
-#ifdef AGS_DEBUG	
+	//#ifdef AGS_DEBUG	
 	g_message("playing[%u|%u]: %u | %u\n\0", audio_channel, selected_channel->pad, note->x[0], note->y);
-#endif
+	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){
 	  /* lookup recycling mutex */
@@ -921,10 +923,11 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   pthread_mutex_lock(audio_mutex);
 
-  if(current_position != NULL){
-    play_notation_audio_run->offset = current_position->prev;
-  }
-
+  /*
+    if(current_position != NULL){
+      play_notation_audio_run->offset = current_position->prev;
+    }
+  */
   pthread_mutex_unlock(audio_mutex);
 }
 
