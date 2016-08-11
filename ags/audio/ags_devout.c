@@ -1618,7 +1618,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* set hardware resampling */
-  err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 1);
+  err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 0);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
 
@@ -1707,7 +1707,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* set the period time */
-  period_time = (USEC_PER_SEC / (devout->samplerate)); // - (USEC_PER_SEC / (devout->samplerate * 1000))
+  period_time = (USEC_PER_SEC / devout->samplerate * devout->buffer_size); // (USEC_PER_SEC / (devout->samplerate * 1000))
   dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
@@ -1921,8 +1921,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
 	int err;
 
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
 	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	}
+	
 	if(err < 0){
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}
@@ -1959,8 +1961,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
 	int err;	
 
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
 	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	}
+	
 	if(err < 0){
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}
@@ -1997,8 +2001,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
 	int err;
 
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
 	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	}
+	
 	if(err < 0){
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}
@@ -2034,8 +2040,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
 	int err;
 
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
 	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	}
+	
 	if(err < 0){
 	  err = snd_pcm_prepare(devout->out.alsa.handle);
 	}

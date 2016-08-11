@@ -541,7 +541,7 @@ ags_soundcard_tic(AgsSoundcard *soundcard)
 }
 
 /**
- * ags_soundcard_tic:
+ * ags_soundcard_offset_changed:
  * @soundcard: an #AgsSoundcard
  *
  * Callback when counter expires minor note offset.
@@ -552,7 +552,10 @@ void
 ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 			     guint note_offset)
 {
-  g_signal_emit(soundcard, soundcard_signals[OFFSET_CHANGED], 0);
+  g_signal_emit(soundcard,
+		soundcard_signals[OFFSET_CHANGED],
+		0,
+		note_offset);
 }
 
 /**
