@@ -936,8 +936,6 @@ void
 ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 {
   audio_signal->samplerate = samplerate;
-
-  //TODO:JK: implement me
 }
 
 /**
@@ -952,9 +950,50 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 void
 ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
 {
-  audio_signal->buffer_size = buffer_size;
+  GList *stream;
 
-  //TODO:JK: implement me
+  stream = audio_signal->stream_beginning;
+
+  while(stream != NULL){
+    switch(audio_signal->format){
+    case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       buffer_size * sizeof(signed char));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       buffer_size * sizeof(signed short));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       buffer_size * sizeof(signed long));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       buffer_size * sizeof(signed long));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       buffer_size * sizeof(signed long long));
+      }
+      break;
+    default:
+      g_warning("ags_audio_signal_set_buffer_size() - unsupported format\0");
+    }
+    
+    stream = stream->next;
+  }
+
+  audio_signal->buffer_size = buffer_size;
 }
 
 /**
@@ -969,9 +1008,50 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
 void
 ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
 {
-  audio_signal->format = format;
+  GList *stream;
 
-  //TODO:JK: implement me
+  stream = audio_signal->stream_beginning;
+
+  while(stream != NULL){
+    switch(format){
+    case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       audio_signal->buffer_size * sizeof(signed char));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       audio_signal->buffer_size * sizeof(signed short));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       audio_signal->buffer_size * sizeof(signed long));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       audio_signal->buffer_size * sizeof(signed long));
+      }
+      break;
+    case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+      {
+	stream->data = (signed char *) realloc(stream->data,
+					       audio_signal->buffer_size * sizeof(signed long long));
+      }
+      break;
+    default:
+      g_warning("ags_audio_signal_set_format() - unsupported format\0");
+    }
+    
+    stream = stream->next;
+  }
+
+  audio_signal->format = format;
 }
 
 /**

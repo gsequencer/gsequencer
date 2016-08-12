@@ -56,7 +56,7 @@ ags_audio_buffer_util_morph_s32(signed long *buffer, guint channels,
 }
 
 signed long long*
-ags_audio_buffer_util_morph_s64(signed char *buffer, guint channels,
+ags_audio_buffer_util_morph_s64(signed long long *buffer, guint channels,
 				guint buffer_length,
 				guint morph_lookbehind,
 				AgsComplex *morph)
@@ -129,7 +129,7 @@ ags_audio_buffer_util_resample_s32(signed long *buffer, guint channels,
 }
 
 signed long long*
-ags_audio_buffer_util_resample_s64(signed char *buffer, guint channels,
+ags_audio_buffer_util_resample_s64(signed long long *buffer, guint channels,
 				   guint samplerate,
 				   guint buffer_length,
 				   guint target_samplerate)
