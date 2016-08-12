@@ -23,7 +23,13 @@
 
 #include <ags/file/ags_file_link.h>
 
+#include <ags/audio/ags_playable.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_ipatch.h>
 
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -232,6 +238,136 @@ void
 ags_input_disconnect(AgsConnectable *connectable)
 {
   ags_input_parent_connectable_interface->disconnect(connectable);
+}
+
+gboolean
+ags_input_open_file(AgsInput *input,
+		    gchar *filename,
+		    gchar *preset,
+		    gchar *instrument,
+		    gchar *sample,
+		    guint audio_channel)
+{
+  AgsFileLink *file_link;
+  
+  GList *audio_signal;
+
+  gboolean success;
+
+  success = FALSE;
+  
+  if(ags_audio_file_check_suffix(filename)){
+    AgsAudioFile *audio_file;
+
+    success = TRUE;
+
+    preset = NULL;
+    instrument = NULL;
+    
+    /* open audio file and read audio signal */
+    audio_file = ags_audio_file_new(filename,
+				    AGS_CHANNEL(input)->soundcard,
+				    audio_channel, audio_channel + 1);
+    
+    ags_audio_file_open(audio_file);
+    ags_audio_file_read_audio_signal(audio_file);
+
+    audio_signal = audio_file->audio_signal;
+    g_object_unref(audio_file);
+  }else if(ags_ipatch_check_suffix(filename)){
+    AgsIpatch *ipatch;
+
+    AgsPlayable *playable;
+
+    GError *error;
+    
+    success = TRUE;
+    
+    ipatch = g_object_new(AGS_TYPE_IPATCH,
+			  "soundcard\0", AGS_CHANNEL(input)->soundcard,
+			  "mode\0", AGS_IPATCH_READ,
+			  "filename\0", filename,
+			  NULL);
+
+    playable = AGS_PLAYABLE(ipatch);
+  
+    error = NULL;
+    ags_playable_level_select(playable,
+			      0, filename,
+			      &error);
+
+    /* select first - preset */
+    ipatch->nth_level = 1;
+  
+    error = NULL;
+    ags_playable_level_select(playable,
+			      1, preset,
+			      &error);
+
+    if(error != NULL){
+      g_object_unref(ipatch);
+
+      return(FALSE);
+    }
+
+    /* select second - instrument */
+    ipatch->nth_level = 2;
+
+    error = NULL;
+    ags_playable_level_select(playable,
+			      2, instrument,
+			      &error);
+
+    if(error != NULL){
+      g_object_unref(ipatch);
+
+      return(FALSE);
+    }
+
+    /* select third - sample */
+    ipatch->nth_level = 3;
+
+    error = NULL;
+    ags_playable_level_select(playable,
+			      3, sample,
+			      &error);
+
+    if(error != NULL){
+      g_object_unref(ipatch);
+
+      return(FALSE);
+    }
+
+    /* read audio signal */
+    audio_signal = ags_playable_read_audio_signal(playable,
+						  AGS_CHANNEL(input)->soundcard,
+						  audio_channel, 1);
+  }
+
+  if(success){
+    if(audio_signal != NULL){
+      file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
+			       "filename\0", filename,
+			       "preset\0", preset,
+			       "instrument\0", instrument,
+			       "audio-channel\0", audio_channel,
+			       NULL);
+      g_object_set(input,
+		   "file-link\0", file_link,
+		   NULL);
+    
+      /* mark as template */
+      AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    
+      /* add as template */
+      ags_recycling_add_audio_signal(AGS_CHANNEL(input)->first_recycling,
+				     AGS_AUDIO_SIGNAL(audio_signal->data));
+    }else{
+      success = FALSE;
+    }
+  }
+  
+  return(success);
 }
 
 /**

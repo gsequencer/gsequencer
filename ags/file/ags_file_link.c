@@ -192,6 +192,10 @@ ags_file_link_set_property(GObject *gobject,
 	return;
       }
 
+      if(file_link->filename != NULL){
+	free(file_link->filename);
+      }
+	
       file_link->filename = g_strdup(filename);
     }
     break;

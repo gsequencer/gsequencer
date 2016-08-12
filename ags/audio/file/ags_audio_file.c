@@ -149,7 +149,6 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 				  PROP_SOUNDCARD,
 				  param_spec);
 
-
   /**
    * AgsAudioFile:filename:
    *
@@ -309,6 +308,27 @@ ags_audio_file_set_property(GObject *gobject,
   audio_file = AGS_AUDIO_FILE(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+      
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(soundcard == ((GObject *) audio_file->soundcard)){
+	return;
+      }
+
+      if(audio_file->soundcard != NULL){
+	g_object_unref(audio_file->soundcard);
+      }
+      
+      if(soundcard != NULL){
+	g_object_ref(G_OBJECT(soundcard));
+      }
+      
+      audio_file->soundcard = (GObject *) soundcard;
+    }
+    break;
   case PROP_FILENAME:
     {
       gchar *filename;
@@ -324,24 +344,6 @@ ags_audio_file_set_property(GObject *gobject,
       }
 
       audio_file->filename = g_strdup(filename);
-    }
-    break;
-  case PROP_SOUNDCARD:
-    {
-      GObject *soundcard;
-      
-      soundcard = (GObject *) g_value_get_object(value);
-
-      if(soundcard == ((GObject *) audio_file->soundcard))
-	return;
-
-      if(audio_file->soundcard != NULL)
-	g_object_unref(audio_file->soundcard);
-
-      if(soundcard != NULL)
-	g_object_ref(G_OBJECT(soundcard));
-
-      audio_file->soundcard = (GObject *) soundcard;
     }
     break;
   case PROP_START_CHANNEL:
@@ -371,17 +373,25 @@ ags_audio_file_get_property(GObject *gobject,
   audio_file = AGS_AUDIO_FILE(gobject);
 
   switch(prop_id){
-  case PROP_FILENAME:
-    g_value_set_string(value, audio_file->filename);
-    break;
   case PROP_SOUNDCARD:
-    g_value_set_string(value, audio_file->soundcard);
+    {
+      g_value_set_string(value, audio_file->soundcard);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, audio_file->filename);
+    }
     break;
   case PROP_START_CHANNEL:
-    g_value_set_uint(value, audio_file->start_channel);
+    {
+      g_value_set_uint(value, audio_file->start_channel);
+    }
     break;
   case PROP_AUDIO_CHANNELS:
-    g_value_set_uint(value, audio_file->audio_channels);
+    {
+      g_value_set_uint(value, audio_file->audio_channels);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -425,6 +435,18 @@ void
 ags_audio_file_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+gboolean
+ags_audio_file_check_suffix(gchar *filename)
+{
+  if(g_str_has_suffix(filename, ".wav\0") ||
+     g_str_has_suffix(filename, ".ogg\0") ||
+     g_str_has_suffix(filename, ".flac\0")){
+    return(TRUE);
+  }
+
+  return(FALSE);
 }
 
 /**

@@ -64,6 +64,10 @@ struct _AgsChannel
   GObject *audio;
   GObject *soundcard;
 
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  
   AgsChannel *prev;
   AgsChannel *prev_pad;
   AgsChannel *next;
@@ -135,6 +139,10 @@ AgsChannel* ags_channel_prev_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_next_with_recycling(AgsChannel *channel);
 
 void ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard);
+
+void ags_channel_set_samplerate(AgsChannel *channel, guint samplerate);
+void ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size);
+void ags_channel_set_format(AgsChannel *channel, guint format);
 
 void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id);

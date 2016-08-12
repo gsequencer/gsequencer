@@ -70,6 +70,7 @@
 #include <ags/audio/task/ags_remove_recall.h>
 #include <ags/audio/task/ags_remove_recall_container.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <stdio.h>
@@ -136,6 +137,9 @@ enum{
   PROP_0,
   PROP_AUDIO,
   PROP_SOUNDCARD,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
   PROP_PAD,
   PROP_AUDIO_CHANNEL,
   PROP_LINE,
@@ -240,6 +244,60 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
+   * AgsAudio:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec =  g_param_spec_uint("samplerate\0",
+				  "samplerate\0",
+				  "The samplerate\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsAudio:buffer-size:
+   *
+   * The buffer size.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec =  g_param_spec_uint("buffer-size\0",
+				  "buffer size\0",
+				  "The buffer size\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsAudio:format:
+   *
+   * The format.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec =  g_param_spec_uint("format\0",
+				  "format\0",
+				  "The format\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+  
+  /**
    * AgsAudio:audio-channel:
    *
    * The nth audio channel.
@@ -256,7 +314,6 @@ ags_channel_class_init(AgsChannelClass *channel)
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
-
 
   /**
    * AgsAudio:pad:
@@ -566,6 +623,7 @@ ags_channel_init(AgsChannel *channel)
   AgsConfig *config;
   AgsMutexManager *mutex_manager;
 
+  gchar *str;
   gchar *str0, *str1;
 
   pthread_mutex_t *application_mutex;
@@ -594,29 +652,74 @@ ags_channel_init(AgsChannel *channel)
   
   pthread_mutex_unlock(application_mutex);
 
-  /*  */
+  /* config */
+  config = ags_config_get_instance();
+
+  /* base init */
   channel->flags = 0;
 
   channel->audio = NULL;
   channel->soundcard = NULL;
+    
+  channel->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  channel->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
+  /* read presets of config */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  
+  if(str != NULL){
+    channel->samplerate = g_ascii_strtoull(str,
+					   NULL,
+					   10);
+
+    free(str);
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  
+  if(str != NULL){
+    channel->buffer_size = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+
+    free(str);
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "format\0");
+  
+  if(str != NULL){
+    channel->format = g_ascii_strtoull(str,
+				       NULL,
+				       10);
+
+    free(str);
+  }
+
+  /* inter-connected channels */
   channel->prev = NULL;
   channel->prev_pad = NULL;
   channel->next = NULL;
   channel->next_pad = NULL;
 
+  /* allocation info */
   channel->pad = 0;
   channel->audio_channel = 0;
   channel->line = 0;
 
   channel->note = NULL;
 
+  /* playback */
   channel->playback = ags_playback_new();
   AGS_PLAYBACK(channel->playback)->source = (GObject *) channel;
 
-  /* config */
-  config = ags_config_get_instance();
-  
+  /* thread model */
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "model\0");
@@ -722,6 +825,36 @@ ags_channel_set_property(GObject *gobject,
       soundcard = (GObject *) g_value_get_object(value);
 
       ags_channel_set_soundcard(channel, (GObject *) soundcard);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate;
+
+      samplerate = g_value_get_uint(value);
+
+      ags_channel_set_samplerate(channel,
+				 samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size;
+
+      buffer_size = g_value_get_uint(value);
+
+      ags_channel_set_buffer_size(channel,
+				  buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format;
+
+      format = g_value_get_uint(value);
+
+      ags_channel_set_format(channel,
+			     format);
     }
     break;
   case PROP_NOTE:
@@ -872,10 +1005,29 @@ ags_channel_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO:
-    g_value_set_object(value, channel->audio);
+    {
+      g_value_set_object(value, channel->audio);
+    }
     break;
   case PROP_SOUNDCARD:
-    g_value_set_object(value, channel->soundcard);
+    {
+      g_value_set_object(value, channel->soundcard);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value, channel->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, channel->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, channel->format);
+    }
     break;
   case PROP_PAD:
     {
@@ -1826,6 +1978,216 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
   }
 
   pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_set_samplerate:
+ * @audio: the #AgsAudio
+ * @samplerate: the samplerate
+ *
+ * Sets buffer length.
+ *
+ * Since: 0.7.45
+ */
+void
+ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
+{
+  AgsAudio *audio;
+
+  auto void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate);
+
+  void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate){
+    AgsAudioSignal *template;
+    
+    template = ags_audio_signal_get_template(audio_signal);
+    
+    if(template != NULL){
+      ags_audio_signal_set_samplerate(template,
+				      samplerate);
+    }
+  }
+
+  if(channel->samplerate == samplerate){
+    return;
+  }
+  
+  audio = channel->audio;
+
+  channel->samplerate = samplerate;
+
+  if(audio != NULL){
+    AgsRecycling *recycling;
+
+    GList *audio_signal;
+    
+    if(AGS_IS_OUTPUT(channel) &&
+       (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      recycling = channel->first_recycling;
+
+      ags_channel_set_samplerate_audio_signal(recycling->audio_signal, samplerate);
+    }
+
+    if(AGS_IS_INPUT(channel) &&
+       channel->link == NULL &&
+       (AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      recycling = channel->first_recycling;
+
+      if(AGS_INPUT(channel)->file_link == NULL){
+	ags_channel_set_samplerate_audio_signal(recycling->audio_signal, samplerate);
+      }else{
+	AgsFileLink *file_link;
+
+	file_link = AGS_INPUT(channel)->file_link;
+	
+	ags_input_open_file(channel,
+			    file_link->filename,
+			    AGS_AUDIO_FILE_LINK(file_link)->preset,
+			    AGS_AUDIO_FILE_LINK(file_link)->instrument,
+			    AGS_AUDIO_FILE_LINK(file_link)->sample,
+			    AGS_AUDIO_FILE_LINK(file_link)->audio_channel);
+      }
+    }
+  }
+}
+
+/**
+ * ags_audio_set_buffer_size:
+ * @audio: the #AgsAudio
+ * @buffer_size: the buffer_size
+ *
+ * Sets buffer length.
+ *
+ * Since: 0.7.45
+ */
+void
+ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
+{
+  AgsAudio *audio;
+
+  auto void ags_channel_set_buffer_size_audio_signal(GList *audio_signal, guint buffer_size);
+
+  void ags_channel_set_buffer_size_audio_signal(GList *audio_signal, guint buffer_size){
+    AgsAudioSignal *template;
+    
+    template = ags_audio_signal_get_template(audio_signal);
+    
+    if(template != NULL){
+      ags_audio_signal_set_buffer_size(template,
+				       buffer_size);
+    }
+  }  
+
+  if(channel->buffer_size == buffer_size){
+    return;
+  }
+  
+  audio = channel->audio;
+  
+  channel->buffer_size = buffer_size;
+
+  if(audio != NULL){
+    AgsRecycling *recycling;
+
+    GList *audio_signal;
+    
+    if(AGS_IS_OUTPUT(channel) &&
+       (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      recycling = channel->first_recycling;
+
+      ags_channel_set_buffer_size_audio_signal(recycling->audio_signal, buffer_size);
+    }
+
+    if(AGS_IS_INPUT(channel) &&
+       channel->link == NULL &&
+       (AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      recycling = channel->first_recycling;
+
+      if(AGS_INPUT(channel)->file_link == NULL){
+	ags_channel_set_buffer_size_audio_signal(recycling->audio_signal, buffer_size);
+      }else{
+	AgsFileLink *file_link;
+
+	file_link = AGS_INPUT(channel)->file_link;
+	
+	ags_input_open_file(channel,
+			    file_link->filename,
+			    AGS_AUDIO_FILE_LINK(file_link)->preset,
+			    AGS_AUDIO_FILE_LINK(file_link)->instrument,
+			    AGS_AUDIO_FILE_LINK(file_link)->sample,
+			    AGS_AUDIO_FILE_LINK(file_link)->audio_channel);
+      }
+    }
+  }
+}
+
+/**
+ * ags_audio_set_format:
+ * @audio: the #AgsAudio
+ * @format: the format
+ *
+ * Sets buffer length.
+ *
+ * Since: 0.7.45
+ */
+void
+ags_channel_set_format(AgsChannel *channel, guint format)
+{
+  AgsAudio *audio;
+
+  auto void ags_channel_set_format_audio_signal(GList *audio_signal, guint format);
+
+  void ags_channel_set_format_audio_signal(GList *audio_signal, guint format){
+    AgsAudioSignal *template;
+    
+    template = ags_audio_signal_get_template(audio_signal);
+    
+    if(template != NULL){
+      ags_audio_signal_set_format(template,
+				  format);
+    }
+  }
+
+  if(channel->format == format){
+    return;
+  }  
+  
+  audio = channel->audio;
+  
+  channel->format = format;
+
+  if(audio != NULL){
+    AgsRecycling *recycling;
+
+    GList *audio_signal;
+    
+    if(AGS_IS_OUTPUT(channel) &&
+       (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      recycling = channel->first_recycling;
+
+      ags_channel_set_format_audio_signal(recycling->audio_signal, format);
+    }
+
+    if(AGS_IS_INPUT(channel) &&
+       channel->link == NULL &&
+       (AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      recycling = channel->first_recycling;
+
+      if(AGS_INPUT(channel)->file_link == NULL){
+	ags_channel_set_format_audio_signal(recycling->audio_signal, format);
+      }else{
+	AgsFileLink *file_link;
+
+	file_link = AGS_INPUT(channel)->file_link;
+	
+	ags_input_open_file(channel,
+			    file_link->filename,
+			    AGS_AUDIO_FILE_LINK(file_link)->preset,
+			    AGS_AUDIO_FILE_LINK(file_link)->instrument,
+			    AGS_AUDIO_FILE_LINK(file_link)->sample,
+			    AGS_AUDIO_FILE_LINK(file_link)->audio_channel);
+      }
+    }
+  }
 }
 
 /**

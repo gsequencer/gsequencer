@@ -41,6 +41,10 @@ struct _AgsAudioFileLink
 {
   AgsFileLink file_link;
 
+  gchar *preset;
+  gchar *instrument;
+  gchar *sample;
+  
   guint audio_channel;
   
   AgsTimestamp *timestamp;

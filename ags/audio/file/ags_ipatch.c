@@ -75,6 +75,7 @@ static AgsPlayableInterface *ags_ipatch_parent_playable_interface;
 
 enum{
   PROP_0,
+  PROP_SOUNDCARD,
   PROP_FILENAME,
   PROP_MODE,
 };
@@ -143,6 +144,29 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
   gobject->finalize = ags_ipatch_finalize;
 
   /* properties */
+  /**
+   * AgsIpatch:soundcard:
+   *
+   * The assigned soundcard.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of ipatch\0",
+				   "The soundcard what ipatch has it's presets\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsIpatch:filename:
+   *
+   * The assigned filename.
+   * 
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_pointer("filename\0",
 				   "the filename\0",
 				   "The filename to open\0",
@@ -151,6 +175,13 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
 				  PROP_FILENAME,
 				  param_spec);
 
+  /**
+   * AgsIpatch:mode:
+   *
+   * The assigned mode.
+   * 
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_pointer("mode\0",
 				    "the mode\0",
 				    "The mode to open the file\0",
@@ -226,6 +257,27 @@ ags_ipatch_set_property(GObject *gobject,
   ipatch = AGS_IPATCH(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+      
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(soundcard == ((GObject *) ipatch->soundcard)){
+	return;
+      }
+
+      if(ipatch->soundcard != NULL){
+	g_object_unref(ipatch->soundcard);
+      }
+      
+      if(soundcard != NULL){
+	g_object_ref(G_OBJECT(soundcard));
+      }
+      
+      ipatch->soundcard = (GObject *) soundcard;
+    }
+    break;
   case PROP_FILENAME:
     {
       gchar *filename;
@@ -275,11 +327,20 @@ ags_ipatch_get_property(GObject *gobject,
   ipatch = AGS_IPATCH(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_string(value, ipatch->soundcard);
+    }
+    break;
   case PROP_FILENAME:
-    g_value_set_pointer(value, ipatch->filename);
+    {
+      g_value_set_pointer(value, ipatch->filename);
+    }
     break;
   case PROP_MODE:
-    g_value_set_pointer(value, ipatch->mode);
+    {
+      g_value_set_pointer(value, ipatch->mode);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -303,6 +364,17 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
+gboolean
+ags_ipatch_check_suffix(gchar *filename)
+{
+  if(g_str_has_suffix(filename, ".sf2\0") ||
+     g_str_has_suffix(filename, ".dls\0") ||
+     g_str_has_suffix(filename, ".gig\0")){
+    return(TRUE);
+  }
+
+  return(FALSE);
+}
 
 gboolean
 ags_ipatch_open(AgsPlayable *playable, gchar *filename)

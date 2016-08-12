@@ -163,10 +163,11 @@ ags_open_sf2_sample_launch(AgsTask *task)
   AgsOpenSf2Sample *open_sf2_sample;
 
   AgsChannel *channel;
-  AgsAudioSignal *audio_signal, *audio_signal_old;
-  AgsPlayable *playable;
-
+  AgsAudioSignal *audio_signal;
+  
   AgsIpatch *ipatch;
+
+  AgsPlayable *playable;
 
   GList *list;
   
@@ -183,10 +184,10 @@ ags_open_sf2_sample_launch(AgsTask *task)
   channel = open_sf2_sample->channel;
 
   ipatch = g_object_new(AGS_TYPE_IPATCH,
+			"soundcard\0", channel->soundcard,
 			"mode\0", AGS_IPATCH_READ,
 			"filename\0", open_sf2_sample->filename,
 			NULL);
-  ipatch->soundcard = channel->soundcard;
 
   playable = AGS_PLAYABLE(ipatch);
   
@@ -250,10 +251,6 @@ ags_open_sf2_sample_launch(AgsTask *task)
   audio_signal = list->data;
   
   /* replace template audio signal */
-  audio_signal_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-  ags_recycling_remove_audio_signal(channel->first_recycling,
-				    (gpointer) audio_signal_old);
-  
   audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   ags_recycling_add_audio_signal(channel->first_recycling,
 				 audio_signal); 

@@ -540,8 +540,6 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->delay = 0.0;
   audio_signal->attack = 0;
 
-  audio_signal->lock_attack = 0;
-
   audio_signal->stream_beginning = NULL;
   audio_signal->stream_current = NULL;
   audio_signal->stream_end = NULL;
@@ -923,6 +921,57 @@ void
 ags_stream_free(signed short *buffer)
 {
   free(buffer);
+}
+
+/**
+ * ags_audio_signal_set_samplerate:
+ * @audio_signal: the #AgsAudioSignal
+ * @samplerate: the samplerate
+ *
+ * Set samplerate.
+ *
+ * Since: 0.7.45
+ */
+void
+ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
+{
+  audio_signal->samplerate = samplerate;
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_signal_set_buffer_size:
+ * @audio_signal: the #AgsAudioSignal
+ * @samplerate: the samplerate
+ *
+ * Set buffer size.
+ *
+ * Since: 0.7.45
+ */
+void
+ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
+{
+  audio_signal->buffer_size = buffer_size;
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_signal_set_format:
+ * @audio_signal: the #AgsAudioSignal
+ * @samplerate: the samplerate
+ *
+ * Set format.
+ *
+ * Since: 0.7.45
+ */
+void
+ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
+{
+  audio_signal->format = format;
+
+  //TODO:JK: implement me
 }
 
 /**

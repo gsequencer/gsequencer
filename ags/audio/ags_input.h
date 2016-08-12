@@ -50,6 +50,13 @@ struct _AgsInputClass
 
 GType ags_input_get_type();
 
+gboolean ags_input_open_file(AgsInput *input,
+			     gchar *filename,
+			     gchar *preset,
+			     gchar *instrument,
+			     gchar *sample,
+			     guint audio_channel);
+
 AgsInput* ags_input_new(GObject *audio);
 
 #endif /*__AGS_INPUT_H__*/
