@@ -96,7 +96,7 @@ ags_composite_class_init(AgsCompositeInterface *interface)
    * @composite: the #AgsComposite
    * @child: the child #GObject
    *
-   * The ::remove signal notifies about removeed child.
+   * The ::remove signal notifies about removed child.
    */
   composite_signals[REMOVE] =
     g_signal_new("remove\0",

@@ -143,12 +143,16 @@ void
 ags_open_single_file_launch(AgsTask *task)
 {
   AgsOpenSingleFile *open_single_file;
+
   AgsChannel *channel;
-  AgsFileLink *file_link;
-  AgsAudioSignal *old_template;
   AgsAudioFile *audio_file;
+
+  AgsFileLink *file_link;
+
   GList *audio_signal;
+
   guint i;
+
   GError *error;
 
   open_single_file = AGS_OPEN_SINGLE_FILE(task);
@@ -188,16 +192,9 @@ ags_open_single_file_launch(AgsTask *task)
     /* mark as template */
     AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 
-    /* old source */
-    old_template = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-    
     /* add as template */
     ags_recycling_add_audio_signal(channel->first_recycling,
 				   AGS_AUDIO_SIGNAL(audio_signal->data));
-
-    /* remove old template */
-    ags_recycling_remove_audio_signal(channel->first_recycling,
-				      old_template);
 
     /* iterate */
     channel = channel->next;

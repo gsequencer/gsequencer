@@ -79,6 +79,8 @@ struct _AgsIpatchClass
 
 GType ags_ipatch_get_type();
 
+gboolean ags_ipatch_check_suffix(gchar *filename);
+
 AgsIpatch* ags_ipatch_new();
 
 #endif /*__AGS_IPATCH_H__*/

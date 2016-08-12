@@ -73,6 +73,9 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 
 enum{
   PROP_0,
+  PROP_PRESET,
+  PROP_INSTRUMENT,
+  PROP_SAMPLE,
   PROP_AUDIO_CHANNEL,
   PROP_TIMESTAMP,
 };
@@ -136,6 +139,33 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
   gobject->finalize = ags_audio_file_link_finalize;
 
   /* properties */
+  param_spec = g_param_spec_string("preset\0",
+				   "the preset\0",
+				   "The preset to locate the file\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESET,
+				  param_spec);
+
+  param_spec = g_param_spec_string("instrument\0",
+				   "the instrument\0",
+				   "The instrument to locate the file\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INSTRUMENT,
+				  param_spec);
+
+  param_spec = g_param_spec_string("sample\0",
+				   "the sample\0",
+				   "The sample to locate the file\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLE,
+				  param_spec);
+
   param_spec = g_param_spec_uint("audio-channel\0",
 				 "audio channel to read\0",
 				 "The selected audio channel to read\0",
@@ -168,6 +198,10 @@ ags_audio_file_link_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_audio_file_link_init(AgsAudioFileLink *audio_file_link)
 {
+  audio_file_link->preset = NULL;
+  audio_file_link->instrument = NULL;
+  audio_file_link->sample = NULL;
+  
   audio_file_link->audio_channel = 0;
   
   audio_file_link->timestamp = NULL;
@@ -184,6 +218,57 @@ ags_audio_file_link_set_property(GObject *gobject,
   audio_file_link = AGS_AUDIO_FILE_LINK(gobject);
   
   switch(prop_id){
+  case PROP_PRESET:
+    {
+      char *preset;
+
+      preset = (char *) g_value_get_string(value);
+
+      if(preset == audio_file_link->preset){
+	return;
+      }
+
+      if(audio_file_link->preset != NULL){
+	free(audio_file_link->preset);
+      }
+	
+      audio_file_link->preset = g_strdup(preset);
+    }
+    break;
+  case PROP_INSTRUMENT:
+    {
+      char *instrument;
+
+      instrument = (char *) g_value_get_string(value);
+
+      if(instrument == audio_file_link->instrument){
+	return;
+      }
+
+      if(audio_file_link->instrument != NULL){
+	free(audio_file_link->instrument);
+      }
+	
+      audio_file_link->instrument = g_strdup(instrument);
+    }
+    break;
+  case PROP_SAMPLE:
+    {
+      char *sample;
+
+      sample = (char *) g_value_get_string(value);
+
+      if(sample == audio_file_link->sample){
+	return;
+      }
+
+      if(audio_file_link->sample != NULL){
+	free(audio_file_link->sample);
+      }
+	
+      audio_file_link->sample = g_strdup(sample);
+    }
+    break;
   case PROP_AUDIO_CHANNEL:
     {
       audio_file_link->audio_channel = g_value_get_uint(value);
@@ -227,6 +312,21 @@ ags_audio_file_link_get_property(GObject *gobject,
   audio_file_link = AGS_AUDIO_FILE_LINK(gobject);
   
   switch(prop_id){
+  case PROP_PRESET:
+    {
+      g_value_set_string(value, audio_file_link->preset);
+    }
+    break;
+  case PROP_INSTRUMENT:
+    {
+      g_value_set_string(value, audio_file_link->instrument);
+    }
+    break;
+  case PROP_SAMPLE:
+    {
+      g_value_set_string(value, audio_file_link->sample);
+    }
+    break;
   case PROP_AUDIO_CHANNEL:
     {
       g_value_set_uint(value, audio_file_link->audio_channel);

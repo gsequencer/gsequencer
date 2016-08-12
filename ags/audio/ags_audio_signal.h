@@ -63,8 +63,6 @@ struct _AgsAudioSignal
 
   gdouble delay;
   guint attack;
-
-  guint lock_attack;
   
   GList *stream_beginning;
   GList *stream_current;
@@ -83,6 +81,10 @@ GType ags_audio_signal_get_type();
 
 signed short* ags_stream_alloc(guint buffer_size);
 void ags_stream_free(signed short *buffer);
+
+void ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
+void ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
+void ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format);
 
 guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
 
