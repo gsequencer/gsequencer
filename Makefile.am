@@ -493,7 +493,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_sound_provider.h \
-	ags/audio/ags_synths.h
+	ags/audio/ags_synth_generator.h \
+	ags/audio/ags_synth_util.h
 
 deprecated_libags_audio_c_sources =
 
@@ -541,7 +542,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_sound_provider.c \
-	ags/audio/ags_synths.c
+	ags/audio/ags_synth_generator.c \
+	ags/audio/ags_synth_util.c
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =

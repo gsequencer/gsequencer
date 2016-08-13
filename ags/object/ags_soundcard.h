@@ -66,7 +66,7 @@ typedef enum{
   AGS_SOUNDCARD_SIGNED_24_BIT   = 24,
   AGS_SOUNDCARD_SIGNED_32_BIT   = 32,
   AGS_SOUNDCARD_SIGNED_64_BIT   = 64,
-}AgsSoundcardBitMode;
+}AgsSoundcardFormat;
 
 struct _AgsSoundcardInterface
 {
