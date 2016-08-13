@@ -73,6 +73,7 @@ struct _AgsAudioSignalClass
 {
   GObjectClass object;
 
+  void (*reset_format)(AgsAudioSignal *audio_signal, guint format);
   void (*realloc_buffer_size)(AgsAudioSignal *audio_signal, guint buffer_size);
   void (*morph_samplerate)(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 };

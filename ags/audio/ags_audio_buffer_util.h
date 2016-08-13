@@ -114,6 +114,10 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE,
 }AgsAudioBufferUtilCopyMode;
 
+guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
+guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
+					  guint source_format);
+
 /* morph */
 signed char* ags_audio_buffer_util_morph_s8(signed char *buffer, guint channels,
 					    guint buffer_length,
@@ -347,9 +351,6 @@ void ags_audio_buffer_util_copy_double_to_double(double *destination, guint dcha
 						 guint count);
 
 /* copy */
-void ags_audio_buffer_util_get_copy_mode(guint dformat, gboolean source_is_soundcard,
-					 guint sformat, gboolean destination_is_soundcard);
-
 void ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels,
 						 void *source, guint schannels,
 						 guint count, guint mode);
