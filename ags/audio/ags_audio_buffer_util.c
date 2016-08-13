@@ -164,6 +164,18 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_audio_buffer_util_copy_s8_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s8_to_s8(signed char *destination, guint dchannels,
 				    signed char *source, guint schannels,
@@ -201,6 +213,18 @@ ags_audio_buffer_util_copy_s8_to_s8(signed char *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s8_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s8_to_s16(signed short *destination, guint dchannels,
 				     signed char *source, guint schannels,
@@ -240,6 +264,18 @@ ags_audio_buffer_util_copy_s8_to_s16(signed short *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s8_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s8_to_s24(signed long *destination, guint dchannels,
 				     signed char *source, guint schannels,
@@ -279,6 +315,18 @@ ags_audio_buffer_util_copy_s8_to_s24(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s8_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s8_to_s32(signed long *destination, guint dchannels,
 				     signed char *source, guint schannels,
@@ -318,6 +366,18 @@ ags_audio_buffer_util_copy_s8_to_s32(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s8_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s8_to_s64(signed long long *destination, guint dchannels,
 				     signed char *source, guint schannels,
@@ -357,6 +417,18 @@ ags_audio_buffer_util_copy_s8_to_s64(signed long long *destination, guint dchann
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s8_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s8_to_float(float *destination, guint dchannels,
 				       signed char *source, guint schannels,
@@ -396,6 +468,18 @@ ags_audio_buffer_util_copy_s8_to_float(float *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s8_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s8_to_double(double *destination, guint dchannels,
 					signed char *source, guint schannels,
@@ -435,6 +519,18 @@ ags_audio_buffer_util_copy_s8_to_double(double *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s16_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s16_to_s8(signed char *destination, guint dchannels,
 				     signed short *source, guint schannels,
@@ -474,6 +570,18 @@ ags_audio_buffer_util_copy_s16_to_s8(signed char *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s16_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s16_to_s16(signed short *destination, guint dchannels,
 				      signed short *source, guint schannels,
@@ -511,6 +619,18 @@ ags_audio_buffer_util_copy_s16_to_s16(signed short *destination, guint dchannels
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s16_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s16_to_s24(signed long *destination, guint dchannels,
 				      signed short *source, guint schannels,
@@ -550,6 +670,18 @@ ags_audio_buffer_util_copy_s16_to_s24(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s16_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s16_to_s32(signed long *destination, guint dchannels,
 				      signed short *source, guint schannels,
@@ -589,6 +721,18 @@ ags_audio_buffer_util_copy_s16_to_s32(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s16_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s16_to_s64(signed long long *destination, guint dchannels,
 				      signed short *source, guint schannels,
@@ -628,6 +772,18 @@ ags_audio_buffer_util_copy_s16_to_s64(signed long long *destination, guint dchan
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s16_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s16_to_float(float *destination, guint dchannels,
 					signed short *source, guint schannels,
@@ -667,6 +823,18 @@ ags_audio_buffer_util_copy_s16_to_float(float *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s16_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s16_to_double(double *destination, guint dchannels,
 					 signed short *source, guint schannels,
@@ -706,6 +874,18 @@ ags_audio_buffer_util_copy_s16_to_double(double *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s24_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s24_to_s8(signed char *destination, guint dchannels,
 				     signed long *source, guint schannels,
@@ -745,6 +925,18 @@ ags_audio_buffer_util_copy_s24_to_s8(signed char *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s24_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s24_to_s16(signed short *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -784,6 +976,18 @@ ags_audio_buffer_util_copy_s24_to_s16(signed short *destination, guint dchannels
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s24_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s24_to_s24(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -821,6 +1025,18 @@ ags_audio_buffer_util_copy_s24_to_s24(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s24_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s24_to_s32(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -860,6 +1076,18 @@ ags_audio_buffer_util_copy_s24_to_s32(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s24_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s24_to_s64(signed long long *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -899,6 +1127,18 @@ ags_audio_buffer_util_copy_s24_to_s64(signed long long *destination, guint dchan
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s24_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s24_to_float(float *destination, guint dchannels,
 					signed long *source, guint schannels,
@@ -938,6 +1178,18 @@ ags_audio_buffer_util_copy_s24_to_float(float *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s24_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s24_to_double(double *destination, guint dchannels,
 					 signed long *source, guint schannels,
@@ -977,6 +1229,18 @@ ags_audio_buffer_util_copy_s24_to_double(double *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s32_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s32_to_s8(signed char *destination, guint dchannels,
 				     signed long *source, guint schannels,
@@ -1016,6 +1280,18 @@ ags_audio_buffer_util_copy_s32_to_s8(signed char *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s32_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s32_to_s16(signed short *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -1055,6 +1331,18 @@ ags_audio_buffer_util_copy_s32_to_s16(signed short *destination, guint dchannels
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s32_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s32_to_s24(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -1094,6 +1382,18 @@ ags_audio_buffer_util_copy_s32_to_s24(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s32_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s32_to_s32(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -1131,6 +1431,18 @@ ags_audio_buffer_util_copy_s32_to_s32(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s32_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s32_to_s64(signed long long *destination, guint dchannels,
 				      signed long *source, guint schannels,
@@ -1170,6 +1482,18 @@ ags_audio_buffer_util_copy_s32_to_s64(signed long long *destination, guint dchan
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s32_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s32_to_float(float *destination, guint dchannels,
 					signed long *source, guint schannels,
@@ -1209,6 +1533,18 @@ ags_audio_buffer_util_copy_s32_to_float(float *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s32_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s32_to_double(double *destination, guint dchannels,
 					 signed long *source, guint schannels,
@@ -1248,6 +1584,18 @@ ags_audio_buffer_util_copy_s32_to_double(double *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s64_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s64_to_s8(signed char *destination, guint dchannels,
 				     signed long long *source, guint schannels,
@@ -1287,6 +1635,18 @@ ags_audio_buffer_util_copy_s64_to_s8(signed char *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s64_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s64_to_s16(signed short *destination, guint dchannels,
 				      signed long long *source, guint schannels,
@@ -1326,6 +1686,18 @@ ags_audio_buffer_util_copy_s64_to_s16(signed short *destination, guint dchannels
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s64_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s64_to_s24(signed long *destination, guint dchannels,
 				      signed long long *source, guint schannels,
@@ -1365,6 +1737,18 @@ ags_audio_buffer_util_copy_s64_to_s24(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s64_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s64_to_s32(signed long *destination, guint dchannels,
 				      signed long long *source, guint schannels,
@@ -1404,6 +1788,18 @@ ags_audio_buffer_util_copy_s64_to_s32(signed long *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s64_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s64_to_s64(signed long long *destination, guint dchannels,
 				      signed long long *source, guint schannels,
@@ -1441,6 +1837,18 @@ ags_audio_buffer_util_copy_s64_to_s64(signed long long *destination, guint dchan
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s64_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s64_to_float(float *destination, guint dchannels,
 					signed long long *source, guint schannels,
@@ -1480,6 +1888,18 @@ ags_audio_buffer_util_copy_s64_to_float(float *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_s64_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_s64_to_double(double *destination, guint dchannels,
 					 signed long long *source, guint schannels,
@@ -1519,6 +1939,18 @@ ags_audio_buffer_util_copy_s64_to_double(double *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_float_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_float_to_s8(signed char *destination, guint dchannels,
 				       float *source, guint schannels,
@@ -1558,6 +1990,18 @@ ags_audio_buffer_util_copy_float_to_s8(signed char *destination, guint dchannels
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_float_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_float_to_s16(signed short *destination, guint dchannels,
 					float *source, guint schannels,
@@ -1597,6 +2041,18 @@ ags_audio_buffer_util_copy_float_to_s16(signed short *destination, guint dchanne
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_float_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_float_to_s24(signed long *destination, guint dchannels,
 					float *source, guint schannels,
@@ -1636,6 +2092,18 @@ ags_audio_buffer_util_copy_float_to_s24(signed long *destination, guint dchannel
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_float_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_float_to_s32(signed long *destination, guint dchannels,
 					float *source, guint schannels,
@@ -1675,6 +2143,18 @@ ags_audio_buffer_util_copy_float_to_s32(signed long *destination, guint dchannel
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_float_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_float_to_s64(signed long long *destination, guint dchannels,
 					float *source, guint schannels,
@@ -1714,6 +2194,18 @@ ags_audio_buffer_util_copy_float_to_s64(signed long long *destination, guint dch
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_float_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_float_to_float(float *destination, guint dchannels,
 					  float *source, guint schannels,
@@ -1751,6 +2243,18 @@ ags_audio_buffer_util_copy_float_to_float(float *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_float_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_float_to_double(double *destination, guint dchannels,
 					   float *source, guint schannels,
@@ -1788,6 +2292,18 @@ ags_audio_buffer_util_copy_float_to_double(double *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_double_to_s8:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_double_to_s8(signed char *destination, guint dchannels,
 					double *source, guint schannels,
@@ -1827,6 +2343,18 @@ ags_audio_buffer_util_copy_double_to_s8(signed char *destination, guint dchannel
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_double_to_s16:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_double_to_s16(signed short *destination, guint dchannels,
 					 double *source, guint schannels,
@@ -1866,6 +2394,18 @@ ags_audio_buffer_util_copy_double_to_s16(signed short *destination, guint dchann
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_double_to_s24:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_double_to_s24(signed long *destination, guint dchannels,
 					 double *source, guint schannels,
@@ -1905,6 +2445,18 @@ ags_audio_buffer_util_copy_double_to_s24(signed long *destination, guint dchanne
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_double_to_s32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_double_to_s32(signed long *destination, guint dchannels,
 					 double *source, guint schannels,
@@ -1944,6 +2496,18 @@ ags_audio_buffer_util_copy_double_to_s32(signed long *destination, guint dchanne
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_double_to_s64:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_double_to_s64(signed long long *destination, guint dchannels,
 					 double *source, guint schannels,
@@ -1983,6 +2547,18 @@ ags_audio_buffer_util_copy_double_to_s64(signed long long *destination, guint dc
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_double_to_float:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_double_to_float(float *destination, guint dchannels,
 					   double *source, guint schannels,
@@ -2020,6 +2596,18 @@ ags_audio_buffer_util_copy_double_to_float(float *destination, guint dchannels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_copy_double_to_double:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_audio_buffer_util_copy_double_to_double(double *destination, guint dchannels,
 					    double *source, guint schannels,
@@ -2064,6 +2652,19 @@ ags_audio_buffer_util_get_copy_mode(guint dformat, gboolean source_is_soundcard,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_audio_buffer_util_copy_buffer_to_buffer:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ * @mode: specified type conversion as described
+ * 
+ * Wrapper function to copy functions. Doing type conversion.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels,
 					    void *source, guint schannels,
