@@ -139,6 +139,13 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
   gobject->finalize = ags_audio_file_link_finalize;
 
   /* properties */
+  /**
+   * AgsAudioFileLink:preset:
+   *
+   * The assigned preset.
+   * 
+   * Since: 0.7.45
+   */
   param_spec = g_param_spec_string("preset\0",
 				   "the preset\0",
 				   "The preset to locate the file\0",
@@ -148,6 +155,13 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
 				  PROP_PRESET,
 				  param_spec);
 
+  /**
+   * AgsAudioFileLink:instrument:
+   *
+   * The assigned instrument.
+   * 
+   * Since: 0.7.45
+   */
   param_spec = g_param_spec_string("instrument\0",
 				   "the instrument\0",
 				   "The instrument to locate the file\0",
@@ -157,6 +171,13 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
 				  PROP_INSTRUMENT,
 				  param_spec);
 
+  /**
+   * AgsAudioFileLink:sample:
+   *
+   * The assigned sample.
+   * 
+   * Since: 0.7.45
+   */
   param_spec = g_param_spec_string("sample\0",
 				   "the sample\0",
 				   "The sample to locate the file\0",
@@ -166,6 +187,13 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
 				  PROP_SAMPLE,
 				  param_spec);
 
+  /**
+   * AgsAudioFileLink:audio-channel:
+   *
+   * The assigned audio channel.
+   * 
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_uint("audio-channel\0",
 				 "audio channel to read\0",
 				 "The selected audio channel to read\0",
@@ -176,6 +204,13 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
+  /**
+   * AgsAudioFileLink:timestamp:
+   *
+   * The assigned timestamp.
+   * 
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_object("timestamp\0",
 				   "timestamp\0",
 				   "The timestamp\0",

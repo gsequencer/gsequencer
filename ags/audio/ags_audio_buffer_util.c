@@ -169,7 +169,36 @@ ags_audio_buffer_util_copy_s8_to_s8(signed char *destination, guint dchannels,
 				    signed char *source, guint schannels,
 				    guint count)
 {
-  //TODO:JK: implement me
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xff & ((signed short) ((*destination) + (*source)));
+      destination[1 * dchannels] = 0xff & ((signed short) (destination[1 * dchannels] + source[1 * schannels]));
+      destination[2 * dchannels] = 0xff & ((signed short) (destination[2 * dchannels] + source[2 * schannels]));
+      destination[3 * dchannels] = 0xff & ((signed short) (destination[3 * dchannels] + source[3 * schannels]));
+      destination[4 * dchannels] = 0xff & ((signed short) (destination[4 * dchannels] + source[4 * schannels]));
+      destination[5 * dchannels] = 0xff & ((signed short) (destination[5 * dchannels] + source[5 * schannels]));
+      destination[6 * dchannels] = 0xff & ((signed short) (destination[6 * dchannels] + source[6 * schannels]));
+      destination[7 * dchannels] = 0xff & ((signed short) (destination[7 * dchannels] + source[7 * schannels]));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xff & ((signed short) ((*destination) + (*source)));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -177,7 +206,38 @@ ags_audio_buffer_util_copy_s8_to_s16(signed short *destination, guint dchannels,
 				     signed char *source, guint schannels,
 				     guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 258.00787401574803149606;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + (signed long) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + (signed long) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + (signed long) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + (signed long) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + (signed long) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + (signed long) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + (signed long) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -185,7 +245,38 @@ ags_audio_buffer_util_copy_s8_to_s24(signed long *destination, guint dchannels,
 				     signed char *source, guint schannels,
 				     guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 66052.03149606299212598425;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffff & ((signed long) (destination[1 * dchannels] + (signed long) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffff & ((signed long) (destination[2 * dchannels] + (signed long) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffff & ((signed long) (destination[3 * dchannels] + (signed long) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffff & ((signed long) (destination[4 * dchannels] + (signed long) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffff & ((signed long) (destination[5 * dchannels] + (signed long) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffff & ((signed long) (destination[6 * dchannels] + (signed long) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffff & ((signed long) (destination[7 * dchannels] + (signed long) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -193,7 +284,38 @@ ags_audio_buffer_util_copy_s8_to_s32(signed long *destination, guint dchannels,
 				     signed char *source, guint schannels,
 				     guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 1690931.99212598425196850393;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffff & ((signed long long) (destination[1 * dchannels] + (signed long) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffff & ((signed long long) (destination[2 * dchannels] + (signed long) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffff & ((signed long long) (destination[3 * dchannels] + (signed long) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffff & ((signed long long) (destination[4 * dchannels] + (signed long) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffff & ((signed long long) (destination[5 * dchannels] + (signed long) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffff & ((signed long long) (destination[6 * dchannels] + (signed long) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffff & ((signed long long) (destination[7 * dchannels] + (signed long) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -201,7 +323,38 @@ ags_audio_buffer_util_copy_s8_to_s64(signed long long *destination, guint dchann
 				     signed char *source, guint schannels,
 				     guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 72624976668147841.00000000000000000000;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[1 * dchannels] + (signed long long) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[2 * dchannels] + (signed long long) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[3 * dchannels] + (signed long long) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[4 * dchannels] + (signed long long) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[5 * dchannels] + (signed long long) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[6 * dchannels] + (signed long long) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[7 * dchannels] + (signed long long) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -225,7 +378,8 @@ ags_audio_buffer_util_copy_s16_to_s8(signed char *destination, guint dchannels,
 				     signed short *source, guint schannels,
 				     guint count)
 {
-  static const gdouble scale = 0.00387585070345;
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00387585070345164342;
   guint limit;
   guint i;
 
@@ -300,7 +454,8 @@ ags_audio_buffer_util_copy_s16_to_s24(signed long *destination, guint dchannels,
 				      signed short *source, guint schannels,
 				      guint count)
 {
-  static const gdouble scale = 256.00778222;
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 256.00778221991637928403;
   guint limit;
   guint i;
 
@@ -311,7 +466,7 @@ ags_audio_buffer_util_copy_s16_to_s24(signed long *destination, guint dchannels,
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+      *destination = 0xffffff & ((signed long) ((*destination) + (signed long) (scale * source[0])));
       destination[1 * dchannels] = 0xffffff & ((signed long) (destination[1 * dchannels] + (signed long) (scale * source[1 * schannels])));
       destination[2 * dchannels] = 0xffffff & ((signed long) (destination[2 * dchannels] + (signed long) (scale * source[2 * schannels])));
       destination[3 * dchannels] = 0xffffff & ((signed long) (destination[3 * dchannels] + (signed long) (scale * source[3 * schannels])));
@@ -326,7 +481,7 @@ ags_audio_buffer_util_copy_s16_to_s24(signed long *destination, guint dchannels,
   }
 
   for(; i < count; i++){
-    *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+    *destination = 0xffffff & ((signed long) ((*destination) + (signed long) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
@@ -338,7 +493,8 @@ ags_audio_buffer_util_copy_s16_to_s32(signed long *destination, guint dchannels,
 				      signed short *source, guint schannels,
 				      guint count)
 {
-  static const gdouble scale = 65538.0000305;
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 6553.79995117038483840449;
   guint limit;
   guint i;
 
@@ -349,7 +505,7 @@ ags_audio_buffer_util_copy_s16_to_s32(signed long *destination, guint dchannels,
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = 0xffffffff & ((signed long) ((*destination) + (scale * source[0])));
+      *destination = 0xffffffff & ((signed long long) ((*destination) + (signed long) (scale * source[0])));
       destination[1 * dchannels] = 0xffffffff & ((signed long long) (destination[1 * dchannels] + (signed long) (scale * source[1 * schannels])));
       destination[2 * dchannels] = 0xffffffff & ((signed long long) (destination[2 * dchannels] + (signed long) (scale * source[2 * schannels])));
       destination[3 * dchannels] = 0xffffffff & ((signed long long) (destination[3 * dchannels] + (signed long) (scale * source[3 * schannels])));
@@ -364,7 +520,7 @@ ags_audio_buffer_util_copy_s16_to_s32(signed long *destination, guint dchannels,
   }
 
   for(; i < count; i++){
-    *destination = 0xffffffff & ((signed long) ((*destination) + (scale * source[0])));
+    *destination = 0xffffffff & ((signed long long) ((*destination) + (signed long) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
@@ -376,7 +532,38 @@ ags_audio_buffer_util_copy_s16_to_s64(signed long long *destination, guint dchan
 				      signed short *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 281483566907400.00021362956633198034;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[1 * dchannels] + (signed long long) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[2 * dchannels] + (signed long long) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[3 * dchannels] + (signed long long) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[4 * dchannels] + (signed long long) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[5 * dchannels] + (signed long long) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[6 * dchannels] + (signed long long) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[7 * dchannels] + (signed long long) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (signed long long) (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -400,7 +587,38 @@ ags_audio_buffer_util_copy_s24_to_s8(signed char *destination, guint dchannels,
 				     signed long *source, guint schannels,
 				     guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00001513958157772798;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xff & ((signed short) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xff & ((signed short) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xff & ((signed short) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xff & ((signed short) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xff & ((signed short) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xff & ((signed short) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xff & ((signed short) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xff & ((signed short) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xff & ((signed short) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -408,7 +626,38 @@ ags_audio_buffer_util_copy_s24_to_s16(signed short *destination, guint dchannels
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00390613125635758118;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -416,7 +665,36 @@ ags_audio_buffer_util_copy_s24_to_s24(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffff & ((signed long) ((*destination) + (*source)));
+      destination[1 * dchannels] = 0xffffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
+      destination[2 * dchannels] = 0xffffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
+      destination[3 * dchannels] = 0xffffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
+      destination[4 * dchannels] = 0xffffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
+      destination[5 * dchannels] = 0xffffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
+      destination[6 * dchannels] = 0xffffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
+      destination[7 * dchannels] = 0xffffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffff & ((signed long) ((*destination) + (*source)));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -424,7 +702,38 @@ ags_audio_buffer_util_copy_s24_to_s32(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 25.60000283718142952697;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffff & ((signed long long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffff & ((signed long long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffff & ((signed long long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffff & ((signed long long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffff & ((signed long long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffff & ((signed long long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffff & ((signed long long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -432,7 +741,38 @@ ags_audio_buffer_util_copy_s24_to_s64(signed long long *destination, guint dchan
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 1099511758848.01562488265334160963;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -456,7 +796,38 @@ ags_audio_buffer_util_copy_s32_to_s8(signed char *destination, guint dchannels,
 				     signed long *source, guint schannels,
 				     guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000059138983983780;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xff & ((signed short) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xff & ((signed short) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xff & ((signed short) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xff & ((signed short) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xff & ((signed short) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xff & ((signed short) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xff & ((signed short) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xff & ((signed short) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xff & ((signed short) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -464,7 +835,38 @@ ags_audio_buffer_util_copy_s32_to_s16(signed short *destination, guint dchannels
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00015258323529106482;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -472,7 +874,38 @@ ags_audio_buffer_util_copy_s32_to_s24(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.03906249548890626240;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffff & ((signed long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffff & ((signed long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffff & ((signed long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffff & ((signed long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffff & ((signed long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffff & ((signed long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffff & ((signed long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -480,7 +913,36 @@ ags_audio_buffer_util_copy_s32_to_s32(signed long *destination, guint dchannels,
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffff & ((signed long long) ((*destination) + (*source)));
+      destination[1 * dchannels] = 0xffffffff & ((signed long long) (destination[1 * dchannels] + source[1 * schannels]));
+      destination[2 * dchannels] = 0xffffffff & ((signed long long) (destination[2 * dchannels] + source[2 * schannels]));
+      destination[3 * dchannels] = 0xffffffff & ((signed long long) (destination[3 * dchannels] + source[3 * schannels]));
+      destination[4 * dchannels] = 0xffffffff & ((signed long long) (destination[4 * dchannels] + source[4 * schannels]));
+      destination[5 * dchannels] = 0xffffffff & ((signed long long) (destination[5 * dchannels] + source[5 * schannels]));
+      destination[6 * dchannels] = 0xffffffff & ((signed long long) (destination[6 * dchannels] + source[6 * schannels]));
+      destination[7 * dchannels] = 0xffffffff & ((signed long long) (destination[7 * dchannels] + source[7 * schannels]));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffff & ((signed long long) ((*destination) + (*source)));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -488,7 +950,38 @@ ags_audio_buffer_util_copy_s32_to_s64(signed long long *destination, guint dchan
 				      signed long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000000002328306417;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -512,7 +1005,38 @@ ags_audio_buffer_util_copy_s64_to_s8(signed char *destination, guint dchannels,
 				     signed long long *source, guint schannels,
 				     guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000000000000001376;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xff & ((signed short) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xff & ((signed short) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xff & ((signed short) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xff & ((signed short) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xff & ((signed short) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xff & ((signed short) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xff & ((signed short) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xff & ((signed short) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xff & ((signed short) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -520,7 +1044,38 @@ ags_audio_buffer_util_copy_s64_to_s16(signed short *destination, guint dchannels
 				      signed long long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000000000000355260;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffff & ((signed long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -528,7 +1083,38 @@ ags_audio_buffer_util_copy_s64_to_s24(signed long *destination, guint dchannels,
 				      signed long long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000000000090949459;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffff & ((signed long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffff & ((signed long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffff & ((signed long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffff & ((signed long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffff & ((signed long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffff & ((signed long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffff & ((signed long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffff & ((signed long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -536,7 +1122,38 @@ ags_audio_buffer_util_copy_s64_to_s32(signed long *destination, guint dchannels,
 				      signed long long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: scale = (2^bits_destination / 2.0 - 1.0) / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000000002328306417;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffff & ((signed long long) ((*destination) + (scale * source[0])));
+      destination[1 * dchannels] = 0xffffff & ((signed long long) (destination[1 * dchannels] + (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffff & ((signed long long) (destination[2 * dchannels] + (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffff & ((signed long long) (destination[3 * dchannels] + (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffff & ((signed long long) (destination[4 * dchannels] + (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffff & ((signed long long) (destination[5 * dchannels] + (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffff & ((signed long long) (destination[6 * dchannels] + (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffff & ((signed long long) (destination[7 * dchannels] + (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffff & ((signed long long) ((*destination) + (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
@@ -544,7 +1161,36 @@ ags_audio_buffer_util_copy_s64_to_s64(signed long long *destination, guint dchan
 				      signed long long *source, guint schannels,
 				      guint count)
 {
-  //TODO:JK: implement me
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (*source)));
+      destination[1 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[1 * dchannels] + source[1 * schannels]));
+      destination[2 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[2 * dchannels] + source[2 * schannels]));
+      destination[3 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[3 * dchannels] + source[3 * schannels]));
+      destination[4 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[4 * dchannels] + source[4 * schannels]));
+      destination[5 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[5 * dchannels] + source[5 * schannels]));
+      destination[6 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[6 * dchannels] + source[6 * schannels]));
+      destination[7 * dchannels] = 0xffffffffffffffff & ((signed long long) (destination[7 * dchannels] + source[7 * schannels]));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = 0xffffffffffffffff & ((signed long long) ((*destination) + (*source)));
+
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 void
