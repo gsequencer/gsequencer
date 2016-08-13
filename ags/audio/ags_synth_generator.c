@@ -131,6 +131,150 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 
   /* properties */
   /**
+   * AgsSynthGenerator:samplerate:
+   *
+   * The samplerate to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_uint("samplerate\0",
+				 "using samplerate\0",
+				 "The samplerate to be used\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsSynthGenerator:buffer-size:
+   *
+   * The buffer size to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_uint("buffer-size\0",
+				 "using buffer size\0",
+				 "The buffer size to be used\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsSynthGenerator:format:
+   *
+   * The format to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_uint("format\0",
+				 "using format\0",
+				 "The format to be used\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsSynthGenerator:n-frames:
+   *
+   * The n-frames to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_uint("n-frames\0",
+				 "apply n-frames\0",
+				 "To apply n-frames\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_N_FRAMES,
+				  param_spec);
+
+  /**
+   * AgsSynthGenerator:oscillator:
+   *
+   * The oscillator to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_uint("oscillator\0",
+				 "using oscillator\0",
+				 "The oscillator to be used\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OSCILLATOR,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:frequency:
+   *
+   * The frequency to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_double("frequency\0",
+				   "using frequency\0",
+				   "The frequency to be used\0",
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FREQUENCY,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:phase:
+   *
+   * The phase to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_double("phase\0",
+				   "using phase\0",
+				   "The phase to be used\0",
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PHASE,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:volume:
+   *
+   * The volume to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_double("volume\0",
+				   "using volume\0",
+				   "The volume to be used\0",
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
+
+  /**
    * AgsSynthGenerator:timestamp:
    *
    * The assigned timestamp.
@@ -173,6 +317,46 @@ ags_synth_generator_set_property(GObject *gobject,
   synth_generator = AGS_SYNTH_GENERATOR(gobject);
   
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      synth_generator->samplerate = g_value_get_uint(value);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      synth_generator->buffer_size = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      synth_generator->format = g_value_get_uint(value);
+    }
+    break;
+  case PROP_N_FRAMES:
+    {
+      synth_generator->n_frames = g_value_get_uint(value);
+    }
+    break;
+  case PROP_OSCILLAOTR:
+    {
+      synth_generator->oscillaotr = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+      synth_generator->frequency = g_value_get_double(value);
+    }
+    break;
+  case PROP_PHASE:
+    {
+      synth_generator->phase = g_value_get_double(value);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      synth_generator->volume = g_value_get_double(value);
+    }
+    break;
   case PROP_TIMESTAMP:
     {
       GObject *timestamp;
@@ -211,6 +395,46 @@ ags_synth_generator_get_property(GObject *gobject,
   synth_generator = AGS_SYNTH_GENERATOR(gobject);
   
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value, synth_generator->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, synth_generator->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, synth_generator->format);
+    }
+    break;
+  case PROP_N_FRAMES:
+    {
+      g_value_set_uint(value, synth_generator->n_frames);
+    }
+    break;
+  case PROP_OSCILLATOR:
+    {
+      g_value_set_uint(value, synth_generator->oscillator);
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+      g_value_set_uint(value, synth_generator->frequency);
+    }
+    break;
+  case PROP_PHASE:
+    {
+      g_value_set_uint(value, synth_generator->phase);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      g_value_set_uint(value, synth_generator->volume);
+    }
+    break;
   case PROP_TIMESTAMP:
     {
       g_value_set_object(value, synth_generator->timestamp);

@@ -206,7 +206,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "using samplerate\0",
 				 "The samplerate to be used\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -224,7 +224,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "using buffer size\0",
 				 "The buffer size to be used\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -242,7 +242,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "using format\0",
 				 "The format to be used\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -260,7 +260,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "frame word size\0",
 				 "The word size of a frame\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -278,7 +278,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "stream length\0",
 				 "The length of the stream\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -296,7 +296,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "stream's first frame\0",
 				 "The first frame of the stream\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -314,7 +314,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "stream's last frame\0",
 				 "The last frame of the stream\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -332,7 +332,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "stream's loop start\0",
 				 "The loop start of the stream\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -350,13 +350,12 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 "stream's loop end\0",
 				 "The loop end of the stream\0",
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LOOP_END,
 				  param_spec);
-
 
   /**
    * AgsAudioSignal:delay:

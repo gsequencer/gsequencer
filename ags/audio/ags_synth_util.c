@@ -21,6 +21,20 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
+/**
+ * ags_synth_util_sin_s8:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin_s8(signed char *buffer,
 		      gdouble freq, gdouble phase, gdouble volume,
@@ -35,6 +49,20 @@ ags_synth_util_sin_s8(signed char *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sin_s16:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin_s16(signed short *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
@@ -49,6 +77,20 @@ ags_synth_util_sin_s16(signed short *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sin_s24:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin_s24(signed long *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
@@ -63,6 +105,20 @@ ags_synth_util_sin_s24(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sin_s32:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin_s32(signed long *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
@@ -77,6 +133,20 @@ ags_synth_util_sin_s32(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sin_s64:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin_s64(signed long long *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
@@ -91,6 +161,20 @@ ags_synth_util_sin_s64(signed long long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sin_float:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin_float(float *buffer,
 			 gdouble freq, gdouble phase, gdouble volume,
@@ -104,6 +188,20 @@ ags_synth_util_sin_float(float *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sin_double:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sinus wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin_double(double *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
@@ -117,6 +215,20 @@ ags_synth_util_sin_double(double *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sawtooth_s8:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth_s8(signed char *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
@@ -134,6 +246,20 @@ ags_synth_util_sawtooth_s8(signed char *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sawtooth_s16:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth_s16(signed short *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -151,6 +277,20 @@ ags_synth_util_sawtooth_s16(signed short *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sawtooth_s24:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth_s24(signed long *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -168,6 +308,20 @@ ags_synth_util_sawtooth_s24(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sawtooth_s32:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth_s32(signed long *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -185,6 +339,20 @@ ags_synth_util_sawtooth_s32(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sawtooth_s64:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth_s64(signed long long *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -202,6 +370,20 @@ ags_synth_util_sawtooth_s64(signed long long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sawtooth_float:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth_float(float *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
@@ -218,6 +400,20 @@ ags_synth_util_sawtooth_float(float *buffer,
 }
 }
 
+/**
+ * ags_synth_util_sawtooth_double:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth_double(double *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
@@ -234,6 +430,20 @@ ags_synth_util_sawtooth_double(double *buffer,
 }
 }
 
+/**
+ * ags_synth_util_triangle_s8:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle_s8(signed char *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
@@ -251,6 +461,20 @@ ags_synth_util_triangle_s8(signed char *buffer,
   }
 }
 
+/**
+ * ags_synth_util_triangle_s16:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle_s16(signed short *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -268,6 +492,20 @@ ags_synth_util_triangle_s16(signed short *buffer,
   }
 }
 
+/**
+ * ags_synth_util_triangle_s24:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle_s24(signed long *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -285,6 +523,20 @@ ags_synth_util_triangle_s24(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_triangle_s32:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle_s32(signed long *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -302,6 +554,20 @@ ags_synth_util_triangle_s32(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_triangle_s64:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle_s64(signed long long *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -319,6 +585,20 @@ ags_synth_util_triangle_s64(signed long long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_triangle_float:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle_float(float *buffer,
 			      gdouble freq, gdouble phase, gdouble volume,
@@ -335,6 +615,20 @@ ags_synth_util_triangle_float(float *buffer,
   }
 }
 
+/**
+ * ags_synth_util_triangle_double:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle_double(double *buffer,
 			       gdouble freq, gdouble phase, gdouble volume,
@@ -351,6 +645,20 @@ ags_synth_util_triangle_double(double *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square_s8:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square_s8(signed char *buffer,
 			 gdouble freq, gdouble phase, gdouble volume,
@@ -372,6 +680,20 @@ ags_synth_util_square_s8(signed char *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square_s16:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square_s16(signed short *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
@@ -394,6 +716,20 @@ ags_synth_util_square_s16(signed short *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square_s24:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square_s24(signed long *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
@@ -416,6 +752,20 @@ ags_synth_util_square_s24(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square_s32:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square_s32(signed long *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
@@ -438,6 +788,20 @@ ags_synth_util_square_s32(signed long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square_s64:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square_s64(signed long long *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
@@ -459,6 +823,20 @@ ags_synth_util_square_s64(signed long long *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square_float:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square_float(float *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
@@ -479,6 +857,20 @@ ags_synth_util_square_float(float *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square_double:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square_double(double *buffer,
 			     gdouble freq, gdouble phase, gdouble volume,
@@ -499,6 +891,21 @@ ags_synth_util_square_double(double *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sin:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sin wave
+ * @phase: the phase of the sin wave
+ * @volume: the volume of the sin wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sin wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sin(void *buffer,
 		   gdouble freq, gdouble phase, gdouble volume,
@@ -569,6 +976,21 @@ ags_synth_util_sin(void *buffer,
   }
 }
 
+/**
+ * ags_synth_util_sawtooth:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the sawtooth wave
+ * @phase: the phase of the sawtooth wave
+ * @volume: the volume of the sawtooth wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate sawtooth wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_sawtooth(void *buffer,
 			gdouble freq, gdouble phase, gdouble volume,
@@ -639,6 +1061,21 @@ ags_synth_util_sawtooth(void *buffer,
   }
 }
 
+/**
+ * ags_synth_util_triangle:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the triangle wave
+ * @phase: the phase of the triangle wave
+ * @volume: the volume of the triangle wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate triangle wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_triangle(void *buffer,
 			gdouble freq, gdouble phase, gdouble volume,
@@ -709,6 +1146,21 @@ ags_synth_util_triangle(void *buffer,
   }
 }
 
+/**
+ * ags_synth_util_square:
+ * @buffer: the audio buffer
+ * @freq: the frequency of the square wave
+ * @phase: the phase of the square wave
+ * @volume: the volume of the square wave
+ * @samplerate: the samplerate
+ * @audio_buffer_util_format: the audio data format
+ * @offset: start frame
+ * @n_frames: generate n frames
+ *
+ * Generate square wave.
+ *
+ * Since: 0.7.45
+ */
 void
 ags_synth_util_square(void *buffer,
 		      gdouble freq, gdouble phase, gdouble volume,
