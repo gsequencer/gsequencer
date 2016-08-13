@@ -153,6 +153,7 @@ void
 ags_input_init(AgsInput *input)
 {
   input->file_link = NULL;
+  input->synth_generator = NULL;
 }
 
 void

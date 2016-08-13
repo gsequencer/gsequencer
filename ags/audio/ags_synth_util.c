@@ -21,6 +21,8 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <math.h>
+
 /**
  * ags_synth_util_sin_s8:
  * @buffer: the audio buffer
@@ -396,8 +398,8 @@ ags_synth_util_sawtooth_float(float *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = ((double) buffer[i] + (double) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * volume)));
-}
+    buffer[i] = ((double) buffer[i] + (double) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * volume));
+  }
 }
 
 /**
@@ -426,8 +428,8 @@ ags_synth_util_sawtooth_double(double *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = ((double) buffer[i] + (double) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * volume)));
-}
+    buffer[i] = ((double) buffer[i] + (double) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * volume));
+  }
 }
 
 /**
@@ -450,13 +452,13 @@ ags_synth_util_triangle_s8(signed char *buffer,
 			   guint samplerate,
 			   guint offset, guint n_frames)
 {
-  static const gdouble scale = 127.0
-    guint i;
+  static const gdouble scale = 127.0;
+  guint i;
 
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     buffer[i] = (signed char) (0xff & ((signed short) buffer[i] + (signed short) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
@@ -487,7 +489,7 @@ ags_synth_util_triangle_s16(signed short *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     buffer[i] = (signed short) (0xffff & ((signed long) buffer[i] + (signed long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
@@ -518,7 +520,7 @@ ags_synth_util_triangle_s24(signed long *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     buffer[i] = (signed long) (0xffffff & ((signed long) buffer[i] + (signed long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
@@ -549,7 +551,7 @@ ags_synth_util_triangle_s32(signed long *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     buffer[i] = (signed long) (0xffffffff & ((signed long long) buffer[i] + (signed long long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
@@ -580,7 +582,7 @@ ags_synth_util_triangle_s64(signed long long *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     buffer[i] = (signed long long) (0xffffffffffffffff & ((signed long long) buffer[i] + (signed long long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
@@ -610,7 +612,7 @@ ags_synth_util_triangle_float(float *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     buffer[i] = ((double) buffer[i] + (double) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * volume));
   }
 }
@@ -640,7 +642,7 @@ ags_synth_util_triangle_double(double *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     buffer[i] = ((double) buffer[i] + (double) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * volume));
   }
 }
@@ -671,7 +673,7 @@ ags_synth_util_square_s8(signed char *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
       buffer[i] = (signed char) (0xff & ((signed short) buffer[i] + (signed short) (1.0 * scale * volume)));
     }else{
@@ -703,11 +705,10 @@ ags_synth_util_square_s16(signed short *buffer,
   static const gdouble scale = 32767.0;
   guint i;
 
-
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
       buffer[i] = (signed short) (0xffff & ((signed long) buffer[i] + (signed long) (1.0 * scale * volume)));
     }else{
@@ -739,11 +740,10 @@ ags_synth_util_square_s24(signed long *buffer,
   static const gdouble scale = 8388607.0;
   guint i;
 
-
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
       buffer[i] = (signed long) (0xffffff & ((signed long) buffer[i] + (signed long) (1.0 * scale * volume)));
     }else{
@@ -775,11 +775,10 @@ ags_synth_util_square_s32(signed long *buffer,
   static const gdouble scale = 214748363.0;
   guint i;
 
-
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
       buffer[i] = (signed long) (0xffffffff & ((signed long long) buffer[i] + (signed long long) (1.0 * scale * volume)));
     }else{
@@ -814,7 +813,7 @@ ags_synth_util_square_s64(signed long long *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
       buffer[i] = (signed long long) (0xffffffffffffffff & ((signed long long) buffer[i] + (signed long long) (1.0 * scale * volume)));
     }else{
@@ -848,7 +847,7 @@ ags_synth_util_square_float(float *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
       buffer[i] = (buffer[i] + (1.0 * volume));
     }else{
@@ -882,7 +881,7 @@ ags_synth_util_square_double(double *buffer,
   phase = (int) (phase) % (int) (freq);
   phase = (phase / freq) * (samplerate / freq);
 
-  for (i = offset; i < length; i++){
+  for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
       buffer[i] = (buffer[i] + (1.0 * volume));
     }else{

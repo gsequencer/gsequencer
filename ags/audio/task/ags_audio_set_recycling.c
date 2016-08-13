@@ -23,7 +23,6 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_synths.h>
 
 #include <math.h>
 
