@@ -35,17 +35,18 @@ typedef struct _AgsAudio AgsAudio;
 typedef struct _AgsAudioClass AgsAudioClass;
 
 typedef enum{
-  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  1,
-  AGS_AUDIO_INPUT_TAKES_FILE            = 1 <<  2,
-  AGS_AUDIO_HAS_NOTATION                = 1 <<  3,
-  AGS_AUDIO_SYNC                        = 1 <<  4, // can be combined with below
-  AGS_AUDIO_ASYNC                       = 1 <<  5,
-  AGS_AUDIO_RUNNING                     = 1 <<  6,
-  AGS_AUDIO_PLAYING                     = 1 <<  7,
+  AGS_AUDIO_SYNC                        = 1, // can be combined with below
+  AGS_AUDIO_ASYNC                       = 1 <<  1,
+  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  2,
+  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  3,
+  AGS_AUDIO_INPUT_TAKES_FILE            = 1 <<  4,
+  AGS_AUDIO_INPUT_TAKES_SYNTH           = 1 <<  5,
+  AGS_AUDIO_REVERSE_MAPPING             = 1 <<  6,
+  AGS_AUDIO_HAS_NOTATION                = 1 <<  7,
   AGS_AUDIO_NOTATION_DEFAULT            = 1 <<  8,
-  AGS_AUDIO_REVERSE_MAPPING             = 1 <<  9,
-  AGS_AUDIO_PATTERN_MODE                = 1 << 10,
+  AGS_AUDIO_PATTERN_MODE                = 1 <<  9,
+  AGS_AUDIO_RUNNING                     = 1 << 10,
+  AGS_AUDIO_PLAYING                     = 1 << 11,
 }AgsAudioFlags;
 
 struct _AgsAudio

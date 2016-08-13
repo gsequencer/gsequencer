@@ -37,7 +37,6 @@
 #include <libxml/xpath.h>
 #include <libxml/tree.h>
 
-
 void ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link);
 void ags_audio_file_link_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audio_file_link_init(AgsAudioFileLink *audio_file_link);
@@ -83,7 +82,7 @@ enum{
 static gpointer ags_audio_file_link_parent_class = NULL;
 static AgsPluginInterface *ags_audio_file_link_parent_plugin_interface;
 
-static const gchar *ags_audio_file_link_plugin_name = "ags-audio-file\0";
+static const gchar *ags_audio_file_link_plugin_name = "ags-audio-file-link\0";
 
 GType
 ags_audio_file_link_get_type()
@@ -400,6 +399,8 @@ ags_audio_file_link_read(AgsFile *file,
   }else{
     gobject->audio_channel = 0;
   }
+
+  //TODO:JK: add missing
   
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "file\0", file,
@@ -446,6 +447,8 @@ ags_audio_file_link_write(AgsFile *file,
 	     "audio-channel\0",
 	     g_strdup_printf("%d\0", audio_file_link->audio_channel));
 
+  //TODO:JK: add missing
+  
   /* write timestamp */
   if(audio_file_link->timestamp != NULL){
     ags_file_write_timestamp(file,
@@ -511,6 +514,8 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
   if(!xmlStrncmp(type,
 		 "url\0",
 		 4)){
+    //TODO:JK: add missing
+    
     /* instantiat audio file */
     filename = AGS_FILE_LINK(audio_file_link)->filename;
     audio_file = ags_audio_file_new((gchar *) filename,

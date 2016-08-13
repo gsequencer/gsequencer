@@ -41,6 +41,7 @@ struct _AgsInput
   AgsChannel channel;
 
   GObject *file_link;
+  GObject *synth_generator;
 };
 
 struct _AgsInputClass
@@ -56,6 +57,12 @@ gboolean ags_input_open_file(AgsInput *input,
 			     gchar *instrument,
 			     gchar *sample,
 			     guint audio_channel);
+gboolean ags_input_apply_synth(AgsInput *input,
+			       guint oscillator,
+			       gdouble frequency,
+			       gdouble phase,
+			       gdouble volume,
+			       guint n_frames);
 
 AgsInput* ags_input_new(GObject *audio);
 

@@ -370,6 +370,17 @@ ags_input_open_file(AgsInput *input,
   return(success);
 }
 
+gboolean
+ags_input_apply_synth(AgsInput *input,
+		      guint oscillator,
+		      gdouble frequency,
+		      gdouble phase,
+		      gdouble volume,
+		      guint n_frames)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_input_new:
  * @audio: the #AgsAudio

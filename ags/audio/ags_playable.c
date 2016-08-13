@@ -597,7 +597,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     audio_signal->loop_start = loop_start;
     audio_signal->loop_end = loop_end;
     //TODO:JK: read resolution of file
-    //    audio_signal->resolution = AGS_DEVOUT_RESOLUTION_16_BIT;
+    //    audio_signal->format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
     error = NULL;
     buffer = ags_playable_read(playable,
