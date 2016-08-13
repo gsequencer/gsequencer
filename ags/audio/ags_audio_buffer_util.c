@@ -1536,14 +1536,14 @@ ags_audio_buffer_util_copy_float_to_s8(signed char *destination, guint dchannels
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = ((double) ((*destination) + (double) (scale * source[0])));
-      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
-      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
-      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
-      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
-      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
-      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
-      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+      *destination = 0xff & (signed char) ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = 0xff & (signed char) ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xff & (signed char) ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xff & (signed char) ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xff & (signed char) ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xff & (signed char) ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xff & (signed char) ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xff & (signed char) ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
 
       destination += (8 * dchannels);
       source += (8 * schannels);
@@ -1551,7 +1551,7 @@ ags_audio_buffer_util_copy_float_to_s8(signed char *destination, guint dchannels
   }
 
   for(; i < count; i++){
-    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+    *destination = 0xff & (signed char) ((double) ((*destination) + (double) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
@@ -1575,14 +1575,14 @@ ags_audio_buffer_util_copy_float_to_s16(signed short *destination, guint dchanne
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = ((double) ((*destination) + (double) (scale * source[0])));
-      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
-      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
-      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
-      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
-      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
-      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
-      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+      *destination = 0xffff & (signed short) ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = 0xffff & (signed short) ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffff & (signed short) ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffff & (signed short) ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffff & (signed short) ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffff & (signed short) ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffff & (signed short) ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffff & (signed short) ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
 
       destination += (8 * dchannels);
       source += (8 * schannels);
@@ -1590,7 +1590,7 @@ ags_audio_buffer_util_copy_float_to_s16(signed short *destination, guint dchanne
   }
 
   for(; i < count; i++){
-    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+    *destination = 0xffff & (signed short) ((double) ((*destination) + (double) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
@@ -1614,14 +1614,14 @@ ags_audio_buffer_util_copy_float_to_s24(signed long *destination, guint dchannel
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = ((double) ((*destination) + (double) (scale * source[0])));
-      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
-      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
-      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
-      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
-      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
-      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
-      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+      *destination = 0xffffff & (signed long) ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = 0xffffff & (signed long) ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffff & (signed long) ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffff & (signed long) ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffff & (signed long) ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffff & (signed long) ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffff & (signed long) ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffff & (signed long) ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
 
       destination += (8 * dchannels);
       source += (8 * schannels);
@@ -1629,7 +1629,7 @@ ags_audio_buffer_util_copy_float_to_s24(signed long *destination, guint dchannel
   }
 
   for(; i < count; i++){
-    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+    *destination = 0xffffff & (signed long) ((double) ((*destination) + (double) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
@@ -1653,14 +1653,14 @@ ags_audio_buffer_util_copy_float_to_s32(signed long *destination, guint dchannel
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = ((double) ((*destination) + (double) (scale * source[0])));
-      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
-      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
-      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
-      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
-      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
-      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
-      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+      *destination = 0xffffffff & (signed long) ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffff & (signed long) ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffff & (signed long) ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffff & (signed long) ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffff & (signed long) ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffff & (signed long) ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffff & (signed long) ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffff & (signed long) ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
 
       destination += (8 * dchannels);
       source += (8 * schannels);
@@ -1668,7 +1668,7 @@ ags_audio_buffer_util_copy_float_to_s32(signed long *destination, guint dchannel
   }
 
   for(; i < count; i++){
-    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+    *destination = 0xffffffff & (signed long) ((double) ((*destination) + (double) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
@@ -1692,14 +1692,14 @@ ags_audio_buffer_util_copy_float_to_s64(signed long long *destination, guint dch
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = ((double) ((*destination) + (double) (scale * source[0])));
-      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
-      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
-      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
-      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
-      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
-      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
-      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+      *destination = 0xffffffffffffffff & (signed long long) ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = 0xffffffffffffffff & (signed long long) ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = 0xffffffffffffffff & (signed long long) ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = 0xffffffffffffffff & (signed long long) ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = 0xffffffffffffffff & (signed long long) ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = 0xffffffffffffffff & (signed long long) ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = 0xffffffffffffffff & (signed long long) ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = 0xffffffffffffffff & (signed long long) ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
 
       destination += (8 * dchannels);
       source += (8 * schannels);
@@ -1707,7 +1707,7 @@ ags_audio_buffer_util_copy_float_to_s64(signed long long *destination, guint dch
   }
 
   for(; i < count; i++){
-    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+    *destination = 0xffffffffffffffff & (signed long long) ((double) ((*destination) + (double) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
