@@ -41,7 +41,6 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_synths.h>
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>

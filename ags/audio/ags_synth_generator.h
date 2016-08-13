@@ -68,6 +68,6 @@ struct _AgsSynthGeneratorClass
   
 GType ags_synth_generator_get_type();
 
-AgsSynthGenerator* ags_synth_generator_new(GObject *soundcard);
+AgsSynthGenerator* ags_synth_generator_new();
 
 #endif /*__AGS_SYNTH_GENERATOR_H__*/

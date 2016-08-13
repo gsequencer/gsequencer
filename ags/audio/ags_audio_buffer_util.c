@@ -2890,6 +2890,7 @@ ags_audio_buffer_util_copy_double_to_double(double *destination, guint dchannels
  * @dchannels: destination buffer's count of channels
  * @source: source buffer
  * @schannels: source buffer's count of channels
+ * @offset: start frame
  * @count: number of frames to copy
  * @mode: specified type conversion as described
  * 
@@ -2900,348 +2901,348 @@ ags_audio_buffer_util_copy_double_to_double(double *destination, guint dchannels
 void
 ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels,
 					    void *source, guint schannels,
-					    guint count, guint mode)
+					    guint offset, guint count, guint mode)
 {
   switch(mode){
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8:
     {
-      ags_audio_buffer_util_copy_s8_to_s8((signed char *) destination, dchannels,
+      ags_audio_buffer_util_copy_s8_to_s8((signed char *) destination + offset, dchannels,
 					  (signed char *) source, schannels,
 					  count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16:
     {
-      ags_audio_buffer_util_copy_s8_to_s16((signed short *) destination, dchannels,
+      ags_audio_buffer_util_copy_s8_to_s16((signed short *) destination + offset, dchannels,
 					   (signed char *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24:
     {
-      ags_audio_buffer_util_copy_s8_to_s24((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s8_to_s24((signed long *) destination + offset, dchannels,
 					   (signed char *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32:
     {
-      ags_audio_buffer_util_copy_s8_to_s32((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s8_to_s32((signed long *) destination + offset, dchannels,
 					   (signed char *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64:
     {
-      ags_audio_buffer_util_copy_s8_to_s64((signed long long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s8_to_s64((signed long long *) destination + offset, dchannels,
 					   (signed char *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_s8_to_float((float *) destination, dchannels,
+      ags_audio_buffer_util_copy_s8_to_float((float *) destination + offset, dchannels,
 					     (signed char *) source, schannels,
 					     count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE:
     {
-      ags_audio_buffer_util_copy_s8_to_double((double *) destination, dchannels,
+      ags_audio_buffer_util_copy_s8_to_double((double *) destination + offset, dchannels,
 					      (signed char *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8:
     {
-      ags_audio_buffer_util_copy_s16_to_s8((signed char *) destination, dchannels,
+      ags_audio_buffer_util_copy_s16_to_s8((signed char *) destination + offset, dchannels,
 					   (signed short *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16:
     {
-      ags_audio_buffer_util_copy_s16_to_s16((signed short *) destination, dchannels,
+      ags_audio_buffer_util_copy_s16_to_s16((signed short *) destination + offset, dchannels,
 					    (signed short *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24:
     {
-      ags_audio_buffer_util_copy_s16_to_s24((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s16_to_s24((signed long *) destination + offset, dchannels,
 					    (signed short *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32:
     {
-      ags_audio_buffer_util_copy_s16_to_s32((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s16_to_s32((signed long *) destination + offset, dchannels,
 					    (signed short *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64:
     {
-      ags_audio_buffer_util_copy_s16_to_s64((signed long long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s16_to_s64((signed long long *) destination + offset, dchannels,
 					    (signed short *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_s16_to_float((float *) destination, dchannels,
+      ags_audio_buffer_util_copy_s16_to_float((float *) destination + offset, dchannels,
 					      (signed short *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE:
     {
-      ags_audio_buffer_util_copy_s16_to_double((double *) destination, dchannels,
+      ags_audio_buffer_util_copy_s16_to_double((double *) destination + offset, dchannels,
 					       (signed short *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8:
     {
-      ags_audio_buffer_util_copy_s24_to_s8((signed char *) destination, dchannels,
+      ags_audio_buffer_util_copy_s24_to_s8((signed char *) destination + offset, dchannels,
 					   (signed long *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16:
     {
-      ags_audio_buffer_util_copy_s24_to_s16((signed short *) destination, dchannels,
+      ags_audio_buffer_util_copy_s24_to_s16((signed short *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24:
     {
-      ags_audio_buffer_util_copy_s24_to_s24((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s24_to_s24((signed long *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32:
     {
-      ags_audio_buffer_util_copy_s24_to_s32((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s24_to_s32((signed long *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64:
     {
-      ags_audio_buffer_util_copy_s24_to_s64((signed long long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s24_to_s64((signed long long *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_s24_to_float((float *) destination, dchannels,
+      ags_audio_buffer_util_copy_s24_to_float((float *) destination + offset, dchannels,
 					      (signed long *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE:
     {
-      ags_audio_buffer_util_copy_s24_to_double((double *) destination, dchannels,
+      ags_audio_buffer_util_copy_s24_to_double((double *) destination + offset, dchannels,
 					       (signed long *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8:
     {
-      ags_audio_buffer_util_copy_s32_to_s8((signed char *) destination, dchannels,
+      ags_audio_buffer_util_copy_s32_to_s8((signed char *) destination + offset, dchannels,
 					   (signed long *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16:
     {
-      ags_audio_buffer_util_copy_s32_to_s16((signed short *) destination, dchannels,
+      ags_audio_buffer_util_copy_s32_to_s16((signed short *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24:
     {
-      ags_audio_buffer_util_copy_s32_to_s24((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s32_to_s24((signed long *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32:
     {
-      ags_audio_buffer_util_copy_s32_to_s32((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s32_to_s32((signed long *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64:
     {
-      ags_audio_buffer_util_copy_s32_to_s64((signed long long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s32_to_s64((signed long long *) destination + offset, dchannels,
 					    (signed long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_s32_to_s8((float *) destination, dchannels,
+      ags_audio_buffer_util_copy_s32_to_s8((float *) destination + offset, dchannels,
 					   (signed long *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE:
     {
-      ags_audio_buffer_util_copy_s32_to_double((double *) destination, dchannels,
+      ags_audio_buffer_util_copy_s32_to_double((double *) destination + offset, dchannels,
 					       (signed long *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8:
     {
-      ags_audio_buffer_util_copy_s64_to_s8((signed char *) destination, dchannels,
+      ags_audio_buffer_util_copy_s64_to_s8((signed char *) destination + offset, dchannels,
 					   (signed long long *) source, schannels,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16:
     {
-      ags_audio_buffer_util_copy_s64_to_s16((signed short *) destination, dchannels,
+      ags_audio_buffer_util_copy_s64_to_s16((signed short *) destination + offset, dchannels,
 					    (signed long long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24:
     {
-      ags_audio_buffer_util_copy_s64_to_s24((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s64_to_s24((signed long *) destination + offset, dchannels,
 					    (signed long long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32:
     {
-      ags_audio_buffer_util_copy_s64_to_s32((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s64_to_s32((signed long *) destination + offset, dchannels,
 					    (signed long long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64:
     {
-      ags_audio_buffer_util_copy_s64_to_s64((signed long long *) destination, dchannels,
+      ags_audio_buffer_util_copy_s64_to_s64((signed long long *) destination + offset, dchannels,
 					    (signed long long *) source, schannels,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_s64_to_float((float *) destination, dchannels,
+      ags_audio_buffer_util_copy_s64_to_float((float *) destination + offset, dchannels,
 					      (signed long long *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE:
     {
-      ags_audio_buffer_util_copy_s64_to_double((double *) destination, dchannels,
+      ags_audio_buffer_util_copy_s64_to_double((double *) destination + offset, dchannels,
 					       (signed long long *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8:
     {
-      ags_audio_buffer_util_copy_float_to_s8((signed char *) destination, dchannels,
+      ags_audio_buffer_util_copy_float_to_s8((signed char *) destination + offset, dchannels,
 					     (float *) source, schannels,
 					     count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16:
     {
-      ags_audio_buffer_util_copy_float_to_s16((signed short *) destination, dchannels,
+      ags_audio_buffer_util_copy_float_to_s16((signed short *) destination + offset, dchannels,
 					      (float *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24:
     {
-      ags_audio_buffer_util_copy_float_to_s24((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_float_to_s24((signed long *) destination + offset, dchannels,
 					      (float *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32:
     {
-      ags_audio_buffer_util_copy_float_to_s32((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_float_to_s32((signed long *) destination + offset, dchannels,
 					      (float *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64:
     {
-      ags_audio_buffer_util_copy_float_to_s64((signed long long *) destination, dchannels,
+      ags_audio_buffer_util_copy_float_to_s64((signed long long *) destination + offset, dchannels,
 					      (float *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_float_to_float((float *) destination, dchannels,
+      ags_audio_buffer_util_copy_float_to_float((float *) destination + offset, dchannels,
 						(float *) source, schannels,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE:
     {
-      ags_audio_buffer_util_copy_float_to_double((double *) destination, dchannels,
+      ags_audio_buffer_util_copy_float_to_double((double *) destination + offset, dchannels,
 						 (float *) source, schannels,
 						 count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8:
     {
-      ags_audio_buffer_util_copy_double_to_s8((signed char *) destination, dchannels,
+      ags_audio_buffer_util_copy_double_to_s8((signed char *) destination + offset, dchannels,
 					      (double *) source, schannels,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16:
     {
-      ags_audio_buffer_util_copy_double_to_s16((signed short *) destination, dchannels,
+      ags_audio_buffer_util_copy_double_to_s16((signed short *) destination + offset, dchannels,
 					       (double *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24:
     {
-      ags_audio_buffer_util_copy_double_to_s24((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_double_to_s24((signed long *) destination + offset, dchannels,
 					       (double *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32:
     {
-      ags_audio_buffer_util_copy_double_to_s32((signed long *) destination, dchannels,
+      ags_audio_buffer_util_copy_double_to_s32((signed long *) destination + offset, dchannels,
 					       (double *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64:
     {
-      ags_audio_buffer_util_copy_double_to_s64((signed long long *) destination, dchannels,
+      ags_audio_buffer_util_copy_double_to_s64((signed long long *) destination + offset, dchannels,
 					       (double *) source, schannels,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_double_to_float((float *) destination, dchannels,
+      ags_audio_buffer_util_copy_double_to_float((float *) destination + offset, dchannels,
 						 (double *) source, schannels,
 						 count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE:
     {
-      ags_audio_buffer_util_copy_double_to_double((double *) destination, dchannels,
+      ags_audio_buffer_util_copy_double_to_double((double *) destination + offset, dchannels,
 						  (double *) source, schannels,
 						  count);
     }

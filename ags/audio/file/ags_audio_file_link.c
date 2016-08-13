@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_timestamp.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_id_ref.h>

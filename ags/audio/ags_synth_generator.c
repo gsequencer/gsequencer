@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_timestamp.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -69,6 +71,7 @@ enum{
   PROP_PHASE,
   PROP_VOLUME,
   PROP_N_FRAMES,
+  PROP_TIMESTAMP,
 };
 
 static gpointer ags_synth_generator_parent_class = NULL;
@@ -337,9 +340,9 @@ ags_synth_generator_set_property(GObject *gobject,
       synth_generator->n_frames = g_value_get_uint(value);
     }
     break;
-  case PROP_OSCILLAOTR:
+  case PROP_OSCILLATOR:
     {
-      synth_generator->oscillaotr = g_value_get_uint(value);
+      synth_generator->oscillator = g_value_get_uint(value);
     }
     break;
   case PROP_FREQUENCY:
@@ -452,22 +455,12 @@ ags_synth_generator_read(AgsFile *file,
 			 AgsPlugin *plugin)
 {
   AgsSynthGenerator *gobject;
-  AgsFileLaunch *file_launch;
 
   xmlChar *str;
 
   gobject = AGS_SYNTH_GENERATOR(plugin);
   
   //TODO:JK: implement me
-  
-  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "file\0", file,
-					       "node\0", node,
-					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start\0",
-		   G_CALLBACK(ags_synth_generator_read_launch), gobject);
-  ags_file_add_launch(file,
-		      (GObject *) file_launch);
 }
 
 xmlNode*
@@ -480,8 +473,6 @@ ags_synth_generator_write(AgsFile *file,
   gchar *id;
 
   synth_generator = AGS_SYNTH_GENERATOR(plugin);
-
-  //TODO:JK: implement me
   
   /* allocate new node with uuid */
   id = ags_id_generator_create_uuid();
@@ -501,6 +492,8 @@ ags_synth_generator_write(AgsFile *file,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", synth_generator,
 				   NULL));
+
+  //TODO:JK: implement me
 
   /* write timestamp */
   if(synth_generator->timestamp != NULL){
@@ -532,7 +525,7 @@ ags_synth_generator_finalize(GObject *gobject)
  * Since: 0.7.45
  */
 AgsSynthGenerator*
-ags_synth_generator_new(GObject *soundcard)
+ags_synth_generator_new()
 {
   AgsSynthGenerator *synth_generator;
 

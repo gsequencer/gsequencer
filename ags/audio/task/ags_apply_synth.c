@@ -20,10 +20,12 @@
 #include <ags/audio/task/ags_apply_synth.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_synths.h>
+#include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_synth_util.h>
 
 #include <ags/object/ags_config.h>
 
@@ -160,14 +162,13 @@ ags_apply_synth_finalize(GObject *gobject)
 void
 ags_apply_synth_launch(AgsTask *task)
 {
-  AgsSoundcard *soundcard;
-  AgsChannel *channel;
-  AgsAudioSignal *audio_signal;
-
   AgsApplySynth *apply_synth;
 
-  AgsConfig *config;
+  AgsChannel *channel;
+  AgsAudioSignal *audio_signal;
   
+  AgsSoundcard *soundcard;
+
   GList *stream;
 
   gint wave;
@@ -179,7 +180,14 @@ ags_apply_synth_launch(AgsTask *task)
   double factor;
   guint buffer_size;
   guint samplerate;
+  guint audio_buffer_util_format;
   gchar *str;
+
+  auto double ags_apply_synth_calculate_factor(guint base_frequency, guint wished_frequency, guint wave);
+  auto void ags_apply_synth_launch_write(GList *stream,
+					 guint frequency, guint phase, gdouble volume,
+					 guint samplerate, guint audio_buffer_util_format,
+					 guint offset, guint frame_count);
   
   double ags_apply_synth_calculate_factor(guint base_frequency, guint wished_frequency, guint wave){
     double factor;
@@ -188,25 +196,35 @@ ags_apply_synth_launch(AgsTask *task)
 
     return(factor);
   }
-  void ags_apply_synth_launch_write(guint offset,
-				    guint frequency, guint phase, guint frame_count,
-				    double volume){
+  
+  void ags_apply_synth_launch_write(GList *stream,
+				    guint frequency, guint phase, gdouble volume,
+				    guint samplerate, guint audio_buffer_util_format,
+				    guint offset, guint frame_count){
     switch(wave){
     case AGS_APPLY_SYNTH_SIN:
-      ags_synth_sin(soundcard, (signed short *) stream->data,
-		    offset, frequency, phase, frame_count,
-		    volume);
+      ags_synth_util_sin(stream->data,
+			 frequency, phase, volume,
+			 samplerate, audio_buffer_util_format,
+			 offset, frame_count);
       break;
     case AGS_APPLY_SYNTH_SAW:
-      ags_synth_saw(soundcard, (signed short *) stream->data,
-		    offset, frequency, phase, frame_count,
-		    volume);
-      break;
-    case AGS_APPLY_SYNTH_SQUARE:
-      ags_synth_square(soundcard, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_util_sawtooth(stream->data,
+			      frequency, phase, volume,
+			      samplerate, audio_buffer_util_format,
+			      offset, frame_count);
       break;
     case AGS_APPLY_SYNTH_TRIANGLE:
-      ags_synth_triangle(soundcard, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_util_triangle(stream->data,
+			      frequency, phase, volume,
+			      samplerate, audio_buffer_util_format,
+			      offset, frame_count);
+      break;
+    case AGS_APPLY_SYNTH_SQUARE:
+      ags_synth_util_square(stream->data,
+			    frequency, phase, volume,
+			    samplerate, audio_buffer_util_format,
+			    offset, frame_count);
       break;
     default:
       g_warning("ags_apply_synth_launch_write: warning no wave selected\n\0");
@@ -216,24 +234,6 @@ ags_apply_synth_launch(AgsTask *task)
   apply_synth = AGS_APPLY_SYNTH(task);
   channel = apply_synth->start_channel;
   soundcard = AGS_SOUNDCARD(channel->soundcard);
-
-  config = ags_config_get_instance();
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
   
   wave = (gint) apply_synth->wave;
 
@@ -292,13 +292,15 @@ ags_apply_synth_launch(AgsTask *task)
 #ifdef AGS_DEBUG
       g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
 #endif
-      ags_apply_synth_launch_write(attack,
-				   current_frequency, current_phase[0], buffer_size - attack,
-				   volume);
+      ags_apply_synth_launch_write(stream,
+				   current_frequency, current_phase[0], volume,
+				   audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+				   attack, audio_signal->buffer_size - attack);
     }else{
-      ags_apply_synth_launch_write(attack,
-				   current_frequency, current_phase[0], frame_count,
-				   volume);
+      ags_apply_synth_launch_write(stream,
+				   current_frequency, current_phase[0], volume,
+				   audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+				   attack, audio_signal->buffer_size - attack);
       
       channel = channel->next;
       continue;
@@ -313,17 +315,19 @@ ags_apply_synth_launch(AgsTask *task)
       g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
 #endif
       
-      ags_apply_synth_launch_write(0,
-				   frequency, current_phase[1], buffer_size,
-				   volume);
+      ags_apply_synth_launch_write(stream,
+				   current_frequency, current_phase[0], volume,
+				   audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+				   0, audio_signal->buffer_size);
       
       stream = stream->next;
     }
     
     current_phase[1] = (current_phase[0] + (buffer_size - attack) + j * buffer_size) % current_frequency;
-    ags_apply_synth_launch_write(0,
-				 current_frequency, current_phase[1], last_frame_count,
-				 volume);
+    ags_apply_synth_launch_write(stream,
+				 current_frequency, current_phase[0], volume,
+				 audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+				 0, audio_signal->buffer_size);
     
     
     channel = channel->next;
