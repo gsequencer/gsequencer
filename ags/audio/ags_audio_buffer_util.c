@@ -19,6 +19,245 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/object/ags_soundcard.h>
+
+/**
+ * ags_audio_buffer_util_format_from_soundcard:
+ * @soundcard_format: the soundcard bit mode
+ *
+ * Translate soundcard format to audio buffer util format.
+ *
+ * Since: 0.7.45
+ */
+guint
+ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
+{
+  switch(soundcard_format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S8);
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S16);
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S24);
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S32);
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S64);
+  default:
+    {
+      g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format\0");
+      
+      return(0);
+    }
+  }
+}
+
+/**
+ * ags_audio_buffer_util_get_copy_mode:
+ * @destination_format: the destination buffer format
+ * @source_format: the source buffer format
+ *
+ * Get copy mode for given destination and source format.
+ *
+ * Since: 0.7.45
+ */
+guint
+ags_audio_buffer_util_get_copy_mode(guint destination_format,
+				    guint source_format)
+{
+  switch(source_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+    {
+      /* signed 8 bit source*/
+      switch(destination_format){
+      case AGS_AUDIO_BUFFER_UTIL_S8:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8);
+      case AGS_AUDIO_BUFFER_UTIL_S16:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16);
+      case AGS_AUDIO_BUFFER_UTIL_S24:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24);
+      case AGS_AUDIO_BUFFER_UTIL_S32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32);
+      case AGS_AUDIO_BUFFER_UTIL_S64:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT);
+      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE);
+      default:
+	{
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  
+	  return(0);
+	}
+      }
+    }
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+    {    
+      /* signed 16 bit source */  
+      switch(destination_format){
+      case AGS_AUDIO_BUFFER_UTIL_S8:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8);
+      case AGS_AUDIO_BUFFER_UTIL_S16:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
+      case AGS_AUDIO_BUFFER_UTIL_S24:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24);
+      case AGS_AUDIO_BUFFER_UTIL_S32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32);
+      case AGS_AUDIO_BUFFER_UTIL_S64:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT);
+      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
+      default:
+	{
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  
+	  return(0);
+	}
+      }
+    }
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+    {    
+      
+      /* signed 24 bit source */
+      switch(destination_format){
+      case AGS_AUDIO_BUFFER_UTIL_S8:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8);
+      case AGS_AUDIO_BUFFER_UTIL_S16:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16);
+      case AGS_AUDIO_BUFFER_UTIL_S24:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24);
+      case AGS_AUDIO_BUFFER_UTIL_S32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32);
+      case AGS_AUDIO_BUFFER_UTIL_S64:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT);
+      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE);
+      default:
+	{
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  
+	  return(0);
+	}
+      }
+    }
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+    {    
+      /* signed 32 bit source */
+      switch(destination_format){
+      case AGS_AUDIO_BUFFER_UTIL_S8:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8);
+      case AGS_AUDIO_BUFFER_UTIL_S16:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16);
+      case AGS_AUDIO_BUFFER_UTIL_S24:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24);
+      case AGS_AUDIO_BUFFER_UTIL_S32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32);
+      case AGS_AUDIO_BUFFER_UTIL_S64:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT);
+      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE);
+      default:
+	{
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  
+	  return(0);
+	}
+      }
+    }
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+    {    
+      /* signed 64 bit source */
+      switch(destination_format){
+      case AGS_AUDIO_BUFFER_UTIL_S8:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8);
+      case AGS_AUDIO_BUFFER_UTIL_S16:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16);
+      case AGS_AUDIO_BUFFER_UTIL_S24:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24);
+      case AGS_AUDIO_BUFFER_UTIL_S32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32);
+      case AGS_AUDIO_BUFFER_UTIL_S64:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT);
+      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE);
+      default:
+	{
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  
+	  return(0);
+	}
+      }
+    }
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+    {    
+      /* float source */
+      switch(destination_format){
+      case AGS_AUDIO_BUFFER_UTIL_S8:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8);
+      case AGS_AUDIO_BUFFER_UTIL_S16:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16);
+      case AGS_AUDIO_BUFFER_UTIL_S24:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24);
+      case AGS_AUDIO_BUFFER_UTIL_S32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32);
+      case AGS_AUDIO_BUFFER_UTIL_S64:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
+      default:
+	{
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  
+	  return(0);
+	}
+      }
+    }
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+    {    
+      /* double source */
+      switch(destination_format){
+      case AGS_AUDIO_BUFFER_UTIL_S8:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8);
+      case AGS_AUDIO_BUFFER_UTIL_S16:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16);
+      case AGS_AUDIO_BUFFER_UTIL_S24:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24);
+      case AGS_AUDIO_BUFFER_UTIL_S32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32);
+      case AGS_AUDIO_BUFFER_UTIL_S64:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);
+      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE);
+      default:
+	{
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  
+	  return(0);
+	}
+      }
+    }
+  default:
+    {
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format\0");
+      
+      return(0);
+    }
+  }
+}
+
 signed char*
 ags_audio_buffer_util_morph_s8(signed char *buffer, guint channels,
 			       guint buffer_length,
@@ -2643,13 +2882,6 @@ ags_audio_buffer_util_copy_double_to_double(double *destination, guint dchannels
     destination += dchannels;
     source += schannels;
   }
-}
-
-void
-ags_audio_buffer_util_get_copy_mode(guint dformat, gboolean source_is_soundcard,
-				    guint sformat, gboolean destination_is_soundcard)
-{
-  //TODO:JK: implement me
 }
 
 /**

@@ -580,7 +580,7 @@ ags_devout_init(AgsDevout *devout)
   /* quality */
   devout->dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
   devout->pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
-  devout->format = AGS_SOUNDCARD_RESOLUTION_16_BIT;
+  devout->format = AGS_SOUNDCARD_SIGNED_16_BIT;
   devout->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   devout->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
@@ -1528,21 +1528,21 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   pthread_mutex_lock(mutex);
 
   switch(devout->format){
-  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       format = SND_PCM_FORMAT_S8;
 
       word_size = sizeof(signed char);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       format = SND_PCM_FORMAT_S16;
       
       word_size = sizeof(signed short);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       format = SND_PCM_FORMAT_S24;
       
@@ -1550,12 +1550,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(signed long long);
     }
@@ -1853,27 +1853,27 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   pthread_mutex_lock(mutex);
 
   switch(devout->format){
-  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       word_size = sizeof(signed char);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       word_size = sizeof(signed short);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(signed long long);
     }
@@ -2423,27 +2423,27 @@ ags_devout_realloc_buffer(AgsDevout *devout)
   }
 
   switch(devout->format){
-  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       word_size = sizeof(signed char);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       word_size = sizeof(signed short);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(signed long long);
     }

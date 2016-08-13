@@ -347,6 +347,7 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
   gboolean muted;
   guint soundcard_buffer_size;
+  guint copy_mode;
   
   GValue value = {0,};
 
@@ -393,6 +394,9 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   stream_destination = destination->stream_current;
 
   if(stream_destination != NULL){
+    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination->format),
+						    ags_audio_buffer_util_format_from_soundcard(source->format));
+    
     if(stream_destination->next == NULL){
       ags_audio_signal_add_stream(destination);
     }

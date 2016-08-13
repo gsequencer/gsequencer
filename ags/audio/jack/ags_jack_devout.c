@@ -1264,28 +1264,28 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   pthread_mutex_lock(mutex);
 
   switch(jack_devout->format){
-  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       word_size = sizeof(signed char);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       word_size = sizeof(signed short);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
     {      
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(signed long long);
     }
@@ -1682,27 +1682,27 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
   }
 
   switch(jack_devout->format){
-  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       word_size = sizeof(signed char);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       word_size = sizeof(signed short);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(signed long);
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(signed long long);
     }
@@ -1794,7 +1794,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
   //FIXME:JK: buggy
   /* check buffer flag */
   switch(jack_devout->format){
-  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       word_size = sizeof(signed char);
 
@@ -1804,7 +1804,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
       }
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       word_size = sizeof(signed short);
 
@@ -1813,7 +1813,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
       }
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       word_size = sizeof(signed long);
 
@@ -1822,7 +1822,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
       }
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(signed long);
 
@@ -1831,7 +1831,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
       }
     }
     break;
-  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       g_warning("ags_jack_devout_port_play(): unsupported word size 64 bit\0");
     }
