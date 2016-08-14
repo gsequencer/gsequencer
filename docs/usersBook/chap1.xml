@@ -18,30 +18,36 @@
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>The menubar</title>
   <para>
-    Within the mainbar you may do basic tasks like open/close files or show this help. In this section we cover
-    briefly the the different entries.
+    Within the menubar you may do basic tasks like open/close files. In this section we cover
+    briefly the the different entries. The menus have mnemonics e.g. press ALT and F key in order
+    to open File menu.
   </para>
 
   <sect1>
     <title>File</title>
     <para>
-      The file menu lets you do maintenance related to files or quit application.
+      The file menu lets you do maintenance related to files or quit application. Note there was a simple
+      XML file format introduced in 0.7.x to speed up things. The advanced file format needs optimization
+      work to fulfill. The file format can be modified by configuration file located in your home directory
+      $(HOME)/.gsequencer/ags.conf. The simple file interface is defaulted and can be altered by section
+      generic and simple-file key set to false.
     </para>
 
     <itemizedlist mark="bullet">
       <listitem>
 	<para>
-	  Open - open an &ags; XML file.
+	  Open - open an &ags; XML file. Uses per configuration the simple XML Input/Ouput interface.
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  Save - save your current work.
+	  Save - save your current work. Uses per configuration the simple XML Input/Ouput interface.
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  Save as - save your current work as a different filename.
+	  Save as - save your current work as a different filename. Uses per configuration the simple
+	  XML Input/Ouput interface.
 	</para>
       </listitem>
       <listitem>
@@ -64,12 +70,13 @@
 	</imageobject>
 	<caption>
 	  <para>
-	    The export window dialog screenshot.
+	    The export window screenshot
 	  </para>
 	</caption>
       </mediaobject>
       <para>
-	This shows you the export dialog. You may select filename to export to and duration of the exported track. BPM adjustment
+	This shows you the export dialog. Exclude sequencers affect mainly AgsDrum and AgsMatrix pattern sequencers
+	to be started to output. You may select filename to export to and duration of the exported track. BPM adjustment
 	is take from the navigation. Basically &ags; exports what you hear of the speakers.
       </para>
       <para>
@@ -81,13 +88,14 @@
   <sect1>
     <title>Edit</title>
     <para>
-      The edit menu lets you add/remove audio machines or open preferences dialog.
+      The edit menu lets you add audio machines of the related submenu, open automation window or preferences dialog.
     </para>
 
     <itemizedlist mark="bullet">
       <listitem>
 	<para>
-	  Add - select of different machines
+	  Add - select of different machines. You might want to add the bridged machines of plugins like LADSPA, DSSI or
+	  Lv2. Instrument plugins are available within notation editor.
 	</para>
 
 	<itemizedlist mark="bullet">
@@ -113,21 +121,17 @@
 	  </listitem>
 	  <listitem>
 	    <para>
-	      Synth - is a software synthesizer.
+	      Synth - is a software synthesizer supporting variable oscillator count.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	      FFPlayer - may be used to open Soundfont2 audio file container format.
+	      FFPlayer - may be used to open Soundfont2 audio file container format in order to do
+	      notation.
 	    </para>
 	  </listitem>
 	</itemizedlist>
 	
-      </listitem>
-      <listitem>
-	<para>
-	  Remove - the focused machine.
-	</para>
       </listitem>
       <listitem>
 	<para>
@@ -139,7 +143,8 @@
     <sect2>
       <title>Preferences dialog</title>
       <para>
-	Within preferences dialog you may choose between different topics. For each one one tab.
+	Within preferences dialog you may choose between different topics. For each one one tab. The configuration
+	is applied in place after click Apply or OK. There is no need to restart the application.
       </para>
 
       <sect3>
@@ -156,7 +161,8 @@
 	</mediaobject>
 
 	<para>
-	  The autosave thread option enables auto-saving to $HOME/.gsequencer directory.
+	  The autosave thread option enables auto-saving to $HOME/.gsequencer directory. Segmentation is
+	  used as a delay factor, you can do tactation with it.
 	</para>
       </sect3>
 
@@ -180,10 +186,18 @@
 	</para>
 	<para>
 	  Samplerate affects the entire project. Your audio files have to be at very same rate further
-	  your device has to support the given rate.
+	  your device has to support the given rate. Like buffer size this affects the thread's related to
+	  audio processing their frequencies. Note a too low frequency may cause unexpected behavior like
+	  no proper velocity.
 	</para>
 	<para>
 	  Buffer size is used for all audio buffers. Your soundcard has to support the passed buffer size.
+	  This preference affects thread's frequencies.
+	</para>
+	<para>
+	  Format determines the storage size of one frame. All available formats are signed integers. The
+	  following sizes in bits are available: 8, 16, 24, 32 and 64. Your hardware has a need to support
+	  the format in order to get sounds.
 	</para>
       </sect3>
 
@@ -200,24 +214,8 @@
 	  </caption>
 	</mediaobject>
 	<para>
-	  Auto-sense on stream is required for certain LADSPA plugins but may cause additional performance losses.
-	</para>
-      </sect3>
-
-      <sect3>
-	<title>Server</title>
-	<mediaobject>
-	  <imageobject>
-	    <imagedata fileref="../images/ags_server_preferences.png" />
-	  </imageobject>
-	  <caption>
-	    <para>
-	      The preferences dialog screenshot - server tab
-	    </para>
-	  </caption>
-	</mediaobject>
-	<para>
-	  Ignored for now.
+	  Auto-sense on stream is required for certain plugins and recalls but may cause additional performance
+	  losses.
 	</para>
       </sect3>
 

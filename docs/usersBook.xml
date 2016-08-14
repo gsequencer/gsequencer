@@ -46,10 +46,11 @@
   </dedication>
 
   <xi:include href="&bookpath;/usersBook/preface.xml"/>
-  <xi:include href="&bookpath;/usersBook/chap1.xml"/> <!--menubar -->
+  <xi:include href="&bookpath;/usersBook/chap1.xml"/> <!-- menubar -->
   <xi:include href="&bookpath;/usersBook/chap2.xml"/> <!-- machines/engines -->
   <xi:include href="&bookpath;/usersBook/chap3.xml"/> <!-- editor -->
-  <xi:include href="&bookpath;/usersBook/chap4.xml"/> <!--navigation -->
+  <xi:include href="&bookpath;/usersBook/chap4.xml"/> <!-- navigation -->
+  <xi:include href="&bookpath;/usersBook/chap5.xml"/> <!-- automation -->
   <xi:include href="&bookpath;/appa.xml"/>
   <xi:include href="&bookpath;/usersBook/appb.xml"/>
 
