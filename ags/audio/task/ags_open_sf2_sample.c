@@ -183,6 +183,20 @@ ags_open_sf2_sample_launch(AgsTask *task)
 
   channel = open_sf2_sample->channel;
 
+  if(AGS_IS_INPUT(channel)){
+    if(AGS_INPUT(channel)->file_link == NULL){
+      AGS_INPUT(channel)->file_link = ags_audio_file_link_new();
+    }
+
+    g_object_set(AGS_INPUT(channel)->file_link,
+		 "filename\0", open_sf2_sample->filename,
+		 "preset\0", open_sf2_sample->preset,
+		 "instrument\0", open_sf2_sample->instrument,
+		 "sample\0", open_sf2_sample->sample,
+		 "channel\0", channel->audio_channel,
+		 NULL);
+  }
+  
   ipatch = g_object_new(AGS_TYPE_IPATCH,
 			"soundcard\0", channel->soundcard,
 			"mode\0", AGS_IPATCH_READ,

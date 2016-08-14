@@ -1,3 +1,8 @@
+ags (0.7.46)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed configuration in place of AgsSynth and AgsFFPlayer by using AgsSynthGenerator repectively AgsAudioFileLink
+
 ags (0.7.45)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -56,9 +56,9 @@ struct _AgsApplySynth
 
   guint attack;
   guint frame_count;
-  guint frequency;
-  guint phase;
-  guint start;
+  gdouble frequency;
+  gdouble phase;
+  gdouble start_frequency;
 
   gdouble volume;
 
@@ -76,7 +76,7 @@ GType ags_apply_synth_get_type();
 AgsApplySynth* ags_apply_synth_new(AgsChannel *start_channel, guint count,
 				   guint wave,
 				   guint attack, guint frame_count,
-				   guint frequency, guint phase, guint start,
+				   gdouble frequency, gdouble phase, gdouble start_frequency,
 				   gdouble volume,
 				   guint loop_start, guint loop_end);
 

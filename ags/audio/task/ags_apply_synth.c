@@ -24,7 +24,9 @@
 #include <ags/object/ags_config.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_synth_util.h>
 
@@ -127,7 +129,7 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
   apply_synth->attack = 0;
   apply_synth->frame_count = 0;
   apply_synth->phase = 0;
-  apply_synth->start = 0;
+  apply_synth->start_frequency = 0;
   apply_synth->volume = 1.0;
 
   apply_synth->loop_start = 0;
@@ -258,9 +260,22 @@ ags_apply_synth_launch(AgsTask *task)
 
   factor = 1.0;
 
-  for(i = 0; channel != NULL; i++){
+  for(i = 0; channel != NULL && i < apply_synth->count; i++){
+    if(AGS_IS_INPUT(channel)){
+      if(AGS_INPUT(channel)->synth_generator == NULL){
+	AGS_INPUT(channel)->synth_generator = ags_synth_generator_new();
+      }
+      
+      g_object_set(AGS_INPUT(channel)->synth_generator,
+		   "n-frames\0", frame_count,
+		   "frequency\0", frequency,
+		   "phase\0", phase,
+		   "volume\0", volume,
+		   NULL);
+    }
+    
     /* calculate wished frequncy and phase */
-    current_frequency = (guint) ((double) frequency * exp2((double)((apply_synth->start * -1.0) + (double)i) / 12.0));
+    current_frequency = (guint) ((double) frequency * exp2((double)((apply_synth->start_frequency * -1.0) + (double)i) / 12.0));
     current_phase[0] = (guint) ((double) phase * ((double) frequency / (double) current_frequency));
 
     /* settings which needs to be factorized */
@@ -342,7 +357,7 @@ ags_apply_synth_launch(AgsTask *task)
  * @frame_count: frame count
  * @frequency: frequency
  * @phase: the phase
- * @start: first frame
+ * @start_frequency: base frequency
  * @volume: volume
  * @loop_start: loop start
  * @loop_end: loop end
@@ -357,7 +372,7 @@ AgsApplySynth*
 ags_apply_synth_new(AgsChannel *start_channel, guint count,
 		    guint wave,
 		    guint attack, guint frame_count,
-		    guint frequency, guint phase, guint start,
+		    gdouble frequency, gdouble phase, gdouble start_frequency,
 		    gdouble volume,
 		    guint loop_start, guint loop_end)
 {
@@ -373,7 +388,7 @@ ags_apply_synth_new(AgsChannel *start_channel, guint count,
   apply_synth->frame_count = frame_count;
   apply_synth->frequency = frequency;
   apply_synth->phase = phase;
-  apply_synth->start = start;
+  apply_synth->start_frequency = start_frequency;
   apply_synth->volume = volume;
   apply_synth->loop_start = loop_start;
   apply_synth->loop_end = loop_end;
