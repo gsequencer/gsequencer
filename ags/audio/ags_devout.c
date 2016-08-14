@@ -895,8 +895,6 @@ ags_devout_set_property(GObject *gobject,
       }
 
       devout->samplerate = samplerate;
-
-      ags_devout_realloc_buffer(devout);
     }
     break;
   case PROP_BUFFER:
@@ -1258,7 +1256,7 @@ ags_devout_set_presets(AgsSoundcard *soundcard,
 
   devout = AGS_DEVOUT(soundcard);
   g_object_set(devout,
-	       "dsp-channels\0", channels,
+	       "pcm-channels\0", channels,
 	       "samplerate\0", rate,
 	       "buffer-size\0", buffer_size,
 	       "format\0", format,
@@ -2458,28 +2456,28 @@ ags_devout_realloc_buffer(AgsDevout *devout)
     free(devout->buffer[0]);
   }
   
-  devout->buffer[0] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+  devout->buffer[0] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_1 */
   if(devout->buffer[1] != NULL){
     free(devout->buffer[1]);
   }
 
-  devout->buffer[1] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+  devout->buffer[1] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_2 */
   if(devout->buffer[2] != NULL){
     free(devout->buffer[2]);
   }
 
-  devout->buffer[2] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+  devout->buffer[2] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_3 */
   if(devout->buffer[3] != NULL){
     free(devout->buffer[3]);
   }
   
-  devout->buffer[3] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+  devout->buffer[3] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
 }
 
 /**

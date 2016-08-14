@@ -618,7 +618,8 @@ ags_audio_signal_set_property(GObject *gobject,
 
       samplerate = g_value_get_uint(value);
 
-      audio_signal->samplerate = samplerate;
+      ags_audio_signal_set_samplerate(audio_signal,
+				      samplerate);
     }
     break;
   case PROP_BUFFER_SIZE:
@@ -627,7 +628,8 @@ ags_audio_signal_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
-      audio_signal->buffer_size = buffer_size;
+      ags_audio_signal_set_buffer_size(audio_signal,
+				       buffer_size);
     }
   case PROP_FORMAT:
     {
@@ -635,7 +637,8 @@ ags_audio_signal_set_property(GObject *gobject,
 
       format = g_value_get_uint(value);
 
-      audio_signal->format = format;
+      ags_audio_signal_set_format(audio_signal,
+				  format);
     }
     break;
   case PROP_WORD_SIZE:
