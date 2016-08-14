@@ -21,13 +21,12 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_config.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_synth_util.h>
-
-#include <ags/object/ags_config.h>
 
 #include <math.h>
 
@@ -45,7 +44,7 @@ void ags_apply_synth_launch(AgsTask *task);
  * @short_description: apply synth to channel
  * @title: AgsApplySynth
  * @section_id:
- * @include: ags/synth/task/ags_apply_synth.h
+ * @include: ags/audio/task/ags_apply_synth.h
  *
  * The #AgsApplySynth task apply the specified synth to channel.
  */

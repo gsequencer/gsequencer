@@ -3,11 +3,15 @@ ags (0.7.45)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented resetting samplerate, buffer size and format. Thus added properties to AgsAudio and AgsChannel.
 	* implemented ags_audio_file_check_suffix() and ags_ipatch_check_suffix()
-	* TODO implemented ags_input_open_file()
+	* implemented ags_input_open_file()
 	* implemented soundcard property of AgsIpatch
 	* implemented preset, instrument and sample property of AgsAudioFileLink
+	* implemented AgsSynthGenerator and ags_synth_util.c
+	* implemented copy functions in ags_audio_buffer_util.c
+	* implemented AgsApplyPresets recall
 	* refactored replacing template AgsAudioSignal as adding new template
 	* improved mutices in ags_audio_open_files()
+	* fixed ags_devout_realloc_buffer() to use pcm_channels instead of dsp_channels
 
 ags (0.7.44)
 
