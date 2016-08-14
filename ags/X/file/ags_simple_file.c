@@ -5564,7 +5564,8 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		     G_CALLBACK(ags_simple_file_write_line_resolve_link), line->channel);
   }else if(AGS_IS_INPUT(line->channel) &&
-	   AGS_INPUT(line->channel)->file_link != NULL){
+	   AGS_INPUT(line->channel)->file_link != NULL &&
+	   ags_audio_file_check_suffix(AGS_FILE_LINK(AGS_INPUT(line->channel)->file_link)->filename)){
     xmlNewProp(node,
 	       "filename\0",
 	       g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(line->channel)->file_link)->filename));
