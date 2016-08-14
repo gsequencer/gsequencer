@@ -17,9 +17,15 @@
   <para>
     You can add engines by activating the appropriate menu item within
     the "add" submenu of the "edit" menu item. You may change the properties
-    of an engine by opening the properties dialog from the context menu.
-    From the context menu you may perform some other tasks, too.
+    of an engine by opening the properties dialog from the context menu at the
+    top of each machine within vertical order. From the context menu you may
+    perform some other tasks, as well.
   </para>
+  
+  <para>
+    The edit submenu is only available by sequencers like AgsDrum and AgsMatrix.
+  </para>
+  
   <itemizedlist mark="bullet">
     <listitem>
       <para>
@@ -51,12 +57,26 @@
 	NOTE for LADSPA sink or generators aren't supported, yet.
       </para>
     </listitem>
+    <listitem>
+      <para>
+	Edit gives you editing options.
+      </para>
+      
+      <itemizedlist>
+	<listitem>
+	  Copy pattern does convert your pattern bitmap into a pattern based notation suitable
+	  to paste in notation editor.
+	</listitem>
+      </itemizedlist>
+	  
+    </listitem>
   </itemizedlist>
 
   <sect1>
     <title>Machine properties</title>
     <para>
-      Within properties dialog you can link lines or add effects and adjust audio-channels/pads.
+      Within properties dialog you can link lines either in single channel or in bulk mode, add effects
+      and adjust audio-channels/pads.
     </para>
     
     <sect2>
@@ -75,9 +95,9 @@
 	The output tab lets you mainly perform linking lines and adding effects to them. For each
 	line there's a combo box listing available linking engines, on the right of it there is
 	a spin button let you choose the input line to be linked.
-	As you have added LADSPA effects by clicking add and selected appropriate plugin by using
-	LADSPA dialog. You may remove it by clicking checkbox of the listed plugin and finally click
-	remove.
+	As you have added a plugin by clicking add and selected appropriate effect by using plugin browser
+	dialog. You may remove it by clicking checkbox of the listed plugin and finally click remove.
+	Note you can have a effect only once per channel.
       </para>
     </sect2>
 
@@ -95,7 +115,7 @@
       </mediaobject>
       <para>
 	The input tab does the mainly same as output tab in view of input lines. If supported
-	you might assign files, too.
+	you might assign files, too. In general you connect output to input.
       </para>
     </sect2>
 
@@ -149,7 +169,7 @@
 	</caption>
       </mediaobject>
       <para>
-	The LADSPA browser gives you choice of available LADSPA plugin. It lets you modify
+	The plugin browser gives you choice of available LADSPA or Lv2 plugins. It lets you modify
 	the controls to be used. The added plugin can be removed by activating checkbox in
 	output/input tab and clicking remove.
       </para>
@@ -194,7 +214,7 @@
     </mediaobject>
     <para>
       Bundle audio lines with the mixer and perform toplevel stream manipulation. It contains
-      per audio channel a volume indicator and may contain LADSPA plugins.
+      per audio channel a volume indicator and may contain LADSPA or Lv2 plugins.
     </para>
     <para>
       Due the limitation of recycling it is just able to handle multiple input lines and only one
@@ -519,6 +539,11 @@
       Produce audio data by opening Soundfont2 audio file container format. There three available
       controls, preset and instrument to navigate within container format and a open button to
       read Soundfont2 files and assign the selected instrument to the input.
+    </para>
+    <para>
+      The ffplayer contains recently the bridge widget. You can add plugins in bulk mode by
+      click Add or Remove within AgsFFPlayer's bridge, what you can collapse/expand. To add an effect
+      to a line, you have open as usual input/output of machine properties.
     </para>
   </sect1>
 

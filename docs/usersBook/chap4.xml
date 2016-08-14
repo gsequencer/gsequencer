@@ -34,7 +34,10 @@
   </mediaobject>
   <para>
     With the navigation you have overall control of your song. Settings you perform
-    here may influence the behaviour of AGS.
+    here may influence the behaviour of AGS. There's a duration label doing a time approximation.
+    It is really unreliable and may differ about 30 seconds after 3 minutes of playback. Note
+    with higher frequency of the audio related threads it may differ less. An other factor is bpm
+    what has an influence, as well.
   </para>
 
   <sect1>
@@ -104,5 +107,10 @@
 	</tbody>
       </tgroup>
     </table>
+    <para>
+      The loop checkbox enables the loop L and loop R settings below. It causes the notation to loop playback.
+      Auto-Scroll checkbox animates the horizontal scrollbars to follow playback position. Use exclude sequencers
+      checkbox to enable/disable pattern based sequencers.
+    </para>
   </sect1>
 </chapter>
