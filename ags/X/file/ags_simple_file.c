@@ -3188,7 +3188,6 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 			  7)){
     AgsAudioFile *audio_file;
     AgsAudioFileLink *file_link;
-    AgsAudioSignal *audio_signal_source_old;
     
     GList *audio_signal_list;
     
@@ -3347,7 +3346,6 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 			  7)){
     AgsAudioFile *audio_file;
     AgsAudioFileLink *file_link;
-    AgsAudioSignal *audio_signal_source_old;
     
     GList *audio_signal_list;
     

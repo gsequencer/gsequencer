@@ -701,7 +701,6 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     /* remove old template */
     ags_recycling_remove_audio_signal(recycling,
 				      old_template);
-    g_object_unref(old_template);
   }
   
   recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
@@ -773,7 +772,13 @@ ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 void
 ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 				       AgsAudioSignal *audio_signal)
-{  
+{
+
+  if(g_list_find(recycling->audio_signal,
+		 (gpointer) audio_signal) == NULL){
+    return;
+  }
+  
   recycling->audio_signal = g_list_remove(recycling->audio_signal,
 					  (gpointer) audio_signal);
   audio_signal->recycling = NULL;
