@@ -255,8 +255,9 @@ ags_input_open_file(AgsInput *input,
 
   gboolean success;
 
+  audio_signal = NULL;
   success = FALSE;
-  
+
   if(ags_audio_file_check_suffix(filename)){
     AgsAudioFile *audio_file;
 
@@ -268,13 +269,13 @@ ags_input_open_file(AgsInput *input,
     /* open audio file and read audio signal */
     audio_file = ags_audio_file_new(filename,
 				    AGS_CHANNEL(input)->soundcard,
-				    audio_channel, audio_channel + 1);
+				    audio_channel, 1);
     
     ags_audio_file_open(audio_file);
     ags_audio_file_read_audio_signal(audio_file);
 
     audio_signal = audio_file->audio_signal;
-    g_object_unref(audio_file);
+    //    g_object_unref(audio_file);
   }else if(ags_ipatch_check_suffix(filename)){
     AgsIpatch *ipatch;
 

@@ -32,6 +32,7 @@
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run_master.h>
@@ -224,10 +225,13 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsMutexManager *mutex_manager;
 
   GList *stream;
+
   signed short *buffer0, *buffer1;
+  gboolean muted;
   guint audio_channel, pcm_channels;
   guint buffer_size, soundcard_buffer_size;
-  gboolean muted;
+  guint soundcard_format;
+  guint copy_mode;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
@@ -263,7 +267,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 			    &pcm_channels,
 			    NULL,
 			    &soundcard_buffer_size,
-			    NULL);
+			    &soundcard_format);
   
   if(stream == NULL){
     pthread_mutex_unlock(soundcard_mutex);
@@ -311,22 +315,23 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   }
 
   buffer_size = source->buffer_size;
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(soundcard_format),
+						  ags_audio_buffer_util_format_from_soundcard(source->format));
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
-    AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
-    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), pcm_channels,
-					   (signed short *) stream->data, 1,
-					   soundcard_buffer_size - source->attack);
+    ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + source->attack,
+						stream->data, 1, 0,
+						soundcard_buffer_size - source->attack, copy_mode);
   }else{
     if(source->attack != 0 && stream->prev != NULL){
-      ags_audio_signal_copy_buffer_to_buffer((signed short *) &(buffer0[audio_channel]), pcm_channels,
-					     &(((signed short *) stream->prev->data)[soundcard_buffer_size - source->attack]), 1,
-					     source->attack);
+      ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel,
+						  stream->prev->data, 1, soundcard_buffer_size - source->attack,
+						  source->attack, copy_mode);
     }
 
-    ags_audio_signal_copy_buffer_to_buffer((signed short *) &(buffer0[audio_channel + source->attack * pcm_channels]), pcm_channels,
-					   (signed short *) stream->data, 1,
-					   soundcard_buffer_size - source->attack);
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_channel, pcm_channels, audio_channel + source->attack * pcm_channels,
+						stream->data, 1, 0,
+						soundcard_buffer_size - source->attack, copy_mode);
   }
   
   pthread_mutex_unlock(soundcard_mutex);

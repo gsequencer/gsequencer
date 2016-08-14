@@ -632,6 +632,16 @@ ags_devout_init(AgsDevout *devout)
     free(str);
   }
 
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "format\0");
+  if(str != NULL){
+    devout->format = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+    free(str);
+  }
+
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
   devout->out.alsa.device = AGS_SOUNDCARD_DEFAULT_DEVICE;
@@ -1705,22 +1715,9 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  /* set the period time * /
-  period_time = (USEC_PER_SEC / devout->samplerate * devout->buffer_size); // (USEC_PER_SEC / (devout->samplerate * 1000))
-  dir = -1;
-  err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
-  if (err < 0) {
-    pthread_mutex_unlock(mutex);
-
-    str = snd_strerror(err);
-    g_warning("Unable to set period time %i for playback: %s\n", period_time, str);
-
-    //    free(str);
-    
-    return;
-  }
-
-  err = snd_pcm_hw_params_get_period_size(hwparams, &size, &dir);
+  /* set the period size * /
+  period_size = 32;
+  err = snd_pcm_hw_params_set_period_size(handle, hwparams, period_size, dir);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
 
@@ -1730,8 +1727,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     //    free(str);
     
     return;
-  }
-  period_size = size;
+  }  
   */
   
   /* write the parameters to device */
@@ -1747,7 +1743,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  /* get the current swparams */
+  /* get the current swparams * /
   err = snd_pcm_sw_params_current(handle, swparams);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
@@ -1759,7 +1755,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     
     return;
   }
-
+  */
   /* start the transfer when the buffer is almost full: */
   /* (buffer_size / avail_min) * avail_min * /
   err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);

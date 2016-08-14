@@ -31,6 +31,7 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/object/ags_config.h>
  
@@ -234,7 +235,6 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   gdouble delay;
   guint attack;
   guint buffer_size;
-  guint samplerate;
   guint length;
   gchar *str;
   
@@ -259,14 +259,6 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  free(str);
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
   free(str);
 
   pthread_mutex_unlock(application_mutex);
@@ -404,19 +396,19 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
     //TODO:JK: in future release buffer size may differ
     if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
       AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
-      ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					     (signed short *) stream_source->data, 1,
-					     soundcard_buffer_size - source->attack);
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
+						  stream_source->data, 1, 0,
+						  soundcard_buffer_size - source->attack, copy_mode);
     }else{
       if(source->attack != 0 && stream_source->prev != NULL){
-	ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					       &(((signed short *) stream_source->prev->data)[soundcard_buffer_size - source->attack]), 1,
-					       source->attack);
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
+						    stream_source->prev->data, 1, soundcard_buffer_size - source->attack,
+						    source->attack, copy_mode);
       }
 
-      ags_audio_signal_copy_buffer_to_buffer(&(((signed short *) stream_destination->data)[source->attack]), 1,
-					     (signed short *) stream_source->data, 1,
-					     soundcard_buffer_size - source->attack);
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
+						  stream_source->data, 1, 0,
+						  soundcard_buffer_size - source->attack, copy_mode);
     }
   }
 }

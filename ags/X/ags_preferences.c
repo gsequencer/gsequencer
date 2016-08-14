@@ -277,48 +277,6 @@ ags_preferences_apply(AgsApplicable *applicable)
   }
   
   ags_config_save(config);
-
-  uid = getuid();
-  pw = getpwuid(uid);
-
-  filename = g_strdup_printf("%s/%s/%s\0",
-			     pw->pw_dir,
-			     AGS_DEFAULT_DIRECTORY,
-			     AGS_PREFERENCES_DEFAULT_FILENAME);
-    
-
-  if(g_strcmp0(ags_config_get_value(application_context->config,
-				    AGS_CONFIG_GENERIC,
-				    "simple-file\0"),
-	       "false\0")){
-    AgsSimpleFile *simple_file;
-    
-    simple_file = (AgsFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-					   "application-context\0", application_context,
-					   "filename\0", filename,
-					   NULL);
-    
-    ags_file_write(simple_file);
-    g_object_unref(simple_file);
-  }else{
-    AgsFile *file;
-    
-    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", application_context,
-				    "filename\0", filename,
-				    NULL);
-    
-    ags_file_write(file);
-    g_object_unref(file);
-  }
-  
-  error = NULL;
-
-  g_spawn_command_line_async(g_strdup_printf("gsequencer --filename %s\0",
-					     filename),
-			     &error);
-
-  ags_application_context_quit(application_context);
 }
 
 void

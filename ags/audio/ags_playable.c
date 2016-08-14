@@ -362,7 +362,7 @@ ags_playable_info(AgsPlayable *playable,
  *
  * Since: 0.4.2
  */
-short*
+gdouble*
 ags_playable_read(AgsPlayable *playable,
 		  guint channel,
 		  GError **error)
@@ -387,7 +387,7 @@ ags_playable_read(AgsPlayable *playable,
  */
 void
 ags_playable_write(AgsPlayable *playable,
-		   signed short *buffer, guint buffer_length)
+		   gdouble *buffer, guint buffer_length)
 {
   AgsPlayableInterface *playable_interface;
 
@@ -482,7 +482,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   AgsMutexManager *mutex_manager;
   
   GList *stream, *list, *list_beginning;
-  short *buffer;
+  gdouble *buffer;
   guint channels;
   guint frames;
   guint loop_start;
@@ -613,7 +613,23 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 
       for(j = 0; j < j_stop && stream != NULL; j++){
 	for(k = 0; k < buffer_size; k++){
-	  ((short *) stream->data)[k] = buffer[j * buffer_size + k];
+	  switch(audio_signal->format){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    ((signed char *) stream->data)[k] = 127.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    ((signed short *) stream->data)[k] = 32767.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    ((signed long *) stream->data)[k] = 8388607.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    ((signed long *) stream->data)[k] = 2147483647.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    ((signed long long *) stream->data)[k] = 9223372036854775807.0 * buffer[j * buffer_size + k];
+	    break;
+	  }
 	}
 
 	stream = stream->next;
@@ -621,7 +637,23 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     
       if(frames % buffer_size != 0){
 	for(k = 0; k < frames % buffer_size; k++){
-	  ((short *) stream->data)[k] = buffer[j * buffer_size + k];
+	  switch(audio_signal->format){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    ((signed char *) stream->data)[k] = 127.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    ((signed short *) stream->data)[k] = 32767.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    ((signed long *) stream->data)[k] = 8388607.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    ((signed long *) stream->data)[k] = 2147483647.0 * buffer[j * buffer_size + k];
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    ((signed long long *) stream->data)[k] = 9223372036854775807.0 * buffer[j * buffer_size + k];
+	    break;
+	  }
 	}
       }
 

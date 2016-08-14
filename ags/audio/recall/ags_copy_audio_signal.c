@@ -23,12 +23,15 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_copy_channel.h>
 
@@ -213,14 +216,25 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 void
 ags_copy_audio_signal_run_inter(AgsRecall *recall)
 {
-  GObject *soundcard;
   AgsCopyChannel *copy_channel;
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;
-  //  AgsAttack *attack;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsConfig *config;
+  GObject *soundcard;
+
   GList *stream_source, *stream_destination;
+
+  gchar *str;
   gboolean muted;
+  guint buffer_size;
+  guint copy_mode;
+  
   GValue value = {0,};
+
+  pthread_mutex_t *application_mutex;
 
   AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter(recall);
 
@@ -229,6 +243,21 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   soundcard = AGS_RECALL(copy_audio_signal)->soundcard;
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+  free(str);
+
+  pthread_mutex_unlock(application_mutex);
 
   if(stream_source == NULL){
     ags_recall_done(recall);
@@ -263,18 +292,34 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
     ags_audio_signal_add_stream(destination);
   }
 
-  g_message("copy\0");
+  stream_destination = destination->stream_current;
 
-  //TODO:JK
-  ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					 (signed short *) stream_source->data, 1,
-					 source->buffer_size);
+  if(stream_destination != NULL){
+    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination->format),
+						    ags_audio_buffer_util_format_from_soundcard(source->format));
+    
+    if(stream_destination->next == NULL){
+      ags_audio_signal_add_stream(destination);
+    }
+  
+    //TODO:JK: in future release buffer size may differ
+    if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
+      AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
+						  stream_source->data, 1, 0,
+						  buffer_size - source->attack, copy_mode);
+    }else{
+      if(source->attack != 0 && stream_source->prev != NULL){
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
+						    stream_source->prev->data, 1, buffer_size - source->attack,
+						    source->attack, copy_mode);
+      }
 
-  //  if(attack->first_start != 0){
-  //    ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-  //					   &(((signed short *) stream_source->data)[attack->first_length]), 1,
-  //					   attack->first_start);
-  //  }
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
+						  stream_source->data, 1, 0,
+						  buffer_size - source->attack, copy_mode);
+    }
+  }
 }
 
 AgsRecall*
