@@ -25,6 +25,11 @@
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/task/ags_apply_presets.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
@@ -237,6 +242,40 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* format */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "format\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  audio_preferences->format = (GtkComboBox *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(audio_preferences->format),
+		   1, 2,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  gtk_combo_box_text_append_text(audio_preferences->format,
+				 "8\0");
+  gtk_combo_box_text_append_text(audio_preferences->format,
+				 "16\0");
+  gtk_combo_box_text_append_text(audio_preferences->format,
+				 "24\0");
+  gtk_combo_box_text_append_text(audio_preferences->format,
+				 "32\0");
+  gtk_combo_box_text_append_text(audio_preferences->format,
+				 "64\0");
+  
+  gtk_combo_box_set_active(audio_preferences->format,
+			   1);
+  
   /* JACK */
   str = ags_config_get_value(ags_config_get_instance(),
 			     AGS_CONFIG_GENERIC,
@@ -254,7 +293,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     gtk_table_attach(table,
 		     GTK_WIDGET(audio_preferences->enable_jack),
 		     0, 2,
-		     4, 5,
+		     5, 6,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
 
@@ -262,7 +301,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
-		     5, 6,
+		     6, 7,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
 
@@ -270,7 +309,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     gtk_table_attach(table,
 		     GTK_WIDGET(audio_preferences->jack_driver),
 		     1, 2,
-		     5, 6,
+		     6, 7,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
   
@@ -278,7 +317,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
-		     6, 7,
+		     7, 8,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
 
@@ -286,7 +325,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     gtk_table_attach(table,
 		     GTK_WIDGET(hbox),
 		     1, 2,
-		     6, 7,
+		     7, 8,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
 
@@ -369,28 +408,56 @@ ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_audio_preferences_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences; 
-
-  AgsConfig *config;
 
   GList *card_id, *card_name;
   GtkListStore *model;
   GtkTreeIter current;
+
+  AgsApplyPresets *apply_presets;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
 
   char *device, *str;
   int card_num;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
-
+  guint format;
+  
   GValue value =  {0,};
+
+  pthread_mutex_t *application_mutex;
 
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
+  window = preferences->window;
+  
   config = ags_config_get_instance();
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* device */
   model = gtk_combo_box_get_model(audio_preferences->card);
@@ -406,40 +473,83 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 			   &value);
   
   //FIXME:JK: work-around for alsa-handle
-  str = g_strdup_printf("%s", g_value_get_string(&value));
+  str = g_strdup_printf("%s\0", g_value_get_string(&value));
   g_message("%s\0", str);
   ags_config_set_value(config,
-		 AGS_CONFIG_SOUNDCARD,
-		 "alsa-handle\0",
-		 str);
+		       AGS_CONFIG_SOUNDCARD,
+		       "alsa-handle\0",
+		       str);
   g_free(str);
 
   /* samplerate */
+  rate = gtk_spin_button_get_value(audio_preferences->samplerate);
   str = g_strdup_printf("%u\0",
-			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
+			rate);
   ags_config_set_value(config,
-		 AGS_CONFIG_SOUNDCARD,
-		 "samplerate\0",
-		 str);
+		       AGS_CONFIG_SOUNDCARD,
+		       "samplerate\0",
+		       str);
   g_free(str);
 
   /* buffer size */
+  buffer_size = gtk_spin_button_get_value(audio_preferences->buffer_size);
   str = g_strdup_printf("%u\0",
-			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
+			buffer_size);
   ags_config_set_value(config,
-		 AGS_CONFIG_SOUNDCARD,
-		 "buffer-size\0",
-		 str);
+		       AGS_CONFIG_SOUNDCARD,
+		       "buffer-size\0",
+		       str);
   g_free(str);
 
-  /* dsp channels */
+  /* pcm channels */
+  channels = gtk_spin_button_get_value(audio_preferences->audio_channels);
   str = g_strdup_printf("%u\0",
-			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
+			channels);
   ags_config_set_value(config,
-		 AGS_CONFIG_SOUNDCARD,
-		 "dsp-channels\0",
-		 str);
+		       AGS_CONFIG_SOUNDCARD,
+		       "pcm-channels\0",
+		       str);
   g_free(str);
+
+  /* format */
+  switch(gtk_combo_box_get_active(audio_preferences->format)){
+  case 0:
+    format = AGS_SOUNDCARD_SIGNED_8_BIT;
+    break;
+  case 1:
+    format = AGS_SOUNDCARD_SIGNED_16_BIT;
+    break;
+  case 2:
+    format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    break;
+  case 3:
+    format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    break;
+  case 4:
+    format = AGS_SOUNDCARD_SIGNED_64_BIT;
+    break;
+  }
+
+  
+  str = g_strdup_printf("%u\0",
+			format);
+  ags_config_set_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "format\0",
+		       str);
+  g_free(str);  
+
+  /* create set output device task */
+  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
+					channels,
+					rate,
+					buffer_size,
+					format);
+
+  /* append AgsSetOutputDevice */
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(apply_presets));
+
 }
 
 void
@@ -462,7 +572,8 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
-
+  guint format;
+  
   GValue value =  {0,};
   
   GError *error;
@@ -538,7 +649,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    &channels,
 			    &rate,
 			    &buffer_size,
-			    NULL);
+			    &format);
 
   /*  */
   gtk_spin_button_set_value(audio_preferences->audio_channels,
@@ -547,6 +658,29 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) rate);
   gtk_spin_button_set_value(audio_preferences->buffer_size,
 			    (gdouble) buffer_size);
+
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    gtk_combo_box_set_active(audio_preferences->format,
+			     0);
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    gtk_combo_box_set_active(audio_preferences->format,
+			     1);
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    gtk_combo_box_set_active(audio_preferences->format,
+			     2);
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    gtk_combo_box_set_active(audio_preferences->format,
+			     3);
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    gtk_combo_box_set_active(audio_preferences->format,
+			     4);
+    break;
+  }
 
   /*  */
   if(selected_device != NULL){

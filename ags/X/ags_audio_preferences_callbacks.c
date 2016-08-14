@@ -68,7 +68,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   GtkTreeIter current;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -77,6 +77,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
+
   GValue value =  {0,};
 
   GError *error;
@@ -95,12 +96,12 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /*  */  
@@ -162,7 +163,7 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
   AgsSetAudioChannels *set_audio_channels;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -181,12 +182,12 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
@@ -207,7 +208,7 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
   AgsSetSamplerate *set_samplerate;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -226,12 +227,12 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
@@ -252,7 +253,7 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
   AgsSetBufferSize *set_buffer_size;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -271,12 +272,12 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */

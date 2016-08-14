@@ -38,11 +38,6 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
   case GTK_RESPONSE_OK:
     {
       ags_applicable_apply(AGS_APPLICABLE(dialog));
-      gtk_dialog_run((GtkDialog *) gtk_message_dialog_new((GtkWindow *) dialog,
-							  GTK_DIALOG_MODAL,
-							  GTK_MESSAGE_WARNING,
-							  GTK_BUTTONS_OK,
-							  "Restart Advanced Gtk+ Sequencer now!\0"));
       
       if(apply){
 	ags_applicable_reset(AGS_APPLICABLE(dialog));

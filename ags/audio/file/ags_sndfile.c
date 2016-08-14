@@ -47,8 +47,8 @@ void ags_sndfile_info(AgsPlayable *playable,
 		      guint *channels, guint *frames,
 		      guint *loop_start, guint *loop_end,
 		      GError **error);
-signed short* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
-void ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length);
+gdouble* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
+void ags_sndfile_write(AgsPlayable *playable, gdouble *buffer, guint buffer_length);
 void ags_sndfile_flush(AgsPlayable *playable);
 void ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence);
 void ags_sndfile_close(AgsPlayable *playable);
@@ -347,11 +347,11 @@ ags_sndfile_info(AgsPlayable *playable,
   *loop_end = 0;
 }
 
-signed short*
+gdouble*
 ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 {
   AgsSndfile *sndfile;
-  signed short *buffer, *source;
+  gdouble *buffer, *source;
   guint i;
   guint num_read;
 
@@ -359,13 +359,13 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 
   if(sndfile->buffer == NULL){
     sndfile->buffer = 
-      source = (signed short *) malloc((size_t) sndfile->info->channels *
-				       sndfile->info->frames *
-				       sizeof(signed short));
+      source = (gdouble *) malloc((size_t) sndfile->info->channels *
+				  sndfile->info->frames *
+				  sizeof(gdouble));
     
     //FIXME:JK: work-around comment me out
     //    sf_seek(sndfile->file, 0, SEEK_SET);  
-    num_read = sf_read_short(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
+    num_read = sf_read_double(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
 
     if(num_read != sndfile->info->frames * sndfile->info->channels){
       g_warning("ags_sndfile_read(): read to many items\0");
@@ -375,8 +375,8 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
   }
 
   if(sndfile->info->frames != 0){
-    buffer = (signed short *) malloc((size_t) sndfile->info->frames *
-				     sizeof(signed short));
+    buffer = (gdouble *) malloc((size_t) sndfile->info->frames *
+				sizeof(gdouble));
     
     for(i = 0; i < sndfile->info->frames; i++){
       buffer[i] = source[i * sndfile->info->channels + channel];
@@ -389,7 +389,7 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 }
 
 void
-ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length)
+ags_sndfile_write(AgsPlayable *playable, gdouble *buffer, guint buffer_length)
 {
   AgsSndfile *sndfile;
   sf_count_t multi_frames, retval;
@@ -398,7 +398,7 @@ ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_leng
 
   multi_frames = buffer_length * sndfile->info->channels;
 
-  retval = sf_write_short(sndfile->file, buffer, multi_frames);
+  retval = sf_write_double(sndfile->file, buffer, multi_frames);
 
   if(retval > multi_frames){
     g_warning("retval > multi_frames");

@@ -55,8 +55,8 @@ void ags_ipatch_info(AgsPlayable *playable,
 		     guint *channels, guint *frames,
 		     guint *loop_start, guint *loop_end,
 		     GError **error);
-signed short* ags_ipatch_read(AgsPlayable *playable, guint channel,
-			      GError **error);
+gdouble* ags_ipatch_read(AgsPlayable *playable, guint channel,
+			 GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
 
 /**
@@ -168,8 +168,8 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_pointer("filename\0",
-				   "the filename\0",
-				   "The filename to open\0",
+				    "the filename\0",
+				    "The filename to open\0",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
@@ -428,7 +428,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 
     /* load samples */
     ipatch->samples = (IpatchList *) ipatch_container_get_children(IPATCH_CONTAINER(ipatch->base),
-								  IPATCH_TYPE_SF2_SAMPLE);
+								   IPATCH_TYPE_SF2_SAMPLE);
     
     while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex) != 0);
   }else if(IPATCH_IS_GIG_FILE(ipatch->handle->file)){
@@ -873,13 +873,13 @@ ags_ipatch_info(AgsPlayable *playable,
   }
 }
 
-signed short*
+gdouble*
 ags_ipatch_read(AgsPlayable *playable, guint channel,
 		GError **error)
 {
   AgsIpatch *ipatch;
   IpatchSample *sample;
-  signed short *buffer, *source;
+  gdouble *buffer, *source;
   guint channels, frames;
   guint loop_start, loop_end;
   guint i;
@@ -897,7 +897,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
     g_warning("%s\0", this_error->message);
   }
 
-  buffer = (signed short *) malloc(channels * frames * sizeof(signed short));
+  buffer = (gdouble *) malloc(channels * frames * sizeof(gdouble));
   
   if(ipatch->nth_level == 3){
     if(ipatch->iter != NULL){
@@ -929,7 +929,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 			       0,
 			       frames,
 			       buffer,
-			       IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO | IPATCH_SAMPLE_SIGNED,
+			       IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
 			       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
 			       &this_error);
       

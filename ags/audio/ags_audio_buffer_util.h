@@ -351,8 +351,8 @@ void ags_audio_buffer_util_copy_double_to_double(double *destination, guint dcha
 						 guint count);
 
 /* copy */
-void ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels,
-						 void *source, guint schannels,
-						 guint offset, guint count, guint mode);
+void ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,
+						 void *source, guint schannels, guint soffset,
+						 guint count, guint mode);
 
 #endif /*__AGS_AUDIO_BUFFER_UTIL_H__*/
