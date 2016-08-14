@@ -1275,7 +1275,7 @@ ags_devout_get_presets(AgsSoundcard *soundcard,
   devout = AGS_DEVOUT(soundcard);
 
   if(channels != NULL){
-    *channels = devout->dsp_channels;
+    *channels = devout->pcm_channels;
   }
 
   if(rate != NULL){
@@ -1571,10 +1571,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   devout->note_offset = 0;
 
-  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * word_size);
-  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * word_size);
-  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * word_size);
-  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[0], 0, devout->pcm_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[1], 0, devout->pcm_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[2], 0, devout->pcm_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[3], 0, devout->pcm_channels * devout->buffer_size * word_size);
 
   /*  */
   period_event = 0;
@@ -1615,7 +1615,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  /* set hardware resampling */
+  /* set hardware resampling * /
   err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 0);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
@@ -1627,7 +1627,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     
     return;
   }
-
+  */
+  
   /* set the interleaved read/write format */
   err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
@@ -1655,7 +1656,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* set the count of channels */
-  channels = devout->dsp_channels;
+  channels = devout->pcm_channels;
   err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
@@ -1704,7 +1705,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  /* set the period time */
+  /* set the period time * /
   period_time = (USEC_PER_SEC / devout->samplerate * devout->buffer_size); // (USEC_PER_SEC / (devout->samplerate * 1000))
   dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
@@ -1731,7 +1732,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
   period_size = size;
-
+  */
+  
   /* write the parameters to device */
   err = snd_pcm_hw_params(handle, hwparams);
   if (err < 0) {
@@ -1759,7 +1761,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* start the transfer when the buffer is almost full: */
-  /* (buffer_size / avail_min) * avail_min */
+  /* (buffer_size / avail_min) * avail_min * /
   err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
@@ -1771,9 +1773,9 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     
     return;
   }
-
+  */
   /* allow the transfer when at least period_size samples can be processed */
-  /* or disable this mechanism when period event is enabled (aka interrupt like style processing) */
+  /* or disable this mechanism when period event is enabled (aka interrupt like style processing) * /
   err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
@@ -1786,7 +1788,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  /* write the parameters to the playback device */
+  /* write the parameters to the playback device * /
   err = snd_pcm_sw_params(handle, swparams);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
@@ -1798,7 +1800,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     
     return;
   }
-
+  */
   /*  */
   devout->out.alsa.handle = handle;
   devout->tact_counter = 0.0;
@@ -1897,7 +1899,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   /* check buffer flag */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    memset(devout->buffer[2], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
+    memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[0],
@@ -1937,7 +1939,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }      
     //      g_message("ags_devout_play 0\0");
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
+    memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
 
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[1],
@@ -1977,7 +1979,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }      
     //      g_message("ags_devout_play 1\0");
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    memset(devout->buffer[0], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
+    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[2],
@@ -2017,7 +2019,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }
     //      g_message("ags_devout_play 2\0");
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[1], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
+    memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[3],
