@@ -150,6 +150,9 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   g_cond_init(&(gui_thread->cond));
   g_mutex_init(&(gui_thread->mutex));
 
+  gui_thread->cached_poll_array_size = 0;
+  gui_thread->cached_poll_array = NULL;
+  
   g_atomic_pointer_set(&(gui_thread->task_completion),
 		       NULL);
 }
@@ -196,7 +199,15 @@ void
 ags_gui_thread_run(AgsThread *thread)
 {
   AgsGuiThread *gui_thread;
+
   GMainContext *main_context;
+
+  GPollFD *fds = NULL;  
+
+  gint max_priority;
+  gint timeout;
+  gint nfds, allocated_nfds;
+  gboolean some_ready;
 
   auto void ags_gui_thread_complete_task();
   
@@ -226,15 +237,40 @@ ags_gui_thread_run(AgsThread *thread)
     g_list_free(list_start);
   }
 
+  /*  */
+  main_context = g_main_context_default();
+
+  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_RT_SETUP);
+
+    /*  */
+    if(!g_main_context_acquire(main_context)){
+      gboolean got_ownership = FALSE;
+
+      g_mutex_lock(&(gui_thread->mutex));
+    
+      while(!got_ownership){
+	got_ownership = g_main_context_wait(main_context,
+					    &(gui_thread->cond),
+					    &(gui_thread->mutex));
+      }
+
+      g_mutex_unlock(&(gui_thread->mutex));
+    }
+    
+    g_main_context_push_thread_default(main_context);
+
+    g_main_context_release(main_context);
+  }
+  
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
   }
   
   gui_thread = AGS_GUI_THREAD(thread);
 
-  /*  */
-  main_context = g_main_context_default();
-  
+  /*  */  
   if(!g_main_context_acquire(main_context)){
     gboolean got_ownership = FALSE;
 
@@ -249,15 +285,35 @@ ags_gui_thread_run(AgsThread *thread)
     g_mutex_unlock(&(gui_thread->mutex));
   }
 
-  gdk_threads_enter();
+  allocated_nfds = gui_thread->cached_poll_array_size;
+  fds = gui_thread->cached_poll_array;
+
+  g_main_context_prepare(main_context, &max_priority);
+
+  while((nfds = g_main_context_query(main_context, max_priority, &timeout, fds,
+				     allocated_nfds)) > allocated_nfds){
+    g_free (fds);
+    gui_thread->cached_poll_array_size = allocated_nfds = nfds;
+    gui_thread->cached_poll_array = fds = g_new(GPollFD, nfds);
+  }
+
+  timeout = 0;
+  poll(fds, nfds, timeout);
+
+  some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
+
+  if(some_ready)
+    g_main_context_dispatch (main_context);
   
-  g_main_context_iteration(main_context,
-			   FALSE);
+  //  gdk_threads_leave();
+  
+  //  g_main_context_iteration(main_context,
+  //			   FALSE);
 
   ags_gui_thread_complete_task();  
 
-  gdk_threads_leave();
-
+  //  gdk_threads_enter();
+  
   g_main_context_release(main_context);
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);

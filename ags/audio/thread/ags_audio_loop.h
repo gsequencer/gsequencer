@@ -77,6 +77,13 @@ struct _AgsAudioLoop
   pthread_mutex_t *tree_lock;
   pthread_mutex_t *recall_mutex;
 
+  GMutex mutex;
+  GCond cond;
+  
+  GMainContext *main_context;
+  gint cached_poll_array_size;
+  GPollFD *cached_poll_array;
+
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall
 

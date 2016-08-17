@@ -260,7 +260,7 @@ ags_launch(gboolean single_thread)
     }
     
     pthread_mutex_unlock(gui_thread->start_mutex);
-
+    
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
 				       AGS_CONFIG_GENERIC,
@@ -279,8 +279,9 @@ ags_launch(gboolean single_thread)
     }
 
     /* join gui thread */
+    //    gtk_main();
     pthread_join(*(gui_thread->thread),
-		 NULL);
+    		 NULL);
   }else{
     AgsSingleThread *single_thread;
 
@@ -422,7 +423,8 @@ ags_launch_filename(gchar *filename,
       }
     
       pthread_mutex_unlock(gui_thread->start_mutex);
-
+     
+      
       /* autosave thread */
       if(!g_strcmp0(ags_config_get_value(config,
 					 AGS_CONFIG_GENERIC,
@@ -470,8 +472,9 @@ ags_launch_filename(gchar *filename,
   
   if(!single_thread){
     /* join gui thread */
+    //    gtk_main();
     pthread_join(*(gui_thread->thread),
-		 NULL);
+    		 NULL);
   }
 }
 
@@ -981,6 +984,8 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
   ipatch_init();
+  //  g_log_set_fatal_mask(G_LOG_DOMAIN,
+  //		       0);
   
   /* setup */
   ags_setup(argc, argv);

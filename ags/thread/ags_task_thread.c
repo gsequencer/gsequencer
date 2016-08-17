@@ -364,39 +364,9 @@ ags_task_thread_run(AgsThread *thread)
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
-
-    GMainContext *main_context;
     
     int i;
     
-    static GMutex mutex;
-    static GCond cond;
-
-    static gboolean initialized = FALSE;
-
-    if(!initialized){
-      initialized = TRUE;
-      
-      g_cond_init(&cond);
-      g_mutex_init(&mutex);
-    }
-    
-    main_context = g_main_context_default();
-
-    if(!g_main_context_acquire(main_context)){
-      gboolean got_ownership = FALSE;
-
-      g_mutex_lock(&mutex);
-      
-      while(!got_ownership){
-	got_ownership = g_main_context_wait(main_context,
-					    &cond,
-					    &mutex);
-      }
-
-      g_mutex_unlock(&mutex);
-    }
-
     //    gdk_threads_enter();
     
     pthread_mutex_lock(task_thread->launch_mutex);
@@ -418,9 +388,6 @@ ags_task_thread_run(AgsThread *thread)
     pthread_mutex_unlock(task_thread->launch_mutex);
     
     //    gdk_threads_leave();
-    
-    g_main_context_release(main_context);
-    
   }
 
   pthread_mutex_lock(task_thread->read_mutex);

@@ -46,9 +46,13 @@ typedef struct _AgsGuiThreadClass AgsGuiThreadClass;
 struct _AgsGuiThread
 {
   AgsThread thread;
-
+  
   GMutex mutex;
   GCond cond;
+  
+  GMainContext *main_context;
+  gint cached_poll_array_size;
+  GPollFD *cached_poll_array;
 
   pthread_mutex_t *task_completion_mutex;
   volatile GList *task_completion;
