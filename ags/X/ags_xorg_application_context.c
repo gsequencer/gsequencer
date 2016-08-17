@@ -391,10 +391,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 				TRUE, TRUE);
 
   /* AgsGuiThread */
+  //  xorg_application_context->gui_thread = NULL;
   xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				xorg_application_context->gui_thread,
-				TRUE, TRUE);
+  				xorg_application_context->gui_thread,
+  				TRUE, TRUE);
 
   /* AgsAutosaveThread */
   xorg_application_context->autosave_thread = NULL;

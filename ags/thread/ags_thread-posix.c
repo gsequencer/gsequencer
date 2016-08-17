@@ -2324,7 +2324,7 @@ ags_thread_real_clock(AgsThread *thread)
 
       if(relative_time_spent > 0.0 &&
 	 relative_time_spent < time_cycle){
-	timed_sleep.tv_nsec = (long) relative_time_spent;
+	timed_sleep.tv_nsec = (long) floor(relative_time_spent);
 
 	/* lost precision * /
 	lost_precision = lost_per_jiffie * (1.0 / thread->freq));
@@ -2336,7 +2336,7 @@ ags_thread_real_clock(AgsThread *thread)
 	}
 	*/
 	
-	nanosleep(&timed_sleep, NULL);
+	//	nanosleep(&timed_sleep, NULL);
       }
 
       clock_gettime(CLOCK_MONOTONIC, thread->computing_time);

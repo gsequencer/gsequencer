@@ -330,6 +330,15 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio_loop->recall_mutex, NULL);
 
+  /*  */
+  g_cond_init(&(audio_loop->cond));
+  g_mutex_init(&(audio_loop->mutex));
+
+  audio_loop->main_context = g_main_context_new();
+
+  audio_loop->cached_poll_array_size = 0;
+  audio_loop->cached_poll_array = NULL;
+
   /* recall related lists */
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
@@ -566,8 +575,22 @@ ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
 
+  GMainContext *main_context;
+
+  GPollFD *fds = NULL;  
+
+  gint max_priority;
+  gint timeout;
+  gint nfds, allocated_nfds;
+  gboolean some_ready;
+  
   guint val;
 
+  static gboolean initialized = FALSE;
+  
+  audio_loop = AGS_AUDIO_LOOP(thread);
+  main_context = audio_loop->main_context;
+  
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -580,11 +603,52 @@ ags_audio_loop_run(AgsThread *thread)
 
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
+
+    g_main_context_push_thread_default(main_context);
   }
+
+  /*  */  
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    g_mutex_lock(&(audio_loop->mutex));
+    
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(audio_loop->cond),
+					  &(audio_loop->mutex));
+    }
+
+    g_mutex_unlock(&(audio_loop->mutex));
+  }
+
+  //  g_main_context_iteration(main_context,
+  //			   FALSE);
+
+  allocated_nfds = audio_loop->cached_poll_array_size;
+  fds = audio_loop->cached_poll_array;
+
+  g_main_context_prepare(main_context, &max_priority);
+
+  while((nfds = g_main_context_query(main_context, max_priority, &timeout, fds,
+				     allocated_nfds)) > allocated_nfds){
+    g_free (fds);
+    audio_loop->cached_poll_array_size = allocated_nfds = nfds;
+    audio_loop->cached_poll_array = fds = g_new(GPollFD, nfds);
+  }
+
+  timeout = 0;
+  poll(fds, nfds, timeout);
+
+  some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
+
+  if(some_ready)
+    g_main_context_dispatch(main_context);
+
+  g_main_context_release(main_context);
   
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
-  audio_loop = AGS_AUDIO_LOOP(thread);
-
+  
   pthread_mutex_lock(audio_loop->recall_mutex);
 
   /* play recall */
