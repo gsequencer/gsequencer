@@ -54,6 +54,12 @@ struct _AgsMainLoopInterface
 
   void (*set_last_sync)(AgsMainLoop *main_loop, guint last_sync);
   guint (*get_last_sync)(AgsMainLoop *main_loop);
+
+  void (*interrupt)(AgsMainLoop *main_loop,
+		    int sig,
+		    guint time_cycle, guint *time_spent);
+  gboolean (*monitor)(AgsMainLoop *main_loop,
+		      guint time_cycle, guint *time_spent);
 };
 
 GType ags_main_loop_get_type();

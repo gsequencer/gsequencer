@@ -66,6 +66,8 @@ typedef enum{
   AGS_THREAD_UNREF_ON_EXIT           = 1 << 11,
   AGS_THREAD_IS_CHAOS_TREE           = 1 << 12,
   AGS_THREAD_IMMEDIATE_SYNC          = 1 << 13,
+  AGS_THREAD_RECOVER_INTERRUPTED     = 1 << 14,
+  AGS_THREAD_RESUME_INTERRUPTED      = 1 << 15,
 }AgsThreadFlags;
 
 typedef enum{
@@ -100,6 +102,8 @@ typedef enum{
   AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 22,
   AGS_THREAD_START_SYNCED_FREQ       = 1 << 23,
   AGS_THREAD_SYNCED_FREQ             = 1 << 24,
+  AGS_THREAD_INTERRUPTED             = 1 << 25,
+  AGS_THREAD_MONITORING              = 1 << 26,
 }AgsThreadSyncFlags;
 
 struct _AgsThread
@@ -180,6 +184,10 @@ struct _AgsThreadClass
   void (*resume)(AgsThread *thread);
   void (*timelock)(AgsThread *thread);
   void (*stop)(AgsThread *thread);
+
+  guint (*interrupted)(AgsThread *thread,
+		       int sig,
+		       guint time_cycle, guint *time_spent);
 };
 
 GType ags_thread_get_type();
@@ -242,6 +250,10 @@ void ags_thread_suspend(AgsThread *thread);
 void ags_thread_resume(AgsThread *thread);
 void ags_thread_timelock(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
+
+guint ags_thread_interrupted(AgsThread *thread,
+			     int sig,
+			     guint time_cycle, guint *time_spent);
 
 void ags_thread_hangcheck(AgsThread *thread);
 
