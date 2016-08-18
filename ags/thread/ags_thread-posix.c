@@ -59,10 +59,10 @@ void ags_thread_real_timelock(AgsThread *thread);
 void* ags_thread_timelock_loop(void *ptr);
 void ags_thread_real_stop(AgsThread *thread);
 
-void ags_thread_interrupted_callback(AgsMainLoop *main_loop,
-				     int sig,
-				     guint time_cycle, guint *time_spent,
-				     AgsThread *thread);
+void ags_thread_interrupt_callback(AgsMainLoop *main_loop,
+				   int sig,
+				   guint time_cycle, guint *time_spent,
+				   AgsThread *thread);
 static void ags_thread_self_create();
 
 /**
@@ -318,7 +318,7 @@ ags_thread_class_init(AgsThreadClass *thread)
   /**
    * AgsThread::interrupted:
    * @thread: the #AgsThread
-   * @sig:
+   * @sig: the signal number
    * @time_cycle:
    * @time_spent:
    *
@@ -875,21 +875,38 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
     AgsThread *child;
 
     /* check main loop monitor if suspended and interrupted */
-    if((AGS_THREAD_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 &&
-       (AGS_THREAD_SUSPENDED & g_atomic_int_get(&(thread->flags))) != 0){
-      if(ags_main_loop_monitor(AGS_MAIN_LOOP(main_loop),
-			       0, NULL)){
-	if((AGS_THREAD_RESUME_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 ||
-	   (AGS_THREAD_RECOVER_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0){
-	  ags_thread_resume(thread);
-	}
-	
-	if((AGS_THREAD_RECOVER_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 ||
-	   ((AGS_THREAD_RESUME_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 &&
-	    (AGS_THREAD_MONITORING & g_atomic_int_get(&(thread->sync_flags))) != 0)){
+    if((AGS_THREAD_SUSPENDED & g_atomic_int_get(&(thread->flags))) == 0){
+      if((AGS_THREAD_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0){
+	if(ags_main_loop_monitor(AGS_MAIN_LOOP(main_loop),
+				 0, NULL)){
 	  g_atomic_int_and(&(thread->sync_flags),
 			   ~(AGS_THREAD_INTERRUPTED |
 			     AGS_THREAD_MONITORING));
+	}
+      }
+    }else{ 
+      if((AGS_THREAD_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0){
+	if(ags_main_loop_monitor(AGS_MAIN_LOOP(main_loop),
+				 0, NULL)){
+	  if((AGS_THREAD_RESUME_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 ||
+	     (AGS_THREAD_RECOVER_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0){
+#ifdef AGS_PTHREAD_RESUME
+	    pthread_resume(thread->thread);
+#else
+	    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
+#endif
+	  }
+	
+	  if((AGS_THREAD_RECOVER_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 ||
+	     ((AGS_THREAD_RESUME_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 &&
+	      (AGS_THREAD_MONITORING & g_atomic_int_get(&(thread->sync_flags))) != 0)){
+	    g_atomic_int_and(&(thread->sync_flags),
+			     ~(AGS_THREAD_INTERRUPTED |
+			       AGS_THREAD_MONITORING));
+	  }else{
+	    g_atomic_int_or(&(thread->sync_flags),
+			    AGS_THREAD_MONITORING);
+	  }
 	}else{
 	  g_atomic_int_or(&(thread->sync_flags),
 			  AGS_THREAD_MONITORING);
@@ -901,7 +918,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
     child = g_atomic_pointer_get(&(thread->children));
 
     while(child != NULL){
-      ags_thread_set_sync_all_reset(child);
+      ags_thread_set_sync_all_reset_after(child);
       
       child = g_atomic_pointer_get(&(child->next));
     }
@@ -925,6 +942,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 
   ags_thread_set_sync_all_reset(main_loop);
   ags_thread_set_sync_all_recursive(main_loop, tic);
+  ags_thread_set_sync_all_reset_after(main_loop);
 }
 
 /**
@@ -1214,8 +1232,8 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
   if(AGS_IS_MAIN_LOOP(main_loop)){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
-    g_signal_connect(AGS_MAIN_LOOP(main_loop), "interrupted\0",
-		     G_CALLBACK(ags_thread_interrupted_callback), thread);
+    g_signal_connect(AGS_MAIN_LOOP(main_loop), "interrupt\0",
+		     G_CALLBACK(ags_thread_interrupt_callback), child);
   }
   
   g_object_ref(thread);
@@ -2343,6 +2361,10 @@ ags_thread_real_clock(AgsThread *thread)
   thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION));
   delay_per_hertz = AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION;
 
+  if(thread->delay < thread->tic_delay){
+    thread->tic_delay = thread->delay;
+  }
+  
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
     //    g_message("%d %d %f\0", thread->tic_delay, thread->delay, thread->freq);
   }  
@@ -2858,7 +2880,6 @@ ags_thread_loop(void *ptr)
 	 (AGS_THREAD_MONITORING & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
 	ags_thread_run(thread);
       }
-      
       //    g_printf("%s\n\0", G_OBJECT_TYPE_NAME(thread));
 
       /*  */
@@ -3166,7 +3187,7 @@ ags_thread_real_timelock(AgsThread *thread)
 #ifdef AGS_PTHREAD_SUSPEND
     pthread_suspend(thread->thread);
 #else
-    pthread_kill(thread_id, AGS_THREAD_SUSPEND_SIG);
+    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
 
     /* allow non greedy to continue */
@@ -3209,10 +3230,10 @@ ags_thread_real_timelock(AgsThread *thread)
     }
 
     /* your chance */
-#ifdef AGS_PTHREAD_SUSPEND
+#ifdef AGS_PTHREAD_RESUME
     pthread_resume(thread->thread));
 #else
-    pthread_kill(thread_id, AGS_THREAD_RESUME_SIG);
+    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
 #endif
   }
 #endif
@@ -3286,6 +3307,7 @@ ags_thread_interrupted(AgsThread *thread,
 		       int sig,
 		       guint time_cycle, guint *time_spent)
 {
+  guint retval;
   guint thread_signal;
 
   pthread_mutex_lock(&class_mutex);
@@ -3306,8 +3328,11 @@ ags_thread_interrupted(AgsThread *thread,
 		0,
 		sig,
 		time_cycle,
-		time_spent);
+		time_spent,
+		&retval);
   g_object_unref(G_OBJECT(thread));
+
+  return(retval);
 }
 
 /**
@@ -3445,10 +3470,10 @@ ags_thread_find_type(AgsThread *thread, GType type)
 }
 
 void
-ags_thread_interrupted_callback(AgsMainLoop *main_loop,
-				int sig,
-				guint time_cycle, guint *time_spent,
-				AgsThread *thread)
+ags_thread_interrupt_callback(AgsMainLoop *main_loop,
+			      int sig,
+			      guint time_cycle, guint *time_spent,
+			      AgsThread *thread)
 {
   ags_thread_interrupted(thread,
 			 sig,

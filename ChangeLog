@@ -2,9 +2,12 @@ ags (0.7.46)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsMainLoop::interrupt and AgsMainLoop::monitor
+	* implemented AgsThread::interrupted and use it in ags_gui_thread.c
+	* implemented ags_audio_loop_timing_thread() to emit AgsMainLoop::interrupt
 	* fixed configuration in place of AgsSynth and AgsFFPlayer by using AgsSynthGenerator repectively AgsAudioFileLink
 	* fixed AgsTactable signals to be emitted
-	* TODO fixed configuration in place to reset thread frequency
+	* fixed configuration in place to reset thread frequency
+	* added thread posix signals to AgsGuiThread
 
 ags (0.7.45)
 

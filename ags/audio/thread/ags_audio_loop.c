@@ -64,10 +64,16 @@ void ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_audio_loop_get_tic(AgsMainLoop *main_loop);
 void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_audio_loop_get_last_sync(AgsMainLoop *main_loop);
+gboolean ags_audio_loop_monitor(AgsMainLoop *main_loop,
+				guint time_cycle, guint *time_spent);
 void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_start(AgsThread *thread);
 void ags_audio_loop_run(AgsThread *thread);
+
+void ags_audio_loop_notify_frequency(GObject *gobject,
+				     GParamSpec *pspec,
+				     gpointer user_data);
 
 void* ags_audio_loop_timing_thread(void *ptr);
 void ags_audio_loop_play_recall(AgsAudioLoop *audio_loop);
@@ -257,6 +263,8 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
   main_loop->get_tic = ags_audio_loop_get_tic;
   main_loop->set_last_sync = ags_audio_loop_set_last_sync;
   main_loop->get_last_sync = ags_audio_loop_get_last_sync;
+  main_loop->interrupt = NULL;
+  main_loop->monitor = ags_audio_loop_monitor;
 }
 
 void
@@ -274,6 +282,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   /* calculate frequency */
   thread = (AgsThread *) audio_loop;
 
+  g_signal_connect_after(thread, "notify::frequency\0",
+			 G_CALLBACK(ags_audio_loop_notify_frequency), NULL);
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
@@ -315,6 +326,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   g_atomic_int_set(&(audio_loop->tic), 0);
   g_atomic_int_set(&(audio_loop->last_sync), 0);
 
+  audio_loop->time_cycle = NSEC_PER_SEC / thread->freq;
+  
   audio_loop->application_context = NULL;
   audio_loop->soundcard = NULL;
 
@@ -331,7 +344,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio_loop->recall_mutex, NULL);
 
-  /*  */
+  /* event main loop */
   g_cond_init(&(audio_loop->cond));
   g_mutex_init(&(audio_loop->mutex));
 
@@ -339,6 +352,15 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->cached_poll_array_size = 0;
   audio_loop->cached_poll_array = NULL;
+
+  /* timing thread */
+  audio_loop->timing_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(audio_loop->timing_mutex, NULL);
+
+  audio_loop->timing_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(audio_loop->timing_cond, NULL);
+
+  audio_loop->timing_thread = (pthread_t *) malloc(sizeof(pthread_t));
 
   /* recall related lists */
   audio_loop->play_recall_ref = 0;
@@ -537,6 +559,17 @@ ags_audio_loop_get_last_sync(AgsMainLoop *main_loop)
   return(val);
 }
 
+gboolean
+ags_audio_loop_monitor(AgsMainLoop *main_loop,
+		       guint time_cycle, guint *time_spent)
+{
+  if(g_atomic_int_get(&(AGS_AUDIO_LOOP(main_loop)->time_spent)) == 0){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
 void
 ags_audio_loop_finalize(GObject *gobject)
 {
@@ -594,7 +627,8 @@ ags_audio_loop_run(AgsThread *thread)
   
   audio_loop = AGS_AUDIO_LOOP(thread);
   main_context = audio_loop->main_context;
-  
+
+  /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -611,46 +645,18 @@ ags_audio_loop_run(AgsThread *thread)
     g_main_context_push_thread_default(main_context);
   }
 
-  /*  */  
-  if(!g_main_context_acquire(main_context)){
-    gboolean got_ownership = FALSE;
-
-    g_mutex_lock(&(audio_loop->mutex));
-    
-    while(!got_ownership){
-      got_ownership = g_main_context_wait(main_context,
-					  &(audio_loop->cond),
-					  &(audio_loop->mutex));
-    }
-
-    g_mutex_unlock(&(audio_loop->mutex));
-  }
-
-  //  g_main_context_iteration(main_context,
-  //			   FALSE);
-
-  allocated_nfds = audio_loop->cached_poll_array_size;
-  fds = audio_loop->cached_poll_array;
-
-  g_main_context_prepare(main_context, &max_priority);
-
-  while((nfds = g_main_context_query(main_context, max_priority, &timeout, fds,
-				     allocated_nfds)) > allocated_nfds){
-    g_free (fds);
-    audio_loop->cached_poll_array_size = allocated_nfds = nfds;
-    audio_loop->cached_poll_array = fds = g_new(GPollFD, nfds);
-  }
-
-  timeout = 0;
-  poll(fds, nfds, timeout);
-
-  some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
-
-  if(some_ready)
-    g_main_context_dispatch(main_context);
-
-  g_main_context_release(main_context);
+  /* wake-up timing thread */
+  pthread_mutex_lock(audio_loop->timing_mutex);
   
+  g_atomic_int_or(&(audio_loop->timing_flags),
+		  AGS_AUDIO_LOOP_TIMING_WAKEUP);
+
+  if((AGS_AUDIO_LOOP_TIMING_WAITING & (g_atomic_int_get(&(audio_loop->timing_flags)))) != 0){
+    pthread_cond_signal(audio_loop->timing_cond);
+  }
+
+  pthread_mutex_unlock(audio_loop->timing_mutex);
+    
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
   
   pthread_mutex_lock(audio_loop->recall_mutex);
@@ -716,6 +722,14 @@ ags_audio_loop_run(AgsThread *thread)
   //  FcFini();
 }
 
+void
+ags_audio_loop_notify_frequency(GObject *gobject,
+				GParamSpec *pspec,
+				gpointer user_data)
+{
+  AGS_AUDIO_LOOP(gobject)->time_cycle = NSEC_PER_SEC / AGS_THREAD(gobject)->freq;
+}
+
 void*
 ags_audio_loop_timing_thread(void *ptr)
 {
@@ -732,6 +746,7 @@ ags_audio_loop_timing_thread(void *ptr)
   thread = audio_loop;
 
   timing_mutex = audio_loop->timing_mutex;
+  timing_cond = audio_loop->timing_cond;
   
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     pthread_mutex_lock(timing_mutex);
@@ -754,7 +769,9 @@ ags_audio_loop_timing_thread(void *ptr)
     pthread_mutex_unlock(timing_mutex);
 
     idle.tv_sec = 0;
-    idle.tv_nsec = audio_loop->time_cycle - 4000; //NOTE:JK: 4 usec tolerance
+    idle.tv_nsec = audio_loop->time_cycle - 40000; //NOTE:JK: 40 usec tolerance
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     0);
     
     nanosleep(&idle,
 	      NULL);
@@ -765,9 +782,6 @@ ags_audio_loop_timing_thread(void *ptr)
     ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
 			    AGS_THREAD_SUSPEND_SIG,
 			    audio_loop->time_cycle, &(audio_loop->time_spent));
-    
-    g_atomic_int_set(&(audio_loop->time_spent),
-		     0);
   }
   
   pthread_exit(NULL);
