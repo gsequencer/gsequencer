@@ -59,6 +59,10 @@ void ags_thread_real_timelock(AgsThread *thread);
 void* ags_thread_timelock_loop(void *ptr);
 void ags_thread_real_stop(AgsThread *thread);
 
+void ags_thread_interrupted_callback(AgsMainLoop *main_loop,
+				     int sig,
+				     guint time_cycle, guint *time_spent,
+				     AgsThread *thread);
 static void ags_thread_self_create();
 
 /**
@@ -847,14 +851,53 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
   AgsThread *main_loop;
 
   auto void ags_thread_set_sync_all_reset(AgsThread *thread);
+  auto void ags_thread_set_sync_all_reset_after(AgsThread *thread);
   auto void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
 
   void ags_thread_set_sync_all_reset(AgsThread *thread){
     AgsThread *child;
 
+    /* reset chaos tree */
     g_atomic_int_and(&(thread->flags),
 		    ~AGS_THREAD_IS_CHAOS_TREE);
+    
+    /* descend */
+    child = g_atomic_pointer_get(&(thread->children));
 
+    while(child != NULL){
+      ags_thread_set_sync_all_reset(child);
+      
+      child = g_atomic_pointer_get(&(child->next));
+    }
+  }
+
+  void ags_thread_set_sync_all_reset_after(AgsThread *thread){
+    AgsThread *child;
+
+    /* check main loop monitor if suspended and interrupted */
+    if((AGS_THREAD_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 &&
+       (AGS_THREAD_SUSPENDED & g_atomic_int_get(&(thread->flags))) != 0){
+      if(ags_main_loop_monitor(AGS_MAIN_LOOP(main_loop),
+			       0, NULL)){
+	if((AGS_THREAD_RESUME_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 ||
+	   (AGS_THREAD_RECOVER_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0){
+	  ags_thread_resume(thread);
+	}
+	
+	if((AGS_THREAD_RECOVER_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 ||
+	   ((AGS_THREAD_RESUME_INTERRUPTED & g_atomic_int_get(&(thread->sync_flags))) != 0 &&
+	    (AGS_THREAD_MONITORING & g_atomic_int_get(&(thread->sync_flags))) != 0)){
+	  g_atomic_int_and(&(thread->sync_flags),
+			   ~(AGS_THREAD_INTERRUPTED |
+			     AGS_THREAD_MONITORING));
+	}else{
+	  g_atomic_int_or(&(thread->sync_flags),
+			  AGS_THREAD_MONITORING);
+	}
+      }
+    }
+
+    /* descend */
     child = g_atomic_pointer_get(&(thread->children));
 
     while(child != NULL){
@@ -1169,7 +1212,10 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
   main_loop = ags_thread_get_toplevel(thread);
 
   if(AGS_IS_MAIN_LOOP(main_loop)){
-    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));  
+    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+
+    g_signal_connect(AGS_MAIN_LOOP(main_loop), "interrupted\0",
+		     G_CALLBACK(ags_thread_interrupted_callback), thread);
   }
   
   g_object_ref(thread);
@@ -1370,6 +1416,11 @@ ags_thread_is_current_ready(AgsThread *current,
     retval = TRUE;
   }
 
+  if((AGS_THREAD_SUSPENDED & flags) != 0 &&
+     (AGS_THREAD_INTERRUPTED & sync_flags) != 0){
+    retval = TRUE;
+  }
+
   if(retval){
     pthread_mutex_unlock(current->mutex);
 
@@ -1446,6 +1497,11 @@ ags_thread_is_tree_ready(AgsThread *thread,
     }
     
     if((AGS_THREAD_READY & flags) != 0){
+      retval = TRUE;
+    }
+
+    if((AGS_THREAD_SUSPENDED & flags) != 0 &&
+       (AGS_THREAD_INTERRUPTED & sync_flags) != 0){
       retval = TRUE;
     }
 
@@ -2798,7 +2854,11 @@ ags_thread_loop(void *ptr)
       pthread_mutex_unlock(thread->timelock_mutex);
 
       /* run */
-      ags_thread_run(thread);
+      if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0 &&
+	 (AGS_THREAD_MONITORING & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+	ags_thread_run(thread);
+      }
+      
       //    g_printf("%s\n\0", G_OBJECT_TYPE_NAME(thread));
 
       /*  */
@@ -3382,6 +3442,17 @@ ags_thread_find_type(AgsThread *thread, GType type)
 
   
   return(NULL);
+}
+
+void
+ags_thread_interrupted_callback(AgsMainLoop *main_loop,
+				int sig,
+				guint time_cycle, guint *time_spent,
+				AgsThread *thread)
+{
+  ags_thread_interrupted(thread,
+			 sig,
+			 time_cycle, time_spent);
 }
 
 static void

@@ -41,7 +41,9 @@ void ags_gui_thread_suspend(AgsThread *thread);
 void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
-void ags_gui_thread_suspend_handler(int sig);
+void ags_gui_thread_interrupted(AgsThread *thread,
+				int sig,
+				guint time_cycle, guint *time_spent);
 
 /**
  * SECTION:ags_gui_thread
@@ -114,6 +116,8 @@ ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread)
   thread->suspend = ags_gui_thread_suspend;
   thread->resume = ags_gui_thread_resume;
   thread->stop = ags_gui_thread_stop;
+
+  thread->interrupted = ags_gui_thread_interrupted;
 }
 
 void
@@ -150,6 +154,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   g_cond_init(&(gui_thread->cond));
   g_mutex_init(&(gui_thread->mutex));
 
+  gui_thread->main_context = g_main_context_default();
   gui_thread->cached_poll_array_size = 0;
   gui_thread->cached_poll_array = NULL;
   
@@ -238,7 +243,9 @@ ags_gui_thread_run(AgsThread *thread)
   }
 
   /*  */
-  main_context = g_main_context_default();
+  gui_thread = AGS_GUI_THREAD(thread);
+
+  main_context = gui_thread->main_context;
 
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     g_atomic_int_or(&(thread->flags),
@@ -268,9 +275,10 @@ ags_gui_thread_run(AgsThread *thread)
     return;
   }
   
-  gui_thread = AGS_GUI_THREAD(thread);
-
-  /*  */  
+  /*  */
+  g_atomic_int_set(&(gui_thread->polling),
+		   TRUE);
+  
   if(!g_main_context_acquire(main_context)){
     gboolean got_ownership = FALSE;
 
@@ -302,8 +310,9 @@ ags_gui_thread_run(AgsThread *thread)
 
   some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
 
-  if(some_ready)
+  if(some_ready){
     g_main_context_dispatch (main_context);
+  }
   
   //  gdk_threads_leave();
   
@@ -315,6 +324,10 @@ ags_gui_thread_run(AgsThread *thread)
   //  gdk_threads_enter();
   
   g_main_context_release(main_context);
+
+  g_atomic_int_set(&(gui_thread->polling),
+		   FALSE);
+  
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
@@ -361,6 +374,25 @@ ags_gui_thread_stop(AgsThread *thread)
 
   /*  */
   gdk_flush();
+}
+
+void
+ags_gui_thread_interrupted(AgsThread *thread,
+			   int sig,
+			   guint time_cycle, guint *time_spent)
+{
+  AgsGuiThread *gui_thread;
+
+  gui_thread = thread;
+  
+  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+    g_atomic_int_or(&(thread->sync_flags),
+		    AGS_THREAD_INTERRUPTED);
+    
+    if(g_atomic_int_get(&(gui_thread->polling))){
+      ags_thread_suspend(thread);
+    }
+  }
 }
 
 /**
