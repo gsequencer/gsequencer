@@ -91,7 +91,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Notify to monitor time.
    *
-   * Returns:
+   * Returns: if monitor is allowed
    * 
    * Since: 0.7.46
    */
@@ -326,16 +326,23 @@ ags_main_loop_interrupt(AgsMainLoop *main_loop,
  *
  * Notify to monitor time.
  *
+ * Returns: if monitor is allowed
+ *
  * Since: 0.7.46
  */
 gboolean
 ags_main_loop_monitor(AgsMainLoop *main_loop,
 		      guint time_cycle, guint *time_spent)
 {
+  gboolean has_monitor;
+  
   g_signal_emit(main_loop,
 		main_loop_signals[MONITOR],
 		0,
 		time_cycle,
-		time_spent);
+		time_spent,
+		&has_monitor);
+
+  return(has_monitor);
 }
 

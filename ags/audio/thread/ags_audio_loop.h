@@ -59,15 +59,24 @@ typedef enum{
   AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 10,
 }AgsAudioLoopFlags;
 
+typedef enum{
+  AGS_AUDIO_LOOP_TIMING_WAITING                 = 1,
+  AGS_AUDIO_LOOP_TIMING_WAKEUP                  = 1 <<  1,
+}AgsAudioLoopTimingFlags;
+
 struct _AgsAudioLoop
 {
   AgsThread thread;
 
   guint flags;
-
+  volatile guint timing_flags;
+  
   volatile guint tic;
   volatile guint last_sync;
 
+  guint time_cycle;
+  volatile guint time_spent;
+  
   GObject *application_context;
   GObject *soundcard;
   
@@ -84,6 +93,11 @@ struct _AgsAudioLoop
   gint cached_poll_array_size;
   GPollFD *cached_poll_array;
 
+  pthread_mutex_t *timing_mutex;
+  pthread_cond_t *timing_cond;
+  
+  pthread_t *timing_thread;
+  
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall
 
