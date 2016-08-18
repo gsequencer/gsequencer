@@ -568,6 +568,9 @@ ags_audio_loop_start(AgsThread *thread)
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
+
+    pthread_create(audio_loop->timing_thread, NULL,
+		   ags_audio_loop_timing_thread, audio_loop);
   }
 }
 

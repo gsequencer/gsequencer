@@ -46,6 +46,8 @@ typedef struct _AgsGuiThreadClass AgsGuiThreadClass;
 struct _AgsGuiThread
 {
   AgsThread thread;
+
+  volatile gboolean polling;
   
   GMutex mutex;
   GCond cond;
