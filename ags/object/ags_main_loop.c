@@ -19,9 +19,11 @@
 
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/object/ags_marshal.h>
+
 #include <stdio.h>
 
-void ags_main_loop_base_init(AgsMainLoopInterface *interface);
+void ags_main_loop_class_init(AgsMainLoopInterface *interface);
 
 /**
  * SECTION:ags_main_loop
@@ -34,30 +36,73 @@ void ags_main_loop_base_init(AgsMainLoopInterface *interface);
  * threads.
  */
 
+enum {
+  INTERRUPT,
+  MONITOR,
+  LAST_SIGNAL,
+};
+
+static guint main_loop_signals[LAST_SIGNAL];
+
 GType
 ags_main_loop_get_type()
 {
-  static GType ags_type_main_loop = 0;
+  static GType main_loop_type = 0;
 
-  if(!ags_type_main_loop){
-    static const GTypeInfo ags_main_loop_info = {
-      sizeof(AgsMainLoopInterface),
-      (GBaseInitFunc) ags_main_loop_base_init,
-      NULL, /* base_finalize */
-    };
-    
-    ags_type_main_loop = g_type_register_static(G_TYPE_INTERFACE,
-						"AgsMainLoop\0", &ags_main_loop_info,
-						0);
+  if(!main_loop_type){
+    main_loop_type = g_type_register_static_simple(G_TYPE_INTERFACE,
+						   "AgsMainLoop\0",
+						   sizeof (AgsMainLoopInterface),
+						   (GClassInitFunc) ags_main_loop_class_init,
+						   0, NULL, 0);
   }
-
-  return(ags_type_main_loop);
+  
+  return(main_loop_type);
 }
 
 void
-ags_main_loop_base_init(AgsMainLoopInterface *interface)
+ags_main_loop_class_init(AgsMainLoopInterface *interface)
 {
-  /* empty */
+  /**
+   * AgsMainLoop::interrupt:
+   * @main_loop: the #AgsMainLoop
+   * @sig: the signal number
+   * @time_cycle: the amount of time of a cycle
+   * @time_spent: the amount of time passed since last cycle
+   *
+   * Notify about interrupt threads.
+   *
+   * Since: 0.7.46
+   */
+  g_signal_new("interrupt\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
+	       NULL, NULL,
+	       g_cclosure_user_marshal_VOID__INT_UINT_POINTER,
+	       G_TYPE_NONE, 3,
+	       G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
+
+  /**
+   * AgsMainLoop::monitor:
+   * @main_loop: the #AgsMainLoop
+   * @time_cycle: the amount of time of a cycle
+   * @time_spent: the amount of time passed since last cycle
+   *
+   * Notify to monitor time.
+   *
+   * Returns:
+   * 
+   * Since: 0.7.46
+   */
+  g_signal_new("monitor\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
+	       NULL, NULL,
+	       g_cclosure_user_marshal_BOOLEAN__UINT_POINTER,
+	       G_TYPE_BOOLEAN, 2,
+	       G_TYPE_UINT, G_TYPE_POINTER);
 }
 
 /**
@@ -248,3 +293,49 @@ ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
 
   return(main_loop_interface->get_last_sync(main_loop));
 }
+
+/**
+ * ags_main_loop_interrupt:
+ * @main_loop: the #AgsMainLoop
+ * @sig: the singal number
+ * @time_cycle: the amount of time of a cycle
+ * @time_spent: the amount of time passed since last cycle
+ * 
+ * Notify about interrupt threads.
+ *
+ * Since: 0.7.46
+ */
+void
+ags_main_loop_interrupt(AgsMainLoop *main_loop,
+			int sig,
+			guint time_cycle, guint *time_spent)
+{
+  g_signal_emit(main_loop,
+		main_loop_signals[INTERRUPT],
+		0,
+		sig,
+		time_cycle,
+		time_spent);
+}
+
+/**
+ * ags_main_loop_monitor:
+ * @main_loop: the #AgsMainLoop
+ * @time_cycle: the amount of time of a cycle
+ * @time_spent: the amount of time passed since last cycle
+ *
+ * Notify to monitor time.
+ *
+ * Since: 0.7.46
+ */
+gboolean
+ags_main_loop_monitor(AgsMainLoop *main_loop,
+		      guint time_cycle, guint *time_spent)
+{
+  g_signal_emit(main_loop,
+		main_loop_signals[MONITOR],
+		0,
+		time_cycle,
+		time_spent);
+}
+

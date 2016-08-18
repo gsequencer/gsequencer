@@ -33,7 +33,6 @@ void ags_soundcard_class_init(AgsSoundcardInterface *interface);
  * The #AgsSoundcard interface gives you a unique access to audio devices.
  */
 
-
 enum {
   TIC,
   OFFSET_CHANGED,

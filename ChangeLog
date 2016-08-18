@@ -1,7 +1,10 @@
 ags (0.7.46)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMainLoop::interrupt and AgsMainLoop::monitor
 	* fixed configuration in place of AgsSynth and AgsFFPlayer by using AgsSynthGenerator repectively AgsAudioFileLink
+	* fixed AgsTactable signals to be emitted
+	* TODO fixed configuration in place to reset thread frequency
 
 ags (0.7.45)
 

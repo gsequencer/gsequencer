@@ -78,4 +78,10 @@ guint ags_main_loop_get_tic(AgsMainLoop *main_loop);
 void ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_main_loop_get_last_sync(AgsMainLoop *main_loop);
 
+void ags_main_loop_interrupt(AgsMainLoop *main_loop,
+			     int sig,
+			     guint time_cycle, guint *time_spent);
+gboolean ags_main_loop_monitor(AgsMainLoop *main_loop,
+			       guint time_cycle, guint *time_spent);
+
 #endif /*__AGS_MAIN_LOOP_H__*/
