@@ -72,14 +72,15 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * Since: 0.7.46
    */
-  g_signal_new("change-sequencer-duration\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsTactableInterface, change_sequencer_duration),
-	       NULL, NULL,
-	       g_cclosure_marshal_VOID__DOUBLE,
-	       G_TYPE_NONE, 1,
-	       G_TYPE_DOUBLE);
+  tactable_signals[CHANGE_SEQUENCER_DURATION] = 
+    g_signal_new("change-sequencer-duration\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTactableInterface, change_sequencer_duration),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__DOUBLE,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_DOUBLE);
 
   /**
    * AgsTactable::change-notation-duration:
@@ -91,14 +92,15 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * Since: 0.7.46
    */
-  g_signal_new("change-notation-duration\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsTactableInterface, change_notation_duration),
-	       NULL, NULL,
-	       g_cclosure_marshal_VOID__DOUBLE,
-	       G_TYPE_NONE, 1,
-	       G_TYPE_DOUBLE);
+  tactable_signals[CHANGE_NOTATION_DURATION] = 
+    g_signal_new("change-notation-duration\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTactableInterface, change_notation_duration),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__DOUBLE,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_DOUBLE);
 
   /**
    * AgsTactable::change-tact
@@ -109,14 +111,15 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * Since: 0.7.46
    */
-  g_signal_new("change-tact\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
-	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
-	       G_TYPE_NONE, 2,
-	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+  tactable_signals[CHANGE_TACT] = 
+    g_signal_new("change-tact\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 
   /**
    * AgsTactable::change-bpm:
@@ -127,14 +130,15 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * Since: 0.7.46
    */
-  g_signal_new("change-bpm\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
-	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
-	       G_TYPE_NONE, 2,
-	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+  tactable_signals[CHANGE_BPM] = 
+    g_signal_new("change-bpm\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 }
 
 /**

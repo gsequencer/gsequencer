@@ -85,6 +85,7 @@ enum{
   RESUME,
   TIMELOCK,
   STOP,
+  INTERRUPTED,
   LAST_SIGNAL,
 };
 
@@ -181,15 +182,18 @@ ags_thread_class_init(AgsThreadClass *thread)
   thread->resume = NULL;
   thread->timelock = ags_thread_real_timelock;
   thread->stop = ags_thread_real_stop;
-
+  thread->interrupted = NULL;
+  
   /* signals */
   /**
    * AgsThread::clock:
-   * @thread: the object playing.
+   * @thread: the #AgsThread
    *
    * The ::clock signal is invoked every thread tic.
    *
    * Returns: the number of cycles to perform
+   * 
+   * Since: 0.6.0
    */
   thread_signals[CLOCK] =
     g_signal_new("clock\0",
@@ -203,9 +207,11 @@ ags_thread_class_init(AgsThreadClass *thread)
 
   /**
    * AgsThread::start:
-   * @thread: the object playing.
+   * @thread: the #AgsThread
    *
    * The ::start signal is invoked as thread started.
+   * 
+   * Since: 0.5.0
    */
   thread_signals[START] =
     g_signal_new("start\0",
@@ -218,9 +224,11 @@ ags_thread_class_init(AgsThreadClass *thread)
 
   /**
    * AgsThread::run:
-   * @thread: the object playing.
+   * @thread: the #AgsThread
    *
    * The ::run signal is invoked during run loop.
+   * 
+   * Since: 0.5.0
    */
   thread_signals[RUN] =
     g_signal_new("run\0",
@@ -233,9 +241,11 @@ ags_thread_class_init(AgsThreadClass *thread)
 
   /**
    * AgsThread::suspend:
-   * @thread: the object playing.
+   * @thread: the #AgsThread
    *
    * The ::suspend signal is invoked during suspending.
+   * 
+   * Since: 0.5.0
    */
   thread_signals[SUSPEND] =
     g_signal_new("suspend\0",
@@ -248,10 +258,12 @@ ags_thread_class_init(AgsThreadClass *thread)
 
   /**
    * AgsThread::resume:
-   * @thread: the object playing.
+   * @thread: the #AgsThread
    * @recall_id: the appropriate #AgsRecallID
    *
    * The ::resume signal is invoked during resuming.
+   * 
+   * Since: 0.5.0
    */
   thread_signals[RESUME] =
     g_signal_new("resume\0",
@@ -264,11 +276,13 @@ ags_thread_class_init(AgsThreadClass *thread)
 
   /**
    * AgsThread::timelock:
-   * @thread: the object playing.
+   * @thread: the #AgsThread
    * @recall_id: the appropriate #AgsRecallID
    *
    * The ::timelock signal is invoked as standard compution
    * time exceeded.
+   * 
+   * Since: 0.5.0
    */
   thread_signals[TIMELOCK] =
     g_signal_new("timelock\0",
@@ -281,10 +295,12 @@ ags_thread_class_init(AgsThreadClass *thread)
 
   /**
    * AgsThread::stop:
-   * @thread: the object playing.
+   * @thread: the #AgsThread
    * @recall_id: the appropriate #AgsRecallID
    *
    * The ::stop signal is invoked as @thread stopped.
+   * 
+   * Since: 0.5.0
    */
   thread_signals[STOP] =
     g_signal_new("stop\0",
@@ -294,6 +310,29 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsThread::interrupted:
+   * @thread: the #AgsThread
+   * @sig:
+   * @time_cycle:
+   * @time_spent:
+   *
+   * The ::interrupted signal is invoked as @thread should resume from interrupt.
+   *
+   * Returns: the time spent
+   *
+   * Since: 0.7.46
+   */
+  thread_signals[INTERRUPTED] =
+    g_signal_new("interrupted\0",
+		 G_TYPE_FROM_CLASS (thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsThreadClass, interrupted),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_UINT__INT_UINT_POINTER,
+		 G_TYPE_UINT, 3,
+		 G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
 }
 
 void
@@ -2336,7 +2375,7 @@ ags_thread_real_clock(AgsThread *thread)
 	}
 	*/
 	
-	//	nanosleep(&timed_sleep, NULL);
+	nanosleep(&timed_sleep, NULL);
       }
 
       clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
@@ -3166,6 +3205,48 @@ ags_thread_stop(AgsThread *thread)
   g_object_ref(G_OBJECT(thread));
   g_signal_emit(G_OBJECT(thread),
 		thread_signal, 0);
+  g_object_unref(G_OBJECT(thread));
+}
+
+/**
+ * ags_thread_interrupted:
+ * @thread: the #AgsThread
+ * @sig: signal number
+ * @time_cycle: duration of the time cycle
+ * @time_spent: time spent since last cycle
+ *
+ * Notify to resume interrupted thread.
+ * 
+ * Returns: the time spent
+ *
+ * Since: 0.7.46
+ */
+guint
+ags_thread_interrupted(AgsThread *thread,
+		       int sig,
+		       guint time_cycle, guint *time_spent)
+{
+  guint thread_signal;
+
+  pthread_mutex_lock(&class_mutex);
+
+  thread_signal = thread_signals[INTERRUPTED];
+
+  pthread_mutex_unlock(&class_mutex);
+
+  g_return_if_fail(AGS_IS_THREAD(thread));
+
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
+
+  g_object_ref(G_OBJECT(thread));
+  g_signal_emit(G_OBJECT(thread),
+		thread_signal,
+		0,
+		sig,
+		time_cycle,
+		time_spent);
   g_object_unref(G_OBJECT(thread));
 }
 

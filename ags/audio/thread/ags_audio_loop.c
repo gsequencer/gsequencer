@@ -69,6 +69,7 @@ void ags_audio_loop_finalize(GObject *gobject);
 void ags_audio_loop_start(AgsThread *thread);
 void ags_audio_loop_run(AgsThread *thread);
 
+void* ags_audio_loop_timing_thread(void *ptr);
 void ags_audio_loop_play_recall(AgsAudioLoop *audio_loop);
 void ags_audio_loop_play_channel(AgsAudioLoop *audio_loop);
 void ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback *playback);
@@ -710,6 +711,63 @@ ags_audio_loop_run(AgsThread *thread)
   //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
   //  FcFini();
+}
+
+void*
+ags_audio_loop_timing_thread(void *ptr)
+{
+  AgsAudioLoop *audio_loop;
+
+  AgsThread *thread;
+
+  struct timespec idle;
+  
+  pthread_mutex_t *timing_mutex;
+  pthread_cond_t *timing_cond;
+  
+  audio_loop = AGS_AUDIO_LOOP(ptr);
+  thread = audio_loop;
+
+  timing_mutex = audio_loop->timing_mutex;
+  
+  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+    pthread_mutex_lock(timing_mutex);
+
+    if((AGS_AUDIO_LOOP_TIMING_WAKEUP & (g_atomic_int_get(&(audio_loop->timing_flags)))) == 0){
+      g_atomic_int_or(&(audio_loop->timing_flags),
+		      AGS_AUDIO_LOOP_TIMING_WAITING);
+      
+      while((AGS_AUDIO_LOOP_TIMING_WAKEUP & (g_atomic_int_get(&(audio_loop->timing_flags)))) == 0 &&
+	    (AGS_AUDIO_LOOP_TIMING_WAITING & (g_atomic_int_get(&(audio_loop->timing_flags)))) != 0){
+	pthread_cond_wait(timing_cond,
+			  timing_mutex);
+      }
+
+      g_atomic_int_and(&(audio_loop->timing_flags),
+		       ~(AGS_AUDIO_LOOP_TIMING_WAITING |
+			 AGS_AUDIO_LOOP_TIMING_WAKEUP)); 
+    }
+    
+    pthread_mutex_unlock(timing_mutex);
+
+    idle.tv_sec = 0;
+    idle.tv_nsec = audio_loop->time_cycle - 4000; //NOTE:JK: 4 usec tolerance
+    
+    nanosleep(&idle,
+	      NULL);
+
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     audio_loop->time_cycle);
+    
+    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+			    AGS_THREAD_SUSPEND_SIG,
+			    audio_loop->time_cycle, &(audio_loop->time_spent));
+    
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     0);
+  }
+  
+  pthread_exit(NULL);
 }
 
 /**
