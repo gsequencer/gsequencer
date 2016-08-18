@@ -930,6 +930,8 @@ main(int argc, char **argv)
   signal(SIGTTIN, SIG_IGN);
   signal(SIGTTOU, SIG_IGN);
   signal(SIGCHLD, SIG_IGN);
+  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
+  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
 
   ags_sigact.sa_handler = ags_signal_handler;
   sigemptyset(&ags_sigact.sa_mask);

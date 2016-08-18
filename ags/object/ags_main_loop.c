@@ -74,14 +74,15 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Since: 0.7.46
    */
-  g_signal_new("interrupt\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
-	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__INT_UINT_POINTER,
-	       G_TYPE_NONE, 3,
-	       G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
+  main_loop_signals[INTERRUPT] = 
+    g_signal_new("interrupt\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__INT_UINT_POINTER,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
 
   /**
    * AgsMainLoop::monitor:
@@ -95,14 +96,15 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    * 
    * Since: 0.7.46
    */
-  g_signal_new("monitor\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
-	       NULL, NULL,
-	       g_cclosure_user_marshal_BOOLEAN__UINT_POINTER,
-	       G_TYPE_BOOLEAN, 2,
-	       G_TYPE_UINT, G_TYPE_POINTER);
+  main_loop_signals[MONITOR] =
+    g_signal_new("monitor\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_BOOLEAN__UINT_POINTER,
+		 G_TYPE_BOOLEAN, 2,
+		 G_TYPE_UINT, G_TYPE_POINTER);
 }
 
 /**

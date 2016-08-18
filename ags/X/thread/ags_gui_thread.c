@@ -58,6 +58,20 @@ void ags_gui_thread_interrupted(AgsThread *thread,
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
 
+__thread struct sigaction ags_gui_thread_sigact;
+
+void
+ags_gui_thread_signal_handler(int signr)
+{
+  if(signr == SIGINT){
+    //TODO:JK: do backup
+    
+    exit(-1);
+  }else{
+    sigemptyset(&(ags_gui_thread_sigact.sa_mask));
+  }
+}
+
 GType
 ags_gui_thread_get_type()
 {
@@ -138,8 +152,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 
   thread = AGS_THREAD(gui_thread);
 
-  //  g_atomic_int_or(&(thread->flags),
-  //		  AGS_THREAD_TIMELOCK_RUN);
+  g_atomic_int_or(&(thread->sync_flags),
+		  AGS_THREAD_RESUME_INTERRUPTED);
   
   thread->freq = AGS_GUI_THREAD_DEFAULT_JIFFIE;
 
@@ -210,10 +224,13 @@ ags_gui_thread_run(AgsThread *thread)
   GPollFD *fds = NULL;  
 
   gint max_priority;
-  gint timeout;
+  struct timespec timeout;
   gint nfds, allocated_nfds;
   gboolean some_ready;
 
+  sigset_t sigmask;
+  int ret;
+  
   auto void ags_gui_thread_complete_task();
   
   void ags_gui_thread_complete_task()
@@ -248,9 +265,18 @@ ags_gui_thread_run(AgsThread *thread)
   main_context = gui_thread->main_context;
 
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    sigset_t sigmask;
+    
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
 
+    ags_gui_thread_sigact.sa_handler = ags_gui_thread_signal_handler;
+
+    sigemptyset(&ags_gui_thread_sigact.sa_mask);
+    ags_gui_thread_sigact.sa_flags = 0;
+
+    sigaction(SIGIO, &ags_gui_thread_sigact, (struct sigaction *) NULL);
+    
     /*  */
     if(!g_main_context_acquire(main_context)){
       gboolean got_ownership = FALSE;
@@ -305,8 +331,17 @@ ags_gui_thread_run(AgsThread *thread)
     gui_thread->cached_poll_array = fds = g_new(GPollFD, nfds);
   }
 
-  timeout = 0;
-  poll(fds, nfds, timeout);
+  timeout.tv_sec = 0;
+  timeout.tv_nsec = 0;
+  
+  sigemptyset(&sigmask);
+  //  sigaddset(&sigmask,
+  //	    AGS_THREAD_SUSPEND_SIG);
+  
+  ret = ppoll(fds,
+	      nfds,
+	      &timeout,
+	      &sigmask);
 
   some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
 
@@ -389,8 +424,16 @@ ags_gui_thread_interrupted(AgsThread *thread,
     g_atomic_int_or(&(thread->sync_flags),
 		    AGS_THREAD_INTERRUPTED);
     
-    if(g_atomic_int_get(&(gui_thread->polling))){
-      ags_thread_suspend(thread);
+    if(g_atomic_int_get(&(gui_thread->polling))){      
+      //      g_message("huh!\0");
+      pthread_kill(*(thread->thread),
+		   SIGIO);
+      
+#ifdef AGS_PTHREAD_SUSPEND
+      pthread_suspend(thread->thread);
+#else
+      pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+#endif
     }
   }
 }
