@@ -6,7 +6,7 @@
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = . docs/reference/ags
 
-AM_CPPFLAGS = -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
+AM_CPPFLAGS = -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security
 
 # what flags you want to pass to the C compiler & linker
 CFLAGS = @CFLAGS@
@@ -62,6 +62,7 @@ userdoc = \
 	docs/usersBook/chap2.xml \
 	docs/usersBook/chap3.xml \
 	docs/usersBook/chap4.xml \
+	docs/usersBook/chap5.xml \
 	docs/usersBook/preface.xml
 
 devdoc = \
@@ -110,6 +111,7 @@ devdocimages = \
 	$(top_srcdir)/docs/images/AGS_super-threaded.png
 
 userdocimages = \
+	$(top_srcdir)/docs/images/ags_automation_window_dssi_xsynth.png \
 	$(top_srcdir)/docs/images/ags_export_window.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-input.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-resize_channels.png \

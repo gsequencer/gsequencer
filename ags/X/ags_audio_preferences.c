@@ -28,6 +28,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/task/ags_set_output_device.h>
 #include <ags/audio/task/ags_apply_presets.h>
 
 #include <ags/X/ags_window.h>
@@ -416,6 +417,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   GtkListStore *model;
   GtkTreeIter current;
 
+  AgsSetOutputDevice *set_output_device;
   AgsApplyPresets *apply_presets;
   
   AgsMutexManager *mutex_manager;
@@ -538,6 +540,14 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 		       "format\0",
 		       str);
   g_free(str);  
+
+  /* create set output device task */
+  set_output_device = ags_set_output_device_new(window->soundcard,
+						str);
+
+  /* append AgsSetOutputDevice */
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(set_output_device));
 
   /* create set output device task */
   apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
