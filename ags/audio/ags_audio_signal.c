@@ -82,6 +82,7 @@ enum{
   PROP_STREAM,
   PROP_STREAM_END,
   PROP_STREAM_CURRENT,
+  PROP_NOTE,
 };
 
 enum{
@@ -438,7 +439,23 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   g_object_class_install_property(gobject,
 				  PROP_STREAM_CURRENT,
 				  param_spec);
-  
+
+  /**
+   * AgsAudioSignal:note:
+   *
+   * The assigned #AgsNote providing default settings.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("note\0",
+				   "assigned note\0",
+				   "The note it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE,
+				  param_spec);
+
   /* AgsAudioSignalClass */
   audio_signal->realloc_buffer_size = ags_audio_signal_real_realloc_buffer_size;
   audio_signal->morph_samplerate = ags_audio_signal_real_morph_samplerate;
@@ -542,6 +559,8 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->stream_beginning = NULL;
   audio_signal->stream_current = NULL;
   audio_signal->stream_end = NULL;
+
+  audio_signal->note = NULL;
 }
 
 void
@@ -734,6 +753,24 @@ ags_audio_signal_set_property(GObject *gobject,
       audio_signal->stream_current = current;
     }
     break;
+  case PROP_NOTE:
+    {
+      GObject *note;
+
+      note = g_value_get_object(value);
+
+      if(audio_signal->note == note)
+	return;
+
+      if(audio_signal->note != NULL)
+	g_object_unref(audio_signal->note);
+
+      if(note != NULL)
+	g_object_ref(note);
+
+      audio_signal->note = note;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -829,6 +866,9 @@ ags_audio_signal_get_property(GObject *gobject,
       g_value_set_pointer(value, audio_signal->stream_current);
     }
     break;
+  case PROP_NOTE:
+    g_value_set_object(value, audio_signal->note);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -868,20 +908,27 @@ ags_audio_signal_finalize(GObject *gobject)
 
   g_free(ids);
   
-  if(audio_signal->soundcard != NULL)
+  if(audio_signal->soundcard != NULL){
     g_object_unref(audio_signal->soundcard);
-
-  if(audio_signal->recycling != NULL)
+  }
+  
+  if(audio_signal->recycling != NULL){
     g_object_unref(audio_signal->recycling);
-
-  if(audio_signal->recall_id != NULL)
+  }
+  
+  if(audio_signal->recall_id != NULL){
     g_object_unref(audio_signal->recall_id);
-
+  }
+  
   if(audio_signal->stream_beginning != NULL){
     g_list_free_full(audio_signal->stream_beginning,
 		     ags_stream_free);
   }
 
+  if(audio_signal->note != NULL){
+    g_object_unref(audio_signal->note);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }

@@ -256,6 +256,11 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
     soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
   }
 
+  /* reset playback on soundcard */
+  ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
+  ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
+			  &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
+
   /* reset audio thread frequency */
   audio_thread = main_loop;
   
