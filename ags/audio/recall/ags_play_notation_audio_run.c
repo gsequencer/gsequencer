@@ -867,7 +867,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					      (GObject *) recycling,
 					      (GObject *) child_recall_id);
-
+	  g_object_set(audio_signal,
+		       "note\0", note,
+		       NULL);
+	  
 	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
 	    ags_recycling_create_audio_signal_with_defaults(recycling,
 							    audio_signal,

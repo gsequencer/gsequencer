@@ -67,6 +67,8 @@ struct _AgsAudioSignal
   GList *stream_beginning;
   GList *stream_current;
   GList *stream_end;
+
+  GObject *note;
 };
 
 struct _AgsAudioSignalClass
