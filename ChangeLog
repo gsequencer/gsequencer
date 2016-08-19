@@ -1,3 +1,10 @@
+ags (0.7.47)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* modified Makefile.am to use -Wformat and -Werror=format-security
+	* modified Makefile.am to include docs/images/ags_automation_window_dssi_xsynth.png
+	* fixed format security errors
+
 ags (0.7.46)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

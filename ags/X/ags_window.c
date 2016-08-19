@@ -557,7 +557,7 @@ ags_window_show_error(AgsWindow *window,
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_ERROR,
 				  GTK_BUTTONS_OK,
-				  message);
+				  "%s\0", message);
   gtk_widget_show_all(dialog);
 
   g_signal_connect(dialog, "response\0",

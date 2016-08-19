@@ -437,7 +437,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 			      &error);
 
     if(error != NULL){
-      g_warning(error->message);
+      g_warning("%s\0", error->message);
 
       g_error_free(error);
     }
@@ -516,7 +516,7 @@ ags_config_load_from_data(AgsConfig *config,
 			      &error);
 
     if(error != NULL){
-      g_warning(error->message);
+      g_warning("%s\0", error->message);
 
       g_error_free(error);
     }
