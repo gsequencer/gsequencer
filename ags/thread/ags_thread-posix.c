@@ -319,8 +319,8 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::interrupted:
    * @thread: the #AgsThread
    * @sig: the signal number
-   * @time_cycle:
-   * @time_spent:
+   * @time_cycle: the cycles duration
+   * @time_spent: the time spent
    *
    * The ::interrupted signal is invoked as @thread should resume from interrupt.
    *
@@ -990,6 +990,8 @@ ags_thread_lock(AgsThread *thread)
  * appropriate flag and returning %TRUE. Otherwise return %FALSE
  * without lock.
  *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
  * Since: 0.4.0
  */
 gboolean
@@ -1595,6 +1597,8 @@ ags_thread_is_tree_ready(AgsThread *thread,
  * 
  * Retrieve next locked thread above @thread.
  *
+ * Returns: next matching #AgsThread
+ *
  * Since: 0.4.0
  */
 AgsThread*
@@ -1620,6 +1624,8 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
  * @thread: an #AgsThread
  *
  * Retrieve next locked thread neighbooring @thread
+ *
+ * Returns: next matching #AgsThread
  *
  * Since: 0.4.0
  */
@@ -1652,6 +1658,8 @@ ags_thread_next_sibling_locked(AgsThread *thread)
  * @thread: an #AgsThread
  * 
  * Retrieve next locked thread following @thread
+ *
+ * Returns: next matching #AgsThread
  *
  * Since: 0.4.0
  */
@@ -3594,6 +3602,8 @@ ags_thread_is_chaos_tree(AgsThread *thread,
  * Create a new #AgsThread you may provide a #gpointer as @data
  * to your thread routine.
  *
+ * Returns: the new #AgsThread
+ * 
  * Since: 0.4.0
  */
 AgsThread*

@@ -3,6 +3,7 @@ ags (0.7.49)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed data-race of resetting soundcard device and apply presets
 	* improved API reference manual
+	* deleted ags_perform_automation_audio.[ch] and ags_perform_automation_audio_run.[ch] because it is not needed, see AgsRecall::automate
 
 ags (0.7.48)
 
