@@ -133,7 +133,7 @@ struct _AgsMidiBuilderClass
 		       guint tempo);  
   void (*append_time_signature)(AgsMidiBuilder *midi_builder,
 				guint delta_time,
-				guint nn, guint denom, guint dd, guint cc, guint bb);
+				guint nn, guint dd, guint cc, guint bb);
   void (*append_key_signature)(AgsMidiBuilder *midi_builder,
 			       guint sf, guint mi);
   void (*append_sequencer_meta_event)(AgsMidiBuilder *midi_builder,
@@ -244,7 +244,7 @@ void ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
 				   guint tempo);  
 void ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
 					    guint delta_time,
-					    guint nn, guint denom, guint dd, guint cc, guint bb);
+					    guint nn, guint dd, guint cc, guint bb);
 void ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
 					   guint delta_time,
 					   guint sf, guint mi);

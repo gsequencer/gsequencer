@@ -115,7 +115,7 @@ void ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
 					guint tempo);  
 void ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
 						 guint delta_time,
-						 guint nn, guint denom, guint dd, guint cc, guint bb);
+						 guint nn, guint dd, guint cc, guint bb);
 void ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
 						guint delta_time,
 						guint sf, guint mi);
@@ -657,11 +657,11 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::time-signature:
    * @midi_builder: the builder
-   * @nn: nominator
-   * @denom: denominitor
-   * @dd: delta-time
-   * @cc: ticks
-   * @bb: segmentation
+   * @delta_time: delta time
+   * @nn: numerator
+   * @dd: denominator
+   * @cc: ticks per metronome click
+   * @bb: 32nd per quarter note
    *
    * The ::time-signature signal is emited during building of event.
    *
@@ -1479,7 +1479,7 @@ ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
 void
 ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
 					    guint delta_time,
-					    guint nn, guint denom, guint dd, guint cc, guint bb)
+					    guint nn, guint dd, guint cc, guint bb)
 {
   //TODO:JK: implement me
 }
@@ -1488,11 +1488,10 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
  * ags_midi_builder_append_time_signature:
  * @midi_builder: the #AgsMidiBuilder
  * @delta_time: the delta time
- * @nn:
- * @denom:
- * @dd:
- * @cc:
- * @bb:
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: ticks per metronome click
+ * @bb: 32nd per quarter note
  *
  * Appends time signature.
  *
@@ -1501,7 +1500,7 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
 void
 ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
 				       guint delta_time,
-				       guint nn, guint denom, guint dd, guint cc, guint bb)
+				       guint nn, guint dd, guint cc, guint bb)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
@@ -1509,7 +1508,7 @@ ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[TIME_SIGNATURE], 0,
 		delta_time,
-		nn, denom, dd, cc, bb);
+		nn, dd, cc, bb);
   g_object_unref((GObject *) midi_builder);
 }
 
@@ -1525,8 +1524,8 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
  * ags_midi_builder_append_key_signature:
  * @midi_builder: the #AgsMidiBuilder
  * @delta_time: the delta time
- * @sf:
- * @mi:
+ * @sf: key
+ * @mi: mode
  *
  * Appends key signature.
  *

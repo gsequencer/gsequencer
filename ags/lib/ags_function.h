@@ -111,6 +111,6 @@ gboolean ags_function_substitute_values(AgsFunction *function,
 AgsComplex* ags_function_translate_value(AgsFunction *function,
 					 AgsComplex *value);
 
-AgsFunction* ags_function_new();
+AgsFunction* ags_function_new(gchar *source_function);
 
 #endif /*__AGS_FUNCTION_H__*/
