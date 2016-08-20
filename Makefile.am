@@ -46,7 +46,7 @@ EXTRA_DIST += docs/reference/ags
 otherincludedir = $(includedir)/ags
 nobase_include_HEADERS = $(libags_1_0_la_HEADERS_0) $(libags_thread_1_0_la_HEADERS_0) $(libags_server_0_7_la_HEADERS_0) $(libags_audio_1_0_la_HEADERS_0) $(libags_gui_0_7_la_HEADERS_0) $(libgsequencer_0_7_la_HEADERS_0)
 
-docdir = $(datadir)/docs/gsequencer
+docdir = $(datadir)/doc/gsequencer
 doc_DATA = README ags_example.xml
 
 # documentation
@@ -1471,9 +1471,14 @@ install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
+	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
 	cp html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
 	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
+
+install-ags-docs: ags-docs
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
+	cp -rv docs/reference/ags/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
+	ln -s ../../doc/libgsequencer-0.7.x-doc/ags/ $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
