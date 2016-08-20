@@ -125,6 +125,17 @@ void ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_buil
 void ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
 					     guint delta_time,
 					     gchar *text, guint length);
+
+/**
+ * SECTION:ags_midi_builder
+ * @short_description: MIDI buidler
+ * @title: AgsMidiBuilder
+ * @section_id:
+ * @include: ags/audio/midi/ags_midi_builder.h
+ *
+ * The #AgsMidiBuilder lets you create MIDI files using its builder functions.
+ */
+
 enum{
   PROP_0,
   PROP_FILE,

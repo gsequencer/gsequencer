@@ -70,7 +70,7 @@ gchar* ags_accessible_pattern_box_get_localized_name(AtkAction *action,
 
 /**
  * SECTION:ags_pattern_box
- * @short_description: pattern_box sequencer
+ * @short_description: pattern box sequencer
  * @title: AgsPatternBox
  * @section_id:
  * @include: ags/X/machine/ags_pattern_box.h

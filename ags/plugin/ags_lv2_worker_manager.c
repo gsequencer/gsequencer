@@ -33,13 +33,12 @@ void ags_lv2_worker_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_worker_manager
- * @short_description: uri map
+ * @short_description: manage workers
  * @title: AgsLv2WorkerManager
  * @section_id:
- * @include: ags/thread/ags_lv2_worker_manager.h
+ * @include: ags/plugin/ags_lv2_worker_manager.h
  *
- * The #AgsLv2WorkerManager keeps your uri in a hash table where you can lookup your
- * ids.
+ * The #AgsLv2WorkerManager tracks your workers.
  */
 
 static gpointer ags_lv2_worker_manager_parent_class = NULL;

@@ -33,7 +33,7 @@ void ags_lv2_worker_finalize(GObject *gobject);
  * @short_description: task thread
  * @title: AgsLv2Worker
  * @section_id:
- * @include: ags/thread/ags_lv2_worker.h
+ * @include: ags/plugin/ags_lv2_worker.h
  *
  * The #AgsLv2Worker acts as task queue thread.
  */

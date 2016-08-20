@@ -35,7 +35,7 @@ void ags_task_completion_launch_callback(AgsTask *task,
 
 /**
  * SECTION:ags_task_completion
- * @short_description: gui thread
+ * @short_description: task completion
  * @title: AgsTaskCompletion
  * @section_id:
  * @include: ags/thread/ags_task_completion.h

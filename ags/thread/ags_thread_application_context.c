@@ -63,6 +63,16 @@ xmlNode* ags_thread_application_context_write(AgsFile *file, xmlNode *parent, GO
 void ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
 						       AgsThreadApplicationContext *thread_application_context);
 
+/**
+ * SECTION:ags_thread_application_context
+ * @short_description: threaded application context
+ * @title: AgsThreadApplicationContext
+ * @section_id:
+ * @include: ags/thread/ags_thread_application_context.h
+ *
+ * The #AgsThreadApplicationContext provides you multi-threaded functionality.
+ */
+
 static gpointer ags_thread_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_thread_application_context_parent_connectable_interface;
 

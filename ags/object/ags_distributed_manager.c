@@ -23,7 +23,7 @@ void ags_distributed_manager_class_init(AgsDistributedManagerInterface *interfac
 
 /**
  * SECTION:ags_distributed_manager
- * @short_description: unique access to recalls
+ * @short_description: access distributed ressources
  * @title: AgsDistributedManager
  * @section_id:
  * @include: ags/object/ags_distributed_manager.h
