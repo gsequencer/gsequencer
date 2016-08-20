@@ -25,14 +25,14 @@
 
 #include <ags/lib/ags_complex.h>
 
-long ags_midi_util_envelope_to_velocity(AgsComplex *attack,
-					AgsComplex *decay,
-					AgsComplex *sustain,
-					AgsComplex *release,
-					AgsComplex *ratio,
-					guint samplerate,
-					guint start_frame, guint end_frame);
-void ags_midi_util_velocity_to_envelope(long delta_time,
+glong ags_midi_util_envelope_to_velocity(AgsComplex *attack,
+					 AgsComplex *decay,
+					 AgsComplex *sustain,
+					 AgsComplex *release,
+					 AgsComplex *ratio,
+					 guint samplerate,
+					 guint start_frame, guint end_frame);
+void ags_midi_util_velocity_to_envelope(glong delta_time,
 					gboolean is_release,
 					AgsComplex **attack,
 					AgsComplex **decay,
@@ -42,14 +42,14 @@ void ags_midi_util_velocity_to_envelope(long delta_time,
 					guint *samplerate,
 					guint *start_frame, guint *end_frame);
 
-long ags_midi_util_envelope_to_pressure(AgsComplex *attack,
-					AgsComplex *decay,
-					AgsComplex *sustain,
-					AgsComplex *release,
-					AgsComplex *ratio,
-					guint samplerate,
-					guint start_frame, guint end_frame);
-void ags_midi_util_pressure_to_envelope(long delta_time,
+glong ags_midi_util_envelope_to_pressure(AgsComplex *attack,
+					 AgsComplex *decay,
+					 AgsComplex *sustain,
+					 AgsComplex *release,
+					 AgsComplex *ratio,
+					 guint samplerate,
+					 guint start_frame, guint end_frame);
+void ags_midi_util_pressure_to_envelope(glong delta_time,
 					gboolean is_sustain,
 					AgsComplex **attack,
 					AgsComplex **decay,
@@ -59,10 +59,10 @@ void ags_midi_util_pressure_to_envelope(long delta_time,
 					guint *samplerate,
 					guint *start_frame, guint *end_frame);
 
-guint ags_midi_util_delta_time_to_offset(long delta_time,
+guint ags_midi_util_delta_time_to_offset(glong delta_time,
 					 gdouble bpm, gdouble delay_factor,
 					 gdouble *delay, guint *attack);
-long ags_midi_util_offset_to_delta_time(guint x,
-					gdouble bpm, gdouble delay_factor);
+glong ags_midi_util_offset_to_delta_time(guint x,
+					 gdouble bpm, gdouble delay_factor);
 
 #endif /*__AGS_MIDI_UTIL_H__*/

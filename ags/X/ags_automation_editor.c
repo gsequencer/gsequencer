@@ -397,7 +397,7 @@ ags_automation_editor_child_alloc(AgsMachine *machine,
 
 /**
  * ags_automation_editor_reset_port:
- * @automation_toolbar: an #AgsAutomationToolbar
+ * @automation_editor: an #AgsAutomationEditor
  * @machine: the #AgsMachine
  * @channel_type: G_TYPE_NONE, AGS_TYPE_OUTPUT or AGS_TYPE_INPUT
  * @remove_specifier: the specifiers to remove

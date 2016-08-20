@@ -268,7 +268,8 @@ ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
 /**
  * ags_tactable_change_tact:
  * @tactable: an #AgsTactable
- * @tact: the tact
+ * @new_tact: the new tact
+ * @old_tact: the old tact
  *
  * Tact changed.
  * 
@@ -287,7 +288,8 @@ ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_ta
 /**
  * ags_tactable_change_bpm:
  * @tactable: an #AgsTactable
- * @bpm: the bpm
+ * @new_bpm: the new bpm
+ * @old_bpm: the old bpm
  *
  * Bpm changed.
  * 

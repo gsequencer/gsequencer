@@ -990,7 +990,7 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 /**
  * ags_audio_signal_set_buffer_size:
  * @audio_signal: the #AgsAudioSignal
- * @samplerate: the samplerate
+ * @buffer_size: the buffer size
  *
  * Set buffer size.
  *
@@ -1048,7 +1048,7 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
 /**
  * ags_audio_signal_set_format:
  * @audio_signal: the #AgsAudioSignal
- * @samplerate: the samplerate
+ * @format: the format
  *
  * Set format.
  *

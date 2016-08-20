@@ -40,11 +40,11 @@
  * Since: 0.7.2
  */
 guint
-ags_midi_buffer_util_get_varlength_size(long varlength)
+ags_midi_buffer_util_get_varlength_size(glong varlength)
 {
   unsigned char c;
   guint i;
-  long mask;
+  glong mask;
   
   /* retrieve new size */
   i = 0;
@@ -69,10 +69,10 @@ ags_midi_buffer_util_get_varlength_size(long varlength)
  */
 void
 ags_midi_buffer_util_put_varlength(unsigned char *buffer,
-				   long varlength)
+				   glong varlength)
 {
   guint i, j;
-  long mask;
+  glong mask;
 
   i = ags_midi_buffer_util_get_varlength_size(varlength);
   mask = 0xff;
@@ -96,9 +96,9 @@ ags_midi_buffer_util_put_varlength(unsigned char *buffer,
  */
 guint
 ags_midi_buffer_util_get_varlength(unsigned char *buffer,
-				   long *varlength)
+				   glong *varlength)
 {
-  long value;
+  glong value;
   guint i;
   char c;
   
@@ -136,10 +136,10 @@ ags_midi_buffer_util_get_varlength(unsigned char *buffer,
  */
 void
 ags_midi_buffer_util_put_key_on(unsigned char *buffer,
-				long delta_time,
-				long channel,
-				long key,
-				long velocity)
+				glong delta_time,
+				glong channel,
+				glong key,
+				glong velocity)
 {
   guint delta_time_size;
 
@@ -174,12 +174,12 @@ ags_midi_buffer_util_put_key_on(unsigned char *buffer,
  */
 guint
 ags_midi_buffer_util_get_key_on(unsigned char *buffer,
-				long *delta_time,
-				long *channel,
-				long *key,
-				long *velocity)
+				glong *delta_time,
+				glong *channel,
+				glong *key,
+				glong *velocity)
 {
-  long val;
+  glong val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -222,10 +222,10 @@ ags_midi_buffer_util_get_key_on(unsigned char *buffer,
  */
 void
 ags_midi_buffer_util_put_key_off(unsigned char *buffer,
-				 long delta_time,
-				 long channel,
-				 long key,
-				 long velocity)
+				 glong delta_time,
+				 glong channel,
+				 glong key,
+				 glong velocity)
 {
   guint delta_time_size;
 
@@ -260,12 +260,12 @@ ags_midi_buffer_util_put_key_off(unsigned char *buffer,
  */
 guint
 ags_midi_buffer_util_get_key_off(unsigned char *buffer,
-				 long *delta_time,
-				 long *channel,
-				 long *key,
-				 long *velocity)
+				 glong *delta_time,
+				 glong *channel,
+				 glong *key,
+				 glong *velocity)
 {
-  long val;
+  glong val;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -308,10 +308,10 @@ ags_midi_buffer_util_get_key_off(unsigned char *buffer,
  */
 void
 ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
-				      long delta_time,
-				      long channel,
-				      long key,
-				      long pressure)
+				      glong delta_time,
+				      glong channel,
+				      glong key,
+				      glong pressure)
 {
   guint delta_time_size;
 
@@ -346,12 +346,12 @@ ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
  */
 guint
 ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
-				      long *delta_time,
-				      long *channel,
-				      long *key,
-				      long *pressure)
+				      glong *delta_time,
+				      glong *channel,
+				      glong *key,
+				      glong *pressure)
 {
-  long val;
+  glong val;
   guint delta_time_size;
   
   if(buffer == NULL){

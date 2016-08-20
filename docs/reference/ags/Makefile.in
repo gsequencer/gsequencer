@@ -508,35 +508,15 @@ DOC_MAIN_SGML_FILE = $(DOC_MODULE)-docs.xml
 DOC_SOURCE_DIR = $(top_srcdir)/ags
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
-SCANGOBJ_OPTIONS = --type-init-func=gtk_init\(NULL\,NULL\) \
-	--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) \
-	$(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) \
-	$(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) \
-	$(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) \
-	$(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) \
-	$(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) \
-	$(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)" \
-	--ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) \
-	$(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) \
-	$(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) \
-	$(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) \
-	$(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) \
-	$(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) \
-	$(XMLRPC_SERVER_LIBS) $(JACK_LIBS) -L$(top_builddir) \
-	$(top_builddir)/libags-1.0.la \
-	$(top_builddir)/libags_thread-1.0.la \
-	$(top_builddir)/libags_server-0.7.la \
-	$(top_builddir)/libags_audio-1.0.la \
-	$(top_builddir)/libags_gui-0.7.la \
-	$(top_builddir)/libgsequencer-0.7.la"
+SCANGOBJ_OPTIONS = --cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS) -L$(top_builddir) $(top_builddir)/libags-1.0.la $(top_builddir)/libags_thread-1.0.la $(top_builddir)/libags_server-0.7.la $(top_builddir)/libags_audio-1.0.la $(top_builddir)/libags_gui-0.7.la $(top_builddir)/libgsequencer-0.7.la"
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-SCAN_OPTIONS = --rebuild-types --rebuild-sections 
+SCAN_OPTIONS = --rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS = --xml-mode --output-format=xml --name-space=ags
+MKDB_OPTIONS = --xml-mode --output-format=xml --name-space=ags --module=ags
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS = 
@@ -615,9 +595,9 @@ EXTRA_DIST = \
 	$(HTML_IMAGES)			\
 	$(SETUP_FILES)
 
-DOC_STAMPS = setup-build.stamp scan-build.stamp sgml-build.stamp \
+DOC_STAMPS = setup-build.stamp scan-build.stamp tmpl-build.stamp sgml-build.stamp \
 	html-build.stamp pdf-build.stamp \
-	sgml.stamp html.stamp pdf.stamp
+	tmpl.stamp sgml.stamp html.stamp pdf.stamp
 
 SCANOBJ_FILES = \
 	$(DOC_MODULE).args 	 \
@@ -649,6 +629,11 @@ GTK_DOC_V_SCAN_0 = @echo "  DOC   Scanning header files";
 GTK_DOC_V_INTROSPECT = $(GTK_DOC_V_INTROSPECT_$(V))
 GTK_DOC_V_INTROSPECT_ = $(GTK_DOC_V_INTROSPECT_$(AM_DEFAULT_VERBOSITY))
 GTK_DOC_V_INTROSPECT_0 = @echo "  DOC   Introspecting gobjects";
+
+#### templates ####
+GTK_DOC_V_TMPL = $(GTK_DOC_V_TMPL_$(V))
+GTK_DOC_V_TMPL_ = $(GTK_DOC_V_TMPL_$(AM_DEFAULT_VERBOSITY))
+GTK_DOC_V_TMPL_0 = @echo "  DOC   Rebuilding template files";
 
 #### xml ####
 GTK_DOC_V_XML = $(GTK_DOC_V_XML_$(V))
@@ -1064,12 +1049,15 @@ setup-build.stamp:
 	    files=`echo $(SETUP_FILES) $(DOC_MODULE).types`; \
 	    if test "x$$files" != "x" ; then \
 	        for file in $$files ; do \
-	            destdir=`dirname $(abs_builddir)/$$file`; \
+	            destdir=`dirname $(abs_builddir)/$$file` ;\
 	            test -d "$$destdir" || mkdir -p "$$destdir"; \
 	            test -f $(abs_srcdir)/$$file && \
 	                cp -pf $(abs_srcdir)/$$file $(abs_builddir)/$$file || true; \
 	        done; \
 	    fi; \
+	    test -d $(abs_srcdir)/tmpl && \
+	        { cp -pR $(abs_srcdir)/tmpl $(abs_builddir)/; \
+	        chmod -R u+w $(abs_builddir)/tmpl; } \
 	fi
 	$(AM_V_at)touch setup-build.stamp
 
@@ -1099,8 +1087,23 @@ scan-build.stamp: setup-build.stamp $(HFILE_GLOB) $(CFILE_GLOB)
 $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt: scan-build.stamp
 	@true
 
-sgml-build.stamp: setup-build.stamp $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(HFILE_GLOB) $(CFILE_GLOB) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt $(expand_content_files) xml/gtkdocentities.ent
-	$(GTK_DOC_V_XML)_source_dir='' ; \
+tmpl-build.stamp: setup-build.stamp $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(HFILE_GLOB) $(CFILE_GLOB) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt
+	$(GTK_DOC_V_TMPL)gtkdoc-mktmpl --module=$(DOC_MODULE) $(MKTMPL_OPTIONS)
+	$(AM_V_at)if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
+	  if test -w $(abs_srcdir) ; then \
+	    cp -pR $(abs_builddir)/tmpl $(abs_srcdir)/; \
+	  fi \
+	fi
+	$(AM_V_at)touch tmpl-build.stamp
+
+tmpl.stamp: tmpl-build.stamp
+	@true
+
+$(srcdir)/tmpl/*.sgml:
+	@true
+
+sgml-build.stamp: tmpl.stamp $(DOC_MODULE)-sections.txt $(srcdir)/tmpl/*.sgml $(expand_content_files) xml/gtkdocentities.ent
+	-$(GTK_DOC_V_XML)chmod -R u+w $(srcdir) && _source_dir='' ; \
 	for i in $(DOC_SOURCE_DIR) ; do \
 	    _source_dir="$${_source_dir} --source-dir=$$i" ; \
 	done ; \
@@ -1185,6 +1188,7 @@ distclean-local:
 	    $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 	@if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
 	    rm -f $(SETUP_FILES) $(DOC_MODULE).types; \
+	    rm -rf tmpl; \
 	fi
 
 maintainer-clean-local:
@@ -1231,7 +1235,9 @@ uninstall-local:
 @HAVE_GTK_DOC_FALSE@	@false
 
 dist-hook: dist-check-gtkdoc all-gtk-doc dist-hook-local
+	@mkdir $(distdir)/tmpl
 	@mkdir $(distdir)/html
+	@-cp ./tmpl/*.sgml $(distdir)/tmpl
 	@cp ./html/* $(distdir)/html
 	@-cp ./$(DOC_MODULE).pdf $(distdir)/
 	@-cp ./$(DOC_MODULE).types $(distdir)/
