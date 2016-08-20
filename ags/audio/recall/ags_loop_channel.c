@@ -303,7 +303,6 @@ ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 
 /**
  * ags_loop_channel_new:
- * @source: the #AgsChannel as source
  *
  * Creates an #AgsLoopChannel
  *

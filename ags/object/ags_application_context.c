@@ -526,7 +526,7 @@ ags_application_context_find_main_loop(GList *application_context)
  *
  * Since: 0.7.0
  */
-gboolean
+void
 ags_application_context_quit(AgsApplicationContext *application_context)
 {
   //TODO:JK: enhance me
