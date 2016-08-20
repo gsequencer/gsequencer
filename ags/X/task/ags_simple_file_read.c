@@ -30,6 +30,16 @@ void ags_simple_file_read_finalize(GObject *gobject);
 
 void ags_simple_file_read_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_simple_file_read
+ * @short_description: task to read simple file format
+ * @title: AgsConfig
+ * @section_id:
+ * @include: ags/X/task/ags_simple_file_read.h
+ *
+ * #AgsSimpleFileRead lets you read the simple file format as a task.
+ */
+
 static gpointer ags_simple_file_read_parent_class = NULL;
 static AgsConnectableInterface *ags_simple_file_read_parent_connectable_interface;
 
@@ -139,6 +149,16 @@ ags_simple_file_read_launch(AgsTask *task)
   gdk_threads_leave();
 }
 
+/**
+ * ags_simple_file_read_new:
+ * @simple_file: the #AgsSimpleFile
+ *
+ * Create a new task to read the simple file format.
+ *
+ * Returns: the #AgsSimpleFileRead task
+ * 
+ * Since: 0.7.42
+ */
 AgsSimpleFileRead*
 ags_simple_file_read_new(AgsSimpleFile *simple_file)
 {

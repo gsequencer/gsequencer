@@ -215,11 +215,15 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   /**
    * AgsEffectLine::add-effect:
    * @effect_line: the #AgsEffectLine to modify
-   * @control_type_name: 
-   * @filename: 
+   * @control_type_name: the string representation of a #GType
+   * @filename: the effect's filename
    * @effect: the effect's name
    *
    * The ::add-effect signal notifies about added effect.
+   *
+   * Returns: the #GList-struct containing the #AgsPort objects added
+   *
+   * Since: 0.7.42
    */
   effect_line_signals[ADD_EFFECT] =
     g_signal_new("add-effect\0",
@@ -239,6 +243,8 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * @nth: the nth effect
    *
    * The ::remove-effect signal notifies about removed effect.
+   *
+   * Since: 0.7.42
    */
   effect_line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect\0",
@@ -253,9 +259,12 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   /**
    * AgsEffectLine::map-recall:
    * @effect_line: the #AgsEffectLine
-   * @output_pad_start: 
+   * @output_pad_start: the channel's start pad
    *
-   * The ::map-recall should be used to add the effect_line's default recall.
+   * The ::map-recall should be used to add the effect_line's default recall. This function
+   * may call ags_effect_line_find_port().
+   *
+   * Since: 0.7.42
    */
   effect_line_signals[MAP_RECALL] =
     g_signal_new("map-recall\0",
@@ -273,6 +282,10 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * Returns: a #GList with associated ports
    *
    * The ::find-port as recall should be mapped
+   *
+   * Returns: an #GList containing all related #AgsPort
+   *
+   * Since: 0.7.8
    */
   effect_line_signals[FIND_PORT] =
     g_signal_new("find-port\0",
@@ -1013,6 +1026,19 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   return(port);
 }
 
+/**
+ * ags_effect_line_add_effect:
+ * @effect_line: the #AgsEffectLine to modify
+ * @control_type_name: the string representation of a #GType
+ * @filename: the effect's filename
+ * @effect: the effect's name
+ *
+ * Add an effect by its filename and effect specifier.
+ *
+ * Returns: the #GList-struct containing the #AgsPort objects added
+ *
+ * Since: 0.7.42
+ */
 GList*
 ags_effect_line_add_effect(AgsEffectLine *effect_line,
 			   GList *control_type_name,
@@ -1157,6 +1183,15 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 				   remove_specifier);
 }
 
+/**
+ * ags_effect_line_remove_effect:
+ * @effect_line: the #AgsEffectLine to modify
+ * @nth: the nth effect to remove
+ *
+ * Remove an effect by its position.
+ *
+ * Since: 0.7.42
+ */
 void
 ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 			      guint nth)
@@ -1186,9 +1221,12 @@ ags_effect_line_real_map_recall(AgsEffectLine *effect_line,
 /**
  * ags_effect_line_map_recall:
  * @effect_line: the #AgsEffectLine to add its default recall.
- * @output_pad_start: 
+ * @output_pad_start: the start channel's index
  *
- * You may want the @effect_line to add its default recall.
+ * You may want the @effect_line to add its default recall. This function
+ * may call ags_effect_line_find_port().
+ *
+ * Since: 0.7.42
  */
 void
 ags_effect_line_map_recall(AgsEffectLine *effect_line,
@@ -1243,9 +1281,10 @@ ags_effect_line_real_find_port(AgsEffectLine *effect_line)
 /**
  * ags_effect_line_find_port:
  * @effect_line: the #AgsEffectLine
- * Returns: an #GList containing all related #AgsPort
  *
  * Lookup ports of associated recalls.
+ *
+ * Returns: an #GList containing all related #AgsPort
  *
  * Since: 0.7.8
  */

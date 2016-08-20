@@ -333,6 +333,11 @@ ags_apply_presets_audio_signal(AgsApplyPresets *apply_presets,
 
 /**
  * ags_apply_presets_new:
+ * @scope: a #GObject
+ * @pcm_channels: pcm channels
+ * @samplerate: samplerate
+ * @buffer_size: buffer size
+ * @format: format
  *
  * Creates an #AgsApplyPresets.
  *

@@ -242,6 +242,8 @@ ags_line_class_init(AgsLineClass *line)
    * @channel: the #AgsChannel to set
    *
    * The ::set-channel signal notifies about changed channel.
+   *
+   * Since: 0.4.3
    */
   line_signals[SET_CHANNEL] =
     g_signal_new("set-channel\0",
@@ -259,6 +261,8 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::group-changed signal notifies about changed grouping. This
    * normally happens as toggling group button in #AgsPad or #AgsLine.
+   *
+   * Since: 0.4.3
    */
   line_signals[GROUP_CHANGED] =
     g_signal_new("group-changed\0",
@@ -272,11 +276,15 @@ ags_line_class_init(AgsLineClass *line)
   /**
    * AgsLine::add-effect:
    * @line: the #AgsLine to modify
-   * @control_type_name: 
-   * @filename: 
+   * @control_type_name: the control #GType string representation
+   * @filename: the effect's filename
    * @effect: the effect's name
    *
    * The ::add-effect signal notifies about added effect.
+   *
+   * Returns: a #GList-struct containing new #AgsPort objects
+   *
+   * Since: 0.4.3
    */
   line_signals[ADD_EFFECT] =
     g_signal_new("add-effect\0",
@@ -296,6 +304,8 @@ ags_line_class_init(AgsLineClass *line)
    * @nth: the nth effect
    *
    * The ::remove-effect signal notifies about removed effect.
+   *
+   * Since: 0.4.3
    */
   line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect\0",
@@ -310,9 +320,11 @@ ags_line_class_init(AgsLineClass *line)
   /**
    * AgsLine::map-recall:
    * @line: the #AgsLine
-   * @output_pad_start: 
+   * @output_pad_start: the channels start pad
    *
    * The ::map-recall as recalls should be mapped.
+   *
+   * Since: 0.4.3
    */
   line_signals[MAP_RECALL] =
     g_signal_new("map-recall\0",
@@ -327,9 +339,12 @@ ags_line_class_init(AgsLineClass *line)
   /**
    * AgsLine::find-port:
    * @line: the #AgsLine 
-   * Returns: a #GList with associated ports
    *
    * The ::find-port retrieves all associated ports.
+   * 
+   * Returns: a #GList with associated ports
+   *
+   * Since: 0.4.3
    */
   line_signals[FIND_PORT] =
     g_signal_new("find-port\0",
@@ -1179,11 +1194,13 @@ ags_line_real_add_effect(AgsLine *line,
 /**
  * ags_line_add_effect:
  * @line: the #AgsLine
- * @control_type_name: the control type name
+ * @control_type_name: the control #GType string representation
  * @filename: the filename of the plugin
  * @effect: the effect's name
  *
  * Add a line member.
+ *
+ * Returns: a #GList-struct containing new #AgsPort objects
  *
  * Since: 0.4.3 
  */
@@ -1371,8 +1388,6 @@ ags_line_real_map_recall(AgsLine *line,
  * ags_line_map_recall:
  * @line: an #AgsLine
  * @output_pad_start: the start pad
- * 
- * Returns: an #GList containing all related #AgsPort
  *
  * Is emitted as group is changed.
  *
@@ -1458,10 +1473,12 @@ ags_line_find_port(AgsLine *line)
 
 /**
  * ags_line_find_next_grouped:
- * @line: an #AgsLine
+ * @line: a #GList-struct of #AgsLine objects
  *
  * Retrieve next grouped line.
  *
+ * Returns: next matching #GList-struct containing #AgsLine
+ * 
  * Since: 0.4
  */
 GList*
