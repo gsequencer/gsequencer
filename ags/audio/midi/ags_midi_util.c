@@ -46,7 +46,7 @@
  *
  * Since: 0.7.2
  */
-long
+glong
 ags_midi_util_envelope_to_velocity(AgsComplex *attack,
 				   AgsComplex *decay,
 				   AgsComplex *sustain,
@@ -55,7 +55,7 @@ ags_midi_util_envelope_to_velocity(AgsComplex *attack,
 				   guint samplerate,
 				   guint start_frame, guint end_frame)
 {
-  long velocity;
+  glong velocity;
 
   velocity = 127;
 
@@ -82,7 +82,7 @@ ags_midi_util_envelope_to_velocity(AgsComplex *attack,
  * Since: 0.7.2
  */
 void
-ags_midi_util_velocity_to_envelope(long delta_time,
+ags_midi_util_velocity_to_envelope(glong delta_time,
 				   gboolean is_release,
 				   AgsComplex **attack,
 				   AgsComplex **decay,
@@ -112,7 +112,7 @@ ags_midi_util_velocity_to_envelope(long delta_time,
  *
  * Since: 0.7.2
  */
-long
+glong
 ags_midi_util_envelope_to_pressure(AgsComplex *attack,
 				   AgsComplex *decay,
 				   AgsComplex *sustain,
@@ -121,7 +121,7 @@ ags_midi_util_envelope_to_pressure(AgsComplex *attack,
 				   guint samplerate,
 				   guint start_frame, guint end_frame)
 {
-  long pressure;
+  glong pressure;
 
   pressure = 127;
 
@@ -148,7 +148,7 @@ ags_midi_util_envelope_to_pressure(AgsComplex *attack,
  * Since: 0.7.2
  */
 void
-ags_midi_util_pressure_to_envelope(long delta_time,
+ags_midi_util_pressure_to_envelope(glong delta_time,
 				   gboolean is_sustain,
 				   AgsComplex **attack,
 				   AgsComplex **decay,
@@ -176,7 +176,7 @@ ags_midi_util_pressure_to_envelope(long delta_time,
  * Since: 0.7.2
  */
 guint
-ags_midi_util_delta_time_to_offset(long delta_time,
+ags_midi_util_delta_time_to_offset(glong delta_time,
 				   gdouble bpm, gdouble delay_factor,
 				   gdouble *delay, guint *attack)
 {
@@ -201,7 +201,7 @@ ags_midi_util_delta_time_to_offset(long delta_time,
  *
  * Since: 0.7.2
  */
-long
+glong
 ags_midi_util_offset_to_delta_time(guint x,
 				   gdouble bpm, gdouble delay_factor)
 {

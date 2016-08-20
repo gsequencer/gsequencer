@@ -25,46 +25,46 @@
 
 #include <stdlib.h>
 
-guint ags_midi_buffer_util_get_varlength_size(long varlength);
+guint ags_midi_buffer_util_get_varlength_size(glong varlength);
 void ags_midi_buffer_util_put_varlength(unsigned char *buffer,
-					long varlength);
+					glong varlength);
 guint ags_midi_buffer_util_get_varlength(unsigned char *buffer,
-					 long *varlength);
+					 glong *varlength);
 
 void ags_midi_buffer_util_put_key_on(unsigned char *buffer,
-				     long delta_time,
-				     long channel,
-				     long key,
-				     long velocity);
+				     glong delta_time,
+				     glong channel,
+				     glong key,
+				     glong velocity);
 
 guint ags_midi_buffer_util_get_key_on(unsigned char *buffer,
-				      long *delta_time,
-				      long *channel,
-				      long *key,
-				      long *velocity);
+				      glong *delta_time,
+				      glong *channel,
+				      glong *key,
+				      glong *velocity);
 
 void ags_midi_buffer_util_put_key_off(unsigned char *buffer,
-				      long delta_time,
-				      long channel,
-				      long key,
-				      long velocity);
+				      glong delta_time,
+				      glong channel,
+				      glong key,
+				      glong velocity);
 
 guint ags_midi_buffer_util_get_key_off(unsigned char *buffer,
-				       long *delta_time,
-				       long *channel,
-				       long *key,
-				       long *velocity);
+				       glong *delta_time,
+				       glong *channel,
+				       glong *key,
+				       glong *velocity);
 
 void ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
-					   long delta_time,
-					   long channel,
-					   long key,
-					   long pressure);
+					   glong delta_time,
+					   glong channel,
+					   glong key,
+					   glong pressure);
 
 guint ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
-					    long *delta_time,
-					    long *channel,
-					    long *key,
-					    long *pressure);
+					    glong *delta_time,
+					    glong *channel,
+					    glong *key,
+					    glong *pressure);
 
 #endif /*__AGS_MIDI_BUFFER_UTIL_H__*/

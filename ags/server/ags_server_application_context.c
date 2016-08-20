@@ -85,7 +85,7 @@ ags_server_application_context_class_init(AgsServerApplicationContextClass *serv
   GObjectClass *gobject;
   AgsApplicationContextClass *application_context;
 
-  ags_server_application_context_parent_class = g_type_class_peek_parent(ags_server_application_context);
+  ags_server_application_context_parent_class = g_type_class_peek_parent(server_application_context);
 
   /* GObjectClass */
   gobject = (GObjectClass *) server_application_context;

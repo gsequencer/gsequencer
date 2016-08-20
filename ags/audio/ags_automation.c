@@ -1719,7 +1719,7 @@ ags_automation_get_specifier_unique(GList *automation)
 
 /**
  * ags_automation_find_specifier:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: a #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
  *
  * Find port specifier.
@@ -1745,10 +1745,10 @@ ags_automation_find_specifier(GList *automation,
 }
 
 /**
- * ags_automation_find_specifier:
+ * ags_automation_find_specifier_with_type_and_line:
  * @automation: a #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
- * @channel_type: the channel type
+ * @channel_type: the channel #GType
  * @line: the line
  *
  * Find port specifier with channel type and line.
