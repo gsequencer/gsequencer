@@ -19,6 +19,7 @@
 
 #include <ags/server/ags_server_application_context.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
 void ags_server_application_context_class_init(AgsServerApplicationContextClass *server_application_context);
