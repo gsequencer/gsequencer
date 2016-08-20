@@ -3,6 +3,7 @@ ags (0.7.48)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed restart soundcard playback as doing ags_apply_presets_launch()
 	* implemented AgsNote in AgsAudioSignal
+	* improved gtk-doc related files
 
 ags (0.7.47)
 
