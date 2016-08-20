@@ -1477,6 +1477,7 @@ install-html: html
 
 install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	cp -rv docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
 	ln -s ../../doc/libgsequencer-0.7.x-doc/ags/ $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
