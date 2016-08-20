@@ -23,6 +23,16 @@
 
 void ags_sound_provider_class_init(AgsSoundProviderInterface *interface);
 
+/**
+ * SECTION:ags_sound_provider
+ * @short_description: provide accoustics
+ * @title: AgsSoundProvider
+ * @section_id:
+ * @include: ags/thread/ags_sound_provider.h
+ *
+ * The #AgsSoundProvider provides you the advanced audio capabilities.
+ */
+
 GType
 ags_sound_provider_get_type()
 {
@@ -45,6 +55,15 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_sound_provider_set_soundcard:
+ * @sound_provider: the #AgsSoundProvider
+ * @soundcard: a #GList-struc containing #AgsSoundcard
+ * 
+ * Set soundcards.
+ *
+ * Since: 0.7.4
+ */
 void
 ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
 				 GList *soundcard)
@@ -59,6 +78,16 @@ ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
 					  soundcard);
 }
 
+/**
+ * ags_sound_provider_get_soundcard:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get soundcards.
+ *
+ * Returns: a #GList-struct containing #AgsSoundcard
+ * 
+ * Since: 0.7.4
+ */
 GList*
 ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
 {
@@ -71,6 +100,15 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
   return(sound_provider_interface->get_soundcard(sound_provider));
 }
 
+/**
+ * ags_sound_provider_set_sequencer:
+ * @sound_provider: the #AgsSoundProvider
+ * @sequencer: a #GList-struc containing #AgsSequencer
+ * 
+ * Set sequencers.
+ *
+ * Since: 0.7.4
+ */
 void
 ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
 				 GList *sequencer)
@@ -85,6 +123,16 @@ ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
 					  sequencer);
 }
 
+/**
+ * ags_sound_provider_get_sequencer:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get sequencers.
+ *
+ * Returns: a #GList-struct containing #AgsSequencer
+ * 
+ * Since: 0.7.4
+ */
 GList*
 ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
 {
@@ -97,6 +145,15 @@ ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
   return(sound_provider_interface->get_sequencer(sound_provider));
 }
 
+/**
+ * ags_sound_provider_set_distributed_manager:
+ * @sound_provider: the #AgsSoundProvider
+ * @distributed_manager: a #GList-struct containing #AgsDistributedManager
+ *
+ * Set distributed manager.
+ * 
+ * Since: 0.7.4
+ */
 void
 ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
 					   GList *distributed_manager)
@@ -111,6 +168,16 @@ ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
 						    distributed_manager);
 }
 
+/**
+ * ags_sound_provider_get_distributed_manager:
+ * @sound_provider: the #AgsSoundProvider
+ *
+ * Set distributed manager.
+ * 
+ * Returns: a #GList-struct containing #AgsDistributedManager
+ *
+ * Since: 0.7.4
+ */
 GList*
 ags_sound_provider_get_distributed_manager(AgsSoundProvider *sound_provider)
 {

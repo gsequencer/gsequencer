@@ -427,6 +427,8 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
+  GList *tasks;
+  
   char *device, *str;
   int card_num;
   guint channels, channels_min, channels_max;
@@ -542,23 +544,26 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   g_free(str);  
 
   /* create set output device task */
+  tasks = NULL;
+  
   set_output_device = ags_set_output_device_new(window->soundcard,
 						str);
-
-  /* append AgsSetOutputDevice */
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(set_output_device));
-
+  tasks = g_list_prepend(tasks,
+			 set_output_device);
+  
   /* create set output device task */
   apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
 					channels,
 					rate,
 					buffer_size,
 					format);
-
-  /* append AgsSetOutputDevice */
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(apply_presets));
+  tasks = g_list_prepend(tasks,
+			 apply_presets);
+  tasks = g_list_reverse(tasks);
+  
+  /* append AgsSetOutputDevice and AgsSetOutputDevice */
+  ags_task_thread_append_tasks(task_thread,
+			       tasks);
 
 }
 

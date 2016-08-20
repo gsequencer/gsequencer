@@ -30,13 +30,12 @@ void ags_lv2_log_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_log_manager
- * @short_description: uri map
+ * @short_description: allow lv2 plugins to log
  * @title: AgsLv2LogManager
  * @section_id:
- * @include: ags/thread/ags_lv2_log_manager.h
+ * @include: ags/plugin/ags_lv2_log_manager.h
  *
- * The #AgsLv2LogManager keeps your uri in a hash table where you can lookup your
- * ids.
+ * The #AgsLv2LogManager handles console IO.
  */
 
 static gpointer ags_lv2_log_manager_parent_class = NULL;
@@ -125,6 +124,17 @@ ags_lv2_log_manager_finalize(GObject *gobject)
   /* empty */
 }
 
+/**
+ * ags_lv2_log_manager_printf:
+ * @handle: the log handle
+ * @type: LV2 URID
+ * @fmt: format
+ * @...: %NULL terminated variable arguments
+ * 
+ * Print formatted.
+ * 
+ * Returns: 0
+ */
 int
 ags_lv2_log_manager_printf(LV2_Log_Handle handle,
 			   LV2_URID type,
@@ -142,6 +152,19 @@ ags_lv2_log_manager_printf(LV2_Log_Handle handle,
   return(retval);
 }
 
+/**
+ * ags_lv2_log_manager_vprintf:
+ * @handle: the log handle
+ * @type: LV2 URID
+ * @fmt: format
+ * @ap: argument pointer
+ *
+ * Variadict print formatted.
+ *
+ * Returns: 0
+ *
+ * Since: 0.7.7
+ */
 int
 ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
 			    LV2_URID type,

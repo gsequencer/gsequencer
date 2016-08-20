@@ -73,7 +73,7 @@ xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_
  * @short_description: the menu bar.
  * @title: AgsMidiParser
  * @section_id:
- * @include: ags/X/ags_midi_parser.h
+ * @include: ags/audio/midi/ags_midi_parser.h
  *
  * #AgsMidiParser reads your midi parsers.
  */

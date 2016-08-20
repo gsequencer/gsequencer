@@ -36,7 +36,7 @@ void ags_midi_file_reader_finalize(GObject *gobject);
  * @short_description: the MIDI file reader
  * @title: AgsMidiFileReader
  * @section_id:
- * @include: ags/X/ags_midi_file_reader.h
+ * @include: ags/audio/midi/ags_midi_file_reader.h
  *
  * #AgsMidiFileReader reads your midi files.
  */

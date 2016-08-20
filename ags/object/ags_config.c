@@ -167,6 +167,8 @@ ags_config_class_init(AgsConfigClass *config)
    * @config: the object to resolve
    *
    * The ::load-defaults signal notifies about loading defaults
+   *
+   * Since: 0.4.2
    */
   config_signals[LOAD_DEFAULTS] =
     g_signal_new("load-defaults\0",
@@ -185,6 +187,8 @@ ags_config_class_init(AgsConfigClass *config)
    * @value: the value to apply
    *
    * The ::set-value signal notifies about value been setting.
+   *
+   * Since: 0.4.2
    */
   config_signals[SET_VALUE] =
     g_signal_new("set-value\0",
@@ -204,6 +208,8 @@ ags_config_class_init(AgsConfigClass *config)
    * Returns: the value
    *
    * The ::get-value signal notifies about value been getting.
+   *
+   * Since: 0.4.2
    */
   config_signals[GET_VALUE] =
     g_signal_new("get-value\0",

@@ -34,6 +34,16 @@ void ags_single_thread_stop(AgsThread *thread);
 
 void* ags_single_thread_loop(void *ptr);
 
+/**
+ * SECTION:ags_single_thread
+ * @short_description: single threaded environment
+ * @title: AgsSingleThread
+ * @section_id:
+ * @include: ags/thread/ags_single_thread.h
+ *
+ * The #AgsSingleThread runs the application within one single thread.
+ */
+
 static gpointer ags_single_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_single_thread_parent_connectable_interface;
 

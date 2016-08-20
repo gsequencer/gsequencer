@@ -32,13 +32,12 @@ void ags_lv2_event_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_event_manager
- * @short_description: uri map
+ * @short_description: event manager
  * @title: AgsLv2EventManager
  * @section_id:
- * @include: ags/thread/ags_lv2_event_manager.h
+ * @include: ags/plugin/ags_lv2_event_manager.h
  *
- * The #AgsLv2EventManager keeps your uri in a hash table where you can lookup your
- * ids.
+ * The #AgsLv2EventManager allows you to do memory management with LV2_Event's.
  */
 
 static gpointer ags_lv2_event_manager_parent_class = NULL;
@@ -131,8 +130,8 @@ uint32_t
 ags_lv2_event_manager_lv2_event_ref(LV2_Event_Callback_Data callback_data,
 				    LV2_Event *event)
 {
-  /* empty */
-
+  //TODO:JK: implement me
+  
   return(1);
 }
 
@@ -140,8 +139,8 @@ uint32_t
 ags_lv2_event_manager_lv2_event_unref(LV2_Event_Callback_Data callback_data,
 				      LV2_Event *event)
 {
-  /* empty */
-
+  //TODO:JK: implement me
+  
   return(1);
 }
 

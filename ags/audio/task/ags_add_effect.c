@@ -37,7 +37,7 @@ void ags_add_effect_launch(AgsTask *task);
  * @section_id:
  * @include: ags/audio/task/ags_add_effect.h
  *
- * The #AgsAddEffect task adds #AgsEffect to context.
+ * The #AgsAddEffect task adds the specified effect to #AgsChannel.
  */
 
 static gpointer ags_add_effect_parent_class = NULL;

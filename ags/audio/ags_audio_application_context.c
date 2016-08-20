@@ -90,6 +90,16 @@ xmlNode* ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GOb
 void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
 						      AgsAudioApplicationContext *audio_application_context);
 
+/**
+ * SECTION:ags_audio_application_context
+ * @short_description: audio application context
+ * @title: AgsAudioApplicationContext
+ * @section_id:
+ * @include: ags/audio/ags_audio_application_context.h
+ *
+ * The #AgsAudioApplicationContext provides you sound processing, output and capturing.
+ */
+
 static gpointer ags_audio_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_audio_application_context_parent_connectable_interface;
 

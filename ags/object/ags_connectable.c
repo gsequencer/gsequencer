@@ -23,7 +23,7 @@ void ags_connectable_base_init(AgsConnectableInterface *interface);
 
 /**
  * SECTION:ags_connectable
- * @short_description: unique access to recalls
+ * @short_description: unique access to ojbects
  * @title: AgsConnectable
  * @include: ags/object/ags_connectable.h
  *

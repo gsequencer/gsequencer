@@ -21,7 +21,7 @@
   <bookinfo>
     <title>Advanced Gtk+ Sequencer Reference Manual</title>
     <releaseinfo>
-      for Advanced Gtk+ Sequencer v0.7.48.
+      for Advanced Gtk+ Sequencer v0.7.49.
       The latest version of this documentation can be found on-line at
       <ulink role="online-location" url="http://gsequencer.org/api/ags/index.html">http://gsequencer.org/api/ags/</ulink>.
     </releaseinfo>
@@ -123,6 +123,7 @@
 
     <xi:include href="xml/ags_autosave_thread.xml"/>
     <xi:include href="xml/ags_concurrency_provider.xml"/>
+    <xi:include href="xml/ags_generic_main_loop.xml"/>
     <xi:include href="xml/ags_history.xml"/>
     <xi:include href="xml/ags_iterator_thread.xml"/>
     <xi:include href="xml/ags_mutex_manager.xml"/>
@@ -266,8 +267,10 @@
       <xi:include href="xml/ags_envelope_recycling.xml"/>
       <xi:include href="xml/ags_loop_channel.xml"/>
       <xi:include href="xml/ags_loop_channel_run.xml"/>
+      <xi:include href="xml/ags_peak_audio_signal.xml"/>
       <xi:include href="xml/ags_peak_channel.xml"/>
       <xi:include href="xml/ags_peak_channel_run.xml"/>
+      <xi:include href="xml/ags_peak_recycling.xml"/>
       <xi:include href="xml/ags_volume_audio_signal.xml"/>
       <xi:include href="xml/ags_volume_channel.xml"/>
       <xi:include href="xml/ags_volume_channel_run.xml"/>
@@ -297,6 +300,7 @@
 
       <xi:include href="xml/ags_add_audio.xml"/>
       <xi:include href="xml/ags_add_audio_signal.xml"/>
+      <xi:include href="xml/ags_add_effect.xml"/>
       <xi:include href="xml/ags_add_line_member.xml"/>
       <xi:include href="xml/ags_add_note.xml"/>
       <xi:include href="xml/ags_add_point_to_selection.xml"/>
@@ -448,6 +452,8 @@
       <xi:include href="xml/ags_toggle_led.xml"/>
       <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
       <xi:include href="xml/ags_update_bulk_member.xml"/>
+      <xi:include href="xml/ags_simple_file_read.xml"/>
+      <xi:include href="xml/ags_simple_file_write.xml"/>
     </chapter>
 
     <chapter id="import">
