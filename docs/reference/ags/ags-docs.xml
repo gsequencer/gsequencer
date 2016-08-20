@@ -189,7 +189,8 @@
     <xi:include href="xml/ags_sound_provider.xml"/>
     <xi:include href="xml/ags_timestamp.xml"/>
     <xi:include href="xml/ags_timestamp_factory.xml"/>
-    <xi:include href="xml/ags_synths.xml"/>
+    <xi:include href="xml/ags_synth_generator.xml"/>
+    <xi:include href="xml/ags_synth_util.xml"/>
 
     <chapter id="audio-thread">
       <title>Audio thread - multi-threaded audio</title>

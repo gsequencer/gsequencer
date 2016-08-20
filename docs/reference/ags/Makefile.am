@@ -73,12 +73,12 @@ AM_CPPFLAGS = \
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS=
 GTKDOC_LIBS = \
-	-lags-1.0 \
-	-lags_thread-1.0 \
-	-lags_server-0.7 \
-	-lags_audio-1.0 \
-	-lags_gui-0.7 \
-	-lgsequencer-0.7
+	$(top_builddir)/libags-1.0.la \
+	$(top_builddir)/libags_thread-1.0.la \
+	$(top_builddir)/libags_server-0.7.la \
+	$(top_builddir)/libags_audio-1.0.la \
+	$(top_builddir)/libags_gui-0.7.la \
+	$(top_builddir)/libgsequencer-0.7.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make

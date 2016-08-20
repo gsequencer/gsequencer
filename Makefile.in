@@ -1193,7 +1193,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = $(datadir)/docs/gsequencer
+docdir = $(datadir)/doc/gsequencer
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -8942,9 +8942,14 @@ install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
+	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
 	cp html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
 	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
+
+install-ags-docs: ags-docs
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
+	cp -rv docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
+	ln -s ../../doc/libgsequencer-0.7.x-doc/ags/ $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
