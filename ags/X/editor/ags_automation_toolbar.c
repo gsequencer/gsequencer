@@ -629,6 +629,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
  *
  * Create a new #AgsAutomationToolbar.
  *
+ * Returns: a new #AgsAutomationToolbar
+ *
  * Since: 0.4.3
  */
 AgsAutomationToolbar*

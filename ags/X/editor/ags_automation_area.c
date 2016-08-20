@@ -889,6 +889,8 @@ ags_automation_area_paint(AgsAutomationArea *automation_area,
  *
  * Create a new #AgsAutomationArea.
  *
+ * Returns: a new #AgsAutomationArea
+ *
  * Since: 0.4.3
  */
 AgsAutomationArea*

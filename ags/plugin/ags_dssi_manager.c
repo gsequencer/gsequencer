@@ -41,7 +41,7 @@ void ags_dssi_manager_finalize(GObject *gobject);
  * @short_description: Singleton pattern to organize DSSI
  * @title: AgsDssiManager
  * @section_id:
- * @include: ags/object/ags_dssi_manager.h
+ * @include: ags/plugin/ags_dssi_manager.h
  *
  * The #AgsDssiManager loads/unloads DSSI plugins.
  */
@@ -371,7 +371,6 @@ ags_dssi_manager_get_instance()
 
 /**
  * ags_dssi_manager_new:
- * @devout: an #AgsDevout
  *
  * Creates an #AgsDssiManager
  *

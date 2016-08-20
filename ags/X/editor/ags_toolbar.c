@@ -258,6 +258,8 @@ ags_toolbar_show(GtkWidget *widget)
  *
  * Create a new #AgsToolbar.
  *
+ * Returns: a new #AgsToolbar
+ *
  * Since: 0.3
  */
 AgsToolbar*

@@ -194,6 +194,8 @@ ags_vindicator_draw(AgsVIndicator *indicator)
  *
  * Creates an #AgsVIndicator.
  *
+ * Returns: a new #AgsVIndicator
+ *
  * Since: 0.4
  */
 AgsVIndicator*

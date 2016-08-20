@@ -117,6 +117,13 @@ ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_bu
   gobject->finalize = ags_machine_radio_button_finalize;
 
   /* properties */
+  /**
+   * AgsMachineRadioButton:machine:
+   *
+   * The assigned #AgsMachine
+   * 
+   * Since: 0.4.3
+   */
   param_spec = g_param_spec_object("machine\0",
 				   "assigned machine\0",
 				   "The machine it is assigned to\0",
@@ -229,6 +236,8 @@ ags_machine_radio_button_finalize(GObject *gobject)
  * ags_machine_radio_button_new:
  *
  * Create a new #AgsMachineRadioButton.
+ *
+ * Returns: a new #AgsMachineRadioButton
  *
  * Since: 0.4
  */

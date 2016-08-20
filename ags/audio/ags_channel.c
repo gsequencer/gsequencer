@@ -5846,6 +5846,8 @@ ags_channel_recycling_changed(AgsChannel *channel,
  * Make the tree ready for a new #AgsPlayback. Only for asynchronous use, take a look at #AgsInitChannel or
  * #AgsInitAudio task.
  *
+ * Returns: a new #AgsRecallID
+ *
  * Since: 0.3
  */
 AgsRecallID*

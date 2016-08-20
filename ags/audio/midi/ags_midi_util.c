@@ -73,7 +73,7 @@ ags_midi_util_envelope_to_velocity(AgsComplex *attack,
  * @sustain: sustain
  * @release: release
  * @ratio: ratio
- * @samplerate samplerate
+ * @samplerate: samplerate
  * @start_frame: start frame
  * @end_frame: end frame
  *

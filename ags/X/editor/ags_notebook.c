@@ -570,6 +570,8 @@ ags_notebook_remove_child(AgsNotebook *notebook,
  *
  * Create a new #AgsNotebook.
  *
+ * Returns: a new #AgsNotebook
+ *
  * Since: 0.4
  */
 AgsNotebook*

@@ -282,8 +282,6 @@ ags_recycling_context_finalize(GObject *gobject)
  *
  * Replaces one recycling entry in a context.
  *
- * Returns: the new recycling context
- *
  * Since: 0.4
  */
 void
@@ -602,6 +600,8 @@ ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context
  * @new_last_recycling: the last recycling to insert
  *
  * Modify recycling of context.
+ *
+ * Returns: the new #AgsRecyclingContext
  *
  * Since: 0.4
  */

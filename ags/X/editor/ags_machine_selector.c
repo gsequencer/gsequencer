@@ -111,6 +111,15 @@ ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector)
   /* AgsMachineSelectorClass */
   machine_selector->changed = NULL;
 
+  /**
+   * AgsMachineSelector::changed:
+   * @machine_selector: the #AgsMachineSelector
+   * @machine: the changed #AgsMachine
+   *
+   * The ::changed signal notifies changed #AgsMachine.
+   *
+   * Since: 0.4.2
+   */
   machine_selector_signals[CHANGED] =
     g_signal_new("changed\0",
                  G_TYPE_FROM_CLASS(machine_selector),
@@ -331,6 +340,8 @@ ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *m
  *
  * Create a new #AgsMachineSelector.
  *
+ * Returns: a new #AgsMachineSelector
+ *
  * Since: 0.4
  */
 AgsMachineSelector*
@@ -349,6 +360,8 @@ ags_machine_selector_new()
  * @machine_selector: the #AgsMachineSelector
  *
  * Create a new #AgsMachineSelectorPopup.
+ *
+ * Returns: a new #GtkMenu suitable for #AgsMachineSelector
  *
  * Since: 0.4
  */

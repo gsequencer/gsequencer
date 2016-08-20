@@ -372,6 +372,8 @@ ags_meter_paint(AgsMeter *meter)
  *
  * Create a new #AgsMeter.
  *
+ * Returns: a new #AgsMeter
+ *
  * Since: 0.4
  */
 AgsMeter*

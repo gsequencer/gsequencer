@@ -964,6 +964,8 @@ ags_automation_edit_remove_area(AgsAutomationEdit *automation_edit,
  *
  * Create a new #AgsAutomationEdit.
  *
+ * Returns: a new #AgsAutomationEdit
+ *
  * Since: 0.4.3
  */
 AgsAutomationEdit*
