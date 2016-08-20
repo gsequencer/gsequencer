@@ -27,6 +27,8 @@
  *
  * Translate soundcard format to audio buffer util format.
  *
+ * Returns: the converted format
+ *
  * Since: 0.7.45
  */
 guint
@@ -58,6 +60,8 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
  * @source_format: the source buffer format
  *
  * Get copy mode for given destination and source format.
+ *
+ * Returns: the desired copy mode
  *
  * Since: 0.7.45
  */

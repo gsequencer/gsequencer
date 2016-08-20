@@ -1585,6 +1585,8 @@ ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
  *
  * Create a new #AgsNoteEdit.
  *
+ * Returns: a new #AgsNoteEdit
+ * 
  * Since: 0.4
  */
 AgsNoteEdit*

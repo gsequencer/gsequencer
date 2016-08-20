@@ -1481,6 +1481,8 @@ ags_machine_get_possible_links(AgsMachine *machine)
  *
  * Find the specified by @name machine.
  *
+ * Returns: the matching #AgsMachine, or %NULL
+ *
  * Since: 0.3
  */
 AgsMachine*
@@ -1657,6 +1659,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
  *
  * Creates a new machine file chooser dialog in order to
  * open audio files.
+ *
+ * Returns: a new #GtkFileChooserDialog
  *
  * Since: 0.4
  */

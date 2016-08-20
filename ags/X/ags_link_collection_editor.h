@@ -59,6 +59,6 @@ void ags_link_collection_editor_check_first_link(AgsLinkCollectionEditor *link_c
 
 void ags_link_collection_editor_check_count(AgsLinkCollectionEditor *link_collection_editor);
 
-AgsLinkCollectionEditor* ags_link_collection_editor_new();
+AgsLinkCollectionEditor* ags_link_collection_editor_new(GType channel_type);
 
 #endif /*__AGS_LINK_COLLECTION_EDITOR_H__*/

@@ -228,6 +228,8 @@ ags_scale_remove_area(AgsScale *scale,
  *
  * Create a new #AgsScale.
  *
+ * Returns: a new #AgsScale
+ *
  * Since: 0.4.3
  */
 AgsScale*

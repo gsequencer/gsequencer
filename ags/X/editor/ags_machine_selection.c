@@ -273,6 +273,8 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
  *
  * Create a new #AgsMachineSelection.
  *
+ * Returns: a new #AgsMachineSelection
+ *
  * Since: 0.4
  */
 AgsMachineSelection*

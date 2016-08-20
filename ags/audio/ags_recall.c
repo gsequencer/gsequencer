@@ -395,9 +395,11 @@ ags_recall_class_init(AgsRecallClass *recall)
   /* signals */
   /**
    * AgsRecall::load-automation:
-   * @recall: the object to initialize
+   * @recall: the #AgsRecall to initialize
    *
    * The ::load-automation signal notifies about loading automation.
+   *
+   * Since: 0.7.42
    */
   recall_signals[LOAD_AUTOMATION] =
     g_signal_new("load-automation\0",
@@ -411,9 +413,11 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::unload-automation:
-   * @recall: the object to initialize
+   * @recall: the #AgsRecall to initialize
    *
    * The ::unload-automation signal notifies about unloading automation.
+   *
+   * Since: 0.7.42
    */
   recall_signals[UNLOAD_AUTOMATION] =
     g_signal_new("unload-automation\0",
@@ -426,10 +430,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::resolve-dependencies:
-   * @recall: the object to resolve
+   * @recall: the #AgsRecall to resolve
    *
    * The ::resolve-dependencies signal notifies about resolving
    * dependencies.
+   *
+   * Since: 0.4.2
    */
   recall_signals[RESOLVE_DEPENDENCIES] =
     g_signal_new("resolve-dependencies\0",
@@ -442,10 +448,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-init-pre:
-   * @recall: the object to initialize
+   * @recall: the #AgsRecall to initialize
    *
    * The ::run-init-pre signal notifies about initializing
    * stage 0.
+   *
+   * Since: 0.4.2
    */
   recall_signals[RUN_INIT_PRE] =
     g_signal_new("run-init-pre\0",
@@ -458,10 +466,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-init-inter:
-   * @recall: the object to initialize
+   * @recall: the #AgsRecall to initialize
    *
    * The ::run-init-inter signal notifies about initializing
    * stage 1.
+   *
+   * Since: 0.4.2
    */
   recall_signals[RUN_INIT_INTER] =
     g_signal_new("run-init-inter\0",
@@ -474,10 +484,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-init-post:
-   * @recall: the object to initialize
+   * @recall: the #AgsRecall to initialize
    *
    * The ::run-init-post signal notifies about initializing
    * stage 2.
+   *
+   * Since: 0.4.2
    */
   recall_signals[RUN_INIT_POST] =
     g_signal_new("run-init-post\0",
@@ -490,10 +502,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::automate:
-   * @recall: the object to play 
+   * @recall: the #AgsRecall to play 
    *
    * The ::automate signal notifies about running
    * automation and is normally called during ::run-pre.
+   *
+   * Since: 0.7.42
    */
   recall_signals[AUTOMATE] =
     g_signal_new("automate\0",
@@ -506,10 +520,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-pre:
-   * @recall: the object to play 
+   * @recall: the #AgsRecall to play 
    *
    * The ::run-pre signal notifies about running
    * stage 0.
+   *
+   * Since: 0.4.2
    */
   recall_signals[RUN_PRE] =
     g_signal_new("run-pre\0",
@@ -522,10 +538,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-inter:
-   * @recall: the object to play
+   * @recall: the #AgsRecall to play
    *
    * The ::run-inter signal notifies about running
    * stage 1.
+   *
+   * Since: 0.4.2
    */
   recall_signals[RUN_INTER] =
     g_signal_new("run-inter\0",
@@ -538,10 +556,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-post:
-   * @recall: the object to play
+   * @recall: the #AgsRecall to play
    *
    * The ::run-post signal notifies about running
    * stage 2.
+   *
+   * Since: 0.4.2
    */
   recall_signals[RUN_POST] =
     g_signal_new("run-post\0",
@@ -554,10 +574,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::stop-persistent:
-   * @recall: the object stop playback
+   * @recall: the #AgsRecall stop playback
    *
    * The ::stop-persistent signal notifies about definitively
    * stopping playback.
+   *
+   * Since: 0.4.2
    */
   recall_signals[STOP_PERSISTENT] =
     g_signal_new("stop_persistent\0",
@@ -570,9 +592,11 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::done:
-   * @recall: the object to finish playback
+   * @recall: the #AgsRecall to finish playback
    *
    * The ::done signal notifies about stopping playback.
+   *
+   * Since: 0.4.2
    */
   recall_signals[DONE] =
     g_signal_new("done\0",
@@ -585,9 +609,11 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::cancel:
-   * @recall: the object to cancel playback
+   * @recall: the #AgsRecall to cancel playback
    *
    * The ::cancel signal notifies about cancelling playback.
+   *
+   * Since: 0.4.2
    */
   recall_signals[CANCEL] =
     g_signal_new("cancel\0",
@@ -600,9 +626,11 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::remove:
-   * @recall: the object to remove of audio loop
+   * @recall: the #AgsRecall to remove of audio loop
    *
    * The ::remove signal notifies about removing.
+   *
+   * Since: 0.4.2
    */
   recall_signals[REMOVE] =
     g_signal_new("remove\0",
@@ -615,12 +643,14 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::duplicate:
-   * @recall: the object to duplicate
+   * @recall: the #AgsRecall to duplicate
    * @recall_id: the assigned #AgsRecallID
    * @n_params: pointer to array length
    * @parameter: parameter array
    *
    * The ::duplicate signal notifies about instantiating.
+   *
+   * Since: 0.4.2
    */
   recall_signals[DUPLICATE] =
     g_signal_new("duplicate\0",
@@ -635,12 +665,14 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::notify-dependency:
-   * @recall: the object to notify
+   * @recall: the #AgsRecall to notify
    * @dependency: the kind of dependency
    * @count: the reference count
    *
    * The ::notify-dependency signal notifies about dependencies
    * added.
+   *
+   * Since: 0.4.2
    */
   recall_signals[NOTIFY_DEPENDENCY] =
     g_signal_new("notify-dependency\0",
@@ -654,11 +686,13 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::child-added:
-   * @recall: the object to add the child
+   * @recall: the #AgsRecall to add the child
    * @child: the #AgsRecall to add
    *
    * The ::child-added signal notifies about children
    * added.
+   *
+   * Since: 0.4.2
    */
   recall_signals[CHILD_ADDED] =
     g_signal_new("child-added\0",
@@ -1914,6 +1948,8 @@ ags_recall_remove(AgsRecall *recall)
  *
  * Check if recall is over.
  * 
+ * Returns: %TRUE if recall is done, otherwise %FALSE
+ *
  * Since: 0.4
  */
 gboolean
@@ -2001,6 +2037,8 @@ ags_recall_real_duplicate(AgsRecall *recall,
  * Should duplicate an #AgsRecall, so it can pass the runs. Mainly used for
  * creating duplicates from templates, see %AGS_RECALL_TEMPLATE.
  * 
+ * Returns: the duplicated #AgsRecall
+ *
  * Since: 0.4
  */
 AgsRecall*
@@ -2745,6 +2783,8 @@ ags_recall_run_init(AgsRecall *recall, guint stage)
  * @data: the data to pass the callback
  *
  * Allocates #AgsRecallHandler-struct.
+ * 
+ * Returns: the newly allocated #AgsRecallHandler-struct
  * 
  * Since: 0.4
  */

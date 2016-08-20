@@ -455,6 +455,8 @@ ags_audio_file_check_suffix(gchar *filename)
  *
  * Open the #AgsAudioFile in read mode.
  *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
  * Since: 0.3
  */
 gboolean
@@ -505,6 +507,8 @@ ags_audio_file_open(AgsAudioFile *audio_file)
  * @create: create the file
  *
  * Open the #AgsAudioFile in read/write mode.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
  *
  * Since: 0.4.2
  */
@@ -567,6 +571,8 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
  * @data: the audio data
  *
  * Open #AgsAudioFile using virtual functions.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
  *
  * Since: 0.4
  */

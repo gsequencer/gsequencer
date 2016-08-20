@@ -542,6 +542,7 @@ ags_soundcard_tic(AgsSoundcard *soundcard)
 /**
  * ags_soundcard_offset_changed:
  * @soundcard: an #AgsSoundcard
+ * @note_offset: the current note offset
  *
  * Callback when counter expires minor note offset.
  *

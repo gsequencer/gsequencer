@@ -41,7 +41,7 @@ void ags_ladspa_manager_finalize(GObject *gobject);
  * @short_description: Singleton pattern to organize LADSPA
  * @title: AgsLadspaManager
  * @section_id:
- * @include: ags/object/ags_ladspa_manager.h
+ * @include: ags/plugin/ags_ladspa_manager.h
  *
  * The #AgsLadspaManager loads/unloads LADSPA plugins.
  */
@@ -369,7 +369,6 @@ ags_ladspa_manager_get_instance()
 
 /**
  * ags_ladspa_manager_new:
- * @devout: an #AgsDevout
  *
  * Creates an #AgsLadspaManager
  *

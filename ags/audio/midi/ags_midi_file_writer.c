@@ -194,6 +194,8 @@ ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
  * @filename: the filename, may be %NULL
  * 
  * Instantiate a new #AgsMidiFileWriter assigned to @filename.
+ *
+ * Returns: a new #AgsMidiFileWriter
  * 
  * Since: 0.7.1
  */

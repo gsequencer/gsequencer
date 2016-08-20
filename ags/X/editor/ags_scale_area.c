@@ -42,7 +42,7 @@ void ags_scale_area_disconnect(AgsConnectable *connectable);
  * @short_description: area scales
  * @title: AgsScaleArea
  * @section_id:
- * @include: ags/X/areaor/ags_scale_area.h
+ * @include: ags/X/editor/ags_scale_area.h
  *
  * The #AgsScaleArea lets you paint scales.
  */
@@ -245,6 +245,8 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
  * @steps: n-steps
  *
  * Create a new #AgsScaleArea.
+ *
+ * Returns: a new #AgsScaleArea
  *
  * Since: 0.4.3
  */

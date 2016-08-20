@@ -744,6 +744,8 @@ ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Get config instance.
  *
+ * Returns: the config instance
+ *
  * Since: 0.7.0
  */
 AgsConfig*

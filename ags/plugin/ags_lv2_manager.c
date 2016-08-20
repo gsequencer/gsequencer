@@ -52,7 +52,7 @@ void ags_lv2_manager_finalize(GObject *gobject);
  * @short_description: Singleton pattern to organize LV2
  * @title: AgsLv2Manager
  * @section_id:
- * @include: ags/object/ags_lv2_manager.h
+ * @include: ags/plugin/ags_lv2_manager.h
  *
  * The #AgsLv2Manager loads/unloads LV2 plugins.
  */

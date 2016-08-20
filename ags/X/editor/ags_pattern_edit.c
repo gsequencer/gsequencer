@@ -1531,6 +1531,8 @@ ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
  *
  * Create a new #AgsPatternEdit.
  *
+ * Returns: a new #AgsPatternEdit
+ *
  * Since: 0.4.2
  */
 AgsPatternEdit*

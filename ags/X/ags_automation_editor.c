@@ -1680,6 +1680,8 @@ ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
  *
  * Create a new #AgsAutomationEditor.
  *
+ * Returns: a new #AgsAutomationEditor
+ *
  * Since: 0.4.2
  */
 AgsAutomationEditor*

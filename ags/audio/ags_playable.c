@@ -307,6 +307,8 @@ ags_playable_iter_start(AgsPlayable *playable)
  *
  * Iterating next on current level.
  *
+ * Returns: %TRUE if has more, otherwise %FALSE
+ *
  * Since: 0.4.2
  */
 gboolean

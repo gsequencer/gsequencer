@@ -538,6 +538,8 @@ ags_application_context_quit(AgsApplicationContext *application_context)
  * 
  * Get your application context instance.
  *
+ * Returns: the #AgsApplicationContext instance
+ *
  * Since: 0.7.0
  */
 AgsApplicationContext*

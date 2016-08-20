@@ -53,6 +53,6 @@ struct _AgsPanelClass
 
 GType ags_panel_get_type(void);
 
-AgsPanel* ags_panel_new();
+AgsPanel* ags_panel_new(GObject *soundcard);
 
 #endif /*__AGS_PANEL_H__*/

@@ -642,6 +642,8 @@ ags_file_finalize(GObject *gobject)
  *
  * Compute MD5 sums of a buffer.
  *
+ * Returns: the md5 checksum
+ *
  * Since: 0.4.0
  */
 gchar*
