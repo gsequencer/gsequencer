@@ -369,6 +369,7 @@ libags_thread_h_sources = \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
 	ags/thread/ags_mutex_manager.h \
+	ags/thread/ags_polling_thread.h \
 	ags/thread/ags_returnable_thread.h \
 	ags/thread/ags_single_thread.h \
 	ags/thread/ags_task_completion.h \
@@ -390,6 +391,7 @@ libags_thread_c_sources = \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
 	ags/thread/ags_mutex_manager.c \
+	ags/thread/ags_polling_thread.c \
 	ags/thread/ags_returnable_thread.c \
 	ags/thread/ags_single_thread.c \
 	ags/thread/ags_task_completion.c \
