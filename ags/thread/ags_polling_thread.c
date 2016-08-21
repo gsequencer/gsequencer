@@ -235,7 +235,7 @@ ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
       return(i);
     }
   }
-  
+
   return(-1);
 }
 
