@@ -2,6 +2,7 @@ ags (0.7.50)
 
 	* implemented ags_polling_thread.[ch] and ags_poll_fd.[ch]
 	* implemented ags_soundcard_get_poll_fd()
+	* using AgsPollingThread in ags_soundcard_thread.c and ags_gui_thread.c
 	* fixed use of freed string in ags_audio_preferences.c as apply soundcard
 
 ags (0.7.49)

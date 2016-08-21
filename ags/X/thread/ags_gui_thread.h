@@ -47,15 +47,18 @@ struct _AgsGuiThread
 {
   AgsThread thread;
 
-  volatile gboolean polling;
+  volatile gboolean dispatching;
   
   GMutex mutex;
   GCond cond;
   
   GMainContext *main_context;
+  
   gint cached_poll_array_size;
   GPollFD *cached_poll_array;
 
+  GList *poll_fd;
+  
   pthread_mutex_t *task_completion_mutex;
   volatile GList *task_completion;
 };

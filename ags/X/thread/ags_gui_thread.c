@@ -23,6 +23,8 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_polling_thread.h>
+#include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_task_completion.h>
 
 #include <fontconfig/fontconfig.h>
@@ -159,6 +161,21 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   
   thread->freq = AGS_GUI_THREAD_DEFAULT_JIFFIE;
 
+  /* main context */
+  g_atomic_int_set(&(gui_thread->dispatching),
+		   TRUE);
+
+  g_cond_init(&(gui_thread->cond));
+  g_mutex_init(&(gui_thread->mutex));
+
+  gui_thread->main_context = g_main_context_default();
+
+  gui_thread->cached_poll_array_size = 0;
+  gui_thread->cached_poll_array = NULL;
+
+  gui_thread->poll_fd = NULL;
+  
+  /* task completion */
   pthread_mutexattr_init(&attr);
   pthread_mutexattr_settype(&attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -166,14 +183,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->task_completion_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(gui_thread->task_completion_mutex,
 		     &attr);
-  
-  g_cond_init(&(gui_thread->cond));
-  g_mutex_init(&(gui_thread->mutex));
-
-  gui_thread->main_context = g_main_context_default();
-  gui_thread->cached_poll_array_size = 0;
-  gui_thread->cached_poll_array = NULL;
-  
+    
   g_atomic_pointer_set(&(gui_thread->task_completion),
 		       NULL);
 }
@@ -222,21 +232,20 @@ ags_gui_thread_run(AgsThread *thread)
   AgsGuiThread *gui_thread;
 
   AgsThread *main_loop;
+  AgsPollingThread *polling_thread;
+  AgsPollFd *poll_fd;
   
   GMainContext *main_context;
 
   GPollFD *fds = NULL;  
 
-  struct timespec time_now;
-  struct timespec timeout;
+  GList *list, *list_next;
 
-  guint time_cycle, time_spent;
   gint max_priority;
   gint nfds, allocated_nfds;
-  gboolean some_ready;
-
-  sigset_t sigmask;
-  int ret;
+  gint timeout;
+  gint position;
+  guint i;
   
   auto void ags_gui_thread_complete_task();
   
@@ -269,6 +278,8 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
   main_loop = ags_thread_get_toplevel(thread);
+  polling_thread = ags_thread_find_type(main_loop,
+					AGS_TYPE_POLLING_THREAD);
   
   main_context = gui_thread->main_context;
 
@@ -310,7 +321,7 @@ ags_gui_thread_run(AgsThread *thread)
   }
   
   /*  */
-  g_atomic_int_set(&(gui_thread->polling),
+  g_atomic_int_set(&(gui_thread->dispatching),
 		   TRUE);
   
   if(!g_main_context_acquire(main_context)){
@@ -330,6 +341,7 @@ ags_gui_thread_run(AgsThread *thread)
   allocated_nfds = gui_thread->cached_poll_array_size;
   fds = gui_thread->cached_poll_array;
 
+  /* query new */
   g_main_context_prepare(main_context, &max_priority);
 
   while((nfds = g_main_context_query(main_context, max_priority, &timeout, fds,
@@ -339,44 +351,64 @@ ags_gui_thread_run(AgsThread *thread)
     gui_thread->cached_poll_array = fds = g_new(GPollFD, nfds);
   }
 
-  /* calculate timeout */
-  clock_gettime(CLOCK_MONOTONIC, &time_now);
-      
-  if(time_now.tv_sec == main_loop->computing_time->tv_sec + 1){
-    time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - main_loop->computing_time->tv_nsec);
-  }else if(time_now.tv_sec > main_loop->computing_time->tv_sec + 1){
-    time_spent = (time_now.tv_sec - main_loop->computing_time->tv_sec) * NSEC_PER_SEC;
-    time_spent += (time_now.tv_nsec - main_loop->computing_time->tv_nsec);
-  }else{
-    time_spent = time_now.tv_nsec - main_loop->computing_time->tv_nsec;
+  /* remove old poll fd */
+  list = gui_thread->poll_fd;
+  
+  while(list != NULL){
+    gboolean found;
+
+    list_next = list->next;
+    found = FALSE;
+    
+    for(i = 0; i < nfds; i++){
+      if(AGS_POLL_FD(list->data)->fd == fds[i].fd){
+	found = TRUE;
+
+	break;
+      }
+    }
+
+    if(!found){
+      ags_polling_thread_remove_poll_fd(polling_thread,
+					list->data);
+      gui_thread->poll_fd = g_list_remove(gui_thread->poll_fd,
+					  list->data);
+      g_object_unref(list->data);
+    }
+    
+    list = list_next;
   }
 
-  time_cycle = NSEC_PER_SEC / main_loop->freq;
+  g_list_free(list);
 
-  if(time_spent + 40000 < time_cycle){
-    timeout.tv_sec = 0;
-    timeout.tv_nsec = time_cycle - time_spent - 40000; // 4usec tolerance
+  /* add new poll fd */
+  for(i = 0; i < gui_thread->cached_poll_array_size; i++){
+    pthread_mutex_lock(polling_thread->fd_mutex);
 
-    /* poll */
-    sigemptyset(&sigmask);
-  
-    ret = ppoll(fds,
-		nfds,
-		&timeout,
-		&sigmask);
+    position = ags_polling_thread_fd_position(polling_thread,
+					      fds[i].fd);
 
-    some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
+    pthread_mutex_unlock(polling_thread->fd_mutex);
+    
+    if(position < 0){
+      poll_fd = ags_poll_fd_new();
+      poll_fd->fd = fds[i].fd;
+      
+      ags_polling_thread_add_poll_fd(polling_thread,
+				     poll_fd);
 
-    if(some_ready){
-      g_main_context_dispatch (main_context);
+      /* add poll fd to gui thread */
+      gui_thread->poll_fd = g_list_prepend(gui_thread->poll_fd,
+					   poll_fd);
     }
-  }  
+  }
 
+  g_main_context_dispatch (main_context);
   ags_gui_thread_complete_task();  
 
   g_main_context_release(main_context);
 
-  g_atomic_int_set(&(gui_thread->polling),
+  g_atomic_int_set(&(gui_thread->dispatching),
 		   FALSE);
   
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
@@ -440,7 +472,7 @@ ags_gui_thread_interrupted(AgsThread *thread,
     g_atomic_int_or(&(thread->sync_flags),
 		    AGS_THREAD_INTERRUPTED);
     
-    if(g_atomic_int_get(&(gui_thread->polling))){      
+    if(g_atomic_int_get(&(gui_thread->dispatching))){      
       //      g_message("huh!\0");
       pthread_kill(*(thread->thread),
 		   SIGIO);
