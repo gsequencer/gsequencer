@@ -29,7 +29,7 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 
-#include <unistd.h>
+#include <poll.h>
 
 #define AGS_TYPE_POLLING_THREAD                (ags_polling_thread_get_type())
 #define AGS_POLLING_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_POLLING_THREAD, AgsPollingThread))
@@ -43,9 +43,22 @@
 typedef struct _AgsPollingThread AgsPollingThread;
 typedef struct _AgsPollingThreadClass AgsPollingThreadClass;
 
+typedef enum{
+  AGS_POLLING_THREAD_PERFORMANCE          = 1,
+  AGS_POLLING_THREAD_OMIT                 = 1 <<  1,
+}AgsPollingThreadFlags;
+
 struct _AgsPollingThread
 {
   AgsThread thread;
+
+  guint flags;
+
+  pthread_mutex_t *fd_mutex;
+  
+  struct pollfd *fds;
+  
+  GList *poll_fd;
 };
 
 struct _AgsPollingThreadClass
@@ -54,6 +67,14 @@ struct _AgsPollingThreadClass
 };
 
 GType ags_polling_thread_get_type();
+
+gint ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
+				    int fd);
+
+void ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
+				    GObject *gobject);
+void ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
+				       GObject *gobject);
 
 AgsPollingThread* ags_polling_thread_new();
 
