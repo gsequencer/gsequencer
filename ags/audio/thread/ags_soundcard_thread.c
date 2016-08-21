@@ -22,6 +22,8 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_polling_thread.h>
+#include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -45,8 +47,10 @@ void ags_soundcard_thread_start(AgsThread *thread);
 void ags_soundcard_thread_run(AgsThread *thread);
 void ags_soundcard_thread_stop(AgsThread *thread);
 
-void ags_soundcard_stopped_all_callback(AgsAudioLoop *audio_loop,
-					AgsSoundcardThread *soundcard_thread);
+void ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
+					    AgsSoundcardThread *soundcard_thread);
+void ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
+					       AgsSoundcardThread *soundcard_thread);
 
 /**
  * SECTION:ags_soundcard_thread
@@ -275,7 +279,7 @@ ags_soundcard_thread_connect(AgsConnectable *connectable)
 
   audio_loop = ags_thread_get_toplevel(soundcard_thread);
   g_signal_connect((GObject *) audio_loop, "stopped-all\0",
-		   G_CALLBACK(ags_soundcard_stopped_all_callback), soundcard_thread);    
+		   G_CALLBACK(ags_soundcard_thread_stopped_all_callback), soundcard_thread);    
 }
 
 void
@@ -297,13 +301,20 @@ ags_soundcard_thread_finalize(GObject *gobject)
 void
 ags_soundcard_thread_start(AgsThread *thread)
 {
-  AgsSoundcard *soundcard;
   AgsSoundcardThread *soundcard_thread;
-  static gboolean initialized = FALSE;
+
+  AgsThread *main_loop;
+  AgsPollingThread *polling_thread;
+  
+  AgsSoundcard *soundcard;
+
+  GList *poll_fd;
+  
   GError *error;
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
-
+  main_loop = ags_thread_get_toplevel(thread);
+  
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
   /* abort if already playing */
@@ -317,7 +328,25 @@ ags_soundcard_thread_start(AgsThread *thread)
   if(ags_soundcard_get_buffer(soundcard) == NULL){
     ags_soundcard_play_init(soundcard,
 			    &(soundcard_thread->error));
-      
+
+    /* find polling thread */
+    polling_thread = ags_thread_find_type(main_loop,
+					  AGS_TYPE_POLLING_THREAD);
+    
+    /* add poll fd and connect dispatch */
+    poll_fd = ags_soundcard_get_poll_fd(soundcard);
+    
+    while(poll_fd != NULL){
+      ags_polling_thread_add_poll_fd(polling_thread,
+				     poll_fd->data);
+      g_signal_connect(G_OBJECT(poll_fd->data), "dispatch\0",
+		       G_CALLBACK(ags_soundcard_thread_dispatch_callback), soundcard_thread);
+
+      poll_fd = poll_fd->next;
+    }
+
+    g_list_free(poll_fd);
+
 #ifdef AGS_DEBUG
     g_message("ags_devout_alsa_play\0");
 #endif
@@ -337,7 +366,10 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   AgsSoundcard *soundcard;
 
+  GList *poll_fd;
+  
   long delay;
+  
   GError *error;
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
@@ -350,35 +382,75 @@ ags_soundcard_thread_run(AgsThread *thread)
     error = NULL;
     ags_soundcard_play(soundcard,
 		       &error);
-    
+
     if(error != NULL){
       //TODO:JK: implement me
+
+      g_warning("%s\0",
+		error->message);
     }
+
+    /* reset polling thread */
+    poll_fd = ags_soundcard_get_poll_fd(soundcard);
+
+    while(poll_fd != NULL){
+      AGS_POLL_FD(poll_fd->data)->polling_thread->flags &= AGS_POLLING_THREAD_OMIT;
+      
+      poll_fd = poll_fd->next;
+    }
+
+    g_list_free(poll_fd);
   }
 }
 
 void
 ags_soundcard_thread_stop(AgsThread *thread)
 {
-  AgsSoundcard *soundcard;
   AgsSoundcardThread *soundcard_thread;
 
+  AgsSoundcard *soundcard;
+
+  GList *poll_fd;
+  
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
+  /* remove poll fd */
+  poll_fd = ags_soundcard_get_poll_fd(soundcard);
+  
+  while(poll_fd != NULL){
+    ags_polling_thread_remove_poll_fd(AGS_POLL_FD(poll_fd->data)->polling_thread,
+				      poll_fd->data);
+    g_object_unref(poll_fd->data);
+    
+    poll_fd = poll_fd->next;
+  }
+
+  g_list_free(poll_fd);
+
+  /* stop thread and soundcard */
   AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
+
+  //FIXME:JK: is this safe?
   ags_soundcard_stop(soundcard);
 }
 
 void
-ags_soundcard_stopped_all_callback(AgsAudioLoop *audio_loop,
+ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
+				       AgsSoundcardThread *soundcard_thread)
+{
+  poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+}
+
+void
+ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
 				   AgsSoundcardThread *soundcard_thread)
 {
   AgsSoundcard *soundcard;
   
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
-  
+
   if(ags_soundcard_is_playing(soundcard)){
     ags_thread_stop((AgsThread *) soundcard_thread);
   }

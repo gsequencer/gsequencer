@@ -263,6 +263,8 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
     return;
   }
 
+  AGS_POLL_FD(gobject)->polling_thread = polling_thread;
+  
   length = g_list_length(polling_thread->poll_fd);
   polling_thread->fds = (struct pollfd *) realloc(polling_thread->fds,
 						  (length + 1) * sizeof(struct pollfd));
@@ -304,6 +306,8 @@ ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
     return;
   }
   
+  AGS_POLL_FD(gobject)->polling_thread = NULL;
+
   /* realloc array */
   length = g_list_length(polling_thread->poll_fd);
   

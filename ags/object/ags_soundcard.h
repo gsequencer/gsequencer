@@ -103,11 +103,13 @@ struct _AgsSoundcardInterface
   
   void (*list_cards)(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name);
-
+  
+  GList* (*get_poll_fd)(AgsSoundcard *soundcard);
+  
   gboolean (*is_starting)(AgsSoundcard *soundcard);
   gboolean (*is_playing)(AgsSoundcard *soundcard);
   gboolean (*is_recording)(AgsSoundcard *soundcard);
-  
+
   void (*play_init)(AgsSoundcard *soundcard,
 		    GError **error);
   void (*play)(AgsSoundcard *soundcard,
@@ -190,6 +192,8 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			    guint *rate_min, guint *rate_max,
 			    guint *buffer_size_min, guint *buffer_size_max,
 			    GError **error);
+
+GList* ags_soundcard_get_poll_fd(AgsSoundcard *soundcard);
 
 gboolean ags_soundcard_is_starting(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_playing(AgsSoundcard *soundcard);

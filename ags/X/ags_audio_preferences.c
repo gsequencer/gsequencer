@@ -483,7 +483,6 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 		       AGS_CONFIG_SOUNDCARD,
 		       "alsa-handle\0",
 		       str);
-  g_free(str);
 
   /* samplerate */
   rate = gtk_spin_button_get_value(audio_preferences->samplerate);

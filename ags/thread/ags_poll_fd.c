@@ -97,6 +97,23 @@ ags_poll_fd_class_init(AgsPollFdClass *poll_fd)
 
   /* AgsPollFdClass */
   poll_fd->dispatch = NULL;
+
+  /**
+   * AgsPollFd::dispatch:
+   * @poll_fd: the #AgsPollFd
+   *
+   * The ::dispatch signal is emited during poll
+   *
+   * Since: 0.4.2
+   */
+  poll_fd_signals[DISPATCH] =
+    g_signal_new("dispatch\0",
+		 G_TYPE_FROM_CLASS (poll_fd),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPollFdClass, dispatch),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -112,6 +129,8 @@ void
 ags_poll_fd_init(AgsPollFd *poll_fd)
 {
   poll_fd->flags = 0;
+
+  poll_fd->polling_thread = NULL;
 }
 
 void

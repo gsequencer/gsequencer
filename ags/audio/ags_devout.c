@@ -28,6 +28,7 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_poll_fd.h>
 
 #include <ags/audio/ags_notation.h>
 
@@ -39,6 +40,8 @@
 #include <sys/ioctl.h>
 #include <sys/soundcard.h>
 #include <errno.h>
+
+#include <poll.h>
 
 #include <string.h>
 #include <math.h>
@@ -105,6 +108,8 @@ void ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			 guint *rate_min, guint *rate_max,
 			 guint *buffer_size_min, guint *buffer_size_max,
 			 GError **error);
+
+GList* ags_devout_get_poll_fd(AgsSoundcard *soundcard);
 
 gboolean ags_devout_is_starting(AgsSoundcard *soundcard);
 gboolean ags_devout_is_playing(AgsSoundcard *soundcard);
@@ -499,6 +504,7 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->list_cards = ags_devout_list_cards;
   soundcard->pcm_info = ags_devout_pcm_info;
 
+  soundcard->get_poll_fd = ags_devout_get_poll_fd;
   soundcard->is_starting =  ags_devout_is_starting;
   soundcard->is_playing = ags_devout_is_playing;
   soundcard->is_recording = NULL;
@@ -1460,6 +1466,38 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
   *buffer_size_max = frames;
 
   snd_pcm_close(handle);
+}
+
+GList*
+ags_devout_get_poll_fd(AgsSoundcard *soundcard)
+{
+  AgsPollFd *poll_fd;
+
+  GList *list;
+
+  struct pollfd *fds;
+  
+  gint count;
+  guint i;
+
+  /* get poll fds of ALSA */
+  count = snd_pcm_poll_descriptors_count(AGS_DEVOUT(soundcard)->out.alsa.handle);
+  snd_pcm_poll_descriptors(AGS_DEVOUT(soundcard)->out.alsa.handle, fds, count);
+
+  /* map fds */
+  list = NULL;
+
+  for(i = 0; i < count; i++){
+    poll_fd = ags_poll_fd_new();
+    poll_fd->fd = fds[i].fd;
+    
+    list = g_list_prepend(list,
+			  poll_fd);
+  }
+
+  free(fds);
+  
+  return(list);
 }
 
 gboolean

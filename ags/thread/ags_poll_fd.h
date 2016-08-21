@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/thread/ags_polling_thread.h>
+
 #define AGS_TYPE_POLL_FD                (ags_poll_fd_get_type())
 #define AGS_POLL_FD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_POLL_FD, AgsPollFd))
 #define AGS_POLL_FD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_POLL_FD, AgsPollFdClass))
@@ -48,6 +50,8 @@ struct _AgsPollFd
 
   guint flags;
 
+  AgsPollingThread *polling_thread;
+  
   int fd;
 };
 

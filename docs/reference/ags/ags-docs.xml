@@ -127,6 +127,8 @@
     <xi:include href="xml/ags_history.xml"/>
     <xi:include href="xml/ags_iterator_thread.xml"/>
     <xi:include href="xml/ags_mutex_manager.xml"/>
+    <xi:include href="xml/ags_polling_thread.xml"/>
+    <xi:include href="xml/ags_poll_fd.xml"/>
     <xi:include href="xml/ags_returnable_thread.xml"/>
     <xi:include href="xml/ags_single_thread.xml"/>
     <xi:include href="xml/ags_task.xml"/>
