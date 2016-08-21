@@ -106,6 +106,8 @@ ags_task_class_init(AgsTaskClass *task)
    * @task: the object to launch.
    *
    * The ::launch signal is emited in a thread safe context
+   *
+   * Since: 0.4.2
    */
   task_signals[LAUNCH] =
     g_signal_new("launch\0",
@@ -122,6 +124,8 @@ ags_task_class_init(AgsTaskClass *task)
    * @error: the error
    *
    * The ::failure signal is emited if ::launch fails
+   *
+   * Since: 0.4.2
    */
   task_signals[FAILURE] =
     g_signal_new("failure\0",

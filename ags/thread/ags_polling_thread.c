@@ -17,12 +17,11 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/thread/ags_polling_thread.h>
+#include <ags/thread/ags_polling_thread.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_application_context.h>
 
-#include <math.h>
+#include <ags/thread/ags_poll_fd.h>
 
 void ags_polling_thread_class_init(AgsPollingThreadClass *polling_thread);
 void ags_polling_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -46,7 +45,6 @@ void ags_polling_thread_stop(AgsThread *thread);
  */
 
 static gpointer ags_polling_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_polling_thread_parent_connectable_interface;
 
 GType
 ags_polling_thread_get_type()
@@ -109,8 +107,6 @@ ags_polling_thread_class_init(AgsPollingThreadClass *polling_thread)
 void
 ags_polling_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_polling_thread_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
   connectable->connect = ags_polling_thread_connect;
   connectable->disconnect = ags_polling_thread_disconnect;
 }
@@ -118,22 +114,26 @@ ags_polling_thread_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_polling_thread_init(AgsPollingThread *polling_thread)
 {
-  /* empty */
+  polling_thread->flags = 0;
+
+  polling_thread->fd_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(polling_thread->fd_mutex,
+		     NULL);
+  
+  polling_thread->fds = NULL;
+
+  polling_thread->poll_fd = NULL;
 }
 
 void
 ags_polling_thread_connect(AgsConnectable *connectable)
 {
-  ags_polling_thread_parent_connectable_interface->connect(connectable);
-
   /* empty */
 }
 
 void
 ags_polling_thread_disconnect(AgsConnectable *connectable)
 {
-  ags_polling_thread_parent_connectable_interface->disconnect(connectable);
-
   /* empty */
 }
 
@@ -164,9 +164,57 @@ ags_polling_thread_run(AgsThread *thread)
 {
   AgsPollingThread *polling_thread;
 
-  AgsThread *main_loop;
+  GList *list;
+  
+  struct timespec timeout;
 
-  //TODO:JK: implement me
+  sigset_t sigmask;
+  gint position;
+  int ret;
+
+  polling_thread = AGS_POLLING_THREAD(thread);
+  sigemptyset(&sigmask);
+
+  timeout.tv_sec = 0;
+  timeout.tv_nsec = (NSEC_PER_SEC / thread->freq);
+  
+  pthread_mutex_lock(polling_thread->fd_mutex);
+
+  if((AGS_POLLING_THREAD_OMIT & (polling_thread->flags)) == 0){
+    ppoll(polling_thread->fds,
+	  g_list_length(polling_thread->poll_fd),
+	  &timeout,
+	  &sigmask);
+
+    list = polling_thread->poll_fd;
+
+    while(list != NULL){
+      position = ags_polling_thread_fd_position(polling_thread,
+						AGS_POLL_FD(list->data)->fd);
+
+      if((POLLIN & (polling_thread->fds[position].revents)) != 0){
+	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_INPUT;
+      }
+
+      if((POLLPRI & (polling_thread->fds[position].revents)) != 0){
+	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_PRIORITY_INPUT;
+      }
+
+      if((POLLOUT & (polling_thread->fds[position].revents)) != 0){
+	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_OUTPUT;
+      }
+
+      if((POLLHUP & (polling_thread->fds[position].revents)) != 0){
+	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_HANG_UP;
+      }
+
+      ags_poll_fd_dispatch(list->data);
+
+      list = list->next;
+    }  
+  }
+  
+  pthread_mutex_unlock(polling_thread->fd_mutex);
 }
 
 void
@@ -174,6 +222,114 @@ ags_polling_thread_stop(AgsThread *thread)
 {
   /*  */
   AGS_THREAD_CLASS(ags_polling_thread_parent_class)->stop(thread);  
+}
+
+gint
+ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
+			       int fd)
+{
+  gint i;
+
+  for(i = 0; i < g_list_length(polling_thread->poll_fd); i++){
+    if(fd == polling_thread->fds[i].fd){
+      return(i);
+    }
+  }
+  
+  return(-1);
+}
+
+void
+ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
+			       GObject *gobject)
+{
+  guint length;
+  gint nth;
+  
+  if(polling_thread == NULL ||
+     gobject == NULL){
+    return;
+  }
+
+  pthread_mutex_lock(polling_thread->fd_mutex);
+
+
+  nth = g_list_position(polling_thread->poll_fd,
+			gobject);
+
+  if(nth >= 0){
+    pthread_mutex_unlock(polling_thread->fd_mutex);
+    
+    return;
+  }
+
+  length = g_list_length(polling_thread->poll_fd);
+  polling_thread->fds = (struct pollfd *) realloc(polling_thread->fds,
+						  (length + 1) * sizeof(struct pollfd));
+  polling_thread->fds[length].fd = AGS_POLL_FD(gobject)->fd;
+  polling_thread->fds[length].events = 0;
+  polling_thread->fds[length].revents = 0;
+  
+  /* add to list */
+  g_object_ref(gobject);
+  polling_thread->poll_fd = g_list_prepend(polling_thread->poll_fd,
+					   gobject);
+
+  pthread_mutex_unlock(polling_thread->fd_mutex);
+}
+
+void
+ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
+				  GObject *gobject)
+{
+  struct pollfd *fds;
+
+  guint length;
+  gint nth;
+  
+  if(polling_thread == NULL ||
+     gobject == NULL){
+    return;
+  }
+
+  pthread_mutex_lock(polling_thread->fd_mutex);
+  
+  /* find fd */
+  nth = g_list_position(polling_thread->poll_fd,
+			gobject);
+
+  if(nth < 0){
+    pthread_mutex_unlock(polling_thread->fd_mutex);
+    
+    return;
+  }
+  
+  /* realloc array */
+  length = g_list_length(polling_thread->poll_fd);
+  
+  fds = (struct pollfd *) malloc((length - 1) * sizeof(struct pollfd));
+
+  if(nth != 0){
+    memcpy(fds,
+	   polling_thread->fds,
+	   nth * sizeof(struct pollfd));
+  }
+
+  if(nth + 1 < length){
+    memcpy(&(fds[nth]),
+	   &(polling_thread->fds[nth + 1]),
+	   (length - nth - 1) * sizeof(struct pollfd));
+  }
+
+  free(polling_thread->fds);
+  polling_thread->fds = fds;
+
+  /* remove from list */
+  polling_thread->poll_fd = g_list_remove(polling_thread->poll_fd,
+					  gobject);
+  g_object_unref(gobject);
+
+  pthread_mutex_unlock(polling_thread->fd_mutex);
 }
 
 /**
