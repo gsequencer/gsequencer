@@ -103,7 +103,7 @@ ags_task_class_init(AgsTaskClass *task)
   /* signals */
   /**
    * AgsTask::launch:
-   * @task: the object to launch.
+   * @task: the #AgsTask to launch.
    *
    * The ::launch signal is emited in a thread safe context
    *
@@ -120,7 +120,7 @@ ags_task_class_init(AgsTaskClass *task)
 
   /**
    * AgsTask::failure:
-   * @task: the object failed to do its work.
+   * @task: the #AgsTask failed to do its work.
    * @error: the error
    *
    * The ::failure signal is emited if ::launch fails
