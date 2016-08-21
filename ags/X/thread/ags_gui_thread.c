@@ -28,6 +28,8 @@
 #include <fontconfig/fontconfig.h>
 #include <math.h>
 
+void ags_gui_thread_signal_handler(int signr)
+
 void ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread);
 void ags_gui_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_gui_thread_init(AgsGuiThread *gui_thread);
@@ -219,12 +221,17 @@ ags_gui_thread_run(AgsThread *thread)
 {
   AgsGuiThread *gui_thread;
 
+  AgsThread *main_loop;
+  
   GMainContext *main_context;
 
   GPollFD *fds = NULL;  
 
-  gint max_priority;
+  struct timespec time_now;
   struct timespec timeout;
+
+  guint time_cycle, time_spent;
+  gint max_priority;
   gint nfds, allocated_nfds;
   gboolean some_ready;
 
@@ -261,7 +268,8 @@ ags_gui_thread_run(AgsThread *thread)
 
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
-
+  main_loop = ags_thread_get_toplevel(thread);
+  
   main_context = gui_thread->main_context;
 
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -331,33 +339,41 @@ ags_gui_thread_run(AgsThread *thread)
     gui_thread->cached_poll_array = fds = g_new(GPollFD, nfds);
   }
 
-  timeout.tv_sec = 0;
-  timeout.tv_nsec = 0;
-  
-  sigemptyset(&sigmask);
-  //  sigaddset(&sigmask,
-  //	    AGS_THREAD_SUSPEND_SIG);
-  
-  ret = ppoll(fds,
-	      nfds,
-	      &timeout,
-	      &sigmask);
-
-  some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
-
-  if(some_ready){
-    g_main_context_dispatch (main_context);
+  /* calculate timeout */
+  clock_gettime(CLOCK_MONOTONIC, &time_now);
+      
+  if(time_now.tv_sec == main_loop->computing_time->tv_sec + 1){
+    time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - main_loop->computing_time->tv_nsec);
+  }else if(time_now.tv_sec > main_loop->computing_time->tv_sec + 1){
+    time_spent = (time_now.tv_sec - main_loop->computing_time->tv_sec) * NSEC_PER_SEC;
+    time_spent += (time_now.tv_nsec - main_loop->computing_time->tv_nsec);
+  }else{
+    time_spent = time_now.tv_nsec - main_loop->computing_time->tv_nsec;
   }
+
+  time_cycle = NSEC_PER_SEC / main_loop->freq;
+
+  if(time_spent + 40000 < time_cycle){
+    timeout.tv_sec = 0;
+    timeout.tv_nsec = time_cycle - time_spent - 40000; // 4usec tolerance
+
+    /* poll */
+    sigemptyset(&sigmask);
   
-  //  gdk_threads_leave();
-  
-  //  g_main_context_iteration(main_context,
-  //			   FALSE);
+    ret = ppoll(fds,
+		nfds,
+		&timeout,
+		&sigmask);
+
+    some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
+
+    if(some_ready){
+      g_main_context_dispatch (main_context);
+    }
+  }  
 
   ags_gui_thread_complete_task();  
 
-  //  gdk_threads_enter();
-  
   g_main_context_release(main_context);
 
   g_atomic_int_set(&(gui_thread->polling),
