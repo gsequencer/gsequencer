@@ -355,18 +355,27 @@ ags_thread_init(AgsThread *thread)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
+  int err;
+  
   /* insert audio loop mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE_NP);
+  err = pthread_mutexattr_setprotocol(attr,
+				      PTHREAD_PRIO_INHERIT);
+
+  if(err != 0){
+    g_warning("no priority inheritance\0");
+  }
+  
   mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
-
+		     attr);
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
@@ -401,12 +410,17 @@ ags_thread_init(AgsThread *thread)
   pthread_attr_init(thread->thread_attr);
 
   thread->freq = AGS_THREAD_DEFAULT_JIFFIE;
-    
-  pthread_mutexattr_init(&(thread->mutexattr));
-  pthread_mutexattr_settype(&(thread->mutexattr), PTHREAD_MUTEX_RECURSIVE);
+
+  thread->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(thread->mutexattr);
+  pthread_mutexattr_settype(thread->mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE_NP);
+  pthread_mutexattr_setprotocol(thread->mutexattr,
+				PTHREAD_PRIO_INHERIT);
 
   thread->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(thread->mutex, &(thread->mutexattr));
+  pthread_mutex_init(thread->mutex, thread->mutexattr);
 
   thread->cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(thread->cond, NULL);
@@ -436,6 +450,8 @@ ags_thread_init(AgsThread *thread)
   thread->wait_count[1] = 1;
 
   /* timelock */
+  thread->timelock_thread = (pthread_t *) malloc(sizeof(pthread_t));
+
   thread->timelock_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(thread->timelock_mutex, NULL);
 
@@ -453,7 +469,7 @@ ags_thread_init(AgsThread *thread)
 
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC /
-				   (AGS_THREAD_DEFAULT_JIFFIE + 1));
+				   AGS_THREAD_HERTZ_JIFFIE / 5);
 
   thread->greedy_locks = NULL;
 
@@ -2445,7 +2461,7 @@ ags_thread_real_clock(AgsThread *thread)
 
       time_cycle = NSEC_PER_SEC / thread->freq;
       
-      relative_time_spent = time_cycle - time_spent;
+      relative_time_spent = time_cycle - time_spent - AGS_THREAD_TOLERANCE;
 
       if(relative_time_spent > 0.0 &&
 	 relative_time_spent < time_cycle){
@@ -2461,7 +2477,7 @@ ags_thread_real_clock(AgsThread *thread)
 	}
 	*/
 	
-	//	nanosleep(&timed_sleep, NULL);
+	nanosleep(&timed_sleep, NULL);
       }
 
       clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
@@ -2861,31 +2877,30 @@ ags_thread_loop(void *ptr)
       }
 
       pthread_mutex_unlock(thread->greedy_mutex);
-
-
-      /* */
-      pthread_mutex_lock(thread->timelock_mutex);
-
-      val = g_atomic_int_get(&(thread->sync_flags));
-
-      if((AGS_THREAD_TIMELOCK_RUN & val) != 0){
-	guint locked;
-
-	locked = g_atomic_int_get(&(thread->sync_flags));
-				
-	g_atomic_int_and(&(thread->sync_flags),
-			 (~AGS_THREAD_TIMELOCK_WAIT));
-
-	if((AGS_THREAD_TIMELOCK_WAIT & locked) != 0){	
-	  pthread_cond_signal(thread->timelock_cond);
-	}
-      }
-
-      pthread_mutex_unlock(thread->timelock_mutex);
-
+      
       /* run */
       if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0 &&
 	 (AGS_THREAD_MONITORING & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+	/* timed lock (suspend) */
+	pthread_mutex_lock(thread->timelock_mutex);
+
+	val = g_atomic_int_get(&(thread->sync_flags));
+
+	if((AGS_THREAD_TIMELOCK_RUN & val) != 0){
+	  guint locked;
+
+	  locked = g_atomic_int_get(&(thread->sync_flags));
+				
+	  g_atomic_int_and(&(thread->sync_flags),
+			   (~AGS_THREAD_TIMELOCK_WAIT));
+
+	  if((AGS_THREAD_TIMELOCK_WAIT & locked) != 0){	
+	    pthread_cond_signal(thread->timelock_cond);
+	  }
+	}
+
+	pthread_mutex_unlock(thread->timelock_mutex);
+	
 	ags_thread_run(thread);
       }
       //    g_printf("%s\n\0", G_OBJECT_TYPE_NAME(thread));
@@ -2937,7 +2952,8 @@ ags_thread_loop(void *ptr)
     }
     
     /* yield */
-    if(thread->tic_delay != thread->delay){
+    if(main_loop->tic_delay != main_loop->delay &&
+       thread->cycle_iteration % (guint) floor(AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_YIELD_JIFFIE) == 0){
       pthread_yield();
     }    
   }
@@ -3108,7 +3124,9 @@ ags_thread_timelock_loop(void *ptr)
 
     sync_flags = g_atomic_int_get(&(thread->sync_flags));
 
-    if((AGS_THREAD_WAIT_0 & sync_flags) != 0){
+    if((AGS_THREAD_WAIT_0 & sync_flags ||
+	AGS_THREAD_WAIT_1 & sync_flags ||
+	AGS_THREAD_WAIT_2 & sync_flags) != 0){
 #ifdef AGS_DEBUG
       g_message("thread in realtime\0");
 #endif
@@ -3128,124 +3146,15 @@ ags_thread_timelock_loop(void *ptr)
 void
 ags_thread_real_timelock(AgsThread *thread)
 {
-  AgsThread *main_loop;
-  GList *greedy_locks;
-  guint locked_greedy, val;
-  guint tic, next_tic;
-      
-  pthread_mutex_lock(thread->greedy_mutex);
-
-  tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-  if(tic = 2){
-    next_tic = 0;
-  }else if(tic = 0){
-    next_tic = 1;
-  }else if(tic = 1){
-    next_tic = 2;
-  }
-
-#if defined(AGS_PTHREAD_SUSPEND) || defined(AGS_LINUX_SIGNALS)
-  val = g_atomic_int_get(&(thread->sync_flags));
-
-  if((AGS_THREAD_SKIP_NON_GREEDY & val) != 0){
-#endif
-    /*
-     * bad choice because throughput will suffer but it's your only choice as long
-     * pthread_suspend and pthread_resume will be missing.
-     */
-
-    ags_thread_lock(main_loop);
-    greedy_locks = thread->greedy_locks;
-
-    while(greedy_locks != NULL){
-      pthread_mutex_lock(AGS_THREAD(greedy_locks->data)->greedy_mutex);
-      
-      g_atomic_int_or(&(AGS_THREAD(greedy_locks->data)->sync_flags),
-		      (AGS_THREAD_WAIT_0 | AGS_THREAD_SKIPPED_BY_TIMELOCK));
-
-      pthread_mutex_unlock(AGS_THREAD(greedy_locks->data)->greedy_mutex);
-
-      greedy_locks = greedy_locks->next;
-    }
-
-    ags_thread_unlock(main_loop);
-
-    if(!ags_thread_is_tree_ready(thread,
-				 next_tic)){
-      g_atomic_int_or(&(thread->sync_flags),
-		      AGS_THREAD_WAIT_0);
-
-      while(!ags_thread_is_current_ready(thread,
-					 next_tic)){
-	pthread_cond_wait(thread->cond,
-			  thread->greedy_mutex);
-      }
-    }else{
-      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_set_sync_all(main_loop, tic);
-    }
-#if defined(AGS_PTHREAD_SUSPEND) || defined(AGS_LINUX_SIGNALS)
-  }else{
-    g_atomic_int_or(&(thread->sync_flags),
-		    AGS_THREAD_TIMELOCK_RESUME);
-    
-    /* throughput is mandatory */
+  g_atomic_int_or(&(thread->sync_flags),
+		  AGS_THREAD_INTERRUPTED);
+  
+  /* throughput is mandatory */
 #ifdef AGS_PTHREAD_SUSPEND
     pthread_suspend(thread->thread);
 #else
     pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
-
-    /* allow non greedy to continue */
-    greedy_locks = thread->greedy_locks;
-
-    while(greedy_locks != NULL){
-      pthread_mutex_lock(AGS_THREAD(greedy_locks->data)->greedy_mutex);
-    
-      locked_greedy = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->locked_greedy));
-
-      locked_greedy--;
-
-      g_atomic_int_set(&(AGS_THREAD(greedy_locks->data)->locked_greedy),
-		       locked_greedy);
-
-      pthread_cond_signal(AGS_THREAD(greedy_locks->data)->greedy_cond);
-
-      pthread_mutex_unlock(AGS_THREAD(greedy_locks->data)->greedy_mutex);
-
-      greedy_locks = greedy_locks->next;
-    }
-
-    /* skip syncing for greedy */
-    main_loop = ags_thread_get_toplevel(thread);
-
-    if(!ags_thread_is_tree_ready(thread,
-				 next_tic)){
-      g_atomic_int_or(&(thread->sync_flags),
-		      AGS_THREAD_WAIT_0);
-
-      while(!ags_thread_is_current_ready(thread,
-					 next_tic)){
-	pthread_cond_wait(thread->cond,
-			  thread->greedy_mutex);
-      }
-    }else{
-      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_set_sync_all(main_loop, tic);
-    }
-
-    /* your chance */
-#ifdef AGS_PTHREAD_RESUME
-    pthread_resume(thread->thread));
-#else
-    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
-#endif
-  }
-#endif
-  pthread_mutex_unlock(thread->greedy_mutex);
 }
 
 void

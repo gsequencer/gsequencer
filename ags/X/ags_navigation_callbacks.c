@@ -604,21 +604,21 @@ ags_navigation_tic_callback(GObject *soundcard,
   }
 
   if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) != navigation->note_offset){
-    //    gdk_threads_enter();
+    gdk_threads_enter();
     
     navigation->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
     tact = navigation->note_offset - navigation->start_tact;
 
-    //    gdk_window_flush(GTK_WIDGET(navigation->duration_time)->window);
-    //    timestr = ags_navigation_absolute_tact_to_time_string(tact,
-    //							  ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard)),
-    //							  ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard)));
+    gdk_window_flush(GTK_WIDGET(navigation->duration_time)->window);
+    timestr = ags_navigation_absolute_tact_to_time_string(tact,
+    							  ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard)),
+							  ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard)));
   
-    //    gtk_label_set_label(navigation->duration_time, timestr);
-    //    gtk_widget_queue_draw(navigation->duration_time);
+    gtk_label_set_label(navigation->duration_time, timestr);
+    gtk_widget_queue_draw(navigation->duration_time);
     g_free(timestr);
 
-    //    gdk_threads_leave();
+    gdk_threads_leave();
   }
 }
 

@@ -176,7 +176,7 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
   GList *list;
   guint i;
 
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   g_atomic_int_set(&(thread_pool->flags),
 		   0);
@@ -189,12 +189,16 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
   thread_pool->thread = (pthread_t *) malloc(sizeof(pthread_t));
 
   //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
 
   thread_pool->creation_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(thread_pool->creation_mutex, &attr);
+  pthread_mutex_init(thread_pool->creation_mutex, attr);
 
   thread_pool->creation_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(thread_pool->creation_cond, NULL);

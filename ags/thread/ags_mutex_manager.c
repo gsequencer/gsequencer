@@ -44,7 +44,7 @@ void ags_mutex_manager_destroy_data(gpointer data);
 static gpointer ags_mutex_manager_parent_class = NULL;
 
 AgsMutexManager *ags_mutex_manager = NULL;
-pthread_mutex_t ags_application_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t *ags_application_mutex = NULL;
 
 GType
 ags_mutex_manager_get_type()
@@ -153,7 +153,24 @@ ags_mutex_manager_destroy_data(gpointer data)
 pthread_mutex_t*
 ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
 {
-  return(&ags_application_mutex);
+  if(ags_application_mutex == NULL){
+    pthread_mutexattr_t *attr;
+
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+    pthread_mutexattr_init(attr);
+    pthread_mutexattr_settype(attr,
+			      PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutexattr_setprotocol(attr,
+				  PTHREAD_PRIO_INHERIT);
+
+    ags_application_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(ags_application_mutex,
+		       attr);
+  }
+  
+  return(ags_application_mutex);
 }
 
 /**

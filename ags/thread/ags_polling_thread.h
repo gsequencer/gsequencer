@@ -40,7 +40,8 @@
 
 #define AGS_POLLING_THREAD_RT_PRIORITY (95)
 
-#define AGS_POLLING_THREAD_DEFAULT_JIFFIE (2000.0)
+#define AGS_POLLING_THREAD_DEFAULT_JIFFIE (100.0) //NOTE:JK: take care of AGS_POLLING_THREAD_UNDERLOAD as exceeding AGS_THREAD_HERTZ_JIFFIE
+#define AGS_POLLING_THREAD_UNDERLOAD (4500)
 
 typedef struct _AgsPollingThread AgsPollingThread;
 typedef struct _AgsPollingThreadClass AgsPollingThreadClass;
