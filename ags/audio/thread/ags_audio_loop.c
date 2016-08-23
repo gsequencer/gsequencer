@@ -652,13 +652,15 @@ ags_audio_loop_run(AgsThread *thread)
   }
 
   /* reset polling thread */
-  pthread_mutex_lock(polling_thread->fd_mutex);
+  if(polling_thread != NULL){
+    pthread_mutex_lock(polling_thread->fd_mutex);
       
-  g_atomic_int_and(&(polling_thread->flags),
-		   (~AGS_POLLING_THREAD_OMIT));
+    g_atomic_int_and(&(polling_thread->flags),
+		     (~AGS_POLLING_THREAD_OMIT));
     
-  pthread_mutex_unlock(polling_thread->fd_mutex);
-
+    pthread_mutex_unlock(polling_thread->fd_mutex);
+  }
+  
   /* wake-up timing thread */
   pthread_mutex_lock(audio_loop->timing_mutex);
   
