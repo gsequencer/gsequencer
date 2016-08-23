@@ -375,6 +375,28 @@ ags_soundcard_get_poll_fd(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_is_available:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get available.
+ *
+ * Returns: %TRUE if available, else %FALSE
+ *
+ * Since: 0.7.50
+ */
+gboolean
+ags_soundcard_is_available(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), FALSE);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->is_available, FALSE);
+
+  return(soundcard_interface->is_available(soundcard));
+}
+
+/**
  * ags_soundcard_is_starting:
  * @soundcard: an #AgsSoundcard
  *

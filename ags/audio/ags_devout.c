@@ -110,6 +110,7 @@ void ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			 GError **error);
 
 GList* ags_devout_get_poll_fd(AgsSoundcard *soundcard);
+gboolean ags_devout_is_available(AgsSoundcard *soundcard);
 
 gboolean ags_devout_is_starting(AgsSoundcard *soundcard);
 gboolean ags_devout_is_playing(AgsSoundcard *soundcard);
@@ -505,6 +506,8 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_devout_pcm_info;
 
   soundcard->get_poll_fd = ags_devout_get_poll_fd;
+  soundcard->is_available = ags_devout_is_available;
+
   soundcard->is_starting =  ags_devout_is_starting;
   soundcard->is_playing = ags_devout_is_playing;
   soundcard->is_recording = NULL;
@@ -1510,6 +1513,31 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
   }
   
   return(list);
+}
+
+gboolean
+ags_devout_is_available(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+  GList *list;
+  
+  devout = AGS_DEVOUT(soundcard);
+  
+  list = devout->poll_fd;
+
+  while(list !=	NULL){
+    signed short revents;
+    
+    snd_pcm_poll_descriptors_revents(devout->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
+    
+    if((POLLOUT & revents) != 0){
+      return(TRUE);
+    }
+
+    list = list->next;
+  }
+  
+  return(FALSE);
 }
 
 gboolean

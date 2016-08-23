@@ -441,19 +441,19 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
 
   audio_loop = ags_thread_get_toplevel(soundcard_thread);
 
-  pthread_mutex_lock(audio_loop->timing_mutex);
+  if(ags_soundcard_is_available(AGS_SOUNDCARD(soundcard_thread->soundcard))){
+    pthread_mutex_lock(audio_loop->timing_mutex);
 
-  //  g_atomic_int_set(&(audio_loop->time_spent),
-  //		   audio_loop->time_cycle);
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     audio_loop->time_cycle);
 
-  pthread_mutex_unlock(audio_loop->timing_mutex);
+    pthread_mutex_unlock(audio_loop->timing_mutex);
 
-  //  ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
-  //			  AGS_THREAD_SUSPEND_SIG,
-  //			  0, &time_spent);
+    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+			    AGS_THREAD_SUSPEND_SIG,
+			    0, &time_spent);
   
-  if((AGS_POLL_FD_OUTPUT & (poll_fd->flags)) != 0){
-    //    poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+    poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
   }
 }
 
