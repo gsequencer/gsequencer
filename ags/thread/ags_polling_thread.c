@@ -114,6 +114,12 @@ ags_polling_thread_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_polling_thread_init(AgsPollingThread *polling_thread)
 {
+  AgsThread *thread;
+
+  thread = polling_thread;
+
+  thread->freq = AGS_POLLING_THREAD_DEFAULT_JIFFIE;
+  
   polling_thread->flags = 0;
 
   polling_thread->fd_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
@@ -176,16 +182,34 @@ ags_polling_thread_run(AgsThread *thread)
   sigemptyset(&sigmask);
 
   timeout.tv_sec = 0;
-  timeout.tv_nsec = (NSEC_PER_SEC / thread->freq);
+  timeout.tv_nsec = (NSEC_PER_SEC / thread->freq - 40000);
   
   pthread_mutex_lock(polling_thread->fd_mutex);
 
   if((AGS_POLLING_THREAD_OMIT & (polling_thread->flags)) == 0){
-    ppoll(polling_thread->fds,
-	  g_list_length(polling_thread->poll_fd),
-	  &timeout,
-	  &sigmask);
+    list = polling_thread->poll_fd;
 
+    /* pre flag */
+    while(list != NULL){
+      position = ags_polling_thread_fd_position(polling_thread,
+						AGS_POLL_FD(list->data)->fd);
+
+      if(AGS_POLL_FD(list->data)->poll_fd != NULL){
+	AGS_POLL_FD(list->data)->poll_fd->events = polling_thread->fds[position].events;
+      }
+      
+      list = list->next;
+    }  
+
+    /* poll */	
+    if(polling_thread->fds != NULL){
+      ppoll(polling_thread->fds,
+	    g_list_length(polling_thread->poll_fd),
+	    &timeout,
+	    &sigmask);
+    }
+
+    /* post flag */
     list = polling_thread->poll_fd;
 
     while(list != NULL){
@@ -208,8 +232,17 @@ ags_polling_thread_run(AgsThread *thread)
 	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_HANG_UP;
       }
 
+      /* do legacy */
+      if(AGS_POLL_FD(list->data)->poll_fd != NULL){
+	AGS_POLL_FD(list->data)->poll_fd->revents = polling_thread->fds[position].revents;
+      }
+      
       ags_poll_fd_dispatch(list->data);
-
+      AGS_POLL_FD(list->data)->flags &= (~(AGS_POLL_FD_INPUT |
+					   AGS_POLL_FD_OUTPUT |
+					   AGS_POLL_FD_HANG_UP));
+      AGS_POLL_FD(list->data)->poll_fd->revents = 0;
+      
       list = list->next;
     }  
   }
@@ -266,8 +299,14 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
   AGS_POLL_FD(gobject)->polling_thread = polling_thread;
   
   length = g_list_length(polling_thread->poll_fd);
-  polling_thread->fds = (struct pollfd *) realloc(polling_thread->fds,
-						  (length + 1) * sizeof(struct pollfd));
+
+  if(length == 0){
+    polling_thread->fds = (struct pollfd *) malloc(sizeof(struct pollfd));
+  }else{
+    polling_thread->fds = (struct pollfd *) realloc(polling_thread->fds,
+						    (length + 1) * sizeof(struct pollfd));
+  }
+
   polling_thread->fds[length].fd = AGS_POLL_FD(gobject)->fd;
   polling_thread->fds[length].events = 0;
   polling_thread->fds[length].revents = 0;

@@ -602,8 +602,8 @@ ags_audio_loop_start(AgsThread *thread)
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
 
-    pthread_create(audio_loop->timing_thread, NULL,
-		   ags_audio_loop_timing_thread, audio_loop);
+    //    pthread_create(audio_loop->timing_thread, NULL,
+    //		   ags_audio_loop_timing_thread, audio_loop);
   }
 }
 
@@ -648,15 +648,11 @@ ags_audio_loop_run(AgsThread *thread)
   /* wake-up timing thread */
   pthread_mutex_lock(audio_loop->timing_mutex);
   
-  g_atomic_int_or(&(audio_loop->timing_flags),
-		  AGS_AUDIO_LOOP_TIMING_WAKEUP);
-
-  if((AGS_AUDIO_LOOP_TIMING_WAITING & (g_atomic_int_get(&(audio_loop->timing_flags)))) != 0){
-    pthread_cond_signal(audio_loop->timing_cond);
-  }
+  g_atomic_int_set(&(audio_loop->time_spent),
+		   0);
 
   pthread_mutex_unlock(audio_loop->timing_mutex);
-    
+  
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
   
   pthread_mutex_lock(audio_loop->recall_mutex);
@@ -773,15 +769,12 @@ ags_audio_loop_timing_thread(void *ptr)
     g_atomic_int_set(&(audio_loop->time_spent),
 		     0);
     
-    nanosleep(&idle,
-	      NULL);
+    //    nanosleep(&idle,
+    //	      NULL);
 
     g_atomic_int_set(&(audio_loop->time_spent),
 		     audio_loop->time_cycle);
     
-    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
-			    AGS_THREAD_SUSPEND_SIG,
-			    audio_loop->time_cycle, &(audio_loop->time_spent));
   }
   
   pthread_exit(NULL);

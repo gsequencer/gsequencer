@@ -20,6 +20,8 @@
 #ifndef __AGS_POLL_FD_H__
 #define __AGS_POLL_FD_H__
 
+#include <poll.h>
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -53,6 +55,8 @@ struct _AgsPollFd
   AgsPollingThread *polling_thread;
   
   int fd;
+
+  struct pollfd *poll_fd;
 };
 
 struct _AgsPollFdClass

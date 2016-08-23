@@ -695,6 +695,8 @@ ags_devout_init(AgsDevout *devout)
   devout->application_context = NULL;
   devout->application_mutex = NULL;
 
+  devout->poll_fd = NULL;
+  
   /* all AgsAudio */
   devout->audio = NULL;
 }
@@ -1480,22 +1482,29 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
   gint count;
   guint i;
 
-  /* get poll fds of ALSA */
-  count = snd_pcm_poll_descriptors_count(AGS_DEVOUT(soundcard)->out.alsa.handle);
-  snd_pcm_poll_descriptors(AGS_DEVOUT(soundcard)->out.alsa.handle, fds, count);
+  if(AGS_DEVOUT(soundcard)->poll_fd == NULL){
+    /* get poll fds of ALSA */
+    count = snd_pcm_poll_descriptors_count(AGS_DEVOUT(soundcard)->out.alsa.handle);
 
-  /* map fds */
-  list = NULL;
+    fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
+    snd_pcm_poll_descriptors(AGS_DEVOUT(soundcard)->out.alsa.handle, fds, count);
 
-  for(i = 0; i < count; i++){
-    poll_fd = ags_poll_fd_new();
-    poll_fd->fd = fds[i].fd;
-    
-    list = g_list_prepend(list,
-			  poll_fd);
+    /* map fds */
+    list = NULL;
+
+    for(i = 0; i < count; i++){
+      poll_fd = ags_poll_fd_new();
+      poll_fd->fd = fds[i].fd;
+      poll_fd->poll_fd = &(fds[i]);
+      
+      list = g_list_prepend(list,
+			    poll_fd);
+    }
+
+    AGS_DEVOUT(soundcard)->poll_fd = list;
+  }else{
+    list = AGS_DEVOUT(soundcard)->poll_fd;
   }
-
-  free(fds);
   
   return(list);
 }
@@ -1835,12 +1844,15 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
   */
+
   /*  */
   devout->out.alsa.handle = handle;
   devout->tact_counter = 0.0;
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
 
+  ags_soundcard_get_poll_fd(soundcard);
+  
   devout->flags |= AGS_DEVOUT_INITIALIZED;
   devout->flags |= AGS_DEVOUT_BUFFER0;
   devout->flags &= (~(AGS_DEVOUT_BUFFER1 |
@@ -2118,10 +2130,27 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   AgsApplicationContext *application_context;
 
+  GList *poll_fd;
+
   pthread_mutex_t *mutex;
   
   devout = AGS_DEVOUT(soundcard);
 
+  /* remove poll fd */
+  poll_fd = devout->poll_fd;
+  
+  while(poll_fd != NULL){
+    ags_polling_thread_remove_poll_fd(AGS_POLL_FD(poll_fd->data)->polling_thread,
+				      poll_fd->data);
+    g_object_unref(poll_fd->data);
+    
+    poll_fd = poll_fd->next;
+  }
+
+  g_list_free(poll_fd);
+
+  devout->poll_fd = NULL;
+  
   application_context = ags_soundcard_get_application_context(soundcard);
   
   pthread_mutex_lock(application_context->mutex);

@@ -35,6 +35,7 @@
 #endif
 #include <ags/thread/ags_single_thread.h>
 #include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_polling_thread.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_thread_pool.h>
 
@@ -71,6 +72,8 @@ struct _AgsXorgApplicationContext
 
   AgsThreadPool *thread_pool;
 
+  AgsPollingThread *polling_thread;
+  
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
 
