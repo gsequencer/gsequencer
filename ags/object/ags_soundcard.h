@@ -105,6 +105,7 @@ struct _AgsSoundcardInterface
 		     GList **card_id, GList **card_name);
   
   GList* (*get_poll_fd)(AgsSoundcard *soundcard);
+  gboolean (*is_available)(AgsSoundcard *soundcard);
   
   gboolean (*is_starting)(AgsSoundcard *soundcard);
   gboolean (*is_playing)(AgsSoundcard *soundcard);
@@ -194,6 +195,7 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			    GError **error);
 
 GList* ags_soundcard_get_poll_fd(AgsSoundcard *soundcard);
+gboolean ags_soundcard_is_available(AgsSoundcard *soundcard);
 
 gboolean ags_soundcard_is_starting(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_playing(AgsSoundcard *soundcard);

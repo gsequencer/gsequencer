@@ -1,9 +1,10 @@
 ags (0.7.50)
 
 	* implemented ags_polling_thread.[ch] and ags_poll_fd.[ch]
-	* implemented ags_soundcard_get_poll_fd()
+	* implemented ags_soundcard_get_poll_fd() and ags_soundcard_is_avialable()
 	* using AgsPollingThread in ags_soundcard_thread.c and ags_gui_thread.c
 	* fixed use of freed string in ags_audio_preferences.c as apply soundcard
+	* improved priorities
 
 ags (0.7.49)
 

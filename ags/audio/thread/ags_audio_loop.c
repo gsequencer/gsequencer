@@ -789,8 +789,6 @@ ags_audio_loop_timing_thread(void *ptr)
     nanosleep(&idle,
 	      NULL);
 
-    time_spent = audio_loop->time_cycle;
-
     g_atomic_int_set(&(audio_loop->time_spent),
 		     audio_loop->time_cycle);
     ags_main_loop_interrupt(AGS_MAIN_LOOP(thread),
