@@ -343,11 +343,13 @@ ags_soundcard_thread_start(AgsThread *thread)
   poll_fd = ags_soundcard_get_poll_fd(soundcard);
     
   while(poll_fd != NULL){
-    ags_polling_thread_add_poll_fd(polling_thread,
-				   poll_fd->data);
-    g_signal_connect(G_OBJECT(poll_fd->data), "dispatch\0",
-		     G_CALLBACK(ags_soundcard_thread_dispatch_callback), soundcard_thread);
-
+    if(polling_thread != NULL){
+      ags_polling_thread_add_poll_fd(polling_thread,
+				     poll_fd->data);
+      g_signal_connect(G_OBJECT(poll_fd->data), "dispatch\0",
+		       G_CALLBACK(ags_soundcard_thread_dispatch_callback), soundcard_thread);
+    }
+    
     poll_fd = poll_fd->next;
   }
 
@@ -364,8 +366,6 @@ ags_soundcard_thread_run(AgsThread *thread)
   AgsAudioLoop *audio_loop;
   AgsSoundcardThread *soundcard_thread;
 
-  AgsPollingThread *polling_thread;
-  
   AgsSoundcard *soundcard;
 
   GList *poll_fd;
@@ -376,9 +376,6 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
   audio_loop = ags_thread_get_toplevel(thread);
-  
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
   
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -452,8 +449,10 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
     ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
 			    AGS_THREAD_SUSPEND_SIG,
 			    0, &time_spent);
-  
-    poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+
+    if(poll_fd->polling_thread != NULL){
+      poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+    }
   }
 }
 
