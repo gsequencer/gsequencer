@@ -131,6 +131,8 @@ ags_poll_fd_init(AgsPollFd *poll_fd)
   poll_fd->flags = 0;
 
   poll_fd->polling_thread = NULL;
+
+  poll_fd->poll_fd = NULL;
 }
 
 void

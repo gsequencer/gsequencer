@@ -245,6 +245,7 @@ ags_gui_thread_run(AgsThread *thread)
   gint nfds, allocated_nfds;
   gint timeout;
   gint position;
+  gboolean some_ready;
   guint i;
   
   auto void ags_gui_thread_complete_task();
@@ -351,6 +352,29 @@ ags_gui_thread_run(AgsThread *thread)
     gui_thread->cached_poll_array = fds = g_new(GPollFD, nfds);
   }
 
+  /* add new poll fd */
+  for(i = 0; i < gui_thread->cached_poll_array_size; i++){
+    pthread_mutex_lock(polling_thread->fd_mutex);
+
+    position = ags_polling_thread_fd_position(polling_thread,
+					      fds[i].fd);
+
+    pthread_mutex_unlock(polling_thread->fd_mutex);
+    
+    if(position < 0){
+      poll_fd = ags_poll_fd_new();
+      poll_fd->fd = fds[i].fd;
+      poll_fd->poll_fd = &(fds[i]);
+      
+      ags_polling_thread_add_poll_fd(polling_thread,
+				     poll_fd);
+      
+      /* add poll fd to gui thread */
+      gui_thread->poll_fd = g_list_prepend(gui_thread->poll_fd,
+					   poll_fd);
+    }
+  }
+
   /* remove old poll fd */
   list = gui_thread->poll_fd;
   
@@ -379,31 +403,12 @@ ags_gui_thread_run(AgsThread *thread)
     list = list_next;
   }
 
-  g_list_free(list);
+  some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
 
-  /* add new poll fd */
-  for(i = 0; i < gui_thread->cached_poll_array_size; i++){
-    pthread_mutex_lock(polling_thread->fd_mutex);
-
-    position = ags_polling_thread_fd_position(polling_thread,
-					      fds[i].fd);
-
-    pthread_mutex_unlock(polling_thread->fd_mutex);
-    
-    if(position < 0){
-      poll_fd = ags_poll_fd_new();
-      poll_fd->fd = fds[i].fd;
-      
-      ags_polling_thread_add_poll_fd(polling_thread,
-				     poll_fd);
-
-      /* add poll fd to gui thread */
-      gui_thread->poll_fd = g_list_prepend(gui_thread->poll_fd,
-					   poll_fd);
-    }
+  if(some_ready){
+    g_main_context_dispatch(main_context);
   }
-
-  g_main_context_dispatch (main_context);
+  
   ags_gui_thread_complete_task();  
 
   g_main_context_release(main_context);
@@ -470,13 +475,13 @@ ags_gui_thread_interrupted(AgsThread *thread,
   
   if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
     g_atomic_int_or(&(thread->sync_flags),
-		    AGS_THREAD_INTERRUPTED);
+    		    AGS_THREAD_INTERRUPTED);
     
     if(g_atomic_int_get(&(gui_thread->dispatching))){      
       //      g_message("huh!\0");
       pthread_kill(*(thread->thread),
-		   SIGIO);
-      
+      		   SIGIO);
+
 #ifdef AGS_PTHREAD_SUSPEND
       pthread_suspend(thread->thread);
 #else

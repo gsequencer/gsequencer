@@ -181,7 +181,7 @@ void
 ags_launch(gboolean single_thread)
 {
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *gui_thread, *task_thread;
+  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
   AgsConfig *config;
@@ -204,6 +204,8 @@ ags_launch(gboolean single_thread)
   
   pthread_mutex_unlock(application_mutex);
   
+  polling_thread = ags_thread_find_type(audio_loop,
+					AGS_TYPE_POLLING_THREAD);
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
 
@@ -211,6 +213,8 @@ ags_launch(gboolean single_thread)
   pthread_mutex_lock(audio_loop->start_mutex);
     
   start_queue = NULL;
+  start_queue = g_list_prepend(start_queue,
+			       polling_thread);
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
   start_queue = g_list_prepend(start_queue,
@@ -319,7 +323,7 @@ ags_launch_filename(gchar *filename,
 		    gboolean single_thread)
 {
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *gui_thread, *task_thread;
+  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
   AgsConfig *config;
@@ -342,6 +346,8 @@ ags_launch_filename(gchar *filename,
   
   pthread_mutex_unlock(application_mutex);
 
+  polling_thread = ags_thread_find_type(audio_loop,
+					AGS_TYPE_POLLING_THREAD);
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
 
@@ -374,6 +380,8 @@ ags_launch_filename(gchar *filename,
     pthread_mutex_lock(audio_loop->start_mutex);
     
     start_queue = NULL;
+    start_queue = g_list_prepend(start_queue,
+				 polling_thread);
     start_queue = g_list_prepend(start_queue,
 				 task_thread);
     start_queue = g_list_prepend(start_queue,
@@ -545,7 +553,7 @@ ags_timer_launch(timer_t *timer_id,
 		 gboolean single_thread)
 {
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *gui_thread, *task_thread;
+  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
   AgsConfig *config;
@@ -568,6 +576,8 @@ ags_timer_launch(timer_t *timer_id,
   
   pthread_mutex_unlock(application_mutex);
   
+  polling_thread = ags_thread_find_type(audio_loop,
+					AGS_TYPE_POLLING_THREAD);
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
 
@@ -575,6 +585,8 @@ ags_timer_launch(timer_t *timer_id,
   pthread_mutex_lock(audio_loop->start_mutex);
     
   start_queue = NULL;
+  start_queue = g_list_prepend(start_queue,
+			       polling_thread);
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
   start_queue = g_list_prepend(start_queue,
@@ -686,7 +698,7 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 			  gboolean single_thread)
 {
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *gui_thread, *task_thread;
+  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
   AgsConfig *config;
@@ -709,6 +721,8 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
   
   pthread_mutex_unlock(application_mutex);
   
+  polling_thread = ags_thread_find_type(audio_loop,
+					AGS_TYPE_POLLING_THREAD);
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
 
@@ -741,6 +755,8 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
     pthread_mutex_lock(audio_loop->start_mutex);
     
     start_queue = NULL;
+    start_queue = g_list_prepend(start_queue,
+				 polling_thread);
     start_queue = g_list_prepend(start_queue,
 				 task_thread);
     start_queue = g_list_prepend(start_queue,

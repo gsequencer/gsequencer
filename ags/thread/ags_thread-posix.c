@@ -2461,7 +2461,7 @@ ags_thread_real_clock(AgsThread *thread)
 	}
 	*/
 	
-	nanosleep(&timed_sleep, NULL);
+	//	nanosleep(&timed_sleep, NULL);
       }
 
       clock_gettime(CLOCK_MONOTONIC, thread->computing_time);

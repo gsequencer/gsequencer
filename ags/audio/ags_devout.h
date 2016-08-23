@@ -116,6 +116,8 @@ struct _AgsDevout
 
   GObject *application_context;
   pthread_mutex_t *application_mutex;
+
+  GList *poll_fd;
   
   GList *audio;
 };

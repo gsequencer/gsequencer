@@ -245,7 +245,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   GObject *soundcard;
   GObject *sequencer;
   AgsJackServer *jack_server;
-  
+
   AgsConfig *config;
 
   struct passwd *pw;
@@ -366,6 +366,12 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_object_ref(audio_loop);
   ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
+  /* AgsPollingThread */
+  xorg_application_context->polling_thread = ags_polling_thread_new();
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				xorg_application_context->polling_thread,
+				TRUE, TRUE);
+  
   /* AgsTaskThread */
   AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
