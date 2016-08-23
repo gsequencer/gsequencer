@@ -16,6 +16,10 @@ Following site gives you advice in configuring ALSA
 
 http://www.alsa-project.org/main/index.php/Low_latency_howto
 
+You might want to disable systemd accounting.
+
+https://www.freedesktop.org/software/systemd/man/systemd.resource-control.html
+
 If you have pulseaudio running you might run `gsequencer` with pasuspender like:
 
 $ pasuspender -- gsequencer
