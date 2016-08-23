@@ -939,6 +939,12 @@ main(int argc, char **argv)
     }
   }
 
+  param.sched_priority = GSEQUENCER_RT_PRIORITY;
+      
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed\0");
+  }
+
   /* Ignore interactive and job-control signals.  */
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);

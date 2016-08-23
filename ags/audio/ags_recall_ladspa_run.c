@@ -26,6 +26,7 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -306,9 +307,9 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
     return;
   }
   
-  ags_recall_ladspa_short_to_float(audio_signal->stream_current->data,
-				   recall_ladspa_run->input,
-				   (guint) audio_signal->buffer_size, (guint) recall_ladspa->input_lines);
+  ags_audio_buffer_util_copy_s16_to_float(recall_ladspa_run->input, (guint) recall_ladspa->input_lines,
+					  audio_signal->stream_current->data, 1,
+					  (guint) audio_signal->buffer_size);
 
   /* process data */
   for(i = 0; i < recall_ladspa->input_lines; i++){
@@ -320,9 +321,10 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   memset((signed short *) audio_signal->stream_current->data,
 	 0,
 	 buffer_size * sizeof(signed short));
-  ags_recall_ladspa_float_to_short(recall_ladspa_run->output,
-				   audio_signal->stream_current->data,
-				   (guint) audio_signal->buffer_size, (guint) recall_ladspa->output_lines);
+
+  ags_audio_buffer_util_copy_float_to_s16(audio_signal->stream_current->data, 1,
+					  recall_ladspa_run->input, (guint) recall_ladspa->input_lines,
+					  (guint) audio_signal->buffer_size);
 }
 
 /**

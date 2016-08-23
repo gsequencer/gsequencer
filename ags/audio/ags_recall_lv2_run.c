@@ -33,6 +33,7 @@
 #include <ags/plugin/ags_lv2_urid_manager.h>
 
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_route_lv2_audio_run.h>
@@ -495,9 +496,9 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }
 
   if(recall_lv2_run->input != NULL){
-    ags_recall_lv2_short_to_float(audio_signal->stream_current->data,
-				  recall_lv2_run->input,
-				  audio_signal->buffer_size, recall_lv2->input_lines);
+    ags_audio_buffer_util_copy_s16_to_float(recall_lv2_run->input, (guint) recall_lv2->input_lines,
+					    audio_signal->stream_current->data, 1,
+					    (guint) audio_signal->buffer_size);
   }
   
   /* process data */
@@ -514,9 +515,9 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 	   0,
 	   buffer_size * sizeof(signed short));
     
-    ags_recall_lv2_float_to_short(recall_lv2_run->output,
-				  audio_signal->stream_current->data,
-				  audio_signal->buffer_size, recall_lv2->output_lines);
+    ags_audio_buffer_util_copy_float_to_s16(audio_signal->stream_current->data, 1,
+					    recall_lv2_run->output, (guint) recall_lv2->output_lines,
+					    (guint) audio_signal->buffer_size);
   }
 }
 

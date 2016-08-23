@@ -342,6 +342,22 @@ ags_thread_pool_creation_thread(void *ptr)
 					  thread_pool->parent);
   
   pthread_mutex_unlock(application_mutex);
+
+  /* real-time setup */
+  if((AGS_THREAD_POOL_RT_SETUP & (g_atomic_int_get(&(thread_pool->flags)))) == 0){
+    struct sched_param param;
+    
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_THREAD_POOL_RT_PRIORITY;
+      
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    g_atomic_int_or(&(thread_pool->flags),
+		    AGS_THREAD_POOL_RT_SETUP);
+  }
+
   
 #ifdef AGS_DEBUG
   g_message("ags_thread_pool_creation_thread\0");
