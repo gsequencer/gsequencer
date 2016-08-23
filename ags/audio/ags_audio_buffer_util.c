@@ -830,6 +830,8 @@ ags_audio_buffer_util_copy_s16_to_s16(signed short *destination, guint dchannels
 				      signed short *source, guint schannels,
 				      guint count)
 {
+  signed short *dest_iter;
+  signed short mask;
   guint limit;
   guint i;
 
@@ -837,20 +839,45 @@ ags_audio_buffer_util_copy_s16_to_s16(signed short *destination, guint dchannels
   
   /* unrolled function */
   if(count > 8){
+    dest_iter = destination;
     limit = count - 8;
-  
+    
     for(; i < limit; i += 8){
-      *destination = 0xffff & ((signed long) ((*destination) + (*source)));
-      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
-      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
-      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
-      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
-      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
-      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
-      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
+      v8s16 a = {*source, *(source += schannels), *(source += schannels), *(source += schannels), *(source += schannels), *(source += schannels), *(source += schannels), *(source += schannels)};
+      v8s16 b = {*dest_iter, *(dest_iter += dchannels), *(dest_iter += dchannels), *(dest_iter += dchannels), *(dest_iter += dchannels), *(dest_iter += dchannels), *(dest_iter += dchannels), *(dest_iter += dchannels)};
+      v8s16 c;
 
-      destination += (8 * dchannels);
-      source += (8 * schannels);
+      source += schannels;
+      dest_iter += dchannels;
+      
+      mask = 0xffff;      
+      c = mask & (a + b);
+      
+      *destination = (signed short) c[0];
+      destination += dchannels;
+      
+      *destination = (signed short) c[1];
+      destination += dchannels;
+      
+      *destination = (signed short) c[2];
+      destination += dchannels;
+      
+      *destination = (signed short) c[3];
+      destination += dchannels;
+      
+      *destination = (signed short) c[4];
+      destination += dchannels;
+      
+      *destination = (signed short) c[5];
+      destination += dchannels;
+      
+      *destination = (signed short) c[6];
+      destination += dchannels;
+      
+      *destination = (signed short) c[7];
+      destination += dchannels;
+
+      //      dest_iter = destination;
     }
   }
 

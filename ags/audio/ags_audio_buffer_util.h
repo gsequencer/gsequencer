@@ -114,6 +114,8 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE,
 }AgsAudioBufferUtilCopyMode;
 
+typedef signed short v8s16 __attribute__ ((vector_size(8 * sizeof(signed short))));
+
 guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
 guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
 					  guint source_format);
