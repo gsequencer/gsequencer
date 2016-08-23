@@ -361,8 +361,11 @@ ags_soundcard_thread_run(AgsThread *thread)
 {
   AgsThread *parent;
   
+  AgsAudioLoop *audio_loop;
   AgsSoundcardThread *soundcard_thread;
 
+  AgsPollingThread *polling_thread;
+  
   AgsSoundcard *soundcard;
 
   GList *poll_fd;
@@ -372,7 +375,11 @@ ags_soundcard_thread_run(AgsThread *thread)
   GError *error;
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
-
+  audio_loop = ags_thread_get_toplevel(thread);
+  
+  polling_thread = ags_thread_find_type(audio_loop,
+					AGS_TYPE_POLLING_THREAD);
+  
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
@@ -402,15 +409,6 @@ ags_soundcard_thread_run(AgsThread *thread)
 
       g_warning("%s\0",
 		error->message);
-    }
-
-    /* reset polling thread */
-    poll_fd = ags_soundcard_get_poll_fd(soundcard);
-
-    while(poll_fd != NULL){
-      AGS_POLL_FD(poll_fd->data)->polling_thread->flags &= AGS_POLLING_THREAD_OMIT;
-      
-      poll_fd = poll_fd->next;
     }
   }
 }
@@ -445,17 +443,17 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
 
   pthread_mutex_lock(audio_loop->timing_mutex);
 
-  g_atomic_int_set(&(audio_loop->time_spent),
-		   audio_loop->time_cycle);
+  //  g_atomic_int_set(&(audio_loop->time_spent),
+  //		   audio_loop->time_cycle);
 
   pthread_mutex_unlock(audio_loop->timing_mutex);
 
-  ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
-			  AGS_THREAD_SUSPEND_SIG,
-			  0, &time_spent);
+  //  ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+  //			  AGS_THREAD_SUSPEND_SIG,
+  //			  0, &time_spent);
   
   if((AGS_POLL_FD_OUTPUT & (poll_fd->flags)) != 0){
-    poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+    //    poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
   }
 }
 

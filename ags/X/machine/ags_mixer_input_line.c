@@ -147,7 +147,7 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   AGS_LINE(mixer_input_line)->indicator = widget;
   g_hash_table_insert(ags_indicator_queue_draw,
 		      widget, ags_line_indicator_queue_draw);
-  //  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw, (gpointer) widget);
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw, (gpointer) widget);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,

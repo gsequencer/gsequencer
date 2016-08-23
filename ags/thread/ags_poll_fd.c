@@ -104,7 +104,7 @@ ags_poll_fd_class_init(AgsPollFdClass *poll_fd)
    *
    * The ::dispatch signal is emited during poll
    *
-   * Since: 0.4.2
+   * Since: 0.7.50
    */
   poll_fd_signals[DISPATCH] =
     g_signal_new("dispatch\0",

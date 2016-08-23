@@ -43,10 +43,13 @@
 #define AGS_RT_PRIORITY (45)
 
 #define AGS_THREAD_HERTZ_JIFFIE (1000.0)
+#define AGS_THREAD_YIELD_JIFFIE (2.0)
 #define AGS_THREAD_DEFAULT_JIFFIE (1000.0)
 #define AGS_THREAD_MAX_PRECISION (1000.0)
 
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
+
+#define AGS_THREAD_TOLERANCE (-4000.0) //NOTE:JK: 4 usec is much
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
@@ -128,7 +131,7 @@ struct _AgsThread
   gdouble freq;
 
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t mutexattr;
+  pthread_mutexattr_t *mutexattr;
   pthread_cond_t *cond;
 
   volatile GList *start_queue;
@@ -142,7 +145,7 @@ struct _AgsThread
   gboolean first_barrier;
   int wait_count[2];
 
-  pthread_t timelock_thread;
+  pthread_t *timelock_thread;
   pthread_mutex_t *timelock_mutex;
   pthread_cond_t *timelock_cond;
 

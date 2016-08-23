@@ -36,7 +36,7 @@
 #define AGS_IS_THREAD_POOL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD_POOL))
 #define AGS_THREAD_POOL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD_POOL, AgsThreadPoolClass))
 
-#define AGS_THREAD_POOL_RT_PRIORITY (95)
+#define AGS_THREAD_POOL_RT_PRIORITY (99)
 
 typedef struct _AgsThreadPool AgsThreadPool;
 typedef struct _AgsThreadPoolClass AgsThreadPoolClass;

@@ -25,6 +25,7 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_polling_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -612,6 +613,8 @@ ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
 
+  AgsPollingThread *polling_thread;
+  
   GMainContext *main_context;
 
   GPollFD *fds = NULL;  
@@ -626,6 +629,9 @@ ags_audio_loop_run(AgsThread *thread)
   static gboolean initialized = FALSE;
   
   audio_loop = AGS_AUDIO_LOOP(thread);
+  polling_thread = ags_thread_find_type(thread,
+					AGS_TYPE_POLLING_THREAD);
+  
   main_context = audio_loop->main_context;
 
   /* real-time setup */
@@ -645,18 +651,29 @@ ags_audio_loop_run(AgsThread *thread)
     g_main_context_push_thread_default(main_context);
   }
 
+  /* reset polling thread */
+  pthread_mutex_lock(polling_thread->fd_mutex);
+      
+  g_atomic_int_and(&(polling_thread->flags),
+		   (~AGS_POLLING_THREAD_OMIT));
+    
+  pthread_mutex_unlock(polling_thread->fd_mutex);
+
   /* wake-up timing thread */
   pthread_mutex_lock(audio_loop->timing_mutex);
   
   g_atomic_int_set(&(audio_loop->time_spent),
 		   0);
 
-  pthread_mutex_unlock(audio_loop->timing_mutex);
-  
-  //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
-  
-  pthread_mutex_lock(audio_loop->recall_mutex);
+  //  g_atomic_int_or(&(audio_loop->timing_flags),
+  //		  AGS_AUDIO_LOOP_TIMING_WAKEUP);
+  //  pthread_cond_signal(audio_loop->timing_cond);
 
+  pthread_mutex_unlock(audio_loop->timing_mutex);
+
+  /*  */
+  pthread_mutex_lock(audio_loop->recall_mutex);
+  
   /* play recall */
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
     ags_audio_loop_play_recall(audio_loop);
@@ -734,6 +751,8 @@ ags_audio_loop_timing_thread(void *ptr)
   AgsThread *thread;
 
   struct timespec idle;
+
+  guint time_spent;
   
   pthread_mutex_t *timing_mutex;
   pthread_cond_t *timing_cond;
@@ -765,16 +784,20 @@ ags_audio_loop_timing_thread(void *ptr)
     pthread_mutex_unlock(timing_mutex);
 
     idle.tv_sec = 0;
-    idle.tv_nsec = audio_loop->time_cycle - 40000; //NOTE:JK: 40 usec tolerance
-    g_atomic_int_set(&(audio_loop->time_spent),
-		     0);
+    idle.tv_nsec = audio_loop->time_cycle - 4000; //NOTE:JK: 4 usec tolerance
     
-    //    nanosleep(&idle,
-    //	      NULL);
+    nanosleep(&idle,
+	      NULL);
+
+    time_spent = audio_loop->time_cycle;
 
     g_atomic_int_set(&(audio_loop->time_spent),
 		     audio_loop->time_cycle);
+    ags_main_loop_interrupt(AGS_MAIN_LOOP(thread),
+    			    AGS_THREAD_SUSPEND_SIG,
+    			    audio_loop->time_cycle, &time_spent);
     
+    //    g_message("inter\0");    
   }
   
   pthread_exit(NULL);

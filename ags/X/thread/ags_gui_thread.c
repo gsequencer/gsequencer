@@ -45,6 +45,8 @@ void ags_gui_thread_suspend(AgsThread *thread);
 void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
+void ags_gui_thread_dispatch(AgsPollFd *poll,
+			     AgsGuiThread *gui_thread);
 void ags_gui_thread_interrupted(AgsThread *thread,
 				int sig,
 				guint time_cycle, guint *time_spent);
@@ -157,13 +159,14 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   thread = AGS_THREAD(gui_thread);
 
   g_atomic_int_or(&(thread->sync_flags),
-		  AGS_THREAD_RESUME_INTERRUPTED);
+		  (AGS_THREAD_RESUME_INTERRUPTED |
+		   AGS_THREAD_TIMELOCK_RUN));
   
   thread->freq = AGS_GUI_THREAD_DEFAULT_JIFFIE;
 
   /* main context */
   g_atomic_int_set(&(gui_thread->dispatching),
-		   TRUE);
+		   FALSE);
 
   g_cond_init(&(gui_thread->cond));
   g_mutex_init(&(gui_thread->mutex));
@@ -279,21 +282,7 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
 
-  /* real-time setup */
-  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
-    struct sched_param param;
-    
-    /* Declare ourself as a real time task */
-    param.sched_priority = AGS_POLLING_THREAD_RT_PRIORITY;
-      
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
-    }
-
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_RT_SETUP);
-  }
-  
+  /* real-time setup */  
   main_loop = ags_thread_get_toplevel(thread);
   polling_thread = ags_thread_find_type(main_loop,
 					AGS_TYPE_POLLING_THREAD);
@@ -301,8 +290,17 @@ ags_gui_thread_run(AgsThread *thread)
   main_context = gui_thread->main_context;
 
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    struct sched_param param;
+
     sigset_t sigmask;
     
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_GUI_THREAD_RT_PRIORITY;
+      
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
 
@@ -337,10 +335,7 @@ ags_gui_thread_run(AgsThread *thread)
     return;
   }
   
-  /*  */
-  g_atomic_int_set(&(gui_thread->dispatching),
-		   TRUE);
-  
+  /*  */  
   if(!g_main_context_acquire(main_context)){
     gboolean got_ownership = FALSE;
 
@@ -381,6 +376,8 @@ ags_gui_thread_run(AgsThread *thread)
       poll_fd = ags_poll_fd_new();
       poll_fd->fd = fds[i].fd;
       poll_fd->poll_fd = &(fds[i]);
+      g_signal_connect(poll_fd, "dispatch\0",
+		       G_CALLBACK(ags_gui_thread_dispatch), gui_thread);
       
       ags_polling_thread_add_poll_fd(polling_thread,
 				     poll_fd);
@@ -419,23 +416,47 @@ ags_gui_thread_run(AgsThread *thread)
     list = list_next;
   }
 
-  some_ready = g_main_context_check(main_context, max_priority, fds, nfds);
+  if(g_atomic_int_get(&(gui_thread->dispatching)) == TRUE){
+    some_ready = g_main_context_check(main_context, max_priority, gui_thread->cached_poll_array, gui_thread->cached_poll_array_size);
+    
+    if(some_ready){
+      g_main_context_dispatch(main_context);
+    }
 
-  if(some_ready){
-    g_main_context_dispatch(main_context);
+    g_atomic_int_set(&(gui_thread->dispatching),
+		     FALSE);
   }
   
   ags_gui_thread_complete_task();  
 
   g_main_context_release(main_context);
-
-  g_atomic_int_set(&(gui_thread->dispatching),
-		   FALSE);
   
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
   //  FcFini();
+}
+
+void
+ags_gui_thread_dispatch(AgsPollFd *poll_fd,
+			AgsGuiThread *gui_thread)
+{
+  AgsThread *thread;
+
+  thread = gui_thread;
+  g_atomic_int_set(&(gui_thread->dispatching),
+		   TRUE);
+
+  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
+    g_atomic_int_and(&(thread->sync_flags),
+		     (~AGS_THREAD_INTERRUPTED));
+
+#ifdef AGS_PTHREAD_RESUME
+    pthread_resume(thread->thread);
+#else
+    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
+#endif
+  }
 }
 
 void
@@ -490,18 +511,17 @@ ags_gui_thread_interrupted(AgsThread *thread,
   gui_thread = thread;
   
   if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
-    //    g_atomic_int_or(&(thread->sync_flags),
-    //		    AGS_THREAD_INTERRUPTED);
+    g_atomic_int_or(&(thread->sync_flags),
+    		    AGS_THREAD_INTERRUPTED);
     
     if(g_atomic_int_get(&(gui_thread->dispatching))){      
-      //      g_message("huh!\0");
-      //      pthread_kill(*(thread->thread),
-      //	   SIGIO);
+      pthread_kill(*(thread->thread),
+		   SIGIO);
 
 #ifdef AGS_PTHREAD_SUSPEND
-      //      pthread_suspend(thread->thread);
+    pthread_suspend(thread->thread);
 #else
-      //      pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
     }
   }

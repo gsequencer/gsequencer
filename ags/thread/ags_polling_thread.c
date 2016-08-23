@@ -34,6 +34,10 @@ void ags_polling_thread_start(AgsThread *thread);
 void ags_polling_thread_run(AgsThread *thread);
 void ags_polling_thread_stop(AgsThread *thread);
 
+void ags_polling_thread_interrupted(AgsThread *thread,
+				    int sig,
+				    guint time_cycle, guint *time_spent);
+
 /**
  * SECTION:ags_polling_thread
  * @short_description: polling thread
@@ -102,6 +106,8 @@ ags_polling_thread_class_init(AgsPollingThreadClass *polling_thread)
   thread->start = ags_polling_thread_start;
   thread->run = ags_polling_thread_run;
   thread->stop = ags_polling_thread_stop;
+
+  thread->interrupted = ags_polling_thread_interrupted;
 }
 
 void
@@ -117,6 +123,8 @@ ags_polling_thread_init(AgsPollingThread *polling_thread)
   AgsThread *thread;
 
   thread = polling_thread;
+  g_atomic_int_or(&(thread->sync_flags),
+		  (AGS_THREAD_RESUME_INTERRUPTED));
 
   thread->freq = AGS_POLLING_THREAD_DEFAULT_JIFFIE;
   
@@ -169,7 +177,8 @@ void
 ags_polling_thread_run(AgsThread *thread)
 {
   AgsPollingThread *polling_thread;
-
+  AgsThread *main_loop;
+  
   GList *list;
   
   struct timespec timeout;
@@ -179,7 +188,8 @@ ags_polling_thread_run(AgsThread *thread)
   int ret;
 
   polling_thread = AGS_POLLING_THREAD(thread);
-
+  main_loop = ags_thread_get_toplevel(thread);
+  
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
@@ -198,7 +208,20 @@ ags_polling_thread_run(AgsThread *thread)
   sigemptyset(&sigmask);
 
   timeout.tv_sec = 0;
-  timeout.tv_nsec = (NSEC_PER_SEC / thread->freq - 40000);
+
+  if(main_loop->tic_delay == main_loop->delay){
+    if(AGS_THREAD_TOLERANCE > 0.0){
+      timeout.tv_nsec = 0;
+    }else{
+      timeout.tv_nsec = -1 * AGS_THREAD_TOLERANCE;
+    }
+  }else{
+    if(thread->freq > AGS_THREAD_HERTZ_JIFFIE){
+      timeout.tv_nsec = (NSEC_PER_SEC / thread->freq + AGS_POLLING_THREAD_UNDERLOAD);
+    }else{
+      timeout.tv_nsec = (NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE + AGS_POLLING_THREAD_UNDERLOAD);
+    }
+  }
   
   pthread_mutex_lock(polling_thread->fd_mutex);
 
@@ -252,8 +275,9 @@ ags_polling_thread_run(AgsThread *thread)
       if(AGS_POLL_FD(list->data)->poll_fd != NULL){
 	AGS_POLL_FD(list->data)->poll_fd->revents = polling_thread->fds[position].revents;
       }
-      
+
       ags_poll_fd_dispatch(list->data);
+      
       AGS_POLL_FD(list->data)->flags &= (~(AGS_POLL_FD_INPUT |
 					   AGS_POLL_FD_OUTPUT |
 					   AGS_POLL_FD_HANG_UP));
@@ -271,6 +295,21 @@ ags_polling_thread_stop(AgsThread *thread)
 {
   /*  */
   AGS_THREAD_CLASS(ags_polling_thread_parent_class)->stop(thread);  
+}
+
+void
+ags_polling_thread_interrupted(AgsThread *thread,
+			       int sig,
+			       guint time_cycle, guint *time_spent)
+{
+  AgsPollingThread *polling_thread;
+
+  polling_thread = thread;
+  
+  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+    g_atomic_int_or(&(polling_thread->flags),
+		    AGS_POLLING_THREAD_OMIT);
+  }
 }
 
 gint
