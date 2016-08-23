@@ -179,6 +179,22 @@ ags_polling_thread_run(AgsThread *thread)
   int ret;
 
   polling_thread = AGS_POLLING_THREAD(thread);
+
+  /* real-time setup */
+  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    struct sched_param param;
+    
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_POLLING_THREAD_RT_PRIORITY;
+      
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_RT_SETUP);
+  }
+
   sigemptyset(&sigmask);
 
   timeout.tv_sec = 0;

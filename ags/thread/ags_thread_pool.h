@@ -36,11 +36,14 @@
 #define AGS_IS_THREAD_POOL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD_POOL))
 #define AGS_THREAD_POOL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD_POOL, AgsThreadPoolClass))
 
+#define AGS_THREAD_POOL_RT_PRIORITY (95)
+
 typedef struct _AgsThreadPool AgsThreadPool;
 typedef struct _AgsThreadPoolClass AgsThreadPoolClass;
 
 typedef enum{
-  AGS_THREAD_POOL_RUNNING  = 1,
+  AGS_THREAD_POOL_RUNNING    = 1,
+  AGS_THREAD_POOL_RT_SETUP   = 1 <<  1,
 }AgsThreadPoolFlags;
 
 struct _AgsThreadPool

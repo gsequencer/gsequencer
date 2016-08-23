@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_note.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_route_dssi_audio_run.h>
@@ -400,9 +401,9 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   }
 
   if(recall_dssi_run->input != NULL){
-    ags_recall_dssi_short_to_float(audio_signal->stream_current->data,
-				   recall_dssi_run->input,
-				   (guint) audio_signal->buffer_size, (guint) recall_dssi->input_lines);
+    ags_audio_buffer_util_copy_s16_to_float(recall_dssi_run->input, (guint) recall_dssi->input_lines,
+					    audio_signal->stream_current->data, 1,
+					    (guint) audio_signal->buffer_size);
   }
   
   /* process data */
@@ -439,9 +440,9 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   }
 
   /* copy data */
-  ags_recall_dssi_float_to_short(recall_dssi_run->output,
-				 audio_signal->stream_current->data,
-				 (guint) audio_signal->buffer_size, (guint) recall_dssi->output_lines);
+  ags_audio_buffer_util_copy_float_to_s16(audio_signal->stream_current->data, 1,
+					  recall_dssi_run->output, (guint) recall_dssi->output_lines,
+					  (guint) audio_signal->buffer_size);
 }
 
 void

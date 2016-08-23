@@ -278,6 +278,22 @@ ags_gui_thread_run(AgsThread *thread)
 
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
+
+  /* real-time setup */
+  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    struct sched_param param;
+    
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_POLLING_THREAD_RT_PRIORITY;
+      
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_RT_SETUP);
+  }
+  
   main_loop = ags_thread_get_toplevel(thread);
   polling_thread = ags_thread_find_type(main_loop,
 					AGS_TYPE_POLLING_THREAD);
@@ -474,18 +490,18 @@ ags_gui_thread_interrupted(AgsThread *thread,
   gui_thread = thread;
   
   if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
-    g_atomic_int_or(&(thread->sync_flags),
-    		    AGS_THREAD_INTERRUPTED);
+    //    g_atomic_int_or(&(thread->sync_flags),
+    //		    AGS_THREAD_INTERRUPTED);
     
     if(g_atomic_int_get(&(gui_thread->dispatching))){      
       //      g_message("huh!\0");
-      pthread_kill(*(thread->thread),
-      		   SIGIO);
+      //      pthread_kill(*(thread->thread),
+      //	   SIGIO);
 
 #ifdef AGS_PTHREAD_SUSPEND
-      pthread_suspend(thread->thread);
+      //      pthread_suspend(thread->thread);
 #else
-      pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+      //      pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
     }
   }

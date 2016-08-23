@@ -38,6 +38,8 @@
 #define AGS_IS_POLLING_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_POLLING_THREAD))
 #define AGS_POLLING_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_POLLING_THREAD, AgsPollingThreadClass))
 
+#define AGS_POLLING_THREAD_RT_PRIORITY (95)
+
 #define AGS_POLLING_THREAD_DEFAULT_JIFFIE (2000.0)
 
 typedef struct _AgsPollingThread AgsPollingThread;
