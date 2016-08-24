@@ -20,6 +20,8 @@ You might want to disable systemd accounting.
 
 https://www.freedesktop.org/software/systemd/man/systemd.resource-control.html
 
+$ systemd-run -p CPUAccounting=false -p MemoryAccounting=false -p TasksAccounting=false -p IOAccounting=false -p BlockIOAccounting=false --scope gsequencer
+
 If you have pulseaudio running you might run `gsequencer` with pasuspender like:
 
 $ pasuspender -- gsequencer
