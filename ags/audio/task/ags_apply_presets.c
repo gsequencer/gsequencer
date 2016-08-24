@@ -212,8 +212,8 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 
   gdouble freq;
   guint channels;
-
-  application_context = ags_application_context_get_instance();
+  
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
   main_loop = application_context->main_loop;
   
   freq = ceil((gdouble) apply_presets->samplerate / (gdouble) apply_presets->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
@@ -226,10 +226,10 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 			    apply_presets->format);
 
   /* reset audio loop frequency */
-  g_object_set(export_thread,
+  g_object_set(G_OBJECT(main_loop),
 	       "frequency\0", freq,
 	       NULL);
-  
+    
   /* reset export thread frequency */
   export_thread = main_loop;
   
@@ -257,10 +257,12 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   }
 
   /* reset playback on soundcard */
-  ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
-  ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
-			  &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
-
+  if(ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
+    ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
+    ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
+			    &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
+  }
+  
   /* reset audio thread frequency */
   audio_thread = main_loop;
   
@@ -271,10 +273,10 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 		 NULL);
 
     /* reset channel thread frequency */
-    channel_thread = main_loop;
+    channel_thread = audio_thread;
     
     while((channel_thread = ags_thread_find_type(channel_thread,
-					       AGS_TYPE_CHANNEL_THREAD)) != NULL){
+						 AGS_TYPE_CHANNEL_THREAD)) != NULL){
       g_object_set(channel_thread,
 		   "frequency\0", freq,
 		   NULL);
@@ -292,7 +294,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 
   while(audio != NULL){
     ags_apply_presets_audio(apply_presets,
-			    audio->data);
+			    AGS_AUDIO(audio->data));
     
     audio = audio->next;
   }

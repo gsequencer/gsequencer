@@ -59,6 +59,8 @@ struct _AgsGuiThread
   gint cached_poll_array_size;
   GPollFD *cached_poll_array;
 
+  guint max_priority;
+  
   GList *poll_fd;
   
   pthread_mutex_t *task_completion_mutex;

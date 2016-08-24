@@ -477,7 +477,8 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 			   &value);
   
   //FIXME:JK: work-around for alsa-handle
-  str = g_strdup_printf("%s\0", g_value_get_string(&value));
+  device = 
+    str = g_strdup_printf("%s\0", g_value_get_string(&value));
   g_message("%s\0", str);
   ags_config_set_value(config,
 		       AGS_CONFIG_SOUNDCARD,
@@ -546,7 +547,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   tasks = NULL;
   
   set_output_device = ags_set_output_device_new(window->soundcard,
-						str);
+						device);
   tasks = g_list_prepend(tasks,
 			 set_output_device);
   

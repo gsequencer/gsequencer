@@ -1,3 +1,9 @@
+ags (0.7.51)
+
+	* implemented ags_polling_thread.[ch] and ags_poll_fd.[ch]
+	* fixed freed overwritten temporary string in ags_set_output_device.c
+	* fixed reset frequency of main loop in ags_apply_presets.c
+
 ags (0.7.50)
 
 	* implemented ags_polling_thread.[ch] and ags_poll_fd.[ch]
