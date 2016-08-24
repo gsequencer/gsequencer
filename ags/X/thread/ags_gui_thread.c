@@ -45,11 +45,14 @@ void ags_gui_thread_suspend(AgsThread *thread);
 void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
-void ags_gui_thread_dispatch(AgsPollFd *poll,
-			     AgsGuiThread *gui_thread);
 void ags_gui_thread_interrupted(AgsThread *thread,
 				int sig,
 				guint time_cycle, guint *time_spent);
+
+void ags_gui_thread_dispatch_callback(AgsPollFd *poll,
+				      AgsGuiThread *gui_thread);
+void ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
+						AgsGuiThread *gui_thread);
 
 /**
  * SECTION:ags_gui_thread
@@ -177,6 +180,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->cached_poll_array = NULL;
 
   gui_thread->poll_fd = NULL;
+
+  gui_thread->max_priority = 0;
   
   /* task completion */
   pthread_mutexattr_init(&attr);
@@ -242,15 +247,11 @@ ags_gui_thread_run(AgsThread *thread)
 
   GPollFD *fds = NULL;  
 
-  GList *list, *list_next;
-
-  gint max_priority;
   gint nfds, allocated_nfds;
   gint timeout;
-  gint position;
+
   gboolean some_ready;
-  guint i;
-  
+
   auto void ags_gui_thread_complete_task();
   
   void ags_gui_thread_complete_task()
@@ -311,7 +312,7 @@ ags_gui_thread_run(AgsThread *thread)
 
     sigaction(SIGIO, &ags_gui_thread_sigact, (struct sigaction *) NULL);
     
-    /*  */
+    /* push default thread */
     if(!g_main_context_acquire(main_context)){
       gboolean got_ownership = FALSE;
 
@@ -328,6 +329,10 @@ ags_gui_thread_run(AgsThread *thread)
     
     g_main_context_push_thread_default(main_context);
 
+    g_signal_connect(polling_thread, "run\0",
+		     G_CALLBACK(ags_gui_thread_polling_thread_run_callback), gui_thread);
+
+
     g_main_context_release(main_context);
   }
   
@@ -335,7 +340,7 @@ ags_gui_thread_run(AgsThread *thread)
     return;
   }
   
-  /*  */  
+  /* acquire main context */
   if(!g_main_context_acquire(main_context)){
     gboolean got_ownership = FALSE;
 
@@ -354,75 +359,21 @@ ags_gui_thread_run(AgsThread *thread)
   fds = gui_thread->cached_poll_array;
 
   /* query new */
-  g_main_context_prepare(main_context, &max_priority);
+  g_main_context_prepare(main_context, &gui_thread->max_priority);
 
-  while((nfds = g_main_context_query(main_context, max_priority, &timeout, fds,
+  while((nfds = g_main_context_query(main_context, gui_thread->max_priority, &timeout, fds,
 				     allocated_nfds)) > allocated_nfds){
     g_free (fds);
     gui_thread->cached_poll_array_size = allocated_nfds = nfds;
     gui_thread->cached_poll_array = fds = g_new(GPollFD, nfds);
   }
 
-  /* add new poll fd */
-  for(i = 0; i < gui_thread->cached_poll_array_size; i++){
-    pthread_mutex_lock(polling_thread->fd_mutex);
-
-    position = ags_polling_thread_fd_position(polling_thread,
-					      fds[i].fd);
-
-    pthread_mutex_unlock(polling_thread->fd_mutex);
-    
-    if(position < 0){
-      poll_fd = ags_poll_fd_new();
-      poll_fd->fd = fds[i].fd;
-      poll_fd->poll_fd = &(fds[i]);
-      g_signal_connect(poll_fd, "dispatch\0",
-		       G_CALLBACK(ags_gui_thread_dispatch), gui_thread);
-      
-      ags_polling_thread_add_poll_fd(polling_thread,
-				     poll_fd);
-      
-      /* add poll fd to gui thread */
-      gui_thread->poll_fd = g_list_prepend(gui_thread->poll_fd,
-					   poll_fd);
-    }
-  }
-
-  /* remove old poll fd */
-  list = gui_thread->poll_fd;
+  /* dispatch */
+  some_ready = g_main_context_check(main_context, gui_thread->max_priority, gui_thread->cached_poll_array, gui_thread->cached_poll_array_size);
   
-  while(list != NULL){
-    gboolean found;
-
-    list_next = list->next;
-    found = FALSE;
-    
-    for(i = 0; i < nfds; i++){
-      if(AGS_POLL_FD(list->data)->fd == fds[i].fd){
-	found = TRUE;
-
-	break;
-      }
-    }
-
-    if(!found){
-      ags_polling_thread_remove_poll_fd(polling_thread,
-					list->data);
-      gui_thread->poll_fd = g_list_remove(gui_thread->poll_fd,
-					  list->data);
-      g_object_unref(list->data);
-    }
-    
-    list = list_next;
-  }
-
+  g_main_context_dispatch(main_context);
+  
   if(g_atomic_int_get(&(gui_thread->dispatching)) == TRUE){
-    some_ready = g_main_context_check(main_context, max_priority, gui_thread->cached_poll_array, gui_thread->cached_poll_array_size);
-    
-    if(some_ready){
-      g_main_context_dispatch(main_context);
-    }
-
     g_atomic_int_set(&(gui_thread->dispatching),
 		     FALSE);
   }
@@ -438,24 +389,28 @@ ags_gui_thread_run(AgsThread *thread)
 }
 
 void
-ags_gui_thread_dispatch(AgsPollFd *poll_fd,
-			AgsGuiThread *gui_thread)
+ags_gui_thread_interrupted(AgsThread *thread,
+			   int sig,
+			   guint time_cycle, guint *time_spent)
 {
-  AgsThread *thread;
+  AgsGuiThread *gui_thread;
 
-  thread = gui_thread;
-  g_atomic_int_set(&(gui_thread->dispatching),
-		   TRUE);
+  gui_thread = thread;
+  
+  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+    g_atomic_int_or(&(thread->sync_flags),
+    		    AGS_THREAD_INTERRUPTED);
+    
+    if(g_atomic_int_get(&(gui_thread->dispatching))){      
+      pthread_kill(*(thread->thread),
+		   SIGIO);
 
-  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
-    g_atomic_int_and(&(thread->sync_flags),
-		     (~AGS_THREAD_INTERRUPTED));
-
-#ifdef AGS_PTHREAD_RESUME
-    pthread_resume(thread->thread);
+#ifdef AGS_PTHREAD_SUSPEND
+    pthread_suspend(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
+    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
+    }
   }
 }
 
@@ -502,28 +457,98 @@ ags_gui_thread_stop(AgsThread *thread)
 }
 
 void
-ags_gui_thread_interrupted(AgsThread *thread,
-			   int sig,
-			   guint time_cycle, guint *time_spent)
+ags_gui_thread_dispatch_callback(AgsPollFd *poll_fd,
+				 AgsGuiThread *gui_thread)
 {
-  AgsGuiThread *gui_thread;
+  AgsThread *thread;
 
-  gui_thread = thread;
-  
-  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
-    g_atomic_int_or(&(thread->sync_flags),
-    		    AGS_THREAD_INTERRUPTED);
-    
-    if(g_atomic_int_get(&(gui_thread->dispatching))){      
-      pthread_kill(*(thread->thread),
-		   SIGIO);
+  thread = gui_thread;
+  g_atomic_int_set(&(gui_thread->dispatching),
+		   TRUE);
 
-#ifdef AGS_PTHREAD_SUSPEND
-    pthread_suspend(thread->thread);
+  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
+    g_atomic_int_and(&(thread->sync_flags),
+		     (~AGS_THREAD_INTERRUPTED));
+
+#ifdef AGS_PTHREAD_RESUME
+    pthread_resume(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
 #endif
+  }
+}
+
+void
+ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
+					   AgsGuiThread *gui_thread)
+{
+
+  AgsPollingThread *polling_thread;
+
+  AgsPollFd *poll_fd;
+  
+  GPollFD *fds = NULL;  
+
+  GList *list, *list_next;
+
+  gint position;
+  guint i;
+
+  polling_thread = thread;
+  
+  fds = gui_thread->cached_poll_array;
+  
+  /* add new poll fd */
+  for(i = 0; i < gui_thread->cached_poll_array_size; i++){
+    pthread_mutex_lock(polling_thread->fd_mutex);
+
+    position = ags_polling_thread_fd_position(polling_thread,
+					      fds[i].fd);
+
+    pthread_mutex_unlock(polling_thread->fd_mutex);
+    
+    if(position < 0){
+      poll_fd = ags_poll_fd_new();
+      poll_fd->fd = fds[i].fd;
+      poll_fd->poll_fd = &(fds[i]);
+      g_signal_connect(poll_fd, "dispatch\0",
+		       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
+      
+      ags_polling_thread_add_poll_fd(polling_thread,
+				     poll_fd);
+      
+      /* add poll fd to gui thread */
+      gui_thread->poll_fd = g_list_prepend(gui_thread->poll_fd,
+					   poll_fd);
     }
+  }
+
+  /* remove old poll fd */
+  list = gui_thread->poll_fd;
+  
+  while(list != NULL){
+    gboolean found;
+
+    list_next = list->next;
+    found = FALSE;
+    
+    for(i = 0; i < gui_thread->cached_poll_array_size; i++){
+      if(AGS_POLL_FD(list->data)->fd == fds[i].fd){
+	found = TRUE;
+
+	break;
+      }
+    }
+
+    if(!found){
+      ags_polling_thread_remove_poll_fd(polling_thread,
+					list->data);
+      gui_thread->poll_fd = g_list_remove(gui_thread->poll_fd,
+					  list->data);
+      g_object_unref(list->data);
+    }
+    
+    list = list_next;
   }
 }
 

@@ -1256,7 +1256,7 @@ ags_devout_set_device(AgsSoundcard *soundcard,
   AgsDevout *devout;
   
   devout = AGS_DEVOUT(soundcard);
-  devout->out.alsa.device = device;
+  devout->out.alsa.device = g_strdup(device);
 }
 
 gchar*
