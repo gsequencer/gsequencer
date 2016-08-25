@@ -1,3 +1,11 @@
+ags (0.7.53)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed readjust delay as modify buffer size or samplerate of soundcard
+	* fixed tempo divide delay by 16.0 and corrected bpm calculation
+	* implemented ags_soundcard_get_uptime()
+	* implemented ags_cell_pattern_led_queue_draw_timeout() and ags_pattern_box_led_queue_draw_timeout()
+
 ags (0.7.52)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

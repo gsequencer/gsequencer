@@ -70,8 +70,6 @@ void ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 void ags_navigation_raster_callback(GtkWidget *widget,
 				    AgsNavigation *navigation);
 
-void ags_navigation_tic_callback(GObject *soundcard,
-				 AgsNavigation *navigation);
 void ags_navigation_soundcard_stop_callback(GObject *soundcard,
 					    AgsNavigation *navigation);
 

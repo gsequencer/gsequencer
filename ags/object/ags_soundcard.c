@@ -463,6 +463,28 @@ ags_soundcard_is_recording(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_get_uptime:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get playback time as string.
+ *
+ * Returns: playback time as string
+ *
+ * Since: 0.7.53
+ */
+gchar*
+ags_soundcard_get_uptime(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_uptime, NULL);
+
+  return(soundcard_interface->get_uptime(soundcard));
+}
+
+/**
  * ags_soundcard_play:
  * @soundcard: an #AgsSoundcard
  * @error: an error that may occure

@@ -431,9 +431,6 @@ ags_drum_connect(AgsConnectable *connectable)
   ags_connectable_connect(drum->pattern_box);
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "tact\0",
-			 G_CALLBACK(ags_drum_tact_callback), drum);
-
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "done\0",
 			 G_CALLBACK(ags_drum_done_callback), drum);
 }
@@ -505,8 +502,7 @@ ags_drum_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
@@ -524,8 +520,7 @@ ags_drum_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
   list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);

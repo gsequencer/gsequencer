@@ -26,7 +26,13 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_pattern.h>
+
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -82,6 +88,7 @@ static gpointer ags_cell_pattern_parent_class = NULL;
 static GQuark quark_accessible_object = 0;
 
 GtkStyle *cell_pattern_style;
+GHashTable *ags_cell_pattern_led_queue_draw = NULL;
 
 GType
 ags_cell_pattern_get_type(void)
@@ -288,11 +295,25 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 		       FALSE, FALSE,
 		       0);
   }
+
+  if(ags_cell_pattern_led_queue_draw == NULL){
+    ags_cell_pattern_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							   NULL,
+							   NULL);
+  }
+
+  g_hash_table_insert(ags_cell_pattern_led_queue_draw,
+		      cell_pattern, ags_cell_pattern_led_queue_draw_timeout);
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_cell_pattern_led_queue_draw_timeout, (gpointer) cell_pattern);
+
 }
 
 void
 ags_cell_pattern_finalize(GObject *gobject)
 {
+  g_hash_table_remove(ags_cell_pattern_led_queue_draw,
+		      gobject);
+
   G_OBJECT_CLASS(ags_cell_pattern_parent_class)->finalize(gobject);
 }
 
@@ -584,7 +605,7 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 
   machine = gtk_widget_get_ancestor(cell_pattern,
 				    AGS_TYPE_MACHINE);
-
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
@@ -795,6 +816,143 @@ ags_cell_pattern_blink_worker(void *data)
 			      blink_cell_pattern_cursor);
 
   return(NULL);
+}
+
+/**
+ * ags_cell_pattern_led_queue_draw_timeout:
+ * @cell_pattern: the #AgsCellPattern
+ *
+ * Queue draw led.
+ *
+ * Returns: %TRUE if continue timeout, otherwise %FALSE
+ *
+ * Since: 0.7.53
+ */
+gboolean
+ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
+{
+  if(g_hash_table_lookup(ags_cell_pattern_led_queue_draw,
+			 cell_pattern) != NULL){
+    AgsWindow *window;
+    AgsMachine *machine;
+
+    AgsAudio *audio;
+    AgsRecallID *recall_id;
+    
+    AgsCountBeatsAudio *play_count_beats_audio;
+    AgsCountBeatsAudioRun *play_count_beats_audio_run;
+
+    AgsMutexManager *mutex_manager;
+
+    GList *list, *active;
+    guint offset;
+    guint active_led_new;
+    guint i;
+    
+    GValue value = {0,};
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+
+    gdk_threads_enter();
+
+    machine = gtk_widget_get_ancestor(cell_pattern,
+				      AGS_TYPE_MACHINE);
+
+    if(machine == NULL){
+      gdk_threads_leave();
+      
+      return(TRUE);
+    }
+
+    audio = machine->audio;
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+    pthread_mutex_lock(application_mutex);
+  
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get window and application_context  */
+    window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) machine,
+						AGS_TYPE_WINDOW));
+
+    /* get some recalls */
+    pthread_mutex_lock(audio_mutex);
+
+    recall_id = ags_recall_id_find_parent_recycling_context(audio->recall_id,
+							    NULL);
+
+    if(recall_id == NULL){
+      pthread_mutex_unlock(audio_mutex);
+      
+      gdk_threads_leave();
+      
+      return(TRUE);
+    }
+    
+    list = ags_recall_find_type(audio->play,
+				AGS_TYPE_COUNT_BEATS_AUDIO);
+    
+    if(list != NULL){
+      play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+    }
+    
+    list = ags_recall_find_type_with_recycling_context(audio->play,
+						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+						       (GObject *) recall_id->recycling_context);
+    
+    if(list != NULL){
+      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+    }
+    
+    if(play_count_beats_audio == NULL ||
+       play_count_beats_audio_run == NULL){
+      pthread_mutex_unlock(audio_mutex);
+      
+      gdk_threads_leave();
+      
+      return(TRUE);
+    }
+
+    /* active led */
+    active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;
+    cell_pattern->active_led = (guint) active_led_new;
+      
+    pthread_mutex_unlock(audio_mutex);
+
+    /* led */
+    list = gtk_container_get_children(cell_pattern->led);
+    
+    for(i = 0; list != NULL; i++){
+      if(i == active_led_new){
+	active = list;
+	list = list->next;
+	
+	continue;
+      }
+      
+      ags_led_unset_active(AGS_LED(list->data));
+      
+      list = list->next;
+    }
+
+    if(active != NULL){
+      ags_led_set_active(AGS_LED(active->data));
+    }
+    
+    g_list_free(list);
+    
+    gdk_threads_leave();
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

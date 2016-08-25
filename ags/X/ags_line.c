@@ -1491,8 +1491,18 @@ ags_line_find_next_grouped(GList *line)
   return(line);
 }
 
+/**
+ * ags_line_indicator_queue_draw_timeout:
+ * @widget: the indicator widgt
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 0.7.8
+ */
 gboolean
-ags_line_indicator_queue_draw(GtkWidget *widget)
+ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 {
   if(g_hash_table_lookup(ags_indicator_queue_draw,
 			 widget) != NULL){
