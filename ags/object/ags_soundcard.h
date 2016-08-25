@@ -37,7 +37,7 @@
 #define AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS (2)
 #define AGS_SOUNDCARD_DEFAULT_SAMPLERATE (44100.0)
 #define AGS_SOUNDCARD_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
-#define AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE (944)
+#define AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE (512)
 #define AGS_SOUNDCARD_DEFAULT_DEVICE "hw:0,0\0"
 #define AGS_SOUNDCARD_DEFAULT_BPM (120.0)
 #define AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR (1.0 / 4.0)
@@ -111,6 +111,8 @@ struct _AgsSoundcardInterface
   gboolean (*is_playing)(AgsSoundcard *soundcard);
   gboolean (*is_recording)(AgsSoundcard *soundcard);
 
+  gchar* (*get_uptime)(AgsSoundcard *soundcard);
+  
   void (*play_init)(AgsSoundcard *soundcard,
 		    GError **error);
   void (*play)(AgsSoundcard *soundcard,
@@ -126,7 +128,7 @@ struct _AgsSoundcardInterface
   void (*tic)(AgsSoundcard *soundcard);
   void (*offset_changed)(AgsSoundcard *soundcard,
 			 guint note_offset);
-
+  
   void* (*get_buffer)(AgsSoundcard *soundcard);
   void* (*get_next_buffer)(AgsSoundcard *soundcard);  
 
@@ -200,6 +202,8 @@ gboolean ags_soundcard_is_available(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_starting(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_playing(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_recording(AgsSoundcard *soundcard);
+
+gchar* ags_soundcard_get_uptime(AgsSoundcard *soundcard);
 
 void ags_soundcard_play_init(AgsSoundcard *soundcard,
 			     GError **error);

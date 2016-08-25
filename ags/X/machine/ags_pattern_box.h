@@ -92,6 +92,8 @@ struct _AgsPatternBoxClass
 
 GType ags_pattern_box_get_type(void);
 
+gboolean ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box);
+
 void ags_pattern_box_set_pattern(AgsPatternBox *pattern_box);
 
 AgsPatternBox* ags_pattern_box_new();

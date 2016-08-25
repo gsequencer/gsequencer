@@ -269,7 +269,7 @@ ags_navigation_init(AgsNavigation *navigation)
 	       "label\0", "0000:00.000\0",
 	       NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
-  //  g_timeout_add(1000 / 30, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
 
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -407,8 +407,8 @@ ags_navigation_connect(AgsConnectable *connectable)
   //		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
   /* soundcard */
-  g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
-  			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
+  //  g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
+  //			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
   g_signal_connect_after((GObject *) navigation->soundcard, "stop\0",
   			 G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
@@ -703,16 +703,16 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
   
   /* retrieve some presets */
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
   free(str);
-
+  
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
@@ -777,9 +777,16 @@ ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 gboolean
 ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 {
+  AgsNavigation *navigation;
+  
   gdk_threads_enter();
 
-  gtk_widget_queue_draw(AGS_NAVIGATION(widget)->duration_time);
+  navigation = AGS_NAVIGATION(widget);
+  
+  g_object_set(navigation->duration_time,
+	       "label\0", ags_soundcard_get_uptime(navigation->soundcard),
+	       NULL);
+  gtk_widget_queue_draw(navigation->duration_time);
 
   gdk_threads_leave();
 

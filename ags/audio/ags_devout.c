@@ -115,6 +115,8 @@ gboolean ags_devout_is_available(AgsSoundcard *soundcard);
 gboolean ags_devout_is_starting(AgsSoundcard *soundcard);
 gboolean ags_devout_is_playing(AgsSoundcard *soundcard);
 
+gchar* ags_devout_get_uptime(AgsSoundcard *soundcard);
+
 void ags_devout_alsa_init(AgsSoundcard *soundcard,
 			  GError **error);
 void ags_devout_alsa_play(AgsSoundcard *soundcard,
@@ -512,6 +514,8 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->is_playing = ags_devout_is_playing;
   soundcard->is_recording = NULL;
 
+  soundcard->get_uptime = ags_devout_get_uptime;
+  
   soundcard->play_init = ags_devout_alsa_init;
   soundcard->play = ags_devout_alsa_play;
 
@@ -906,6 +910,7 @@ ags_devout_set_property(GObject *gobject,
       devout->buffer_size = buffer_size;
 
       ags_devout_realloc_buffer(devout);
+      ags_devout_adjust_delay_and_attack(devout);
     }
     break;
   case PROP_SAMPLERATE:
@@ -919,6 +924,7 @@ ags_devout_set_property(GObject *gobject,
       }
 
       devout->samplerate = samplerate;
+      ags_devout_adjust_delay_and_attack(devout);
     }
     break;
   case PROP_BUFFER:
@@ -1558,6 +1564,67 @@ ags_devout_is_playing(AgsSoundcard *soundcard)
   devout = AGS_DEVOUT(soundcard);
   
   return(((AGS_DEVOUT_PLAY & (devout->flags)) != 0) ? TRUE: FALSE);
+}
+
+gchar*
+ags_devout_get_uptime(AgsSoundcard *soundcard)
+{
+  gchar *uptime;
+
+  if(ags_soundcard_is_playing(soundcard)){
+    guint samplerate;
+    guint buffer_size;
+
+    guint note_offset;
+    gdouble bpm;
+    gdouble delay_factor;
+    
+    gdouble delay;
+    gdouble delay_min, delay_sec, delay_msec;
+    gdouble tact_redux;
+    guint min, sec, msec;
+
+    ags_soundcard_get_presets(soundcard,
+			      NULL,
+			      &samplerate,
+			      &buffer_size,
+			      NULL);
+    
+    note_offset = ags_soundcard_get_note_offset(soundcard);
+
+    bpm = ags_soundcard_get_bpm(soundcard);
+    delay_factor = ags_soundcard_get_delay_factor(soundcard);
+
+    /* calculate delays */
+    delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
+  
+    delay_sec = ((bpm / delay_factor) / 60.0);
+    delay_min = delay_sec * 60.0;
+    delay_msec = delay_sec / 1000.0;
+
+    /* translate to time string */
+    tact_redux = note_offset;
+
+    min = (guint) floor(tact_redux / delay_min);
+
+    if(min > 0){
+      tact_redux = tact_redux - (min * delay_min);
+    }
+
+    sec = (guint) floor(tact_redux / delay_sec);
+
+    if(sec > 0){
+      tact_redux = tact_redux - (sec * delay_sec);
+    }
+
+    msec = (guint) floor(tact_redux / delay_msec);
+
+    uptime = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
+  }else{
+    uptime = g_strdup("0000:00.000\0");
+  }
+  
+  return(uptime);
 }
 
 void
@@ -2470,7 +2537,7 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
     return;
   }
   
-  delay = ((gdouble) devout->samplerate / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
+  delay = (60.0 * (((gdouble) devout->samplerate / (gdouble) devout->buffer_size) / (gdouble) devout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) devout->delay_factor)));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f\0", delay);
