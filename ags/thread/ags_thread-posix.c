@@ -524,10 +524,7 @@ ags_thread_set_property(GObject *gobject,
 
       thread->freq = freq;
       thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION));
-
-      if(thread->delay < thread->tic_delay){
-	thread->tic_delay = thread->delay;
-      }
+      thread->tic_delay = 0;
     }
     break;
   default:

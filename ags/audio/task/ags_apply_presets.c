@@ -263,32 +263,6 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 			    &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
   }
   
-  /* reset audio thread frequency */
-  audio_thread = main_loop;
-  
-  while((audio_thread = ags_thread_find_type(audio_thread,
-					     AGS_TYPE_AUDIO_THREAD)) != NULL){
-    g_object_set(audio_thread,
-		 "frequency\0", freq,
-		 NULL);
-
-    /* reset channel thread frequency */
-    channel_thread = audio_thread;
-    
-    while((channel_thread = ags_thread_find_type(channel_thread,
-						 AGS_TYPE_CHANNEL_THREAD)) != NULL){
-      g_object_set(channel_thread,
-		   "frequency\0", freq,
-		   NULL);
-
-      /* iterate */
-      channel_thread = g_atomic_pointer_get(&(channel_thread->next));
-    }
-
-    /* iterate */
-    audio_thread = g_atomic_pointer_get(&(audio_thread->next));
-  }
-
   /* descend children */
   audio = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 
