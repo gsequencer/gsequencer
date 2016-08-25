@@ -1,11 +1,17 @@
+ags (0.7.52)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed resetting buffer size and samplerate
+
 ags (0.7.51)
 
-	* implemented ags_polling_thread.[ch] and ags_poll_fd.[ch]
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed freed overwritten temporary string in ags_set_output_device.c
 	* fixed reset frequency of main loop in ags_apply_presets.c
 
 ags (0.7.50)
 
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_polling_thread.[ch] and ags_poll_fd.[ch]
 	* implemented ags_soundcard_get_poll_fd() and ags_soundcard_is_avialable()
 	* using AgsPollingThread in ags_soundcard_thread.c and ags_gui_thread.c

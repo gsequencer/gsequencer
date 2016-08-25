@@ -1997,6 +1997,12 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 {
   AgsAudio *audio;
 
+  AgsConfig *config;
+  
+  gchar *str0, *str1;
+
+  gdouble freq;
+
   auto void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate);
 
   void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate){
@@ -2018,6 +2024,45 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 
   channel->samplerate = samplerate;
 
+  /* reset threads */
+  config = ags_config_get_instance();
+  
+  freq = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+  str0 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "model\0");
+  str1 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "super-threaded-scope\0");
+
+  if(str0 != NULL && str1 != NULL){
+    if(!g_ascii_strncasecmp(str0,
+			    "super-threaded\0",
+			    15)){
+      if(!g_ascii_strncasecmp(str1,
+			      "channel\0",
+			      8) ||
+	 !g_ascii_strncasecmp(str1,
+			      "recycling\0",
+			      10)){
+	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
+		     "frequency\0", freq,
+		     NULL);
+	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
+		     "frequency\0", freq,
+		     NULL);
+	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
+		     "frequency\0", freq,
+		     NULL);
+      }
+    }
+  }
+
+  g_free(str0);
+  g_free(str1);
+
+  /* reset recycling */
   if(audio != NULL){
     AgsRecycling *recycling;
 
@@ -2067,6 +2112,12 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 {
   AgsAudio *audio;
 
+  AgsConfig *config;
+  
+  gchar *str0, *str1;
+
+  gdouble freq;
+
   auto void ags_channel_set_buffer_size_audio_signal(GList *audio_signal, guint buffer_size);
 
   void ags_channel_set_buffer_size_audio_signal(GList *audio_signal, guint buffer_size){
@@ -2088,6 +2139,45 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
   
   channel->buffer_size = buffer_size;
 
+  /* reset threads */
+  config = ags_config_get_instance();
+  
+  freq = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+  str0 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "model\0");
+  str1 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "super-threaded-scope\0");
+
+  if(str0 != NULL && str1 != NULL){
+    if(!g_ascii_strncasecmp(str0,
+			    "super-threaded\0",
+			    15)){
+      if(!g_ascii_strncasecmp(str1,
+			      "channel\0",
+			      8) ||
+	 !g_ascii_strncasecmp(str1,
+			      "recycling\0",
+			      10)){
+	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
+		     "frequency\0", freq,
+		     NULL);
+	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
+		     "frequency\0", freq,
+		     NULL);
+	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
+		     "frequency\0", freq,
+		     NULL);
+      }
+    }
+  }
+
+  g_free(str0);
+  g_free(str1);
+
+  /* reset recycling */
   if(audio != NULL){
     AgsRecycling *recycling;
 
