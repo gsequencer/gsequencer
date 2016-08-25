@@ -2069,20 +2069,6 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
 
   gchar *str;
 
-  str = ags_config_get_value(ags_config_get_instance(),
-			     AGS_CONFIG_GENERIC,
-			     "disable-feature\0");
-
-  if(!g_ascii_strncasecmp(str,
-			  "experimental\0",
-			  13)){
-    g_free(str);
-    
-    return;
-  }
-
-  g_free(str);
-  
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("connection\0"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
   gtk_widget_show(item);

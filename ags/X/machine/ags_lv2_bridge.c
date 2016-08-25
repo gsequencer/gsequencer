@@ -1489,6 +1489,18 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
   
   gchar *uri;
 
+  if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+    g_object_set(AGS_MACHINE(lv2_bridge)->audio,
+		 "audio-start-mapping\0", 0,
+		 "audio-end-mapping\0", 128,
+		 "midi-start-mapping\0", 0,
+		 "midi-end-mapping\0", 128,
+		 NULL);
+    
+    ags_machine_popup_add_connection_options(lv2_bridge,
+					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
+  }
+  
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename,
 					       lv2_bridge->effect);
 

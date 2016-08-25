@@ -288,9 +288,18 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_HAS_NOTATION | 
 		   AGS_AUDIO_NOTATION_DEFAULT);
-
+  g_object_set(audio,
+	       "audio-start-mapping\0", 0,
+	       "audio-end-mapping\0", 128,
+	       "midi-start-mapping\0", 0,
+	       "midi-end-mapping\0", 128,
+	       NULL);
+  
   AGS_MACHINE(dssi_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				      AGS_MACHINE_REVERSE_NOTATION);
+
+  ags_machine_popup_add_connection_options(dssi_bridge,
+					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_dssi_bridge_set_audio_channels), NULL);

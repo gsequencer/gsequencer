@@ -753,11 +753,18 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   snd_midi_event_reset_encode(parser);
   
   if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-    selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
+    selected_channel = ags_channel_pad_nth(channel, audio->audio_start_mapping + audio->input_pads - note->y - 1);
   }else{
-    selected_channel = ags_channel_pad_nth(channel, note->y);
+    selected_channel = ags_channel_pad_nth(channel,
+					   audio->audio_start_mapping + note->y);
   }
 
+  /* check within mapping */
+  if(selected_channel->pad - audio->audio_start_mapping + audio->midi_start_mapping < audio->midi_start_mapping ||
+     selected_channel->pad - audio->audio_start_mapping + audio->midi_start_mapping >= audio->midi_end_mapping){
+    return;
+  }
+  
   /* get recall id */
   child_recall_id = NULL;
     
@@ -819,41 +826,11 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
 	      snd_midi_event_reset_encode(seq_event);	      
 	      //memset(seq_event, 0, sizeof(snd_seq_event_t));
-		  
-	      /*
-		velocity = ags_midi_util_envelope_to_velocity(note->attack,
-		note->decay,
-		note->sustain,
-		note->release,
-		note->ratio,
-		samplerate,
-		0, buffer_length);
-		ags_midi_buffer_util_put_key_on(&buffer,
-		0, // play immediately since DSSI doesn't know timing: route_dssi_audio_run->delta_time,
-		0,
-		channel->pad,
-		velocity);
-		seq_length += 3;
-
-		clock_gettime(CLOCK_MONOTONIC,
-		&(seq_event->time));
-
-		buffer = (char *) malloc(7 * sizeof(char));
-		velocity = 127;
-		  
-		ags_midi_buffer_util_put_key_on(buffer,
-		0, // play immediately since DSSI doesn't know timing: route_dssi_audio_run->delta_time,
-		0,
-		selected_channel->pad,
-		velocity);
-		seq_length = 3;
-		snd_midi_event_encode(parser, buffer + 1, 3, seq_event);
-	      */
-
+	      
 	      seq_event->type = SND_SEQ_EVENT_NOTEON;
 
 	      seq_event->data.note.channel = 0;
-	      seq_event->data.note.note = 0x7f & (selected_channel->pad);
+	      seq_event->data.note.note = 0x7f & (selected_channel->pad - audio->audio_start_mapping + audio->midi_start_mapping);
 	      seq_event->data.note.velocity = 127;
 
 	      AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->audio_channel = audio_channel;
@@ -957,7 +934,9 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     //	      note->x[0], route_dssi_audio_run->count_beats_audio_run->notation_counter);
 
     //FIXME:JK: should consider delay
-    if(note->x[0] == route_dssi_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
+    if(note->y >= audio->audio_start_mapping &&
+       note->y < audio->audio_end_mapping &&
+       note->x[0] == route_dssi_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
       //      g_object_ref(note);
       ags_route_dssi_audio_run_feed_midi(route_dssi_audio_run,
 					 note);      

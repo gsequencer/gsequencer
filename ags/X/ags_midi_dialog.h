@@ -40,7 +40,10 @@ typedef struct _AgsMidiDialog AgsMidiDialog;
 typedef struct _AgsMidiDialogClass AgsMidiDialogClass;
 
 typedef enum{
-  AGS_MIDI_DIALOG_CONNECTED   = 1,
+  AGS_MIDI_DIALOG_CONNECTED      = 1,
+  AGS_MIDI_DIALOG_IO_OPTIONS     = 1 <<  1,
+  AGS_MIDI_DIALOG_MAPPING        = 1 <<  2,
+  AGS_MIDI_DIALOG_DEVICE         = 1 <<  3,
 }AgsMidiDialogFlags;
 
 struct _AgsMidiDialog
@@ -53,9 +56,13 @@ struct _AgsMidiDialog
   gchar *build_id;
   
   AgsMachine *machine;
+
+  GtkVBox *io_options;
   
   GtkCheckButton *playback;
   GtkCheckButton *record;
+
+  GtkVBox *mapping;
   
   GtkSpinButton *audio_start;
   GtkSpinButton *audio_end;
@@ -63,6 +70,8 @@ struct _AgsMidiDialog
   GtkSpinButton *midi_start;
   GtkSpinButton *midi_end;
 
+  GtkVBox *device;
+  
   GtkComboBoxText *backend;  
   GtkComboBoxText *midi_device;
   
