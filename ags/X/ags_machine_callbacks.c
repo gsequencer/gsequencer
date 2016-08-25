@@ -355,12 +355,15 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
   if(machine->connection == NULL){
     midi_dialog =
       machine->connection = ags_midi_dialog_new(machine);
-
+    midi_dialog->flags |= AGS_MIDI_DIALOG_MAPPING;
+    
     g_signal_connect(midi_dialog, "delete-event\0",
 		     G_CALLBACK(ags_machine_midi_dialog_delete_event_callback), machine);
 
     ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
     ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
+
+    gtk_widget_show_all(midi_dialog);
   }else{
     midi_dialog = machine->connection;
   }

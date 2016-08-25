@@ -1,7 +1,8 @@
 ags (0.7.52)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed resetting buffer size and samplerate
+	* fixed resetting buffer size and samplerate because threads might not have been added to the tree, yet
+	* implemented midi mapping of DSSI and Lv2 synths
 
 ags (0.7.51)
 

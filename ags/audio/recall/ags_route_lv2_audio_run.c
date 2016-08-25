@@ -757,11 +757,18 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 			    audio_channel);
 
   if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-    selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
+    selected_channel = ags_channel_pad_nth(channel, audio->audio_start_mapping + audio->input_pads - note->y - 1);
   }else{
-    selected_channel = ags_channel_pad_nth(channel, note->y);
+    selected_channel = ags_channel_pad_nth(channel,
+					   audio->audio_start_mapping + note->y);
   }
 
+  /* check within mapping */
+  if(selected_channel->pad - audio->audio_start_mapping + audio->midi_start_mapping < audio->midi_start_mapping ||
+     selected_channel->pad - audio->audio_start_mapping + audio->midi_start_mapping >= audio->midi_end_mapping){
+    return;
+  }
+  
   /* get recall id */
   child_recall_id = NULL;
     
@@ -827,7 +834,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	      seq_event->type = SND_SEQ_EVENT_NOTEON;
 
 	      seq_event->data.note.channel = 0;
-	      seq_event->data.note.note = 0x7f & (selected_channel->pad);
+	      seq_event->data.note.note = 0x7f & (selected_channel->pad - audio->audio_start_mapping + audio->midi_start_mapping);
 	      seq_event->data.note.velocity = 127;
 
 	      AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->audio_channel = audio_channel;
