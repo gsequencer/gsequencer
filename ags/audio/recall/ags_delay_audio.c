@@ -1027,7 +1027,7 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
   
-  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_SOUNDCARD_DEFAULT_BPM);
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
 
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
@@ -1081,7 +1081,7 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
   
-  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_SOUNDCARD_DEFAULT_BPM);
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
 
   //  g_message("%f\0", duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
   
