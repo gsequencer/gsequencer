@@ -548,7 +548,7 @@ ags_config_load_from_data(AgsConfig *config,
 			     *groups,
 			     *keys,
 			     value);
-
+	
 	keys++;
       }
 

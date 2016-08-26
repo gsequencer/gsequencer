@@ -181,6 +181,26 @@ ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data)
   }
 }
 
+void
+ags_lv2_worker_interrupted_callback(AgsThread *thread,
+				    int sig,
+				    guint time_cycle, guint *time_spent,
+				    AgsLv2Worker *lv2_worker)
+{
+  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+    g_atomic_int_or(&(thread->sync_flags),
+    		    AGS_THREAD_INTERRUPTED);
+    
+    if((AGS_LV2_WORKER_RUN & (g_atomic_int_get(&(lv2_worker->flags)))) != 0){
+#ifdef AGS_PTHREAD_SUSPEND
+    pthread_suspend(thread->thread);
+#else
+    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+#endif
+    }
+  }
+}
+
 AgsLv2WorkerResponseData*
 ags_lv2_worker_alloc_response_data()
 {

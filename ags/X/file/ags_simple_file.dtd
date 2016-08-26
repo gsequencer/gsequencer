@@ -44,26 +44,26 @@
 
 <!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
 <!ATTLIST ags-sf-machine
-	  id              CDATA     #REQUIRED
-	  type            CDATA     #REQUIRED
-	  filename        CDATA     #IMPLIED
-	  preset          CDATA     #IMPLIED
-	  instrument      CDATA     #IMPLIED
-	  plugin-file     CDATA     #IMPLIED
-	  effect          CDATA     #IMPLIED
-	  midi_device     CDATA     #IMPLIED
-	  program         CDATA     #IMPLIED
-	  bank_0          NMTOKEN   0
-	  bank_1          NMTOKEN   0
-	  loop            CDATA     "false"
-	  reverse-mapping CDATA     "false"
-	  audio_start     NMTOKEN   0
-	  audio_end       NMTOKEN   127
-	  midi_start      NMTOKEN   0
-	  midi_end        NMTOKEN   127
-	  channels        NMTOKEN   #IMPLIED
-	  output-pads     NMTOKEN   #IMPLIED
-	  input-pads      NMTOKEN   #IMPLIED
+	  id                      CDATA     #REQUIRED
+	  type                    CDATA     #REQUIRED
+	  filename                CDATA     #IMPLIED
+	  preset                  CDATA     #IMPLIED
+	  instrument              CDATA     #IMPLIED
+	  plugin-file             CDATA     #IMPLIED
+	  effect                  CDATA     #IMPLIED
+	  midi_device             CDATA     #IMPLIED
+	  program                 CDATA     #IMPLIED
+	  bank_0                  NMTOKEN   0
+	  bank_1                  NMTOKEN   0
+	  loop                    CDATA     "false"
+	  reverse-mapping         CDATA     "false"
+	  audio-start-mapping     NMTOKEN   0
+	  audio-end-mapping       NMTOKEN   127
+	  midi-start-mapping      NMTOKEN   0
+	  midi-end-mapping        NMTOKEN   127
+	  channels                NMTOKEN   #IMPLIED
+	  output-pads             NMTOKEN   #IMPLIED
+	  input-pads              NMTOKEN   #IMPLIED
 	  >
 
 <!ELEMENT ags-sf-automated-port-list (ags-sf-automated-port*)>

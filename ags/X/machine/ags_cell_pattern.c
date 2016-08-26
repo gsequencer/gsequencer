@@ -895,6 +895,9 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
       return(TRUE);
     }
     
+    play_count_beats_audio = NULL;
+    play_count_beats_audio_run = NULL;
+
     list = ags_recall_find_type(audio->play,
 				AGS_TYPE_COUNT_BEATS_AUDIO);
     

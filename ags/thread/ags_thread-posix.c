@@ -399,6 +399,7 @@ ags_thread_init(AgsThread *thread)
   thread->current_tic = 0;
 
   thread->cycle_iteration = 0;
+  thread->time_late = 0;
   thread->computing_time = (struct timespec *) malloc(sizeof(struct timespec));
   thread->computing_time->tv_sec = 0;
   thread->computing_time->tv_nsec = 0;
@@ -2463,22 +2464,14 @@ ags_thread_real_clock(AgsThread *thread)
 
       time_cycle = NSEC_PER_SEC / thread->freq;
       
-      relative_time_spent = time_cycle - time_spent - AGS_THREAD_TOLERANCE;
+      relative_time_spent = time_cycle - time_spent - thread->time_late - AGS_THREAD_TOLERANCE;
 
-      if(relative_time_spent > 0.0 &&
-	 relative_time_spent < time_cycle){
-	timed_sleep.tv_nsec = (long) floor(relative_time_spent);
-
-	/* lost precision * /
-	lost_precision = lost_per_jiffie * (1.0 / thread->freq));
-	
-	if(relative_time_spent + lost_precision > 0.0){
-	  timed_sleep.tv_nsec = (long) (relative_time_spent + lost_precision);
-	}else{
-	  g_warning("ags_thread-posix.c - not optimized tree\0");
-	}
-	*/
-	
+      if(relative_time_spent < 0.0){
+	thread->time_late = -1.25 * relative_time_spent;
+      }else if(relative_time_spent > 0.0){
+	thread->time_late = 0;
+	timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
+      
 	nanosleep(&timed_sleep, NULL);
       }
 

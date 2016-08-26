@@ -888,15 +888,24 @@ ags_audio_init(AgsAudio *audio)
 	 !g_ascii_strncasecmp(str1,
 			      "recycling\0",
 			      10)){
+	gdouble freq;
+	
+	freq = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+	
 	g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 			AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
 
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
 											    audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0]->freq = freq;
+	
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
 											    audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->freq = freq;
+
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
 											    audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->freq = freq;
       }
     }
   }
@@ -1641,6 +1650,9 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   GList *list;
   AgsMutexManager *mutex_manager;
   
+  guint samplerate;
+  guint buffer_size;
+
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
@@ -1663,13 +1675,24 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
     return;
   }
 
-  if(audio->soundcard != NULL)
+  if(audio->soundcard != NULL){
     g_object_unref(audio->soundcard);
-
-  if(soundcard != NULL)
+  }
+  
+  if(soundcard != NULL){
     g_object_ref(soundcard);
-
+  }
+  
   audio->soundcard = (GObject *) soundcard;
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    NULL);
+  g_object_set(audio,
+	       "samplerate\0", samplerate,
+	       "buffer-size\0", buffer_size,
+	       NULL);
 
   /* playback domain */
   if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] != NULL){
@@ -2024,6 +2047,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio\0", (GObject *) audio,
 					      "soundcard\0", audio->soundcard,
+					      "samplerate\0", audio->samplerate,
+					      "buffer-size\0", audio->buffer_size,
 					      NULL);
 
 	if(start == NULL){
@@ -2533,6 +2558,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio\0", (GObject *) audio,
 					      "soundcard\0", audio->soundcard,
+					      "samplerate\0", audio->samplerate,
+					      "buffer-size\0", audio->buffer_size,
 					      NULL);
 	if(start == NULL){
 	  /* set first channel in AgsAudio */

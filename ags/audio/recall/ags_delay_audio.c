@@ -990,44 +990,13 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
 {
   AgsDelayAudio *delay_audio;
 
-  AgsConfig *config;
+  GObject *soundcard;
   
-  guint buffer_size;
-  guint samplerate;
   gdouble delay;
-  gchar *str;
-  
   GValue value = {0,};
 
-  config = ags_config_get_instance();
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
-  
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+  soundcard = AGS_RECALL(delay_audio)->soundcard;
 
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
@@ -1042,44 +1011,15 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 {
   AgsDelayAudio *delay_audio;
 
-  AgsConfig *config;
-  
-  guint buffer_size;
-  guint samplerate;
+  GObject *soundcard;
+
   gdouble delay;
   gchar *str;
   
   GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
-
-  config = ags_config_get_instance();
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-  
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
+  soundcard = AGS_RECALL(delay_audio)->soundcard;
   
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
 

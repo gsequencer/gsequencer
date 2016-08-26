@@ -54,6 +54,9 @@ struct _AgsApplyPresetsClass
 
 GType ags_apply_presets_get_type();
 
+void ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
+				 GObject *soundcard);
+
 AgsApplyPresets* ags_apply_presets_new(GObject *scope,
 				       guint pcm_channels,
 				       guint samplerate,

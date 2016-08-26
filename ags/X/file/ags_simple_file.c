@@ -51,6 +51,8 @@
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_acceleration.h>
 
+#include <ags/audio/task/ags_apply_presets.h>
+
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -1157,7 +1159,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	guint buffer_size;
 	guint format;
 
-	config = application_context->config;
+	config = ags_config_get_instance();
 	ags_simple_file_read_config(simple_file,
 				    child,
 				    (GObject **) &config);
@@ -1171,9 +1173,6 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 	samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 	buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-
-	/* read config soundcard */
-	config = ags_config_get_instance();
 
 	/* device */
 	str = ags_config_get_value(config,
@@ -1190,7 +1189,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	/* presets */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
-				   "dsp-channels\0");
+				   "pcm-channels\0");
 
 	if(str != NULL){
 	  dsp_channels = g_ascii_strtoull(str,
@@ -1217,6 +1216,16 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	  buffer_size = g_ascii_strtoull(str,
 					 NULL,
 					 10);
+	  free(str);
+	}
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "format\0");
+	if(str != NULL){
+	  format = g_ascii_strtoull(str,
+				    NULL,
+				    10);
 	  free(str);
 	}
 
@@ -1496,15 +1505,23 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 {
   AgsWindow *gobject;
 
+  AgsApplyPresets *apply_presets;
+
   AgsFileLaunch *file_launch;
 
   AgsApplicationContext *application_context;
+  AgsConfig *config;
   
   xmlNode *child;
 
   GList *list;
   
   xmlChar *str;
+
+  guint pcm_channels;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
   
   if(*window != NULL){
     gobject = *window;
@@ -1563,6 +1580,59 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
     child = child->next;
   }
 
+  config = ags_config_get_instance();
+
+  /* presets */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "pcm-channels\0");
+
+  if(str != NULL){
+    pcm_channels = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+    g_free(str);
+  }
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "format\0");
+  if(str != NULL){
+    format = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+    free(str);
+  }
+
+  apply_presets = ags_apply_presets_new(gobject->soundcard,
+					pcm_channels,
+					samplerate,
+					buffer_size,
+					format);
+  ags_apply_presets_soundcard(apply_presets,
+			      gobject->soundcard);
+  
   /* launch settings */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "node\0", node,
@@ -1695,7 +1765,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
   xmlChar *type_name;
   xmlChar *str;
-  
+
   guint audio_channels;
   guint output_pads, input_pads;
 
@@ -1731,7 +1801,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   g_object_set(gobject->audio,
 	       "soundcard\0", soundcard,
 	       NULL);
-  
+
   /* machine specific */  
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
     xmlChar *filename, *effect;
@@ -1774,6 +1844,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
+      
       gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				AGS_AUDIO_INPUT_HAS_RECYCLING |
 				AGS_AUDIO_SYNC |
@@ -1836,7 +1907,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		       AGS_TYPE_OUTPUT,
 		       output_pads);
   }
-
+  
   /* children */
   child = node->children;
 
@@ -2039,6 +2110,51 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     ags_lv2_bridge_load(gobject);
   }
 
+  /* retrieve midi mapping */
+  str = xmlGetProp(node,
+		   "audio-start-mapping\0");
+
+  if(str != NULL){
+    g_object_set(gobject->audio,
+		 "audio-start-mapping\0", g_ascii_strtoull(str,
+							   NULL,
+							   10),
+		 NULL);
+  }
+
+  str = xmlGetProp(node,
+		   "audio-end-mapping\0");
+
+  if(str != NULL){
+    g_object_set(gobject->audio,
+		 "audio-end-mapping\0", g_ascii_strtoull(str,
+							 NULL,
+							 10),
+		 NULL);
+  }
+
+  str = xmlGetProp(node,
+		   "midi-start-mapping\0");
+
+  if(str != NULL){
+    g_object_set(gobject->audio,
+		 "midi-start-mapping\0", g_ascii_strtoull(str,
+							  NULL,
+							  10),
+		 NULL);
+  }
+
+  str = xmlGetProp(node,
+		   "midi-end-mapping\0");
+
+  if(str != NULL){
+    g_object_set(gobject->audio,
+		 "midi-end-mapping\0", g_ascii_strtoull(str,
+							NULL,
+							10),
+		 NULL);
+  }
+  
   gtk_widget_show_all(gobject);
 
   /* add audio to soundcard */
@@ -4902,6 +5018,25 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	     (xmlChar *) "input-pads\0",
 	     (xmlChar *) g_strdup_printf("%d\0", machine->audio->input_pads));
 
+  /* midi mapping */
+  if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    xmlNewProp(node,
+	       "audio-start-mapping\0",
+	       g_strdup_printf("%d\0", machine->audio->audio_start_mapping));
+
+    xmlNewProp(node,
+	       "audio-end-mapping\0",
+	       g_strdup_printf("%d\0", machine->audio->audio_end_mapping));
+
+    xmlNewProp(node,
+	       "midi-start-mapping\0",
+	       g_strdup_printf("%d\0", machine->audio->midi_start_mapping));
+
+    xmlNewProp(node,
+	       "midi-end-mapping\0",
+	       g_strdup_printf("%d\0", machine->audio->midi_end_mapping));
+  }
+  
   /* machine specific */
   if(AGS_IS_DRUM(machine)){
     AgsDrum *drum;
