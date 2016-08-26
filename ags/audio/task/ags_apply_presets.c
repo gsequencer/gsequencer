@@ -50,8 +50,6 @@ void ags_apply_presets_finalize(GObject *gobject);
 
 void ags_apply_presets_launch(AgsTask *task);
 
-void ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
-				 GObject *soundcard);
 void ags_apply_presets_audio(AgsApplyPresets *apply_presets,
 			     AgsAudio *audio);
 void ags_apply_presets_channel(AgsApplyPresets *apply_presets,

@@ -740,16 +740,25 @@ ags_channel_init(AgsChannel *channel)
 	 !g_ascii_strncasecmp(str1,
 			      "recycling\0",
 			      10)){
+	gdouble freq;
+	
+	freq = ceil((gdouble) channel->samplerate / (gdouble) channel->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
 	g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
 			AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
 
 	AGS_PLAYBACK(channel->playback)->channel_thread[0] = ags_channel_thread_new(NULL,
 										    channel);
+	AGS_PLAYBACK(channel->playback)->channel_thread[0]->freq = freq;
+	
 	AGS_PLAYBACK(channel->playback)->channel_thread[1] = ags_channel_thread_new(NULL,
 										    channel);
+	AGS_PLAYBACK(channel->playback)->channel_thread[1]->freq = freq;
+
 	AGS_PLAYBACK(channel->playback)->channel_thread[2] = ags_channel_thread_new(NULL,
 										    channel);
-      
+	AGS_PLAYBACK(channel->playback)->channel_thread[2]->freq = freq;
+	
 	if(!g_ascii_strncasecmp(str1,
 				"recycling\0",
 				10)){
@@ -2016,10 +2025,6 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
     }
   }
 
-  if(channel->samplerate == samplerate){
-    return;
-  }
-  
   audio = channel->audio;
 
   channel->samplerate = samplerate;
@@ -2130,10 +2135,6 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 				       buffer_size);
     }
   }  
-
-  if(channel->buffer_size == buffer_size){
-    return;
-  }
   
   audio = channel->audio;
   

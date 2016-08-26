@@ -2046,7 +2046,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     to_unsigned = snd_pcm_format_unsigned(format) == 1;
 
     /* fill the channel areas */
-    for(count = 0; count + 1 < buffer_size; count++){
+    for(count = 0; count < buffer_size; count++){
       for(chn = 0; chn < channels; chn++){
 	switch(ags_format){
 	case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2085,7 +2085,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
       }
 
       ring_buffer += channels * phys_bps;
-    }	
+    }
   }
   
   devout = AGS_DEVOUT(soundcard);

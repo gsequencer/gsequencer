@@ -209,20 +209,23 @@ ags_polling_thread_run(AgsThread *thread)
 
   timeout.tv_sec = 0;
 
-  if(main_loop->tic_delay == main_loop->delay){
-    if(AGS_THREAD_TOLERANCE > 0.0){
-      timeout.tv_nsec = 0;
-    }else{
-      timeout.tv_nsec = -1 * AGS_THREAD_TOLERANCE;
-    }
+  if(main_loop->time_late != NULL){
+    timeout.tv_nsec = 0;
   }else{
-    if(thread->freq > AGS_THREAD_HERTZ_JIFFIE){
-      timeout.tv_nsec = (NSEC_PER_SEC / thread->freq + AGS_POLLING_THREAD_UNDERLOAD);
+    if(main_loop->tic_delay == main_loop->delay){
+      if(AGS_THREAD_TOLERANCE > 0.0){
+	timeout.tv_nsec = 0;
+      }else{
+	timeout.tv_nsec = -1 * AGS_THREAD_TOLERANCE;
+      }
     }else{
-      timeout.tv_nsec = (NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE + AGS_POLLING_THREAD_UNDERLOAD);
+      if(thread->freq > AGS_THREAD_HERTZ_JIFFIE){
+	timeout.tv_nsec = (NSEC_PER_SEC / thread->freq + AGS_POLLING_THREAD_UNDERLOAD);
+      }else{
+	timeout.tv_nsec = (NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE + AGS_POLLING_THREAD_UNDERLOAD);
+      }
     }
-  }
-  
+  }  
   pthread_mutex_lock(polling_thread->fd_mutex);
 
   if((AGS_POLLING_THREAD_OMIT & (polling_thread->flags)) == 0){

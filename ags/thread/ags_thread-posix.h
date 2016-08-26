@@ -49,7 +49,7 @@
 
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
-#define AGS_THREAD_TOLERANCE (-4000.0) //NOTE:JK: 4 usec is much
+#define AGS_THREAD_TOLERANCE (0.0)
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
@@ -123,6 +123,7 @@ struct _AgsThread
   guint current_tic;
 
   guint cycle_iteration;
+  guint time_late;
   struct timespec *computing_time;
   
   pthread_t *thread;
