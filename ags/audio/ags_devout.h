@@ -81,6 +81,7 @@ struct _AgsDevout
   guint samplerate; // sample_rate
 
   void** buffer;
+  unsigned char **ring_buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;

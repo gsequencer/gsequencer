@@ -1,3 +1,10 @@
+ags (0.7.54)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing addition of overclock value of soundcard in ags_simple_file.c
+	* fixed wrong sequencer duration calculated by wrong delay now it gets it of AgsSoundcard
+	* implemented character ring-buffer in ags_devout.c
+
 ags (0.7.53)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

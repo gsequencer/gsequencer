@@ -670,6 +670,8 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[2] = NULL;
   devout->buffer[3] = NULL;
   
+  devout->ring_buffer = NULL;
+
   ags_devout_realloc_buffer(devout);
   
   /* bpm */
@@ -1705,6 +1707,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
+      format = SND_PCM_FORMAT_S32;
+      
       word_size = sizeof(signed long);
     }
     break;
@@ -1731,6 +1735,11 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   memset(devout->buffer[2], 0, devout->pcm_channels * devout->buffer_size * word_size);
   memset(devout->buffer[3], 0, devout->pcm_channels * devout->buffer_size * word_size);
 
+  /* allocate ring buffer */
+  devout->ring_buffer = (unsigned char **) malloc(2 * sizeof(unsigned char *));
+  devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
+  devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
+  
   /*  */
   period_event = 0;
   
@@ -1847,7 +1856,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* set the buffer size */
-  size = devout->buffer_size;
+  size = 2 * devout->buffer_size;
   err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
@@ -1861,8 +1870,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* set the period size * /
-  period_size = 32;
-  err = snd_pcm_hw_params_set_period_size(handle, hwparams, period_size, dir);
+  period_size = devout->buffer_size;
+  err = snd_pcm_hw_params_set_period_size_near(handle, hwparams, period_size, dir);
   if (err < 0) {
     pthread_mutex_unlock(mutex);
 
@@ -1872,7 +1881,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     //    free(str);
     
     return;
-  }  
+  }
   */
   
   /* write the parameters to device */
@@ -1978,6 +1987,106 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   guint word_size;
   
   pthread_mutex_t *mutex;
+
+  auto void ags_devout_alsa_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
+
+  void ags_devout_alsa_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
+    snd_pcm_format_t format;
+
+    int format_bits;
+
+    unsigned int max_val;
+    
+    int bps; /* bytes per sample */
+    int phys_bps;
+
+    int big_endian;
+    int to_unsigned;
+
+    int res;
+
+    gint count;
+    guint i, chn;
+    
+    switch(ags_format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	format = SND_PCM_FORMAT_S8;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	format = SND_PCM_FORMAT_S16;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	format = SND_PCM_FORMAT_S24;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	format = SND_PCM_FORMAT_S32;
+      }
+      break;
+    default:
+      g_warning("ags_devout_alsa_init(): unsupported word size\0");
+      return;
+    }
+
+    count = buffer_size;
+    format_bits = snd_pcm_format_width(format);
+
+    max_val = (1 << (format_bits - 1)) - 1;
+
+    bps = format_bits / 8;
+    phys_bps = snd_pcm_format_physical_width(format) / 8;
+    
+    big_endian = snd_pcm_format_big_endian(format) == 1;
+    to_unsigned = snd_pcm_format_unsigned(format) == 1;
+
+    /* fill the channel areas */
+    for(count = 0; count + 1 < buffer_size; count++){
+      for(chn = 0; chn < channels; chn++){
+	switch(ags_format){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	  {
+	    res = (int) ((signed char *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	  {
+	    res = (int) ((signed short *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	  {
+	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	  {
+	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	  }
+	  break;
+	}
+
+	if(to_unsigned)
+	  res ^= 1U << (format_bits - 1);
+
+	/* Generate data in native endian format */
+	if (big_endian) {
+	  for (i = 0; i < bps; i++)
+	    *(ring_buffer + chn * bps + phys_bps - 1 - i) = (res >> i * 8) & 0xff;
+	} else {
+	  for (i = 0; i < bps; i++)
+	    *(ring_buffer + chn * bps + i) = (res >>  i * 8) & 0xff;
+	}	
+      }
+
+      ring_buffer += channels * phys_bps;
+    }	
+  }
   
   devout = AGS_DEVOUT(soundcard);
 
@@ -1995,7 +2104,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   /* retrieve word size */
   pthread_mutex_lock(mutex);
-
+  
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2044,9 +2153,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   /* check buffer flag */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
+    
+    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[0], devout->format, devout->ring_buffer[0], devout->pcm_channels, devout->buffer_size);
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->buffer[0],
+					 devout->ring_buffer[0],
 					 (snd_pcm_uframes_t) (devout->buffer_size));
 
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
@@ -2085,8 +2195,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
 
+    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[1], devout->format, devout->ring_buffer[1], devout->pcm_channels, devout->buffer_size);
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->buffer[1],
+					 devout->ring_buffer[1],
 					 (snd_pcm_uframes_t) (devout->buffer_size));
      
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
@@ -2125,8 +2236,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
       
+    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[2], devout->format, devout->ring_buffer[0], devout->pcm_channels, devout->buffer_size);
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->buffer[2],
+					 devout->buffer[0],
 					 (snd_pcm_uframes_t) (devout->buffer_size));
 
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
@@ -2165,8 +2277,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
       
+    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[3], devout->format, devout->ring_buffer[1], devout->pcm_channels, devout->buffer_size);
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->buffer[3],
+					 devout->ring_buffer[1],
 					 (snd_pcm_uframes_t) (devout->buffer_size));
 
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
@@ -2267,6 +2380,13 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
+
+  free(devout->ring_buffer[0]);
+  free(devout->ring_buffer[1]);
+  free(devout->ring_buffer);
+
+  devout->ring_buffer = NULL;
+  
   devout->flags &= (~(AGS_DEVOUT_BUFFER0 |
 		      AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |
