@@ -573,14 +573,18 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   AgsWindow *window;
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences;
-  
+
   AgsConfig *config;
+
   AgsSoundcard *soundcard;
+
   GtkListStore *model;
+
   GtkTreeIter current;
   GList *card_id, *card_id_start, *card_name, *card_name_start;
 
   char *device, *str, *tmp, *selected_device;
+
   guint nth;
   gboolean found_card;
   int card_num;
@@ -592,17 +596,16 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   GValue value =  {0,};
   
   GError *error;
-
+  
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
 
   /*  */
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
-  config = ags_config_get_instance();
 
   soundcard = AGS_SOUNDCARD(window->soundcard);
-
+  
   /* refresh */
   card_id = NULL;
   card_name = NULL;
@@ -649,17 +652,21 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   if(!found_card){
     nth = 0;
   }
-  
+
   gtk_combo_box_set_active(audio_preferences->card,
 			   nth);
-  
+  str = gtk_combo_box_text_get_active_text(audio_preferences->card);
+
   g_list_free_full(card_id_start,
 		   g_free);
   g_list_free_full(card_name_start,
 		   g_free);
 
+  g_message("%s\0", str);
+  
   /*  */
-  device = ags_soundcard_get_device(soundcard);
+  ags_soundcard_set_device(soundcard,
+			   str);
   ags_soundcard_get_presets(soundcard,
 			    &channels,
 			    &rate,
@@ -698,14 +705,19 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   }
 
   /*  */
-  if(selected_device != NULL){
+  if(str != NULL){
+    str = g_strndup(str,
+		    index(str,
+			  ',') - str);
+
     error = NULL;
     ags_soundcard_pcm_info(soundcard,
-			   selected_device,
+			   str,
 			   &channels_min, &channels_max,
 			   &rate_min, &rate_max,
 			   &buffer_size_min, &buffer_size_max,
 			   &error);
+    g_free(str);
 
     if(error != NULL){
       GtkMessageDialog *dialog;

@@ -1,6 +1,12 @@
 ags (0.7.54)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash on missing poll descriptor
+	* fixed first connect and then reset AgsPreferences in order to get valid configuration
+
+ags (0.7.54)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing addition of overclock value of soundcard in ags_simple_file.c
 	* fixed wrong sequencer duration calculated by wrong delay now it gets it of AgsSoundcard
 	* fixed use of uninitialized value in ags_cell_pattern.c and ags_pattern_box.c
