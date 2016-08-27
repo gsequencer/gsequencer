@@ -1496,13 +1496,19 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
   gint count;
   guint i;
 
+  if(AGS_DEVOUT(soundcard)->out.alsa.handle == NULL){
+    return(NULL);
+  }
+  
   if(AGS_DEVOUT(soundcard)->poll_fd == NULL){
     /* get poll fds of ALSA */
     count = snd_pcm_poll_descriptors_count(AGS_DEVOUT(soundcard)->out.alsa.handle);
 
-    fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
-    snd_pcm_poll_descriptors(AGS_DEVOUT(soundcard)->out.alsa.handle, fds, count);
-
+    if(count > 0){
+      fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
+      snd_pcm_poll_descriptors(AGS_DEVOUT(soundcard)->out.alsa.handle, fds, count);
+    }
+    
     /* map fds */
     list = NULL;
 
