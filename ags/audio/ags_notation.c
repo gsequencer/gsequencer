@@ -523,13 +523,19 @@ ags_notation_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO:
-    g_value_set_object(value, notation->audio);
+    {
+      g_value_set_object(value, notation->audio);
+    }
     break;
   case PROP_AUDIO_CHANNEL:
-    g_value_set_uint(value, notation->audio_channel);
+    {
+      g_value_set_uint(value, notation->audio_channel);
+    }
     break;
   case PROP_PORT:
-    g_value_set_object(value, notation->port);
+    {
+      g_value_set_object(value, notation->port);
+    }
     break;
   case PROP_NOTE:
     {
@@ -591,7 +597,9 @@ ags_notation_get_property(GObject *gobject,
     }
     break;
   case PROP_TIMESTAMP:
-    g_value_set_object(value, notation->timestamp);
+    {
+      g_value_set_object(value, notation->timestamp);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

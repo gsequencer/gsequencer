@@ -1,3 +1,10 @@
+ags (0.7.56)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am to install libags-1.0.pc
+	* improved developer manual
+	* implemented timestamp property of AgsAutomation
+
 ags (0.7.55)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

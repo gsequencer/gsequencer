@@ -84,6 +84,7 @@ enum{
   PROP_ACCELERATION,
   PROP_CURRENT_ACCELERATIONS,
   PROP_NEXT_ACCELERATIONS,
+  PROP_TIMESTAMP,
 };
 
 static gpointer ags_automation_parent_class = NULL;
@@ -337,6 +338,22 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NEXT_ACCELERATIONS,
+				  param_spec);
+
+  /**
+   * AgsAutomation:timestamp:
+   *
+   * The automation's timestamp.
+   * 
+   * Since: 0.7.56
+   */
+  param_spec = g_param_spec_object("timestamp\0",
+				   "timestamp of automation\0",
+				   "The timestamp of automation\0",
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
 				  param_spec);
 }
 
@@ -595,6 +612,27 @@ ags_automation_set_property(GObject *gobject,
       automation->next_accelerations = next_accelerations;
     }
     break;
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
+
+      if(timestamp == (AgsTimestamp *) automation->timestamp){
+	return;
+      }
+
+      if(automation->timestamp != NULL){
+	g_object_unref(G_OBJECT(automation->timestamp));
+      }
+
+      if(timestamp != NULL){
+	g_object_ref(G_OBJECT(timestamp));
+      }
+
+      automation->timestamp = (GObject *) timestamp;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -665,6 +703,11 @@ ags_automation_get_property(GObject *gobject,
   case PROP_NEXT_ACCELERATIONS:
     {
       g_value_set_pointer(value, automation->next_accelerations);
+    }
+    break;
+  case PROP_TIMESTAMP:
+    {
+      g_value_set_object(value, automation->timestamp);
     }
     break;
   default:

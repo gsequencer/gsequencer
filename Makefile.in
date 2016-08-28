@@ -101,6 +101,7 @@ check_PROGRAMS = ags_thread_test$(EXEEXT) ags_audio_test$(EXEEXT) \
 	ags_channel_test$(EXEEXT) ags_recycling_test$(EXEEXT) \
 	ags_audio_signal_test$(EXEEXT) ags_recall_test$(EXEEXT) \
 	ags_pattern_test$(EXEEXT) ags_notation_test$(EXEEXT) \
+	ags_automation_test$(EXEEXT) \
 	ags_functional_audio_test$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -701,6 +702,15 @@ ags_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_audio_test_CFLAGS) $(CFLAGS) $(ags_audio_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_ags_automation_test_OBJECTS = ags/test/audio/ags_automation_test-ags_automation_test.$(OBJEXT)
+ags_automation_test_OBJECTS = $(am_ags_automation_test_OBJECTS)
+ags_automation_test_DEPENDENCIES = libags_audio-1.0.la \
+	libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la \
+	libags-1.0.la
+ags_automation_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_automation_test_CFLAGS) $(CFLAGS) \
+	$(ags_automation_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_channel_test_OBJECTS =  \
 	ags/test/audio/ags_channel_test-ags_channel_test.$(OBJEXT)
 ags_channel_test_OBJECTS = $(am_ags_channel_test_OBJECTS)
@@ -824,7 +834,7 @@ SOURCES = $(libags_1_0_la_SOURCES) $(libags_audio_1_0_la_SOURCES) \
 	$(libags_thread_1_0_la_SOURCES) \
 	$(libgsequencer_0_7_la_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
-	$(ags_channel_test_SOURCES) \
+	$(ags_automation_test_SOURCES) $(ags_channel_test_SOURCES) \
 	$(ags_functional_audio_test_SOURCES) \
 	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
@@ -835,7 +845,7 @@ DIST_SOURCES = $(libags_1_0_la_SOURCES) $(libags_audio_1_0_la_SOURCES) \
 	$(libags_thread_1_0_la_SOURCES) \
 	$(libgsequencer_0_7_la_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
-	$(ags_channel_test_SOURCES) \
+	$(ags_automation_test_SOURCES) $(ags_channel_test_SOURCES) \
 	$(ags_functional_audio_test_SOURCES) \
 	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
@@ -1438,6 +1448,10 @@ ags_notation_test_SOURCES = ags/test/audio/ags_notation_test.c
 ags_notation_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_notation_test_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_notation_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
+ags_automation_test_SOURCES = ags/test/audio/ags_automation_test.c
+ags_automation_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_automation_test_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_automation_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 
 # libags all files
 deprecated_libags_h_sources = 
@@ -4141,6 +4155,13 @@ ags/test/audio/ags_audio_test-ags_audio_test.$(OBJEXT):  \
 ags_audio_test$(EXEEXT): $(ags_audio_test_OBJECTS) $(ags_audio_test_DEPENDENCIES) $(EXTRA_ags_audio_test_DEPENDENCIES) 
 	@rm -f ags_audio_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_audio_test_LINK) $(ags_audio_test_OBJECTS) $(ags_audio_test_LDADD) $(LIBS)
+ags/test/audio/ags_automation_test-ags_automation_test.$(OBJEXT):  \
+	ags/test/audio/$(am__dirstamp) \
+	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
+
+ags_automation_test$(EXEEXT): $(ags_automation_test_OBJECTS) $(ags_automation_test_DEPENDENCIES) $(EXTRA_ags_automation_test_DEPENDENCIES) 
+	@rm -f ags_automation_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_automation_test_LINK) $(ags_automation_test_OBJECTS) $(ags_automation_test_LDADD) $(LIBS)
 ags/test/audio/ags_channel_test-ags_channel_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -4700,6 +4721,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_0_7_la-ags_service_provider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_signal_test-ags_audio_signal_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_test-ags_audio_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_automation_test-ags_automation_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_channel_test-ags_channel_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_functional_audio_test-ags_functional_audio_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_notation_test-ags_notation_test.Po@am__quote@
@@ -7975,6 +7997,20 @@ ags/test/audio/ags_audio_test-ags_audio_test.obj: ags/test/audio/ags_audio_test.
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_audio_test-ags_audio_test.obj `if test -f 'ags/test/audio/ags_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_audio_test.c'; fi`
 
+ags/test/audio/ags_automation_test-ags_automation_test.o: ags/test/audio/ags_automation_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_automation_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_automation_test-ags_automation_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_automation_test-ags_automation_test.Tpo -c -o ags/test/audio/ags_automation_test-ags_automation_test.o `test -f 'ags/test/audio/ags_automation_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_automation_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_automation_test-ags_automation_test.Tpo ags/test/audio/$(DEPDIR)/ags_automation_test-ags_automation_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_automation_test.c' object='ags/test/audio/ags_automation_test-ags_automation_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_automation_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_automation_test-ags_automation_test.o `test -f 'ags/test/audio/ags_automation_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_automation_test.c
+
+ags/test/audio/ags_automation_test-ags_automation_test.obj: ags/test/audio/ags_automation_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_automation_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_automation_test-ags_automation_test.obj -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_automation_test-ags_automation_test.Tpo -c -o ags/test/audio/ags_automation_test-ags_automation_test.obj `if test -f 'ags/test/audio/ags_automation_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_automation_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_automation_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_automation_test-ags_automation_test.Tpo ags/test/audio/$(DEPDIR)/ags_automation_test-ags_automation_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_automation_test.c' object='ags/test/audio/ags_automation_test-ags_automation_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_automation_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_automation_test-ags_automation_test.obj `if test -f 'ags/test/audio/ags_automation_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_automation_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_automation_test.c'; fi`
+
 ags/test/audio/ags_channel_test-ags_channel_test.o: ags/test/audio/ags_channel_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_channel_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_channel_test-ags_channel_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_channel_test-ags_channel_test.Tpo -c -o ags/test/audio/ags_channel_test-ags_channel_test.o `test -f 'ags/test/audio/ags_channel_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_channel_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_channel_test-ags_channel_test.Tpo ags/test/audio/$(DEPDIR)/ags_channel_test-ags_channel_test.Po
@@ -8547,6 +8583,13 @@ ags_notation_test.log: ags_notation_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_automation_test.log: ags_automation_test$(EXEEXT)
+	@p='ags_automation_test$(EXEEXT)'; \
+	b='ags_automation_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_functional_audio_test.log: ags_functional_audio_test$(EXEEXT)
 	@p='ags_functional_audio_test$(EXEEXT)'; \
 	b='ags_functional_audio_test'; \
@@ -8975,6 +9018,7 @@ install-data-local:
 	cp $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/0.7.13/
 	cp $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	cp $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
+	cp $(top_srcdir)/libags-1.0.pc $(pkgconfigdir)
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
