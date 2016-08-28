@@ -3,7 +3,9 @@ ags (0.7.56)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed Makefile.am to install libags-1.0.pc
 	* improved developer manual
+	* improved set AgsApplicationContext's instance in gsequencer_main.c
 	* implemented timestamp property of AgsAutomation
+	* implemented ags_thread_add_start_queue() and ags_thread_add_start_queue_all()
 
 ags (0.7.55)
 

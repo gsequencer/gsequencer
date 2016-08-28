@@ -1,17 +1,17 @@
-AgsDevout *devout;
+GObject *soundcard;
 AgsAudio *master_audio, *slave_audio;
 AgsLinkChannel *linkChannel;
 GError *error;
 
 /* some pseudo code */
-devout = AGS_WINDOW(gtk_widget_get_toblevel(widget))->devout;
+soundcard = AGS_WINDOW(gtk_widget_get_toblevel(widget))->soundcard;
 
 /* create AgsAudio objects */
 master_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-                                         "devout", devout,
+                                         "soundcard\0", soundcard,
                                          NULL);
 slave_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-                                        "devout", devout,
+                                        "soundcard\0", soundcard,
                                         NULL);
 
 /* assign AgsAudioSignal objects to master_audio and slave_audio */

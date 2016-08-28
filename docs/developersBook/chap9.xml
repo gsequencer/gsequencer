@@ -298,7 +298,7 @@
 	</listitem>
 	<listitem>
 	  <para>
-	    recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
+	    recall_class-&gt;automate, recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
 	    recall_class-&gt;run_post
 	  </para>
 	</listitem>

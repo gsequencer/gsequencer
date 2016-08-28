@@ -46,6 +46,8 @@ appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
 
 EXTRA_DIST += gsequencer.desktop.in
+
+# clean
 CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
 
 # extra
@@ -1480,7 +1482,8 @@ install-data-local:
 	cp $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/0.7.13/
 	cp $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	cp $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
-	cp $(top_srcdir)/libags-1.0.pc $(pkgconfigdir)
+	mkdir -p $(DESTDIR)/$(pkgconfigdir)
+	cp $(top_builddir)/libags-1.0.pc $(DESTDIR)/$(pkgconfigdir)
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
@@ -1498,6 +1501,7 @@ install-ags-docs: ags-docs
 	cp -rv $(top_srcdir)/docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
 	ln -s ../../doc/libgsequencer-0.7.x-doc/ags/ $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
+
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
@@ -1505,6 +1509,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
 	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/ags
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags-1.0.pc
 
 clean-local:
 	rm -rf $(top_srcdir)/html

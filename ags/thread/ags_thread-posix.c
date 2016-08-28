@@ -2595,6 +2595,60 @@ ags_thread_real_start(AgsThread *thread)
 }
 
 /**
+ * ags_thread_add_start_queue:
+ * @thread: the #AgsThread
+ * @child: the child #AgsThread to start
+ *
+ * Add @child to @thread's start queue.
+ *
+ * Since: 0.7.56
+ */
+void
+ags_thread_add_start_queue(AgsThread *thread,
+			   AgsThread *child)
+{
+  GList *start_queue;
+  
+  pthread_mutex_lock(thread->start_mutex);
+  
+  start_queue = g_atomic_pointer_get(&(thread->start_queue));
+  start_queue = g_list_prepend(start_queue,
+			       child);
+
+  g_atomic_pointer_set(&(thread->start_queue),
+		       start_queue);
+  
+  pthread_mutex_unlock(thread->start_mutex);
+}
+
+/**
+ * ags_thread_add_start_queue:
+ * @thread: the #AgsThread
+ * @child: the children as #GList-struct containing #AgsThread to start
+ *
+ * Add @child to @thread's start queue.
+ *
+ * Since: 0.7.56
+ */
+void
+ags_thread_add_start_queue_all(AgsThread *thread,
+			       GList *child)
+{
+  GList *start_queue;
+  
+  pthread_mutex_lock(thread->start_mutex);
+  
+  start_queue = g_atomic_pointer_get(&(thread->start_queue));
+  start_queue = g_list_concat(start_queue,
+			      g_list_copy(child));
+
+  g_atomic_pointer_set(&(thread->start_queue),
+		       start_queue);
+  
+  pthread_mutex_unlock(thread->start_mutex);
+}
+
+/**
  * ags_thread_start:
  * @thread: the #AgsThread instance
  *

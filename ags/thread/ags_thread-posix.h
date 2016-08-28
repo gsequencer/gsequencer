@@ -248,6 +248,11 @@ void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
 guint ags_thread_clock(AgsThread *thread);
 
+void ags_thread_add_start_queue(AgsThread *thread,
+				AgsThread *child);
+void ags_thread_add_start_queue_all(AgsThread *thread,
+				    GList *child);
+
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
 void ags_thread_suspend(AgsThread *thread);
