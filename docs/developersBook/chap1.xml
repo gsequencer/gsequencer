@@ -89,7 +89,7 @@
   <sect1>
     <title>The file property</title>
     <para>
-      You might want to set an AgsFile instance within your application context. This in
+      You might want to set an AgsFile or AgsSimpleFile instance within your application context. This in
       view of having your application persisted.
     </para>
 

@@ -93,7 +93,7 @@ struct sigaction ags_sigact_timer;
 struct sigevent ags_sev_timer;
 struct itimerspec its;
 
-AgsApplicationContext *application_context;
+extern AgsApplicationContext *ags_application_context;
 
 void
 ags_signal_handler(int signr)
@@ -114,16 +114,16 @@ ags_signal_handler(int signr)
 void
 ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
 {
-    pthread_mutex_lock(AGS_THREAD(application_context->main_loop)->timer_mutex);
+    pthread_mutex_lock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
 
-    g_atomic_int_set(&(AGS_THREAD(application_context->main_loop)->timer_expired),
+    g_atomic_int_set(&(AGS_THREAD(ags_application_context->main_loop)->timer_expired),
 		     TRUE);
   
-    if(AGS_THREAD(application_context->main_loop)->timer_wait){
-      pthread_cond_signal(AGS_THREAD(application_context->main_loop)->timer_cond);
+    if(AGS_THREAD(ags_application_context->main_loop)->timer_wait){
+      pthread_cond_signal(AGS_THREAD(ags_application_context->main_loop)->timer_cond);
     }
     
-    pthread_mutex_unlock(AGS_THREAD(application_context->main_loop)->timer_mutex);
+    pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
   //  signal(sig, SIG_IGN);
 }
 
@@ -163,11 +163,11 @@ ags_setup(int argc, char **argv)
     
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
-  application_context = ags_xorg_application_context_new();
-  application_context->argc = argc;
-  application_context->argv = argv;
+  ags_application_context = ags_xorg_application_context_new();
+  ags_application_context->argc = argc;
+  ags_application_context->argv = argv;
 
-  lv2_worker_manager->thread_pool = AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool;
+  lv2_worker_manager->thread_pool = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->thread_pool;
   
   /* parse rc file */
   rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
@@ -196,11 +196,11 @@ ags_launch(gboolean single_thread)
   /* get threads, thread pool and config */
   pthread_mutex_lock(application_mutex);
   
-  audio_loop = application_context->main_loop;
-  task_thread = application_context->task_thread;
+  audio_loop = ags_application_context->main_loop;
+  task_thread = ags_application_context->task_thread;
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
-  config = application_context->config;
+  config = ags_application_context->config;
   
   pthread_mutex_unlock(application_mutex);
   
@@ -211,7 +211,7 @@ ags_launch(gboolean single_thread)
 
   /* start engine */
   pthread_mutex_lock(audio_loop->start_mutex);
-    
+  
   start_queue = NULL;
   start_queue = g_list_prepend(start_queue,
 			       polling_thread);
@@ -290,7 +290,7 @@ ags_launch(gboolean single_thread)
     AgsSingleThread *single_thread;
 
     /* single thread */
-    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(application_context)->data);
+    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(ags_application_context)->data);
 
     /* add known threads to single_thread */
     ags_thread_add_child(AGS_THREAD(single_thread),
@@ -338,11 +338,11 @@ ags_launch_filename(gchar *filename,
   /* get threads, thread pool and config */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
-  task_thread = application_context->task_thread;
+  audio_loop = ags_application_context->main_loop;
+  task_thread = ags_application_context->task_thread;
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
-  config = application_context->config;
+  config = ags_application_context->config;
   
   pthread_mutex_unlock(application_mutex);
 
@@ -363,7 +363,7 @@ ags_launch_filename(gchar *filename,
     GError *error;
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context\0", application_context,
+						 "application-context\0", ags_application_context,
 						 "filename\0", filename,
 						 NULL);
     error = NULL;
@@ -460,7 +460,7 @@ ags_launch_filename(gchar *filename,
       GError *error;
     
       file = g_object_new(AGS_TYPE_FILE,
-			  "application-context\0", application_context,
+			  "application-context\0", ags_application_context,
 			  "filename\0", filename,
 			  NULL);
       error = NULL;
@@ -568,11 +568,11 @@ ags_timer_launch(timer_t *timer_id,
   /* get threads, thread pool and config */
   pthread_mutex_lock(application_mutex);
   
-  audio_loop = application_context->main_loop;
-  task_thread = application_context->task_thread;
+  audio_loop = ags_application_context->main_loop;
+  task_thread = ags_application_context->task_thread;
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
-  config = application_context->config;
+  config = ags_application_context->config;
   
   pthread_mutex_unlock(application_mutex);
   
@@ -665,7 +665,7 @@ ags_timer_launch(timer_t *timer_id,
     AgsSingleThread *single_thread;
 
     /* single thread */
-    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(application_context)->data);
+    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(ags_application_context)->data);
 
     /* add known threads to single_thread */
     ags_thread_add_child(AGS_THREAD(single_thread),
@@ -713,11 +713,11 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
   /* get thread, thread pool and config */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
-  task_thread = application_context->task_thread;
+  audio_loop = ags_application_context->main_loop;
+  task_thread = ags_application_context->task_thread;
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
-  config = application_context->config;
+  config = ags_application_context->config;
   
   pthread_mutex_unlock(application_mutex);
   
@@ -738,7 +738,7 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
     GError *error;    
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context\0", application_context,
+						 "application-context\0", ags_application_context,
 						 "filename\0", filename,
 						 NULL);
     error = NULL;
@@ -839,7 +839,7 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
     GError *error;
     
     file = g_object_new(AGS_TYPE_FILE,
-			"application-context\0", application_context,
+			"application-context\0", ags_application_context,
 			"filename\0", filename,
 			NULL);
     error = NULL;
@@ -1013,7 +1013,7 @@ main(int argc, char **argv)
   
   /* setup */
   ags_setup(argc, argv);
-  config = application_context->config;
+  config = ags_application_context->config;
 
   /* JACK */
   str = ags_config_get_value(config,
@@ -1077,7 +1077,7 @@ main(int argc, char **argv)
     uid = getuid();
     pw = getpwuid(uid);
 
-    if(g_strcmp0(ags_config_get_value(application_context->config,
+    if(g_strcmp0(ags_config_get_value(ags_application_context->config,
 				      AGS_CONFIG_GENERIC,
 				      "simple-file\0"),
 		 "false\0")){
