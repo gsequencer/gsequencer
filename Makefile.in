@@ -118,7 +118,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = libags-1.0.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -149,7 +149,8 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" \
-	"$(DESTDIR)$(docdir)" "$(DESTDIR)$(includedir)"
+	"$(DESTDIR)$(docdir)" "$(DESTDIR)$(pkgconfigdir)" \
+	"$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libags_1_0_la_LIBADD =
 am__objects_1 =
@@ -848,7 +849,7 @@ am__can_run_installinfo = \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man1_MANS)
-DATA = $(appdata_DATA) $(doc_DATA)
+DATA = $(appdata_DATA) $(doc_DATA) $(pkgconfig_DATA)
 HEADERS = $(nobase_include_HEADERS)
 am__extra_recursive_targets = ags-docs-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
@@ -1049,10 +1050,10 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in AUTHORS \
-	COPYING ChangeLog INSTALL NEWS README compile config.guess \
-	config.rpath config.sub depcomp install-sh ltmain.sh missing \
-	test-driver
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(srcdir)/libags-1.0.pc.in AUTHORS COPYING ChangeLog INSTALL \
+	NEWS README compile config.guess config.rpath config.sub \
+	depcomp install-sh ltmain.sh missing test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1193,6 +1194,8 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
+
+# doc
 docdir = $(datadir)/doc/gsequencer
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
@@ -1235,14 +1238,18 @@ AM_CPPFLAGS = -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDI
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags-1.0.la libags_thread-1.0.la libags_server-0.7.la libags_audio-1.0.la libags_gui-0.7.la libgsequencer-0.7.la
+
+# extra
 EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 \
 	gsequencer.1 midi2xml.1 README ags_example.xml \
-	gsequencer-documentation gsequencer.desktop.in \
-	docs/reference/ags $(manpages) $(userdoc) $(userdocimages) \
-	$(devdoc) $(devdocimages) $(devdoclistings) \
-	$(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl \
+	gsequencer-documentation libags-1.0.pc.in \
+	gsequencer.desktop.in docs/reference/ags $(manpages) \
+	$(userdoc) $(userdocimages) $(devdoc) $(devdocimages) \
+	$(devdoclistings) $(top_srcdir)/ags/file/ags_file.dtd \
+	$(top_srcdir)/ags.xsl \
 	$(top_srcdir)/ags/object/ags_marshallers.list
-CLEANFILES = $(appdata_DATA)
+CLEANFILES = docs/reference/ags/Makefile $(appdata_DATA) \
+	$(pkgconfig_DATA)
 man1_MANS = gsequencer.1 midi2xml.1
 libags_ladir = $(datadir)
 libags_thread_ladir = $(datadir)
@@ -1250,8 +1257,16 @@ libags_server_ladir = $(datadir)
 libags_audio_ladir = $(datadir)
 libags_gui_ladir = $(datadir)
 libgsequencer_ladir = $(datadir)
+
+# pkg-config
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libags-1.0.pc
+
+# desktop file
 appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
+
+# include
 otherincludedir = $(includedir)/ags
 nobase_include_HEADERS = $(libags_1_0_la_HEADERS_0) $(libags_thread_1_0_la_HEADERS_0) $(libags_server_0_7_la_HEADERS_0) $(libags_audio_1_0_la_HEADERS_0) $(libags_gui_0_7_la_HEADERS_0) $(libgsequencer_0_7_la_HEADERS_0)
 doc_DATA = README ags_example.xml
@@ -2640,6 +2655,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+libags-1.0.pc: $(top_builddir)/config.status $(srcdir)/libags-1.0.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -8227,6 +8244,27 @@ uninstall-docDATA:
 	@list='$(doc_DATA)'; test -n "$(docdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(docdir)'; $(am__uninstall_files_from_dir)
+install-pkgconfigDATA: $(pkgconfig_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(pkgconfig_DATA)'; test -n "$(pkgconfigdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgconfigdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgconfigdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgconfigdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgconfigdir)" || exit $$?; \
+	done
+
+uninstall-pkgconfigDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkgconfig_DATA)'; test -n "$(pkgconfigdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pkgconfigdir)'; $(am__uninstall_files_from_dir)
 install-nobase_includeHEADERS: $(nobase_include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(nobase_include_HEADERS)'; test -n "$(includedir)" || list=; \
@@ -8703,7 +8741,7 @@ all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) $(HEADERS) \
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -8821,7 +8859,8 @@ info: info-am
 info-am:
 
 install-data-am: install-appdataDATA install-data-local \
-	install-docDATA install-man install-nobase_includeHEADERS
+	install-docDATA install-man install-nobase_includeHEADERS \
+	install-pkgconfigDATA
 
 install-dvi: install-dvi-am
 
@@ -8869,7 +8908,7 @@ ps-am:
 
 uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS \
 	uninstall-docDATA uninstall-libLTLIBRARIES uninstall-man \
-	uninstall-nobase_includeHEADERS
+	uninstall-nobase_includeHEADERS uninstall-pkgconfigDATA
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 uninstall-man: uninstall-man1
@@ -8891,39 +8930,40 @@ uninstall-man: uninstall-man1
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-libLTLIBRARIES \
 	install-man install-man1 install-nobase_includeHEADERS \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am recheck tags tags-am uninstall \
-	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
-	uninstall-docDATA uninstall-hook uninstall-libLTLIBRARIES \
-	uninstall-man uninstall-man1 uninstall-nobase_includeHEADERS
+	install-pdf install-pdf-am install-pkgconfigDATA install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am recheck tags tags-am \
+	uninstall uninstall-am uninstall-appdataDATA \
+	uninstall-binPROGRAMS uninstall-docDATA uninstall-hook \
+	uninstall-libLTLIBRARIES uninstall-man uninstall-man1 \
+	uninstall-nobase_includeHEADERS uninstall-pkgconfigDATA
 
 .PRECIOUS: Makefile
 
 
 ags-docs-local:
-	$(MAKE) -C docs/reference/ags
+	$(MAKE) -C $(top_srcdir)/docs/reference/ags
 	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
 gsequencer.1:
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o ./ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml
 
 midi2xml.1:
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o ./ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
 html:
-	mkdir -p html/
-	mkdir -p html/{developer-docs,user-docs}
-	xsltproc --output html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
+	mkdir -p $(top_srcdir)/html/
+	mkdir -p $(top_srcdir)/html/{developer-docs,user-docs}
+	xsltproc --output $(top_srcdir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output $(top_srcdir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
@@ -8943,24 +8983,27 @@ install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
 	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
-	cp html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
-	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
+	cp $(top_srcdir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	cp $(top_srcdir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
 
 install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
-	cp -rv docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
+	cp -rv $(top_srcdir)/docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
 	ln -s ../../doc/libgsequencer-0.7.x-doc/ags/ $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
+	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
+	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
 clean-local:
-	rm -rf html
-	rm -f docs/reference/ags/Makefile
+	rm -rf $(top_srcdir)/html
+	rm -rf $(top_srcdir)/docs/reference/ags/xml
+	rm -rf $(top_srcdir)/docs/reference/ags/html
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

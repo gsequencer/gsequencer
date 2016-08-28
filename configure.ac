@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.54],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.7.55],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -132,6 +132,9 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
-AC_CONFIG_FILES([Makefile docs/reference/ags/Makefile])
+AC_CONFIG_FILES([
+Makefile
+docs/reference/ags/Makefile
+libags-1.0.pc])
 
 AC_OUTPUT

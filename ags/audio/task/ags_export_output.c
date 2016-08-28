@@ -25,6 +25,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <sndfile.h>
+
 void ags_export_output_class_init(AgsExportOutputClass *export_output);
 void ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_output_init(AgsExportOutput *export_output);
@@ -156,8 +158,10 @@ ags_export_output_launch(AgsTask *task)
   gchar *filename;
   guint dsp_channels;
   guint samplerate;
+  guint format;
   guint tic;
   guint val;
+  guint major_format;
   
   export_output = AGS_EXPORT_OUTPUT(task);
   soundcard = export_output->soundcard;
@@ -169,7 +173,7 @@ ags_export_output_launch(AgsTask *task)
 			    &dsp_channels,
 			    &samplerate,
 			    NULL,
-			    NULL);
+			    &format);
   
   /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
@@ -180,6 +184,42 @@ ags_export_output_launch(AgsTask *task)
   audio_file->samplerate = (int) samplerate;
   audio_file->channels = dsp_channels;
 
+  //TODO:JK: more formats
+  major_format = SF_FORMAT_WAV;
+  
+  if(g_str_has_suffix(filename,
+		      ".flac\0")){
+    major_format = SF_FORMAT_FLAC;
+  }else if(g_str_has_suffix(filename,
+			    ".ogg\0")){
+    major_format = SF_FORMAT_OGG;
+  }
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      audio_file->format = major_format | SF_FORMAT_PCM_S8;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      audio_file->format = major_format | SF_FORMAT_PCM_16;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      audio_file->format = major_format | SF_FORMAT_PCM_24;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      audio_file->format = major_format | SF_FORMAT_PCM_32;
+    }
+    break;
+  default:
+    audio_file->format = major_format | SF_FORMAT_PCM_16;
+  }
+  
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
 

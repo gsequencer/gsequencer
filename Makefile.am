@@ -24,7 +24,7 @@ bin_PROGRAMS = gsequencer midi2xml
 
 EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 midi2xml.1 README ags_example.xml gsequencer-documentation
 
-CLEANFILES =
+CLEANFILES = docs/reference/ags/Makefile
 
 man1_MANS = gsequencer.1 midi2xml.1
 
@@ -35,17 +35,27 @@ libags_audio_ladir = $(datadir)
 libags_gui_ladir = $(datadir)
 libgsequencer_ladir = $(datadir)
 
+# pkg-config
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libags-1.0.pc
+
+EXTRA_DIST += libags-1.0.pc.in
+
+# desktop file
 appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
 
 EXTRA_DIST += gsequencer.desktop.in
-CLEANFILES += $(appdata_DATA)
+CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
 
+# extra
 EXTRA_DIST += docs/reference/ags
 
+# include
 otherincludedir = $(includedir)/ags
 nobase_include_HEADERS = $(libags_1_0_la_HEADERS_0) $(libags_thread_1_0_la_HEADERS_0) $(libags_server_0_7_la_HEADERS_0) $(libags_audio_1_0_la_HEADERS_0) $(libags_gui_0_7_la_HEADERS_0) $(libgsequencer_0_7_la_HEADERS_0)
 
+# doc
 docdir = $(datadir)/doc/gsequencer
 doc_DATA = README ags_example.xml
 
@@ -1433,26 +1443,26 @@ midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 midi2xml_SOURCES = ags/midi2xml_main.c ags/audio/midi/ags_midi_parser.c ags/audio/midi/ags_midi_parser.h ags/object/ags_marshal.c ags/object/ags_marshal.h
 
 ags-docs-local:
-	$(MAKE) -C docs/reference/ags
+	$(MAKE) -C $(top_srcdir)/docs/reference/ags
 	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
 gsequencer.1:
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o ./ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml
 
 midi2xml.1:
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o ./ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o $(top_srcdir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
 html:
-	mkdir -p html/
-	mkdir -p html/{developer-docs,user-docs}
-	xsltproc --output html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
+	mkdir -p $(top_srcdir)/html/
+	mkdir -p $(top_srcdir)/html/{developer-docs,user-docs}
+	xsltproc --output $(top_srcdir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output $(top_srcdir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
@@ -1472,21 +1482,24 @@ install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
 	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
-	cp html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
-	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
+	cp $(top_srcdir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	cp $(top_srcdir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
 
 install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
-	cp -rv docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
+	cp -rv $(top_srcdir)/docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
 	ln -s ../../doc/libgsequencer-0.7.x-doc/ags/ $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
+	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
+	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 
 clean-local:
-	rm -rf html
-	rm -f docs/reference/ags/Makefile
+	rm -rf $(top_srcdir)/html
+	rm -rf $(top_srcdir)/docs/reference/ags/xml
+	rm -rf $(top_srcdir)/docs/reference/ags/html
