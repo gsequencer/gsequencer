@@ -717,26 +717,31 @@ ags_notation_test_remove_point_from_selection()
 void
 ags_notation_test_add_region_to_selection()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_notation_test_remove_region_from_selection()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_notation_test_copy_selection()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_notation_test_cut_selection()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_notation_test_insert_from_clipboard()
 {
+  //TODO:JK: implement me
 }
 
 int
