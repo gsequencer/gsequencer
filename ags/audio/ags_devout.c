@@ -1774,12 +1774,23 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /* choose all parameters */
   err = snd_pcm_hw_params_any(handle, hwparams);
+
   if (err < 0) {
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
     g_warning("Broken configuration for playback: no configurations available: %s\n", str);
 
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_BROKEN_CONFIGURATION,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     //    free(str);
     
     return;
@@ -1807,6 +1818,16 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     str = snd_strerror(err);
     g_warning("Access type not available for playback: %s\n", str);
 
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_ACCESS_TYPE_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     //    free(str);
     
     return;
@@ -1820,6 +1841,16 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     str = snd_strerror(err);
     g_warning("Sample format not available for playback: %s\n", str);
 
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_SAMPLE_FORMAT_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     //    free(str);
     
     return;
@@ -1834,6 +1865,16 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     str = snd_strerror(err);
     g_warning("Channels count (%i) not available for playbacks: %s\n", channels, str);
 
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_CHANNELS_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     //    free(str);
     
     return;
@@ -1849,6 +1890,16 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     str = snd_strerror(err);
     g_warning("Rate %iHz not available for playback: %s\n", rate, str);
 
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_SAMPLERATE_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     //    free(str);
     
     return;
@@ -1858,6 +1909,17 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
     g_warning("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
     //    exit(-EINVAL);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_SAMPLERATE_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     return;
   }
 
@@ -1870,6 +1932,16 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     str = snd_strerror(err);
     g_warning("Unable to set buffer size %i for playback: %s\n", size, str);
 
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_BUFFER_SIZE_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     //    free(str);
     
     return;
@@ -1898,6 +1970,16 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     str = snd_strerror(err);
     g_warning("Unable to set hw params for playback: %s\n", str);
 
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_HW_PARAMETERS_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\n\0",
+		  str);
+    }
+
+    devout->out.alsa.handle = NULL;
+    
     //    free(str);
     
     return;

@@ -369,6 +369,8 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   AgsAudio *audio;
 
+  gchar *str;
+  
   audio = AGS_MACHINE(lv2_bridge)->audio;
   audio->flags |= (AGS_AUDIO_SYNC);
 
@@ -426,20 +428,28 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   lv2_bridge->lv2_gui = NULL;
 
   /* lv2 menu */
-  item = gtk_image_menu_item_new_with_label("Lv2\0");
-  gtk_menu_shell_append(AGS_MACHINE(lv2_bridge)->popup,
-			item);
-  gtk_widget_show(item);
+  str = ags_config_get_value(ags_config_get_instance(),
+			     AGS_CONFIG_GENERIC,
+			     "disable-feature\0");
   
-  lv2_bridge->lv2_menu = gtk_menu_new();
-  gtk_menu_item_set_submenu(item,
-			    lv2_bridge->lv2_menu);
+  if(!g_ascii_strncasecmp(str,
+			  "experimental\0",
+			  13)){
+    item = gtk_image_menu_item_new_with_label("Lv2\0");
+    gtk_menu_shell_append(AGS_MACHINE(lv2_bridge)->popup,
+			  item);
+    gtk_widget_show(item);
+  
+    lv2_bridge->lv2_menu = gtk_menu_new();
+    gtk_menu_item_set_submenu(item,
+			      lv2_bridge->lv2_menu);
 
-  item = gtk_image_menu_item_new_with_label("show GUI\0");
-  gtk_menu_shell_append(lv2_bridge->lv2_menu,
-			item);
+    item = gtk_image_menu_item_new_with_label("show GUI\0");
+    gtk_menu_shell_append(lv2_bridge->lv2_menu,
+			  item);
 
-  gtk_widget_show_all(lv2_bridge->lv2_menu);
+    gtk_widget_show_all(lv2_bridge->lv2_menu);
+  }
 }
 
 void
@@ -745,6 +755,8 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
 
   GList *list;
 
+  gchar *str;
+  
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
   }
@@ -754,10 +766,18 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
   lv2_bridge = AGS_LV2_BRIDGE(connectable);
 
   /* menu */
-  list = gtk_container_get_children(lv2_bridge->lv2_menu);
+  str = ags_config_get_value(ags_config_get_instance(),
+			     AGS_CONFIG_GENERIC,
+			     "disable-feature\0");
+  
+  if(!g_ascii_strncasecmp(str,
+			  "experimental\0",
+			  13)){
+    list = gtk_container_get_children(lv2_bridge->lv2_menu);
 
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
-		   G_CALLBACK(ags_lv2_bridge_show_gui_callback), lv2_bridge);
+    g_signal_connect(G_OBJECT(list->data), "activate\0",
+		     G_CALLBACK(ags_lv2_bridge_show_gui_callback), lv2_bridge);
+  }
 }
 
 void

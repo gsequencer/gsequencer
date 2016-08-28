@@ -1,8 +1,11 @@
-ags (0.7.54)
+ags (0.7.55)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed crash on missing poll descriptor
 	* fixed first connect and then reset AgsPreferences in order to get valid configuration
+	* improved error setting and handling in ags_devout_alsa_init() handling now wrong configuration
+	* disabled Lv2 context menu of AgsMachine
+	* added libags.pc.in file
 
 ags (0.7.54)
 
