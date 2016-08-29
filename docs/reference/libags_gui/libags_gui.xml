@@ -12,13 +12,13 @@
     <releaseinfo>
       for &package_string;.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://[SERVER]/&package_name;/index.html">http://[SERVER]/&package_name;/</ulink>.
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/&package_name;/index.html">http://nongnu.org/gsequencer/&package_name;/</ulink>.
     </releaseinfo>
   </bookinfo>
 
   <chapter>
-    <title>[Insert title here]</title>
-        <xi:include href="xml/ags_cartesian.xml"/>
+    <title>UI Widgets</title>
+    <xi:include href="xml/ags_cartesian.xml"/>
     <xi:include href="xml/ags_container.xml"/>
     <xi:include href="xml/ags_dial.xml"/>
     <xi:include href="xml/ags_expander.xml"/>
@@ -35,8 +35,8 @@
     <xi:include href="xml/ags_timebar.xml"/>
     <xi:include href="xml/ags_vindicator.xml"/>
     <xi:include href="xml/ags_waveform.xml"/>
-
   </chapter>
+  
   <chapter id="object-tree">
     <title>Object Hierarchy</title>
     <xi:include href="xml/tree_index.sgml"/>

@@ -6,50 +6,31 @@
   <!ENTITY % gtkdocentities SYSTEM "xml/gtkdocentities.ent">
   %gtkdocentities;
 ]>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
 <book id="index">
   <bookinfo>
     <title>&package_name; Reference Manual</title>
     <releaseinfo>
       for &package_string;.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://[SERVER]/&package_name;/index.html">http://[SERVER]/&package_name;/</ulink>.
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/&package_name;/index.html">http://nongnu.org/gsequencer/&package_name;/</ulink>.
     </releaseinfo>
   </bookinfo>
 
-  <chapter>
-    <title>[Insert title here]</title>
-        <xi:include href="xml/ags_add_bulk_member.xml"/>
-    <xi:include href="xml/ags_add_line_member.xml"/>
+  <part id="lib">
+    <title>GSequencer UI Library</title>
+
     <xi:include href="xml/ags_audio_preferences.xml"/>
     <xi:include href="xml/ags_audio_preferences_callbacks.xml"/>
-    <xi:include href="xml/ags_automation_area.xml"/>
-    <xi:include href="xml/ags_automation_edit.xml"/>
-    <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
-    <xi:include href="xml/ags_automation_editor.xml"/>
-    <xi:include href="xml/ags_automation_editor_callbacks.xml"/>
-    <xi:include href="xml/ags_automation_toolbar.xml"/>
-    <xi:include href="xml/ags_automation_toolbar_callbacks.xml"/>
-    <xi:include href="xml/ags_automation_window.xml"/>
-    <xi:include href="xml/ags_blink_cell_pattern_cursor.xml"/>
     <xi:include href="xml/ags_bulk_member.xml"/>
     <xi:include href="xml/ags_bulk_member_callbacks.xml"/>
-    <xi:include href="xml/ags_cell_pattern.xml"/>
-    <xi:include href="xml/ags_cell_pattern_callbacks.xml"/>
-    <xi:include href="xml/ags_change_indicator.xml"/>
-    <xi:include href="xml/ags_change_tact.xml"/>
-    <xi:include href="xml/ags_display_tact.xml"/>
-    <xi:include href="xml/ags_drum.xml"/>
-    <xi:include href="xml/ags_drum_callbacks.xml"/>
-    <xi:include href="xml/ags_drum_input_line.xml"/>
-    <xi:include href="xml/ags_drum_input_line_callbacks.xml"/>
-    <xi:include href="xml/ags_drum_input_pad.xml"/>
-    <xi:include href="xml/ags_drum_input_pad_callbacks.xml"/>
-    <xi:include href="xml/ags_drum_output_line.xml"/>
-    <xi:include href="xml/ags_drum_output_line_callbacks.xml"/>
-    <xi:include href="xml/ags_drum_output_pad.xml"/>
-    <xi:include href="xml/ags_drum_output_pad_callbacks.xml"/>
-    <xi:include href="xml/ags_dssi_bridge.xml"/>
-    <xi:include href="xml/ags_dssi_bridge_callbacks.xml"/>
     <xi:include href="xml/ags_dssi_browser.xml"/>
     <xi:include href="xml/ags_dssi_browser_callbacks.xml"/>
     <xi:include href="xml/ags_editor.xml"/>
@@ -63,22 +44,10 @@
     <xi:include href="xml/ags_effect_pad.xml"/>
     <xi:include href="xml/ags_export_window.xml"/>
     <xi:include href="xml/ags_export_window_callbacks.xml"/>
-    <xi:include href="xml/ags_ffplayer.xml"/>
-    <xi:include href="xml/ags_ffplayer_bridge.xml"/>
-    <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
-    <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
-    <xi:include href="xml/ags_ffplayer_input_line.xml"/>
-    <xi:include href="xml/ags_ffplayer_input_line_callbacks.xml"/>
-    <xi:include href="xml/ags_ffplayer_input_pad.xml"/>
-    <xi:include href="xml/ags_file_selection.xml"/>
-    <xi:include href="xml/ags_file_selection_callbacks.xml"/>
     <xi:include href="xml/ags_generic_preferences.xml"/>
-    <xi:include href="xml/ags_generic_preferences_callbacks.xml"/>
-    <xi:include href="xml/ags_gui_file_xml.xml"/>
-    <xi:include href="xml/ags_gui_thread.xml"/>
+    <xi:include href="xml/ags_generic_preferences_callbacks.xml"/>    
     <xi:include href="xml/ags_history_browser.xml"/>
-    <xi:include href="xml/ags_inline_player.xml"/>
-    <xi:include href="xml/ags_ladspa_bridge.xml"/>
+    <xi:include href="xml/ags_inline_player.xml"/>    
     <xi:include href="xml/ags_ladspa_browser.xml"/>
     <xi:include href="xml/ags_ladspa_browser_callbacks.xml"/>
     <xi:include href="xml/ags_line.xml"/>
@@ -95,54 +64,24 @@
     <xi:include href="xml/ags_link_editor_callbacks.xml"/>
     <xi:include href="xml/ags_listing_editor.xml"/>
     <xi:include href="xml/ags_listing_editor_callbacks.xml"/>
-    <xi:include href="xml/ags_lv2_bridge.xml"/>
-    <xi:include href="xml/ags_lv2_bridge_callbacks.xml"/>
     <xi:include href="xml/ags_lv2_browser.xml"/>
     <xi:include href="xml/ags_lv2_browser_callbacks.xml"/>
     <xi:include href="xml/ags_machine.xml"/>
     <xi:include href="xml/ags_machine_callbacks.xml"/>
     <xi:include href="xml/ags_machine_editor.xml"/>
     <xi:include href="xml/ags_machine_editor_callbacks.xml"/>
-    <xi:include href="xml/ags_machine_radio_button.xml"/>
-    <xi:include href="xml/ags_machine_selection.xml"/>
-    <xi:include href="xml/ags_machine_selector.xml"/>
-    <xi:include href="xml/ags_machine_selector_callbacks.xml"/>
-    <xi:include href="xml/ags_matrix.xml"/>
-    <xi:include href="xml/ags_matrix_bridge.xml"/>
-    <xi:include href="xml/ags_matrix_bulk_input.xml"/>
-    <xi:include href="xml/ags_matrix_callbacks.xml"/>
     <xi:include href="xml/ags_menu_bar.xml"/>
     <xi:include href="xml/ags_menu_bar_callbacks.xml"/>
-    <xi:include href="xml/ags_meter.xml"/>
-    <xi:include href="xml/ags_meter_callbacks.xml"/>
     <xi:include href="xml/ags_midi_dialog.xml"/>
     <xi:include href="xml/ags_midi_dialog_callbacks.xml"/>
     <xi:include href="xml/ags_midi_import_wizard.xml"/>
     <xi:include href="xml/ags_midi_import_wizard_callbacks.xml"/>
-    <xi:include href="xml/ags_mixer.xml"/>
-    <xi:include href="xml/ags_mixer_callbacks.xml"/>
-    <xi:include href="xml/ags_mixer_input_line.xml"/>
-    <xi:include href="xml/ags_mixer_input_pad.xml"/>
     <xi:include href="xml/ags_navigation.xml"/>
     <xi:include href="xml/ags_navigation_callbacks.xml"/>
-    <xi:include href="xml/ags_note_edit.xml"/>
-    <xi:include href="xml/ags_note_edit_callbacks.xml"/>
-    <xi:include href="xml/ags_notebook.xml"/>
-    <xi:include href="xml/ags_notebook_callbacks.xml"/>
-    <xi:include href="xml/ags_oscillator.xml"/>
-    <xi:include href="xml/ags_oscillator_callbacks.xml"/>
     <xi:include href="xml/ags_pad.xml"/>
     <xi:include href="xml/ags_pad_callbacks.xml"/>
     <xi:include href="xml/ags_pad_editor.xml"/>
     <xi:include href="xml/ags_pad_editor_callbacks.xml"/>
-    <xi:include href="xml/ags_panel.xml"/>
-    <xi:include href="xml/ags_panel_callbacks.xml"/>
-    <xi:include href="xml/ags_panel_input_line.xml"/>
-    <xi:include href="xml/ags_panel_input_pad.xml"/>
-    <xi:include href="xml/ags_pattern_box.xml"/>
-    <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
-    <xi:include href="xml/ags_pattern_edit.xml"/>
-    <xi:include href="xml/ags_pattern_edit_callbacks.xml"/>
     <xi:include href="xml/ags_performance_preferences.xml"/>
     <xi:include href="xml/ags_plugin_browser.xml"/>
     <xi:include href="xml/ags_plugin_browser_callbacks.xml"/>
@@ -155,33 +94,128 @@
     <xi:include href="xml/ags_property_editor_callbacks.xml"/>
     <xi:include href="xml/ags_property_listing_editor.xml"/>
     <xi:include href="xml/ags_resize_editor.xml"/>
-    <xi:include href="xml/ags_scale.xml"/>
-    <xi:include href="xml/ags_scale_area.xml"/>
-    <xi:include href="xml/ags_scale_callbacks.xml"/>
-    <xi:include href="xml/ags_scroll_on_play.xml"/>
     <xi:include href="xml/ags_server_preferences.xml"/>
     <xi:include href="xml/ags_sf2_chooser.xml"/>
     <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>
-    <xi:include href="xml/ags_simple_autosave_thread.xml"/>
-    <xi:include href="xml/ags_simple_file.xml"/>
-    <xi:include href="xml/ags_simple_file_read.xml"/>
-    <xi:include href="xml/ags_simple_file_write.xml"/>
-    <xi:include href="xml/ags_synth.xml"/>
-    <xi:include href="xml/ags_synth_callbacks.xml"/>
-    <xi:include href="xml/ags_synth_input_line.xml"/>
-    <xi:include href="xml/ags_synth_input_pad.xml"/>
-    <xi:include href="xml/ags_toggle_led.xml"/>
-    <xi:include href="xml/ags_toolbar.xml"/>
-    <xi:include href="xml/ags_toolbar_callbacks.xml"/>
-    <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
     <xi:include href="xml/ags_track_collection.xml"/>
     <xi:include href="xml/ags_track_collection_mapper.xml"/>
-    <xi:include href="xml/ags_update_bulk_member.xml"/>
     <xi:include href="xml/ags_window.xml"/>
     <xi:include href="xml/ags_window_callbacks.xml"/>
     <xi:include href="xml/ags_xorg_application_context.xml"/>
 
-  </chapter>
+    <chapter id="editor">
+      <title>GUI Editor</title>
+
+      <xi:include href="xml/ags_automation_area.xml"/>
+      <xi:include href="xml/ags_automation_edit.xml"/>
+      <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_automation_editor.xml"/>
+      <xi:include href="xml/ags_automation_editor_callbacks.xml"/>
+      <xi:include href="xml/ags_automation_toolbar.xml"/>
+      <xi:include href="xml/ags_automation_toolbar_callbacks.xml"/>
+      <xi:include href="xml/ags_automation_window.xml"/>
+      <xi:include href="xml/ags_file_selection.xml"/>
+      <xi:include href="xml/ags_file_selection_callbacks.xml"/>
+      <xi:include href="xml/ags_machine_radio_button.xml"/>
+      <xi:include href="xml/ags_machine_selection.xml"/>
+      <xi:include href="xml/ags_machine_selector.xml"/>
+      <xi:include href="xml/ags_machine_selector_callbacks.xml"/>      
+      <xi:include href="xml/ags_meter.xml"/>
+      <xi:include href="xml/ags_meter_callbacks.xml"/>
+      <xi:include href="xml/ags_note_edit.xml"/>
+      <xi:include href="xml/ags_note_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_notebook.xml"/>
+      <xi:include href="xml/ags_notebook_callbacks.xml"/>      
+      <xi:include href="xml/ags_pattern_edit.xml"/>
+      <xi:include href="xml/ags_pattern_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_scale.xml"/>
+      <xi:include href="xml/ags_scale_area.xml"/>
+      <xi:include href="xml/ags_scale_callbacks.xml"/>
+      <xi:include href="xml/ags_toolbar.xml"/>
+      <xi:include href="xml/ags_toolbar_callbacks.xml"/>
+      <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
+    </chapter>
+
+    <chapter id="machine">
+      <title>Audio machines</title>
+
+      <xi:include href="xml/ags_cell_pattern.xml"/>
+      <xi:include href="xml/ags_cell_pattern_callbacks.xml"/>
+      <xi:include href="xml/ags_drum.xml"/>
+      <xi:include href="xml/ags_drum_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_input_line.xml"/>
+      <xi:include href="xml/ags_drum_input_line_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_input_pad.xml"/>
+      <xi:include href="xml/ags_drum_input_pad_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_output_line.xml"/>
+      <xi:include href="xml/ags_drum_output_line_callbacks.xml"/>
+      <xi:include href="xml/ags_drum_output_pad.xml"/>
+      <xi:include href="xml/ags_drum_output_pad_callbacks.xml"/>
+      <xi:include href="xml/ags_dssi_bridge.xml"/>
+      <xi:include href="xml/ags_dssi_bridge_callbacks.xml"/>
+      <xi:include href="xml/ags_ffplayer.xml"/>
+      <xi:include href="xml/ags_ffplayer_bridge.xml"/>
+      <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
+      <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
+      <xi:include href="xml/ags_ffplayer_input_line.xml"/>
+      <xi:include href="xml/ags_ffplayer_input_line_callbacks.xml"/>
+      <xi:include href="xml/ags_ffplayer_input_pad.xml"/>
+      <xi:include href="xml/ags_ladspa_bridge.xml"/>      
+      <xi:include href="xml/ags_lv2_bridge.xml"/>
+      <xi:include href="xml/ags_lv2_bridge_callbacks.xml"/>
+      <xi:include href="xml/ags_matrix.xml"/>
+      <xi:include href="xml/ags_matrix_bridge.xml"/>
+      <xi:include href="xml/ags_matrix_bulk_input.xml"/>
+      <xi:include href="xml/ags_matrix_callbacks.xml"/>      
+      <xi:include href="xml/ags_mixer.xml"/>
+      <xi:include href="xml/ags_mixer_callbacks.xml"/>
+      <xi:include href="xml/ags_mixer_input_line.xml"/>
+      <xi:include href="xml/ags_mixer_input_pad.xml"/>
+      <xi:include href="xml/ags_oscillator.xml"/>
+      <xi:include href="xml/ags_oscillator_callbacks.xml"/>
+      <xi:include href="xml/ags_panel.xml"/>
+      <xi:include href="xml/ags_panel_callbacks.xml"/>
+      <xi:include href="xml/ags_panel_input_line.xml"/>
+      <xi:include href="xml/ags_panel_input_pad.xml"/>
+      <xi:include href="xml/ags_pattern_box.xml"/>
+      <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
+      <xi:include href="xml/ags_synth.xml"/>
+      <xi:include href="xml/ags_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_synth_input_line.xml"/>
+      <xi:include href="xml/ags_synth_input_pad.xml"/>
+    </chapter>
+    
+    <chapter id="file">
+      <title>GUI files</title>
+ 
+      <xi:include href="xml/ags_gui_file_xml.xml"/>
+      <xi:include href="xml/ags_simple_file.xml"/>
+    </chapter>
+
+    <chapter id="thread">
+      <title>GUI threads</title>
+
+      <xi:include href="xml/ags_gui_thread.xml"/>
+      <xi:include href="xml/ags_simple_autosave_thread.xml"/>
+    </chapter>
+
+    <chapter id="task">
+      <title>GUI tasks</title>
+
+      <xi:include href="xml/ags_add_bulk_member.xml"/>
+      <xi:include href="xml/ags_add_line_member.xml"/>
+      <xi:include href="xml/ags_blink_cell_pattern_cursor.xml"/>
+      <xi:include href="xml/ags_change_indicator.xml"/>
+      <xi:include href="xml/ags_change_tact.xml"/>
+      <xi:include href="xml/ags_display_tact.xml"/>
+      <xi:include href="xml/ags_scroll_on_play.xml"/>
+      <xi:include href="xml/ags_simple_file_read.xml"/>
+      <xi:include href="xml/ags_simple_file_write.xml"/>
+      <xi:include href="xml/ags_toggle_led.xml"/>
+      <xi:include href="xml/ags_update_bulk_member.xml"/>
+    </chapter>
+  </part>
+  
   <chapter id="object-tree">
     <title>Object Hierarchy</title>
     <xi:include href="xml/tree_index.sgml"/>
