@@ -4,22 +4,22 @@
 # of using the various options.
 
 # The name of the module, e.g. 'glib'.
-DOC_MODULE=ags
+DOC_MODULE=libags-1.0
 
 # Uncomment for versioned docs and specify the version of the module, e.g. '2'.
 #DOC_MODULE_VERSION=2
 
 # The top-level XML file.
-DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.xml
+DOC_MAIN_SGML_FILE=$(DOC_MODULE).xml
 
 # Directories containing the source code.
 # gtk-doc will search all .c and .h files beneath these paths
 # for inline comments documenting functions and macros.
 # e.g. DOC_SOURCE_DIR=$(top_srcdir)/gtk $(top_srcdir)/gdk
-DOC_SOURCE_DIR=$(top_srcdir)/ags
+DOC_SOURCE_DIR=$(top_srcdir)/ags/util $(top_srcdir)/ags/lib $(top_srcdir)/ags/object $(top_srcdir)/ags/file $(top_srcdir)/ags/thread $(top_srcdir)/ags/server
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
-SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS) -L$(top_builddir) $(top_builddir)/libags-1.0.la $(top_builddir)/libags_thread-1.0.la $(top_builddir)/libags_server-0.7.la $(top_builddir)/libags_audio-1.0.la $(top_builddir)/libags_gui-0.7.la $(top_builddir)/libgsequencer-0.7.la"
+SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(GOBJECT_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(GOBJECT_LIBS) -L$(top_builddir) $(top_builddir)/libags-1.0.la $(top_builddir)/libags_thread-1.0.la $(top_builddir)/libags_server-0.7.la"
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
@@ -27,7 +27,7 @@ SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags --module=ags
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space="libags-1.0" --module="libags-1.0"
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
@@ -75,11 +75,7 @@ GTKDOC_CFLAGS=$(gsequencer_CFLAGS) -DGTK_IS_WIDGET_CLASS=1
 GTKDOC_LIBS = \
 	$(top_builddir)/libags-1.0.la \
 	$(top_builddir)/libags_thread-1.0.la \
-	$(top_builddir)/libags_server-0.7.la \
-	$(top_builddir)/libags_audio-1.0.la \
-	$(top_builddir)/libags_gui-0.7.la \
-	$(top_builddir)/libgsequencer-0.7.la \
-	$(gsequencer_LDFLAGS)
+	$(top_builddir)/libags_server-0.7.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
