@@ -1509,14 +1509,14 @@ install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags_audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags_gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	cp -rv $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/
-	cp -rv $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags_audio-doc/
-	cp -rv $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags_gui-doc/
-	cp -rv $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/
+	cp -rv $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	cp -rv $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags_audio-doc/api
+	cp -rv $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags_gui-doc/api
+	cp -rv $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
 	ln -s ../../doc/libags_audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
 	ln -s ../../doc/libags_gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 
 
 uninstall-hook:
@@ -1525,7 +1525,10 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer--doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/ags
+	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
