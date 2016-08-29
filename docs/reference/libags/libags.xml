@@ -18,9 +18,9 @@
   <bookinfo>
     <title>Advanced Gtk+ Sequencer Reference Manual</title>
     <releaseinfo>
-      for &package_string;.
+      for libags.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://nongnu.org/gsequencer/&package_name;/index.html">http://nongnu.org/gsequencer/&package_name;/</ulink>.
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/libags/index.html">http://nongnu.org/gsequencer/libags/</ulink>.
     </releaseinfo>
   </bookinfo>
 
