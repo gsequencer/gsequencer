@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 
-Name: Ags
+Name: libags-audio
 Description: Advanced Gtk+ Sequencer audio processing engine
 URL: http://nongnu.org/gsequencer
 Version: @PACKAGE_VERSION@
