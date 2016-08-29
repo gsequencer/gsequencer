@@ -138,9 +138,9 @@ docs/reference/libags/Makefile
 docs/reference/libags_audio/Makefile
 docs/reference/libags_gui/Makefile
 docs/reference/libgsequencer/Makefile
-libags-1.0.pc
-libags_audio-1.0.pc
-libags_gui-0.7.pc
-libgsequencer-0.7.pc])
+libags.pc
+libags_audio.pc
+libags_gui.pc
+libgsequencer.pc])
 
 AC_OUTPUT

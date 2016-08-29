@@ -37,9 +37,9 @@ CLEANFILES = docs/reference/libags/Makefile docs/reference/libags_gui/Makefile d
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libags-1.0.pc libags_audio-1.0.pc libags_gui-0.7.pc libgsequencer-0.7.pc
+pkgconfig_DATA = libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc
 
-EXTRA_DIST += libags-1.0.pc.in libags_audio-1.0.pc.in libags_gui-0.7.pc.in libgsequencer-0.7.pc.in
+EXTRA_DIST += libags.pc.in libags_audio.pc.in libags_gui.pc.in libgsequencer.pc.in
 
 # desktop file
 appdatadir = $(datadir)/applications
@@ -1526,10 +1526,10 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer--doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
 	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/ags
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags-1.0.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio-1.0.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui-0.7.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer-0.7.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer.pc
 
 clean-local:
 	rm -rf $(top_srcdir)/html
