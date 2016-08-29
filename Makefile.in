@@ -119,8 +119,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = libags-1.0.pc libags_audio-1.0.pc \
-	libags_gui-0.7.pc libgsequencer-0.7.pc
+CONFIG_CLEAN_FILES = libags.pc libags_audio.pc libags_gui.pc \
+	libgsequencer.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -1048,11 +1048,11 @@ TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/libags-1.0.pc.in $(srcdir)/libags_audio-1.0.pc.in \
-	$(srcdir)/libags_gui-0.7.pc.in \
-	$(srcdir)/libgsequencer-0.7.pc.in AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README compile config.guess config.rpath \
-	config.sub depcomp install-sh ltmain.sh missing test-driver
+	$(srcdir)/libags.pc.in $(srcdir)/libags_audio.pc.in \
+	$(srcdir)/libags_gui.pc.in $(srcdir)/libgsequencer.pc.in \
+	AUTHORS COPYING ChangeLog INSTALL NEWS README compile \
+	config.guess config.rpath config.sub depcomp install-sh \
+	ltmain.sh missing test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1241,12 +1241,12 @@ lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la li
 # extra
 EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 \
 	gsequencer.1 README ags_example.xml gsequencer-documentation \
-	midi2xml.1 libags-1.0.pc.in libags_audio-1.0.pc.in \
-	libags_gui-0.7.pc.in libgsequencer-0.7.pc.in \
-	gsequencer.desktop.in docs/reference/libags \
-	docs/reference/libags_audio docs/reference/libags_gui \
-	docs/reference/libgsequencer $(manpages) $(userdoc) \
-	$(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings) \
+	midi2xml.1 libags.pc.in libags_audio.pc.in libags_gui.pc.in \
+	libgsequencer.pc.in gsequencer.desktop.in \
+	docs/reference/libags docs/reference/libags_audio \
+	docs/reference/libags_gui docs/reference/libgsequencer \
+	$(manpages) $(userdoc) $(userdocimages) $(devdoc) \
+	$(devdocimages) $(devdoclistings) \
 	$(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl \
 	$(top_srcdir)/ags/object/ags_marshallers.list
 man1_MANS = gsequencer.1 midi2xml.1
@@ -1266,7 +1266,7 @@ CLEANFILES = docs/reference/libags/Makefile \
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libags-1.0.pc libags_audio-1.0.pc libags_gui-0.7.pc libgsequencer-0.7.pc
+pkgconfig_DATA = libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc
 
 # desktop file
 appdatadir = $(datadir)/applications
@@ -2666,13 +2666,13 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-libags-1.0.pc: $(top_builddir)/config.status $(srcdir)/libags-1.0.pc.in
+libags.pc: $(top_builddir)/config.status $(srcdir)/libags.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-libags_audio-1.0.pc: $(top_builddir)/config.status $(srcdir)/libags_audio-1.0.pc.in
+libags_audio.pc: $(top_builddir)/config.status $(srcdir)/libags_audio.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-libags_gui-0.7.pc: $(top_builddir)/config.status $(srcdir)/libags_gui-0.7.pc.in
+libags_gui.pc: $(top_builddir)/config.status $(srcdir)/libags_gui.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-libgsequencer-0.7.pc: $(top_builddir)/config.status $(srcdir)/libgsequencer-0.7.pc.in
+libgsequencer.pc: $(top_builddir)/config.status $(srcdir)/libgsequencer.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
@@ -9011,10 +9011,10 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer--doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
 	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/ags
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags-1.0.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio-1.0.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui-0.7.pc
-	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer-0.7.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer.pc
 
 clean-local:
 	rm -rf $(top_srcdir)/html

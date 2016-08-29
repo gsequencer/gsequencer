@@ -4,7 +4,7 @@
 # of using the various options.
 
 # The name of the module, e.g. 'glib'.
-DOC_MODULE=libags-1.0
+DOC_MODULE=libags
 
 # Uncomment for versioned docs and specify the version of the module, e.g. '2'.
 #DOC_MODULE_VERSION=2
@@ -19,7 +19,7 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE).xml
 DOC_SOURCE_DIR=$(top_srcdir)/ags/util $(top_srcdir)/ags/lib $(top_srcdir)/ags/object $(top_srcdir)/ags/file $(top_srcdir)/ags/thread $(top_srcdir)/ags/server
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
-SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(GOBJECT_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(GOBJECT_LIBS) -L$(top_builddir) $(top_builddir)/libags-1.0.la $(top_builddir)/libags_thread-1.0.la $(top_builddir)/libags_server-0.7.la"
+SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(GOBJECT_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(GOBJECT_LIBS) -L$(top_builddir) $(top_builddir)/libags.la $(top_builddir)/libags_thread.la $(top_builddir)/libags_server.la"
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
@@ -27,7 +27,7 @@ SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space="libags-1.0" --module="libags-1.0"
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space="libags" --module="libags"
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
@@ -73,9 +73,9 @@ AM_CPPFLAGS = \
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS=$(gsequencer_CFLAGS) -DGTK_IS_WIDGET_CLASS=1
 GTKDOC_LIBS = \
-	$(top_builddir)/libags-1.0.la \
-	$(top_builddir)/libags_thread-1.0.la \
-	$(top_builddir)/libags_server-0.7.la
+	$(top_builddir)/libags.la \
+	$(top_builddir)/libags_thread.la \
+	$(top_builddir)/libags_server.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
