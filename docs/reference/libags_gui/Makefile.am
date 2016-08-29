@@ -4,7 +4,7 @@
 # of using the various options.
 
 # The name of the module, e.g. 'glib'.
-DOC_MODULE=libags_gui-0.7
+DOC_MODULE=libags_gui
 
 # Uncomment for versioned docs and specify the version of the module, e.g. '2'.
 #DOC_MODULE_VERSION=2
@@ -19,7 +19,7 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE).xml
 DOC_SOURCE_DIR=$(top_srcdir)/ags/widget
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
-SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) -L$(top_builddir) $(top_builddir)/libags_gui-0.7.la"
+SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) -L$(top_builddir) $(top_builddir)/libags_gui.la"
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
@@ -27,7 +27,7 @@ SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space="libags_gui-0.7" --module="libags_gui-0.7"
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space="libags_gui" --module="libags_gui"
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
@@ -73,7 +73,7 @@ AM_CPPFLAGS = \
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS=$(gsequencer_CFLAGS) -DGTK_IS_WIDGET_CLASS=1
 GTKDOC_LIBS = \
-	$(top_builddir)/libags_gui-0.7.la
+	$(top_builddir)/libags_gui.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
