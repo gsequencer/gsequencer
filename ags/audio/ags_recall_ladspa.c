@@ -739,58 +739,6 @@ ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
 }
 
 /**
- * ags_recall_ladspa_short_to_float:
- * @buffer: source
- * @destination: destination
- * @buffer_size: buffer size
- * @lines: lines
- *
- * Convert data type.
- * 
- * Since: 0.4
- */
-void
-ags_recall_ladspa_short_to_float(signed short *buffer,
-				 LADSPA_Data *destination,
-				 guint buffer_size, guint lines)
-{
-  LADSPA_Data *new_buffer;
-  guint i;
-
-  new_buffer = destination;
-
-  for(i = 0; i < buffer_size; i++){
-    new_buffer[lines * i] = (LADSPA_Data) (buffer[i] * (1.0f / 32767.5f));
-  }
-}
-
-/**
- * ags_recall_ladspa_float_to_short:
- * @buffer: source
- * @destination: destination
- * @buffer_size: buffer size
- * @lines: lines
- *
- * Convert data type.
- * 
- * Since: 0.4
- */
-void
-ags_recall_ladspa_float_to_short(LADSPA_Data *buffer,
-				 signed short *destination,
-				 guint buffer_size, guint lines)
-{
-  signed short *new_buffer;
-  guint i;
-
-  new_buffer = destination;
-
-  for(i = 0; i < buffer_size; i++){
-    new_buffer[i] = (signed short) (buffer[lines * i] * 32767.5f);
-  }
-}
-
-/**
  * ags_recall_ladspa_find:
  * @recall: a #GList containing #AgsRecall
  * @filename: plugin filename

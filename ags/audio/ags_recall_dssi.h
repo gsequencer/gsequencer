@@ -71,13 +71,6 @@ void ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 				     GObject *port,
 				     gpointer port_descriptor);
 
-void ags_recall_dssi_short_to_float(signed short *buffer,
-				    LADSPA_Data *destination,
-				    guint buffer_size, guint lines);
-void ags_recall_dssi_float_to_short(LADSPA_Data *buffer,
-				    signed short *destination,
-				    guint buffer_size, guint lines);
-
 GList* ags_recall_dssi_find(GList *recall,
 			    gchar *filename, gchar *effect);
 

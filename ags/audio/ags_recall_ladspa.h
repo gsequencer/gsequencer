@@ -68,13 +68,6 @@ void ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
 				       GObject *port,
 				       gpointer port_descriptor);
 
-void ags_recall_ladspa_short_to_float(signed short *buffer,
-				      LADSPA_Data *destination,
-				      guint buffer_size, guint lines);
-void ags_recall_ladspa_float_to_short(LADSPA_Data *buffer,
-				      signed short *destination,
-				      guint buffer_size, guint lines);
-
 GList* ags_recall_ladspa_find(GList *recall,
 			      gchar *filename, gchar *effect);
 

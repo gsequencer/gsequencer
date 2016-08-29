@@ -22,9 +22,7 @@ lib_LTLIBRARIES = libags-1.0.la libags_thread-1.0.la libags_server-0.7.la libags
 
 bin_PROGRAMS = gsequencer midi2xml
 
-EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 midi2xml.1 README ags_example.xml gsequencer-documentation
-
-CLEANFILES = docs/reference/ags/Makefile
+EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1
 
 man1_MANS = gsequencer.1 midi2xml.1
 
@@ -37,9 +35,9 @@ libgsequencer_ladir = $(datadir)
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libags-1.0.pc
+pkgconfig_DATA = libags-1.0.pc libags_audio-1.0.pc libags_gui-0.7.pc libgsequencer-0.7.pc
 
-EXTRA_DIST += libags-1.0.pc.in
+EXTRA_DIST += libags-1.0.pc.in libags_audio-1.0.pc.in libags_gui-0.7.pc.in libgsequencer-0.7.pc.in
 
 # desktop file
 appdatadir = $(datadir)/applications
@@ -48,10 +46,13 @@ appdata_DATA = gsequencer.desktop
 EXTRA_DIST += gsequencer.desktop.in
 
 # clean
-CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
+CLEANFILES = $(appdata_DATA) $(pkgconfig_DATA)
 
 # extra
-EXTRA_DIST += docs/reference/ags
+EXTRA_DIST += docs/reference/libags
+EXTRA_DIST += docs/reference/libags_audio
+EXTRA_DIST += docs/reference/libags_gui
+EXTRA_DIST += docs/reference/libgsequencer
 
 # include
 otherincludedir = $(includedir)/ags
@@ -63,8 +64,8 @@ doc_DATA = README ags_example.xml
 
 # documentation
 manpages = \
-	gsequencer.1.xml \
-	midi2xml.1.xml
+	gsequencer.1.xml
+#	midi2xml.1.xml
 
 userdoc = \
 	docs/usersBook.xml \
@@ -163,30 +164,30 @@ libgsequencer_0_7_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file
 
 # library libags
 libags_1_0_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
-libags_1_0_la_LDFLAGS = $(LDFLAGS) -version-info 0:0:0 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp  $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
+libags_1_0_la_LDFLAGS = $(LDFLAGS) -shared -fPIC -Wl,-soname,libags-1.0.so -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp  $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
 
 # library libags-thread
-libags_thread_1_0_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(GOBJECT_CFLAGS)
-libags_thread_1_0_la_LDFLAGS = $(LDFLAGS) -version-info 0:0:0 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(GOBJECT_LIBS)
+libags_thread_1_0_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+libags_thread_1_0_la_LDFLAGS = $(LDFLAGS) -shared -fPIC -Wl,-soname,libags_thread-1.0.so -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(GOBJECT_LIBS)
 libags_thread_1_0_la_LIBADD = libags-1.0.la
 
 # library libags-server
 libags_server_0_7_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_server_0_7_la_LDFLAGS = $(LDFLAGS) -version-info 0:0:0 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+libags_server_0_7_la_LDFLAGS = $(LDFLAGS) -shared -fPIC -Wl,-soname,libags_server-0.7.so -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 libags_server_0_7_la_LIBADD = libags_thread-1.0.la libags-1.0.la
 
 # library libags-audio
 libags_audio_1_0_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-libags_audio_1_0_la_LDFLAGS = $(LDFLAGS) -version-info 0:0:0 -L/lib -L/usr/lib -L/usr/X11/lib -L/usr/lib/x86_64-linux-gnu -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+libags_audio_1_0_la_LDFLAGS = $(LDFLAGS) -shared -fPIC -Wl,-soname,libags_audio-1.0.so -L/lib -L/usr/lib -L/usr/X11/lib -L/usr/lib/x86_64-linux-gnu -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 libags_audio_1_0_la_LIBADD = libags_server-0.7.la libags_thread-1.0.la libags-1.0.la
 
 # library libags-gui
 libags_gui_0_7_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_gui_0_7_la_LDFLAGS = $(LDFLAGS) -version-info 0:0:0 -L/lib -L/usr/lib -L/usr/X11/lib -L/usr/lib/x86_64-linux-gnu -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_gui_0_7_la_LDFLAGS = $(LDFLAGS) -shared -fPIC -Wl,-soname,libags_gui-0.7.so -L/lib -L/usr/lib -L/usr/X11/lib -L/usr/lib/x86_64-linux-gnu -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 # library libgsequencer
 libgsequencer_0_7_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(JACK_CFLAGS)
-libgsequencer_0_7_la_LDFLAGS = $(LDFLAGS) -version-info 0:0:0 -L/lib -L/usr/lib -L/usr/X11/lib -L/usr/lib/x86_64-linux-gnu -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
+libgsequencer_0_7_la_LDFLAGS = $(LDFLAGS) -shared -fPIC -Wl,-soname,libgsequencer-0.7.so -L/lib -L/usr/lib -L/usr/X11/lib -L/usr/lib/x86_64-linux-gnu -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
 libgsequencer_0_7_la_LIBADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 
 # static gsequencer - for testing
@@ -1445,13 +1446,20 @@ gsequencerheaders = \
 gsequencer_c_sources = \
 	ags/gsequencer_main.c
 
-midi2xml_CFLAGS= $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+midi2xml_CFLAGS = $(CFLAGS) -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
+midi2xml_LDFLAGS = -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+midi2xml_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 
-midi2xml_SOURCES = ags/midi2xml_main.c ags/audio/midi/ags_midi_parser.c ags/audio/midi/ags_midi_parser.h ags/object/ags_marshal.c ags/object/ags_marshal.h
+midi2xml_SOURCES = ags/midi2xml_main.c
 
 ags-docs-local:
-	$(MAKE) -C $(top_srcdir)/docs/reference/ags
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags_audio
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags_gui
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
 	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
@@ -1467,10 +1475,10 @@ gsequencer.desktop: gsequencer.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' < "$<" > $@
 
 html:
-	mkdir -p $(top_srcdir)/html/
-	mkdir -p $(top_srcdir)/html/{developer-docs,user-docs}
-	xsltproc --output $(top_srcdir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
-	xsltproc --output $(top_srcdir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
+	mkdir -p $(top_builddir)/html/
+	mkdir -p $(top_builddir)/html/{developer-docs,user-docs}
+	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
@@ -1482,36 +1490,52 @@ install-data-local:
 	cp $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/0.7.13/
 	cp $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	cp $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
-	mkdir -p $(DESTDIR)/$(pkgconfigdir)
-	cp $(top_builddir)/libags-1.0.pc $(DESTDIR)/$(pkgconfigdir)
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
 install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/{images,html}/
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
-	cp $(top_srcdir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
-	cp $(top_srcdir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
+	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/images/
+	cp $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	cp $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/html/
 
 install-ags-docs: ags-docs
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
-	cp -rv $(top_srcdir)/docs/reference/ags/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc/ags/
-	ln -s ../../doc/libgsequencer-0.7.x-doc/ags/ $(DESTDIR)/$(datadir)/gtk-doc/html/ags
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags_audio-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags_gui-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	cp -rv $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/
+	cp -rv $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags_audio-doc/
+	cp -rv $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags_gui-doc/
+	cp -rv $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/
+	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	ln -s ../../doc/libags_audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	ln -s ../../doc/libags_gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
 
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
-	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x-doc
+	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer--doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
 	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/ags
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags-1.0.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio-1.0.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui-0.7.pc
+	rm -f $(DESTDIR)/$(pkgconfigdir)/libgsequencer-0.7.pc
 
 clean-local:
 	rm -rf $(top_srcdir)/html
-	rm -rf $(top_srcdir)/docs/reference/ags/xml
-	rm -rf $(top_srcdir)/docs/reference/ags/html
+	rm -rf $(top_srcdir)/docs/reference/libags/xml
+	rm -rf $(top_srcdir)/docs/reference/libags/html
+	rm -rf $(top_srcdir)/docs/reference/libags_audio/xml
+	rm -rf $(top_srcdir)/docs/reference/libags_audio/html
+	rm -rf $(top_srcdir)/docs/reference/libags_gui/xml
+	rm -rf $(top_srcdir)/docs/reference/libags_gui/html
+	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
+	rm -rf $(top_srcdir)/docs/reference/libgsequencer/html

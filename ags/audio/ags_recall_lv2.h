@@ -82,13 +82,6 @@ void ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 				    GObject *port,
 				    gpointer port_descriptor);
 
-void ags_recall_lv2_short_to_float(signed short *buffer,
-				   float *destination,
-				   guint buffer_size, guint lines);
-void ags_recall_lv2_float_to_short(float *buffer,
-				   signed short *destination,
-				   guint buffer_size, guint lines);
-
 GList* ags_recall_lv2_find(GList *recall,
 			   gchar *filename, gchar *uri);
 

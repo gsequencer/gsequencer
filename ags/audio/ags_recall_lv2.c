@@ -844,58 +844,6 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 }
 
 /**
- * ags_recall_lv2_short_to_float:
- * @buffer: source
- * @destination: destination
- * @buffer_size: buffer size
- * @lines: lines
- *
- * Convert data type.
- * 
- * Since: 0.4.3
- */
-void
-ags_recall_lv2_short_to_float(signed short *buffer,
-			      float *destination,
-			      guint buffer_size, guint lines)
-{
-  float *new_buffer;
-  guint i;
-
-  new_buffer = destination;
-
-  for(i = 0; i < buffer_size; i++){
-    new_buffer[lines * i] += (float) (buffer[i] * (1.0f / 32767.5f));
-  }
-}
-
-/**
- * ags_recall_lv2_float_to_short:
- * @buffer: source
- * @destination: destination
- * @buffer_size: buffer size
- * @lines: lines
- *
- * Convert data type.
- * 
- * Since: 0.4.3
- */
-void
-ags_recall_lv2_float_to_short(float *buffer,
-			      signed short *destination,
-			      guint buffer_size, guint lines)
-{
-  signed short *new_buffer;
-  guint i;
-
-  new_buffer = destination;
-
-  for(i = 0; i < buffer_size; i++){
-    new_buffer[i] += (signed short) (buffer[lines * i] * 32767.5f);
-  }
-}
-
-/**
  * ags_recall_lv2_find:
  * @recall: a #GList containing #AgsRecall
  * @filename: plugin filename

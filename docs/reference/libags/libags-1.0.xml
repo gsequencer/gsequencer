@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
+<book id="index">
+  <bookinfo>
+    <title>Advanced Gtk+ Sequencer Reference Manual</title>
+    <releaseinfo>
+      for libags-1.0
+      The latest version of this documentation can be found on-line at
+      <ulink role="online-location" url="http://gsequencer.org/api/libags-1.0/index.html">http://gsequencer.org/api/libags-1.0/</ulink>.
+    </releaseinfo>
+  </bookinfo>
+
+  <part id="lib">
+    <title>Library - Completion routines</title>
+
+    <xi:include href="xml/ags_complex.xml"/>
+    <xi:include href="xml/ags_conversion.xml"/>
+    <xi:include href="xml/ags_function.xml"/>
+    <xi:include href="xml/ags_parameter.xml"/>
+    <xi:include href="xml/ags_turtle.xml"/>
+  </part>
+
+  <part id="util">
+    <title>Util - Helper functions</title>
+
+    <xi:include href="xml/ags_id_generator.xml"/>
+  </part>
+  
+  <part id="object">
+    <title>Object - Interfaces and marshallers</title>
+
+    <xi:include href="xml/ags_async_queue.xml"/>
+    <xi:include href="xml/ags_applicable.xml"/>
+    <xi:include href="xml/ags_application_context.xml"/>
+    <xi:include href="xml/ags_concurrent_tree.xml"/>
+    <xi:include href="xml/ags_config.xml"/>
+    <xi:include href="xml/ags_connectable.xml"/>
+    <xi:include href="xml/ags_countable.xml"/>
+    <xi:include href="xml/ags_distributed_manager.xml"/>
+    <xi:include href="xml/ags_dynamic_connectable.xml"/>
+    <xi:include href="xml/ags_main_loop.xml"/>
+    <xi:include href="xml/ags_marshal.xml"/>
+    <xi:include href="xml/ags_mutable.xml"/>
+    <xi:include href="xml/ags_packable.xml"/>
+    <xi:include href="xml/ags_portlet.xml"/>
+    <xi:include href="xml/ags_seekable.xml"/>
+    <xi:include href="xml/ags_sequencer.xml"/>
+    <xi:include href="xml/ags_soundcard.xml"/>
+    <xi:include href="xml/ags_tactable.xml"/>
+    <xi:include href="xml/ags_tree_iterator.xml"/>
+    <xi:include href="xml/ags_plugin.xml"/>
+  </part>
+  
+  <part id="xml-io">
+    <title>XML Input/Output - Persist project</title>
+    
+    <xi:include href="xml/ags_file_stock.xml"/>
+    <xi:include href="xml/ags_file.xml"/>
+    <xi:include href="xml/ags_file_id_ref.xml"/>
+    <xi:include href="xml/ags_file_link.xml"/>
+    <xi:include href="xml/ags_file_lookup.xml"/>
+    <xi:include href="xml/ags_file_launch.xml"/>
+    <xi:include href="xml/ags_file_util.xml"/>
+  </part>
+
+  <part id="thread">
+    <title>Thread - Multi-threaded tree</title>
+
+    <xi:include href="xml/ags_autosave_thread.xml"/>
+    <xi:include href="xml/ags_concurrency_provider.xml"/>
+    <xi:include href="xml/ags_generic_main_loop.xml"/>
+    <xi:include href="xml/ags_history.xml"/>
+    <xi:include href="xml/ags_mutex_manager.xml"/>
+    <xi:include href="xml/ags_polling_thread.xml"/>
+    <xi:include href="xml/ags_poll_fd.xml"/>
+    <xi:include href="xml/ags_returnable_thread.xml"/>
+    <xi:include href="xml/ags_single_thread.xml"/>
+    <xi:include href="xml/ags_task.xml"/>
+    <xi:include href="xml/ags_task_completion.xml"/>
+    <xi:include href="xml/ags_task_thread.xml"/>
+    <xi:include href="xml/ags_timestamp_thread.xml"/>
+    <xi:include href="xml/ags_thread-posix.xml"/>
+    <xi:include href="xml/ags_thread_application_context.xml"/>
+    <xi:include href="xml/ags_thread_pool.xml"/>
+
+    <chapter id="thread-file">
+      <title>Thread files - Reading/Writing audio data from disk</title>
+      
+      <xi:include href="xml/ags_thread_file_xml.xml"/>
+    </chapter>
+  </part>
+
+  <part id="xml-rpc">
+    <title>XML-RPC - planned server</title>
+
+    <xi:include href="xml/ags_registry.xml"/>
+    <xi:include href="xml/ags_remote_task.xml"/>
+    <xi:include href="xml/ags_server.xml"/>
+    <xi:include href="xml/ags_server_application_context.xml"/>
+    <xi:include href="xml/ags_service_provider.xml"/>
+  </part>
+  
+  <index id="api-index-full">
+    <title>API Index</title>
+    <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="deprecated-api-index" role="deprecated">
+    <title>Index of deprecated API</title>
+    <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
+  </index>
+  
+</book>
