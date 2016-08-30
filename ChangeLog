@@ -1,7 +1,19 @@
+ags (0.7.60)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed spelling error unknow to unknown
+	* fixed underscore to score of installation directories
+	* modified libgsequencer to be private
+
+ags (0.7.59)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed package name in .pc files
+
 ags (0.7.58)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* splitted API reference
+	* split API reference
 
 ags (0.7.57)
 

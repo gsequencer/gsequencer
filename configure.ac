@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.59],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.7.60],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -137,10 +137,10 @@ Makefile
 docs/reference/libags/Makefile
 docs/reference/libags_audio/Makefile
 docs/reference/libags_gui/Makefile
-docs/reference/libgsequencer/Makefile
 libags.pc
 libags_audio.pc
-libags_gui.pc
-libgsequencer.pc])
+libags_gui.pc])
+# docs/reference/libgsequencer/Makefile
+# libgsequencer.pc
 
 AC_OUTPUT
