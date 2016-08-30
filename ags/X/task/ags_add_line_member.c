@@ -171,7 +171,7 @@ ags_add_line_member_launch(AgsTask *task)
     ags_connectable_connect(AGS_CONNECTABLE(add_line_member->line_member));
     gtk_widget_show_all(AGS_EFFECT_LINE(add_line_member->line)->table);
   }else{
-    g_warning("ags_add_line_member.c - unknow line type");
+    g_warning("ags_add_line_member.c - unknown line type");
   }
   
   ags_line_member_find_port(add_line_member->line_member);

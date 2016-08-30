@@ -161,7 +161,7 @@ ags_audio_set_recycling_launch(AgsTask *task)
       }else if(!strncmp("end_recycling\0", parameter[i].name, 13)){
 	end_recycling = (AgsRecycling *) g_value_get_object(&(parameter[i].value));
       }else{
-	g_error("ags_audio_set_recycling_launch_read_parameter: unknow Parameter\0");
+	g_error("ags_audio_set_recycling_launch_read_parameter: unknown Parameter\0");
       }
     }
   }
