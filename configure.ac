@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.61],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.7.62],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -22,6 +22,11 @@ LT_PREREQ([2.4.2])
 LT_INIT
 AC_SUBST([LIBTOOL_DEPS])
 AC_ENABLE_SHARED
+
+AC_SUBST([GSEQUENCER_CFLAGS])
+AC_SUBST([GSEQUENCER_LDFLAGS])
+AC_SUBST([MIDI2XML_CFLAGS])
+AC_SUBST([MIDI2XML_LDFLAGS])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':

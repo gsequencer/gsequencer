@@ -317,7 +317,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							   TRUE);
     audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
-							 soundcard);
+							  soundcard);
     g_object_ref(G_OBJECT(soundcard));
   }
   

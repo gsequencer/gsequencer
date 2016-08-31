@@ -1,3 +1,8 @@
+ags (0.7.62)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved build system
+	* improved ags_functional_audio_test.c to provide configuration
 ags (0.7.61)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
