@@ -25,6 +25,7 @@
 
 #include <ags/lib/ags_time.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
@@ -87,6 +88,30 @@ void ags_functional_audio_test_playback();
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_NOTES (4 * (guint) (1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH) * 120)
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY (120)
 
+#define AGS_FUNCTIONAL_AUDIO_TEST_CONFIG "[generic]\n" \
+  "autosave-thread=false\n"			       \
+  "simple-file=true\n"				       \
+  "disable-feature=experimental\n"		       \
+  "segmentation=4/4\n"				       \
+  "\n"						       \
+  "[thread]\n"					       \
+  "model=super-threaded\n"			       \
+  "super-threaded-scope=channel\n"		       \
+  "lock-global=ags-thread\n"			       \
+  "lock-parent=ags-recycling-thread\n"		       \
+  "\n"						       \
+  "[soundcard]\n"				       \
+  "samplerate=44100\n"				       \
+  "buffer-size=1024\n"				       \
+  "pcm-channels=2\n"				       \
+  "dsp-channels=2\n"				       \
+  "alsa-handle=hw:0,0\n"			       \
+  "format=24\n"					       \
+  "\n"						       \
+  "[recall]\n"					       \
+  "auto-sense=true\n"				       \
+  "\n"
+
 AgsAudioApplicationContext *audio_application_context;
 
 /* The suite initialization function.
@@ -96,6 +121,12 @@ AgsAudioApplicationContext *audio_application_context;
 int
 ags_functional_audio_test_init_suite()
 {
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_FUNCTIONAL_AUDIO_TEST_CONFIG,
+			    strlen(AGS_FUNCTIONAL_AUDIO_TEST_CONFIG));
   audio_application_context = ags_audio_application_context_new();
   
   return(0);
