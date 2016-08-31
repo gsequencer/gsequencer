@@ -8992,8 +8992,6 @@ ags-docs-local:
 	cd $(top_srcdir)
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags_gui
 	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
-	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
@@ -9028,11 +9026,11 @@ install-data-local:
 
 install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/{images,html}/
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/images/
+	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	cp $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
-	cp $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/html/
+	cp $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 
 install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
