@@ -289,15 +289,18 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   g_object_ref(G_OBJECT(soundcard));
   
   if(jack_enabled){
+    GObject *tmp;
+    
     //    jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
     //  jackctl_server_start(jack_server->jackctl);
     //    jackctl_server_open(jack_server->jackctl,
     //			jslist->data);
     
-    soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
-							   TRUE);
+    tmp = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+						     TRUE);
 
-    if(soundcard != NULL){
+    if(tmp != NULL){
+      soundcard = tmp;
       ags_soundcard_set_application_context(AGS_SOUNDCARD(soundcard),
 					    audio_application_context);
       audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
@@ -315,11 +318,18 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   g_object_ref(G_OBJECT(sequencer));
 
   if(jack_enabled){
-    sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
-							 FALSE);
-    audio_application_context->sequencer = g_list_prepend(audio_application_context->sequencer,
-							 sequencer);
-    g_object_ref(G_OBJECT(sequencer));
+    GObject *tmp;
+    
+    tmp = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
+						     FALSE);
+
+    if(tmp != NULL){
+      sequencer = tmp;
+      
+      audio_application_context->sequencer = g_list_prepend(audio_application_context->sequencer,
+							    sequencer);
+      g_object_ref(G_OBJECT(sequencer));
+    }
   }
   
   /* AgsServer */

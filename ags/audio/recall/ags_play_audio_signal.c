@@ -271,6 +271,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   
   if(stream == NULL){
     pthread_mutex_unlock(soundcard_mutex);
+
     ags_recall_done(recall);
 
     return;
@@ -281,7 +282,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   
   if(buffer0 == NULL && 
      buffer1 == NULL){
+    pthread_mutex_unlock(soundcard_mutex);
+    
     g_warning("no output buffer\0");
+    
     return;
   }
 

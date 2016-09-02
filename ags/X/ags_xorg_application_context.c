@@ -298,9 +298,12 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     
     soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							   TRUE);
-    xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
-							 soundcard);
-    g_object_ref(G_OBJECT(soundcard));
+
+    if(soundcard != NULL){
+      xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
+							   soundcard);
+      g_object_ref(G_OBJECT(soundcard));
+    }
   }
   
   /* AgsSequencer */
@@ -314,9 +317,12 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   if(jack_enabled){
     sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
 							 FALSE);
-    xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
-							 sequencer);
-    g_object_ref(G_OBJECT(sequencer));
+
+    if(sequencer != NULL){
+      xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
+							   sequencer);
+      g_object_ref(G_OBJECT(sequencer));
+    }
   }
   
   /* AgsWindow */
