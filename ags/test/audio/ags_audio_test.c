@@ -260,7 +260,8 @@ ags_audio_test_set_audio_channels()
   /* verify pad count */
   channel = audio->input;
   
-  for(i = 0; channel != ags_channel_pad_last(audio->input); i++){
+  for(i = 0; channel != ags_channel_nth(audio->input,
+					AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_AUDIO_CHANNELS); i++){
     current = channel;
     
     for(j = 0; current != NULL; j++){
@@ -285,7 +286,8 @@ ags_audio_test_set_audio_channels()
   /* verify pad count */
   channel = audio->output;
   
-  for(i = 0; channel != ags_channel_pad_last(audio->output); i++){
+  for(i = 0; channel != ags_channel_nth(audio->output,
+					AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_AUDIO_CHANNELS); i++){
     current = channel;
     
     for(j = 0; current != NULL; j++){

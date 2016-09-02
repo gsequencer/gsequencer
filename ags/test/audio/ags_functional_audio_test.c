@@ -101,6 +101,7 @@ void ags_functional_audio_test_playback();
   "lock-parent=ags-recycling-thread\n"		       \
   "\n"						       \
   "[soundcard]\n"				       \
+  "jack=enabled\n"                                     \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \

@@ -246,13 +246,10 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   
   AgsConfig *config;
 
-  struct passwd *pw;
   JSList *jslist;
 
   gchar *str;
   gboolean jack_enabled;
-  uid_t uid;
-  gchar *wdir, *config_file;
 
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
 
@@ -262,23 +259,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   g_object_set(config,
 	       "application-context\0", audio_application_context,
 	       NULL);
-
-  uid = getuid();
-  pw = getpwuid(uid);
-
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
-
-  config_file = g_strdup_printf("%s/%s\0",
-				wdir,
-				AGS_DEFAULT_CONFIG);
-
-  ags_config_load_from_file(config,
-			    config_file);
-
-  g_free(wdir);
-  g_free(config_file);
 
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
@@ -316,9 +296,14 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     
     soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							   TRUE);
-    audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
-							  soundcard);
-    g_object_ref(G_OBJECT(soundcard));
+
+    if(soundcard != NULL){
+      ags_soundcard_set_application_context(AGS_SOUNDCARD(soundcard),
+					    audio_application_context);
+      audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
+							    soundcard);
+      g_object_ref(G_OBJECT(soundcard));
+    }
   }
   
   /* AgsSequencer */

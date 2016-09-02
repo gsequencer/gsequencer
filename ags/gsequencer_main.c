@@ -907,7 +907,11 @@ main(int argc, char **argv)
   struct sched_param param;
   struct rlimit rl;
   struct sigaction sa;
+  struct passwd *pw;
 
+  gchar *wdir, *config_file;
+
+  uid_t uid;
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
@@ -1012,8 +1016,26 @@ main(int argc, char **argv)
   //		       0);
   
   /* setup */
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  wdir = g_strdup_printf("%s/%s\0",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+
+  config_file = g_strdup_printf("%s/%s\0",
+				wdir,
+				AGS_DEFAULT_CONFIG);
+
+  config = ags_config_get_instance();
+
+  ags_config_load_from_file(config,
+			    config_file);
+
+  g_free(wdir);
+  g_free(config_file);
+  
   ags_setup(argc, argv);
-  config = ags_application_context->config;
 
   /* JACK */
   str = ags_config_get_value(config,

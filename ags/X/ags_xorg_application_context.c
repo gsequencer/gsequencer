@@ -248,13 +248,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   AgsConfig *config;
 
-  struct passwd *pw;
   JSList *jslist;
 
   gchar *str;
   gboolean jack_enabled;
-  uid_t uid;
-  gchar *wdir, *config_file;
 
   AGS_APPLICATION_CONTEXT(xorg_application_context)->log = NULL;
 
@@ -264,23 +261,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_object_set(config,
 	       "application-context\0", xorg_application_context,
 	       NULL);
-
-  uid = getuid();
-  pw = getpwuid(uid);
-
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
-
-  config_file = g_strdup_printf("%s/%s\0",
-				wdir,
-				AGS_DEFAULT_CONFIG);
-
-  ags_config_load_from_file(config,
-			    config_file);
-
-  g_free(wdir);
-  g_free(config_file);
 
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
