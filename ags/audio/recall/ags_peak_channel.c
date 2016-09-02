@@ -360,7 +360,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
-      copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_SOUNDCARD_SIGNED_16_BIT,
+      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_SIGNED_16_BIT),
 						      ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal->data)->format));
 
       if((AGS_IS_INPUT(source) &&

@@ -321,7 +321,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   buffer_size = source->buffer_size;
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(soundcard_format),
 						  ags_audio_buffer_util_format_from_soundcard(source->format));
-
+  
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + source->attack,
 						stream->data, 1, 0,

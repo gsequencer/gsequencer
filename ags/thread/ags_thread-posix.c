@@ -1357,18 +1357,21 @@ ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
 gboolean
 ags_thread_sibling_is_locked(AgsThread *thread)
 {
+  AgsThread *iter;
+  
   if(thread == NULL){
     return(FALSE);
   }
 
-  thread = ags_thread_first(thread);
+  iter = ags_thread_first(thread);
 
-  while(g_atomic_pointer_get(&(thread->next)) != NULL){
-    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(thread->flags)))) != 0){
+  while(iter != NULL){
+    if(iter != thread &&
+       (AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) != 0){
       return(TRUE);
     }
 
-    thread = g_atomic_pointer_get(&(thread->next));
+    iter = g_atomic_pointer_get(&(iter->next));
   }
 
   return(FALSE);

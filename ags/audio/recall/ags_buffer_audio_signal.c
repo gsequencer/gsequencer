@@ -288,6 +288,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   destination = ags_audio_signal_new((GObject *) soundcard,
 				     (GObject *) recycling,
 				     (GObject *) parent_recall_id);
+  
   g_object_set(buffer_audio_signal,
 	       "destination\0", destination,
 	       NULL);  

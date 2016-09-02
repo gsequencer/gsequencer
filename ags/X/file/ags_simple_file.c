@@ -1227,8 +1227,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 				    NULL,
 				    10);
 	  free(str);
-	}
 
+	}
+	
 	ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 				  dsp_channels,
 				  samplerate,
