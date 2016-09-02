@@ -1,8 +1,22 @@
+ags (0.7.63)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible NULL pointer access caused by ags_audio_application_context.c and ags_xorg_application_context.c
+	* fixed possible dead-lock in ags_play_audio_signal.c
+	* fixed format configuration issues in ags_audio_signal.c
+	* fixed ags_functional_audio_test.c
+	* fixed ags_audio_test.c
+	* fixed ags_channel_test.c
+	* fixed ags_notation_test.c
+	* fixed ags_pattern_test.c
+	* fixed ags_recycling_test.c
+
 ags (0.7.62)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved build system
 	* improved ags_functional_audio_test.c to provide configuration
+
 ags (0.7.61)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

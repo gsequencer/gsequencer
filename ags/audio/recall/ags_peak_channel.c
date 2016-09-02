@@ -317,13 +317,17 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsConfig *config;
   
   GList *audio_signal;
+
+  gchar *str;
+
+  static const double scale_precision = 10.0;
+
   signed short *buffer;
   double current_value;
   guint buffer_size;
-  static const double scale_precision = 10.0;
   guint limit;
   guint i;
-  gchar *str;
+  guint copy_mode;
   
   GValue value = {0,};
 
@@ -356,6 +360,9 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
+      copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_SOUNDCARD_SIGNED_16_BIT,
+						      ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal->data)->format));
+
       if((AGS_IS_INPUT(source) &&
 	  (AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0) ||
 	 (AGS_IS_OUTPUT(source) &&
@@ -363,17 +370,17 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 	if((AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0 &&
 	   AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
 	  /* copy buffer 1:1 */
-	  ags_audio_signal_copy_buffer_to_buffer(buffer, 1,
-						 (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
-						 buffer_size);
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, 0,
+						      AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1, 0,
+						      buffer_size, copy_mode);
 	}
       }else{
 	if((AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0 &&
 	   AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
 	  /* copy buffer 1:1 */
-	  ags_audio_signal_copy_buffer_to_buffer(buffer, 1,
-						 (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
-						 buffer_size);
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, 0,
+						      AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1, 0,
+						      buffer_size, copy_mode);
 	}
       }
 

@@ -108,13 +108,12 @@ ags_pattern_test_find_near_timestamp()
   timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(pattern[0]->timestamp)->timer.unix_time.time_val;
   
   /* assert find */
-  for(i = 0; i < AGS_PATTERN_TEST_FIND_NEAR_TIMESTAMP_N_PATTERN; i++){
+  for(i = 0; i + 1 < AGS_PATTERN_TEST_FIND_NEAR_TIMESTAMP_N_PATTERN; i++){
+    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(pattern[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_PATTERN_DEFAULT_DURATION + 1);
     current = ags_pattern_find_near_timestamp(list,
 					      timestamp);
 
-    CU_ASSERT(current != NULL && current->data == pattern[i]);
-    
-    timestamp->timer.unix_time.time_val += ((i + 1) * AGS_PATTERN_DEFAULT_DURATION);    
+    CU_ASSERT(current != NULL && current->data == pattern[i + 1]);
   }  
 }
 

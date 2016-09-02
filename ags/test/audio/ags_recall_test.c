@@ -103,176 +103,211 @@ ags_recall_test_resolve_dependencies()
 void
 ags_recall_test_child_added()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_run_init_pre()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_run_init_inter()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_run_init_post()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_stop_persistent()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_done()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_cancel()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_remove()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_is_done()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_duplicate()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_set_recall_id()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_set_soundcard_recursive()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_notify_dependency()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_add_dependency()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_remove_dependency()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_get_dependencies()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_remove_child()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_add_child()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_get_children()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_get_by_effect()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_find_by_effect()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_find_type()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_find_template()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_template_find_type()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_template_find_all_type()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_find_type_with_recycling_context()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_find_recycling_context()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_find_provider()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_template_find_provider()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_find_provider_with_recycling_context()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_run_init()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_add_handler()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_remove_handler()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_lock_port()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_test_unlock_port()
 {
+  //TODO:JK: implement me
 }
 
 int

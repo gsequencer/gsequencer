@@ -546,8 +546,18 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
     audio_signal->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }
   
-  audio_signal->format = AGS_SOUNDCARD_SIGNED_16_BIT;
-
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "format\0");
+  if(str != NULL){
+    audio_signal->format = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+    free(str);
+  }else{
+    audio_signal->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+  }
+  
   audio_signal->length = 0;
   audio_signal->last_frame = 0;
   audio_signal->loop_start = 0;
@@ -956,12 +966,50 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
  * Since: 0.3
  */
 signed short*
-ags_stream_alloc(guint buffer_size)
+ags_stream_alloc(guint buffer_size,
+		 guint format)
 {
-  signed short *buffer;
+  void *buffer;
+  guint word_size;
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      buffer = (signed short *) malloc(buffer_size * sizeof(signed char));
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      buffer = (signed short *) malloc(buffer_size * sizeof(signed long));
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      buffer = (signed short *) malloc(buffer_size * sizeof(signed long));
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      buffer = (signed short *) malloc(buffer_size * sizeof(signed long long));
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    g_warning("ags_stream_alloc(): unsupported word size\0");
+    return;
+  }
 
-  buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
-  memset(buffer, 0, buffer_size * sizeof(signed short));
+  memset(buffer, 0, buffer_size * word_size);
 
   return(buffer);
 }
@@ -1155,7 +1203,8 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
   signed short *buffer;
 
   stream = g_list_alloc();
-  buffer = ags_stream_alloc(audio_signal->buffer_size);
+  buffer = ags_stream_alloc(audio_signal->buffer_size,
+			    audio_signal->format);
   stream->data = buffer;
 
   if(audio_signal->stream_end != NULL){
@@ -1195,7 +1244,8 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
     stream = NULL;
 
     for(i = audio_signal->length; i < length; i++){
-      buffer = ags_stream_alloc(audio_signal->buffer_size);
+      buffer = ags_stream_alloc(audio_signal->buffer_size,
+				audio_signal->format);
 
       stream = g_list_prepend(stream,
 			      buffer);
@@ -1281,24 +1331,26 @@ ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
   guint old_buffer_size;
   guint counter;
   guint i_old, i_current;
-
+  
   old = audio_signal->stream_beginning;
   old_buffer_size = audio_signal->buffer_size;
 
   current = NULL;
   current = g_list_prepend(current,
-			   ags_stream_alloc(buffer_size));
+			   ags_stream_alloc(buffer_size,
+					    audio_signal->format));
   counter = 0;
 
   i_old = 0;
   i_current = 0;
-  
+
   while(old != NULL){
     ((signed short *) current->data)[i_current] = ((signed short *) old->data)[i_old];
     
     if(i_current == buffer_size){
       current = g_list_prepend(current,
-			       ags_stream_alloc(buffer_size));
+			       ags_stream_alloc(buffer_size,
+						audio_signal->format));
       
       i_current = 0;
       
@@ -1356,13 +1408,14 @@ ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint sampl
   double k_old, k_current;
   guint frame;
   double factor, value, preview;
-
+  
   old = audio_signal->stream_beginning;
   old_samplerate = audio_signal->samplerate;
 
   current = NULL;
   current = g_list_prepend(current,
-			   ags_stream_alloc(audio_signal->buffer_size));
+			   ags_stream_alloc(audio_signal->buffer_size,
+					    audio_signal->format));
   counter = 0;
 
   i_old = 0;
@@ -1399,7 +1452,8 @@ ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint sampl
 
     if(i_current == samplerate){
       current = g_list_prepend(current,
-			       ags_stream_alloc(audio_signal->buffer_size));
+			       ags_stream_alloc(audio_signal->buffer_size,
+						audio_signal->format));
 
       i_current = 0;
 
@@ -1443,78 +1497,6 @@ ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate
 		audio_signal_signals[MORPH_SAMPLERATE], 0,
 		samplerate, k_morph);
   g_object_unref(G_OBJECT(audio_signal));
-}
-
-/**
- * ags_audio_signal_copy_buffer_to_buffer:
- * @destination: destination buffer
- * @dchannels: destination audio channels
- * @source: source buffer
- * @schannels: source audio channels
- * @size: frame count to copy
- *
- * Copy a buffer to an other buffer.
- *
- * Since: 0.3
- */
-void
-ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels, signed short *source, guint schannels, guint size)
-{
-  guint limit;
-  guint i;
-
-  i = 0;
-  
-  /* unrolled function */
-  if(size > 8){
-    limit = size - 8;
-  
-    for(; i < limit; i += 8){
-      *destination = 0xffff & ((signed long) ((*destination) + (*source)));
-      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
-      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
-      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
-      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
-      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
-      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
-      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
-
-      destination += (8 * dchannels);
-      source += (8 * schannels);
-    }
-  }
-
-  for(; i < size; i++){
-    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
-
-    destination += dchannels;
-    source += schannels;
-  }
-}
-
-/**
- * ags_audio_signal_copy_buffer_to_double_buffer:
- * @destination: destination buffer
- * @dchannels: destination audio channels
- * @source: source buffer
- * @schannels: source audio channels
- * @size: frame count to copy
- *
- * Copy a buffer to an other buffer.
- *
- * Since: 0.4
- */
-void
-ags_audio_signal_copy_buffer_to_double_buffer(double *destination, guint dchannels,
-					      signed short *source, guint schannels,
-					      guint size)
-{
-  for(; 0<size; --size){
-    *destination += *source;
-
-    destination += dchannels;
-    source += schannels;
-  }
 }
 
 /**
@@ -1571,6 +1553,9 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
   }else{
     GList *template_stream, *stream;
 
+    guint word_size;
+    guint copy_mode;
+
     audio_signal->buffer_size = template->buffer_size;
     ags_audio_signal_stream_resize(audio_signal,
 				   template->length);
@@ -1578,11 +1563,45 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
     stream = audio_signal->stream_beginning;
     template_stream = template->stream_beginning;
 
-    while(template_stream != NULL){
-      ags_audio_signal_copy_buffer_to_buffer(stream->data, 1,
-					     template_stream->data, 1,
-					     template->buffer_size);
+    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						    ags_audio_buffer_util_format_from_soundcard(template->format));
 
+    switch(audio_signal->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	word_size = sizeof(signed char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	word_size = sizeof(signed long long);
+      }
+      break;
+    default:
+      g_warning("ags_audio_signal_duplicate(): unsupported word size\0");
+      return;
+    }
+    
+    while(template_stream != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						  template_stream->data, 1, 0,
+						  template->buffer_size, copy_mode);
       stream = stream->next;
       template_stream = template_stream->next;
     }
@@ -1712,6 +1731,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   guint remaining_size;
   guint i, j, j_offcut;
   guint k, k_end;
+  guint copy_mode;
   gboolean alloc_buffer;
   
   soundcard = audio_signal->soundcard;
@@ -1726,7 +1746,10 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   template_size = (guint) (template->delay * template->buffer_size) +
     template->length * template->buffer_size +
     template->last_frame;
-
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						  ags_audio_buffer_util_format_from_soundcard(template->format));
+  
   j = 0;
   k = 0;
 
@@ -1745,7 +1768,8 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   for(i = 0; i < frame_count - template->buffer_size; i += audio_signal->buffer_size){
     /* alloc buffer and prepend */
     if(alloc_buffer){
-      audio_signal_buffer = ags_stream_alloc(audio_signal->buffer_size);
+      audio_signal_buffer = ags_stream_alloc(audio_signal->buffer_size,
+					     audio_signal->format);
       audio_signal_stream = g_list_prepend(audio_signal_stream,
 					   audio_signal_buffer);
     }
@@ -1756,21 +1780,37 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
     /* allocate and copy buffer */
     if(template_size < audio_signal->buffer_size){
       /* copy buffer */
-      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
-					     &(template_buffer[j_offcut]), 1, template_size - j_offcut);
+      //FIXME:JK: 
+      ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal_buffer, 1, 0,
+						  template_buffer, 1, j_offcut,
+						  template_size - j_offcut, copy_mode);
+      //      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
+      //				     &(template_buffer[j_offcut]), 1, template_size - j_offcut);
 
       for(j = template_size - j_offcut; j < audio_signal->buffer_size - template_size; j += template_size){
-	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					       template_buffer, 1, template_size);
+	//FIXME:JK:
+	ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal_buffer, 1, 0,
+						    template_buffer, 1, 0,
+						    template_size, copy_mode);
+	//	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+	//				       template_buffer, 1, template_size);
       }
 
       j_offcut = audio_signal->buffer_size - j;
-      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					     template_buffer, 1, j_offcut);
+      //FIXME:JK:
+      ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal_buffer, 1, j,
+						  template_buffer, 1, j_offcut,
+						  k_end - j_offcut, copy_mode);
+      //      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+      //				     template_buffer, 1, j_offcut);
     }else{
       /* deep copy */
-      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					     &(template_buffer[j_offcut]), 1, k_end - j_offcut);
+      //FIXME:JK:
+      ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal_buffer, 1, j,
+						  template_buffer, 1, j_offcut,
+						  k_end - j_offcut, copy_mode);
+      //      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+      //				     &(template_buffer[j_offcut]), 1, k_end - j_offcut);
       k += (k_end - j_offcut);
 
       /* iterate template stream */
@@ -1808,8 +1848,11 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   remaining_size = frame_count - (i * audio_signal->buffer_size);
 
   if(remaining_size > k_end - j_offcut){
-    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					   &(template_buffer[j_offcut]), 1, k_end - j_offcut);
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal_buffer, 1, j,
+						template_buffer, 1, j_offcut,
+						k_end - j_offcut, copy_mode);
+    //    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+    //					   &(template_buffer[j_offcut]), 1, k_end - j_offcut);
 
     if(k_end + j_offcut == template->buffer_size){
       if(template_stream->next != NULL){
@@ -1819,11 +1862,19 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
       }
     }
 
-    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					   &(template_buffer[j_offcut]), 1, remaining_size - (k_end - j_offcut));
+    //FIXME:JK:
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal_buffer, 1, j,
+						template_buffer, 1, j_offcut,
+						remaining_size - (k_end - j_offcut), copy_mode);
+    //    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+    //					   &(template_buffer[j_offcut]), 1, remaining_size - (k_end - j_offcut));
   }else{
-    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
-					   &(template_buffer[j_offcut]), 1, remaining_size);
+    //FIXME:JK:
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal_buffer, 1, j,
+						template_buffer, 1, j_offcut,
+						remaining_size, copy_mode);
+    //    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+    //					   &(template_buffer[j_offcut]), 1, remaining_size);
   }
 
   /* reverse list */

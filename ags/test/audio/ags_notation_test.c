@@ -155,12 +155,12 @@ ags_notation_test_find_near_timestamp()
   timestamp = ags_timestamp_new();
   
   /* assert find */
-  for(i = 0; i < AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_N_NOTATION; i++){
-    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(notation[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_NOTATION_DEFAULT_DURATION);
+  for(i = 0; i + 1 < AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_N_NOTATION; i++){
+    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(notation[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_NOTATION_DEFAULT_DURATION + 1);
     current = ags_notation_find_near_timestamp(list, 0,
 					       timestamp);
 
-    CU_ASSERT(current != NULL && current->data == notation[i]);
+    CU_ASSERT(current != NULL && current->data == notation[i + 1]);
   }  
 }
 

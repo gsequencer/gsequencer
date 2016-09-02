@@ -82,7 +82,8 @@ struct _AgsAudioSignalClass
 
 GType ags_audio_signal_get_type();
 
-signed short* ags_stream_alloc(guint buffer_size);
+signed short* ags_stream_alloc(guint buffer_size,
+			       guint format);
 void ags_stream_free(signed short *buffer);
 
 void ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
@@ -97,19 +98,6 @@ void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint len
 
 void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
 void ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
-
-void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
-					    signed short *source, guint schannels, guint size);
-//  __attribute__ ((hot))
-//  __attribute__ ((fastcall));
-void ags_audio_signal_copy_buffer_to_double_buffer(double *destination, guint dchannels,
-						   signed short *source, guint schannels, guint size);
-//  __attribute__ ((hot))
-//  __attribute__ ((fastcall));
-void ags_audio_signal_copy_double_buffer_to_buffer(signed short *destination, guint dchannels,
-						   double *source, guint schannels, guint size);
-//  __attribute__ ((hot))
-//  __attribute__ ((fastcall));
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);
