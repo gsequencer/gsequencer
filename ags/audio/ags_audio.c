@@ -770,7 +770,7 @@ ags_audio_init(AgsAudio *audio)
   attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE_NP);
+			    PTHREAD_MUTEX_RECURSIVE);
   pthread_mutexattr_setprotocol(attr,
 				PTHREAD_PRIO_INHERIT);
 

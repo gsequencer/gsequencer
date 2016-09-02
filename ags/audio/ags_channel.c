@@ -256,7 +256,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  0,
 				  G_MAXUINT32,
 				  0,
-				  G_PARAM_READABLE);
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,
 				  param_spec);
@@ -274,7 +274,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  0,
 				  G_MAXUINT32,
 				  0,
-				  G_PARAM_READABLE);
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
 				  param_spec);
@@ -292,7 +292,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  0,
 				  G_MAXUINT32,
 				  0,
-				  G_PARAM_READABLE);
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
 				  param_spec);
@@ -635,7 +635,7 @@ ags_channel_init(AgsChannel *channel)
   attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE_NP);
+			    PTHREAD_MUTEX_RECURSIVE);
   pthread_mutexattr_setprotocol(attr,
 				PTHREAD_PRIO_INHERIT);
 
@@ -2077,7 +2077,9 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
        (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       recycling = channel->first_recycling;
 
-      ags_channel_set_samplerate_audio_signal(recycling->audio_signal, samplerate);
+      if(recycling != NULL){
+	ags_channel_set_samplerate_audio_signal(recycling->audio_signal, samplerate);
+      }
     }
 
     if(AGS_IS_INPUT(channel) &&
@@ -2086,7 +2088,9 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
       recycling = channel->first_recycling;
 
       if(AGS_INPUT(channel)->file_link == NULL){
-	ags_channel_set_samplerate_audio_signal(recycling->audio_signal, samplerate);
+	if(recycling != NULL){
+	  ags_channel_set_samplerate_audio_signal(recycling->audio_signal, samplerate);
+	}
       }else{
 	AgsFileLink *file_link;
 
@@ -2188,7 +2192,9 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
        (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       recycling = channel->first_recycling;
 
-      ags_channel_set_buffer_size_audio_signal(recycling->audio_signal, buffer_size);
+      if(recycling != NULL){
+	ags_channel_set_buffer_size_audio_signal(recycling->audio_signal, buffer_size);
+      }
     }
 
     if(AGS_IS_INPUT(channel) &&
@@ -2197,7 +2203,9 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
       recycling = channel->first_recycling;
 
       if(AGS_INPUT(channel)->file_link == NULL){
-	ags_channel_set_buffer_size_audio_signal(recycling->audio_signal, buffer_size);
+	if(recycling != NULL){
+	  ags_channel_set_buffer_size_audio_signal(recycling->audio_signal, buffer_size);
+	}
       }else{
 	AgsFileLink *file_link;
 
@@ -2258,7 +2266,9 @@ ags_channel_set_format(AgsChannel *channel, guint format)
        (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       recycling = channel->first_recycling;
 
-      ags_channel_set_format_audio_signal(recycling->audio_signal, format);
+      if(recycling != NULL){
+	ags_channel_set_format_audio_signal(recycling->audio_signal, format);
+      }
     }
 
     if(AGS_IS_INPUT(channel) &&
@@ -2267,7 +2277,9 @@ ags_channel_set_format(AgsChannel *channel, guint format)
       recycling = channel->first_recycling;
 
       if(AGS_INPUT(channel)->file_link == NULL){
-	ags_channel_set_format_audio_signal(recycling->audio_signal, format);
+	if(recycling != NULL){
+	  ags_channel_set_format_audio_signal(recycling->audio_signal, format);
+	}
       }else{
 	AgsFileLink *file_link;
 
@@ -4055,9 +4067,8 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
   pthread_mutex_lock(mutex);
   
 #ifdef AGS_DEBUG
-  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %llu %llu\n\0",
+  g_message("ags_channel_init_recall@%d - channel: %llu %llu\n\0",
 	    stage,
-	    AGS_AUDIO(channel->audio)->input_lines,
 	    (long long unsigned int) channel->audio_channel,
 	    (long long unsigned int) channel->pad);  
 #endif
@@ -4099,7 +4110,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
 #ifdef AGS_DEBUG
-      g_message("recall run init: %s - %x\0", G_OBJECT_TYPE_NAME(recall), recall->flags);
+      g_message("recall run init@%d: %s - %x\0", stage, G_OBJECT_TYPE_NAME(recall), recall->flags);
 #endif
 
       if(stage == 0){
@@ -8164,8 +8175,9 @@ ags_channel_recursive_play(AgsChannel *channel,
     /* lookup mutex */
     pthread_mutex_lock(application_mutex);
 
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     channel);
+    current_mutex =
+      mutex = ags_mutex_manager_lookup(mutex_manager,
+				       channel);
     
     pthread_mutex_unlock(application_mutex);
 

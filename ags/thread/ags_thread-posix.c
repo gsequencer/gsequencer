@@ -364,7 +364,7 @@ ags_thread_init(AgsThread *thread)
 
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE_NP);
+			    PTHREAD_MUTEX_RECURSIVE);
   err = pthread_mutexattr_setprotocol(attr,
 				      PTHREAD_PRIO_INHERIT);
 
@@ -416,7 +416,7 @@ ags_thread_init(AgsThread *thread)
 
   pthread_mutexattr_init(thread->mutexattr);
   pthread_mutexattr_settype(thread->mutexattr,
-			    PTHREAD_MUTEX_RECURSIVE_NP);
+			    PTHREAD_MUTEX_RECURSIVE);
   pthread_mutexattr_setprotocol(thread->mutexattr,
 				PTHREAD_PRIO_INHERIT);
 
