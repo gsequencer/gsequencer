@@ -2248,10 +2248,6 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 				  format);
     }
   }
-
-  if(channel->format == format){
-    return;
-  }  
   
   audio = channel->audio;
   
@@ -2291,6 +2287,7 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 			    AGS_AUDIO_FILE_LINK(file_link)->instrument,
 			    AGS_AUDIO_FILE_LINK(file_link)->sample,
 			    AGS_AUDIO_FILE_LINK(file_link)->audio_channel);
+	ags_channel_set_format_audio_signal(recycling->audio_signal, format);
       }
     }
   }

@@ -776,7 +776,18 @@ ags_devout_set_property(GObject *gobject,
 	  g_free(str);
 	}
 	
-	devout->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "format\0");
+
+	if(str != NULL){
+	  devout->format = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+	  
+	  g_free(str);
+	}
+
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "buffer-size\0");
@@ -1262,9 +1273,33 @@ ags_devout_set_device(AgsSoundcard *soundcard,
 		      gchar *device)
 {
   AgsDevout *devout;
+
+  GList *card_id, *card_name;
   
   devout = AGS_DEVOUT(soundcard);
-  devout->out.alsa.device = g_strdup(device);
+
+  card_id = NULL;
+  card_name = NULL;
+  
+  ags_soundcard_list_cards(soundcard,
+			   &card_id, &card_name);
+
+  while(card_id != NULL){
+    if(!g_ascii_strncasecmp(card_id->data,
+			    device,
+			    strlen(card_id->data))){
+      devout->out.alsa.device = g_strdup(device);
+
+      break;
+    }
+    
+    card_id = card_id->next;
+  }
+
+  g_list_free_full(card_id,
+		   g_free);
+  g_list_free_full(card_name,
+		   g_free);
 }
 
 gchar*
@@ -1348,8 +1383,14 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
   int device;
   int error;
 
-  *card_id = NULL;
-  *card_name = NULL;
+  if(card_id != NULL){
+    *card_id = NULL;
+  }
+
+  if(card_name != NULL){
+    *card_name = NULL;
+  }
+  
   card_num = -1;
 
   while(TRUE){
@@ -1395,17 +1436,27 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
       
       continue;
     }
-    
-    *card_id = g_list_prepend(*card_id, str);
-    *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
 
+    if(card_id != NULL){
+      *card_id = g_list_prepend(*card_id, str);
+    }
+
+    if(card_name != NULL){
+      *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+    }
+    
     snd_ctl_close(card_handle);
   }
 
   snd_config_update_free_global();
 
-  *card_id = g_list_reverse(*card_id);
-  *card_name = g_list_reverse(*card_name);
+  if(card_id != NULL){
+    *card_id = g_list_reverse(*card_id);
+  }
+
+  if(card_name != NULL){
+    *card_name = g_list_reverse(*card_name);
+  }
 }
 
 void

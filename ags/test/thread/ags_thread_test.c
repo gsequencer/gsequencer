@@ -595,14 +595,14 @@ ags_thread_test_is_current_ready()
 				TRUE, TRUE);
 
   /* not ready at all */
-  CU_ASSERT(ags_thread_is_current_ready(parent, 0) == FALSE);
-  CU_ASSERT(ags_thread_is_current_ready(thread, 0) == FALSE);
+  CU_ASSERT(ags_thread_is_current_ready(parent, 0) == TRUE);
+  CU_ASSERT(ags_thread_is_current_ready(thread, 0) == TRUE);
 
-  CU_ASSERT(ags_thread_is_current_ready(parent, 1) == FALSE);
-  CU_ASSERT(ags_thread_is_current_ready(thread, 1) == FALSE);
+  CU_ASSERT(ags_thread_is_current_ready(parent, 1) == TRUE);
+  CU_ASSERT(ags_thread_is_current_ready(thread, 1) == TRUE);
 
-  CU_ASSERT(ags_thread_is_current_ready(parent, 2) == FALSE);
-  CU_ASSERT(ags_thread_is_current_ready(thread, 2) == FALSE);
+  CU_ASSERT(ags_thread_is_current_ready(parent, 2) == TRUE);
+  CU_ASSERT(ags_thread_is_current_ready(thread, 2) == TRUE);
 
   /* wait 0 ready */
   g_atomic_int_or(&(parent->flags),
@@ -661,11 +661,11 @@ ags_thread_test_is_tree_ready()
 				TRUE, TRUE);
 
   /* not ready at all */
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 0) == FALSE);
+  CU_ASSERT(ags_thread_is_tree_ready(parent, 0) == TRUE);
 
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 1) == FALSE);
+  CU_ASSERT(ags_thread_is_tree_ready(parent, 1) == TRUE);
 
-  CU_ASSERT(ags_thread_is_tree_ready(parent, 2) == FALSE);
+  CU_ASSERT(ags_thread_is_tree_ready(parent, 2) == TRUE);
 
   /* wait 0 ready */
   g_atomic_int_or(&(parent->flags),

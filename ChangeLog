@@ -10,6 +10,8 @@ ags (0.7.63)
 	* fixed ags_notation_test.c
 	* fixed ags_pattern_test.c
 	* fixed ags_recycling_test.c
+	* fixed ags_thread_test.c
+	* improved ags_devout.c to not allow set non-existing soundcard except default hw:0
 
 ags (0.7.62)
 
