@@ -20,6 +20,8 @@
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -338,11 +340,20 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 
   for(; *specifier != NULL; specifier++){
     gtk_list_store_append(list_store, &iter);
+
+#ifdef HAVE_GLIB_2_44
     gtk_list_store_set(list_store, &iter,
 		       0, ((machine->automation_port != NULL &&
 			    g_strv_contains(machine->automation_port, *specifier)) ? : TRUE, FALSE),
 		       1, g_strdup(*specifier),
 		       -1);
+#else
+    gtk_list_store_set(list_store, &iter,
+		       0, ((machine->automation_port != NULL &&
+			    ags_strv_contains(machine->automation_port, *specifier)) ? : TRUE, FALSE),
+		       1, g_strdup(*specifier),
+		       -1);
+#endif
   }
 }
 
@@ -435,9 +446,15 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   /* apply */
   machine->automation_port = specifier;
   
+#ifdef HAVE_GLIB_2_44
   if(specifier != NULL &&
      g_strv_contains(specifier,
 		     control_name)){
+#else
+  if(specifier != NULL &&
+     ags_strv_contains(specifier,
+		       control_name)){
+#endif
     AgsScaleArea *scale_area;
     AgsAutomationArea *automation_area;
 

@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_automation.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_tactable.h>
@@ -1744,8 +1746,13 @@ ags_automation_get_specifier_unique(GList *automation)
   while(automation != NULL){
     current = specifier;
     
+#ifdef HAVE_GLIB_2_44
     if(!g_strv_contains(specifier,
 			AGS_AUTOMATION(automation->data)->control_name)){
+#else
+    if(!ags_strv_contains(specifier,
+			  AGS_AUTOMATION(automation->data)->control_name)){
+#endif
       specifier = (gchar **) realloc(specifier,
 				     (length + 1) * sizeof(gchar *));
       specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;

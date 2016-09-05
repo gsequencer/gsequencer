@@ -768,60 +768,83 @@ void
 ags_midiin_list_cards(AgsSequencer *sequencer,
 		      GList **card_id, GList **card_name)
 {
-  snd_ctl_t *card_handle;
-  snd_ctl_card_info_t *card_info;
-  char *name;
-  gchar *str;
-  int card_num;
-  int device;
-  int error;
+  AgsMidiin *midiin;
 
-  *card_id = NULL;
-  *card_name = NULL;
-  card_num = -1;
+  midiin = AGS_MIDIIN(sequencer);
 
-  while(TRUE){
-    error = snd_card_next(&card_num);
-
-    if(card_num < 0){
-      break;
-    }
-
-    if(error < 0){
-      continue;
-    }
-
-    str = g_strdup_printf("hw:%i\0", card_num);
-    error = snd_ctl_open(&card_handle, str, 0);
-
-    if(error < 0){
-      continue;
-    }
-
-    snd_ctl_card_info_alloca(&card_info);
-    error = snd_ctl_card_info(card_handle, card_info);
-
-    if(error < 0){
-      continue;
-    }
-
-    device = -1;
-    error = snd_ctl_rawmidi_next_device(card_handle, &device);
-    
-    if(error < 0){
-      continue;
-    }
-
-    *card_id = g_list_prepend(*card_id, str);
-    *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
-
-    snd_ctl_close(card_handle);
+  if(card_id != NULL){
+    *card_id = NULL;
   }
 
-  snd_config_update_free_global();
+  if(card_name != NULL){
+    *card_name = NULL;
+  }
 
-  *card_id = g_list_reverse(*card_id);
-  *card_name = g_list_reverse(*card_name);
+  if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
+#ifdef AGS_WITH_ALSA
+    snd_ctl_t *card_handle;
+    snd_ctl_card_info_t *card_info;
+    char *name;
+    gchar *str;
+    int card_num;
+    int device;
+    int error;
+
+    *card_id = NULL;
+    *card_name = NULL;
+    card_num = -1;
+
+    while(TRUE){
+      error = snd_card_next(&card_num);
+
+      if(card_num < 0){
+	break;
+      }
+
+      if(error < 0){
+	continue;
+      }
+
+      str = g_strdup_printf("hw:%i\0", card_num);
+      error = snd_ctl_open(&card_handle, str, 0);
+
+      if(error < 0){
+	continue;
+      }
+
+      snd_ctl_card_info_alloca(&card_info);
+      error = snd_ctl_card_info(card_handle, card_info);
+
+      if(error < 0){
+	continue;
+      }
+
+      device = -1;
+      error = snd_ctl_rawmidi_next_device(card_handle, &device);
+    
+      if(error < 0){
+	continue;
+      }
+
+      *card_id = g_list_prepend(*card_id, str);
+      *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+
+      snd_ctl_close(card_handle);
+    }
+
+    snd_config_update_free_global();
+#endif
+  }else{
+    //TODO:JK: implement me
+  }
+
+  if(card_id != NULL){
+    *card_id = g_list_reverse(*card_id);
+  }
+
+  if(card_name != NULL){
+    *card_name = g_list_reverse(*card_name);
+  }
 }
 
 gboolean
@@ -854,9 +877,11 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 
   AgsApplicationContext *application_context;
 
+#ifdef AGS_WITH_ALSA
   int mode = SND_RAWMIDI_NONBLOCK;
   snd_rawmidi_t* handle = NULL;
-  
+#endif
+
   int err;
   
   pthread_mutex_t *mutex;
@@ -885,6 +910,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 
   midiin->note_offset = 0;
 
+#ifdef AGS_WITH_ALSA
   mode = SND_RAWMIDI_NONBLOCK;
   
   if((err = snd_rawmidi_open(&handle, NULL, midiin->in.alsa.device, mode)) < 0) {
@@ -895,11 +921,16 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 		AGS_MIDIIN_ERROR_LOCKED_SOUNDCARD,
 		"unable to open midi device: %s\n\0",
 		snd_strerror(err));
+
+    pthread_mutex_unlock(mutex);
+
     return;
   }
   
   /*  */
   midiin->in.alsa.handle = handle;
+#endif
+
   midiin->tact_counter = 0.0;
   midiin->delay_counter = 0.0;
   midiin->tic_counter = 0;
@@ -968,6 +999,8 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
     pthread_mutex_lock(mutex);
     
     status = 0;
+
+#ifdef AGS_WITH_ALSA
     status = snd_rawmidi_read(midiin->in.alsa.handle, &c, 1);
 
     if((status < 0) && (status != -EBUSY) && (status != -EAGAIN)){
@@ -1025,6 +1058,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 	midiin->buffer_size[3]++;
       }
     }
+#endif
     
     pthread_mutex_unlock(mutex);
       
@@ -1049,7 +1083,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   /* reset - switch buffer flags */
   ags_midiin_switch_buffer_flag(midiin);
 
+#ifdef AGS_WITH_ALSA
   snd_pcm_prepare(midiin->in.alsa.handle);
+#endif
 
   pthread_mutex_unlock(mutex);
 }
@@ -1082,7 +1118,10 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
 
   midiin = AGS_MIDIIN(sequencer);
 
+#ifdef AGS_WITH_ALSA
   snd_rawmidi_close(midiin->in.alsa.handle);
+#endif
+
   midiin->in.alsa.handle = NULL;
   midiin->flags &= (~(AGS_MIDIIN_BUFFER0 |
 		      AGS_MIDIIN_BUFFER1 |

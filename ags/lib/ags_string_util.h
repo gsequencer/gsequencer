@@ -25,4 +25,8 @@
 
 gchar* ags_string_util_escape_single_quote(gchar *str);
 
+guint ags_strv_length(gchar **str_array);
+gboolean ags_strv_contains(gchar **str_array,
+			   gchar *str);
+
 #endif /*__AGS_STRING_UTIL__*/

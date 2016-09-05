@@ -12,6 +12,17 @@ AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR(m4)
 
+# options
+AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
+				    [enable alsa (default is yes)])],
+	      [],
+	      [enable_alsa=no])
+
+AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
+				      [enable xmlrpc (default is no)])],
+	      [],
+	      [enable_xmlrpc=no])
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
@@ -58,17 +69,30 @@ PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
 
-#PKG_CHECK_MODULES([LIBAO], [ao >= 1.1.0])
-#AC_SUBST(LIBAO_CFLAGS)
-#AC_SUBST(LIBAO_LIBS)
-
-PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
-AC_SUBST(LIBASOUND2_CFLAGS)
-AC_SUBST(LIBASOUND2_LIBS)
+AS_IF([test "x$enable_alsa" != xno],
+      [PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
+       AC_SUBST(LIBASOUND2_CFLAGS)
+       AC_SUBST(LIBASOUND2_LIBS)]
+       AC_DEFINE([AGS_WITH_ALSA], [1], [ALSA enabled]),
+      [AC_MSG_NOTICE([alsa disabled])
+       AC_CHECK_HEADERS([alsa/seq_event.h],
+			[AC_DEFINE([HAVE_ALSA_SEQ_EVENT_H], [1], [ALSA sequencer event available])]
+			[PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.5])
+			AC_SUBST(LIBASOUND2_CFLAGS)
+			AC_SUBST(LIBASOUND2_LIBS)],
+		  	[AC_MSG_NOTICE([ALSA sequencer event not available])],[
+#if HAVE_ALSA_SEQ_EVENT_H
+#  include <alsa/seq_event.h>
+#  include <alsa/seq_midi_event.h>
+#endif
+			])])
 
 PKG_CHECK_MODULES([JACK], [jack])
 AC_SUBST(JACK_CFLAGS)
 AC_SUBST(JACK_LIBS)
+
+AC_CHECK_FUNC([jack_port_uuid],
+	      [AC_DEFINE([HAVE_JACK_PORT_UUID], [1], [Jack port uuid available])])
 
 PKG_CHECK_MODULES([LIBXML2], [libxml-2.0 >= 2.8.0])
 AC_SUBST(LIBXML2_CFLAGS)
@@ -78,19 +102,28 @@ PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
-PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
-AC_SUBST(LIBINSTPATCH_CFLAGS)
-AC_SUBST(LIBINSTPATCH_LIBS)
-
 PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
+
+AC_CHECK_FUNC([g_strv_length],
+	      [AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available])])
+
+AC_CHECK_FUNC([g_strv_contains],
+	      [AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available])])
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
-PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.11.0])
+AC_CHECK_FUNC([atk_value_get_value_and_text],
+	      [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
+
+PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
+AC_SUBST(LIBINSTPATCH_CFLAGS)
+AC_SUBST(LIBINSTPATCH_LIBS)
+
+PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
 
@@ -106,21 +139,21 @@ PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.24.10])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-#PKG_CHECK_MODULES([XMLRPC_UTIL], [xmlrpc_util >= 1.16.33])
-#AC_SUBST(XMLRPC_UTIL_CFLAGS)
-#AC_SUBST(XMLRPC_UTIL_LIBS)
-
-#PKG_CHECK_MODULES([XMLRPC_SERVER], [xmlrpc_client >= 1.#16.33])
-#AC_SUBST(XMLRPC_SERVER_CFLAGS)
-#AC_SUBST(XMLRPC_SERVER_LIBS)
-
-#PKG_CHECK_MODULES([XMLRPC_SERVER_CGI], [xmlrpc_server_cgi >= 1.16.33])
-#AC_SUBST(XMLRPC_SERVER_CGI_CFLAGS)
-#AC_SUBST(XMLRPC_SERVER_CGI_LIBS)
-
-#PKG_CHECK_MODULES([XMLRPC_SERVER_ABYSS], [xmlrpc_server_abyss >= 1.16.33])
-#AC_SUBST(XMLRPC_SERVER_ABYSS_CFLAGS)
-#AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS)$
+AS_IF([test "x$enable_xmlrpc" != xno],
+      [PKG_CHECK_MODULES([XMLRPC_UTIL], [xmlrpc_util >= 1.16.33])
+      AC_SUBST(XMLRPC_UTIL_CFLAGS)
+      AC_SUBST(XMLRPC_UTIL_LIBS)
+      PKG_CHECK_MODULES([XMLRPC_SERVER], [xmlrpc_client >= 1.16.33])
+      AC_SUBST(XMLRPC_SERVER_CFLAGS)
+      AC_SUBST(XMLRPC_SERVER_LIBS)
+      PKG_CHECK_MODULES([XMLRPC_SERVER_CGI], [xmlrpc_server_cgi >= 1.16.33])
+      AC_SUBST(XMLRPC_SERVER_CGI_CFLAGS)
+      AC_SUBST(XMLRPC_SERVER_CGI_LIBS)
+      PKG_CHECK_MODULES([XMLRPC_SERVER_ABYSS], [xmlrpc_server_abyss >= 1.16.33])
+      AC_SUBST(XMLRPC_SERVER_ABYSS_CFLAGS)
+      AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS)
+      AC_DEFINE([AGS_WITH_XMLRPC_C], [1], [Disable if you don't want xmlrpc-c])],
+      AC_MSG_NOTICE([xmlrpc-c disabled]))
 
 # Checks for library functions.
 # AM_GNU_GETTEXT
@@ -136,15 +169,15 @@ GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
 AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
-AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
+# AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
-docs/reference/libags/Makefile
-docs/reference/libags_audio/Makefile
-docs/reference/libags_gui/Makefile
 libags.pc
 libags_audio.pc
 libags_gui.pc])
+# docs/reference/libags/Makefile
+# docs/reference/libags_audio/Makefile
+# docs/reference/libags_gui/Makefile
 # docs/reference/libgsequencer/Makefile
 # libgsequencer.pc
 

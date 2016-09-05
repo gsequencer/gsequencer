@@ -240,8 +240,13 @@ ags_lv2_manager_get_filenames()
 
       i++;
     }else{
+#ifdef HAVE_GLIB_2_44
       if(!g_strv_contains(filenames,
 			  AGS_BASE_PLUGIN(lv2_plugin->data)->filename)){
+#else
+      if(!ags_strv_contains(filenames,
+			    AGS_BASE_PLUGIN(lv2_plugin->data)->filename)){
+#endif
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;

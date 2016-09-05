@@ -68,3 +68,19 @@ ags_string_util_escape_single_quote(gchar *str)
   return(retval);
 }
 
+guint
+ags_strv_length(gchar **str_array)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
+gboolean
+ags_strv_contains(gchar **str_array,
+		  gchar *str)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}

@@ -32,11 +32,6 @@
 
 #include <math.h>
 
-#include <alsa/seq_midi_event.h>
-#include <alsa/seq_event.h>
-
-#include <lv2/lv2plug.in/ns/ext/midi/midi.h>
-
 void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);
 void ags_lv2_plugin_init (AgsLv2Plugin *lv2_plugin);
 void ags_lv2_plugin_set_property(GObject *gobject,
@@ -922,8 +917,6 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 					guint event_count)
 {
   void *offset;
-
-  snd_midi_event_t *midi_event;
   
   unsigned char midi_buffer[8];
 
@@ -931,16 +924,6 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
   guint count;
   guint i;
   gboolean success;
-
-  /* create parse*/
-  midi_event = NULL;
-
-  if(snd_midi_event_new(8,
-			&midi_event)){
-    g_warning("ags_lv2_plugin.c - failed to instantiate MIDI event parser\0");
-
-    return(FALSE);
-  }
 
   /* find offset */
   offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
@@ -951,16 +934,12 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 
   for(i = 0; i < event_count; i++){
     if(offset >= AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size){
-      snd_midi_event_free(midi_event);
-      
       return(FALSE);
     }
 
     /* decode midi sequencer event */
-    count = snd_midi_event_decode(midi_event,
-				  midi_buffer,
-				  8,
-				  &(events[i]));
+    count = ags_midi_buffer_util_decode(midi_buffer,
+					&(events[i]));
     
     if(count < 8){
       padded_buffer_size = 8;
@@ -969,8 +948,6 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
     }
     
     if(AGS_LV2_EVENT_BUFFER(event_buffer)->size + padded_buffer_size >= buffer_size){
-      snd_midi_event_free(midi_event);
-      
       return(FALSE);
     }
     
@@ -988,8 +965,6 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
       
     offset += (padded_buffer_size + sizeof(LV2_Event));
   }
-
-  snd_midi_event_free(midi_event);
 
   return(success);
 }
@@ -1076,8 +1051,6 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   
   LV2_Atom_Sequence *aseq;
   LV2_Atom_Event *aev;
-
-  snd_midi_event_t *midi_event;
   
   char midi_buffer[8];
 
@@ -1088,16 +1061,6 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 
   aseq = (LV2_Atom_Sequence *) atom_sequence;
   
-  /* create parse*/
-  midi_event = NULL;
-
-  if(snd_midi_event_new(8,
-			&midi_event)){
-    g_warning("ags_lv2_plugin.c - failed to instantiate MIDI event parser\0");
-
-    return(FALSE);
-  }
-
   /* find offset */
   aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
   
@@ -1115,16 +1078,12 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 
   for(i = 0; i < event_count; i++){
     if(aev >= atom_sequence + sequence_size){
-      snd_midi_event_free(midi_event);
-      
       return(FALSE);
     }
   
     /* decode midi sequencer event */
-    if((count = snd_midi_event_decode(midi_event,
-				      midi_buffer,
-				      8,
-				      &(events[i]))) <= 8){
+    if((count = ags_midi_buffer_util_decode(midi_buffer,
+					    &(events[i]))) <= 8){
       aev->time.frames = 0;
 
       aev->body.size = count;
@@ -1142,8 +1101,6 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
       break;
     }
   }
-
-  snd_midi_event_free(midi_event);
 
   /* set last empty */
   aev->body.size = 0;  

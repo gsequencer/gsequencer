@@ -157,8 +157,16 @@ gboolean
 ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
 			       gchar *uri, GValue *id)
 {
-  return(g_hash_table_insert(lv2_uri_map_manager->uri_map,
-			     uri, id));
+  if(lv2_uri_map_manager == NULL ||
+     uri == NULL ||
+     id == NULL){
+    return(FALSE);
+  }
+
+  g_hash_table_insert(lv2_uri_map_manager->uri_map,
+		      uri, id);
+
+  return(TRUE);
 }
 
 /**

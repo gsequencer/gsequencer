@@ -249,7 +249,11 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AGS_IPATCH(ffplayer->ipatch)->nth_level = 3;
   sample = ags_playable_sublevel_names(playable);
 
+#ifdef HAVE_GLIB_2_6
   count = g_strv_length(sample);
+#else
+  count = ags_strv_length(sample);
+#endif
 
   /* read all samples */
   ags_audio_set_audio_channels(audio,

@@ -117,6 +117,12 @@ gboolean ags_devout_is_playing(AgsSoundcard *soundcard);
 
 gchar* ags_devout_get_uptime(AgsSoundcard *soundcard);
 
+void ags_devout_oss_init(AgsSoundcard *soundcard,
+			  GError **error);
+void ags_devout_oss_play(AgsSoundcard *soundcard,
+			  GError **error);
+void ags_devout_oss_free(AgsSoundcard *soundcard);
+
 void ags_devout_alsa_init(AgsSoundcard *soundcard,
 			  GError **error);
 void ags_devout_alsa_play(AgsSoundcard *soundcard,
@@ -492,6 +498,30 @@ ags_devout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent
 void
 ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
+  AgsConfig *config;
+
+  gchar *str;
+
+  gboolean use_alsa;
+  
+  config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "backend\0");
+
+#ifdef AGS_WITH_ALSA
+  use_alsa = TRUE;
+#else
+  use_alsa = FALSE;
+#endif
+  
+  if(!g_ascii_strncasecmp(str,
+			  "oss\0",
+			  4)){
+    use_alsa = FALSE;
+  }
+
   soundcard->set_application_context = ags_devout_set_application_context;
   soundcard->get_application_context = ags_devout_get_application_context;
 
@@ -516,13 +546,22 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_uptime = ags_devout_get_uptime;
   
-  soundcard->play_init = ags_devout_alsa_init;
-  soundcard->play = ags_devout_alsa_play;
+  if(use_alsa){
+    soundcard->play_init = ags_devout_alsa_init;
+    soundcard->play = ags_devout_alsa_play;
+  }else{
+    soundcard->play_init = ags_devout_oss_init;
+    soundcard->play = ags_devout_oss_play;
+  }
 
   soundcard->record_init = NULL;
   soundcard->record = NULL;
 
-  soundcard->stop = ags_devout_alsa_free;
+  if(use_alsa){
+    soundcard->stop = ags_devout_alsa_free;
+  }else{
+    soundcard->stop = ags_devout_oss_free;
+  }
 
   soundcard->tic = ags_devout_tic;
   soundcard->offset_changed = ags_devout_offset_changed;
@@ -561,6 +600,8 @@ ags_devout_init(AgsDevout *devout)
   AgsConfig *config;
   
   gchar *str;
+
+  gboolean use_alsa;  
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -572,8 +613,11 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
   pthread_mutexattr_setprotocol(attr,
 				PTHREAD_PRIO_INHERIT);
+#endif
 
   mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
@@ -591,7 +635,25 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutex_unlock(application_mutex);
 
   /* flags */
-  devout->flags = (AGS_DEVOUT_ALSA);
+  config = ags_config_get_instance();
+
+#ifdef AGS_WITH_ALSA
+  use_alsa = TRUE;
+#else
+  use_alsa = FALSE;
+#endif
+  
+  if(!g_ascii_strncasecmp(str,
+			  "oss\0",
+			  4)){
+    use_alsa = FALSE;
+  }
+
+  if(use_alsa){
+    devout->flags = (AGS_DEVOUT_ALSA);
+  }else{
+    devout->flags = (AGS_DEVOUT_OSS);
+  }
 
   /* quality */
   devout->dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
@@ -601,9 +663,6 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   /* read config */
-  config = ags_config_get_instance();
-
-
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "dsp-channels\0");
@@ -658,9 +717,13 @@ ags_devout_init(AgsDevout *devout)
     free(str);
   }
 
-  //  devout->out.oss.device = NULL;
-  devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = AGS_SOUNDCARD_DEFAULT_DEVICE;
+  if(use_alsa){
+    devout->out.alsa.handle = NULL;
+    devout->out.alsa.device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
+  }else{
+    devout->out.oss.device_fd = -1;
+    devout->out.oss.device = AGS_DEVOUT_DEFAULT_OSS_DEVICE;
+  }
 
   /* buffer */
   devout->buffer = (void **) malloc(4 * sizeof(void*));
@@ -825,13 +888,21 @@ ags_devout_set_property(GObject *gobject,
 
 	  g_free(segmentation);
 	}
-	
+
+	if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+	  devout->out.alsa.handle = NULL;
+	  devout->out.alsa.device = ags_config_get_value(config,
+							 AGS_CONFIG_SOUNDCARD,
+							 "alsa-handle\0");
+	  g_message("ALSA device %s\n", devout->out.alsa.device);
+	}else{
+	  devout->out.oss.device_fd = -1;
+	  devout->out.oss.device = ags_config_get_value(config,
+							 AGS_CONFIG_SOUNDCARD,
+							 "oss-handle\0");
+	  g_message("OSS device %s\n", devout->out.oss.device);
+	}
 	//  devout->out.oss.device = NULL;
-	devout->out.alsa.handle = NULL;
-	devout->out.alsa.device = ags_config_get_value(config,
-						       AGS_CONFIG_SOUNDCARD,
-						       "alsa-handle\0");
-	g_message("device %s\n", devout->out.alsa.device);
 
 	ags_devout_adjust_delay_and_attack(devout);
 	ags_devout_realloc_buffer(devout);
@@ -1288,7 +1359,11 @@ ags_devout_set_device(AgsSoundcard *soundcard,
     if(!g_ascii_strncasecmp(card_id->data,
 			    device,
 			    strlen(card_id->data))){
-      devout->out.alsa.device = g_strdup(device);
+      if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+	devout->out.alsa.device = g_strdup(device);
+      }else{
+	devout->out.oss.device = g_strdup(device);
+      }
 
       break;
     }
@@ -1309,7 +1384,11 @@ ags_devout_get_device(AgsSoundcard *soundcard)
   
   devout = AGS_DEVOUT(soundcard);
   
-  return(devout->out.alsa.device);
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    return(devout->out.alsa.device);
+  }else{
+    return(devout->out.oss.device);
+  }
 }
 
 void
@@ -1372,16 +1451,9 @@ void
 ags_devout_list_cards(AgsSoundcard *soundcard,
 		      GList **card_id, GList **card_name)
 {
-  snd_ctl_t *card_handle;
-  snd_ctl_card_info_t *card_info;
+  AgsDevout *devout;
 
-  char *name;
-  gchar *str;
-  gchar *str_err;
-  
-  int card_num;
-  int device;
-  int error;
+  devout = AGS_DEVOUT(soundcard);
 
   if(card_id != NULL){
     *card_id = NULL;
@@ -1390,65 +1462,142 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
   if(card_name != NULL){
     *card_name = NULL;
   }
+
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+#ifdef AGS_WITH_ALSA
+    snd_ctl_t *card_handle;
+    snd_ctl_card_info_t *card_info;
+
+    char *name;
+    gchar *str;
+    gchar *str_err;
   
-  card_num = -1;
+    int card_num;
+    int device;
+    int error;
 
-  while(TRUE){
-    error = snd_card_next(&card_num);
+    card_num = -1;
 
-    if(card_num < 0 || error < 0){
-      str_err = snd_strerror(error);
-      g_message("Can't get the next card number: %s\0", str_err);
+    while(TRUE){
+      error = snd_card_next(&card_num);
 
-      //free(str_err);
+      if(card_num < 0 || error < 0){
+	str_err = snd_strerror(error);
+	g_message("Can't get the next card number: %s\0", str_err);
+
+	//free(str_err);
       
-      break;
-    }
+	break;
+      }
 
-    str = g_strdup_printf("hw:%d\0", card_num);
+      str = g_strdup_printf("hw:%d\0", card_num);
 
 #ifdef AGS_DEBUG
-    g_message("found soundcard - %s\0", str);
+      g_message("found soundcard - %s\0", str);
 #endif
     
-    error = snd_ctl_open(&card_handle, str, 0);
+      error = snd_ctl_open(&card_handle, str, 0);
 
-    if(error < 0){
-      g_free(str);
+      if(error < 0){
+	g_free(str);
       
-      continue;
-    }
+	continue;
+      }
 
-    snd_ctl_card_info_alloca(&card_info);
-    error = snd_ctl_card_info(card_handle, card_info);
+      snd_ctl_card_info_alloca(&card_info);
+      error = snd_ctl_card_info(card_handle, card_info);
 
-    if(error < 0){
-      g_free(str);
+      if(error < 0){
+	g_free(str);
       
-      continue;
-    }
+	continue;
+      }
 
-    device = -1;
-    error = snd_ctl_pcm_next_device(card_handle, &device);
+      device = -1;
+      error = snd_ctl_pcm_next_device(card_handle, &device);
 
-    if(error < 0){
-      g_free(str);
+      if(error < 0){
+	g_free(str);
       
-      continue;
-    }
+	continue;
+      }
 
-    if(card_id != NULL){
-      *card_id = g_list_prepend(*card_id, str);
-    }
+      if(card_id != NULL){
+	*card_id = g_list_prepend(*card_id, str);
+      }
 
-    if(card_name != NULL){
-      *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
-    }
+      if(card_name != NULL){
+	*card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+      }
     
-    snd_ctl_close(card_handle);
-  }
+      snd_ctl_close(card_handle);
+    }
 
-  snd_config_update_free_global();
+    snd_config_update_free_global();
+#endif
+  }else{
+    oss_sysinfo sysinfo;
+    oss_audioinfo ai;
+
+    int mixerfd = -1;
+
+    int next, n;
+    int i;
+
+    if(ioctl(mixerfd, SNDCTL_SYSINFO, &sysinfo) == -1){
+      if(errno == ENXIO){
+	g_warning("OSS has not detected any supported sound hardware in your system.\0");
+      }else{
+	g_warning("SNDCTL_SYSINFO\0");
+
+	if(errno == EINVAL){
+	  g_warning("Error: OSS version 4.0 or later is required\0");
+	}
+      }
+
+      n = 0;
+    }else{
+      n = sysinfo.numaudios;
+    }
+
+    memset(&ai, 0, sizeof(oss_audioinfo));
+    ioctl(mixerfd, SNDCTL_AUDIOINFO_EX, &ai);
+
+    for(i = 0; i < n;){
+      next = ai.next_play_engine;
+
+      if(next > 0){
+	ai.dev = next;
+
+	if(ioctl(mixerfd, SNDCTL_ENGINEINFO, &ai) == -1){
+	  int e = errno;
+
+	  g_warning("Can't get device info for /dev/dsp%d (SNDCTL_AUDIOINFO)\0", i);
+	  g_warning ("errno = %d: %s\n", e, strerror(e));
+
+	  i++;
+
+	  continue;
+	}
+
+	if((DSP_CAP_OUTPUT & (ai.caps)) != 0){
+	  if(card_id != NULL){
+	    *card_id = g_list_prepend(*card_id,
+				      g_strdup_printf("/dev/dsp%i\0", i));
+	  }
+
+	  if(card_name != NULL){
+	    *card_name = g_list_prepend(*card_name,
+					g_strdup_printf("%s\0", ai.name));
+	  }
+	}
+
+	i++;
+      }else{
+	break;
+      }
+    }
+  }
 
   if(card_id != NULL){
     *card_id = g_list_reverse(*card_id);
@@ -1467,6 +1616,7 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 		    guint *buffer_size_min, guint *buffer_size_max,
 		    GError **error)
 {
+#ifdef AGS_WITH_ALSA
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *params;
 
@@ -1533,6 +1683,7 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
   *buffer_size_max = frames;
 
   snd_pcm_close(handle);
+#endif
 }
 
 GList*
@@ -1552,6 +1703,7 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
   }
   
   if(AGS_DEVOUT(soundcard)->poll_fd == NULL){
+#ifdef AGS_WITH_ALSA
     /* get poll fds of ALSA */
     count = snd_pcm_poll_descriptors_count(AGS_DEVOUT(soundcard)->out.alsa.handle);
 
@@ -1559,6 +1711,9 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
       fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
       snd_pcm_poll_descriptors(AGS_DEVOUT(soundcard)->out.alsa.handle, fds, count);
     }
+#else
+    count = 0;
+#endif
     
     /* map fds */
     list = NULL;
@@ -1593,7 +1748,9 @@ ags_devout_is_available(AgsSoundcard *soundcard)
   while(list !=	NULL){
     signed short revents;
     
+#ifdef AGS_WITH_ALSA
     snd_pcm_poll_descriptors_revents(devout->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
+#endif
     
     if((POLLOUT & revents) != 0){
       return(TRUE);
@@ -1687,6 +1844,26 @@ ags_devout_get_uptime(AgsSoundcard *soundcard)
 }
 
 void
+ags_devout_oss_init(AgsSoundcard *soundcard,
+			  GError **error)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_devout_oss_play(AgsSoundcard *soundcard,
+		    GError **error)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_devout_oss_free(AgsSoundcard *soundcard)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_devout_alsa_init(AgsSoundcard *soundcard,
 		     GError **error)
 {
@@ -1695,6 +1872,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
+
+#ifdef AGS_WITH_ALSA
 
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *hwparams;
@@ -1711,15 +1890,17 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   snd_pcm_uframes_t size;
   snd_pcm_sframes_t buffer_size;
   snd_pcm_sframes_t period_size;
-  guint word_size;
   snd_pcm_format_t format;
 
   int period_event;
 
   int err, dir;
+#endif
+
+  guint word_size;
   
-  pthread_mutex_t *mutex;
-  
+  pthread_mutex_t *mutex; 
+ 
   static unsigned int period_time = 100000;
   static unsigned int buffer_time = 100000;
 
@@ -1742,21 +1923,27 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
+#ifdef AGS_WITH_ALSA
       format = SND_PCM_FORMAT_S8;
+#endif
 
       word_size = sizeof(signed char);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
+#ifdef AGS_WITH_ALSA
       format = SND_PCM_FORMAT_S16;
+#endif
       
       word_size = sizeof(signed short);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
+#ifdef AGS_WITH_ALSA
       format = SND_PCM_FORMAT_S24;
+#endif
       
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
       word_size = sizeof(signed long);
@@ -1764,7 +1951,9 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
+#ifdef AGS_WITH_ALSA
       format = SND_PCM_FORMAT_S32;
+#endif
       
       word_size = sizeof(signed long);
     }
@@ -1778,7 +1967,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     g_warning("ags_devout_alsa_init(): unsupported word size\0");
     return;
   }
-  
+
   /* prepare for playback */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
 		    AGS_DEVOUT_START_PLAY |
@@ -1793,6 +1982,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   memset(devout->buffer[3], 0, devout->pcm_channels * devout->buffer_size * word_size);
 
   /* allocate ring buffer */
+#ifdef AGS_WITH_ALSA
   devout->ring_buffer = (unsigned char **) malloc(2 * sizeof(unsigned char *));
   devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
   devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
@@ -2093,6 +2283,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /*  */
   devout->out.alsa.handle = handle;
+#endif
+
   devout->tact_counter = 0.0;
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
@@ -2127,6 +2319,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
   pthread_mutex_t *mutex;
 
+#ifdef AGS_WITH_ALSA
   auto void ags_devout_alsa_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
 
   void ags_devout_alsa_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
@@ -2226,6 +2419,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
       ring_buffer += channels * phys_bps;
     }
   }
+#endif
   
   devout = AGS_DEVOUT(soundcard);
 
@@ -2290,6 +2484,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   //				AGS_DEVOUT_BUFFER3) & (devout->flags)));
 
   /* check buffer flag */
+#ifdef AGS_WITH_ALSA
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
     
@@ -2454,6 +2649,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }
     //      g_message("ags_devout_play 3\0");
   }
+#endif
 
   pthread_mutex_unlock(mutex);
 
@@ -2468,7 +2664,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   ags_task_thread_append_task(task_thread,
 			      switch_buffer_flag);
   
+#ifdef AGS_WITH_ALSA
   snd_pcm_prepare(devout->out.alsa.handle);
+#endif
 }
 
 void
@@ -2486,6 +2684,7 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   
   devout = AGS_DEVOUT(soundcard);
 
+#ifdef AGS_WITH_ALSA
   /* remove poll fd */
   poll_fd = devout->poll_fd;
   
@@ -2500,6 +2699,7 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   g_list_free(poll_fd);
 
   devout->poll_fd = NULL;
+#endif
   
   application_context = ags_soundcard_get_application_context(soundcard);
   
@@ -2516,9 +2716,11 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
     return;
   }
   
+#ifdef AGS_WITH_ALSA
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
+#endif
 
   free(devout->ring_buffer[0]);
   free(devout->ring_buffer[1]);
