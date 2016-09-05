@@ -2083,13 +2083,262 @@ void
 ags_devout_oss_play(AgsSoundcard *soundcard,
 		    GError **error)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+
+  AgsSwitchBufferFlag *switch_buffer_flag;
+  
+  AgsThread *task_thread;
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  gchar *str;
+  
+  guint word_size;
+  
+  pthread_mutex_t *mutex;
+
+  auto void ags_devout_oss_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
+
+  void ags_devout_oss_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
+    snd_pcm_format_t format;
+
+    int format_bits;
+    guint word_size;
+
+    int res;
+    guint chn;
+    guint i, j;
+    
+    switch(ags_format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	word_size = sizeof(char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	word_size = sizeof(long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(long);
+      }
+      break;
+    default:
+      g_warning("ags_devout_oss_play(): unsupported word size\0");
+      return;
+    }
+
+    /* fill the channel areas */
+    for(i = 0; i < buffer_size; i++){
+      switch(ags_format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  res = (int) ((signed char *) buffer)[i * channels + chn];
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  res = (int) ((signed short *) buffer)[i * channels + chn];
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  res = (int) ((signed long *) buffer)[i * channels + chn];
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  res = (int) ((signed long *) buffer)[i * channels + chn];
+	}
+	break;
+      }
+
+      for(chn = 0; chn < channels; chn++){
+	for(j = 0; j < word_size; j++){
+	  ring_buffer[(channels * i + chn * word_size) + word_size - j] = res >> (8 * j);
+	}
+      }
+    }
+  }
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  /*  */
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* retrieve word size */
+  pthread_mutex_lock(mutex);
+  
+  switch(devout->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    //NOTE:JK: not available    break;
+  default:
+    g_warning("ags_devout_oss_play(): unsupported word size\0");
+    return;
+  }
+
+  /* do playback */
+  devout->flags &= (~AGS_DEVOUT_START_PLAY);
+
+  if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
+
+  /* check buffer flag */
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+    
+    ags_devout_oss_play_fill_ring_buffer(devout->buffer[0],
+					 devout->format,
+					 devout->ring_buffer[0],
+					 devout->pcm_channels,
+					 devout->buffer_size);
+
+    write(devout->out.oss.device_fd,
+	  devout->ring_buffer[0],
+	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+
+    ags_devout_oss_play_fill_ring_buffer(devout->buffer[1],
+					 devout->format,
+					 devout->ring_buffer[1],
+					 devout->pcm_channels,
+					 devout->buffer_size);
+
+    write(devout->out.oss.device_fd,
+	  devout->ring_buffer[1],
+	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+      
+    ags_devout_oss_play_fill_ring_buffer(devout->buffer[2],
+					 devout->format,
+					 devout->ring_buffer[0],
+					 devout->pcm_channels,
+					 devout->buffer_size);
+
+    write(devout->out.oss.device_fd,
+	  devout->ring_buffer[0],
+	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+  }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
+    memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+      
+    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+      
+    ags_devout_oss_play_fill_ring_buffer(devout->buffer[3],
+					 devout->format,
+					 devout->ring_buffer[1],
+					 devout->pcm_channels,
+					 devout->buffer_size);
+
+    write(devout->out.oss.device_fd,
+	  devout->ring_buffer[1],
+	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+  }
+
+  pthread_mutex_unlock(mutex);
+
+  /* tic */
+  ags_soundcard_tic(soundcard);
+
+  /* reset - switch buffer flags */
+  task_thread = ags_thread_find_type(application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  switch_buffer_flag = ags_switch_buffer_flag_new(devout);
+  ags_task_thread_append_task(task_thread,
+			      switch_buffer_flag);
 }
 
 void
 ags_devout_oss_free(AgsSoundcard *soundcard)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  GList *poll_fd;
+
+  pthread_mutex_t *mutex;
+  
+  devout = AGS_DEVOUT(soundcard);
+  
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    return;
+  }
+  
+  devout->out.oss.device_fd = -1;
+
+  free(devout->ring_buffer[0]);
+  free(devout->ring_buffer[1]);
+  free(devout->ring_buffer);
+
+  devout->ring_buffer = NULL;
+  
+  devout->flags &= (~(AGS_DEVOUT_BUFFER0 |
+		      AGS_DEVOUT_BUFFER1 |
+		      AGS_DEVOUT_BUFFER2 |
+		      AGS_DEVOUT_BUFFER3 |
+		      AGS_DEVOUT_PLAY |
+		      AGS_DEVOUT_INITIALIZED));
+
+  devout->note_offset = 0;
 }
 
 void
@@ -2594,7 +2843,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
       }
       break;
     default:
-      g_warning("ags_devout_alsa_init(): unsupported word size\0");
+      g_warning("ags_devout_alsa_play(): unsupported word size\0");
       return;
     }
 

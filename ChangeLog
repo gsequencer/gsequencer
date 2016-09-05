@@ -1,13 +1,12 @@
 ags (0.7.64)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented OSS support ags_devout_oss_init()
-	* TODO:JK: ags_devout_oss_play() and ags_devout_oss_stop()
+	* implemented OSS support ags_devout_oss_init(), ags_devout_oss_play() and ags_devout_oss_stop()
+	* fixed potential dead-locks in ags_devout.c
+	* fixed string format in ags_devout.c
 	* TODO:JK: replaced ALSA MIDI decoder with ags_midi_buffer_util_decode()
 	* TODO:JK: added library completion routines ags_strv_contains() and ags_strv_length()
 	* improvded configure.ac to partially disable ALSA support
-	* fixed potential dead-locks in ags_devout.c
-	* fixed string format in ags_devout.c
 
 ags (0.7.63)
 
