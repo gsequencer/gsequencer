@@ -2323,6 +2323,7 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
     return;
   }
   
+  close(devout->out.oss.device_fd);
   devout->out.oss.device_fd = -1;
 
   free(devout->ring_buffer[0]);
