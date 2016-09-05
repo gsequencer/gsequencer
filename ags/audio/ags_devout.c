@@ -45,14 +45,18 @@
 
 #include <string.h>
 #include <math.h>
+
 #include <time.h>
+#include <signal.h>
+#include <strings.h>
+#include <unistd.h>
 
 /**
  * SECTION:ags_devout
  * @short_description: Output to soundcard
  * @title: AgsDevout
  * @section_id:
- * @include: ags/object/ags_soundcard.h
+ * @include: ags/audio/ags_devout.h
  *
  * #AgsDevout represents a soundcard and supports output.
  */
@@ -1845,9 +1849,234 @@ ags_devout_get_uptime(AgsSoundcard *soundcard)
 
 void
 ags_devout_oss_init(AgsSoundcard *soundcard,
-			  GError **error)
+		    GError **error)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+  
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  gchar *str;
+
+  guint word_size;
+  int format;
+  int tmp;
+
+  pthread_mutex_t *mutex;
+
+  devout = AGS_DEVOUT(soundcard);
+
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* retrieve word size */
+  pthread_mutex_lock(mutex);
+
+  switch(devout->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      format = AFMT_U8;
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      format = AFMT_S16_NE;
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      format = AFMT_S24_NE;
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      format = AFMT_S32_NE;
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+  default:
+    g_warning("ags_devout_oss_init(): unsupported word size\0");
+    return;
+  }
+
+  /* prepare for playback */
+  devout->flags |= (AGS_DEVOUT_BUFFER3 |
+		    AGS_DEVOUT_START_PLAY |
+		    AGS_DEVOUT_PLAY |
+		    AGS_DEVOUT_NONBLOCKING);
+
+  devout->note_offset = 0;
+
+  memset(devout->buffer[0], 0, devout->pcm_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[1], 0, devout->pcm_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[2], 0, devout->pcm_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[3], 0, devout->pcm_channels * devout->buffer_size * word_size);
+
+  /* allocate ring buffer */
+  devout->ring_buffer = (unsigned char **) malloc(2 * sizeof(unsigned char *));
+  devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
+  devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
+  
+  /* open device fd */
+  str = devout->out.oss.device;
+  devout->out.oss.device_fd = open(str, O_WRONLY, 0);
+
+  if(devout->out.oss.device_fd == -1){
+    pthread_mutex_unlock(mutex);
+
+    g_warning("couldn't open device %s\0", devout->out.oss.device);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		  "unable to open dsp device: %s\n\0",
+		  str);
+    }
+
+    return;
+  }
+
+  //NOTE:JK: unsupported on kfreebsd 9.0
+  //  tmp = APF_NORMAL;
+  //  ioctl(devout->out.oss.device_fd, SNDCTL_DSP_PROFILE, &tmp);
+
+  tmp = format;
+
+  if(ioctl(devout->out.oss.device_fd, SNDCTL_DSP_SETFMT, &tmp) == -1){
+    pthread_mutex_unlock(mutex);
+
+    str = strerror(errno);
+    g_warning("failed to select bits/sample\0");
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_SAMPLE_FORMAT_NOT_AVAILABLE,
+		  "unable to open dsp device: %s\0",
+		  str);
+    }
+
+    devout->out.oss.device_fd = -1;
+
+    return;
+  }
+  
+  if(tmp != format){
+    pthread_mutex_unlock(mutex);
+
+    str = strerror(errno);
+    g_warning("failed to select bits/sample\0");
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_SAMPLE_FORMAT_NOT_AVAILABLE,
+		  "unable to open dsp device: %s\0",
+		  str);
+    }
+
+    devout->out.oss.device_fd = -1;
+
+    return;
+  }
+
+  tmp = devout->dsp_channels;
+
+  if(ioctl(devout->out.oss.device_fd, SNDCTL_DSP_CHANNELS, &tmp) == -1){
+    pthread_mutex_unlock(mutex);
+
+    str = strerror(errno);
+    g_warning("Channels count (%i) not available for playbacks: %s\0", devout->dsp_channels, str);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_CHANNELS_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\0",
+		  str);
+    }
+
+    devout->out.oss.device_fd = -1;
+    
+    return;
+  }
+
+  if(tmp != devout->dsp_channels){
+    pthread_mutex_unlock(mutex);
+
+    str = strerror(errno);
+    g_warning("Channels count (%i) not available for playbacks: %s\0", devout->dsp_channels, str);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_CHANNELS_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\0",
+		  str);
+    }
+    
+    devout->out.oss.device_fd = -1;
+    
+    return;
+  }
+
+  tmp = devout->samplerate;
+
+  if(ioctl(devout->out.oss.device_fd, SNDCTL_DSP_SPEED, &tmp) == -1){
+    pthread_mutex_unlock(mutex);
+
+    str = strerror(errno);
+    g_warning("Rate %iHz not available for playback: %s\0", devout->samplerate, str);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_SAMPLERATE_NOT_AVAILABLE,
+		  "unable to open pcm device: %s\0",
+		  str);
+    }
+
+    devout->out.oss.device_fd = -1;
+    
+    return;
+  }
+
+  if(tmp != devout->samplerate){
+    g_warning("Warning: Playback using %d Hz (file %d Hz)\0",
+	      tmp,
+	      devout->samplerate);
+  }
+
+  devout->tact_counter = 0.0;
+  devout->delay_counter = 0.0;
+  devout->tic_counter = 0;
+
+  ags_soundcard_get_poll_fd(soundcard);
+  
+  devout->flags |= AGS_DEVOUT_INITIALIZED;
+  devout->flags |= AGS_DEVOUT_BUFFER0;
+  devout->flags &= (~(AGS_DEVOUT_BUFFER1 |
+		      AGS_DEVOUT_BUFFER2 |
+		      AGS_DEVOUT_BUFFER3));
+  
+  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -1964,7 +2193,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     }
     break;
   default:
+    pthread_mutex_unlock(mutex);
+
     g_warning("ags_devout_alsa_init(): unsupported word size\0");
+
     return;
   }
 
@@ -1995,13 +2227,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Playback open error: %s\n", str);
+    g_warning("Playback open error: %s\0", str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
     
@@ -2020,13 +2252,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Broken configuration for playback: no configurations available: %s\n", str);
+    g_warning("Broken configuration for playback: no configurations available: %s\0", str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_BROKEN_CONFIGURATION,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
@@ -2057,13 +2289,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Access type not available for playback: %s\n", str);
+    g_warning("Access type not available for playback: %s\0", str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_ACCESS_TYPE_NOT_AVAILABLE,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
@@ -2080,13 +2312,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Sample format not available for playback: %s\n", str);
+    g_warning("Sample format not available for playback: %s\0", str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_SAMPLE_FORMAT_NOT_AVAILABLE,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
@@ -2104,13 +2336,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Channels count (%i) not available for playbacks: %s\n", channels, str);
+    g_warning("Channels count (%i) not available for playbacks: %s\0", channels, str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_CHANNELS_NOT_AVAILABLE,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
@@ -2129,13 +2361,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Rate %iHz not available for playback: %s\n", rate, str);
+    g_warning("Rate %iHz not available for playback: %s\0", rate, str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_SAMPLERATE_NOT_AVAILABLE,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
@@ -2148,14 +2380,14 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   if (rrate != rate) {
     pthread_mutex_unlock(mutex);
-    g_warning("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
+    g_warning("Rate doesn't match (requested %iHz, get %iHz)\0", rate, err);
     //    exit(-EINVAL);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_SAMPLERATE_NOT_AVAILABLE,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
@@ -2171,13 +2403,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Unable to set buffer size %i for playback: %s\n", size, str);
+    g_warning("Unable to set buffer size %i for playback: %s\0", size, str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_BUFFER_SIZE_NOT_AVAILABLE,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
@@ -2209,13 +2441,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Unable to set hw params for playback: %s\n", str);
+    g_warning("Unable to set hw params for playback: %s\0", str);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_HW_PARAMETERS_NOT_AVAILABLE,
-		  "unable to open pcm device: %s\n\0",
+		  "unable to open pcm device: %s\0",
 		  str);
     }
 
