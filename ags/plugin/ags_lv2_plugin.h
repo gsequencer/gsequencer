@@ -28,9 +28,12 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/lib/ags_turtle.h>
 
+#include <alsa/seq_midi_event.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
+#include <lv2/lv2plug.in/ns/ext/midi/midi.h>
 
 #define AGS_TYPE_LV2_PLUGIN                (ags_lv2_plugin_get_type())
 #define AGS_LV2_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_PLUGIN, AgsLv2Plugin))

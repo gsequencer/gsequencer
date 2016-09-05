@@ -161,8 +161,11 @@ ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
     pthread_mutexattr_init(attr);
     pthread_mutexattr_settype(attr,
 			      PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
     pthread_mutexattr_setprotocol(attr,
 				  PTHREAD_PRIO_INHERIT);
+#endif
 
     ags_application_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
 
@@ -189,8 +192,16 @@ gboolean
 ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
 			 GObject *lock_object, pthread_mutex_t *mutex)
 {
-  return(g_hash_table_insert(mutex_manager->lock_object,
-			     lock_object, mutex));
+  if(mutex_manager == NULL ||
+     lock_object == NULL ||
+     mutex == NULL){
+    return(FALSE);
+  }
+
+  g_hash_table_insert(mutex_manager->lock_object,
+		      lock_object, mutex);
+
+  return(TRUE);
 }
 
 /**

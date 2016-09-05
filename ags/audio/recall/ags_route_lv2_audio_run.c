@@ -48,6 +48,8 @@
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
+#include <alsa/seq_midi_event.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
@@ -829,7 +831,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	      
 	      /* key on */
 	      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
-	      snd_midi_event_reset_encode(seq_event);	      
+	      memset(seq_event, 0, sizeof(snd_seq_event_t));
 
 	      seq_event->type = SND_SEQ_EVENT_NOTEON;
 

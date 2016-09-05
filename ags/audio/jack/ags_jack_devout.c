@@ -1194,8 +1194,6 @@ ags_jack_devout_list_cards(AgsSoundcard *soundcard,
     //TODO:JK: implement me
   }
 
-  snd_config_update_free_global();
-
   *card_id = g_list_reverse(*card_id);
   *card_name = g_list_reverse(*card_name);
 }

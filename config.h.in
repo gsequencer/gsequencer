@@ -1,5 +1,11 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* ALSA enabled */
+#undef AGS_WITH_ALSA
+
+/* Disable if you don't want xmlrpc-c */
+#undef AGS_WITH_XMLRPC_C
+
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
    */
@@ -15,11 +21,17 @@
    */
 #undef HAVE_ALLOCA_H
 
+/* ALSA sequencer event available */
+#undef HAVE_ALSA_SEQ_EVENT_H
+
 /* Define to 1 if you have the <argz.h> header file. */
 #undef HAVE_ARGZ_H
 
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
+
+/* Atk 2.12 available */
+#undef HAVE_ATK_2_12
 
 /* Define to 1 if you have the `clock_gettime' function. */
 #undef HAVE_CLOCK_GETTIME
@@ -45,11 +57,20 @@
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
+/* GLib 2.44 available */
+#undef HAVE_GLIB_2_44
+
+/* GLib 2.6 available */
+#undef HAVE_GLIB_2_6
+
 /* Define to 1 if you have the <gmp.h> header file. */
 #undef HAVE_GMP_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Jack port uuid available */
+#undef HAVE_JACK_PORT_UUID
 
 /* Define to 1 if you have the <ladspa.h> header file. */
 #undef HAVE_LADSPA_H
@@ -212,7 +233,8 @@
 /* Define to 1 if you have the `__argz_stringify' function. */
 #undef HAVE___ARGZ_STRINGIFY
 
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
 #undef LT_OBJDIR
 
 /* Name of package */

@@ -168,8 +168,16 @@ gboolean
 ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
 			    gchar *uri, GValue *id)
 {
-  return(g_hash_table_insert(lv2_urid_manager->urid,
-			     uri, id));
+  if(lv2_urid_manager == NULL ||
+     uri == NULL ||
+     id == NULL){
+    return(FALSE);
+  }
+
+  g_hash_table_insert(lv2_urid_manager->urid,
+		      uri, id);
+
+  return(TRUE);
 }
 
 /**

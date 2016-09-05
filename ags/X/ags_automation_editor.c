@@ -20,6 +20,8 @@
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_automation_editor_callbacks.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
@@ -466,8 +468,13 @@ ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
   if(machine->automation_port != NULL){
     for(; *specifier != NULL; specifier++){      
       /* create specifier array */
+#ifdef HAVE_GLIB_2_44
       if(g_strv_contains(remove_specifier,
 			 *specifier)){
+#else
+      if(ags_strv_contains(remove_specifier,
+			   *specifier)){
+#endif
 	if(editor_child != NULL){
 	  AgsScale *scale;
 	  GList *scale_area;
@@ -549,8 +556,13 @@ ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
 	  }
 	}
       }else{
+#ifdef HAVE_GLIB_2_44
 	if(g_strv_contains(unique_specifier,
 			   *specifier)){
+#else
+	if(ags_strv_contains(unique_specifier,
+			     *specifier)){
+#endif
 	  if(new_automation_port == NULL){
 	    new_automation_port = (gchar **) malloc(2 * sizeof(gchar *));
 	  }else{

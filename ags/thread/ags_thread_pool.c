@@ -194,8 +194,11 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
   pthread_mutexattr_setprotocol(attr,
 				PTHREAD_PRIO_INHERIT);
+#endif
 
   thread_pool->creation_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(thread_pool->creation_mutex, attr);

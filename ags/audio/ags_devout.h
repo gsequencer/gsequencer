@@ -29,7 +29,9 @@
 
 #include <pthread.h>
 
+#ifndef __AGS_WITHOUT_ALSA__
 #include <alsa/asoundlib.h>
+#endif
 
 #define AGS_TYPE_DEVOUT                (ags_devout_get_type())
 #define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))
@@ -37,6 +39,11 @@
 #define AGS_IS_DEVOUT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_DEVOUT))
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
+
+#define __AGS_WITHOUT_ALSA__
+
+#define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0\0"
+#define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp\0"
 
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
@@ -113,6 +120,7 @@ struct _AgsDevout
       int device_fd;
       char *device;
     }oss;
+#ifndef __AGS_WITHOUT_ALSA__
     struct _AgsAlsa{
       char *device;
       int rc;
@@ -120,6 +128,15 @@ struct _AgsDevout
       snd_async_handler_t *ahandler;
       snd_pcm_hw_params_t *params;
     }alsa;
+#else
+    struct _AgsAlsaDummy{
+      char *device;
+      int rc;
+      void *handle;
+      void *ahandler;
+      void *params;
+    }alsa;
+#endif
   }out;
 
   GObject *application_context;

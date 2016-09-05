@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <stdlib.h>
+#include <alsa/seq_event.h>
 
 guint ags_midi_buffer_util_get_varlength_size(glong varlength);
 void ags_midi_buffer_util_put_varlength(unsigned char *buffer,
@@ -66,5 +66,8 @@ guint ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
 					    glong *channel,
 					    glong *key,
 					    glong *pressure);
+
+guint ags_midi_buffer_util_decode(unsigned char *buffer,
+				  snd_seq_event_t *event);
 
 #endif /*__AGS_MIDI_BUFFER_UTIL_H__*/

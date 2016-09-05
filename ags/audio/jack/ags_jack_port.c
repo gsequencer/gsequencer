@@ -364,7 +364,12 @@ ags_jack_port_register(AgsJackPort *jack_port,
 				     list);
   }
 
+#ifdef HAVE_JACK_PORT_UUID
   jack_port->uuid = jack_port_uuid(jack_port->port);
+#else
+  jack_port->uuid = NULL;
+#endif
+
   jack_port->name = port_name;
 }
 

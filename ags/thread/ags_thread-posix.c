@@ -365,12 +365,15 @@ ags_thread_init(AgsThread *thread)
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
   err = pthread_mutexattr_setprotocol(attr,
 				      PTHREAD_PRIO_INHERIT);
 
   if(err != 0){
     g_warning("no priority inheritance\0");
   }
+#endif
   
   mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
@@ -417,8 +420,11 @@ ags_thread_init(AgsThread *thread)
   pthread_mutexattr_init(thread->mutexattr);
   pthread_mutexattr_settype(thread->mutexattr,
 			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
   pthread_mutexattr_setprotocol(thread->mutexattr,
 				PTHREAD_PRIO_INHERIT);
+#endif
 
   thread->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(thread->mutex, thread->mutexattr);

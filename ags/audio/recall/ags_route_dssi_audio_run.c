@@ -48,6 +48,8 @@
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
+#include <alsa/seq_midi_event.h>
+
 void ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_run);
 void ags_route_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_route_dssi_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -677,7 +679,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   GList *list_recall;
   GList *list;
   
-  snd_midi_event_t *parser = NULL;
   snd_seq_event_t *seq_event;
 
   gchar *str;
@@ -749,9 +750,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 			    audio_channel);
 
   /*  */  
-  snd_midi_event_new(10, &parser);  //  snd_midi_event_init(parser);
-  snd_midi_event_reset_encode(parser);
-  
   if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
     selected_channel = ags_channel_pad_nth(channel, audio->audio_start_mapping + audio->input_pads - note->y - 1);
   }else{
@@ -824,7 +822,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	      
 	      /* key on */
 	      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
-	      snd_midi_event_reset_encode(seq_event);	      
+	      memset(seq_event, 0, sizeof(snd_seq_event_t));
 	      //memset(seq_event, 0, sizeof(snd_seq_event_t));
 	      
 	      seq_event->type = SND_SEQ_EVENT_NOTEON;
@@ -857,8 +855,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
       channel_dummy = channel_dummy->next;
     }
   }
-
-  snd_midi_event_free(parser);
 }
 
 void

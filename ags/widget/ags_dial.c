@@ -46,7 +46,9 @@ void ags_dial_show(GtkWidget *widget);
 void ags_accessible_dial_get_value_and_text(AtkValue *value,
 					    gdouble *current_value,
 					    gchar **text);
+#ifdef HAVE_ATK_2_12  
 AtkRange* ags_accessible_dial_get_range(AtkValue *value);
+#endif
 gdouble ags_accessible_dial_get_increment(AtkValue *value);
 void ags_accessible_dial_set_value(AtkValue *value,
 				   gdouble new_value);
@@ -286,12 +288,14 @@ ags_accessible_dial_value_interface_init(AtkValueIface *value)
   value->get_minimum_value = NULL;
   value->set_current_value = NULL;
   value->get_minimum_increment = NULL;
-  
+
+#ifdef HAVE_ATK_2_12  
   value->get_value_and_text = ags_accessible_dial_get_value_and_text;
   value->get_range = ags_accessible_dial_get_range;
   value->get_increment = ags_accessible_dial_get_increment;
   value->get_sub_ranges = NULL;
   value->set_value = ags_accessible_dial_set_value;
+#endif
 }
 
 void
@@ -452,6 +456,7 @@ ags_accessible_dial_get_value_and_text(AtkValue *value,
   }
 }
 
+#ifdef HAVE_ATK_2_12
 AtkRange*
 ags_accessible_dial_get_range(AtkValue *value)
 {
@@ -464,6 +469,7 @@ ags_accessible_dial_get_range(AtkValue *value)
 			gtk_adjustment_get_upper(dial->adjustment),
 			"Valid lower and upper input range of this dial\0");
 }
+#endif
 
 gdouble
 ags_accessible_dial_get_increment(AtkValue *value)

@@ -19,6 +19,7 @@
 
 #include <ags/plugin/ags_dssi_manager.h>
 
+#include <ags/lib/ags_string_util.h>
 #include <ags/object/ags_marshal.h>
 
 #include <ags/plugin/ags_base_plugin.h>
@@ -155,8 +156,13 @@ ags_dssi_manager_get_filenames()
 
       i++;
     }else{
+#ifdef HAVE_GLIB_2_44
       if(!g_strv_contains(filenames,
 			  AGS_BASE_PLUGIN(dssi_plugin->data)->filename)){
+#else
+      if(!ags_strv_contains(filenames,
+			    AGS_BASE_PLUGIN(dssi_plugin->data)->filename)){
+#endif
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(dssi_plugin->data)->filename;

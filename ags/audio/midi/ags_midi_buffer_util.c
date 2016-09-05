@@ -379,3 +379,14 @@ ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
   
   return(delta_time_size + 3);
 }
+
+
+guint
+ags_midi_buffer_util_decode(unsigned char *buffer,
+			    snd_seq_event_t *event)
+{
+  //TODO:JK: implement me
+
+  return(0);
+}
+
