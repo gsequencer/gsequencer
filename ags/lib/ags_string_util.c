@@ -71,16 +71,32 @@ ags_string_util_escape_single_quote(gchar *str)
 guint
 ags_strv_length(gchar **str_array)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  if(str_array == NULL){
+    return(0);
+  }
 
-  return(0);
+  for(i = 0; *str_array != NULL; i++, str_array++);
+
+  return(i);
 }
 
 gboolean
 ags_strv_contains(gchar **str_array,
 		  gchar *str)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  if(str_array == NULL){
+    return(FALSE);
+  }
+
+  for(i = 0; *str_array != NULL; i++, str_array++){
+    if(*str_array == str){
+      return(TRUE);
+    }
+  }
 
   return(FALSE);
 }

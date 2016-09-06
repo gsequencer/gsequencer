@@ -36,6 +36,8 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#include <ags/config.h>
+
 void ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor);
 void ags_automation_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_editor_init(AgsAutomationEditor *automation_editor);

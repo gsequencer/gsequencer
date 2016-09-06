@@ -33,6 +33,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/config.h>
+
 #include <stdlib.h>
 #include <errno.h>
 

@@ -259,7 +259,7 @@ ags_machine_class_init(AgsMachineClass *machine)
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsMachineClass, map_recall),
                  NULL, NULL,
-                 g_cclosure_marshal_VOID__UINT,
+                 g_cclosure_marshal_VOID__VOID,
                  G_TYPE_NONE, 0);
 
   /**

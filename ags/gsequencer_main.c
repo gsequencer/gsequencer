@@ -1013,7 +1013,7 @@ main(int argc, char **argv)
   gtk_init(&argc, &argv);
   ipatch_init();
   //  g_log_set_fatal_mask(G_LOG_DOMAIN,
-  //		       0);
+  //		       G_LOG_LEVEL_CRITICAL);
   
   /* setup */
   uid = getuid();
