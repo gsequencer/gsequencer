@@ -37,6 +37,8 @@
 #include <math.h>
 #include <time.h>
 
+#include <ags/config.h>
+
 /**
  * SECTION:ags_jack_devout
  * @short_description: Output to soundcard

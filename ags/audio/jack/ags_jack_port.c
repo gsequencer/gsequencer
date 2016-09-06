@@ -33,6 +33,8 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <ags/config.h>
+
 void ags_jack_port_class_init(AgsJackPortClass *jack_port);
 void ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_jack_port_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);

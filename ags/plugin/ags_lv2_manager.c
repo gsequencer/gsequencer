@@ -35,6 +35,8 @@
 
 #include <stdio.h>
 
+#include <ags/config.h>
+
 void ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager);
 void ags_lv2_manager_init (AgsLv2Manager *lv2_manager);
 void ags_lv2_manager_set_property(GObject *gobject,

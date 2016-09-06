@@ -33,6 +33,8 @@
 
 #include <dssi.h>
 
+#include <ags/config.h>
+
 void ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager);
 void ags_dssi_manager_init (AgsDssiManager *dssi_manager);
 void ags_dssi_manager_finalize(GObject *gobject);

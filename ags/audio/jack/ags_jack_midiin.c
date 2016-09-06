@@ -43,6 +43,8 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include <ags/config.h>
+
 /**
  * SECTION:ags_jack_midiin
  * @short_description: Input from sequencer

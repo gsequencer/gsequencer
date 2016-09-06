@@ -37,6 +37,8 @@
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
 
+#include <ags/config.h>
+
 void ags_automation_toolbar_class_init(AgsAutomationToolbarClass *automation_toolbar);
 void ags_automation_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar);

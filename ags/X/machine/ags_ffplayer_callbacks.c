@@ -44,6 +44,8 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
+#include <ags/config.h>
+
 #include <math.h>
 
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,

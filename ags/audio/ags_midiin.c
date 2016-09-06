@@ -40,6 +40,8 @@
 #include <math.h>
 #include <time.h>
 
+#include <ags/config.h>
+
 /**
  * SECTION:ags_midiin
  * @short_description: Input from sequencer

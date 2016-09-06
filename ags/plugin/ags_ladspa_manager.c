@@ -34,6 +34,8 @@
 
 #include <ladspa.h>
 
+#include <ags/config.h>
+
 void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
 void ags_ladspa_manager_init (AgsLadspaManager *ladspa_manager);
 void ags_ladspa_manager_finalize(GObject *gobject);

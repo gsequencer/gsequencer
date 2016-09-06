@@ -34,6 +34,8 @@
 
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
+#include <ags/config.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -50,6 +52,8 @@
 #include <signal.h>
 #include <strings.h>
 #include <unistd.h>
+
+#include <ags/config.h>
 
 /**
  * SECTION:ags_devout
@@ -192,6 +196,9 @@ enum{
 
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
+
+const int i = 1;
+#define is_bigendian() ( (*(char*)&i) == 0 )
 
 GType
 ags_devout_get_type (void)
@@ -894,16 +901,30 @@ ags_devout_set_property(GObject *gobject,
 	}
 
 	if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+	  gchar device;
+
 	  devout->out.alsa.handle = NULL;
-	  devout->out.alsa.device = ags_config_get_value(config,
-							 AGS_CONFIG_SOUNDCARD,
-							 "alsa-handle\0");
+	  device = ags_config_get_value(config,
+					AGS_CONFIG_SOUNDCARD,
+					"alsa-handle\0");
+
+	  if(device != NULL){
+	    devout->out.alsa.device = device;
+	  }
+	  
 	  g_message("ALSA device %s\n", devout->out.alsa.device);
 	}else{
+	  gchar device;
+	  
 	  devout->out.oss.device_fd = -1;
-	  devout->out.oss.device = ags_config_get_value(config,
-							 AGS_CONFIG_SOUNDCARD,
-							 "oss-handle\0");
+	  device = ags_config_get_value(config,
+					AGS_CONFIG_SOUNDCARD,
+					"oss-handle\0");
+
+	  if(device != NULL){
+	    devout->out.oss.device = device;
+	  }
+	   
 	  g_message("OSS device %s\n", devout->out.oss.device);
 	}
 	//  devout->out.oss.device = NULL;
@@ -2106,29 +2127,34 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     int format_bits;
     guint word_size;
 
+    int bps;
     int res;
     guint chn;
-    guint i, j;
+    guint count, i;
     
     switch(ags_format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
 	word_size = sizeof(char);
+	bps = 1;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
 	word_size = sizeof(short);
+	bps = 2;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
 	word_size = sizeof(long);
+	bps = 3;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
 	word_size = sizeof(long);
+	bps = 4;
       }
       break;
     default:
@@ -2137,35 +2163,42 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     }
 
     /* fill the channel areas */
-    for(i = 0; i < buffer_size; i++){
-      switch(ags_format){
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
-	{
-	  res = (int) ((signed char *) buffer)[i * channels + chn];
+    for(count = 0; count < buffer_size; count++){
+      for(chn = 0; chn < channels; chn++){
+	switch(ags_format){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	  {
+	    res = (int) ((signed char *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	  {
+	    res = (int) ((signed short *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	  {
+	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	  {
+	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	  }
+	  break;
 	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  res = (int) ((signed short *) buffer)[i * channels + chn];
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_24_BIT:
-	{
-	  res = (int) ((signed long *) buffer)[i * channels + chn];
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_32_BIT:
-	{
-	  res = (int) ((signed long *) buffer)[i * channels + chn];
-	}
-	break;
+	
+	/* Generate data in native endian format */
+	if (is_bigendian()) {
+	  for (i = 0; i < bps; i++)
+	    *(ring_buffer + chn * bps + word_size - 1 - i) = (res >> i * 8) & 0xff;
+	} else {
+	  for (i = 0; i < bps; i++)
+	    *(ring_buffer + chn * bps + i) = (res >>  i * 8) & 0xff;
+	}	
       }
 
-      for(chn = 0; chn < channels; chn++){
-	for(j = 0; j < word_size; j++){
-	  ring_buffer[(channels * i + chn * word_size) + word_size - j] = res >> (8 * j);
-	}
-      }
+      ring_buffer += channels * bps;
     }
   }
   
@@ -2885,9 +2918,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	  break;
 	}
 
-	if(to_unsigned)
+	if(to_unsigned){
 	  res ^= 1U << (format_bits - 1);
-
+	}
+	
 	/* Generate data in native endian format */
 	if (big_endian) {
 	  for (i = 0; i < bps; i++)
@@ -2898,7 +2932,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 	}	
       }
 
-      ring_buffer += channels * phys_bps;
+      ring_buffer += channels * bps;
     }
   }
 #endif

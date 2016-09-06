@@ -353,7 +353,7 @@ ags_line_class_init(AgsLineClass *line)
 		 G_STRUCT_OFFSET(AgsLineClass, find_port),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_POINTER__VOID,
-		 G_TYPE_NONE, 0);
+		 G_TYPE_POINTER, 0);
 }
 
 void

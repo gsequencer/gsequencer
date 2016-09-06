@@ -9,7 +9,7 @@ AC_PREREQ([2.69])
 AC_INIT([gsequencer],[0.7.63],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([ags/config.h])
 AC_CONFIG_MACRO_DIR(m4)
 
 # options
@@ -106,11 +106,10 @@ PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
-AC_CHECK_FUNC([g_strv_length],
-	      [AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available])])
-
-AC_CHECK_FUNC([g_strv_contains],
-	      [AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available])])
+AC_CHECK_LIB(glib-2.0, g_strv_length,
+	     AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available]))
+AC_CHECK_LIB(glib-2.0, g_strv_contains,
+	     AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available]))
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GIO_CFLAGS)
@@ -169,16 +168,16 @@ GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
 AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
-# AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
+AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
+docs/reference/libags/Makefile
+docs/reference/libags_audio/Makefile
+docs/reference/libags_gui/Makefile
+docs/reference/libgsequencer/Makefile
 libags.pc
 libags_audio.pc
 libags_gui.pc])
-# docs/reference/libags/Makefile
-# docs/reference/libags_audio/Makefile
-# docs/reference/libags_gui/Makefile
-# docs/reference/libgsequencer/Makefile
 # libgsequencer.pc
 
 AC_OUTPUT
