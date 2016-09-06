@@ -947,7 +947,7 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
       padded_buffer_size = count;
     }
     
-    if(AGS_LV2_EVENT_BUFFER(event_buffer)->size + padded_buffer_size >= buffer_size){
+    if(AGS_LV2_EVENT_BUFFER(event_buffer)->size + padded_buffer_size >= buffer_size){      
       return(FALSE);
     }
     
@@ -1052,7 +1052,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   LV2_Atom_Sequence *aseq;
   LV2_Atom_Event *aev;
   
-  char midi_buffer[8];
+  unsigned char midi_buffer[8];
 
   guint count, size;
   guint padded_size;
@@ -1081,7 +1081,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
       return(FALSE);
     }
   
-    /* decode midi sequencer event */
+    /* decode midi sequencer event */    
     if((count = ags_midi_buffer_util_decode(midi_buffer,
 					    &(events[i]))) <= 8){
       aev->time.frames = 0;
