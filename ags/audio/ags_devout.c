@@ -520,14 +520,15 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "backend\0");
-
+ 
 #ifdef AGS_WITH_ALSA
   use_alsa = TRUE;
 #else
   use_alsa = FALSE;
 #endif
   
-  if(!g_ascii_strncasecmp(str,
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
 			  "oss\0",
 			  4)){
     use_alsa = FALSE;
@@ -653,8 +654,13 @@ ags_devout_init(AgsDevout *devout)
 #else
   use_alsa = FALSE;
 #endif
-  
-  if(!g_ascii_strncasecmp(str,
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "backend\0");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
 			  "oss\0",
 			  4)){
     use_alsa = FALSE;
@@ -901,7 +907,7 @@ ags_devout_set_property(GObject *gobject,
 	}
 
 	if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-	  gchar device;
+	  gchar *device;
 
 	  devout->out.alsa.handle = NULL;
 	  device = ags_config_get_value(config,
@@ -909,12 +915,11 @@ ags_devout_set_property(GObject *gobject,
 					"alsa-handle\0");
 
 	  if(device != NULL){
-	    devout->out.alsa.device = device;
-	  }
-	  
-	  g_message("ALSA device %s\n", devout->out.alsa.device);
+	    devout->out.alsa.device = g_strdup(device);
+	    g_message("ALSA device %s\n", devout->out.alsa.device);
+	  }	  
 	}else{
-	  gchar device;
+	  gchar *device;
 	  
 	  devout->out.oss.device_fd = -1;
 	  device = ags_config_get_value(config,
@@ -922,10 +927,10 @@ ags_devout_set_property(GObject *gobject,
 					"oss-handle\0");
 
 	  if(device != NULL){
-	    devout->out.oss.device = device;
-	  }
+	    devout->out.oss.device = g_strdup(device);
 	   
-	  g_message("OSS device %s\n", devout->out.oss.device);
+	    g_message("OSS device %s\n", devout->out.oss.device);
+	  }
 	}
 	//  devout->out.oss.device = NULL;
 
@@ -1641,6 +1646,11 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 		    guint *buffer_size_min, guint *buffer_size_max,
 		    GError **error)
 {
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+  
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 #ifdef AGS_WITH_ALSA
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *params;
@@ -1709,11 +1719,83 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 
   snd_pcm_close(handle);
 #endif
+  }else{
+    oss_audioinfo ainfo;
+
+    gchar *str;
+    
+    int mixerfd;
+    int acc;
+    unsigned int cmd;
+    
+    mixerfd = open(card_id, O_RDWR, 0);
+
+    if(mixerfd == -1){
+      int e = errno;
+      
+      str = strerror(e);
+      g_message("unable to open pcm device: %s\n\0", str);
+
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_DEVOUT_ERROR,
+		    AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		    "unable to open pcm device: %s\n\0",
+		    str);
+      }
+    
+      return;      
+    }
+    
+    memset(&ainfo, 0, sizeof (ainfo));
+    
+    cmd = SNDCTL_AUDIOINFO;
+
+    if(card_id != NULL &&
+       !g_ascii_strncasecmp(card_id,
+			    "/dev/dsp\0",
+			    8)){
+      if(strlen(card_id) >  8){
+	sscanf(card_id,
+	       "/dev/dsp%d\0",
+	       &(ainfo.dev));
+      }else{
+	ainfo.dev = 0;
+      }
+    }else{
+      return;
+    }
+    
+    if(ioctl(mixerfd, cmd, &ainfo) == -1){
+      int e = errno;
+
+      str = strerror(e);
+      g_message("unable to retrieve audio info: %s\n\0", str);
+
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_DEVOUT_ERROR,
+		    AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		    "unable to retrieve audio info: %s\n\0",
+		    str);
+      }
+    
+      return;
+    }
+  
+    *channels_min = ainfo.min_channels;
+    *channels_max = ainfo.max_channels;
+    *rate_min = ainfo.min_rate;
+    *rate_max = ainfo.max_rate;
+    *buffer_size_min = 64;
+    *buffer_size_max = 8192;
+  }
 }
 
 GList*
 ags_devout_get_poll_fd(AgsSoundcard *soundcard)
 {
+  AgsDevout *devout;
   AgsPollFd *poll_fd;
 
   GList *list;
@@ -1723,22 +1805,38 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
   gint count;
   guint i;
 
-  if(AGS_DEVOUT(soundcard)->out.alsa.handle == NULL){
-    return(NULL);
+  devout = AGS_DEVOUT(soundcard);
+  
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    if(devout->out.alsa.handle == NULL){
+      return(NULL);
+    }
+  }else{
+    if(devout->out.oss.device_fd == -1){
+      return(NULL);
+    }
   }
   
-  if(AGS_DEVOUT(soundcard)->poll_fd == NULL){
+  if(devout->poll_fd == NULL){
+    count = 0;
+    
+    if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 #ifdef AGS_WITH_ALSA
     /* get poll fds of ALSA */
-    count = snd_pcm_poll_descriptors_count(AGS_DEVOUT(soundcard)->out.alsa.handle);
+    count = snd_pcm_poll_descriptors_count(devout->out.alsa.handle);
 
     if(count > 0){
       fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
-      snd_pcm_poll_descriptors(AGS_DEVOUT(soundcard)->out.alsa.handle, fds, count);
+      snd_pcm_poll_descriptors(devout->out.alsa.handle, fds, count);
     }
-#else
-    count = 0;
 #endif
+    }else{
+      if(devout->out.oss.device_fd != -1){
+	count = 1;
+	fds = (struct pollfd *) malloc(sizeof(struct pollfd));
+	fds->fd = devout->out.oss.device_fd;
+      }
+    }
     
     /* map fds */
     list = NULL;
@@ -1752,9 +1850,9 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
 			    poll_fd);
     }
 
-    AGS_DEVOUT(soundcard)->poll_fd = list;
+    devout->poll_fd = list;
   }else{
-    list = AGS_DEVOUT(soundcard)->poll_fd;
+    list = devout->poll_fd;
   }
   
   return(list);
@@ -1772,15 +1870,26 @@ ags_devout_is_available(AgsSoundcard *soundcard)
 
   while(list !=	NULL){
     signed short revents;
-    
-#ifdef AGS_WITH_ALSA
-    snd_pcm_poll_descriptors_revents(devout->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
-#endif
-    
-    if((POLLOUT & revents) != 0){
-      return(TRUE);
-    }
 
+    if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+#ifdef AGS_WITH_ALSA
+      snd_pcm_poll_descriptors_revents(devout->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
+#endif
+      
+      if((POLLOUT & revents) != 0){
+	return(TRUE);
+      }
+    }else{
+      fd_set writefds;
+
+      FD_ZERO(&writefds);
+      FD_SET(AGS_POLL_FD(list->data)->poll_fd->fd, &writefds);
+      
+      if(FD_ISSET(AGS_POLL_FD(list->data)->poll_fd->fd, &writefds)){
+	return(TRUE);
+      }
+    }
+    
     list = list->next;
   }
   

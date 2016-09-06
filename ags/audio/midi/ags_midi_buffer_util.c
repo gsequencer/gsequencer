@@ -19,6 +19,9 @@
 
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
+#include <alsa/seq_midi_event.h>
+#include <alsa/seq_event.h>
+
 /**
  * SECTION:ags_midi_buffer_util
  * @short_description: MIDI buffer util
@@ -42,20 +45,27 @@
 guint
 ags_midi_buffer_util_get_varlength_size(glong varlength)
 {
+  guint current;
   unsigned char c;
   guint i;
   glong mask;
   
   /* retrieve new size */
-  i = 0;
-  mask = 0xff;
+  mask = 0x7f;
+  current = 8 * 4 - 4;
+  i = current;
 
-  do{
-    c = ((mask << (i * 8)) & varlength) >> (i * 8);
-    i++;
-  }while(0x80 & c);
+  for(; current >= 8; ){
+    if(((mask << (i - 7)) & varlength) != 0){
+      break;
+    }
 
-  return(i);
+    i -= 7;
+    current -= 8;
+  }
+
+  
+  return(floor(current / 8.0) + 1);
 }
 
 /**
@@ -78,8 +88,15 @@ ags_midi_buffer_util_put_varlength(unsigned char *buffer,
   mask = 0xff;
   
   /* write to internal buffer */
-  for(j = 0; j < i; i++){
-    buffer[j] = ((mask << (j * 8)) & varlength) >> (j * 8);
+  mask = 0x7f;
+  j = 8 * i;
+  i = 8 * i - 1;
+
+  for(; i > 0; ){
+    buffer[j] = ((mask << (i - 7)) & varlength) >> (i * 7);
+    
+    i -= 7;
+    j -= 8;
   }
 }
 
@@ -148,14 +165,13 @@ ags_midi_buffer_util_put_key_on(unsigned char *buffer,
 				     delta_time);
 
   /* key-on channel message */
-  buffer[delta_time_size + 1] = 0x90;
-  buffer[delta_time_size + 1] |= (0xf & channel);
+  buffer[delta_time_size] = 0x90 | (channel & 0xf);
 
   /* key */
-  buffer[delta_time_size + 2] = 0x7f & key;
+  buffer[delta_time_size + 1] = key & 0x7f;
 
   /* velocity */
-  buffer[delta_time_size + 3] = 0x7f & velocity;
+  buffer[delta_time_size + 2] = velocity & 0x7f;
 }
 
 /**
@@ -235,13 +251,13 @@ ags_midi_buffer_util_put_key_off(unsigned char *buffer,
 
   /* key-off channel message */
   buffer[delta_time_size] = 0x80;
-  buffer[delta_time_size] |= (0xf & channel);
+  buffer[delta_time_size] |= (channel & 0xf);
 
   /* key */
-  buffer[delta_time_size + 1] = 0x7f & key;
+  buffer[delta_time_size + 1] = key & 0x7f;
 
   /* velocity */
-  buffer[delta_time_size + 2] = 0x7f & velocity;
+  buffer[delta_time_size + 2] = velocity & 0x7f;
 }
 
 /**
@@ -321,13 +337,13 @@ ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
 
   /* key-pressure channel message */
   buffer[delta_time_size + 1] = 0xa0;
-  buffer[delta_time_size + 1] |= (0xf & channel);
+  buffer[delta_time_size + 1] |= (channel & 0xf);
 
   /* key */
-  buffer[delta_time_size + 2] = 0x7f & key;
+  buffer[delta_time_size + 2] = key & 0x7f;
 
   /* velocity */
-  buffer[delta_time_size + 3] = 0x7f & pressure;
+  buffer[delta_time_size + 3] = pressure & 0x7f;
 }
 
 /**
@@ -380,13 +396,63 @@ ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
   return(delta_time_size + 3);
 }
 
-
+/**
+ * ags_midi_buffer_util_decode:
+ * @buffer: the midi buffer
+ * @event: the ALSA sequencer event
+ *
+ * Decode @event to @buffer
+ *
+ * Returns: the bytes written
+ * 
+ * Since: 0.7.64
+ */
 guint
 ags_midi_buffer_util_decode(unsigned char *buffer,
 			    snd_seq_event_t *event)
 {
-  //TODO:JK: implement me
+  guint count;
 
-  return(0);
+  count = 0;
+  
+  switch(event->type){
+  case SND_SEQ_EVENT_NOTEON:
+    {    
+      unsigned char tmp[8];
+      
+      ags_midi_buffer_util_put_key_on(tmp,
+				      0,
+				      event->data.note.channel,
+				      event->data.note.note,
+				      event->data.note.velocity);
+
+      count = ags_midi_buffer_util_get_varlength_size(0);      
+      memcpy(buffer, tmp + count, 3 * sizeof(unsigned char));
+      
+      count = 3;
+    }
+    break;
+  case SND_SEQ_EVENT_NOTEOFF:
+    {
+      unsigned char tmp[8];
+
+      ags_midi_buffer_util_put_key_off(tmp,
+				       0,
+				       event->data.note.channel,
+				       event->data.note.note,
+				       event->data.note.velocity);
+
+      count = ags_midi_buffer_util_get_varlength_size(0);
+      memcpy(buffer, tmp + count, 3 * sizeof(unsigned char));
+      
+      count = 3;      
+    }
+    break;
+  default:
+    g_warning("ags_midi_buffer_util_decode() - unsupported MIDI event\0");
+    break;
+  }
+  
+  return(count);
 }
 

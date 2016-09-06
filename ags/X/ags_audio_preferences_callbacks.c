@@ -39,6 +39,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/config.h>
+
 int
 ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
 {
@@ -71,8 +73,11 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+  AgsConfig *config;
   
   gchar *str;
+
+  gboolean use_alsa;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
@@ -103,11 +108,30 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  /*  */  
-  str = gtk_combo_box_text_get_active_text(audio_preferences->card);
-  str = g_strndup(str,
-		  index(str,
-			',') - str);
+  /*  */    
+#ifdef AGS_WITH_ALSA
+  use_alsa = TRUE;
+#else
+  use_alsa = FALSE;
+#endif
+
+  config = ags_config_get_instance();
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "backend\0");
+
+  if(!g_ascii_strncasecmp(str,
+			  "oss\0",
+			  4)){
+    use_alsa = FALSE;
+  }
+
+  if(use_alsa){
+    str = gtk_combo_box_text_get_active_text(audio_preferences->card);
+    str = g_strndup(str,
+		    index(str,
+			  ',') - str);
+  }
     
   /* reset dialog */
   error = NULL;

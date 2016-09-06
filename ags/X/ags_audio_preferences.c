@@ -34,6 +34,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/config.h>
+
 void ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preferences);
 void ags_audio_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -585,6 +587,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 
   char *device, *str, *tmp, *selected_device;
 
+  gboolean use_alsa;
   guint nth;
   gboolean found_card;
   int card_num;
@@ -609,12 +612,39 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   /* refresh */
   card_id = NULL;
   card_name = NULL;
+
+  config = ags_config_get_instance();
   
-  ags_soundcard_list_cards(soundcard,
-			   &card_id_start, &card_name_start);
+#ifdef AGS_WITH_ALSA
+  use_alsa = TRUE;
+#else
+  use_alsa = FALSE;
+#endif
+  
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "alsa-handle\0");
+			     "backend\0");
+
+  if(!g_ascii_strncasecmp(str,
+			  "oss\0",
+			  4)){
+    use_alsa = FALSE;
+  }
+
+  /*  */
+  ags_soundcard_list_cards(soundcard,
+			   &card_id_start, &card_name_start);
+
+  if(use_alsa){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "alsa-handle\0");
+  }else{
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "oss-handle\0");
+  }
+  
 #ifdef AGS_DEBUG
   g_message("configured soundcard: %s\0", str);
 #endif
