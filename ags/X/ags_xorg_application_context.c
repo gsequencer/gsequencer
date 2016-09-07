@@ -42,6 +42,9 @@
 
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_port.h>
+#include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
@@ -291,17 +294,28 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_object_ref(G_OBJECT(soundcard));
   
   if(jack_enabled){
+    GObject *tmp;
+    
     //    jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
     //  jackctl_server_start(jack_server->jackctl);
     //    jackctl_server_open(jack_server->jackctl,
     //			jslist->data);
     
-    soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
-							   TRUE);
+    tmp = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+						     TRUE);
 
-    if(soundcard != NULL){
+    if(tmp != NULL){
+      jack_nframes_t samplerate;
+
+      soundcard = tmp;
       xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
 							   soundcard);
+      samplerate = jack_get_sample_rate(AGS_JACK_CLIENT(AGS_JACK_PORT(AGS_JACK_DEVOUT(soundcard)->jack_port)->jack_client)->client);
+      ags_config_set_value(config,
+			   AGS_CONFIG_SOUNDCARD,
+			   "samplerate\0",
+			   g_strdup_printf("%d\0", samplerate));
+      
       g_object_ref(G_OBJECT(soundcard));
     }
   }
@@ -315,10 +329,14 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_object_ref(G_OBJECT(sequencer));
 
   if(jack_enabled){
-    sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
-							 FALSE);
+    GObject *tmp;
+    
+    tmp = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
+						     FALSE);
 
-    if(sequencer != NULL){
+    if(tmp != NULL){
+      sequencer = tmp;
+      
       xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
 							   sequencer);
       g_object_ref(G_OBJECT(sequencer));

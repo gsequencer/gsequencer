@@ -44,6 +44,9 @@
 
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_port.h>
+#include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/audio/file/ags_audio_file_xml.h>
 
@@ -300,11 +303,20 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 						     TRUE);
 
     if(tmp != NULL){
+      jack_nframes_t samplerate;
+
       soundcard = tmp;
       ags_soundcard_set_application_context(AGS_SOUNDCARD(soundcard),
 					    audio_application_context);
       audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
 							    soundcard);
+
+      samplerate = jack_get_sample_rate(AGS_JACK_CLIENT(AGS_JACK_PORT(AGS_JACK_DEVOUT(soundcard)->jack_port)->jack_client)->client);
+      ags_config_set_value(config,
+			   AGS_CONFIG_SOUNDCARD,
+			   "samplerate\0",
+			   g_strdup_printf("%d\0", samplerate));
+      
       g_object_ref(G_OBJECT(soundcard));
     }
   }
