@@ -120,6 +120,12 @@ guint ags_audio_buffer_util_format_from_soundcard(guint soundcard_format);
 guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
 					  guint source_format);
 
+/* clear */
+void ags_audio_buffer_util_clear_float(float *buffer, guint channels,
+				       guint count);
+void ags_audio_buffer_util_clear_double(double *buffer, guint channels,
+					guint count);
+
 /* morph */
 signed char* ags_audio_buffer_util_morph_s8(signed char *buffer, guint channels,
 					    guint buffer_length,
