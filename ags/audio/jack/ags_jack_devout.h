@@ -63,6 +63,11 @@ typedef enum
   AGS_JACK_DEVOUT_PORTAUDIO                      = 1 << 17,
 }AgsJackDevoutFlags;
 
+typedef enum{
+  AGS_JACK_DEVOUT_CALLBACK_WAIT                  = 1,
+  AGS_JACK_DEVOUT_CALLBACK_DONE                  = 1 <<  1,
+}AgsJackDevoutSyncFlags;
+
 #define AGS_JACK_DEVOUT_ERROR (ags_jack_devout_error_quark())
 
 typedef enum{
@@ -74,7 +79,8 @@ struct _AgsJackDevout
   GObject object;
 
   guint flags;
-
+  volatile guint sync_flags;
+  
   guint dsp_channels;
   guint pcm_channels;
   guint format;
@@ -103,6 +109,9 @@ struct _AgsJackDevout
 
   gchar *card_uri;
   GObject *jack_port;
+
+  pthread_mutex_t *callback_mutex;
+  pthread_cond_t *callback_cond;
   
   GObject *application_context;
   pthread_mutex_t *application_mutex;

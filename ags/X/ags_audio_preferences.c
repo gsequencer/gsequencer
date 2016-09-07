@@ -790,12 +790,24 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			     AGS_CONFIG_SOUNDCARD,
 			     "backend\0");
 
-  if(!g_ascii_strncasecmp(str,
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
 			  "oss\0",
 			  4)){
     use_alsa = FALSE;
   }
 
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "jack\0");
+
+  if(!g_ascii_strncasecmp(str,
+			  "enabled\0",
+			  8)){
+    gtk_toggle_button_set_active(audio_preferences->enable_jack,
+				 TRUE);
+  }
+  
   /*  */
   ags_soundcard_list_cards(soundcard,
 			   &card_id_start, &card_name_start);

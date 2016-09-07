@@ -123,6 +123,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   
   gchar *str;
 
+  gboolean use_jack;
   gboolean use_alsa;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
@@ -154,7 +155,9 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  /*  */    
+  /*  */
+  use_jack = TRUE;
+  
 #ifdef AGS_WITH_ALSA
   use_alsa = TRUE;
 #else
@@ -162,11 +165,23 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 #endif
 
   config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "jack\0");
+
+  if(!g_ascii_strncasecmp(str,
+			  "disabled\0",
+			  9)){
+    use_jack = FALSE;
+  }
+
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "backend\0");
 
-  if(!g_ascii_strncasecmp(str,
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
 			  "oss\0",
 			  4)){
     use_alsa = FALSE;
@@ -174,7 +189,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 
   str = gtk_combo_box_text_get_active_text(audio_preferences->card);
   
-  if(use_alsa){
+  if(use_alsa && !use_jack){
     str = g_strndup(str,
 		    index(str,
 			  ',') - str);

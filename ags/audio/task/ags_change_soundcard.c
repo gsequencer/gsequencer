@@ -330,6 +330,8 @@ ags_change_soundcard_new(AgsApplicationContext *application_context,
   change_soundcard = (AgsChangeSoundcard *) g_object_new(AGS_TYPE_CHANGE_SOUNDCARD,
 							 NULL);
 
+  change_soundcard->application_context = application_context;
+  
   change_soundcard->use_alsa = use_alsa;
   change_soundcard->use_oss = use_oss;
   change_soundcard->use_jack = use_jack;
