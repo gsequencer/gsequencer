@@ -330,6 +330,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
       g_object_set(AGS_JACK_DEVOUT(jack_port->device),
 		   "jack-port\0", jack_port,
 		   NULL);
+
+      g_message("Advanced Gtk+ Sequencer registered JACK port\0");
     }else{
       g_warning("ags_jack_port.c: audio input not supported\0");
     }

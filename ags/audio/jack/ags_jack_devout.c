@@ -1277,7 +1277,29 @@ ags_jack_devout_pcm_info(AgsSoundcard *soundcard,
 			 guint *buffer_size_min, guint *buffer_size_max,
 			 GError **error)
 {
-  //TODO:JK: implement me
+  if(channels_min != NULL){
+    *channels_min = 1;
+  }
+
+  if(channels_max != NULL){
+    *channels_max = 1024;
+  }
+
+  if(rate_min != NULL){
+    *rate_min = 8000;
+  }
+
+  if(rate_max != NULL){
+    *rate_max = 192000;
+  }
+
+  if(buffer_size_min != NULL){
+    *buffer_size_min = 64;
+  }
+
+  if(buffer_size_max != NULL){
+    *buffer_size_max = 8192;
+  }
 }
 
 gboolean
@@ -1481,8 +1503,8 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     return;
   }
   
-  //  jack_cycle_signal(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
-  //		    0);
+  jack_cycle_signal(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
+  		    0);
 
   pthread_mutex_unlock(mutex);
 }
@@ -1909,7 +1931,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
   jack_devout = AGS_JACK_DEVOUT(ptr);
   client = AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client;
   
-  //  jack_cycle_wait(client);
+  jack_cycle_wait(client);
 
   /*  */
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(jack_devout));

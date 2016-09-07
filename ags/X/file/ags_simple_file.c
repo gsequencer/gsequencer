@@ -1153,12 +1153,15 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	gchar *str;
 
 	gchar *alsa_device;
-	
+
+	gboolean use_alsa, use_jack;
 	guint dsp_channels;
 	guint samplerate;
 	guint buffer_size;
 	guint format;
 
+	use_jack = TRUE;
+	
 	config = ags_config_get_instance();
 	ags_simple_file_read_config(simple_file,
 				    child,
