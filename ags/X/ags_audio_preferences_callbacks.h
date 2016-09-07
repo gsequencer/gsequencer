@@ -22,9 +22,17 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/thread/ags_task.h>
+
 #include <ags/X/ags_audio_preferences.h>
 
+void ags_audio_preferences_launch_change_soundcard_callback(AgsTask *task,
+							    AgsAudioPreferences *audio_preferences);
+
 int ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences);
+
+void ags_audio_preferences_backend_changed_callback(GtkComboBox *combo,
+						    AgsAudioPreferences *audio_preferences);
 
 void ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 						 AgsAudioPreferences *audio_preferences);

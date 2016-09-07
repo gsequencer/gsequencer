@@ -157,8 +157,20 @@ ags_change_soundcard_launch(AgsTask *task)
 {
   AgsChangeSoundcard *change_soundcard;
 
-  change_soundcard = AGS_CHANGE_SOUNDCARD(task);
+  GObject *soundcard, *old_soundcard;
 
+  GList *list, *audio;
+  
+  change_soundcard = AGS_CHANGE_SOUNDCARD(task);
+  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context));
+
+  if(list != NULL){
+    old_soundcard = list->data;
+  }else{
+    old_soundcard = NULL;
+  }
+
+  
   if(change_soundcard->use_alsa){
     ags_change_soundcard_alsa(change_soundcard);
   }
@@ -169,6 +181,55 @@ ags_change_soundcard_launch(AgsTask *task)
 
   if(change_soundcard->use_jack){
     ags_change_soundcard_jack(change_soundcard);
+
+    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context));
+
+    if(list != NULL){
+      soundcard = list->data;
+    }
+  }else{
+    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context));
+    soundcard = list->data;
+
+    /* find jack */
+    while(list != NULL){
+      if(AGS_IS_JACK_DEVOUT(list->data)){
+	soundcard = list->data;
+
+	break;
+      }
+      
+      list = list->next;
+    }
+  }
+
+  /* verifiy first */
+  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context),
+				   g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context)),
+						 soundcard));
+
+  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context),
+				   g_list_prepend(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context)),
+						  soundcard));
+  
+  /* reset audio */
+  if(old_soundcard != NULL &&
+     old_soundcard != soundcard){
+    audio = ags_soundcard_get_audio(AGS_SOUNDCARD(old_soundcard));
+    
+    ags_soundcard_set_audio(AGS_SOUNDCARD(old_soundcard),
+			    NULL);
+
+    ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
+			    audio);
+
+    while(audio != NULL){
+      g_object_set(audio->data,
+		   "soundcard\0", soundcard,
+		   NULL);
+
+      audio = audio->next;
+    }
   }
 }
 
