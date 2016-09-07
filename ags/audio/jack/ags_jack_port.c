@@ -326,10 +326,27 @@ ags_jack_port_register(AgsJackPort *jack_port,
 					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
 
     if(is_output){
+      const char **ports;
+      
       jack_port->device = ags_jack_devout_new(application_context);
       g_object_set(AGS_JACK_DEVOUT(jack_port->device),
 		   "jack-port\0", jack_port,
 		   NULL);
+
+      jack_set_buffer_size(AGS_JACK_CLIENT(jack_port->jack_client)->client,
+			   AGS_JACK_DEVOUT(jack_port->device)->pcm_channels * AGS_JACK_DEVOUT(jack_port->device)->buffer_size);
+      
+      /* port setup */
+      jack_set_process_callback(AGS_JACK_CLIENT(jack_port->jack_client)->client,
+				ags_jack_devout_process_callback,
+				jack_port->device);
+
+      jack_activate(AGS_JACK_CLIENT(jack_port->jack_client)->client);
+
+      ports = jack_get_ports(AGS_JACK_CLIENT(jack_port->jack_client)->client,
+			     NULL,
+			     NULL,
+			     JackPortIsPhysical|JackPortIsOutput);
 
       g_message("Advanced Gtk+ Sequencer registered JACK port\0");
     }else{

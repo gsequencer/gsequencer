@@ -1322,11 +1322,16 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	g_object_unref(change_soundcard);
 
 	/* reset default card */
-	soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
+	if(found_jack){
+	  soundcard = jack_soundcard;
+	}else{
+	  soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
+	}
+	
 	g_object_set(AGS_XORG_APPLICATION_CONTEXT(application_context)->window,
 		     "soundcard\0", soundcard,
 		     NULL);
-
+	
 	/* ensure jack first card */
 	if(!add_jack &&
 	   jack_soundcard != NULL){

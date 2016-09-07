@@ -64,8 +64,9 @@ typedef enum
 }AgsJackDevoutFlags;
 
 typedef enum{
-  AGS_JACK_DEVOUT_CALLBACK_WAIT                  = 1,
-  AGS_JACK_DEVOUT_CALLBACK_DONE                  = 1 <<  1,
+  AGS_JACK_DEVOUT_PASS_THROUGH                   = 1,
+  AGS_JACK_DEVOUT_CALLBACK_WAIT                  = 1 <<  1,
+  AGS_JACK_DEVOUT_CALLBACK_DONE                  = 1 <<  2,
 }AgsJackDevoutSyncFlags;
 
 #define AGS_JACK_DEVOUT_ERROR (ags_jack_devout_error_quark())
@@ -127,6 +128,8 @@ struct _AgsJackDevoutClass
 GType ags_jack_devout_get_type();
 
 GQuark ags_jack_devout_error_quark();
+
+int ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr);
 
 void ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout);
 void ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout);
