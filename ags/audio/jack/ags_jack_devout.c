@@ -19,15 +19,17 @@
 
 #include <ags/audio/jack/ags_jack_devout.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
+#include <ags/lib/ags_time.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
-#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_client.h>
@@ -101,6 +103,8 @@ void ags_jack_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 gboolean ags_jack_devout_is_starting(AgsSoundcard *soundcard);
 gboolean ags_jack_devout_is_playing(AgsSoundcard *soundcard);
 
+gchar* ags_jack_devout_get_uptime(AgsSoundcard *soundcard);
+
 void ags_jack_devout_port_init(AgsSoundcard *soundcard,
 			       GError **error);
 void ags_jack_devout_port_play(AgsSoundcard *soundcard,
@@ -130,6 +134,15 @@ guint ags_jack_devout_get_delay_counter(AgsSoundcard *soundcard);
 void ags_jack_devout_set_note_offset(AgsSoundcard *soundcard,
 				     guint note_offset);
 guint ags_jack_devout_get_note_offset(AgsSoundcard *soundcard);
+
+void ags_jack_devout_set_loop(AgsSoundcard *soundcard,
+			      guint loop_left, guint loop_right,
+			      gboolean do_loop);
+guint ags_jack_devout_get_loop(AgsSoundcard *soundcard,
+			       guint *loop_left, guint *loop_right,
+			       gboolean *do_loop);
+
+guint ags_jack_devout_get_loop_offset(AgsSoundcard *soundcard);
 
 void ags_jack_devout_set_audio(AgsSoundcard *soundcard,
 			       GList *audio);
@@ -308,9 +321,6 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
 				  PROP_PCM_CHANNELS,
 				  param_spec);
 
-  /*
-   * TODO:JK: add support for other quality than 16 bit
-   */
   /**
    * AgsJackDevout:format:
    *
@@ -488,6 +498,8 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->is_playing = ags_jack_devout_is_playing;
   soundcard->is_recording = NULL;
 
+  soundcard->get_uptime = ags_jack_devout_get_uptime;
+  
   soundcard->play_init = ags_jack_devout_port_init;
   soundcard->play = ags_jack_devout_port_play;
 
@@ -515,6 +527,11 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->set_note_offset = ags_jack_devout_set_note_offset;
   soundcard->get_note_offset = ags_jack_devout_get_note_offset;
+
+  soundcard->set_loop = ags_jack_devout_set_loop;
+  soundcard->get_loop = ags_jack_devout_get_loop;
+
+  soundcard->get_loop_offset = ags_jack_devout_get_loop_offset;
 
   soundcard->set_audio = ags_jack_devout_set_audio;
   soundcard->get_audio = ags_jack_devout_get_audio;
@@ -567,10 +584,10 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   /* buffer */
   jack_devout->buffer = (void **) malloc(4 * sizeof(void*));
 
-  jack_devout->buffer[0] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * sizeof(signed short));
-  jack_devout->buffer[1] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * sizeof(signed short));
-  jack_devout->buffer[2] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * sizeof(signed short));
-  jack_devout->buffer[3] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * sizeof(signed short));
+  jack_devout->buffer[0] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * sizeof(signed short));
+  jack_devout->buffer[1] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * sizeof(signed short));
+  jack_devout->buffer[2] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * sizeof(signed short));
+  jack_devout->buffer[3] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * sizeof(signed short));
   
   ags_jack_devout_realloc_buffer(jack_devout);
   
@@ -590,10 +607,18 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   ags_jack_devout_adjust_delay_and_attack(jack_devout);
   
   /* counters */
-  jack_devout->note_offset = 0;
   jack_devout->tact_counter = 0.0;
   jack_devout->delay_counter = 0;
   jack_devout->tic_counter = 0;
+
+  jack_devout->note_offset = 0;
+
+  jack_devout->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
+  jack_devout->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
+
+  jack_devout->do_loop = FALSE;
+
+  jack_devout->loop_offset = 0;
 
   /* parent */
   jack_devout->application_context = NULL;
@@ -612,8 +637,6 @@ ags_jack_devout_set_property(GObject *gobject,
   AgsJackDevout *jack_devout;
 
   jack_devout = AGS_JACK_DEVOUT(gobject);
-
-  //TODO:JK: implement set functionality
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -794,6 +817,7 @@ ags_jack_devout_set_property(GObject *gobject,
       jack_devout->buffer_size = buffer_size;
 
       ags_jack_devout_realloc_buffer(jack_devout);
+      ags_jack_devout_adjust_delay_and_attack(jack_devout);
     }
     break;
   case PROP_SAMPLERATE:
@@ -809,6 +833,7 @@ ags_jack_devout_set_property(GObject *gobject,
       jack_devout->samplerate = samplerate;
 
       ags_jack_devout_realloc_buffer(jack_devout);
+      ags_devout_adjust_delay_and_attack(jack_devout);
     }
     break;
   case PROP_BUFFER:
@@ -1133,7 +1158,7 @@ ags_jack_devout_set_presets(AgsSoundcard *soundcard,
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   g_object_set(jack_devout,
-	       "dsp-channels\0", channels,
+	       "pcm-channels\0", channels,
 	       "samplerate\0", rate,
 	       "buffer-size\0", buffer_size,
 	       "format\0", format,
@@ -1152,7 +1177,7 @@ ags_jack_devout_get_presets(AgsSoundcard *soundcard,
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
   if(channels != NULL){
-    *channels = jack_devout->dsp_channels;
+    *channels = jack_devout->pcm_channels;
   }
 
   if(rate != NULL){
@@ -1176,28 +1201,72 @@ ags_jack_devout_get_presets(AgsSoundcard *soundcard,
  *
  * List available soundcards.
  *
- * Since: 0.4
+ * Since: 0.7.0
  */
 void
 ags_jack_devout_list_cards(AgsSoundcard *soundcard,
 			   GList **card_id, GList **card_name)
 {
-  char *name;
-  gchar *str;
-  int card_num;
-  int device;
-  int error;
+  AgsJackDevout *jack_devout;
 
-  *card_id = NULL;
-  *card_name = NULL;
-  card_num = -1;
+  AgsApplicationContext *application_context;
+  
+  GList *list, *list_start;
 
-  while(FALSE){
-    //TODO:JK: implement me
+  pthread_mutex_t *application_mutex;
+  
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+  
+  application_context = jack_devout->application_context;
+  application_mutex = jack_devout->application_context;
+  
+  if(card_id != NULL){
+    *card_id = NULL;
   }
 
-  *card_id = g_list_reverse(*card_id);
-  *card_name = g_list_reverse(*card_name);
+  if(card_name != NULL){
+    *card_name = NULL;
+  }
+
+  pthread_mutex_lock(application_mutex);
+
+  list_start = 
+    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  while(list != NULL){
+    if(AGS_IS_JACK_DEVOUT(list->data)){
+      if(card_id != NULL){
+	*card_id = g_list_prepend(*card_id,
+				  g_strdup(AGS_JACK_DEVOUT(list->data)->card_uri));
+      }
+
+      if(card_name != NULL){
+	if(AGS_JACK_DEVOUT(list->data)->jack_port != NULL){
+	  *card_name = g_list_prepend(*card_name,
+				      g_strdup(AGS_JACK_PORT(AGS_JACK_DEVOUT(list->data)->jack_port)->name));
+	}else{
+	  *card_name = g_list_prepend(*card_name,
+				      g_strdup("(null)\0"));
+
+	  g_warning("ags_jack_devout_list_cards() - JACK port not connected (null)\0");
+	}
+      }      
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  if(card_id != NULL){
+    *card_id = g_list_reverse(*card_id);
+  }
+
+  if(card_name != NULL){
+    *card_name = g_list_reverse(*card_name);
+  }
 }
 
 void
@@ -1231,6 +1300,46 @@ ags_jack_devout_is_playing(AgsSoundcard *soundcard)
   return((((AGS_JACK_DEVOUT_PLAY & (jack_devout->flags)) != 0) ? TRUE: FALSE));
 }
 
+gchar*
+ags_jack_devout_get_uptime(AgsSoundcard *soundcard)
+{
+  gchar *uptime;
+
+  if(ags_soundcard_is_playing(soundcard)){
+    guint samplerate;
+    guint buffer_size;
+
+    guint note_offset;
+    gdouble bpm;
+    gdouble delay_factor;
+    
+    gdouble delay;
+
+    ags_soundcard_get_presets(soundcard,
+			      NULL,
+			      &samplerate,
+			      &buffer_size,
+			      NULL);
+    
+    note_offset = ags_soundcard_get_note_offset(soundcard);
+
+    bpm = ags_soundcard_get_bpm(soundcard);
+    delay_factor = ags_soundcard_get_delay_factor(soundcard);
+
+    /* calculate delays */
+    delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
+  
+    uptime = ags_time_get_uptime_from_offset(note_offset,
+					     bpm,
+					     delay,
+					     delay_factor);
+  }else{
+    uptime = g_strdup(AGS_TIME_ZERO);
+  }
+  
+  return(uptime);
+}
+  
 void
 ags_jack_devout_port_init(AgsSoundcard *soundcard,
 			  GError **error)
@@ -1303,13 +1412,13 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 
   jack_devout->note_offset = 0;
 
-  memset(jack_devout->buffer[0], 0, jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
-  memset(jack_devout->buffer[1], 0, jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
-  memset(jack_devout->buffer[2], 0, jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
-  memset(jack_devout->buffer[3], 0, jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+  memset(jack_devout->buffer[0], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+  memset(jack_devout->buffer[1], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+  memset(jack_devout->buffer[2], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+  memset(jack_devout->buffer[3], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
 
   jack_set_buffer_size(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
-		       jack_devout->dsp_channels * jack_devout->buffer_size);
+		       jack_devout->pcm_channels * jack_devout->buffer_size);
 
   /* port setup */
   jack_set_process_callback(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
@@ -1596,6 +1705,44 @@ ags_jack_devout_get_note_offset(AgsSoundcard *soundcard)
 }
 
 void
+ags_jack_devout_set_loop(AgsSoundcard *soundcard,
+			 guint loop_left, guint loop_right,
+			 gboolean do_loop)
+{
+  AGS_JACK_DEVOUT(soundcard)->loop_left = loop_left;
+  AGS_JACK_DEVOUT(soundcard)->loop_right = loop_right;
+  AGS_JACK_DEVOUT(soundcard)->do_loop = do_loop;
+
+  if(do_loop){
+    AGS_JACK_DEVOUT(soundcard)->loop_offset = AGS_JACK_DEVOUT(soundcard)->note_offset;
+  }
+}
+
+guint
+ags_jack_devout_get_loop(AgsSoundcard *soundcard,
+			 guint *loop_left, guint *loop_right,
+			 gboolean *do_loop)  
+{
+  if(loop_left != NULL){
+    *loop_left = AGS_JACK_DEVOUT(soundcard)->loop_left;
+  }
+
+  if(loop_right != NULL){
+    *loop_right = AGS_JACK_DEVOUT(soundcard)->loop_right;
+  }
+
+  if(do_loop != NULL){
+    *do_loop = AGS_JACK_DEVOUT(soundcard)->do_loop;
+  }
+}
+
+guint
+ags_jack_devout_get_loop_offset(AgsSoundcard *soundcard)  
+{
+  return(AGS_JACK_DEVOUT(soundcard)->loop_offset);
+}
+
+void
 ags_jack_devout_set_audio(AgsSoundcard *soundcard,
 			  GList *audio)
 {
@@ -1635,7 +1782,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
     return;
   }
   
-  delay = ((gdouble) jack_devout->samplerate / (gdouble) jack_devout->buffer_size) * (gdouble)(60.0 / jack_devout->bpm) * jack_devout->delay_factor;
+  delay = (60.0 * (((gdouble) jack_devout->samplerate / (gdouble) jack_devout->buffer_size) / (gdouble) jack_devout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) jack_devout->delay_factor)));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f\0", delay);
@@ -1717,28 +1864,28 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
     free(jack_devout->buffer[0]);
   }
   
-  jack_devout->buffer[0] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+  jack_devout->buffer[0] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   
   /* AGS_JACK_DEVOUT_BUFFER_1 */
   if(jack_devout->buffer[1] != NULL){
     free(jack_devout->buffer[1]);
   }
 
-  jack_devout->buffer[1] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+  jack_devout->buffer[1] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   
   /* AGS_JACK_DEVOUT_BUFFER_2 */
   if(jack_devout->buffer[2] != NULL){
     free(jack_devout->buffer[2]);
   }
 
-  jack_devout->buffer[2] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+  jack_devout->buffer[2] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   
   /* AGS_JACK_DEVOUT_BUFFER_3 */
   if(jack_devout->buffer[3] != NULL){
     free(jack_devout->buffer[3]);
   }
   
-  jack_devout->buffer[3] = (void *) malloc(jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+  jack_devout->buffer[3] = (void *) malloc(jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
 }
 
 int
@@ -1753,6 +1900,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
   jack_client_t *client;
   jack_default_audio_sample_t *out;
 
+  guint copy_mode;
   guint word_size;
   guint i, j;
   
@@ -1790,6 +1938,8 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
     j = 3;
   }
   
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						  ags_audio_buffer_util_format_from_soundcard(jack_devout->format));
 
   //FIXME:JK: buggy
   /* check buffer flag */
@@ -1797,67 +1947,56 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       word_size = sizeof(signed char);
-
-	
-      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
-	out[i] = ((signed char *) jack_devout->buffer[j])[i];
-      }
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       word_size = sizeof(signed short);
-
-      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
-	out[i] = ((signed short *) jack_devout->buffer[j])[i];
-      }
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       word_size = sizeof(signed long);
-
-      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
-	out[i] = ((signed long *) jack_devout->buffer[j])[i];
-      }
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       word_size = sizeof(signed long);
-
-      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
-	out[i] = ((signed long *) jack_devout->buffer[j])[i];
-      }
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      g_warning("ags_jack_devout_port_play(): unsupported word size 64 bit\0");
+      word_size = sizeof(signed long long);
     }
     break;
   default:
+    pthread_mutex_unlock(mutex);
+
     g_warning("ags_jack_devout_port_play(): unsupported word size\0");
     return;
   }
 
+  ags_audio_buffer_util_copy_buffer_to_buffer(out, jack_devout->pcm_channels, 0,
+					      jack_devout->buffer[j], jack_devout->pcm_channels, 0,
+					      jack_devout->buffer_size, copy_mode);
+  
   if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
-    memset(jack_devout->buffer[3], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+    memset(jack_devout->buffer[3], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
-    memset(jack_devout->buffer[0], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+    memset(jack_devout->buffer[0], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
-    memset(jack_devout->buffer[1], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+    memset(jack_devout->buffer[1], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
-    memset(jack_devout->buffer[2], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
+    memset(jack_devout->buffer[2], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   }
+
+  pthread_mutex_unlock(mutex);
   
   /* tic */
   ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
 
   /* reset - switch buffer flags */
   ags_jack_devout_switch_buffer_flag(jack_devout);
-
-  pthread_mutex_unlock(mutex);
 
   return(0);
 }
@@ -1870,7 +2009,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
  *
  * Returns: a new #AgsJackDevout
  *
- * Since: 0.3
+ * Since: 0.7.0
  */
 AgsJackDevout*
 ags_jack_devout_new(GObject *application_context)

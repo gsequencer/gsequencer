@@ -299,6 +299,7 @@ libags_c_sources = \
 	ags/lib/ags_function.c \
 	ags/lib/ags_parameter.c \
 	ags/lib/ags_string_util.c \
+	ags/lib/ags_time.c \
 	ags/lib/ags_turtle.c \
 	ags/lib/ags_turtle_manager.c
 

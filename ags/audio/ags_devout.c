@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/lib/ags_time.h>
+
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
@@ -30,11 +32,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_poll_fd.h>
 
-#include <ags/audio/ags_notation.h>
-
 #include <ags/audio/task/ags_switch_buffer_flag.h>
-
-#include <ags/config.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -163,7 +161,7 @@ guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
 
 void ags_devout_set_loop(AgsSoundcard *soundcard,
 			 guint loop_left, guint loop_right,
-			 gboolean loop);
+			 gboolean do_loop);
 guint ags_devout_get_loop(AgsSoundcard *soundcard,
 			  guint *loop_left, guint *loop_right,
 			  gboolean *do_loop);
@@ -802,8 +800,6 @@ ags_devout_set_property(GObject *gobject,
   AgsDevout *devout;
 
   devout = AGS_DEVOUT(gobject);
-
-  //TODO:JK: implement set functionality
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -1619,7 +1615,7 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
 
 	  if(card_name != NULL){
 	    *card_name = g_list_prepend(*card_name,
-					g_strdup_printf("%s\0", ai.name));
+					g_strdup(ai.name));
 	  }
 	}
 
@@ -1936,9 +1932,6 @@ ags_devout_get_uptime(AgsSoundcard *soundcard)
     gdouble delay_factor;
     
     gdouble delay;
-    gdouble delay_min, delay_sec, delay_msec;
-    gdouble tact_redux;
-    guint min, sec, msec;
 
     ags_soundcard_get_presets(soundcard,
 			      NULL,
@@ -1954,30 +1947,12 @@ ags_devout_get_uptime(AgsSoundcard *soundcard)
     /* calculate delays */
     delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
   
-    delay_sec = ((bpm / delay_factor) / 60.0);
-    delay_min = delay_sec * 60.0;
-    delay_msec = delay_sec / 1000.0;
-
-    /* translate to time string */
-    tact_redux = note_offset;
-
-    min = (guint) floor(tact_redux / delay_min);
-
-    if(min > 0){
-      tact_redux = tact_redux - (min * delay_min);
-    }
-
-    sec = (guint) floor(tact_redux / delay_sec);
-
-    if(sec > 0){
-      tact_redux = tact_redux - (sec * delay_sec);
-    }
-
-    msec = (guint) floor(tact_redux / delay_msec);
-
-    uptime = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
+    uptime = ags_time_get_uptime_from_offset(note_offset,
+					     bpm,
+					     delay,
+					     delay_factor);
   }else{
-    uptime = g_strdup("0000:00.000\0");
+    uptime = g_strdup(AGS_TIME_ZERO);
   }
   
   return(uptime);
