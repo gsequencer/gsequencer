@@ -36,10 +36,35 @@
 #include <ags/audio/task/ags_set_buffer_size.h>
 #include <ags/audio/task/ags_set_samplerate.h>
 
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 #include <ags/config.h>
+
+void
+ags_audio_preferences_launch_change_soundcard_callback(AgsTask *task,
+						       AgsAudioPreferences *audio_preferences)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsApplicationContext *application_context;
+
+  GObject *soundcard;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = preferences->window;
+
+  application_context = window->application_context;
+
+  /* reset default card */
+  soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
+  g_object_set(window,
+	       "soundcard\0", soundcard,
+	       NULL);
+}
 
 int
 ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
@@ -57,6 +82,27 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
   }
 
   return(0);
+}
+
+void
+ags_audio_preferences_backend_changed_callback(GtkComboBox *combo,
+					       AgsAudioPreferences *audio_preferences)
+{
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(combo);
+
+  if(str != NULL){
+    if(!g_ascii_strncasecmp(str,
+			    "alsa\0",
+			    5)){
+      ags_audio_preferences_load_alsa_card(audio_preferences);
+    }else if(!g_ascii_strncasecmp(str,
+				  "oss\0",
+				  4)){
+      ags_audio_preferences_load_oss_card(audio_preferences);
+    }
+  }
 }
 
 void

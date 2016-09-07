@@ -35,6 +35,8 @@ typedef struct _AgsAudioPreferencesClass AgsAudioPreferencesClass;
 struct _AgsAudioPreferences
 {
   GtkVBox vbox;
+
+  GtkComboBoxText *backend;
   
   GtkComboBoxText *card;
   GtkSpinButton *audio_channels;
@@ -54,6 +56,9 @@ struct _AgsAudioPreferencesClass
 };
 
 GType ags_audio_preferences_get_type(void);
+
+void ags_audio_preferences_load_alsa_card(AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_load_oss_card(AgsAudioPreferences *audio_preferences);
 
 AgsAudioPreferences* ags_audio_preferences_new();
 
