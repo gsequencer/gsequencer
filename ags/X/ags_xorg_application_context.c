@@ -315,6 +315,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 			   AGS_CONFIG_SOUNDCARD,
 			   "samplerate\0",
 			   g_strdup_printf("%d\0", samplerate));
+      g_object_set(soundcard,
+		   "samplerate\0", samplerate,
+		   NULL);
       
       g_object_ref(G_OBJECT(soundcard));
     }

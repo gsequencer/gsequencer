@@ -316,6 +316,9 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 			   AGS_CONFIG_SOUNDCARD,
 			   "samplerate\0",
 			   g_strdup_printf("%d\0", samplerate));
+      g_object_set(soundcard,
+		   "samplerate\0", samplerate,
+		   NULL);
       
       g_object_ref(G_OBJECT(soundcard));
     }
@@ -879,5 +882,3 @@ ags_audio_application_context_new()
 
   return(audio_application_context);
 }
-
-
