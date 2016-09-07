@@ -52,6 +52,7 @@
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_acceleration.h>
 
+#include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/audio/task/ags_change_soundcard.h>
@@ -1270,6 +1271,17 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	found_jack = FALSE;
 	
 	if(use_jack){
+	  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager == NULL){
+	    AgsJackServer *jack_server;
+	    
+	    jack_server = ags_jack_server_new(application_context,
+					      NULL);
+	    AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager = g_list_prepend(AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager,
+												    jack_server);
+	    g_object_ref(G_OBJECT(jack_server));
+	  }
+
+	  /* find jack devout */
 	  list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
 	  
 	  while(list != NULL){

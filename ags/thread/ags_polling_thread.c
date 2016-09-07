@@ -225,7 +225,8 @@ ags_polling_thread_run(AgsThread *thread)
 	timeout.tv_nsec = (NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE + AGS_POLLING_THREAD_UNDERLOAD);
       }
     }
-  }  
+  }
+  
   pthread_mutex_lock(polling_thread->fd_mutex);
 
   if((AGS_POLLING_THREAD_OMIT & (polling_thread->flags)) == 0){
