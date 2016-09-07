@@ -1278,13 +1278,13 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 # pkgconfig_DATA += libgsequencer.pc
 
 # extra
-EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 \
-	gsequencer.1 README ags_example.xml gsequencer-documentation \
-	midi2xml.1 libags.pc.in libags_audio.pc.in libags_gui.pc.in \
-	gsequencer.desktop.in docs/reference/libags \
-	docs/reference/libags_audio docs/reference/libags_gui \
-	$(manpages) $(userdoc) $(userdocimages) $(devdoc) \
-	$(devdocimages) $(devdoclistings) \
+EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 \
+	aclocal.m4 gsequencer.1 README ags_example.xml \
+	gsequencer-documentation midi2xml.1 libags.pc.in \
+	libags_audio.pc.in libags_gui.pc.in gsequencer.desktop.in \
+	docs/reference/libags docs/reference/libags_audio \
+	docs/reference/libags_gui $(manpages) $(userdoc) \
+	$(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings) \
 	$(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl \
 	$(top_srcdir)/ags/object/ags_marshallers.list
 man1_MANS = gsequencer.1 midi2xml.1

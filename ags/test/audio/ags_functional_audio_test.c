@@ -101,12 +101,13 @@ void ags_functional_audio_test_playback();
   "lock-parent=ags-recycling-thread\n"		       \
   "\n"						       \
   "[soundcard]\n"				       \
-  "jack=enabled\n"                                     \
+  "jack=disabled\n"                                    \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \
   "dsp-channels=2\n"				       \
   "alsa-handle=hw:0,0\n"			       \
+  "oss-handle=/dev/dsp\n"			       \
   "format=24\n"					       \
   "\n"						       \
   "[recall]\n"					       \

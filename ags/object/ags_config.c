@@ -32,6 +32,8 @@
 #include <string.h>
 #include <pwd.h>
 
+#include <ags/config.h>
+
 void ags_config_class_init(AgsConfigClass *config_class);
 void ags_config_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_config_init(AgsConfig *config);

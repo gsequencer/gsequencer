@@ -31,7 +31,7 @@ bin_PROGRAMS = gsequencer midi2xml
 libgsequencerdir = $(libdir)/gsequencer
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
-EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1
+EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1
 
 man1_MANS = gsequencer.1 midi2xml.1
 
