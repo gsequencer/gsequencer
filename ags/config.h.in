@@ -3,6 +3,9 @@
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
 
+/* OSS enabled */
+#undef AGS_WITH_OSS
+
 /* Disable if you don't want xmlrpc-c */
 #undef AGS_WITH_XMLRPC_C
 

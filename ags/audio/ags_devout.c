@@ -1566,6 +1566,7 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     snd_config_update_free_global();
 #endif
   }else{
+#ifdef AGS_WITH_OSS
     oss_sysinfo sysinfo;
     oss_audioinfo ai;
 
@@ -1627,6 +1628,7 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
 	break;
       }
     }
+#endif
   }
 
   if(card_id != NULL){
@@ -1720,6 +1722,7 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
   snd_pcm_close(handle);
 #endif
   }else{
+#ifdef AGS_WITH_OSS
     oss_audioinfo ainfo;
 
     gchar *str;
@@ -1789,6 +1792,7 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
     *rate_max = ainfo.max_rate;
     *buffer_size_min = 64;
     *buffer_size_max = 8192;
+#endif
   }
 }
 
@@ -1880,6 +1884,7 @@ ags_devout_is_available(AgsSoundcard *soundcard)
 	return(TRUE);
       }
     }else{
+#ifdef AGS_WITH_OSS
       fd_set writefds;
 
       FD_ZERO(&writefds);
@@ -1888,6 +1893,7 @@ ags_devout_is_available(AgsSoundcard *soundcard)
       if(FD_ISSET(AGS_POLL_FD(list->data)->poll_fd->fd, &writefds)){
 	return(TRUE);
       }
+#endif
     }
     
     list = list->next;
@@ -2014,25 +2020,37 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
+#ifdef AGS_WITH_OSS
       format = AFMT_U8;
+#endif
+      
       word_size = sizeof(signed char);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
+#ifdef AGS_WITH_OSS
       format = AFMT_S16_NE;
+#endif
+      
       word_size = sizeof(signed short);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
+#ifdef AGS_WITH_OSS
       format = AFMT_S24_NE;
+#endif
+      
       word_size = sizeof(signed long);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
+#ifdef AGS_WITH_OSS
       format = AFMT_S32_NE;
+#endif
+      
       word_size = sizeof(signed long);
     }
     break;
@@ -2063,6 +2081,7 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
   devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
   
+#ifdef AGS_WITH_OSS
   /* open device fd */
   str = devout->out.oss.device;
   devout->out.oss.device_fd = open(str, O_WRONLY, 0);
@@ -2193,7 +2212,8 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
 	      tmp,
 	      devout->samplerate);
   }
-
+#endif
+  
   devout->tact_counter = 0.0;
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
@@ -2369,6 +2389,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   }
 
   /* check buffer flag */
+#ifdef AGS_WITH_OSS
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
     
@@ -2420,7 +2441,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 	  devout->ring_buffer[1],
 	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
   }
-
+#endif
+  
   pthread_mutex_unlock(mutex);
 
   /* tic */

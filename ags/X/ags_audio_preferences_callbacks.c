@@ -126,8 +126,9 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
     use_alsa = FALSE;
   }
 
+  str = gtk_combo_box_text_get_active_text(audio_preferences->card);
+  
   if(use_alsa){
-    str = gtk_combo_box_text_get_active_text(audio_preferences->card);
     str = g_strndup(str,
 		    index(str,
 			  ',') - str);

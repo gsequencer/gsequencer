@@ -432,6 +432,8 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   GList *tasks;
   
   char *device, *str;
+
+  gboolean use_alsa;
   int card_num;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
@@ -478,15 +480,42 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 			   0,
 			   &value);
   
-  //FIXME:JK: work-around for alsa-handle
-  device = 
-    str = g_strdup_printf("%s\0", g_value_get_string(&value));
-  g_message("%s\0", str);
-  ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "alsa-handle\0",
-		       str);
+#ifdef AGS_WITH_ALSA
+  use_alsa = TRUE;
+#else
+  use_alsa = FALSE;
+#endif
 
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "backend\0");
+
+  if(!g_ascii_strncasecmp(str,
+			  "oss\0",
+			  4)){
+    use_alsa = FALSE;
+  }
+
+  /* handle */
+  if(use_alsa){
+    //FIXME:JK: work-around for alsa-handle
+    device = 
+      str = g_strdup_printf("%s\0", g_value_get_string(&value));
+    g_message("%s\0", str);
+    ags_config_set_value(config,
+			 AGS_CONFIG_SOUNDCARD,
+			 "alsa-handle\0",
+			 str);
+  }else{
+    device = 
+      str = g_strdup_printf("%s\0", g_value_get_string(&value));
+    g_message("%s\0", str);
+    ags_config_set_value(config,
+			 AGS_CONFIG_SOUNDCARD,
+			 "oss-handle\0",
+			 str);
+  }
+  
   /* samplerate */
   rate = gtk_spin_button_get_value(audio_preferences->samplerate);
   str = g_strdup_printf("%u\0",
@@ -660,8 +689,14 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 
   while(card_id != NULL){
     //FIXME:JK: work-around for alsa-handle
-    tmp = g_strdup_printf("%s,0\0",
-			  card_id->data);
+    if(use_alsa){
+      tmp = g_strdup_printf("%s,0\0",
+			    card_id->data);
+    }else{
+      tmp = g_strdup_printf("%s\0",
+			    card_id->data);
+    }
+    
     if(!g_ascii_strcasecmp(tmp,
 			   str)){
       selected_device = g_strdup(card_id->data);
@@ -670,6 +705,8 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 
     gtk_combo_box_text_append_text(audio_preferences->card,
 				   tmp);
+    g_free(tmp);
+
     
     if(!found_card){
       nth++;
@@ -736,9 +773,11 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 
   /*  */
   if(str != NULL){
-    str = g_strndup(str,
-		    index(str,
-			  ',') - str);
+    if(use_alsa){
+      str = g_strndup(str,
+		      index(str,
+			    ',') - str);
+    }
 
     error = NULL;
     ags_soundcard_pcm_info(soundcard,

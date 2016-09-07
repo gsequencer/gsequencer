@@ -87,6 +87,10 @@ AS_IF([test "x$enable_alsa" != xno],
 #endif
 			])])
 
+AS_IF([test "x$enable_oss" != xno],
+      AC_DEFINE([AGS_WITH_OSS], [1], [OSS enabled]),
+      AC_MSG_NOTICE([oss disabled]))
+
 PKG_CHECK_MODULES([JACK], [jack])
 AC_SUBST(JACK_CFLAGS)
 AC_SUBST(JACK_LIBS)
@@ -174,10 +178,10 @@ Makefile
 docs/reference/libags/Makefile
 docs/reference/libags_audio/Makefile
 docs/reference/libags_gui/Makefile
-docs/reference/libgsequencer/Makefile
 libags.pc
 libags_audio.pc
 libags_gui.pc])
+# docs/reference/libgsequencer/Makefile
 # libgsequencer.pc
 
 AC_OUTPUT

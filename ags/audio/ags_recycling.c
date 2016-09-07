@@ -984,10 +984,10 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 				   (guint) ceil(loop_frame_count / audio_signal->buffer_size) + 1);
     
   }else{
-    ags_audio_signal_stream_resize(audio_signal,
-				   (guint) ceil(frame_count / audio_signal->buffer_size) + 1);
     ags_audio_signal_duplicate_stream(audio_signal,
 				      template);
+    ags_audio_signal_stream_resize(audio_signal,
+				   (guint) ceil(frame_count / audio_signal->buffer_size) + 1);
 
     pthread_mutex_unlock(recycling_mutex);
 
