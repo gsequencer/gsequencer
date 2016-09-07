@@ -95,6 +95,12 @@ struct _AgsJackDevout
 
   guint note_offset;
 
+  guint loop_left;
+  guint loop_right;
+  gboolean do_loop;
+  
+  guint loop_offset;
+
   gchar *card_uri;
   GObject *jack_port;
   

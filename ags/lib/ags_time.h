@@ -23,7 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#define AGS_TIME_ZERO "0000:00.000\0"
+
 #define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+
+gchar* ags_time_get_uptime_from_offset(guint offset,
+				       gdouble bpm,
+				       gdouble delay,
+				       gdouble delay_factor);
 
 #endif /*__AGS_TIME__*/
