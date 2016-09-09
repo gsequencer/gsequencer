@@ -49,14 +49,29 @@ struct _AgsConnectableInterface
 
   void (*connect)(AgsConnectable *connectable);
   void (*disconnect)(AgsConnectable *connectable);
+
+  void (*connect_scope)(AgsConnectable *connectable,
+			GObject *connection);
+  void (*disconnect_scope)(AgsConnectable *connectable,
+			   GObject *connection);
 };
 
 GType ags_connectable_get_type();
 
 void ags_connectable_add_to_registry(AgsConnectable *connectable);
+void ags_connectable_remove_from_registry(AgsConnectable *connectable);
+
+xmlNode* ags_connectable_update(AgsConnectable *connectable);
+
+gboolean ags_connectable_is_ready(AgsConnectable *connectable);
+gboolean ags_connectable_is_connected(AgsConnectable *connectable);
 
 void ags_connectable_connect(AgsConnectable *connectable);
 void ags_connectable_disconnect(AgsConnectable *connectable);
 
+void ags_connectable_connect_scope(AgsConnectable *connectable,
+				   GObject *connection);
+void ags_connectable_disconnect_scope(AgsConnectable *connectable,
+				      GObject *connection);
 
 #endif /*__AGS_CONNECTABLE_H__*/

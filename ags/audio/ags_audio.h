@@ -79,12 +79,14 @@ struct _AgsAudio
 
   guint midi_start_mapping;
   guint midi_end_mapping;
+
+  GList *audio_connection;
   
   AgsChannel *output;
   AgsChannel *input;
 
   GObject *playback_domain;
-
+  
   GList *notation;
   GList *automation;
   
@@ -105,6 +107,8 @@ struct _AgsAudioClass
 {
   GObjectClass object;
 
+  void (*check_connection)(AgsAudio *audio);
+  
   void (*set_audio_channels)(AgsAudio *audio,
 			     guint audio_channels, guint audio_channels_old);
   void (*set_pads)(AgsAudio *audio,
@@ -122,6 +126,8 @@ void ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard);
 
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);
+
+void ags_audio_check_connection(AgsAudio *audio);
 
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);

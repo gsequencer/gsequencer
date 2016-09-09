@@ -36,6 +36,7 @@ struct _AgsAudioPreferences
 {
   GtkVBox vbox;
 
+  GtkCheckButton *enable_jack;
   GtkComboBoxText *backend;
   
   GtkComboBoxText *card;
@@ -44,7 +45,6 @@ struct _AgsAudioPreferences
   GtkSpinButton *buffer_size;
   GtkComboBoxText *format;
 
-  GtkCheckButton *enable_jack;
   GtkComboBoxText *jack_driver;
   GtkButton *start_jack;
   GtkButton *stop_jack;

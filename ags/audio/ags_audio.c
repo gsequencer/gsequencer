@@ -32,6 +32,7 @@
 #include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
+#include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_output.h>
@@ -90,6 +91,8 @@ void ags_audio_connect(AgsConnectable *connectable);
 void ags_audio_disconnect(AgsConnectable *connectable);
 void ags_audio_finalize(GObject *gobject);
 
+void ags_audio_real_check_connection(AgsAudio *audio);
+
 void ags_audio_real_set_audio_channels(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old);
 void ags_audio_real_set_pads(AgsAudio *audio,
@@ -97,6 +100,7 @@ void ags_audio_real_set_pads(AgsAudio *audio,
 			     guint channels, guint channels_old);
 
 enum{
+  CHECK_CONNECTION,
   SET_AUDIO_CHANNELS,
   SET_PADS,
   INIT_RUN,
@@ -123,6 +127,7 @@ enum{
   PROP_AUDIO_END_MAPPING,
   PROP_MIDI_START_MAPPING,
   PROP_MIDI_END_MAPPING,
+  PROP_AUDIO_CONNECTION,
   PROP_OUTPUT,
   PROP_INPUT,
   PROP_PLAYBACK_DOMAIN,
@@ -475,6 +480,22 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:audio-connection:
+   *
+   * The assigned #GList-struct containing #AgsAudioConnection information.
+   * 
+   * Since: 0.7.65
+   */
+  param_spec = g_param_spec_object("audio-connection\0",
+				   "audio connection\0",
+				   "The audio connection information\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CONNECTION,
+				  param_spec);
+  
+  /**
    * AgsAudio:output:
    *
    * The #AgsOutput it contains.
@@ -636,6 +657,8 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   
   /* AgsAudioClass */
+  audio->check_connection = ags_audio_real_check_connection;
+
   audio->set_audio_channels = ags_audio_real_set_audio_channels;
   audio->set_pads = ags_audio_real_set_pads;
 
@@ -644,6 +667,23 @@ ags_audio_class_init(AgsAudioClass *audio)
   audio->done = NULL;
 
   /* signals */
+  /**
+   * AgsAudio::check-connection:
+   * @audio: the object to init run.
+   *
+   * The ::check-connection checks your audio connections.
+   *
+   * Since: 0.7.65
+   */
+  audio_signals[CHECK_CONNECTION] = 
+    g_signal_new("check-connection\0",
+		 G_TYPE_FROM_CLASS(audio),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioClass, check_connection),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
   /**
    * AgsAudio::set-audio-channels:
    * @audio: the object to adjust the channels.
@@ -862,6 +902,9 @@ ags_audio_init(AgsAudio *audio)
   audio->midi_start_mapping = 0;
   audio->midi_end_mapping = 0;
 
+  /* mapping */
+  audio->audio_connection = NULL;
+  
   /* channels */
   audio->output = NULL;
   audio->input = NULL;
@@ -1240,7 +1283,6 @@ ags_audio_set_property(GObject *gobject,
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
   }
 }
 
@@ -1387,7 +1429,6 @@ ags_audio_get_property(GObject *gobject,
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
   }
 }
 
@@ -1953,6 +1994,49 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
       }
     }
   }
+}
+
+void
+ags_audio_real_check_connection(AgsAudio *audio)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_check_connection(AgsAudio *audio)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* lock */
+  pthread_mutex_lock(mutex);
+
+  if(!AGS_IS_AUDIO(audio)){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
+
+  /* emit */
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[CHECK_CONNECTION], 0);
+  g_object_unref((GObject *) audio);
+
+  /* unlock */
+  pthread_mutex_unlock(mutex);
 }
 
 void

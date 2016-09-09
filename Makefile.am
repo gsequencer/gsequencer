@@ -326,6 +326,8 @@ libags_object_h_sources =  \
 	ags/object/ags_async_queue.h \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
+	ags/object/ags_connection.h \
+	ags/object/ags_connection_manager.h \
 	ags/object/ags_countable.h \
 	ags/object/ags_concurrent_tree.h \
 	ags/object/ags_distributed_manager.h \
@@ -351,6 +353,8 @@ libags_object_c_sources = \
 	ags/object/ags_async_queue.c \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
+	ags/object/ags_connection.c \
+	ags/object/ags_connection_manager.c \
 	ags/object/ags_countable.c \
 	ags/object/ags_concurrent_tree.c \
 	ags/object/ags_distributed_manager.c \
@@ -492,6 +496,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h \
+	ags/audio/ags_audio_connection.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
 	ags/audio/ags_channel.h \
@@ -542,6 +547,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
 	ags/audio/ags_audio_buffer_util.c \
+	ags/audio/ags_audio_connection.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
 	ags/audio/ags_channel.c \

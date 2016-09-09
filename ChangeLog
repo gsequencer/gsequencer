@@ -1,6 +1,7 @@
 ags (0.7.65)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added JACK audio output support
 	* implemented ags_jack_devout.c missing functions ags_jack_devout_list_cards() and ags_jack_devout_pcm_info()
 	* implemented ags_time_get_uptime_from_offset()
 	* implemented AgsChangeSoundcard task

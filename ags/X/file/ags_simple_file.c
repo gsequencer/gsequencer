@@ -1152,19 +1152,22 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 		     13)){
 	AgsChangeSoundcard *change_soundcard;
 	
-	GObject *alsa_soundcard, *oss_soundcard, *jack_soundcard;
+	AgsApplyPresets *apply_presets;
+
+	GObject *alsa_soundcard, *oss_soundcard;
 	GObject *soundcard;
 	AgsConfig *config;
 
 	AgsThread *thread;
-	
+
+	GList *jack_soundcard;
 	GList *list;
 	
 	gchar *str;
 	gchar *backend;
 	gchar *alsa_device, *oss_device;
 
-	guint dsp_channels;
+	guint pcm_channels;
 	guint samplerate;
 	guint buffer_size;
 	guint format;
@@ -1268,6 +1271,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	}
 
 	/* check if jack already available */
+	jack_soundcard = NULL;
 	found_jack = FALSE;
 	
 	if(use_jack){
@@ -1286,11 +1290,10 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	  
 	  while(list != NULL){
 	    if(AGS_IS_JACK_DEVOUT(list->data)){
-	      jack_soundcard = list->data;
+	      jack_soundcard = g_list_prepend(jack_soundcard,
+					      list->data);
 
 	      found_jack = TRUE;
-	      
-	      break;
 	    }
 
 	    list = list->next;
@@ -1298,6 +1301,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
 	  if(!found_jack){
 	    add_jack = TRUE;
+	  }else{
+	    jack_soundcard = g_list_reverse(jack_soundcard);
 	  }
 	}
 
@@ -1323,7 +1328,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
 	/* reset default card */
 	if(found_jack){
-	  soundcard = jack_soundcard;
+	  soundcard = jack_soundcard->data;
 	}else{
 	  soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
 	}
@@ -1335,17 +1340,28 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	/* ensure jack first card */
 	if(!add_jack &&
 	   jack_soundcard != NULL){
-	  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = g_list_remove(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
-										       jack_soundcard);
-	  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = g_list_prepend(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
-											jack_soundcard);
+	  GList *list;
+
+	  jack_soundcard = 
+	    list = g_list_reverse(jack_soundcard);
+
+	  while(list != NULL){
+	    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = g_list_remove(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
+											 list->data);
+	    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = g_list_prepend(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
+											  list->data);
+
+	    list = list->next;
+	  }
+
+	  jack_soundcard = g_list_reverse(jack_soundcard);
 	}
 	
 	/* reset presets of soundcard */
 	alsa_device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
 	oss_device = AGS_DEVOUT_DEFAULT_OSS_DEVICE;
 	
-	dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
+	pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
 	format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 	samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 	buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -1378,7 +1394,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 				   "pcm-channels\0");
 
 	if(str != NULL){
-	  dsp_channels = g_ascii_strtoull(str,
+	  pcm_channels = g_ascii_strtoull(str,
 					  NULL,
 					  10);
 	  g_free(str);
@@ -1416,12 +1432,36 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
 	}
 	
-	ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-				  dsp_channels,
-				  samplerate,
-				  buffer_size,
-				  format);
+	if(jack_soundcard != NULL){
+	  GList *list;
 
+	  list = jack_soundcard;
+
+	  while(list != NULL){
+	    apply_presets = ags_apply_presets_new(list->data,
+						  pcm_channels,
+						  samplerate,
+						  buffer_size,
+						  format);
+	    ags_apply_presets_soundcard(apply_presets,
+					list->data);
+
+	    list = list->next;
+	  }
+	}else{
+	  apply_presets = ags_apply_presets_new(soundcard,
+						pcm_channels,
+						samplerate,
+						buffer_size,
+						format);
+	  ags_apply_presets_soundcard(apply_presets,
+				      soundcard);
+	}
+
+	g_object_set(AGS_XORG_APPLICATION_CONTEXT(application_context)->window,
+		     "soundcard\0", soundcard,
+		     NULL);
+	
 	/* calculate frequency of audio loop */
 	AGS_THREAD(application_context->main_loop)->tic_delay = 0;
 	AGS_THREAD(application_context->main_loop)->freq = ceil(samplerate / buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
@@ -1435,6 +1475,44 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 				      AGS_TYPE_EXPORT_THREAD);
       	thread->tic_delay = 0;
 	thread->freq = ceil(samplerate / buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+	/* add missing threads */
+	if(add_alsa){
+	  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(alsa_soundcard);
+	  ags_thread_add_child_extended(AGS_THREAD(application_context->main_loop),
+					AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread,
+					TRUE, TRUE);
+	}
+
+	if(add_oss){
+	  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(oss_soundcard);
+	  ags_thread_add_child_extended(AGS_THREAD(application_context->main_loop),
+					AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread,
+					TRUE, TRUE);
+	}
+	
+	if(add_jack){
+	  GList *list;
+	  gboolean initial_set;
+
+	  list = jack_soundcard;
+	  initial_set = TRUE;
+	  
+	  while(list != NULL){
+	    thread = (AgsThread *) ags_soundcard_thread_new(list->data);
+	    ags_thread_add_child_extended(AGS_THREAD(application_context->main_loop),
+					  thread,
+					  TRUE, TRUE);
+	    
+	    if(initial_set){
+	      AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = thread;
+
+	      initial_set = FALSE;
+	    }
+
+	    list = list->next;
+	  }
+	}
       }else if(!xmlStrncmp("ags-sf-window\0",
 			   child->name,
 			   14)){
@@ -1692,8 +1770,6 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 {
   AgsWindow *gobject;
 
-  AgsApplyPresets *apply_presets;
-
   AgsFileLaunch *file_launch;
 
   AgsApplicationContext *application_context;
@@ -1811,14 +1887,6 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 			      10);
     free(str);
   }
-
-  apply_presets = ags_apply_presets_new(gobject->soundcard,
-					pcm_channels,
-					samplerate,
-					buffer_size,
-					format);
-  ags_apply_presets_soundcard(apply_presets,
-			      gobject->soundcard);
   
   /* launch settings */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,

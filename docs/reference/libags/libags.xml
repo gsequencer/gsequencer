@@ -49,6 +49,8 @@
     <xi:include href="xml/ags_concurrent_tree.xml"/>
     <xi:include href="xml/ags_config.xml"/>
     <xi:include href="xml/ags_connectable.xml"/>
+    <xi:include href="xml/ags_connection.xml"/>
+    <xi:include href="xml/ags_connection_manager.xml"/>
     <xi:include href="xml/ags_countable.xml"/>
     <xi:include href="xml/ags_distributed_manager.xml"/>
     <xi:include href="xml/ags_dynamic_connectable.xml"/>
