@@ -79,6 +79,8 @@ struct _AgsChannel
 
   char *note;
 
+  GList *remote_channel;
+  
   GObject *playback;
 
   // GObject *recycling_context; // contains child recycling
@@ -144,17 +146,20 @@ void ags_channel_set_samplerate(AgsChannel *channel, guint samplerate);
 void ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size);
 void ags_channel_set_format(AgsChannel *channel, guint format);
 
-void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
+void ags_channel_add_remote_channel(AgsChannel *channel, GObject *remote_channel);
+void ags_channel_remove_remote_channel(AgsChannel *channel, GObject *remote_channel);
+
 void ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
+void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
 
 void ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container);
 void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_container);
 
-void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
+void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
-void ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern);
 void ags_channel_add_pattern(AgsChannel *channel, GObject *pattern);
+void ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern);
 
 GList* ags_channel_add_effect(AgsChannel *channel,
 			      char *filename,

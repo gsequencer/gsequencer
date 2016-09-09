@@ -62,6 +62,8 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 
+#include <ags/audio/client/ags_remote_channel.h>
+
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
 
@@ -144,6 +146,7 @@ enum{
   PROP_AUDIO_CHANNEL,
   PROP_LINE,
   PROP_NOTE,
+  PROP_REMOTE_CHANNEL,
   PROP_PLAYBACK,
   PROP_RECALL_ID,
   PROP_RECALL_CONTAINER,
@@ -910,6 +913,21 @@ ags_channel_set_property(GObject *gobject,
       channel->playback = playback;
     }
     break;
+  case PROP_REMOTE_CHANNEL:
+    {
+      AgsRemoteChannel *remote_channel;
+
+      remote_channel = (AgsRemoteChannel *) g_value_get_object(value);
+
+      if(remote_channel == NULL ||
+	 g_list_find(channel->remote_channel, remote_channel) != NULL){
+	return;
+      }
+
+      ags_channel_add_remote_channel(channel,
+				     remote_channel);
+    }
+    break;
   case PROP_RECALL_ID:
     {
       AgsRecallID *recall_id;
@@ -1062,6 +1080,11 @@ ags_channel_get_property(GObject *gobject,
   case PROP_NOTE:
     {
       g_value_set_string(value, channel->note);
+    }
+    break;
+  case PROP_REMOTE_CHANNEL:
+    {
+      g_value_set_pointer(value, g_list_copy(channel->remote_channel));
     }
     break;
   case PROP_PLAYBACK:
@@ -2297,6 +2320,91 @@ ags_channel_set_format(AgsChannel *channel, guint format)
 }
 
 /**
+ * ags_channel_add_remote_channel:
+ * @channel: an #AgsChannel
+ * @remote_channel: the #AgsRemoteChannel
+ *
+ * Adds a remote channel.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_channel_add_remote_channel(AgsChannel *channel, GObject *remote_channel)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  if(channel == NULL || remote_channel == NULL){
+    return;
+  }
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* add recall id */    
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(G_OBJECT(remote_channel));
+  channel->remote_channel = g_list_prepend(channel->remote_channel,
+					   remote_channel);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+
+/**
+ * ags_channel_remove_remote_channel:
+ * @channel: an #AgsChannel
+ * @remote_channel: the #AgsRemoteChannel
+ *
+ * Removes a remote channel.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_channel_remove_remote_channel(AgsChannel *channel, GObject *remote_channel)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  if(channel == NULL || remote_channel == NULL){
+    return;
+  }
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove recall id */    
+  pthread_mutex_lock(mutex);
+
+  channel->remote_channel = g_list_remove(channel->remote_channel,
+				     remote_channel);
+  g_object_unref(G_OBJECT(remote_channel));
+
+  pthread_mutex_unlock(mutex);
+}
+
+/**
  * ags_channel_add_recall_id:
  * @channel: an #AgsChannel
  * @recall_id: the #AgsRecallID
@@ -2463,52 +2571,6 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
   pthread_mutex_unlock(mutex);
 }
 
-/**
- * ags_channel_remove_recall:
- * @channel: an #AgsChannel
- * @recall: the #AgsRecall
- * @play: %TRUE if simple playback.
- *
- * Removes a recall.
- *
- * Since: 0.4
- */
-void
-ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
-{
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  if(channel == NULL || recall == NULL){
-    return;
-  }
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-  
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* add recall */
-  pthread_mutex_lock(mutex);
-
-  if(play){
-    channel->play = g_list_remove(channel->play, recall);
-  }else{
-    channel->recall = g_list_remove(channel->recall, recall);
-  }
-
-  g_object_unref(G_OBJECT(recall));
-
-  pthread_mutex_unlock(mutex);
-}
 
 /**
  * ags_channel_add_recall:
@@ -2558,23 +2620,24 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
 }
 
 /**
- * ags_channel_remove_pattern:
+ * ags_channel_remove_recall:
  * @channel: an #AgsChannel
- * @pattern: the #AgsPattern
+ * @recall: the #AgsRecall
+ * @play: %TRUE if simple playback.
  *
- * Removes a pattern.
+ * Removes a recall.
  *
- * Since: 0.7.2
+ * Since: 0.4
  */
 void
-ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
+ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
 {
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL || pattern == NULL){
+  if(channel == NULL || recall == NULL){
     return;
   }
 
@@ -2589,11 +2652,16 @@ ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
 
   pthread_mutex_unlock(application_mutex);
 
-  /* remove pattern */
+  /* add recall */
   pthread_mutex_lock(mutex);
 
-  channel->pattern = g_list_remove(channel->pattern, pattern);
-  g_object_unref(G_OBJECT(pattern));
+  if(play){
+    channel->play = g_list_remove(channel->play, recall);
+  }else{
+    channel->recall = g_list_remove(channel->recall, recall);
+  }
+
+  g_object_unref(G_OBJECT(recall));
 
   pthread_mutex_unlock(mutex);
 }
@@ -2635,6 +2703,48 @@ ags_channel_add_pattern(AgsChannel *channel, GObject *pattern)
 
   g_object_ref(pattern);
   channel->pattern = g_list_prepend(channel->pattern, pattern);
+
+  pthread_mutex_unlock(mutex);
+}
+
+
+/**
+ * ags_channel_remove_pattern:
+ * @channel: an #AgsChannel
+ * @pattern: the #AgsPattern
+ *
+ * Removes a pattern.
+ *
+ * Since: 0.7.2
+ */
+void
+ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  if(channel == NULL || pattern == NULL){
+    return;
+  }
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove pattern */
+  pthread_mutex_lock(mutex);
+
+  channel->pattern = g_list_remove(channel->pattern, pattern);
+  g_object_unref(G_OBJECT(pattern));
 
   pthread_mutex_unlock(mutex);
 }

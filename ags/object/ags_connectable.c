@@ -96,6 +96,27 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
 }
 
 /**
+ * ags_connectable_update:
+ * @connectable: the #AgsConnectable
+ *
+ * Disconnect the connectable.
+ *
+ * Returns: the #xmlNode-struct descrbing howto update
+ *
+ * Since: 0.7.65
+ */
+xmlNode*
+ags_connectable_update(AgsConnectable *connectable)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+  g_return_val_if_fail(connectable_interface->update, NULL);
+  return(connectable_interface->is_ready(connectable));
+}
+
+/**
  * ags_connectable_is_ready:
  * @connectable: the #AgsConnectable
  *
@@ -182,4 +203,48 @@ ags_connectable_disconnect(AgsConnectable *connectable)
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
   g_return_if_fail(connectable_interface->disconnect);
   connectable_interface->disconnect(connectable);
+}
+
+/**
+ * ags_connectable_connect_scope:
+ * @connectable: the #AgsConnectable
+ * @connection: the connection
+ *
+ * Disconnect the connectable.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_connectable_connect_scope(AgsConnectable *connectable,
+			      GObject *connection)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+  g_return_if_fail(connectable_interface->connect_scope);
+  connectable_interface->connect_scope(connectable,
+				       connection);
+}
+
+/**
+ * ags_connectable_disconnect_scope:
+ * @connectable: the #AgsConnectable
+ * @connection: the connection
+ *
+ * Disconnect the connectable.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_connectable_disconnect_scope(AgsConnectable *connectable,
+				 GObject *connection)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+  g_return_if_fail(connectable_interface->disconnect_scope);
+  connectable_interface->disconnect_scope(connectable,
+					  connection);
 }

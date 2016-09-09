@@ -1153,6 +1153,21 @@ ags_audio_set_property(GObject *gobject,
       audio->midi_end_mapping = midi_end_mapping;
     }
     break;
+  case PROP_AUDIO_CONNECTION:
+    {
+      AgsAudioConnection *audio_connection;
+
+      audio_connection = (AgsAudioConnection *) g_value_get_object(value);
+
+      if(audio_connection == NULL ||
+	 g_list_find(audio->audio_connection, audio_connection) != NULL){
+	return;
+      }
+
+      ags_audio_add_audio_connection(audio,
+				     audio_connection);
+    }
+    break;
   case PROP_PLAYBACK_DOMAIN:
     {
       AgsPlaybackDomain *playback_domain;
@@ -3320,6 +3335,82 @@ void
 ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 {
   audio->sequence_length = sequence_length;
+}
+
+/**
+ * ags_audio_add_audio_connection:
+ * @audio: the #AgsAudio
+ * @audio_connection: an #AgsAudioConnection
+ *
+ * Adds an audio connection.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_audio_add_audio_connection(AgsAudio *audio,
+			       GObject *audio_connection)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* add recall id */
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(audio_connection);
+  audio->audio_connection = g_list_prepend(audio->audio_connection, audio_connection);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_remove_audio_connection:
+ * @audio: the #AgsAudio
+ * @audio_connection: an #AgsAudioConnection
+ *
+ * Removes an audio connection.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_audio_remove_audio_connection(AgsAudio *audio,
+				  GObject *audio_connection)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove recall id */
+  pthread_mutex_lock(mutex);
+
+  audio->audio_connection = g_list_remove(audio->audio_connection, audio_connection);
+  g_object_unref(audio_connection);
+  
+  pthread_mutex_unlock(mutex);
 }
 
 /**
