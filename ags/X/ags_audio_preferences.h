@@ -20,6 +20,9 @@
 #ifndef __AGS_AUDIO_PREFERENCES_H__
 #define __AGS_AUDIO_PREFERENCES_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_AUDIO_PREFERENCES                (ags_audio_preferences_get_type())
@@ -36,15 +39,11 @@ struct _AgsAudioPreferences
 {
   GtkVBox vbox;
 
-  GtkCheckButton *enable_jack;
-  GtkComboBoxText *backend;
-  
-  GtkComboBoxText *card;
-  GtkSpinButton *audio_channels;
-  GtkSpinButton *samplerate;
-  GtkSpinButton *buffer_size;
-  GtkComboBoxText *format;
+  GtkVBox *soundcard_editor;
+  GtkButton *add;
 
+  GtkCheckButton *enable_jack;
+  
   GtkComboBoxText *jack_driver;
   GtkButton *start_jack;
   GtkButton *stop_jack;

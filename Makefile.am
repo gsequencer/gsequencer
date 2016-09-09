@@ -162,8 +162,8 @@ libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sou
 libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_sources) $(libags_thread_task_h_sources)
 libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources)
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_audio_la_HEADERS_0 = $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_client_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
+libags_audio_la_HEADERS_0 = $(libags_audio_h_sources) $(libags_audio_client_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = $(libags_gui_h_sources)
 # libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
@@ -588,6 +588,23 @@ libags_audio_c_sources = \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c
+
+# libags-audio - client
+deprecated_libags_audio_client_h_sources =
+
+libags_audio_client_h_sources = \
+	$(deprecated_libags_audio_client_h_sources)
+#	ags/audio/ags_remote_channel.h \
+#	ags/audio/ags_remote_input.h \
+#	ags/audio/ags_remote_output.h
+
+deprecated_libags_audio_client_c_sources =
+
+libags_audio_client_c_sources = \
+	$(deprecated_libags_audio_client_c_sources) 
+#	ags/audio/ags_remote_channel.c \
+#	ags/audio/ags_remote_input.c \
+#	ags/audio/ags_remote_output.c
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =
@@ -1031,6 +1048,8 @@ deprecated_libgsequencer_h_sources =
 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
+	ags/X/ags_audio_connection_editor_callbacks.h \
+	ags/X/ags_audio_connection_editor.h \
 	ags/X/ags_automation_editor_callbacks.h \
 	ags/X/ags_automation_editor.h \
 	ags/X/ags_automation_window_callbacks.h \
@@ -1105,6 +1124,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_resize_editor.h \
 	ags/X/ags_server_preferences_callbacks.h \
 	ags/X/ags_server_preferences.h \
+	ags/X/ags_soundcard_editor_callbacks.h \
+	ags/X/ags_soundcard_editor.h \
 	ags/X/ags_window.h \
 	ags/X/ags_window_callbacks.h \
 	ags/X/ags_xorg_application_context.h
@@ -1113,6 +1134,8 @@ deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
+	ags/X/ags_audio_connection_editor_callbacks.c \
+	ags/X/ags_audio_connection_editor.c \
 	ags/X/ags_automation_editor.c \
 	ags/X/ags_automation_editor_callbacks.c \
 	ags/X/ags_automation_window.c \
@@ -1188,6 +1211,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
 	ags/X/ags_window.c \
+	ags/X/ags_soundcard_editor_callbacks.c \
+	ags/X/ags_soundcard_editor.c \
 	ags/X/ags_window_callbacks.c \
 	ags/X/ags_xorg_application_context.c
 

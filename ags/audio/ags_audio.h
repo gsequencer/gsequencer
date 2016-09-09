@@ -137,6 +137,11 @@ void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);
 void ags_audio_set_format(AgsAudio *audio, guint format);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
+void ags_audio_add_audio_connection(AgsAudio *audio,
+				    GObject *audio_connection);
+void ags_audio_remove_audio_connection(AgsAudio *audio,
+				       GObject *audio_connection);
+
 void ags_audio_add_notation(AgsAudio *audio,
 			      GObject *notation);
 void ags_audio_remove_notation(AgsAudio *audio,
