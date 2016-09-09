@@ -101,6 +101,53 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
 }
 
 /**
+ * ags_sound_provider_set_default_soundcard_thread:
+ * @sound_provider: the #AgsSoundProvider
+ * @soundcard_thread: the default #AgsThread
+ * 
+ * set default soundcard thread.
+ *
+ * Returns: the #AgsThread
+ * 
+ * Since: 0.7.65
+ */
+void
+ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
+						GObject *soundcard_thread)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_default_soundcard_thread);
+
+  sound_provider_interface->set_default_soundcard_thread(sound_provider,
+							 soundcard_thread);
+}
+
+/**
+ * ags_sound_provider_get_default_soundcard_thread:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get default soundcard thread.
+ *
+ * Returns: the #AgsThread
+ * 
+ * Since: 0.7.65
+ */
+GObject*
+ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_default_soundcard_thread, NULL);
+
+  return(sound_provider_interface->get_default_soundcard_thread(sound_provider));
+}
+
+/**
  * ags_sound_provider_set_sequencer:
  * @sound_provider: the #AgsSoundProvider
  * @sequencer: a #GList-struc containing #AgsSequencer
