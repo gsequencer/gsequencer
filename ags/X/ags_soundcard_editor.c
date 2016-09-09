@@ -23,10 +23,13 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
+#include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 
+#include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/X/ags_xorg_application_context.h>
@@ -142,6 +145,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   GtkTable *table;
   GtkLabel *label;
 
+  soundcard_editor->soundcard = NULL;
+  soundcard_editor->soundcard_thread = NULL;
+  
   table = (GtkTable *) gtk_table_new(3, 8, FALSE);
   gtk_box_pack_start(GTK_BOX(soundcard_editor),
 		     GTK_WIDGET(table),
@@ -751,23 +757,248 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 }
 
 void
-ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
+ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
+			      gchar *device)
 {
   AgsWindow *window;
   AgsPreferences *preferences;
 
+  AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
 
   AgsApplicationContext *application_context;
 
+  GList *distributed_manager;
   GList *card_id;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
+  application_context = window->application_context;
+  
+  /* create soundcard */
+  distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  /*  */
-  jack_devout = ags_jack_devout_new(window->application_context);
+  if(distributed_manager != NULL){
+    jack_server = distributed_manager->data;
+  }else{
+    g_warning("distributed manager not found\0");
+
+    return;
+  }
+  
+  jack_devout = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+							   TRUE);
+
+  if(device != NULL){
+    ags_soundcard_set_device(AGS_SOUNDCARD(device),
+			     device);
+  }
+  
+  card_id = NULL;
+  ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
+			   &card_id, NULL);
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(soundcard_editor->card)));
+
+  while(card_id != NULL){
+    gtk_combo_box_text_append_text(soundcard_editor->card,
+				   card_id->data);
+
+    
+    card_id = card_id->next;
+  }
+
+  /* add new */
+  ags_soundcard_editor_add_soundcard(soundcard_editor,
+				     jack_devout);
+}
+
+void
+ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
+				 gchar *device)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsJackServer *jack_server;
+  AgsJackDevout *jack_devout;
+
+  AgsApplicationContext *application_context;
+
+  GList *distributed_manager;
+  GList *soundcard;
+  GList *card_id;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+  application_context = window->application_context;
+  
+  /* create soundcard */
+  distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+
+  if(distributed_manager != NULL){
+    jack_server = distributed_manager->data;
+  }else{
+    g_warning("distributed manager not found\0");
+
+    return;
+  }
+
+  soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  jack_devout = NULL;
+  
+  while(soundcard != NULL){
+    if(AGS_IS_JACK_DEVOUT(soundcard->data) &&
+       !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)),
+			   device)){
+      jack_devout = soundcard->data;
+      break;
+    }
+    
+    soundcard = soundcard->next;
+  }
+
+  card_id = NULL;
+  ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
+			   &card_id, NULL);
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(soundcard_editor->card)));
+
+  while(card_id != NULL){
+    gtk_combo_box_text_append_text(soundcard_editor->card,
+				   card_id->data);
+
+    
+    card_id = card_id->next;
+  }
+
+  /* remove */
+  ags_soundcard_editor_remove_soundcard(soundcard_editor,
+					jack_devout);
+}
+
+void
+ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
+				   GObject *soundcard)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsThread *audio_loop;
+  AgsThread *soundcard_thread;
+
+  AgsApplicationContext *application_context;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+  application_context = window->application_context;
+
+  audio_loop = application_context->main_loop;
+  
+  soundcard_editor->soundcard = soundcard;
+  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
+				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
+						 soundcard));
+  g_object_ref(soundcard);
+
+  soundcard_editor->soundcard_thread = 
+    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				soundcard_thread,
+				TRUE, TRUE);
+
+  if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
+						    soundcard_thread);
+  }
+}
+
+void
+ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
+				      GObject *soundcard)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsThread *audio_loop;
+  AgsThread *soundcard_thread;
+
+  AgsApplicationContext *application_context;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+  application_context = window->application_context;  
+
+  audio_loop = application_context->main_loop;
+    
+  if(soundcard == soundcard_editor->soundcard){
+    soundcard_editor->soundcard = NULL;
+  }
+
+  if(soundcard != NULL){
+    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
+				     g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
+						   soundcard));
+    g_object_unref(soundcard);
+  }
+  
+  if(soundcard_editor->soundcard_thread != NULL){
+    ags_thread_stop(soundcard_editor->soundcard_thread);
+    
+    ags_thread_remove_child(AGS_THREAD(audio_loop),
+			    soundcard_editor->soundcard_thread);
+
+    g_object_unref(soundcard_editor->soundcard_thread);    
+    soundcard_editor->soundcard_thread = NULL;
+  }
+}
+
+void
+ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsJackServer *jack_server;
+  AgsJackDevout *jack_devout;
+
+  AgsApplicationContext *application_context;
+
+  GList *distributed_manager;
+  GList *soundcard;
+  GList *card_id;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+  application_context = window->application_context;
+  
+  /* create soundcard */
+  distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+
+  if(distributed_manager != NULL){
+    jack_server = distributed_manager->data;
+  }else{
+    g_warning("distributed manager not found\0");
+
+    return;
+  }
+
+  soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  jack_devout = NULL;
+  
+  while(soundcard != NULL){
+    if(AGS_IS_JACK_DEVOUT(soundcard->data)){
+      jack_devout = soundcard->data;
+      break;
+    }
+    
+    soundcard = soundcard->next;
+  }
 
   card_id = NULL;
   ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
@@ -799,9 +1030,10 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
+  application_context = window->application_context;
 
   /*  */
-  devout = ags_devout_new(window->application_context);
+  devout = ags_devout_new(application_context);
   devout->flags &= (~AGS_DEVOUT_OSS);
   devout->flags |= AGS_DEVOUT_ALSA;
 
@@ -818,6 +1050,16 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
     
     card_id = card_id->next;
   }
+
+  /* remove previous */
+  if(soundcard_editor->soundcard != NULL){
+    ags_soundcard_editor_remove_soundcard(soundcard_editor,
+					  soundcard_editor->soundcard);
+  }
+
+  /* add new */
+  ags_soundcard_editor_add_soundcard(soundcard_editor,
+				     devout);
 }
 
 void
@@ -835,9 +1077,10 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
+  application_context = window->application_context;
 
   /*  */  
-  devout = ags_devout_new(window->application_context);
+  devout = ags_devout_new(application_context);
   devout->flags &= (~AGS_DEVOUT_ALSA);
   devout->flags |= AGS_DEVOUT_OSS;
 
@@ -854,6 +1097,16 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
     
     card_id = card_id->next;
   }
+
+  /* remove previous */
+  if(soundcard_editor->soundcard != NULL){
+    ags_soundcard_editor_remove_soundcard(soundcard_editor,
+					  soundcard_editor->soundcard);
+  }
+
+  /* add new */
+  ags_soundcard_editor_add_soundcard(soundcard_editor,
+				     devout);
 }
 
 /**

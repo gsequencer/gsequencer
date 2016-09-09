@@ -59,7 +59,16 @@ void ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *
 		     FALSE, FALSE,
 		     0);
   ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
+  g_signal_connect(soundcard_editor->remove, "clicked\0",
+		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
   gtk_widget_show_all(soundcard_editor);
+}
+
+void
+ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *soundcard_editor,
+						       AgsAudioPreferences *audio_preferences)
+{
+  gtk_widget_destroy(soundcard_editor);
 }
 
 void

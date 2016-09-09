@@ -337,7 +337,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     }else{
       continue;
     }
-
     
     audio_application_context->soundcard = g_list_append(audio_application_context->soundcard,
 							 soundcard);
