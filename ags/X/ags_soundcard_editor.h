@@ -42,6 +42,11 @@ struct _AgsSoundcardEditor
   GtkComboBoxText *backend;
   
   GtkComboBoxText *card;
+  
+  GtkHBox *jack_hbox;
+  GtkButton *add_jack;
+  GtkButton *remove_jack;
+  
   GtkSpinButton *audio_channels;
   GtkSpinButton *samplerate;
   GtkSpinButton *buffer_size;
@@ -56,6 +61,10 @@ struct _AgsSoundcardEditorClass
 };
 
 GType ags_soundcard_editor_get_type(void);
+
+void ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor);
 
 AgsSoundcardEditor* ags_soundcard_editor_new();
 

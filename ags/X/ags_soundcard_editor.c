@@ -142,7 +142,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   GtkTable *table;
   GtkLabel *label;
 
-  table = (GtkTable *) gtk_table_new(2, 8, FALSE);
+  table = (GtkTable *) gtk_table_new(3, 8, FALSE);
   gtk_box_pack_start(GTK_BOX(soundcard_editor),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
@@ -164,7 +164,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_table_attach(table,
 		   GTK_WIDGET(soundcard_editor->backend),
 		   1, 2,
-		   1, 2,
+		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -178,9 +178,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   
   gtk_combo_box_text_append_text(soundcard_editor->backend,
 				 "oss\0");
-  gtk_combo_box_set_active(soundcard_editor->format,
+  gtk_combo_box_set_active(soundcard_editor->backend,
 			   0);
-
+  
   /* sound card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "sound card\0",
@@ -200,7 +200,29 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* jack */
+  soundcard_editor->jack_hbox = gtk_hbox_new(FALSE,
+					     0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(soundcard_editor->jack_hbox),
+		   2, 3,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  soundcard_editor->add_jack = gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start(soundcard_editor->jack_hbox,
+		     soundcard_editor->add_jack,
+		     FALSE, FALSE,
+		     0);
   
+  soundcard_editor->remove_jack = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start(soundcard_editor->jack_hbox,
+		     soundcard_editor->remove_jack,
+		     FALSE, FALSE,
+		     0);
+
   /* audio channels */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "audio channels\0",
@@ -728,15 +750,58 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			    buffer_size_min, buffer_size_max);
 }
 
+void
+ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsJackDevout *jack_devout;
+
+  AgsApplicationContext *application_context;
+
+  GList *card_id;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+
+  /*  */
+  jack_devout = ags_jack_devout_new(window->application_context);
+
+  card_id = NULL;
+  ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
+			   &card_id, NULL);
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(soundcard_editor->card)));
+
+  while(card_id != NULL){
+    gtk_combo_box_text_append_text(soundcard_editor->card,
+				   card_id->data);
+
+    
+    card_id = card_id->next;
+  }
+}
 
 void
 ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 {
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
   AgsDevout *devout;
 
+  AgsApplicationContext *application_context;
+
   GList *card_id;
-  
-  devout = ags_devout_new(NULL);
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+
+  /*  */
+  devout = ags_devout_new(window->application_context);
   devout->flags &= (~AGS_DEVOUT_OSS);
   devout->flags |= AGS_DEVOUT_ALSA;
 
@@ -758,11 +823,21 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 void
 ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 {
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
   AgsDevout *devout;
 
+  AgsApplicationContext *application_context;
+
   GList *card_id;
-  
-  devout = ags_devout_new(NULL);
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+
+  /*  */  
+  devout = ags_devout_new(window->application_context);
   devout->flags &= (~AGS_DEVOUT_ALSA);
   devout->flags |= AGS_DEVOUT_OSS;
 

@@ -56,9 +56,6 @@ struct _AgsAudioPreferencesClass
 
 GType ags_audio_preferences_get_type(void);
 
-void ags_audio_preferences_load_alsa_card(AgsAudioPreferences *audio_preferences);
-void ags_audio_preferences_load_oss_card(AgsAudioPreferences *audio_preferences);
-
 AgsAudioPreferences* ags_audio_preferences_new();
 
 #endif /*__AGS_AUDIO_PREFERENCES_H__*/

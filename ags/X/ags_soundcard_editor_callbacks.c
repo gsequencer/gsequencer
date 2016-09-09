@@ -76,13 +76,23 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
+			    "jack\0",
+			    5)){
+      ags_soundcard_editor_load_jack_card(soundcard_editor);
+
+      gtk_widget_show_all(soundcard_editor->jack_hbox);
+    }else if(!g_ascii_strncasecmp(str,
 			    "alsa\0",
 			    5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
+
+      gtk_widget_hide(soundcard_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss\0",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
+
+      gtk_widget_hide(soundcard_editor->jack_hbox);
     }
   }
 }

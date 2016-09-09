@@ -1312,8 +1312,13 @@ ags_jack_devout_list_cards(AgsSoundcard *soundcard,
   pthread_mutex_t *application_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
-  
+
   application_context = jack_devout->application_context;
+
+  if(application_context == NULL){
+    return;
+  }
+  
   application_mutex = jack_devout->application_mutex;
   
   if(card_id != NULL){
