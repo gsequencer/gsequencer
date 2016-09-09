@@ -19,12 +19,15 @@
 
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
+#include <ags/object/ags_connectable.h>
+
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/jack/ags_jack_server.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
+#include <ags/X/ags_soundcard_editor.h>
 
 #include <ags/config.h>
 
@@ -48,7 +51,15 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
 
 void ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
 {
-  //TODO:JK: implement me
+  AgsSoundcardEditor *soundcard_editor;
+
+  soundcard_editor = ags_soundcard_editor_new();
+  gtk_box_pack_start(audio_preferences->soundcard_editor,
+		     soundcard_editor,
+		     FALSE, FALSE,
+		     0);
+  ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
+  gtk_widget_show_all(soundcard_editor);
 }
 
 void

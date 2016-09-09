@@ -332,6 +332,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
       g_object_set(AGS_JACK_DEVOUT(jack_port->device),
 		   "jack-port\0", jack_port,
 		   NULL);
+      ags_soundcard_set_device(AGS_SOUNDCARD(jack_port->device),
+			       port_name);
 
       jack_set_buffer_size(AGS_JACK_CLIENT(jack_port->jack_client)->client,
 			   AGS_JACK_DEVOUT(jack_port->device)->pcm_channels * AGS_JACK_DEVOUT(jack_port->device)->buffer_size);

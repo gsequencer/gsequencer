@@ -246,16 +246,19 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   GObject *soundcard;
   GObject *sequencer;
   AgsJackServer *jack_server;
+
+  AgsThread *soundcard_thread;
   
   AgsConfig *config;
 
+  GList *list;
   JSList *jslist;
 
+  gchar *soundcard_group;
   gchar *str;
 
-  guint pcm_channels;
-  gboolean jack_enabled;
-
+  guint i;
+  
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
 
   /**/
@@ -265,103 +268,156 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 	       "application-context\0", audio_application_context,
 	       NULL);
 
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "jack\0");
-  jack_enabled = (str != NULL && !g_ascii_strncasecmp(str, "enabled\0", 8)) ? TRUE: FALSE;
-
-  if(str != NULL){
-    g_free(str);
-  }
-
   /* distributed manager */
   audio_application_context->distributed_manager = NULL;
 
-  if(jack_enabled){
-    jack_server = ags_jack_server_new(audio_application_context,
-				      NULL);
-    audio_application_context->distributed_manager = g_list_prepend(audio_application_context->distributed_manager,
-								   jack_server);
-    g_object_ref(G_OBJECT(jack_server));
-  }
-  
-  /* AgsSoundcard */
-  audio_application_context->soundcard = NULL;
- 
-  soundcard = ags_devout_new(audio_application_context);
-  audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
-							soundcard);
-  g_object_ref(G_OBJECT(soundcard));  
-  
-  if(jack_enabled){
-    GObject *tmp;
+  /* jack server */
+  jack_server = ags_jack_server_new(audio_application_context,
+				    NULL);
+  audio_application_context->distributed_manager = g_list_prepend(audio_application_context->distributed_manager,
+								  jack_server);
+  g_object_ref(G_OBJECT(jack_server));
 
-    GList *list;
+  /* soundcard */
+  audio_application_context->soundcard = NULL;
+  soundcard = NULL;
+  
+  soundcard_group = g_strdup("soundcard\0");
+  
+  for(i = 0; ; i++){
+    guint pcm_channels, buffer_size, samplerate, format;
+    gboolean use_jack, use_alsa, use_oss;
     
-    guint i;
-    gboolean initial_set;
-    
-    //    jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
-    //  jackctl_server_start(jack_server->jackctl);
-    //    jackctl_server_open(jack_server->jackctl,
-    //			jslist->data);
-    
+    if(!g_key_file_has_group(config,
+			     soundcard_group)){
+      break;
+    }
+
     str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD,
+			       soundcard_group,
+			       "backend\0");
+
+    g_free(soundcard_group);
+    soundcard_group = g_strdup_printf("%s-%d\0",
+				      AGS_CONFIG_SOUNDCARD,
+				      i);
+
+    use_jack = FALSE;
+    use_alsa = FALSE;
+    use_oss = FALSE;
+    
+    if(str != NULL){
+      if(!g_ascii_strncasecmp(str,
+			      "jack\0",
+			      5)){
+	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+							       TRUE);
+
+	use_jack = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "alsa\0",
+				    5)){
+	soundcard = ags_devout_new(audio_application_context);
+	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
+	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
+		
+	use_alsa = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "oss\0",
+				    4)){
+	soundcard = ags_devout_new(audio_application_context);
+	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
+	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
+
+	use_oss = TRUE;
+      }else{
+	g_warning("unknown soundcard backend\0");
+	continue;
+      }
+    }else{
+      continue;
+    }
+
+    
+    audio_application_context->soundcard = g_list_append(audio_application_context->soundcard,
+							 soundcard);
+    g_object_ref(soundcard);
+
+    /* device */
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "device\0");
+
+    if(str != NULL){
+      ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+			       str);
+      g_free(str);
+    }
+
+    /* presets */
+    pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+    str = ags_config_get_value(config,
+			       soundcard_group,
 			       "pcm-channels\0");
 
     if(str != NULL){
       pcm_channels = g_ascii_strtoull(str,
 				      NULL,
 				      10);
+      g_free(str);
     }
 
-    if(str == NULL ||
-       pcm_channels == 0){
-      pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
-    }
-    
-    list = NULL;
-    initial_set = TRUE;
-    
-    for(i = 0; i < pcm_channels; i++){
-      tmp = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
-						       TRUE);
 
-      if(tmp != NULL){
-	jack_nframes_t samplerate;
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "buffer-size\0");
 
-	if(initial_set){
-	  soundcard = tmp;
-
-	  initial_set = FALSE;
-	}
-	
-	list = g_list_prepend(list,
-			      tmp);
-	samplerate = jack_get_sample_rate(AGS_JACK_CLIENT(AGS_JACK_PORT(AGS_JACK_DEVOUT(tmp)->jack_port)->jack_client)->client);
-	ags_config_set_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0",
-			     g_strdup_printf("%d\0", samplerate));
-	g_object_set(tmp,
-		     "samplerate\0", samplerate,
-		     NULL);
-      
-	g_object_ref(G_OBJECT(tmp));
-      }
+    if(str != NULL){
+      buffer_size = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+      g_free(str);
     }
 
-    if(list != NULL){
-      if(audio_application_context->soundcard != NULL){
-	audio_application_context->soundcard = g_list_concat(g_list_reverse(list),
-							     audio_application_context->soundcard);
-      }else{
-	audio_application_context->soundcard = g_list_reverse(list);
-      }
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "samplerate\0");
+
+    if(str != NULL){
+      samplerate = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+      g_free(str);
     }
+
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "format\0");
+
+    if(str != NULL){
+      format = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+      g_free(str);
+    }
+
+    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+			      pcm_channels,
+			      buffer_size,
+			      samplerate,
+			      format);
   }
-    
+
+  if(audio_application_context->soundcard != NULL){
+    soundcard = audio_application_context->soundcard->data;
+  }
+  
+  g_free(soundcard_group);
+  
   /* AgsSequencer */
   audio_application_context->sequencer = NULL;
 
@@ -370,6 +426,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 						       sequencer);
   g_object_ref(G_OBJECT(sequencer));
 
+  //TODO:JK: comment out
+  /*
   if(jack_enabled){
     GObject *tmp;
     
@@ -384,6 +442,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       g_object_ref(G_OBJECT(sequencer));
     }
   }
+  */
   
   /* AgsServer */
   audio_application_context->server = ags_server_new(audio_application_context);
@@ -407,30 +466,22 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 				TRUE, TRUE);
   
   /* AgsSoundcardThread */
-  audio_application_context->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				audio_application_context->soundcard_thread,
-				TRUE, TRUE);
-
-  if(jack_enabled){
-    AgsThread *soundcard_thread;
-
-    GList *list;
+  audio_application_context->soundcard_thread = NULL;
+  list = audio_application_context->soundcard;
     
-    guint i;
-
-    list = audio_application_context->soundcard;
-    
-    for(i = 1; i < pcm_channels; i++){
-      list = list->next;
+  while(list != NULL){
+    list = list->next;
       
-      soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
-      ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				    soundcard_thread,
-				    TRUE, TRUE);
+    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
+    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				  soundcard_thread,
+				  TRUE, TRUE);
+
+    if(audio_application_context->soundcard_thread == NULL){
+      audio_application_context->soundcard_thread = soundcard_thread;
     }
   }
-
+  
   /* AgsExportThread */
   audio_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
 										NULL);

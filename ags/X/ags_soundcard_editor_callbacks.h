@@ -37,6 +37,10 @@ void ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
 void ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 						AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_add_jack_callback(GtkComboBox *combo,
+					    AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_remove_jack_callback(GtkComboBox *combo,
+					       AgsSoundcardEditor *soundcard_editor);
 
 void ags_soundcard_editor_audio_channels_changed(GtkSpinButton *spin_button,
 						 AgsSoundcardEditor *soundcard_editor);
