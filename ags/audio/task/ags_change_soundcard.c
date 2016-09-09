@@ -157,9 +157,14 @@ ags_change_soundcard_launch(AgsTask *task)
 {
   AgsChangeSoundcard *change_soundcard;
 
+  GObject *alsa_soundcard, *oss_soundcard, *jack_soundcard;
   GObject *soundcard, *old_soundcard;
-
+  
   GList *list, *audio;
+
+  gboolean use_alsa, use_oss, use_jack;
+  gboolean found_alsa, found_oss, found_jack;
+  gboolean add_alsa, add_oss, add_jack;
   
   change_soundcard = AGS_CHANGE_SOUNDCARD(task);
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context));
@@ -170,6 +175,79 @@ ags_change_soundcard_launch(AgsTask *task)
     old_soundcard = NULL;
   }
 
+  //REMOVE:ME: spaghetti
+  /* check if alsa already available * /
+  found_alsa = FALSE;
+	
+  if(use_alsa){
+    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
+	  
+    while(list != NULL){
+      if(AGS_IS_DEVOUT(list->data) &&
+	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(list->data)->flags)) != 0){
+	alsa_soundcard = list->data;
+	      
+	found_alsa = TRUE;
+	      
+	break;
+      }
+
+      list = list->next;
+    }
+
+    if(!found_alsa){
+      add_alsa = TRUE;
+    }
+  }
+
+  /* check if oss already available * /
+  found_oss = FALSE;
+	
+  if(use_oss){
+    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
+	  
+    while(list != NULL){
+      if(AGS_IS_DEVOUT(list->data) &&
+	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(list->data)->flags)) != 0){
+	oss_soundcard = list->data;
+
+	found_oss = TRUE;
+	      
+	break;
+      }
+
+      list = list->next;
+    }
+
+    if(!found_oss){
+      add_oss = TRUE;
+    }
+  }
+
+  /* check if jack already available * /
+  found_jack = FALSE;
+	
+  if(use_jack){
+    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
+	  
+    while(list != NULL){
+      if(AGS_IS_JACK_DEVOUT(list->data)){
+	jack_soundcard = list->data;
+
+	found_jack = TRUE;
+	      
+	break;
+      }
+
+      list = list->next;
+    }
+
+    if(!found_jack){
+      add_jack = TRUE;
+    }
+  }
+  */
+  
   
   if(change_soundcard->use_alsa){
     ags_change_soundcard_alsa(change_soundcard);

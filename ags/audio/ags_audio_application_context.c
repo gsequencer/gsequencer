@@ -252,6 +252,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   JSList *jslist;
 
   gchar *str;
+
+  guint pcm_channels;
   gboolean jack_enabled;
 
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
@@ -288,42 +290,78 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
  
   soundcard = ags_devout_new(audio_application_context);
   audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
-						       soundcard);
-  g_object_ref(G_OBJECT(soundcard));
+							soundcard);
+  g_object_ref(G_OBJECT(soundcard));  
   
   if(jack_enabled){
     GObject *tmp;
+
+    GList *list;
+    
+    guint i;
+    gboolean initial_set;
     
     //    jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
     //  jackctl_server_start(jack_server->jackctl);
     //    jackctl_server_open(jack_server->jackctl,
     //			jslist->data);
     
-    tmp = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
-						     TRUE);
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "pcm-channels\0");
 
-    if(tmp != NULL){
-      jack_nframes_t samplerate;
+    if(str != NULL){
+      pcm_channels = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+    }
 
-      soundcard = tmp;
-      ags_soundcard_set_application_context(AGS_SOUNDCARD(soundcard),
-					    audio_application_context);
-      audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
-							    soundcard);
+    if(str == NULL ||
+       pcm_channels == 0){
+      pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+    }
+    
+    list = NULL;
+    initial_set = TRUE;
+    
+    for(i = 0; i < pcm_channels; i++){
+      tmp = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+						       TRUE);
 
-      samplerate = jack_get_sample_rate(AGS_JACK_CLIENT(AGS_JACK_PORT(AGS_JACK_DEVOUT(soundcard)->jack_port)->jack_client)->client);
-      ags_config_set_value(config,
-			   AGS_CONFIG_SOUNDCARD,
-			   "samplerate\0",
-			   g_strdup_printf("%d\0", samplerate));
-      g_object_set(soundcard,
-		   "samplerate\0", samplerate,
-		   NULL);
+      if(tmp != NULL){
+	jack_nframes_t samplerate;
+
+	if(initial_set){
+	  soundcard = tmp;
+
+	  initial_set = FALSE;
+	}
+	
+	list = g_list_prepend(list,
+			      tmp);
+	samplerate = jack_get_sample_rate(AGS_JACK_CLIENT(AGS_JACK_PORT(AGS_JACK_DEVOUT(tmp)->jack_port)->jack_client)->client);
+	ags_config_set_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0",
+			     g_strdup_printf("%d\0", samplerate));
+	g_object_set(tmp,
+		     "samplerate\0", samplerate,
+		     NULL);
       
-      g_object_ref(G_OBJECT(soundcard));
+	g_object_ref(G_OBJECT(tmp));
+      }
+    }
+
+    if(list != NULL){
+      if(audio_application_context->soundcard != NULL){
+	audio_application_context->soundcard = g_list_concat(g_list_reverse(list),
+							     audio_application_context->soundcard);
+      }else{
+	audio_application_context->soundcard = g_list_reverse(list);
+      }
     }
   }
-  
+    
   /* AgsSequencer */
   audio_application_context->sequencer = NULL;
 
@@ -373,6 +411,25 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				audio_application_context->soundcard_thread,
 				TRUE, TRUE);
+
+  if(jack_enabled){
+    AgsThread *soundcard_thread;
+
+    GList *list;
+    
+    guint i;
+
+    list = audio_application_context->soundcard;
+    
+    for(i = 1; i < pcm_channels; i++){
+      list = list->next;
+      
+      soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
+      ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				    soundcard_thread,
+				    TRUE, TRUE);
+    }
+  }
 
   /* AgsExportThread */
   audio_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,

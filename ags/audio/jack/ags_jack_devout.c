@@ -30,6 +30,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
@@ -166,6 +167,7 @@ enum{
   PROP_DELAY_FACTOR,
   PROP_ATTACK,
   PROP_JACK_PORT,
+  PROP_CHANNEL,
 };
 
 enum{
@@ -459,7 +461,22 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
 				  PROP_JACK_PORT,
 				  param_spec);
 
-  /* AgsJackDevoutClass */
+
+  /**
+   * AgsJackDevout:channel:
+   *
+   * The assigned #AgsChannel
+   * 
+   * Since: 0.7.0
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "channel\0",
+				   "The mapped channel\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
 }
 
 GQuark
@@ -1696,6 +1713,9 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
   jack_devout->delay_counter += 1.0;
 
   if(jack_devout->delay_counter >= delay){
+    ags_soundcard_set_note_offset(soundcard,
+				  jack_devout->note_offset + 1);
+    
     /* delay */
     ags_soundcard_offset_changed(soundcard,
 				 jack_devout->note_offset);

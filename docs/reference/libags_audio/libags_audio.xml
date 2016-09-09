@@ -55,6 +55,7 @@
     <xi:include href="xml/ags_audio.xml"/>
     <xi:include href="xml/ags_audio_application_context.xml"/>
     <xi:include href="xml/ags_audio_buffer_util.xml"/>
+    <xi:include href="xml/ags_audio_connection.xml"/>
     <xi:include href="xml/ags_audio_signal.xml"/>
     <xi:include href="xml/ags_automation.xml"/>
     <xi:include href="xml/ags_channel.xml"/>

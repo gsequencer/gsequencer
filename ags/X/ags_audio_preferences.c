@@ -54,6 +54,37 @@ void ags_audio_preferences_reset(AgsApplicable *applicable);
 static void ags_audio_preferences_finalize(GObject *gobject);
 void ags_audio_preferences_show(GtkWidget *widget);
 
+void ags_audio_preferences_apply_jack(AgsAudioPreferences *audio_preferences,
+				      guint pcm_channels,
+				      guint format,
+				      guint buffer_size);
+void ags_audio_preferences_apply_alsa(AgsAudioPreferences *audio_preferences,
+				      guint device,
+				      guint format,
+				      guint pcm_channels,
+				      guint buffer_size,
+				      guint samplerate);
+void ags_audio_preferences_apply_oss(AgsAudioPreferences *audio_preferences,
+				     guint device,
+				     guint format,
+				     guint pcm_channels,
+				     guint buffer_size,
+				     guint samplerate);
+
+void ags_audio_preferences_reset_jack(AgsAudioPreferences *audio_preferences,
+				      guint pcm_channels,
+				      guint buffer_size);
+void ags_audio_preferences_reset_alsa(AgsAudioPreferences *audio_preferences,
+				      guint device,
+				      guint pcm_channels,
+				      guint buffer_size,
+				      guint samplerate);
+void ags_audio_preferences_reset_oss(AgsAudioPreferences *audio_preferences,
+				     guint device,
+				     guint pcm_channels,
+				     guint buffer_size,
+				     guint samplerate);
+
 /**
  * SECTION:ags_audio_preferences
  * @short_description: A composite widget to do audio related preferences
@@ -168,6 +199,19 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		     FALSE, FALSE,
 		     2);
 
+  /* enable JACK */
+  audio_preferences->enable_jack = (GtkCheckButton *) gtk_check_button_new_with_label("Enable JACK\0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(audio_preferences->enable_jack),
+		   0, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  str = ags_config_get_value(ags_config_get_instance(),
+			     AGS_CONFIG_GENERIC,
+			     "disable-feature\0");
+
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "backend\0",
@@ -176,7 +220,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   0, 1,
+		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -184,7 +228,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(audio_preferences->backend),
 		   1, 2,
-		   0, 1,
+		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -204,7 +248,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -212,7 +256,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(audio_preferences->card),
 		   1, 2,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
@@ -224,7 +268,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   2, 3,
+		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -233,7 +277,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(audio_preferences->audio_channels),
 		   1, 2,
-		   2, 3,
+		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -245,7 +289,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   3, 4,
+		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -254,7 +298,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(audio_preferences->samplerate),
 		   1, 2,
-		   3, 4,
+		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -266,7 +310,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   4, 5,
+		   5, 6,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -275,7 +319,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(audio_preferences->buffer_size),
 		   1, 2,
-		   4, 5,
+		   5, 6,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -287,7 +331,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   5, 6,
+		   6, 7,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -295,7 +339,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_table_attach(table,
 		   GTK_WIDGET(audio_preferences->format),
 		   1, 2,
-		   5, 6,
+		   6, 7,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -313,19 +357,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_combo_box_set_active(audio_preferences->format,
 			   1);
   
-  /* JACK */
-  audio_preferences->enable_jack = (GtkCheckButton *) gtk_check_button_new_with_label("Enable JACK\0");
-  gtk_table_attach(table,
-		   GTK_WIDGET(audio_preferences->enable_jack),
-		   0, 2,
-		   6, 7,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-  
-  str = ags_config_get_value(ags_config_get_instance(),
-			     AGS_CONFIG_GENERIC,
-			     "disable-feature\0");
-  
+  /* JACK */  
   if(!g_ascii_strncasecmp(str,
 			  "experimental\0",
 			  13)){
@@ -400,6 +432,9 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
   
   audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
 
+  g_signal_connect(G_OBJECT(audio_preferences->enable_jack), "clicked\0",
+		   G_CALLBACK(ags_audio_preferences_enable_jack_callback), audio_preferences);
+
   g_signal_connect(G_OBJECT(audio_preferences->backend), "changed\0",
 		   G_CALLBACK(ags_audio_preferences_backend_changed_callback), audio_preferences);
 
@@ -414,9 +449,6 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
   if(g_ascii_strncasecmp(str,
 			 "experimental\0",
 			 13)){
-    g_signal_connect(G_OBJECT(audio_preferences->enable_jack), "clicked\0",
-		     G_CALLBACK(ags_audio_preferences_enable_jack_callback), audio_preferences);
-
     g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked\0",
 		     G_CALLBACK(ags_audio_preferences_start_jack_callback), audio_preferences);
 
@@ -448,26 +480,11 @@ ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_audio_preferences_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences; 
   
-  GObject *alsa_soundcard, *oss_soundcard, *jack_soundcard;
-  GObject *soundcard;
-
-  GList *card_id, *card_name;
   GtkListStore *model;
   GtkTreeIter current;
-
-  AgsChangeSoundcard *change_soundcard;
-  AgsSetOutputDevice *set_output_device;
-  AgsApplyPresets *apply_presets;
-  
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  
-  AgsApplicationContext *application_context;
+    
   AgsConfig *config;
 
   GList *tasks;
@@ -476,14 +493,12 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   gchar *backend;
   char *device, *str;
 
-  int card_num;
-  guint channels, channels_min, channels_max;
-  guint rate, rate_min, rate_max;
-  guint buffer_size, buffer_size_min, buffer_size_max;
+  guint channels;
+  guint rate;
+  guint buffer_size;
   guint format;
-  gboolean use_alsa, use_oss, use_jack;
-  gboolean found_alsa, found_oss, found_jack;
-  gboolean add_alsa, add_oss, add_jack;
+  gboolean use_jack, use_alsa, use_oss;
+  gboolean add_jack, add_alsa, add_oss;
   
   GValue value =  {0,};
 
@@ -491,28 +506,8 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
-  
   config = ags_config_get_instance();
-  application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
-  tasks = NULL;
-  
   /* backend and jack enable */
 #ifdef AGS_WITH_ALSA
   use_alsa = TRUE;
@@ -539,131 +534,6 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
       use_oss = TRUE;
     }
   }
-
-  /* check if alsa already available */
-  found_alsa = FALSE;
-	
-  if(use_alsa){
-    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-    while(list != NULL){
-      if(AGS_IS_DEVOUT(list->data) &&
-	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(list->data)->flags)) != 0){
-	alsa_soundcard = list->data;
-	      
-	found_alsa = TRUE;
-	      
-	break;
-      }
-
-      list = list->next;
-    }
-
-    if(!found_alsa){
-      add_alsa = TRUE;
-    }
-  }
-
-  /* check if oss already available */
-  found_oss = FALSE;
-	
-  if(use_oss){
-    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-    while(list != NULL){
-      if(AGS_IS_DEVOUT(list->data) &&
-	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(list->data)->flags)) != 0){
-	oss_soundcard = list->data;
-
-	found_oss = TRUE;
-	      
-	break;
-      }
-
-      list = list->next;
-    }
-
-    if(!found_oss){
-      add_oss = TRUE;
-    }
-  }
-
-  /* check if jack already available */
-  found_jack = FALSE;
-	
-  if(use_jack){
-    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-    while(list != NULL){
-      if(AGS_IS_JACK_DEVOUT(list->data)){
-	jack_soundcard = list->data;
-
-	found_jack = TRUE;
-	      
-	break;
-      }
-
-      list = list->next;
-    }
-
-    if(!found_jack){
-      add_jack = TRUE;
-    }
-  }
-
-  /* create change soundcard task */
-  change_soundcard = ags_change_soundcard_new(application_context,
-					      add_alsa,
-					      add_oss,
-					      add_jack);
-  g_signal_connect(change_soundcard, "launch\0",
-		   G_CALLBACK(ags_audio_preferences_launch_change_soundcard_callback), audio_preferences);
-    
-  tasks = g_list_prepend(tasks,
-			 change_soundcard);
-
-  /* device */
-  model = gtk_combo_box_get_model(audio_preferences->card);
-
-  if(!(gtk_combo_box_get_active_iter(audio_preferences->card,
-				     &current))){
-    return;
-  }
-
-  gtk_tree_model_get_value(model,
-			   &current,
-			   0,
-			   &value);
-
-  /* handle */
-  if(use_alsa){
-    //FIXME:JK: work-around for alsa-handle
-    device = 
-      str = g_strdup_printf("%s\0", g_value_get_string(&value));
-    g_message("%s\0", str);
-    ags_config_set_value(config,
-			 AGS_CONFIG_SOUNDCARD,
-			 "alsa-handle\0",
-			 str);
-  }else{
-    device = 
-      str = g_strdup_printf("%s\0", g_value_get_string(&value));
-    g_message("%s\0", str);
-    ags_config_set_value(config,
-			 AGS_CONFIG_SOUNDCARD,
-			 "oss-handle\0",
-			 str);
-  }
-  
-  /* samplerate */
-  rate = gtk_spin_button_get_value(audio_preferences->samplerate);
-  str = g_strdup_printf("%u\0",
-			rate);
-  ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0",
-		       str);
-  g_free(str);
 
   /* buffer size */
   buffer_size = gtk_spin_button_get_value(audio_preferences->buffer_size);
@@ -704,34 +574,75 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
     break;
   }
 
-  str = g_strdup_printf("%u\0",
-			format);
-  ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "format\0",
-		       str);
-  g_free(str);  
+  /*  */
+  if(use_jack){
+    ags_audio_preferences_apply_jack(audio_preferences,
+				     format,
+				     channels,
+				     buffer_size);
+  }else{  
+    /* samplerate */
+    rate = gtk_spin_button_get_value(audio_preferences->samplerate);
+    str = g_strdup_printf("%u\0",
+			  rate);
+    ags_config_set_value(config,
+			 AGS_CONFIG_SOUNDCARD,
+			 "samplerate\0",
+			 str);
+    g_free(str);
 
-  /* create set output device task */
-  set_output_device = ags_set_output_device_new(window->soundcard,
-						device);
-  tasks = g_list_prepend(tasks,
-			 set_output_device);
-  
-  /* create set output device task */
-  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
-					channels,
-					rate,
-					buffer_size,
-					format);
-  tasks = g_list_prepend(tasks,
-			 apply_presets);
+    /* device */
+    model = gtk_combo_box_get_model(audio_preferences->card);
 
-  /* append AgsSetOutputDevice and AgsSetOutputDevice */
-  tasks = g_list_reverse(tasks);  
-  ags_task_thread_append_tasks(task_thread,
-			       tasks);
+    if(gtk_combo_box_get_active_iter(audio_preferences->card,
+				     &current)){
+      gtk_tree_model_get_value(model,
+			       &current,
+			       0,
+			       &value);
+      device = g_strdup_printf("%s\0", g_value_get_string(&value));
+    }else{
+      device = NULL;
+    }
 
+    if(use_alsa){
+      if(device == NULL){
+	device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
+      }
+      
+      /* handle */
+      g_message("%s\0", device);
+      ags_config_set_value(config,
+			   AGS_CONFIG_SOUNDCARD,
+			   "alsa-handle\0",
+			   device);
+
+      ags_audio_preferences_apply_alsa(audio_preferences,
+				       device,
+				       format,
+				       channels,
+				       buffer_size,
+				       rate);
+    }else if(use_oss){
+      if(device == NULL){
+	device = AGS_DEVOUT_DEFAULT_OSS_DEVICE;
+      }
+
+      /* handle */
+      g_message("%s\0", device);
+      ags_config_set_value(config,
+			   AGS_CONFIG_SOUNDCARD,
+			   "oss-handle\0",
+			   device);
+      
+      ags_audio_preferences_apply_oss(audio_preferences,
+				      device,
+				      format,
+				      channels,
+				      buffer_size,
+				      rate);
+    }
+  }
 }
 
 void
@@ -1031,7 +942,293 @@ ags_audio_preferences_load_oss_card(AgsAudioPreferences *audio_preferences)
 
     
     card_id = card_id->next;
-  }}
+  }
+}
+
+void
+ags_audio_preferences_apply_jack(AgsAudioPreferences *audio_preferences,
+				 guint format,
+				 guint pcm_channels,
+				 guint buffer_size)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsChangeSoundcard *change_soundcard;
+  AgsSetOutputDevice *set_output_device;
+  AgsApplyPresets *apply_presets;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  //REMOVE:ME: spaghetti
+  /* check if alsa already available * /
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = preferences->window;
+  
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop * /
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread * /
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+  tasks = NULL;
+  
+  /* create change soundcard task * /
+  change_soundcard = ags_change_soundcard_new(application_context,
+					      FALSE,
+					      FALSE,
+					      TRUE);
+  g_signal_connect(change_soundcard, "launch\0",
+		   G_CALLBACK(ags_audio_preferences_launch_change_soundcard_callback), audio_preferences);
+    
+  tasks = g_list_prepend(tasks,
+			 change_soundcard);
+
+  /*  * /
+  str = g_strdup_printf("%u\0",
+			format);
+  ags_config_set_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "format\0",
+		       str);
+  g_free(str);  
+  
+
+  /* create set output device task * /
+  set_output_device = ags_set_output_device_new(window->soundcard,
+						device);
+  tasks = g_list_prepend(tasks,
+			 set_output_device);
+  
+  /* create apply presets task * /
+  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
+					channels,
+					rate,
+					buffer_size,
+					format);
+  tasks = g_list_prepend(tasks,
+			 apply_presets);
+
+  /* append AgsSetOutputDevice and AgsSetOutputDevice * /
+  tasks = g_list_reverse(tasks);  
+  ags_task_thread_append_tasks(task_thread,
+			       tasks);
+  */
+}
+
+void
+ags_audio_preferences_apply_alsa(AgsAudioPreferences *audio_preferences,
+				 guint device,
+				 guint format,
+				 guint pcm_channels,
+				 guint buffer_size,
+				 guint samplerate)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsChangeSoundcard *change_soundcard;
+  AgsSetOutputDevice *set_output_device;
+  AgsApplyPresets *apply_presets;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  //REMOVE:ME: spaghetti
+  /* check if alsa already available * /
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = preferences->window;
+  
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop * /
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread * /
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+  tasks = NULL;
+  
+  /* create change soundcard task * /
+  change_soundcard = ags_change_soundcard_new(application_context,
+					      FALSE,
+					      FALSE,
+					      TRUE);
+  g_signal_connect(change_soundcard, "launch\0",
+		   G_CALLBACK(ags_audio_preferences_launch_change_soundcard_callback), audio_preferences);
+    
+  tasks = g_list_prepend(tasks,
+			 change_soundcard);
+
+  /*  * /
+  str = g_strdup_printf("%u\0",
+			format);
+  ags_config_set_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "format\0",
+		       str);
+  g_free(str);  
+  
+
+  /* create set output device task * /
+  set_output_device = ags_set_output_device_new(window->soundcard,
+						device);
+  tasks = g_list_prepend(tasks,
+			 set_output_device);
+  
+  /* create apply presets task * /
+  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
+					channels,
+					rate,
+					buffer_size,
+					format);
+  tasks = g_list_prepend(tasks,
+			 apply_presets);
+
+  /* append AgsSetOutputDevice and AgsSetOutputDevice * /
+  tasks = g_list_reverse(tasks);  
+  ags_task_thread_append_tasks(task_thread,
+			       tasks);
+  */
+}
+
+void
+ags_audio_preferences_apply_oss(AgsAudioPreferences *audio_preferences,
+				guint device,
+				guint format,
+				guint pcm_channels,
+				guint buffer_size,
+				guint samplerate)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsChangeSoundcard *change_soundcard;
+  AgsSetOutputDevice *set_output_device;
+  AgsApplyPresets *apply_presets;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  //REMOVE:ME: spaghetti
+  /* check if alsa already available * /
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = preferences->window;
+  
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop * /
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread * /
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+  tasks = NULL;
+  
+  /* create change soundcard task * /
+  change_soundcard = ags_change_soundcard_new(application_context,
+					      FALSE,
+					      FALSE,
+					      TRUE);
+  g_signal_connect(change_soundcard, "launch\0",
+		   G_CALLBACK(ags_audio_preferences_launch_change_soundcard_callback), audio_preferences);
+    
+  tasks = g_list_prepend(tasks,
+			 change_soundcard);
+
+  /*  * /
+  str = g_strdup_printf("%u\0",
+			format);
+  ags_config_set_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "format\0",
+		       str);
+  g_free(str);  
+  
+  /* create set output device task * /
+  set_output_device = ags_set_output_device_new(window->soundcard,
+						device);
+  tasks = g_list_prepend(tasks,
+			 set_output_device);
+  
+  /* create apply presets task * /
+  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
+					channels,
+					rate,
+					buffer_size,
+					format);
+  tasks = g_list_prepend(tasks,
+			 apply_presets);
+
+  /* append AgsSetOutputDevice and AgsSetOutputDevice * /
+  tasks = g_list_reverse(tasks);  
+  ags_task_thread_append_tasks(task_thread,
+			       tasks);
+  */
+}
+
+void
+ags_audio_preferences_reset_jack(AgsAudioPreferences *audio_preferences,
+				 guint pcm_channels,
+				 guint buffer_size)
+{
+}
+
+void
+ags_audio_preferences_reset_alsa(AgsAudioPreferences *audio_preferences,
+				 guint device,
+				 guint pcm_channels,
+				 guint buffer_size,
+				 guint samplerate)
+{
+}
+
+void
+ags_audio_preferences_reset_oss(AgsAudioPreferences *audio_preferences,
+				guint device,
+				guint pcm_channels,
+				guint buffer_size,
+				guint samplerate)
+{
+}
 
 /**
  * ags_audio_preferences_new:
