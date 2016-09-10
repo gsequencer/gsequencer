@@ -471,8 +471,6 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 
     if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
       g_warning("ags_jack_server.c - can't open JACK client");
-      
-      return;
     }
   }
 
@@ -584,8 +582,6 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 
     if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
       g_warning("ags_jack_server.c - can't open JACK client");
-      
-      return;
     }
   }
 

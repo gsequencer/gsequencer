@@ -42,6 +42,7 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_midi_dialog.h>
 
 #include <ags/X/editor/ags_machine_radio_button.h>
@@ -51,6 +52,7 @@
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_connection_editor_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine);
 void ags_machine_midi_dialog_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine);
 void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
 
@@ -348,13 +350,44 @@ ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine)
 }
 
 int
+ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  AgsConnectionEditor *connection_editor;
+  
+  if(machine->connection_editor == NULL){
+    connection_editor =
+      machine->connection_editor = ags_connection_editor_new(machine);
+    
+    g_signal_connect(connection_editor, "delete-event\0",
+		     G_CALLBACK(ags_machine_connection_editor_delete_event_callback), machine);
+
+    ags_connectable_connect(AGS_CONNECTABLE(connection_editor));
+    ags_applicable_reset(AGS_APPLICABLE(connection_editor));
+
+    gtk_widget_show_all(connection_editor);
+  }else{
+    connection_editor = machine->connection_editor;
+  }
+
+  gtk_widget_show_all(connection_editor);
+  
+  return(0);
+}
+
+void
+ags_machine_connection_editor_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine)
+{
+  machine->connection_editor = NULL;
+}
+
+int
 ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsMidiDialog *midi_dialog;
   
-  if(machine->connection == NULL){
+  if(machine->midi_dialog == NULL){
     midi_dialog =
-      machine->connection = ags_midi_dialog_new(machine);
+      machine->midi_dialog = ags_midi_dialog_new(machine);
     midi_dialog->flags |= AGS_MIDI_DIALOG_MAPPING;
     
     g_signal_connect(midi_dialog, "delete-event\0",
@@ -365,7 +398,7 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
 
     gtk_widget_show_all(midi_dialog);
   }else{
-    midi_dialog = machine->connection;
+    midi_dialog = machine->midi_dialog;
   }
 
   gtk_widget_show_all(midi_dialog);
@@ -376,9 +409,7 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
 void
 ags_machine_midi_dialog_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine)
 {
-  g_message("delete-event\0");
-  
-  machine->connection = NULL;
+  machine->midi_dialog = NULL;
 }
 
 void

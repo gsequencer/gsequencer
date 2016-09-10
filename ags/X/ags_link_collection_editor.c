@@ -59,7 +59,7 @@ void ags_link_collection_editor_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_link_collection_editor
- * @short_description: Edit links in bulk mode.
+ * @short_description: edit links in bulk mode.
  * @title: AgsLinkCollectionEditor
  * @section_id:
  * @include: ags/X/ags_link_collection_editor.h
@@ -174,13 +174,18 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 {
   GtkAlignment *alignment;
   GtkLabel *label;
+
   GtkCellRenderer *cell_renderer;
+
   GtkListStore *model;
+
   GtkTreeIter iter;
 
   g_signal_connect_after(GTK_WIDGET(link_collection_editor), "parent_set\0",
 			 G_CALLBACK(ags_link_collection_editor_parent_set_callback), link_collection_editor);
 
+  link_collection_editor->channel_type = G_TYPE_NONE;
+  
   gtk_table_resize(GTK_TABLE(link_collection_editor),
 		   4, 2);
   gtk_table_set_row_spacings(GTK_TABLE(link_collection_editor),
@@ -631,7 +636,9 @@ ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor
 				   &iter)){
     AgsMachine *link_machine;
     AgsMachineEditor *machine_editor;
+
     GtkTreeModel *model;
+
     gdouble first_line, first_line_stop, first_line_range;
     gdouble first_link, first_link_stop, first_link_range;
     gdouble max;

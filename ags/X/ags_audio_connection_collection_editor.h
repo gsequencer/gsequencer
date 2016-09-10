@@ -39,6 +39,8 @@ struct _AgsAudioConnectionCollectionEditor
 {
   GtkTable table;
 
+  GType channel_type;
+
   GtkSpinButton *pad;
   GtkSpinButton *audio_channel;
   
@@ -53,6 +55,8 @@ struct _AgsAudioConnectionCollectionEditorClass
 
 GType ags_audio_connection_collection_editor_get_type();
 
-AgsAudioConnectionCollectionEditor* ags_audio_connection_collection_editor_new();
+void ags_audio_connection_collection_editor_check(AgsAudioConnectionCollectionEditor *audio_connection_collection_editor);
+
+AgsAudioConnectionCollectionEditor* ags_audio_connection_collection_editor_new(GType channel_type);
 
 #endif /*__AGS_AUDIO_CONNECTION_COLLECTION_EDITOR_H__*/

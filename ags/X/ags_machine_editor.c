@@ -132,7 +132,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 
   /* properties */
   /**
-   * AgsMachine:machine:
+   * AgsMachineEditor:machine:
    *
    * The #AgsMachine to edit.
    * 
@@ -152,14 +152,14 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 
   /* signals */
   /**
-   * AgsMachine::add-default-recalls:
+   * AgsMachineEditor::set-machine:
    * @machine_editor: the #AgsMachineEditor
    * @machine: the #AgsMachine to set
    *
    * The ::set-machine notify about modified machine.
    */
   machine_editor_signals[SET_MACHINE] =
-    g_signal_new("set_machine\0",
+    g_signal_new("set-machine\0",
 		 G_TYPE_FROM_CLASS (machine_editor),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsMachineEditorClass, set_machine),
@@ -467,8 +467,9 @@ ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine
   
   machine_editor->machine = machine;
 
-  if(machine != NULL)
+  if(machine != NULL){
     ags_machine_editor_add_children(machine_editor);
+  }
 }
 
 /**
