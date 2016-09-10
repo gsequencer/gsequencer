@@ -349,18 +349,32 @@ ags_soundcard_editor_connect(AgsConnectable *connectable)
 
   soundcard_editor = AGS_SOUNDCARD_EDITOR(connectable);
 
+  /* backend and card */
   g_signal_connect(G_OBJECT(soundcard_editor->backend), "changed\0",
 		   G_CALLBACK(ags_soundcard_editor_backend_changed_callback), soundcard_editor);
 
   g_signal_connect(G_OBJECT(soundcard_editor->card), "changed\0",
 		   G_CALLBACK(ags_soundcard_editor_card_changed_callback), soundcard_editor);
 
-
+  /* add / remove jack */
   g_signal_connect(G_OBJECT(soundcard_editor->add_jack), "clicked\0",
 		   G_CALLBACK(ags_soundcard_editor_add_jack_callback), soundcard_editor);
 
   g_signal_connect(G_OBJECT(soundcard_editor->remove_jack), "clicked\0",
 		   G_CALLBACK(ags_soundcard_editor_remove_jack_callback), soundcard_editor);
+
+  /* presets */
+  g_signal_connect(G_OBJECT(soundcard_editor->audio_channels), "changed\0",
+		   G_CALLBACK(ags_soundcard_editor_audio_channels_changed_callback), soundcard_editor);
+
+  g_signal_connect(G_OBJECT(soundcard_editor->samplerate), "changed\0",
+		   G_CALLBACK(ags_soundcard_editor_samplerate_changed_callback), soundcard_editor);
+
+  g_signal_connect(G_OBJECT(soundcard_editor->buffer_size), "changed\0",
+		   G_CALLBACK(ags_soundcard_editor_buffer_size_changed_callback), soundcard_editor);
+
+  g_signal_connect(G_OBJECT(soundcard_editor->format), "changed\0",
+		   G_CALLBACK(ags_soundcard_editor_format_changed_callback), soundcard_editor);
 }
 
 void

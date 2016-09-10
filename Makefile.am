@@ -71,8 +71,8 @@ doc_DATA = README ags_example.xml
 
 # documentation
 manpages = \
-	gsequencer.1.xml
-#	midi2xml.1.xml
+	gsequencer.1.xml \
+	midi2xml.1.xml
 
 userdoc = \
 	docs/usersBook.xml \
@@ -931,6 +931,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_seek_soundcard.h \
 	ags/audio/task/ags_set_audio_channels.h \
 	ags/audio/task/ags_set_buffer_size.h \
+	ags/audio/task/ags_set_format.h \
 	ags/audio/task/ags_set_output_device.h \
 	ags/audio/task/ags_set_samplerate.h \
 	ags/audio/task/ags_start_soundcard.h \
@@ -987,6 +988,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_seek_soundcard.c \
 	ags/audio/task/ags_set_audio_channels.c \
 	ags/audio/task/ags_set_buffer_size.c \
+	ags/audio/task/ags_set_format.c \
 	ags/audio/task/ags_set_output_device.c \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_soundcard.c \
@@ -1048,8 +1050,8 @@ deprecated_libgsequencer_h_sources =
 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
-	ags/X/ags_audio_connection_editor_callbacks.h \
-	ags/X/ags_audio_connection_editor.h \
+	ags/X/ags_audio_connection_collection_editor_callbacks.h \
+	ags/X/ags_audio_connection_collection_editor.h \
 	ags/X/ags_automation_editor_callbacks.h \
 	ags/X/ags_automation_editor.h \
 	ags/X/ags_automation_window_callbacks.h \
@@ -1134,8 +1136,8 @@ deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
-	ags/X/ags_audio_connection_editor_callbacks.c \
-	ags/X/ags_audio_connection_editor.c \
+	ags/X/ags_audio_connection_collection_editor_callbacks.c \
+	ags/X/ags_audio_connection_collection_editor.c \
 	ags/X/ags_automation_editor.c \
 	ags/X/ags_automation_editor_callbacks.c \
 	ags/X/ags_automation_window.c \

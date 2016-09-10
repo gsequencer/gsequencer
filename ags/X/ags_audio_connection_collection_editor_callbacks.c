@@ -17,3 +17,11 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <ags/X/ags_audio_connection_collection_editor_callbacks.h>
+
+void
+ags_audio_connection_collection_editor_soundcard_callback(GtkWidget *combo_box,
+							  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor)
+{
+  //TODO:JK: implement me
+}
