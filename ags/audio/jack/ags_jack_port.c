@@ -325,9 +325,9 @@ ags_jack_port_register(AgsJackPort *jack_port,
   }
 
 #ifdef HAVE_JACK_PORT_UUID
-  jack_port->uuid = jack_port_uuid(jack_port->port);
-#else
-  jack_port->uuid = NULL;
+  if(jack_port->port != NULL){
+    jack_port->uuid = jack_port_uuid(jack_port->port);
+  }
 #endif
 
   jack_port->name = g_strdup(port_name);
@@ -340,8 +340,10 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
     return;
   }
 
-  jack_port_unregister(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-		       jack_port->port);
+  if(jack_port->port != NULL){
+    jack_port_unregister(AGS_JACK_CLIENT(jack_port->jack_client)->client,
+			 jack_port->port);
+  }
 }
 
 /**

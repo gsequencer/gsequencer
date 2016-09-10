@@ -28,13 +28,18 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_sound_provider.h>
+
 #include <ags/audio/task/ags_change_soundcard.h>
 #include <ags/audio/task/ags_set_output_device.h>
 #include <ags/audio/task/ags_apply_presets.h>
 
+#include <ags/audio/thread/ags_soundcard_thread.h>
+
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
+#include <ags/X/ags_soundcard_editor.h>
 
 #include <ags/config.h>
 
@@ -298,13 +303,83 @@ ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_audio_preferences_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me  
+  AgsAudioPreferences *audio_preferences;
+
+  GList *list_start, *list;
+
+  audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
+
+  list =
+    list_start = gtk_container_get_children(audio_preferences->soundcard_editor);
+
+  while(list != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(list->data));
+
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
 }
 
 void
 ags_audio_preferences_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me  
+  AgsWindow *window;
+  AgsPreferences *preferences;
+  AgsAudioPreferences *audio_preferences;
+  AgsSoundcardEditor *soundcard_editor;
+  
+  AgsThread *soundcard_thread;
+  
+  AgsApplicationContext *application_context;
+
+  GObject *soundcard;
+  
+  AgsConfig *config;
+
+  GList *list_start, *list;
+
+  audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = preferences->window;
+  
+  application_context = window->application_context;
+  soundcard_thread = ags_thread_find_type(application_context->main_loop,
+					  AGS_TYPE_SOUNDCARD_THREAD);
+
+  /* clear */
+  list =
+    list_start = gtk_container_get_children(audio_preferences->soundcard_editor);
+
+  while(list != NULL){
+    gtk_widget_destroy(AGS_APPLICABLE(list->data));
+
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
+
+  /* reset */
+  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    soundcard_editor = ags_soundcard_editor_new();    
+
+    soundcard_editor->soundcard = list->data;
+    soundcard_editor->soundcard_thread = ags_soundcard_thread_find_soundcard(soundcard_thread,
+									     list->data);
+    gtk_box_pack_start(audio_preferences->soundcard_editor,
+		       soundcard_editor,
+		       FALSE, FALSE,
+		       0);
+    
+    ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
+    
+    list = list->next;
+  }
+
+  gtk_widget_show_all(audio_preferences->soundcard_editor);
 }
 
 void

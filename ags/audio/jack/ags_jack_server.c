@@ -481,9 +481,13 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   /* the soundcard */
   if(is_output){
     jack_devout = ags_jack_devout_new(jack_server->application_context);
+    str = g_strdup_printf("ags-devout-%d\0",
+			  jack_server->n_soundcards);
     g_object_set(AGS_JACK_DEVOUT(jack_devout),
 		 "jack-client\0", default_client,
+		 "device\0", str,
 		 NULL);
+    g_free(str);
     default_client->device = g_list_prepend(default_client->device,
 					    jack_devout);
 
@@ -672,6 +676,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   jack_devout = ags_jack_devout_new(jack_server->application_context);
   g_object_set(AGS_JACK_DEVOUT(jack_devout),
 	       "jack-client\0", default_client,
+	       "device\0", "ags-default-devout\0",
 	       NULL);
   default_client->device = g_list_prepend(default_client->device,
 					  jack_devout);

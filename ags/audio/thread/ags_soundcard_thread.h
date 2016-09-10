@@ -62,6 +62,9 @@ struct _AgsSoundcardThreadClass
 
 GType ags_soundcard_thread_get_type();
 
+AgsSoundcardThread* ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
+							GObject *soundcard);
+
 AgsSoundcardThread* ags_soundcard_thread_new(GObject *soundcard);
 
 #endif /*__AGS_SOUNDCARD_THREAD_H__*/

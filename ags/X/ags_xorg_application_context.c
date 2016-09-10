@@ -297,7 +297,15 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
-      break;
+      if(i == 0){
+	g_free(soundcard_group);
+	soundcard_group = g_strdup_printf("%s-%d\0",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+	continue;
+      }else{
+	break;
+      }
     }
 
     str = ags_config_get_value(config,
@@ -317,10 +325,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       if(!g_ascii_strncasecmp(str,
 			      "jack\0",
 			      5)){
-	if(!use_jack){
-	  soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
-								 TRUE);
-	}
+	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+							       TRUE);
 	
 	use_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
@@ -341,9 +347,12 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 	use_oss = TRUE;
       }else{
 	g_warning("unknown soundcard backend\0");
+
 	continue;
       }
     }else{
+      g_warning("unknown soundcard backend\0");
+      
       continue;
     }
     
