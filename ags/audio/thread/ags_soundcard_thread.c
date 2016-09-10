@@ -469,6 +469,27 @@ ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
   }
 }
 
+AgsSoundcardThread*
+ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
+				    GObject *soundcard)
+{
+  if(soundcard_thread == NULL ||
+     !AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
+    return(NULL);
+  }
+  
+  while(soundcard_thread != NULL){
+    if(soundcard_thread->soundcard == soundcard){
+      return(soundcard_thread);
+    }
+    
+    soundcard_thread = g_atomic_pointer_get(&(((AgsThread *) soundcard_thread)->next));
+  }
+
+  
+  return(NULL);
+}
+
 /**
  * ags_soundcard_thread_new:
  * @soundcard: the #AgsSoundcard

@@ -325,12 +325,21 @@ ags_navigation_set_property(GObject *gobject,
 
       soundcard = (AgsSoundcard *) g_value_get_object(value);
 
-      if(navigation->soundcard == soundcard)
+      if(navigation->soundcard == soundcard){
 	return;
+      }
 
-      if(soundcard != NULL)
+      if(navigation->soundcard != NULL){
+	g_object_unref(navigation->soundcard);
+      }
+      
+      if(soundcard != NULL){
+	g_signal_connect_after((GObject *) soundcard, "stop\0",
+			       G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
+	
 	g_object_ref(soundcard);
-
+      }
+      
       navigation->soundcard = soundcard;
     }
     break;
@@ -410,9 +419,11 @@ ags_navigation_connect(AgsConnectable *connectable)
   //  g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
   //			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
-  g_signal_connect_after((GObject *) navigation->soundcard, "stop\0",
-  			 G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
-
+  if(navigation->soundcard != NULL){
+    g_signal_connect_after((GObject *) navigation->soundcard, "stop\0",
+			   G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
+  }
+  
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_loop_left_tact_callback), (gpointer) navigation);

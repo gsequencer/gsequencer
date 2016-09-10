@@ -1358,8 +1358,6 @@ ags_jack_devout_list_cards(AgsSoundcard *soundcard,
     list = list->next;
   }
 
-  g_list_free(list_start);
-  
   pthread_mutex_unlock(application_mutex);
   
   if(card_id != NULL && *card_id != NULL){

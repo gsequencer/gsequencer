@@ -273,6 +273,8 @@ ags_editor_set_property(GObject *gobject,
       }
       
       if(soundcard != NULL){
+	g_signal_connect(soundcard, "tic\0",
+			 ags_editor_tic_callback, editor);
 	g_object_ref(soundcard);
       }
       
@@ -325,9 +327,10 @@ ags_editor_connect(AgsConnectable *connectable)
   editor->flags |= AGS_EDITOR_CONNECTED;
 
   /*  */
-  g_signal_connect(editor->soundcard, "tic\0",
-		   ags_editor_tic_callback, editor);
-
+  if(editor->soundcard != NULL){
+    g_signal_connect(editor->soundcard, "tic\0",
+		     ags_editor_tic_callback, editor);
+  }
   
   g_signal_connect((GObject *) editor->machine_selector, "changed\0",
 		   G_CALLBACK(ags_editor_machine_changed_callback), (gpointer) editor);
