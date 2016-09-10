@@ -782,6 +782,10 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
   gdk_threads_enter();
 
   navigation = AGS_NAVIGATION(widget);
+
+  if(navigation->soundcard == NULL){
+    return;
+  }
   
   g_object_set(navigation->duration_time,
 	       "label\0", ags_soundcard_get_uptime(navigation->soundcard),

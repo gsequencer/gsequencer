@@ -23,6 +23,7 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_polling_thread.h>
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_task_completion.h>
@@ -239,18 +240,24 @@ ags_gui_thread_run(AgsThread *thread)
 {
   AgsGuiThread *gui_thread;
 
+  AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsPollingThread *polling_thread;
   AgsPollFd *poll_fd;
-  
+
   GMainContext *main_context;
 
   GPollFD *fds = NULL;  
 
+  GList *list, *list_start;
+  
   gint nfds, allocated_nfds;
   gint timeout;
 
   gboolean some_ready;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
 
   auto void ags_gui_thread_complete_task();
   
@@ -283,6 +290,9 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
   /* real-time setup */  
   main_loop = ags_thread_get_toplevel(thread);
   polling_thread = ags_thread_find_type(main_loop,
@@ -355,6 +365,25 @@ ags_gui_thread_run(AgsThread *thread)
     g_mutex_unlock(&(gui_thread->mutex));
   }
 
+  /*  */
+  list_start = 
+    list = g_list_copy(gui_thread->poll_fd);
+  
+  while(list != NULL){
+    pthread_mutex_lock(application_mutex);
+    
+    mutex = ags_mutex_manager_lookup(mutex_manager,
+				     (GObject *) list->data);
+    g_object_ref(list->data);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    pthread_mutex_lock(mutex);
+
+    list = list->next;
+  }
+  
+  /*  */
   allocated_nfds = gui_thread->cached_poll_array_size;
   fds = gui_thread->cached_poll_array;
 
@@ -368,14 +397,30 @@ ags_gui_thread_run(AgsThread *thread)
     gui_thread->cached_poll_array = fds = g_new(GPollFD, nfds);
   }
 
-  /* dispatch */
+  /* dispatch */  
   some_ready = g_main_context_check(main_context, gui_thread->max_priority, gui_thread->cached_poll_array, gui_thread->cached_poll_array_size);
-  
+
   g_main_context_dispatch(main_context);
   
   if(g_atomic_int_get(&(gui_thread->dispatching)) == TRUE){
     g_atomic_int_set(&(gui_thread->dispatching),
 		     FALSE);
+  }
+  
+  list = list_start;
+  
+  while(list != NULL){
+    pthread_mutex_lock(application_mutex);
+    
+    mutex = ags_mutex_manager_lookup(mutex_manager,
+				     (GObject *) list->data);
+    g_object_unref(list->data);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    pthread_mutex_unlock(mutex);
+
+    list = list->next;
   }
   
   ags_gui_thread_complete_task();  

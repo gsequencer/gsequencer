@@ -494,8 +494,6 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
   g_object_unref(file);
 }
 
-
-
 /**
  * ags_config_load_from_data:
  * @config: the #AgsConfig

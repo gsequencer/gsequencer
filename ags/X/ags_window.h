@@ -63,7 +63,8 @@ struct _AgsWindow
   char *name;
 
   GObject *application_context;
-
+  pthread_mutex_t *application_mutex;
+  
   GObject *soundcard;
 
   AgsMenuBar *menu_bar;

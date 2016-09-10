@@ -46,16 +46,16 @@ struct _AgsDistributedManagerInterface
 		      guint port_count);
   
   void (*set_soundcard)(AgsDistributedManager *distributed_manager,
-			gchar *port_uuid,
-			GObject *soundcard);
-  GObject* (*get_soundcard)(AgsDistributedManager *distributed_manager,
-			    gchar *port_uuid);
+			gchar *client_uuid,
+			GList *soundcard);
+  GList* (*get_soundcard)(AgsDistributedManager *distributed_manager,
+			  gchar *client_uuid);
 
   void (*set_sequencer)(AgsDistributedManager *distributed_manager,
-			gchar *port_uuid,
-			GObject *sequencer);
-  GObject* (*get_sequencer)(AgsDistributedManager *distributed_manager,
-			    gchar *port_uuid);
+			gchar *client_uuid,
+			GList *sequencer);
+  GList* (*get_sequencer)(AgsDistributedManager *distributed_manager,
+			  gchar *client_uuid);
 
   GObject* (*register_soundcard)(AgsDistributedManager *distributed_manager,
 				 gboolean is_output);
@@ -80,16 +80,16 @@ guint* ags_distributed_manager_get_ports(AgsDistributedManager *distributed_mana
 					 guint *port_count);
 
 void ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager,
-					   gchar *port_uuid,
-					   GObject *soundcard);
-GObject* ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager,
-					       gchar *port_uuid);
+					   gchar *client_uuid,
+					   GList *soundcard);
+GList* ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager,
+					     gchar *client_uuid);
 
 void ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager,
-					   gchar *port_uuid,
-					   GObject *sequencer);
-GObject* ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager,
-					       gchar *port_uuid);
+					   gchar *client_uuid,
+					   GList *sequencer);
+GList* ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager,
+					     gchar *client_uuid);
 
 GObject* ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_manager,
 						    gboolean is_output);

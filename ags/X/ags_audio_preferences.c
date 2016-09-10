@@ -163,13 +163,14 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		     audio_preferences->soundcard_editor,
 		     FALSE, FALSE,
 		     0);
-  
+
+  //  audio_preferences->add = NULL;
   audio_preferences->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start(audio_preferences,
 		     audio_preferences->add,
 		     FALSE, FALSE,
 		     0);
-
+  
   /*  */
   table = (GtkTable *) gtk_table_new(2, 9, FALSE);
   gtk_box_pack_start(GTK_BOX(audio_preferences),
@@ -381,180 +382,6 @@ ags_audio_preferences_apply_jack(AgsAudioPreferences *audio_preferences,
   g_free(str);  
   
 
-  /* create set output device task * /
-  set_output_device = ags_set_output_device_new(window->soundcard,
-						device);
-  tasks = g_list_prepend(tasks,
-			 set_output_device);
-  
-  /* create apply presets task * /
-  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
-					channels,
-					rate,
-					buffer_size,
-					format);
-  tasks = g_list_prepend(tasks,
-			 apply_presets);
-
-  /* append AgsSetOutputDevice and AgsSetOutputDevice * /
-  tasks = g_list_reverse(tasks);  
-  ags_task_thread_append_tasks(task_thread,
-			       tasks);
-  */
-}
-
-void
-ags_audio_preferences_apply_alsa(AgsAudioPreferences *audio_preferences,
-				 guint device,
-				 guint format,
-				 guint pcm_channels,
-				 guint buffer_size,
-				 guint samplerate)
-{
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
-  AgsChangeSoundcard *change_soundcard;
-  AgsSetOutputDevice *set_output_device;
-  AgsApplyPresets *apply_presets;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-
-  //REMOVE:ME: spaghetti
-  /* check if alsa already available * /
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
-  
-  application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop * /
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread * /
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
-  tasks = NULL;
-  
-  /* create change soundcard task * /
-  change_soundcard = ags_change_soundcard_new(application_context,
-					      FALSE,
-					      FALSE,
-					      TRUE);
-  g_signal_connect(change_soundcard, "launch\0",
-		   G_CALLBACK(ags_audio_preferences_launch_change_soundcard_callback), audio_preferences);
-    
-  tasks = g_list_prepend(tasks,
-			 change_soundcard);
-
-  /*  * /
-  str = g_strdup_printf("%u\0",
-			format);
-  ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "format\0",
-		       str);
-  g_free(str);  
-  
-
-  /* create set output device task * /
-  set_output_device = ags_set_output_device_new(window->soundcard,
-						device);
-  tasks = g_list_prepend(tasks,
-			 set_output_device);
-  
-  /* create apply presets task * /
-  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
-					channels,
-					rate,
-					buffer_size,
-					format);
-  tasks = g_list_prepend(tasks,
-			 apply_presets);
-
-  /* append AgsSetOutputDevice and AgsSetOutputDevice * /
-  tasks = g_list_reverse(tasks);  
-  ags_task_thread_append_tasks(task_thread,
-			       tasks);
-  */
-}
-
-void
-ags_audio_preferences_apply_oss(AgsAudioPreferences *audio_preferences,
-				guint device,
-				guint format,
-				guint pcm_channels,
-				guint buffer_size,
-				guint samplerate)
-{
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
-  AgsChangeSoundcard *change_soundcard;
-  AgsSetOutputDevice *set_output_device;
-  AgsApplyPresets *apply_presets;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-
-  //REMOVE:ME: spaghetti
-  /* check if alsa already available * /
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
-  
-  application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop * /
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread * /
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
-  tasks = NULL;
-  
-  /* create change soundcard task * /
-  change_soundcard = ags_change_soundcard_new(application_context,
-					      FALSE,
-					      FALSE,
-					      TRUE);
-  g_signal_connect(change_soundcard, "launch\0",
-		   G_CALLBACK(ags_audio_preferences_launch_change_soundcard_callback), audio_preferences);
-    
-  tasks = g_list_prepend(tasks,
-			 change_soundcard);
-
-  /*  * /
-  str = g_strdup_printf("%u\0",
-			format);
-  ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "format\0",
-		       str);
-  g_free(str);  
-  
   /* create set output device task * /
   set_output_device = ags_set_output_device_new(window->soundcard,
 						device);

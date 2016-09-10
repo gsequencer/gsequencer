@@ -40,7 +40,7 @@ void ags_add_bulk_member_launch(AgsTask *task);
  * @short_description: add line_member object to line
  * @title: AgsAddBulkMember
  * @section_id:
- * @include: ags/audio/task/ags_add_bulk_member.h
+ * @include: ags/X/task/ags_add_bulk_member.h
  *
  * The #AgsAddBulkMember task addspacks #AgsLineMember to #AgsLine.
  */

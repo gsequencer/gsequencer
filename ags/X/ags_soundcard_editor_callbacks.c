@@ -40,31 +40,10 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/X/task/ags_add_soundcard_editor_jack.h>
+#include <ags/X/task/ags_remove_soundcard_editor_jack.h>
+
 #include <ags/config.h>
-
-void
-ags_soundcard_editor_launch_change_soundcard_callback(AgsTask *task,
-						      AgsSoundcardEditor *soundcard_editor)
-{
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
-  AgsApplicationContext *application_context;
-
-  GObject *soundcard;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
-
-  application_context = window->application_context;
-
-  /* reset default card */
-  soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
-  g_object_set(window,
-	       "soundcard\0", soundcard,
-	       NULL);
-}
 
 void
 ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
@@ -115,8 +94,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   
   gchar *str;
 
-  gboolean use_jack;
-  gboolean use_alsa;
+  gboolean use_jack, use_alsa, use_oss;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
@@ -126,10 +104,10 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   GError *error;
 
   pthread_mutex_t *application_mutex;
-  
+
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
+  soundcard = soundcard_editor->soundcard;
 
   application_context = window->application_context;
 
@@ -146,27 +124,13 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
-
+  
   /*  */
   use_jack = TRUE;
-  
-#ifdef AGS_WITH_ALSA
-  use_alsa = TRUE;
-#else
   use_alsa = FALSE;
-#endif
+  use_alsa = FALSE;
 
   config = ags_config_get_instance();
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "jack\0");
-
-  if(!g_ascii_strncasecmp(str,
-			  "disabled\0",
-			  9)){
-    use_jack = FALSE;
-  }
 
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
@@ -174,19 +138,38 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
+			  "jack\0",
+			  5)){
+    use_jack = TRUE;
+  }else if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "alsa\0",
+			  5)){
+    use_jack = FALSE;
+    use_alsa = TRUE;
+  }else if(str != NULL &&
+     !g_ascii_strncasecmp(str,
 			  "oss\0",
 			  4)){
-    use_alsa = FALSE;
+    use_jack = FALSE;
+    use_oss = TRUE;
   }
 
   str = gtk_combo_box_text_get_active_text(soundcard_editor->card);
-  
-  if(use_alsa && !use_jack){
-    str = g_strndup(str,
-		    index(str,
-			  ',') - str);
+
+  if(str == NULL){
+    return;
   }
-    
+  
+  if(use_alsa){
+    if(index(str,
+	     ',') != NULL){
+      str = g_strndup(str,
+		      index(str,
+			    ',') - str);
+    }
+  }
+  
   /* reset dialog */
   error = NULL;
   ags_soundcard_pcm_info(soundcard,
@@ -221,6 +204,89 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 			    rate_min, rate_max);
   gtk_spin_button_set_range(soundcard_editor->buffer_size,
 			    buffer_size_min, buffer_size_max);
+}
+
+void
+ags_soundcard_editor_add_jack_callback(GtkWidget *button,
+				       AgsSoundcardEditor *soundcard_editor)
+{
+  AgsWindow *window;
+  AgsAddSoundcardEditorJack *add_soundcard_editor_jack;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;  
+
+  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							      AGS_TYPE_PREFERENCES))->window);
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  /* create set output device task */
+  add_soundcard_editor_jack = ags_add_soundcard_editor_jack_new(soundcard_editor);
+
+  /* append AgsSetAudioChannels */
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_soundcard_editor_jack));
+}
+
+void
+ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
+					  AgsSoundcardEditor *soundcard_editor)
+{
+  AgsWindow *window;
+  AgsRemoveSoundcardEditorJack *remove_soundcard_editor_jack;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;  
+
+  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							      AGS_TYPE_PREFERENCES))->window);
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  /* create set output device task */
+  remove_soundcard_editor_jack = ags_remove_soundcard_editor_jack_new(soundcard_editor,
+								      gtk_combo_box_text_get_active_text(soundcard_editor->card));
+
+  /* append AgsSetAudioChannels */
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(remove_soundcard_editor_jack));
 }
 
 void

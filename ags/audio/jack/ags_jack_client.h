@@ -48,9 +48,11 @@ struct _AgsJackClient
   GObject *jack_server;
   
   gchar *uuid;
+  gchar *name;
   
   jack_client_t *client;
-
+  
+  GList *device;
   GList *port;
 };
 
@@ -71,6 +73,9 @@ void ags_jack_client_add_port(AgsJackClient *jack_client,
 			      GObject *jack_port);
 void ags_jack_client_remove_port(AgsJackClient *jack_client,
 				 GObject *jack_port);
+
+void ags_jack_client_activate(AgsJackClient *jack_client);
+void ags_jack_client_deactivate(AgsJackClient *jack_client);
 
 AgsJackClient* ags_jack_client_new(GObject *jack_server);
 

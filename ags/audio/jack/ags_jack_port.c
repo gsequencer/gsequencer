@@ -158,8 +158,6 @@ ags_jack_port_init(AgsJackPort *jack_port)
   jack_port->name = NULL;
 
   jack_port->port = NULL;
-
-  jack_port->device = NULL;
 }
 
 void
@@ -290,8 +288,6 @@ ags_jack_port_register(AgsJackPort *jack_port,
 {
   AgsJackServer *jack_server;
 
-  AgsApplicationContext *application_context;
-
   GList *list;
   
   if(!AGS_IS_JACK_PORT(jack_port) ||
@@ -309,12 +305,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
   if(jack_port->jack_client != NULL &&
      AGS_JACK_CLIENT(jack_port->jack_client)->jack_server != NULL){
     jack_server = AGS_JACK_CLIENT(jack_port->jack_client)->jack_server;
-
-    application_context = jack_server->application_context;
   }else{
     jack_server = NULL;
-    
-    application_context = NULL;
   }
 
   /* create sequencer or soundcard */
@@ -324,67 +316,12 @@ ags_jack_port_register(AgsJackPort *jack_port,
 					 JACK_DEFAULT_AUDIO_TYPE,
 					 (is_output ? JackPortIsOutput: JackPortIsInput),
 					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
-
-    if(is_output){
-      const char **ports;
-      
-      jack_port->device = ags_jack_devout_new(application_context);
-      g_object_set(AGS_JACK_DEVOUT(jack_port->device),
-		   "jack-port\0", jack_port,
-		   NULL);
-      ags_soundcard_set_device(AGS_SOUNDCARD(jack_port->device),
-			       port_name);
-
-      jack_set_buffer_size(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-			   AGS_JACK_DEVOUT(jack_port->device)->pcm_channels * AGS_JACK_DEVOUT(jack_port->device)->buffer_size);
-      
-      /* port setup */
-      jack_set_process_callback(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-				ags_jack_devout_process_callback,
-				jack_port->device);
-
-      jack_activate(AGS_JACK_CLIENT(jack_port->jack_client)->client);
-
-      ports = jack_get_ports(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-			     NULL,
-			     NULL,
-			     JackPortIsPhysical|JackPortIsOutput);
-
-      g_message("Advanced Gtk+ Sequencer registered JACK port\0");
-    }else{
-      g_warning("ags_jack_port.c: audio input not supported\0");
-    }
-
-    /* add to application context */
-    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-
-    list = g_list_prepend(list,
-			  jack_port->device);
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				     list);
   }else if(is_midi){
     jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
 					 port_name,
 					 JACK_DEFAULT_MIDI_TYPE,
 					 (is_output ? JackPortIsOutput: JackPortIsInput),
 					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
-    
-    if(is_output){
-      g_warning("ags_jack_port.c: MIDI output not supported\0");
-    }else{
-      jack_port->device = ags_jack_midiin_new(application_context);
-      g_object_set(AGS_JACK_MIDIIN(jack_port->device),
-		   "jack-port\0", jack_port,
-		   NULL);
-    }
-    
-    /* add to application context */
-    list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-
-    list = g_list_prepend(list,
-			  jack_port->device);
-    ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				     list);
   }
 
 #ifdef HAVE_JACK_PORT_UUID
@@ -393,7 +330,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
   jack_port->uuid = NULL;
 #endif
 
-  jack_port->name = port_name;
+  jack_port->name = g_strdup(port_name);
 }
 
 void
