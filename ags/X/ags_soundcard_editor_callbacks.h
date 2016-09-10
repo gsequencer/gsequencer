@@ -37,11 +37,13 @@ void ags_soundcard_editor_add_jack_callback(GtkWidget *button,
 void ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
 					       AgsSoundcardEditor *soundcard_editor);
 
-void ags_soundcard_editor_audio_channels_changed(GtkSpinButton *spin_button,
-						 AgsSoundcardEditor *soundcard_editor);
-void ags_soundcard_editor_samplerate_changed(GtkSpinButton *spin_button,
-					     AgsSoundcardEditor *soundcard_editor);
-void ags_soundcard_editor_buffer_size_changed(GtkSpinButton *spin_button,
-					      AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
+							  AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
+						      AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
+						       AgsSoundcardEditor *soundcard_editor);
+void ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
+						  AgsSoundcardEditor *soundcard_editor);
 
 #endif /*__AGS_SOUNDCARD_EDITOR_CALLBACKS_H__*/

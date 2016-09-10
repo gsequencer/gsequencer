@@ -56,8 +56,6 @@ void ags_link_collection_editor_disconnect(AgsConnectable *connectable);
 void ags_link_collection_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_link_collection_editor_apply(AgsApplicable *applicable);
 void ags_link_collection_editor_reset(AgsApplicable *applicable);
-void ags_link_collection_editor_destroy(GtkObject *object);
-void ags_link_collection_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_link_collection_editor
@@ -201,8 +199,8 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		   0, 0);
 
   label = (GtkLabel *) gtk_label_new("link\0");
-  gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
-
+  gtk_container_add(GTK_CONTAINER(alignment),
+		    GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
 						 0.0, 0.0);
@@ -361,7 +359,6 @@ void
 ags_link_collection_editor_connect(AgsConnectable *connectable)
 {
   AgsLinkCollectionEditor *link_collection_editor;
-  GList *pad_list;
 
   /* AgsLinkCollectionEditor */
   link_collection_editor = AGS_LINK_COLLECTION_EDITOR(connectable);
@@ -615,20 +612,6 @@ ags_link_collection_editor_reset(AgsApplicable *applicable)
   link_collection_editor = AGS_LINK_COLLECTION_EDITOR(applicable);
 
   /* empty */
-}
-
-void
-ags_link_collection_editor_destroy(GtkObject *object)
-{
-  AgsLinkCollectionEditor *link_collection_editor;
-
-  link_collection_editor = (AgsLinkCollectionEditor *) object;
-}
-
-void
-ags_link_collection_editor_show(GtkWidget *widget)
-{
-  AgsLinkCollectionEditor *link_collection_editor = (AgsLinkCollectionEditor *) widget;
 }
 
 /**

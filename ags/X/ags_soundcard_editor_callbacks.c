@@ -35,6 +35,7 @@
 #include <ags/audio/task/ags_set_audio_channels.h>
 #include <ags/audio/task/ags_set_buffer_size.h>
 #include <ags/audio/task/ags_set_samplerate.h>
+#include <ags/audio/task/ags_set_format.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -61,8 +62,8 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
       gtk_widget_show_all(soundcard_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
-			    "alsa\0",
-			    5)){
+				  "alsa\0",
+				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
       gtk_widget_hide(soundcard_editor->jack_hbox);
@@ -142,15 +143,15 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 			  5)){
     use_jack = TRUE;
   }else if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "alsa\0",
-			  5)){
+	   !g_ascii_strncasecmp(str,
+				"alsa\0",
+				5)){
     use_jack = FALSE;
     use_alsa = TRUE;
   }else if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "oss\0",
-			  4)){
+	   !g_ascii_strncasecmp(str,
+				"oss\0",
+				4)){
     use_jack = FALSE;
     use_oss = TRUE;
   }
@@ -290,8 +291,8 @@ ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
 }
 
 void
-ags_soundcard_editor_audio_channels_changed(GtkSpinButton *spin_button,
-					    AgsSoundcardEditor *soundcard_editor)
+ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
+						     AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
   AgsSoundcard *soundcard;
@@ -335,8 +336,8 @@ ags_soundcard_editor_audio_channels_changed(GtkSpinButton *spin_button,
 }
 
 void
-ags_soundcard_editor_samplerate_changed(GtkSpinButton *spin_button,
-					AgsSoundcardEditor *soundcard_editor)
+ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
+						 AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
   AgsSoundcard *soundcard;
@@ -380,8 +381,8 @@ ags_soundcard_editor_samplerate_changed(GtkSpinButton *spin_button,
 }
 
 void
-ags_soundcard_editor_buffer_size_changed(GtkSpinButton *spin_button,
-					 AgsSoundcardEditor *soundcard_editor)
+ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
+						  AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
   AgsSoundcard *soundcard;
@@ -422,4 +423,70 @@ ags_soundcard_editor_buffer_size_changed(GtkSpinButton *spin_button,
   /* append AgsSetBufferSize */
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(set_buffer_size));
+}
+
+void
+ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
+					     AgsSoundcardEditor *soundcard_editor)
+{
+  AgsWindow *window;
+  AgsSoundcard *soundcard;
+  AgsSetFormat *set_format;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  guint format;
+  
+  pthread_mutex_t *application_mutex;
+  
+  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							      AGS_TYPE_PREFERENCES))->window);
+  soundcard = AGS_SOUNDCARD(window->soundcard);
+
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  /* format */
+  switch(gtk_combo_box_get_active(soundcard_editor->format)){
+  case 0:
+    format = AGS_SOUNDCARD_SIGNED_8_BIT;
+    break;
+  case 1:
+    format = AGS_SOUNDCARD_SIGNED_16_BIT;
+    break;
+  case 2:
+    format = AGS_SOUNDCARD_SIGNED_24_BIT;
+    break;
+  case 3:
+    format = AGS_SOUNDCARD_SIGNED_32_BIT;
+    break;
+  case 4:
+    format = AGS_SOUNDCARD_SIGNED_64_BIT;
+    break;
+  }
+
+  /* create set output device task */
+  set_format = ags_set_format_new((GObject *) soundcard,
+				  format);
+
+  /* append AgsSetBufferSize */
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(set_format));
 }
