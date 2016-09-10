@@ -133,7 +133,7 @@ enum{
   PROP_BPM,
   PROP_DELAY_FACTOR,
   PROP_ATTACK,
-  PROP_JACK_PORT,
+  PROP_JACK_CLIENT,
 };
 
 enum{
@@ -322,19 +322,19 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 
 
   /**
-   * AgsJackMidiin:jack-port:
+   * AgsJackMidiin:jack-client:
    *
-   * The assigned #AgsJackPort
+   * The assigned #AgsJackClient
    * 
    * Since: 0.7.3
    */
-  param_spec = g_param_spec_object("jack-port\0",
-				   "jack port object\0",
-				   "The jack port object\0",
-				   AGS_TYPE_JACK_PORT,
+  param_spec = g_param_spec_object("jack-client\0",
+				   "jack client object\0",
+				   "The jack client object\0",
+				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_JACK_PORT,
+				  PROP_JACK_CLIENT,
 				  param_spec);
 
   /* AgsJackMidiinClass */
@@ -407,7 +407,7 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->flags = (AGS_JACK_MIDIIN_ALSA);
 
   jack_midiin->card_uri = NULL;
-  jack_midiin->jack_port = NULL;
+  jack_midiin->jack_client = NULL;
 
   /* buffer */
   jack_midiin->buffer = (char **) malloc(4 * sizeof(char*));
@@ -483,10 +483,10 @@ ags_jack_midiin_set_property(GObject *gobject,
 	
 	config = ags_config_get_instance();
 
-	jack_midiin->jack_port = NULL;
+	jack_midiin->jack_client = NULL;
 	jack_midiin->card_uri = g_strdup(ags_config_get_value(config,
 							      AGS_CONFIG_SEQUENCER,
-							      "jack-midi-port\0"));
+							      "jack-midi-client\0"));
       }else{
 	jack_midiin->application_mutex = NULL;
       }
@@ -538,21 +538,21 @@ ags_jack_midiin_set_property(GObject *gobject,
       jack_midiin->delay_factor = delay_factor;
     }
     break;
-  case PROP_JACK_PORT:
+  case PROP_JACK_CLIENT:
     {
-      AgsJackPort *jack_port;
+      AgsJackClient *jack_client;
 
-      jack_port = g_value_get_object(value);
+      jack_client = g_value_get_object(value);
 
-      if(jack_midiin->jack_port == jack_port){
+      if(jack_midiin->jack_client == jack_client){
 	return;
       }
 
-      if(jack_midiin->jack_port != NULL){
-	g_object_unref(G_OBJECT(jack_midiin->jack_port));
+      if(jack_midiin->jack_client != NULL){
+	g_object_unref(G_OBJECT(jack_midiin->jack_client));
       }
 
-      jack_midiin->jack_port = jack_port;
+      jack_midiin->jack_client = jack_client;
     }
     break;
   default:
@@ -602,9 +602,9 @@ ags_jack_midiin_get_property(GObject *gobject,
       g_value_set_double(value, jack_midiin->delay_factor);
     }
     break;
-  case PROP_JACK_PORT:
+  case PROP_JACK_CLIENT:
     {
-      g_value_set_object(value, jack_midiin->jack_port);
+      g_value_set_object(value, jack_midiin->jack_client);
     }
     break;
   default:
@@ -804,65 +804,71 @@ void
 ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 			   GList **card_id, GList **card_name)
 {
-  AgsJackServer *jack_server;
-  
+  AgsJackMidiin *jack_midiin;
+
   AgsApplicationContext *application_context;
-
-  GList *distributed_manager;
-  GList *client, *list;
   
-  char *name;
-  gchar *str;
-  int card_num;
-  int device;
-  int error;
+  GList *list, *list_start;
 
-  application_context = AGS_JACK_MIDIIN(sequencer)->application_context;
-
-  /* find jack server */
-  jack_server = NULL;
+  pthread_mutex_t *application_mutex;
   
-  distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
-  while(distributed_manager != NULL){
-    if(AGS_IS_JACK_SERVER(distributed_manager->data)){
-      jack_server = distributed_manager->data;
+  application_context = jack_midiin->application_context;
 
-      break;
-    }
-
-    distributed_manager = distributed_manager->next;
+  if(application_context == NULL){
+    return;
   }
   
-  /* list card uuid and name */
-  *card_id = NULL;
-  *card_name = NULL;
-  card_num = -1;
+  application_mutex = jack_midiin->application_mutex;
+  
+  if(card_id != NULL){
+    *card_id = NULL;
+  }
 
-  if(jack_server != NULL){
-    client = jack_server->client;
-    
-    while(client != NULL){
-      list = AGS_JACK_CLIENT(client->data)->port;
+  if(card_name != NULL){
+    *card_name = NULL;
+  }
 
-      while(list != NULL){
-	if(AGS_IS_JACK_MIDIIN(AGS_JACK_PORT(list->data)->device)){
-	  *card_id = g_list_prepend(*card_id,
-				    g_strdup(AGS_JACK_PORT(list->data)->uuid));
-	  *card_name = g_list_prepend(*card_name,
-				      AGS_JACK_PORT(list->data)->name);
-	}
-	
-	list = list->next;
+  pthread_mutex_lock(application_mutex);
+
+  list_start = 
+    list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  
+  while(list != NULL){
+    if(AGS_IS_JACK_MIDIIN(list->data)){
+      if(card_id != NULL){
+	*card_id = g_list_prepend(*card_id,
+				  g_strdup(AGS_JACK_MIDIIN(list->data)->card_uri));
       }
 
-      client = client->next;
+      if(card_name != NULL){
+	if(AGS_JACK_MIDIIN(list->data)->jack_client != NULL){
+	  *card_name = g_list_prepend(*card_name,
+				      g_strdup(AGS_JACK_CLIENT(AGS_JACK_MIDIIN(list->data)->jack_client)->name));
+	}else{
+	  *card_name = g_list_prepend(*card_name,
+				      g_strdup("(null)\0"));
+
+	  g_warning("ags_jack_midiin_list_cards() - JACK client not connected (null)\0");
+	}
+      }      
     }
+
+    list = list->next;
   }
 
-  /* reverse the created lists */
-  *card_id = g_list_reverse(*card_id);
-  *card_name = g_list_reverse(*card_name);
+  g_list_free(list_start);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  if(card_id != NULL && *card_id != NULL){
+    *card_id = g_list_reverse(*card_id);
+  }
+
+  if(card_name != NULL && *card_name != NULL){
+    *card_name = g_list_reverse(*card_name);
+  }
 }
 
 gboolean

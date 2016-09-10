@@ -51,8 +51,6 @@ struct _AgsJackPort
   gchar *name;
   
   jack_port_t *port;
-  
-  GObject *device;
 };
 
 struct _AgsJackPortClass

@@ -83,7 +83,10 @@ AgsThread* ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *
 AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
-						GList *soundcar);
+						GList *soundcard);
+GObject* ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
+							       GObject *soundcard_thread);
 GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						GList *sequencer);
@@ -232,6 +235,8 @@ ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInter
 {
   sound_provider->get_soundcard = ags_xorg_application_context_get_soundcard;
   sound_provider->set_soundcard = ags_xorg_application_context_set_soundcard;
+  sound_provider->get_default_soundcard_thread = ags_xorg_application_context_get_default_soundcard_thread;
+  sound_provider->set_default_soundcard_thread = ags_xorg_application_context_set_default_soundcard_thread;
   sound_provider->get_sequencer = ags_xorg_application_context_get_sequencer;
   sound_provider->set_sequencer = ags_xorg_application_context_set_sequencer;
   sound_provider->get_distributed_manager = ags_xorg_application_context_get_distributed_manager;
@@ -290,7 +295,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     guint pcm_channels, buffer_size, samplerate, format;
     gboolean use_jack, use_alsa, use_oss;
     
-    if(!g_key_file_has_group(config,
+    if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       break;
     }
@@ -312,9 +317,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       if(!g_ascii_strncasecmp(str,
 			      "jack\0",
 			      5)){
-	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
-							       TRUE);
-
+	if(!use_jack){
+	  soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+								 TRUE);
+	}
+	
 	use_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa\0",
@@ -339,7 +346,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     }else{
       continue;
     }
-
     
     xorg_application_context->soundcard = g_list_append(xorg_application_context->soundcard,
 							soundcard);
@@ -409,8 +415,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			      pcm_channels,
-			      buffer_size,
 			      samplerate,
+			      buffer_size,
 			      format);
   }
 
@@ -496,8 +502,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   list = xorg_application_context->soundcard;
     
   while(list != NULL){
-    list = list->next;
-      
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  soundcard_thread,
@@ -506,6 +510,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     if(xorg_application_context->soundcard_thread == NULL){
       xorg_application_context->soundcard_thread = soundcard_thread;
     }
+    
+    list = list->next;      
   }
   
   /* AgsExportThread */
@@ -662,6 +668,19 @@ ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
 					   GList *soundcard)
 {
   AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard = soundcard;
+}
+
+GObject*
+ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
+}
+
+void
+ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
+							  GObject *soundcard_thread)
+{
+  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread = soundcard_thread;
 }
 
 GList*

@@ -25,21 +25,16 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/thread/ags_task.h>
-
 #include <ags/X/ags_soundcard_editor.h>
-
-void ags_soundcard_editor_launch_change_soundcard_callback(AgsTask *task,
-							   AgsSoundcardEditor *soundcard_editor);
 
 void ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 						   AgsSoundcardEditor *soundcard_editor);
 
 void ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 						AgsSoundcardEditor *soundcard_editor);
-void ags_soundcard_editor_add_jack_callback(GtkComboBox *combo,
+void ags_soundcard_editor_add_jack_callback(GtkWidget *button,
 					    AgsSoundcardEditor *soundcard_editor);
-void ags_soundcard_editor_remove_jack_callback(GtkComboBox *combo,
+void ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
 					       AgsSoundcardEditor *soundcard_editor);
 
 void ags_soundcard_editor_audio_channels_changed(GtkSpinButton *spin_button,

@@ -26,10 +26,18 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_jack_client_class_init(AgsJackClientClass *jack_client);
 void ags_jack_client_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -46,6 +54,8 @@ void ags_jack_client_get_property(GObject *gobject,
 void ags_jack_client_connect(AgsConnectable *connectable);
 void ags_jack_client_disconnect(AgsConnectable *connectable);
 void ags_jack_client_finalize(GObject *gobject);
+
+int ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr);
 
 /**
  * SECTION:ags_jack_client
@@ -153,6 +163,7 @@ ags_jack_client_init(AgsJackClient *jack_client)
 
   jack_client->client = NULL;
 
+  jack_client->device = NULL;
   jack_client->port = NULL;
 }
 
@@ -281,14 +292,49 @@ ags_jack_client_open(AgsJackClient *jack_client,
     return;
   }
   
-  jack_client->client = jack_client_open(client_name,
+  jack_client->name = g_strdup(client_name);
+  jack_client->client = jack_client_open(jack_client->name,
 					 0,
 					 NULL);
-
+  
   if(jack_client->client != NULL){
     jack_client->uuid = jack_get_uuid_for_client_name(jack_client->client,
-						      client_name);
+						      jack_client->name);
   }
+
+  jack_set_process_callback(jack_client->client,
+			    ags_jack_client_process_callback,
+			    jack_client);
+
+  g_message("Advanced Gtk+ Sequencer open JACK client\0");
+}
+
+/**
+ * ags_jack_client_activate:
+ * @jack_client: the #AgsJackClient
+ *
+ * Activate client.
+ *
+ * Since: 0.7.2
+ */
+void
+ags_jack_client_activate(AgsJackClient *jack_client)
+{
+  jack_activate(jack_client->client);
+}
+
+/**
+ * ags_jack_client_deactivate:
+ * @jack_client: the #AgsJackClient
+ *
+ * Deactivate client.
+ *
+ * Since: 0.7.2
+ */
+void
+ags_jack_client_deactivate(AgsJackClient *jack_client)
+{
+  jack_deactivate(jack_client->client);
 }
 
 /**
@@ -334,6 +380,226 @@ ags_jack_client_remove_port(AgsJackClient *jack_client,
   jack_client->port = g_list_remove(jack_client->port,
 				    jack_port);
   g_object_unref(jack_port);
+}
+
+int
+ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
+{
+  AgsJackClient *jack_client;
+  AgsJackPort *jack_port;
+  AgsJackDevout *jack_devout;
+
+  AgsAudioLoop *audio_loop;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
+  jack_client_t *client;
+  jack_default_audio_sample_t *out;
+
+  GList *device, *port;
+  
+  guint time_spent;
+  guint copy_mode;
+  guint word_size;
+  guint i, j;
+  gboolean no_event;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutex_t *device_mutex;
+  
+  if(ptr == NULL){
+    return(0);
+  }
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) ptr);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(mutex);
+  
+  jack_client = AGS_JACK_CLIENT(ptr);
+
+  if(jack_client->jack_server != NULL){
+    application_context = AGS_JACK_SERVER(jack_client->jack_server)->application_context;
+  }
+  
+  pthread_mutex_unlock(mutex);
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+    
+  audio_loop = application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* retrieve word size */
+  while(device != NULL){
+    /*  */  
+    pthread_mutex_lock(application_mutex);
+  
+    device_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) device->data);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    pthread_mutex_lock(device_mutex);
+    
+    if(AGS_IS_JACK_DEVOUT(device->data)){
+      jack_devout = device->data;
+
+      /* wait callback */
+      if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+	no_event = FALSE;
+
+	pthread_mutex_unlock(device_mutex);
+    
+	/* interrupt GUI */
+	if(audio_loop != NULL){
+	  pthread_mutex_lock(audio_loop->timing_mutex);
+  
+	  g_atomic_int_set(&(audio_loop->time_spent),
+			   audio_loop->time_cycle);
+  
+	  pthread_mutex_unlock(audio_loop->timing_mutex);
+  
+	  ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+				  AGS_THREAD_SUSPEND_SIG,
+				  0, &time_spent);
+	}
+    
+	/* give back computing time until ready */
+	pthread_mutex_lock(jack_devout->callback_mutex);
+    
+	if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+	  g_atomic_int_or(&(jack_devout->sync_flags),
+			  AGS_JACK_DEVOUT_CALLBACK_WAIT);
+    
+	  while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
+		(AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	    pthread_cond_wait(jack_devout->callback_cond,
+			      jack_devout->callback_mutex);
+	  }
+	}
+    
+	g_atomic_int_and(&(jack_devout->sync_flags),
+			 (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
+			    AGS_JACK_DEVOUT_CALLBACK_DONE)));
+    
+	pthread_mutex_unlock(jack_devout->callback_mutex);
+
+	pthread_mutex_lock(device_mutex);
+      }else{
+	no_event = TRUE;
+      }
+
+      /* get buffer */
+      if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
+	j = 0;
+      }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+	j = 1;
+      }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+	j = 2;
+      }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+	j = 3;
+      }
+
+      /* get copy mode */
+      copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						      ags_audio_buffer_util_format_from_soundcard(jack_devout->format));
+
+      /* check buffer flag */
+      switch(jack_devout->format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  word_size = sizeof(signed char);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  word_size = sizeof(signed short);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  word_size = sizeof(signed long);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  word_size = sizeof(signed long);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  word_size = sizeof(signed long long);
+	}
+	break;
+      default:
+	pthread_mutex_unlock(mutex);
+
+	g_warning("ags_jack_devout_process_callback(): unsupported word size\0");
+	return(0);
+      }
+      
+      port = jack_devout->jack_port;
+      
+      for(i = 0; port != NULL; i++){
+	jack_port = port->data;
+	
+	out = jack_port_get_buffer(jack_port->port,
+				   nframes);
+  
+	if(!no_event){
+	  ags_audio_buffer_util_clear_float(out, jack_devout->pcm_channels,
+					    nframes);
+
+	  ags_audio_buffer_util_copy_buffer_to_buffer(out, 1, 0,
+						      jack_devout->buffer[j], jack_devout->pcm_channels, i,
+						      nframes, copy_mode);
+	}
+
+	port = port->next;
+      }
+    
+      if(!no_event){
+	if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
+	  memset(jack_devout->buffer[2], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+	}else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+	  memset(jack_devout->buffer[3], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+	}else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+	  memset(jack_devout->buffer[0], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+	}else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+	  memset(jack_devout->buffer[1], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+
+	  /* tic */
+	  ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
+	  
+	  /* reset - switch buffer flags */
+	  ags_jack_devout_switch_buffer_flag(jack_devout);  
+	}	
+      }
+    }
+
+    pthread_mutex_unlock(device_mutex);
+    
+    device = device->next;
+  }
+  
+  pthread_mutex_unlock(mutex);
+
+
+  return(0);
 }
 
 /**

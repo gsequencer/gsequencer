@@ -722,11 +722,13 @@ ags_audio_loop_run(AgsThread *thread)
     export_thread = ags_thread_find_type(thread,
 					 AGS_TYPE_EXPORT_THREAD);
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0){
+    if(soundcard_thread != NULL &&
+       (AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0){
       ags_thread_stop(soundcard_thread);
     }
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
+    if(export_thread != NULL &&
+       (AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
       ags_thread_stop(export_thread);
     }
   }

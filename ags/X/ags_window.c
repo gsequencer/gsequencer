@@ -171,6 +171,8 @@ ags_window_init(AgsWindow *window)
   	       NULL);
 
   window->application_context = NULL;
+  window->application_mutex = NULL;
+  
   window->soundcard = NULL;
 
   window->name = g_strdup("unnamed\0");
@@ -275,10 +277,13 @@ ags_window_set_property(GObject *gobject,
 	return;
 
       if(window->application_context != NULL){
+	window->application_mutex = NULL;
 	g_object_unref(window->application_context);
       }
 
       if(application_context != NULL){
+	window->application_mutex = (GObject *) application_context->mutex;
+	
 	g_object_ref(application_context);
       }
 

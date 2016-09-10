@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 void ags_poll_fd_class_init(AgsPollFdClass *poll_fd);
 void ags_poll_fd_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_poll_fd_init(AgsPollFd *poll_fd);
@@ -128,6 +130,34 @@ ags_poll_fd_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_poll_fd_init(AgsPollFd *poll_fd)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  /* insert devout mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) poll_fd,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*   */
   poll_fd->flags = 0;
 
   poll_fd->polling_thread = NULL;
@@ -166,12 +196,31 @@ ags_poll_fd_finalize(GObject *gobject)
 void
 ags_poll_fd_dispatch(AgsPollFd *poll_fd)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) poll_fd);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+  
   g_return_if_fail(AGS_IS_POLL_FD(poll_fd));
 
   g_object_ref(G_OBJECT(poll_fd));
   g_signal_emit(G_OBJECT(poll_fd),
 		poll_fd_signals[DISPATCH], 0);
   g_object_unref(G_OBJECT(poll_fd));
+
+  pthread_mutex_unlock(mutex);
 }
 
 /**

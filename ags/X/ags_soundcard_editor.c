@@ -208,6 +208,11 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		   0, 0);
 
   /* jack */
+  soundcard_editor->jack_hbox = NULL;
+  soundcard_editor->add_jack = NULL;
+  soundcard_editor->remove_jack = NULL;
+
+  /*
   soundcard_editor->jack_hbox = gtk_hbox_new(FALSE,
 					     0);
   gtk_table_attach(table,
@@ -228,7 +233,8 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		     soundcard_editor->remove_jack,
 		     FALSE, FALSE,
 		     0);
-
+  */
+  
   /* audio channels */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "audio channels\0",
@@ -327,10 +333,12 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			   1);
 
   /*  */
+  //  soundcard_editor->remove = NULL;
+
   soundcard_editor->remove = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_table_attach(table,
 		   GTK_WIDGET(soundcard_editor->remove),
-		   1, 2,
+		   2, 3,
 		   7, 8,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
@@ -348,6 +356,14 @@ ags_soundcard_editor_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(soundcard_editor->card), "changed\0",
 		   G_CALLBACK(ags_soundcard_editor_card_changed_callback), soundcard_editor);
+
+  /*
+  g_signal_connect(G_OBJECT(soundcard_editor->add_jack), "clicked\0",
+		   G_CALLBACK(ags_soundcard_editor_add_jack_callback), soundcard_editor);
+
+  g_signal_connect(G_OBJECT(soundcard_editor->remove_jack), "clicked\0",
+		   G_CALLBACK(ags_soundcard_editor_remove_jack_callback), soundcard_editor);
+  */
 }
 
 void
@@ -766,17 +782,28 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
 
+  AgsMutexManager *mutex_manager;
+
   AgsApplicationContext *application_context;
 
   GList *distributed_manager;
-  GList *card_id;
+  GList *card_name, *card_uri;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
+
   application_context = window->application_context;
+  application_mutex = window->application_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
   
   /* create soundcard */
+  pthread_mutex_lock(application_mutex);
+
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(distributed_manager != NULL){
@@ -784,34 +811,56 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   }else{
     g_warning("distributed manager not found\0");
 
+    pthread_mutex_unlock(application_mutex);
+    
     return;
   }
   
   jack_devout = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							   TRUE);
 
+  pthread_mutex_unlock(application_mutex);
+
+  if(jack_devout == NULL){
+    return;
+  }
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   jack_devout);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(mutex);
+
   if(device != NULL){
-    ags_soundcard_set_device(AGS_SOUNDCARD(device),
-			     device);
+    //NOTE:JK: don't
+    //    ags_soundcard_set_device(AGS_SOUNDCARD(jack_devout),
+    //			     device);
   }
   
-  card_id = NULL;
+  card_name = NULL;
+  card_uri = NULL;
   ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
-			   &card_id, NULL);
+			   &card_uri, &card_name);
+
+  pthread_mutex_unlock(mutex);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(soundcard_editor->card)));
 
-  while(card_id != NULL){
+  while(card_uri != NULL){
     gtk_combo_box_text_append_text(soundcard_editor->card,
-				   card_id->data);
+    				   card_uri->data);
 
     
-    card_id = card_id->next;
+    card_uri = card_uri->next;
   }
-
+  
   /* add new */
   ags_soundcard_editor_add_soundcard(soundcard_editor,
-				     jack_devout);
+  				     jack_devout);
 }
 
 void
@@ -824,18 +873,27 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
   AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
 
+  AgsMutexManager *mutex_manager;
+
   AgsApplicationContext *application_context;
 
   GList *distributed_manager;
   GList *soundcard;
   GList *card_id;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
   application_context = window->application_context;
-  
+
+  application_mutex = window->application_mutex;
+    
   /* create soundcard */
+  pthread_mutex_lock(application_mutex);
+
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(distributed_manager != NULL){
@@ -843,6 +901,8 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
   }else{
     g_warning("distributed manager not found\0");
 
+    pthread_mutex_unlock(application_mutex);
+    
     return;
   }
 
@@ -860,9 +920,24 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
     soundcard = soundcard->next;
   }
 
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   jack_devout);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(mutex);
+
   card_id = NULL;
   ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
 			   &card_id, NULL);
+
+  pthread_mutex_unlock(mutex);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(soundcard_editor->card)));
 
@@ -891,21 +966,36 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_mutex;
+
+  if(soundcard == NULL){
+    return;
+  }
+  
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
   application_context = window->application_context;
+  application_mutex = window->application_mutex;
+
+  /*  */
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
   
   soundcard_editor->soundcard = soundcard;
+
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
 						 soundcard));
+
+  pthread_mutex_unlock(application_mutex);  
+    
   g_object_ref(soundcard);
 
   soundcard_editor->soundcard_thread = 
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
+
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				soundcard_thread,
 				TRUE, TRUE);
@@ -928,10 +1018,16 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_mutex;
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
   application_context = window->application_context;  
+
+  application_mutex = window->application_mutex;
+  
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
     
@@ -955,6 +1051,8 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
     g_object_unref(soundcard_editor->soundcard_thread);    
     soundcard_editor->soundcard_thread = NULL;
   }
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 void
@@ -972,18 +1070,26 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
   GList *soundcard;
   GList *card_id;
 
+  pthread_mutex_t *application_mutex;
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
   application_context = window->application_context;
-  
+
+  application_mutex = window->application_mutex;
+    
   /* create soundcard */
+  pthread_mutex_lock(application_mutex);
+
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(distributed_manager != NULL){
     jack_server = distributed_manager->data;
   }else{
     g_warning("distributed manager not found\0");
+
+    pthread_mutex_unlock(application_mutex);
 
     return;
   }
@@ -1013,6 +1119,8 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
     
     card_id = card_id->next;
   }
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 void
@@ -1027,12 +1135,18 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 
   GList *card_id;
 
+  pthread_mutex_t *application_mutex;
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
   application_context = window->application_context;
 
+  application_mutex = window->application_mutex;
+  
   /*  */
+  pthread_mutex_lock(application_mutex);
+
   devout = ags_devout_new(application_context);
   devout->flags &= (~AGS_DEVOUT_OSS);
   devout->flags |= AGS_DEVOUT_ALSA;
@@ -1060,6 +1174,8 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   /* add new */
   ags_soundcard_editor_add_soundcard(soundcard_editor,
 				     devout);
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 void
@@ -1074,12 +1190,18 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 
   GList *card_id;
 
+  pthread_mutex_t *application_mutex;
+  
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
   application_context = window->application_context;
 
+  application_mutex = window->application_mutex;
+  
   /*  */  
+  pthread_mutex_lock(application_mutex);
+
   devout = ags_devout_new(application_context);
   devout->flags &= (~AGS_DEVOUT_ALSA);
   devout->flags |= AGS_DEVOUT_OSS;
@@ -1107,6 +1229,8 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
   /* add new */
   ags_soundcard_editor_add_soundcard(soundcard_editor,
 				     devout);
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 /**

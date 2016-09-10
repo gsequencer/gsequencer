@@ -109,7 +109,10 @@ struct _AgsJackDevout
   guint loop_offset;
 
   gchar *card_uri;
-  GObject *jack_port;
+  GObject *jack_client;
+
+  gchar **port_name;
+  GList *jack_port;
 
   pthread_mutex_t *callback_mutex;
   pthread_cond_t *callback_cond;
