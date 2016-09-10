@@ -35,31 +35,43 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_connection_editor.h>
 
 void ags_audio_connection_collection_editor_class_init(AgsAudioConnectionCollectionEditorClass *audio_connection_collection_editor);
 void ags_audio_connection_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_connection_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *audio_connection_collection_editor);
+void ags_audio_connection_collection_editor_set_property(GObject *gobject,
+							 guint prop_id,
+							 const GValue *value,
+							 GParamSpec *param_spec);
+void ags_audio_connection_collection_editor_get_property(GObject *gobject,
+							 guint prop_id,
+							 GValue *value,
+							 GParamSpec *param_spec);
 void ags_audio_connection_collection_editor_connect(AgsConnectable *connectable);
 void ags_audio_connection_collection_editor_disconnect(AgsConnectable *connectable);
 void ags_audio_connection_collection_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_audio_connection_collection_editor_apply(AgsApplicable *applicable);
 void ags_audio_connection_collection_editor_reset(AgsApplicable *applicable);
-void ags_audio_connection_collection_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_audio_connection_collection_editor
- * @short_description: Edit audio_connections in bulk mode.
+ * @short_description: edit audio connections in bulk mode.
  * @title: AgsAudioConnectionCollectionEditor
  * @section_id:
  * @include: ags/X/ags_audio_connection_collection_editor.h
  *
- * #AgsAudioConnectionCollectionEditor is a composite widget to modify audio_connections in bulk mode. A audio_connection collection
- * editor should be packed by a #AgsMachineEditor.
+ * #AgsAudioConnectionCollectionEditor is a composite widget to modify audio connections. A audio_connection collection
+ * editor should be packed by a #AgsConnectionEditor.
  */
 
 static gpointer ags_audio_connection_collection_editor_parent_class = NULL;
+
+enum{
+  PROP_0,
+  PROP_CHANNEL_TYPE,
+};
 
 GType
 ags_audio_connection_collection_editor_get_type(void)
@@ -118,6 +130,26 @@ ags_audio_connection_collection_editor_class_init(AgsAudioConnectionCollectionEd
 
   /* GObjectClass */
   gobject = (GObjectClass *) audio_connection_collection_editor;
+
+  gobject->set_property = ags_audio_connection_collection_editor_set_property;
+  gobject->get_property = ags_audio_connection_collection_editor_get_property;
+  
+  /* properties */
+  /**
+   * AgsAudioConnectionCollectionEditor:channel-type:
+   *
+   * The channel type to apply to. Either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT.
+   * 
+   * Since: 0.7.65
+   */
+  param_spec = g_param_spec_gtype("channel-type\0",
+				  "assigned channel type\0",
+				  "The channel type which this channel audio_connection collection editor is assigned with\0",
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
 }
 
 void
@@ -140,7 +172,12 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
 {
   GtkAlignment *alignment;
   GtkLabel *label;
+  
+  g_signal_connect_after(GTK_WIDGET(audio_connection_collection_editor), "parent-set\0",
+			 G_CALLBACK(ags_audio_connection_collection_editor_parent_set_callback), audio_connection_collection_editor);
 
+  audio_connection_collection_editor->channel_type = G_TYPE_NONE;
+  
   gtk_table_resize(GTK_TABLE(audio_connection_collection_editor),
 		   4, 2);
   gtk_table_set_row_spacings(GTK_TABLE(audio_connection_collection_editor),
@@ -162,8 +199,8 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
-  audio_connection_collection_editor->pad = gtk_spin_button_new_with_range(0.0,
-									   0.0,
+  audio_connection_collection_editor->pad = gtk_spin_button_new_with_range(-1.0,
+									   -1.0,
 									   1.0);
   gtk_table_attach(GTK_TABLE(audio_connection_collection_editor),
 		   GTK_WIDGET(audio_connection_collection_editor->pad),
@@ -186,12 +223,12 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
-  audio_connection_collection_editor->audio_channel = gtk_spin_button_new_with_range(0.0,
-										     0.0,
+  audio_connection_collection_editor->audio_channel = gtk_spin_button_new_with_range(-1.0,
+										     -1.0,
 										     1.0);
   gtk_table_attach(GTK_TABLE(audio_connection_collection_editor),
 		   GTK_WIDGET(audio_connection_collection_editor->audio_channel),
-		   0, 1,
+		   1, 2,
 		   1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
@@ -232,15 +269,56 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
-  audio_connection_collection_editor->audio_channel = gtk_spin_button_new_with_range(0.0,
-										     0.0,
-										     1.0);
+  audio_connection_collection_editor->soundcard_audio_channel = gtk_spin_button_new_with_range(-1.0,
+											       -1.0,
+											       1.0);
   gtk_table_attach(GTK_TABLE(audio_connection_collection_editor),
 		   GTK_WIDGET(audio_connection_collection_editor->soundcard_audio_channel),
 		   1, 2,
 		   3, 4,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
+}
+
+
+void
+ags_audio_connection_collection_editor_set_property(GObject *gobject,
+						    guint prop_id,
+						    const GValue *value,
+						    GParamSpec *param_spec)
+{
+  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor;
+
+  audio_connection_collection_editor = AGS_AUDIO_CONNECTION_COLLECTION_EDITOR(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL_TYPE:
+    audio_connection_collection_editor->channel_type = g_value_get_gtype(value);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_audio_connection_collection_editor_get_property(GObject *gobject,
+						    guint prop_id,
+						    GValue *value,
+						    GParamSpec *param_spec)
+{
+  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor;
+
+  audio_connection_collection_editor = AGS_AUDIO_CONNECTION_COLLECTION_EDITOR(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL_TYPE:
+    g_value_set_gtype(value, audio_connection_collection_editor->channel_type);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -274,7 +352,16 @@ ags_audio_connection_collection_editor_set_update(AgsApplicable *applicable, gbo
 void
 ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor;
+  GtkTreeIter iter;
+
+  audio_connection_collection_editor = AGS_AUDIO_CONNECTION_COLLECTION_EDITOR(applicable);
+
+  if(gtk_combo_box_get_active_iter(audio_connection_collection_editor->soundcard,
+				   &iter)){
+
+    //TODO:JK: implement me
+  }
 }
 
 void
@@ -287,14 +374,74 @@ ags_audio_connection_collection_editor_reset(AgsApplicable *applicable)
   /* empty */
 }
 
+/**
+ * ags_audio_connection_collection_editor_check:
+ * @audio_connection_collection_editor: the #AgsAudio_ConnectionCollectionEditor
+ *
+ * Checks for possible channels to audio_connection. And modifies its ranges.
+ * 
+ * Since: 0.7.65
+ */
 void
-ags_audio_connection_collection_editor_show(GtkWidget *widget)
+ags_audio_connection_collection_editor_check(AgsAudioConnectionCollectionEditor *audio_connection_collection_editor)
 {
-  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor = (AgsAudioConnectionCollectionEditor *) widget;
+  AgsConnectionEditor *connection_editor;
+
+  AgsAudio *audio;
+  
+  GtkTreeIter iter;
+
+  connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(audio_connection_collection_editor),
+								    AGS_TYPE_CONNECTION_EDITOR));
+  audio = connection_editor->machine->audio;
+
+  if(audio_connection_collection_editor->channel_type == AGS_TYPE_INPUT){
+    gtk_spin_button_set_range(audio_connection_collection_editor->pad,
+			      0.0,
+			      audio->input_pads - 1.0);
+  }else{
+    gtk_spin_button_set_range(audio_connection_collection_editor->pad,
+			      0.0,
+			      audio->output_pads - 1.0);
+  }
+
+  gtk_spin_button_set_range(audio_connection_collection_editor->audio_channel,
+			    0.0,
+			    audio->audio_channels - 1.0);
+
+  if(gtk_combo_box_get_active_iter(audio_connection_collection_editor->soundcard,
+				   &iter)){    
+    GObject *soundcard;
+    
+    GtkTreeModel *model;
+
+    guint soundcard_audio_channels;
+    
+    /* soundcard connection */
+    model = gtk_combo_box_get_model(audio_connection_collection_editor->soundcard);
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &soundcard,
+		       -1);
+
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      &soundcard_audio_channels,
+			      NULL,
+			      NULL,
+			      NULL);
+
+    gtk_spin_button_set_range(audio_connection_collection_editor->soundcard_audio_channel,
+			      0.0,
+			      soundcard_audio_channels - 1.0);
+  }else{
+    gtk_spin_button_set_range(audio_connection_collection_editor->soundcard_audio_channel,
+			      -1.0, -1.0);
+  }
 }
 
 /**
  * ags_audio_connection_collection_editor_new:
+ * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *
  * Creates an #AgsAudioConnectionCollectionEditor
  *
@@ -303,11 +450,12 @@ ags_audio_connection_collection_editor_show(GtkWidget *widget)
  * Since: 0.7.65
  */
 AgsAudioConnectionCollectionEditor*
-ags_audio_connection_collection_editor_new()
+ags_audio_connection_collection_editor_new(GType channel_type)
 {
   AgsAudioConnectionCollectionEditor *audio_connection_collection_editor;
   
   audio_connection_collection_editor = (AgsAudioConnectionCollectionEditor *) g_object_new(AGS_TYPE_AUDIO_CONNECTION_COLLECTION_EDITOR,
+											   "channel_type\0", channel_type,
 											   NULL);
   
   return(audio_connection_collection_editor);

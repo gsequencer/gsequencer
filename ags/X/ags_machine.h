@@ -71,9 +71,12 @@ typedef enum{
 }AgsMachineEditOptions;
 
 typedef enum{
-  AGS_MACHINE_POPUP_MIDI_DIALOG           = 1,
-  AGS_MACHINE_SHOW_MIDI_INPUT             = 1 <<  1,
-  AGS_MACHINE_SHOW_MIDI_OUTPUT            = 1 <<  2,
+  AGS_MACHINE_POPUP_CONNECTION_EDITOR         = 1,
+  AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION    = 1 <<  1,
+  AGS_MACHINE_SHOW_AUDIO_INPUT_CONNECTION     = 1 <<  2,
+  AGS_MACHINE_POPUP_MIDI_DIALOG               = 1 <<  3,
+  AGS_MACHINE_SHOW_MIDI_INPUT                 = 1 <<  4,
+  AGS_MACHINE_SHOW_MIDI_OUTPUT                = 1 <<  5,
 }AgsMachineConnectionOptions;
 
 struct _AgsMachine
@@ -117,7 +120,8 @@ struct _AgsMachine
   GtkMenu *popup;
   GtkDialog *properties;
   GtkDialog *rename;
-  GtkDialog *connection;
+  GtkDialog *connection_editor;
+  GtkDialog *midi_dialog;
 
   GObject *application_context;
 };
@@ -149,8 +153,6 @@ GList* ags_machine_find_port(AgsMachine *machine);
 
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
-GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
-
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
 
 void ags_machine_set_run(AgsMachine *machine,
@@ -158,6 +160,9 @@ void ags_machine_set_run(AgsMachine *machine,
 void ags_machine_set_run_extended(AgsMachine *machine,
 				  gboolean run,
 				  gboolean sequencer, gboolean notation);
+
+GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
+GtkListStore* ags_machine_get_possible_audio_output_connections(AgsMachine *machine);
 
 GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
 

@@ -1060,6 +1060,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_audio_preferences.h \
 	ags/X/ags_bulk_member_callbacks.h \
 	ags/X/ags_bulk_member.h \
+	ags/X/ags_connection_editor_callbacks.h \
+	ags/X/ags_connection_editor.h \
 	ags/X/ags_dssi_browser_callbacks.h \
 	ags/X/ags_dssi_browser.h \
 	ags/X/ags_editor_callbacks.h \
@@ -1146,6 +1148,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_audio_preferences_callbacks.c \
 	ags/X/ags_bulk_member.c \
 	ags/X/ags_bulk_member_callbacks.c \
+	ags/X/ags_connection_editor_callbacks.c \
+	ags/X/ags_connection_editor.c \
 	ags/X/ags_dssi_browser_callbacks.c \
 	ags/X/ags_dssi_browser.c \
 	ags/X/ags_editor.c \

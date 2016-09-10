@@ -33,6 +33,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_pattern.h>
@@ -367,7 +368,8 @@ ags_machine_init(AgsMachine *machine)
 			     menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
-  machine->connection = NULL;
+  machine->connection_editor = NULL;
+  machine->midi_dialog = NULL;
 
   machine->application_context = NULL;
 }
@@ -1428,53 +1430,6 @@ ags_machine_find_port(AgsMachine *machine)
 }
 
 /**
- * ags_machine_get_possible_links:
- * @machine: the #AgsMachine
- *
- * Find links suitable for @machine.
- *
- * Returns: a #GtkListStore containing one column with a string representing
- * machines by its type and name.
- *
- * Since: 0.4
- */
-GtkListStore*
-ags_machine_get_possible_links(AgsMachine *machine)
-{
-  GtkListStore *model;
-  GtkTreeIter iter;
-  GList *list;
-
-  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-
-  gtk_list_store_append(model, &iter);
-  gtk_list_store_set(model, &iter,
-		     0, "NULL\0",
-		     1, NULL,
-		     -1);
-
-  if(GTK_WIDGET(machine)->parent != NULL){
-    list = gtk_container_get_children(GTK_CONTAINER(GTK_WIDGET(machine)->parent));
-
-    while(list != NULL){
-      if(list->data != machine){
-	gtk_list_store_append(model, &iter);
-	gtk_list_store_set(model, &iter,
-			   0, g_strdup_printf("%s: %s\0", 
-					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
-					      AGS_MACHINE(list->data)->name),
-			   1, list->data,
-			   -1);
-      }
-
-      list = list->next;
-    }
-  }
-  
-  return(model);
-}
-
-/**
  * ags_machine_find_by_name:
  * @list: a #GList of #AgsMachine
  * @name: the name of machine
@@ -1651,6 +1606,115 @@ ags_machine_set_run_extended(AgsMachine *machine,
     ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				(AgsTask *) cancel_audio);
   }
+}
+
+/**
+ * ags_machine_get_possible_audio_output_connections:
+ * @machine: the #AgsMachine
+ *
+ * Find audio output connections suitable for @machine.
+ *
+ * Returns: a #GtkListStore containing one column with a string representing
+ * machines by its type and name.
+ *
+ * Since: 0.4
+ */
+GtkListStore*
+ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
+{
+  AgsWindow *window;
+  
+  AgsApplicationContext *application_context;
+
+  GtkListStore *model;
+
+  GList *list;
+  GtkTreeIter iter;
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  if(window != NULL){
+    application_context = window->application_context;
+  }else{
+    application_context = NULL;
+  }
+  
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "NULL\0",
+		     1, NULL,
+		     -1);
+
+  if(application_context != NULL){
+    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+    while(list != NULL){
+      if(list->data != machine){
+	gtk_list_store_append(model, &iter);
+	gtk_list_store_set(model, &iter,
+			   0, g_strdup_printf("%s: %s\0", 
+					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
+					      ags_soundcard_get_device(AGS_SOUNDCARD(list->data))),
+			   1, list->data,
+			   -1);
+      }
+
+      list = list->next;
+    }
+  }
+  
+  return(model);
+}
+
+/**
+ * ags_machine_get_possible_links:
+ * @machine: the #AgsMachine
+ *
+ * Find links suitable for @machine.
+ *
+ * Returns: a #GtkListStore containing one column with a string representing
+ * machines by its type and name.
+ *
+ * Since: 0.4
+ */
+GtkListStore*
+ags_machine_get_possible_links(AgsMachine *machine)
+{
+  GtkListStore *model;
+
+  GList *list;
+  GtkTreeIter iter;
+
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "NULL\0",
+		     1, NULL,
+		     -1);
+
+  if(GTK_WIDGET(machine)->parent != NULL){
+    list = gtk_container_get_children(GTK_CONTAINER(GTK_WIDGET(machine)->parent));
+
+    while(list != NULL){
+      if(list->data != machine){
+	gtk_list_store_append(model, &iter);
+	gtk_list_store_set(model, &iter,
+			   0, g_strdup_printf("%s: %s\0", 
+					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
+					      AGS_MACHINE(list->data)->name),
+			   1, list->data,
+			   -1);
+      }
+
+      list = list->next;
+    }
+  }
+  
+  return(model);
 }
 
 /**
@@ -2078,6 +2142,16 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
 			    connection);
 
   gtk_widget_show(connection);
+
+  if((AGS_MACHINE_POPUP_CONNECTION_EDITOR & connection_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("audio connection\0"));
+    gtk_menu_shell_append((GtkMenuShell *) connection, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_connection_editor_callback), (gpointer) machine);
+
+    gtk_widget_show(item);
+  }
 
   if((AGS_MACHINE_POPUP_MIDI_DIALOG & connection_options) != 0){
     item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("MIDI dialog\0"));

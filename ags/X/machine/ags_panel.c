@@ -188,6 +188,9 @@ ags_panel_init(AgsPanel *panel)
   g_signal_connect_after((GObject *) panel, "parent_set\0",
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
+  ags_machine_popup_add_connection_options(panel,
+					   (AGS_MACHINE_POPUP_CONNECTION_EDITOR));
+
   AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_SYNC);
   AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
 

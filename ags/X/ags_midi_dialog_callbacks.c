@@ -607,7 +607,7 @@ ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
   ags_connectable_disconnect(AGS_CONNECTABLE(midi_dialog));
   ags_applicable_apply(AGS_APPLICABLE(midi_dialog));
  
-  midi_dialog->machine->connection = NULL;
+  midi_dialog->machine->midi_dialog = NULL;
   gtk_widget_destroy((GtkWidget *) midi_dialog);
 
   return(0);
@@ -616,7 +616,7 @@ ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 int
 ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  midi_dialog->machine->connection = NULL;
+  midi_dialog->machine->midi_dialog = NULL;
   gtk_widget_destroy((GtkWidget *) midi_dialog);
 
   return(0);

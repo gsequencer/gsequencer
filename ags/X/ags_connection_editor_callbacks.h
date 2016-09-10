@@ -17,20 +17,19 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_AUDIO_CONNECTION_COLLECTION_EDITOR_CALLBACKS_H__
-#define __AGS_AUDIO_CONNECTION_COLLECTION_EDITOR_CALLBACKS_H__
+#ifndef __AGS_CONNECTION_EDITOR_CALLBACKS_H__
+#define __AGS_CONNECTION_EDITOR_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
-
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_audio_connection_collection_editor.h>
+#include <ags/X/ags_connection_editor.h>
 
-int ags_audio_connection_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
-							       AgsAudioConnectionCollectionEditor *audio_connection_collection_editor);
+int ags_connection_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsConnectionEditor *connection_editor);
 
-void ags_audio_connection_collection_editor_soundcard_callback(GtkWidget *combo_box,
-							       AgsAudioConnectionCollectionEditor *audio_connection_collection_editor);
+int ags_connection_editor_apply_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
+int ags_connection_editor_ok_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
+int ags_connection_editor_cancel_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
 
-#endif /*__AGS_AUDIO_CONNECTION_COLLECTION_EDITOR_CALLBACKS_H__*/
+#endif /*__AGS_CONNECTION_EDITOR_CALLBACKS_H__*/
