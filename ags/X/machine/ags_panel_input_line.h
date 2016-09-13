@@ -42,6 +42,8 @@ struct _AgsPanelInputLine
 
   gchar *name;
   gchar *xml_type;
+
+  GtkLabel *soundcard_connection;
 };
 
 struct _AgsPanelInputLineClass

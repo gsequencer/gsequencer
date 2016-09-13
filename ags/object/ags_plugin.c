@@ -27,7 +27,7 @@ void ags_plugin_base_init(AgsPluginInterface *interface);
  * SECTION:ags_plugin
  * @short_description: interfacing plugins
  * @title: AgsPlugin
- * @section_id:
+ * @section_id: AgsPlugin
  * @include: ags/object/ags_plugin.h
  *
  * The #AgsPlugin interface gives you a unique access to recalls,

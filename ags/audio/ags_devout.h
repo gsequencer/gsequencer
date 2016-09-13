@@ -29,7 +29,9 @@
 
 #include <pthread.h>
 
-#ifndef __AGS_WITHOUT_ALSA__
+#include <ags/config.h>
+
+#ifdef AGS_WITH_ALSA
 #include <alsa/asoundlib.h>
 #endif
 
@@ -39,8 +41,6 @@
 #define AGS_IS_DEVOUT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_DEVOUT))
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
-
-#define __AGS_WITHOUT_ALSA__
 
 #define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0\0"
 #define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp\0"
@@ -120,7 +120,7 @@ struct _AgsDevout
       int device_fd;
       char *device;
     }oss;
-#ifndef __AGS_WITHOUT_ALSA__
+#ifdef AGS_WITH_ALSA
     struct _AgsAlsa{
       char *device;
       int rc;

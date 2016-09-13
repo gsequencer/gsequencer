@@ -27,7 +27,7 @@ void ags_sound_provider_class_init(AgsSoundProviderInterface *interface);
  * SECTION:ags_sound_provider
  * @short_description: provide accoustics
  * @title: AgsSoundProvider
- * @section_id:
+ * @section_id: AgsSoundProvider
  * @include: ags/thread/ags_sound_provider.h
  *
  * The #AgsSoundProvider provides you the advanced audio capabilities.

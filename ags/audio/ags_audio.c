@@ -4950,6 +4950,97 @@ ags_audio_open_files(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_recursive_set_property:
+ * @audio: the #AgsAudio
+ * @parameter: the #GParameter-struct array containing properties
+ * @n_params: the length of @parameter array
+ *
+ * Recursive set property for #AgsAudio.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_audio_recursive_set_property(AgsAudio *audio,
+				 GParameter *parameter, gint n_params)
+{
+  AgsChannel *channel;
+  
+  auto void ags_audio_set_property(AgsAudio *audio,
+				   GParameter *parameter, gint n_params);
+  auto void ags_audio_recurisve_set_property_down(AgsChannel *channel,
+						  GParameter *parameter, gint n_params);
+  auto void ags_audio_recurisve_set_property_down_input(AgsChannel *channel,
+							GParameter *parameter, gint n_params);
+
+  void ags_audio_set_property(AgsAudio *audio,
+			      GParameter *parameter, gint n_params){
+    guint i;
+
+    for(i = 0; i < n_params; i++){
+      g_object_set_property(audio,
+			    parameter[i].name, &(parameter[i].value));
+    }
+  }
+  
+  void ags_audio_recurisve_set_property_down(AgsChannel *channel,
+					     GParameter *parameter, gint n_params){
+    if(channel == NULL){
+      return;
+    }
+
+    ags_audio_set_property(channel->audio,
+			   parameter, n_params);
+    
+    ags_audio_recurisve_set_property_down_input(channel,
+						parameter, n_params);
+  }
+    
+  void ags_audio_recurisve_set_property_down_input(AgsChannel *channel,
+						   GParameter *parameter, gint n_params){
+    AgsAudio *audio;
+    AgsChannel *input;
+    
+    if(channel == NULL){
+      return;
+    }
+
+    audio = channel->audio;
+
+    if(audio == NULL){
+      return;
+    }
+    
+    input = ags_channel_nth(audio->input,
+			    channel->audio_channel);
+
+    while(input != NULL){      
+      ags_audio_recurisve_set_property_down(input->link,
+					    parameter, n_params);
+
+      input = input->next;
+    }
+  }
+
+  if(audio == NULL){
+    return;
+  }
+
+  ags_audio_set_property(audio,
+			 parameter, n_params);
+
+  if(audio->input != NULL){
+    channel = audio->input;
+
+    while(channel != NULL){
+      ags_audio_recurisve_set_property_down(channel->link,
+					    parameter, n_params);
+
+      channel = channel->next;
+    }
+  }
+}
+
+/**
  * ags_audio_recursive_play_init:
  * @audio: the #AgsAudio object
  * @playback: if doing playback
@@ -4993,7 +5084,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
   
   pthread_mutex_unlock(application_mutex);
 
-  /* recurisive init playback */
+  /* recursive init playback */
   pthread_mutex_lock(mutex);
 
   list = NULL;

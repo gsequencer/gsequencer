@@ -20,6 +20,7 @@
 #ifndef __AGS_DISTRIBUTED_MANAGER_H__
 #define __AGS_DISTRIBUTED_MANAGER_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_DISTRIBUTED_MANAGER                    (ags_distributed_manager_get_type())
@@ -29,7 +30,7 @@
 #define AGS_IS_DISTRIBUTED_MANAGER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_DISTRIBUTED_MANAGER))
 #define AGS_DISTRIBUTED_MANAGER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_DISTRIBUTED_MANAGER, AgsDistributedManagerInterface))
 
-typedef void AgsDistributedManager;
+typedef struct _AgsDistributedManager AgsDistributedManager;
 typedef struct _AgsDistributedManagerInterface AgsDistributedManagerInterface;
 
 struct _AgsDistributedManagerInterface

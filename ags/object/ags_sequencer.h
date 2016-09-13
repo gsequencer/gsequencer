@@ -20,6 +20,7 @@
 #ifndef __AGS_SEQUENCER_H__
 #define __AGS_SEQUENCER_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/object/ags_application_context.h>
@@ -33,7 +34,7 @@
 #define AGS_IS_SEQUENCER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_SEQUENCER))
 #define AGS_SEQUENCER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_SEQUENCER, AgsSequencerInterface))
 
-typedef void AgsSequencer;
+typedef struct _AgsSequencer AgsSequencer;
 typedef struct _AgsSequencerInterface AgsSequencerInterface;
 
 #define AGS_SEQUENCER_DEFAULT_SAMPLERATE (44100.0)

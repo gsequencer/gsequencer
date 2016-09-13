@@ -20,9 +20,8 @@
 #ifndef __AGS_MUTABLE_H__
 #define __AGS_MUTABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
-
-#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_MUTABLE                    (ags_mutable_get_type())
 #define AGS_MUTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MUTABLE, AgsMutable))
@@ -31,7 +30,7 @@
 #define AGS_IS_MUTABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_MUTABLE))
 #define AGS_MUTABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_MUTABLE, AgsMutableInterface))
 
-typedef void AgsMutable;
+typedef struct _AgsMutable AgsMutable;
 typedef struct _AgsMutableInterface AgsMutableInterface;
 
 struct _AgsMutableInterface

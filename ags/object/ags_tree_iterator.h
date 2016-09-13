@@ -29,7 +29,7 @@
 #define AGS_IS_TREE_ITERATOR_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_TREE_ITERATOR))
 #define AGS_TREE_ITERATOR_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_TREE_ITERATOR, AgsTreeIteratorInterface))
 
-typedef void AgsTreeIterator;
+typedef struct _AgsTreeIterator AgsTreeIterator;
 typedef struct _AgsTreeIteratorInterface AgsTreeIteratorInterface;
 
 struct _AgsTreeIteratorInterface

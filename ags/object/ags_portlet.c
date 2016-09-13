@@ -27,7 +27,7 @@ void ags_portlet_base_init(AgsPortletInterface *interface);
  * SECTION:ags_portlet
  * @short_description: interfacing portlets
  * @title: AgsPortlet
- * @section_id:
+ * @section_id: AgsPortlet
  * @include: ags/object/ags_portlet.h
  *
  * The #AgsPortlet interface is intended to use with ports containing #GObject.
@@ -63,14 +63,14 @@ ags_portlet_base_init(AgsPortletInterface *interface)
 /**
  * ags_portlet_set_port:
  * @portlet: an #AgsPortlet
- * @port: the #AgsPort
+ * @port: the #GObject
  *
  * Set port.
  *
  * Since: 0.4
  */
 void
-ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port)
+ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
 {
   AgsPortletInterface *portlet_interface;
 
@@ -86,11 +86,11 @@ ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port)
  *
  * Get port.
  *
- * Returns: the #AgsPort
+ * Returns: the #GObject
  *
  * Since: 0.4
  */
-AgsPort*
+GObject*
 ags_portlet_get_port(AgsPortlet *portlet)
 {
   AgsPortletInterface *portlet_interface;

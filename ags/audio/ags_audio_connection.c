@@ -50,6 +50,7 @@ enum{
   PROP_PAD,
   PROP_AUDIO_CHANNEL,
   PROP_LINE,
+  PROP_MAPPED_LINE,
 };
 
 GType
@@ -181,6 +182,24 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
   g_object_class_install_property(gobject,
 				  PROP_LINE,
 				  param_spec);
+
+  /**
+   * AgsAudioConnection:mapped-line:
+   *
+   * The nth mapped line assigned with.
+   * 
+   * Since: 0.7.65
+   */
+  param_spec = g_param_spec_uint("mapped-line\0",
+				 "mapped line\0",
+				 "The mapped line of data object\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAPPED_LINE,
+				  param_spec);
 }
 
 void
@@ -194,6 +213,8 @@ ags_audio_connection_init(AgsAudioConnection *audio_connection)
   audio_connection->pad = 0;
   audio_connection->audio_channel = 0;
   audio_connection->line = 0;
+
+  audio_connection->mapped_line = 0;
 }
 
 void
@@ -250,6 +271,11 @@ ags_audio_connection_set_property(GObject *gobject,
       audio_connection->line = g_value_get_uint(value);
     }
     break;
+  case PROP_MAPPED_LINE:
+    {
+      audio_connection->mapped_line = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
   }
@@ -283,12 +309,17 @@ ags_audio_connection_get_property(GObject *gobject,
     break;
   case PROP_AUDIO_CHANNEL:
     {
-      g_value_set_object(value, audio_connection->audio_channel);
+      g_value_set_uint(value, audio_connection->audio_channel);
     }
     break;
   case PROP_LINE:
     {
-      g_value_set_object(value, audio_connection->line);
+      g_value_set_uint(value, audio_connection->line);
+    }
+    break;
+  case PROP_MAPPED_LINE:
+    {
+      g_value_set_uint(value, audio_connection->mapped_line);
     }
     break;
   default:
@@ -306,6 +337,25 @@ ags_audio_connection_finalize(GObject *gobject)
   if(audio_connection->audio != NULL){
     g_object_unref(audio_connection->audio);
   }
+}
+
+GList*
+ags_audio_connection_find(GList *list,
+			  GType channel_type,
+			  guint pad,
+			  guint audio_channel)
+{
+  while(list != NULL){
+    if(AGS_AUDIO_CONNECTION(list->data)->channel_type == channel_type &&
+       AGS_AUDIO_CONNECTION(list->data)->pad == pad &&
+       AGS_AUDIO_CONNECTION(list->data)->audio_channel == audio_channel){
+      return(list);
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
 }
 
 /**

@@ -27,7 +27,7 @@ void ags_applicable_base_init(AgsApplicableInterface *interface);
  * SECTION:ags_applicable
  * @short_description: unique access to dialogs
  * @title: AgsApplicable
- * @section_id:
+ * @section_id: AgsApplicable
  * @include: ags/object/ags_applicable.h
  *
  * The #AgsApplicable interface gives you a unique access to dialogs.

@@ -20,6 +20,7 @@
 #ifndef __AGS_SOUND_PROVIDER_H__
 #define __AGS_SOUND_PROVIDER_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_SOUND_PROVIDER                    (ags_sound_provider_get_type())
@@ -29,7 +30,7 @@
 #define AGS_IS_SOUND_PROVIDER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_SOUND_PROVIDER))
 #define AGS_SOUND_PROVIDER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_SOUND_PROVIDER, AgsSoundProviderInterface))
 
-typedef void AgsSoundProvider;
+typedef struct _AgsSoundProvider AgsSoundProvider;
 typedef struct _AgsSoundProviderInterface AgsSoundProviderInterface;
 
 struct _AgsSoundProviderInterface

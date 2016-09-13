@@ -20,6 +20,7 @@
 #ifndef __AGS_DYNAMIC_CONNECTABLE_H__
 #define __AGS_DYNAMIC_CONNECTABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_DYNAMIC_CONNECTABLE                    (ags_dynamic_connectable_get_type())
@@ -29,7 +30,7 @@
 #define AGS_IS_DYNAMIC_CONNECTABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_DYNAMIC_CONNECTABLE))
 #define AGS_DYNAMIC_CONNECTABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_DYNAMIC_CONNECTABLE, AgsDynamicConnectableInterface))
 
-typedef void AgsDynamicConnectable;
+typedef struct _AgsDynamicConnectable AgsDynamicConnectable;
 typedef struct _AgsDynamicConnectableInterface AgsDynamicConnectableInterface;
 
 struct _AgsDynamicConnectableInterface

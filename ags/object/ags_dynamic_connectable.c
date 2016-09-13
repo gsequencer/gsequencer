@@ -27,7 +27,7 @@ void ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface
  * SECTION:ags_dynamic_connectable
  * @short_description: unique access to recalls
  * @title: AgsDynamicConnectable
- * @section_id:
+ * @section_id: AgsDynamicConnectable
  * @include: ags/object/ags_dynamic_connectable.h
  *
  * The #AgsDynamicConnectable interface gives you a unique access to recalls. Its main

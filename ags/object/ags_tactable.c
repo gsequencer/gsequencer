@@ -27,7 +27,7 @@ void ags_tactable_class_init(AgsTactableInterface *interface);
  * SECTION:ags_tactable
  * @short_description: Unique tempo set or attributes access
  * @title: AgsTactable
- * @section_id:
+ * @section_id: AgsTactable
  * @include: ags/object/ags_tactable.h
  *
  * The #AgsTactable interface gives you a unique access to modify tempo.

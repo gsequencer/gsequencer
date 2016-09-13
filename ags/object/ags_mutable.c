@@ -25,7 +25,7 @@ void ags_mutable_base_init(AgsMutableInterface *interface);
  * SECTION:ags_mutable
  * @short_description: unique access to recalls
  * @title: AgsMutable
- * @section_id:
+ * @section_id: AgsMutable
  * @include: ags/object/ags_mutable.h
  *
  * The #AgsMutable interface gives you a unique access to recalls. Its

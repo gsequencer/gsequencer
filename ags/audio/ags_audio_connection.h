@@ -60,6 +60,8 @@ struct _AgsAudioConnection
   guint pad;
   guint audio_channel;
   guint line;
+
+  guint mapped_line;
 };
 
 struct _AgsAudioConnectionClass
@@ -68,6 +70,11 @@ struct _AgsAudioConnectionClass
 };
 
 GType ags_audio_connection_get_type();
+
+GList* ags_audio_connection_find(GList *list,
+				 GType channel_type,
+				 guint pad,
+				 guint audio_channel);
 
 AgsAudioConnection* ags_audio_connection_new();
 

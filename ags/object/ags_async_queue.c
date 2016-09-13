@@ -27,7 +27,7 @@ void ags_async_queue_base_init(AgsAsyncQueueInterface *interface);
  * SECTION:ags_async_queue
  * @short_description: asynchronous run
  * @title: AgsAsyncQueue
- * @section_id:
+ * @section_id: AgsAsyncQueue
  * @include: ags/object/ags_async_queue.h
  *
  * The #AgsAsyncQueue interface determines if it is safe to run.

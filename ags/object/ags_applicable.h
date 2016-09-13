@@ -30,7 +30,7 @@
 #define AGS_IS_APPLICABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_APPLICABLE))
 #define AGS_APPLICABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_APPLICABLE, AgsApplicableInterface))
 
-typedef void AgsApplicable;
+typedef struct _AgsApplicable AgsApplicable;
 typedef struct _AgsApplicableInterface AgsApplicableInterface;
 
 struct _AgsApplicableInterface

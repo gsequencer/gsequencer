@@ -32,6 +32,7 @@
 #include <ags/file/ags_file_launch.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_recall_factory.h>
@@ -199,11 +200,11 @@ ags_panel_init(AgsPanel *panel)
   AGS_MACHINE(panel)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(panel)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_panel_set_audio_channels), NULL);
+  g_signal_connect(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
+		   G_CALLBACK(ags_panel_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_pads\0",
-			 G_CALLBACK(ags_panel_set_pads), NULL);
+  g_signal_connect(G_OBJECT(panel->machine.audio), "set_pads\0",
+		   G_CALLBACK(ags_panel_set_pads), NULL);
 
   /* */
   panel->name = NULL;
@@ -391,7 +392,91 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 			     guint audio_channels, guint audio_channels_old,
 			     gpointer data)
 {
-  /* empty */
+  AgsAudioConnection *audio_connection;
+
+  GList *list;
+  
+  guint i, j;
+
+  if(audio_channels > audio_channels_old){
+    for(i = 0; i < audio->input_pads; i++){
+      if(i != 0){
+	for(j = 0; j < audio_channels_old; j++){
+	  list = audio->audio_connection;
+	  
+	  while((list = ags_audio_connection_find(list,
+						  AGS_TYPE_INPUT,
+						  i,
+						  j)) != NULL){
+	    GObject *data_object;
+
+	    g_object_get(G_OBJECT(list->data),
+			 "data-object\0", &data_object,
+			 NULL);
+	    
+	    if(AGS_IS_SOUNDCARD(data_object)){
+	      break;
+	    }
+
+	    list = list->next;
+	  }
+
+	  if(list != NULL){
+	    audio_connection = list->data;
+	    audio_connection->line = i * audio->audio_channels + j;
+
+	    audio_connection->mapped_line = audio_connection->line;
+	  }
+	}
+      }
+
+      for(j = audio_channels_old; j < audio_channels; j++){
+	audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
+					"data-object\0", audio->soundcard,
+					NULL);
+	audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
+				    AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
+				    AGS_AUDIO_CONNECTION_SCOPE_LINE);
+	
+	audio_connection->audio = audio;
+	audio_connection->channel_type = AGS_TYPE_INPUT;
+
+	audio_connection->pad = i;
+	audio_connection->audio_channel = j;
+	audio_connection->line = i * audio->audio_channels + j;
+
+	audio_connection->mapped_line = audio_connection->line;
+	
+	ags_audio_add_audio_connection(audio,
+				       audio_connection);
+      }
+    }
+  }else{
+    for(i = 0; i < audio->input_pads; i++){
+      for(j = audio_channels; j < audio_channels_old; j++){
+	list = audio->audio_connection;
+	
+	while((list = ags_audio_connection_find(list,
+						AGS_TYPE_INPUT,
+						i,
+						j)) != NULL){
+	  GObject *data_object;
+
+	  g_object_get(G_OBJECT(list->data),
+		       "data-object\0", &data_object,
+		       NULL);
+	    
+	  if(AGS_IS_SOUNDCARD(data_object)){
+	    ags_audio_remove_audio_connection(audio,
+					      audio_connection);
+	    break;
+	  }
+
+	  list = list->next;
+	}
+      }
+    }
+  }
 }
 
 void
@@ -399,7 +484,63 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 		   guint pads, guint pads_old,
 		   gpointer data)
 {
-  /* empty */
+  AgsAudioConnection *audio_connection;
+
+  GList *list;
+  
+  guint i, j;
+  
+  if(type == AGS_TYPE_INPUT){
+    if(pads > pads_old){
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
+					  "data-object\0", audio->soundcard,
+					  NULL);
+	  audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
+				      AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
+				      AGS_AUDIO_CONNECTION_SCOPE_LINE);
+
+	  audio_connection->audio = audio;
+	  audio_connection->channel_type = AGS_TYPE_INPUT;
+
+	  audio_connection->pad = i;
+	  audio_connection->audio_channel = j;
+	  audio_connection->line = i * audio->audio_channels + j;
+
+	  audio_connection->mapped_line = audio_connection->line;
+	  
+	  ags_audio_add_audio_connection(audio,
+					 audio_connection);
+	}
+      }
+    }else{
+      for(i = pads; i < pads_old; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  list = audio->audio_connection;
+	
+	  while((list = ags_audio_connection_find(list,
+						  AGS_TYPE_INPUT,
+						  i,
+						  j)) != NULL){
+	    GObject *data_object;
+
+	    g_object_get(G_OBJECT(list->data),
+			 "data-object\0", &data_object,
+			 NULL);
+	    
+	    if(AGS_IS_SOUNDCARD(data_object)){
+	      ags_audio_remove_audio_connection(audio,
+						audio_connection);
+	      break;
+	    }
+
+	    list = list->next;
+	  }
+	}
+      }
+    }
+  }
 }
 
 /**

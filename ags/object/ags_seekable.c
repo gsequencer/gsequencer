@@ -27,7 +27,7 @@ void ags_seekable_class_init(AgsSeekableInterface *interface);
  * SECTION:ags_seekable
  * @short_description: unique access to recalls
  * @title: AgsSeekable
- * @section_id:
+ * @section_id: AgsSeekable
  * @include: ags/object/ags_seekable.h
  *
  * The #AgsSeekable interface gives you the #AgsSeekable::seek() signal
