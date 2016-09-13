@@ -20,9 +20,8 @@
 #ifndef __AGS_PORTLET_H__
 #define __AGS_PORTLET_H__
 
+#include <glib.h>
 #include <glib-object.h>
-
-#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_PORTLET                    (ags_portlet_get_type())
 #define AGS_PORTLET(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORTLET, AgsPortlet))
@@ -31,15 +30,15 @@
 #define AGS_IS_PORTLET_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_PORTLET))
 #define AGS_PORTLET_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_PORTLET, AgsPortletInterface))
 
-typedef void AgsPortlet;
+typedef struct _AgsPortlet AgsPortlet;
 typedef struct _AgsPortletInterface AgsPortletInterface;
 
 struct _AgsPortletInterface
 {
   GTypeInterface interface;
 
-  AgsPort* (*get_port)(AgsPortlet *portlet);
-  void (*set_port)(AgsPortlet *portlet, AgsPort *port);
+  GObject* (*get_port)(AgsPortlet *portlet);
+  void (*set_port)(AgsPortlet *portlet, GObject *port);
 
   GList* (*list_safe_properties)(AgsPortlet *portlet);
 
@@ -49,8 +48,8 @@ struct _AgsPortletInterface
 
 GType ags_portlet_get_type();
 
-AgsPort* ags_portlet_get_port(AgsPortlet *portlet);
-void ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port);
+GObject* ags_portlet_get_port(AgsPortlet *portlet);
+void ags_portlet_set_port(AgsPortlet *portlet, GObject *port);
 
 GList* ags_portlet_list_safe_properties(AgsPortlet *portlet);
 

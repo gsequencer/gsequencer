@@ -32,7 +32,7 @@
 #define AGS_IS_ASYNC_QUEUE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_ASYNC_QUEUE))
 #define AGS_ASYNC_QUEUE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_ASYNC_QUEUE, AgsAsyncQueueInterface))
 
-typedef void AgsAsyncQueue;
+typedef struct _AgsAsyncQueue AgsAsyncQueue;
 typedef struct _AgsAsyncQueueInterface AgsAsyncQueueInterface;
 
 struct _AgsAsyncQueueInterface

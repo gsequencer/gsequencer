@@ -20,6 +20,7 @@
 #ifndef __AGS_PACKABLE_H__
 #define __AGS_PACKABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_PACKABLE                    (ags_packable_get_type())
@@ -29,7 +30,7 @@
 #define AGS_IS_PACKABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_PACKABLE))
 #define AGS_PACKABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_PACKABLE, AgsPackableInterface))
 
-typedef void AgsPackable;
+typedef struct _AgsPackable AgsPackable;
 typedef struct _AgsPackableInterface AgsPackableInterface;
 
 struct _AgsPackableInterface

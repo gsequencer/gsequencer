@@ -34,7 +34,7 @@
 #define AGS_IS_MAIN_LOOP_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_MAIN_LOOP))
 #define AGS_MAIN_LOOP_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_MAIN_LOOP, AgsMainLoopInterface))
 
-typedef void AgsMainLoop;
+typedef struct _AgsMainLoop AgsMainLoop;
 typedef struct _AgsMainLoopInterface AgsMainLoopInterface;
 
 struct _AgsMainLoopInterface

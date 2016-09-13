@@ -18,13 +18,16 @@
  */
 
 #include <ags/X/machine/ags_panel_input_line.h>
+#include <ags/X/machine/ags_panel_input_line_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
@@ -172,6 +175,12 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
 
+  panel_input_line->soundcard_connection = gtk_label_new("(null)\0");
+  ags_expander_add(AGS_LINE(panel_input_line)->expander,
+		   GTK_WIDGET(panel_input_line->soundcard_connection),
+		   0, 0,
+		   1, 1);
+
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type\0", GTK_TYPE_CHECK_BUTTON,
 					       "widget-label\0", "mute\0",
@@ -181,7 +190,7 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 					       NULL);
   ags_expander_add(AGS_LINE(panel_input_line)->expander,
 		   GTK_WIDGET(line_member),
-		   0, 0,
+		   1, 0,
 		   1, 1);
 }
 
@@ -263,16 +272,59 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsPanelInputLine *panel_input_line;
 
+  AgsAudioConnection *audio_connection;
+  
+  GList *list;
+  
+  gchar *str;
+  
   AGS_LINE_CLASS(ags_panel_input_line_parent_class)->set_channel(line, channel);
 
   panel_input_line = AGS_PANEL_INPUT_LINE(line);
 
+  /*  */
+  list = AGS_AUDIO(channel->audio)->audio_connection;
+	  
+  while((list = ags_audio_connection_find(list,
+					  AGS_TYPE_INPUT,
+					  channel->pad,
+					  channel->audio_channel)) != NULL){
+    GObject *data_object;
+
+    g_object_get(G_OBJECT(list->data),
+		 "data-object\0", &data_object,
+		 NULL);
+	    
+    if(AGS_IS_SOUNDCARD(data_object)){
+      break;
+    }
+
+    list = list->next;
+  }
+
+  if(list != NULL){
+    audio_connection = list->data;
+    
+    str = g_strdup_printf("%s:%s[%d]\0",
+			  G_OBJECT_TYPE_NAME(channel->soundcard),
+			  ags_soundcard_get_device(AGS_SOUNDCARD(channel->soundcard)),
+			  audio_connection->mapped_line);
+    gtk_label_set_label(panel_input_line->soundcard_connection,
+			str);
+
+    g_signal_connect(audio_connection, "notify::data-object\0",
+		     G_CALLBACK(ags_panel_input_line_notify_data_object_callback), panel_input_line);
+
+    g_signal_connect(audio_connection, "notify::mapped-line\0",
+		     G_CALLBACK(ags_panel_input_line_notify_mapped_line_callback), panel_input_line);
+    
+    g_free(str);
+  }
+  
 #ifdef AGS_DEBUG
   g_message("ags_panel_input_line_set_channel - channel: %u\0",
 	    channel->line);
 #endif
-
-  /* empty */
 }
 
 void

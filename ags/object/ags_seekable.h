@@ -20,6 +20,7 @@
 #ifndef __AGS_SEEKABLE_H__
 #define __AGS_SEEKABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_SEEKABLE                    (ags_seekable_get_type())
@@ -29,7 +30,7 @@
 #define AGS_IS_SEEKABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_SEEKABLE))
 #define AGS_SEEKABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_SEEKABLE, AgsSeekableInterface))
 
-typedef void AgsSeekable;
+typedef struct _AgsSeekable AgsSeekable;
 typedef struct _AgsSeekableInterface AgsSeekableInterface;
 
 struct _AgsSeekableInterface

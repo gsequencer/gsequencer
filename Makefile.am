@@ -35,7 +35,7 @@ EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gseq
 
 man1_MANS = gsequencer.1 midi2xml.1
 
-CLEANFILES = docs/reference/libags/Makefile docs/reference/libags_gui/Makefile docs/reference/libags_audio/Makefile docs/reference/libgsequencer/Makefile
+CLEANFILES = 
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -332,6 +332,7 @@ libags_object_h_sources =  \
 	ags/object/ags_concurrent_tree.h \
 	ags/object/ags_distributed_manager.h \
 	ags/object/ags_dynamic_connectable.h \
+	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
 	ags/object/ags_marshal.h \
 	ags/object/ags_mutable.h \
@@ -503,6 +504,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_channel_iter.h \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_effect.h \
+	ags/audio/ags_fifoout.h \
 	ags/audio/ags_input.h \
 	ags/audio/ags_message.h \
 	ags/audio/ags_midiin.h \
@@ -554,6 +556,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_input.c \
+	ags/audio/ags_fifoout.c \
 	ags/audio/ags_message.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \
@@ -593,18 +596,18 @@ libags_audio_c_sources = \
 deprecated_libags_audio_client_h_sources =
 
 libags_audio_client_h_sources = \
-	$(deprecated_libags_audio_client_h_sources)
-#	ags/audio/ags_remote_channel.h \
-#	ags/audio/ags_remote_input.h \
-#	ags/audio/ags_remote_output.h
+	$(deprecated_libags_audio_client_h_sources) \
+	ags/audio/client/ags_remote_channel.h \
+	ags/audio/client/ags_remote_input.h \
+	ags/audio/client/ags_remote_output.h
 
 deprecated_libags_audio_client_c_sources =
 
 libags_audio_client_c_sources = \
-	$(deprecated_libags_audio_client_c_sources) 
-#	ags/audio/ags_remote_channel.c \
-#	ags/audio/ags_remote_input.c \
-#	ags/audio/ags_remote_output.c
+	$(deprecated_libags_audio_client_c_sources) \
+	ags/audio/client/ags_remote_channel.c \
+	ags/audio/client/ags_remote_input.c \
+	ags/audio/client/ags_remote_output.c
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =
@@ -1360,6 +1363,7 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_panel_callbacks.h \
 	ags/X/machine/ags_panel.h \
 	ags/X/machine/ags_panel_input_line.h \
+	ags/X/machine/ags_panel_input_line_callbacks.h \
 	ags/X/machine/ags_panel_input_pad.h \
 	ags/X/machine/ags_pattern_box_callbacks.h \
 	ags/X/machine/ags_pattern_box.h \
@@ -1415,6 +1419,7 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_panel.c \
 	ags/X/machine/ags_panel_callbacks.c \
 	ags/X/machine/ags_panel_input_line.c \
+	ags/X/machine/ags_panel_input_line_callbacks.c \
 	ags/X/machine/ags_panel_input_pad.c \
 	ags/X/machine/ags_pattern_box_callbacks.c \
 	ags/X/machine/ags_pattern_box.c \
@@ -1586,9 +1591,21 @@ clean-local:
 	rm -rf $(top_srcdir)/html
 	rm -rf $(top_srcdir)/docs/reference/libags/xml
 	rm -rf $(top_srcdir)/docs/reference/libags/html
+	rm -rf $(top_srcdir)/docs/reference/libags/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libags_audio/xml
 	rm -rf $(top_srcdir)/docs/reference/libags_audio/html
+	rm -rf $(top_srcdir)/docs/reference/libags_audio/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libags_gui/xml
 	rm -rf $(top_srcdir)/docs/reference/libags_gui/html
+	rm -rf $(top_srcdir)/docs/reference/libags_gui/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/html
+	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
+	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags
+	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags_audio
+	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags_gui
+
+distclean-local:
+	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags
+	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags_audio
+	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags_gui

@@ -19,7 +19,9 @@
 
 #include <ags/audio/recall/ags_peak_channel.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 

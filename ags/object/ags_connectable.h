@@ -32,7 +32,7 @@
 #define AGS_IS_CONNECTABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_CONNECTABLE))
 #define AGS_CONNECTABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_CONNECTABLE, AgsConnectableInterface))
 
-typedef void AgsConnectable;
+typedef struct _AgsConnectable AgsConnectable;
 typedef struct _AgsConnectableInterface AgsConnectableInterface;
 
 struct _AgsConnectableInterface

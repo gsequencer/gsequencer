@@ -20,6 +20,7 @@
 #ifndef __AGS_SOUNDCARD_H__
 #define __AGS_SOUNDCARD_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/object/ags_application_context.h>
@@ -56,7 +57,7 @@
 
 #define AGS_SOUNDCARD_DEFAULT_OVERCLOCK (0.0)
 
-typedef void AgsSoundcard;
+typedef struct _AgsSoundcard AgsSoundcard;
 typedef struct _AgsSoundcardInterface AgsSoundcardInterface;
 
 typedef enum{

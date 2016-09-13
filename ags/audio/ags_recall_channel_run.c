@@ -738,21 +738,21 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
 }
 
 void
-ags_recall_channel_run_connect_dynamic(AgsConnectable *connectable)
+ags_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
     return;
   }
 
-  ags_recall_channel_run_parent_dynamic_connectable_interface->connect_dynamic(connectable);
+  ags_recall_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
 }
 
 void
-ags_recall_channel_run_disconnect_dynamic(AgsConnectable *connectable)
+ags_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  ags_recall_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(connectable);
+  ags_recall_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* empty */
 }

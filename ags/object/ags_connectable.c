@@ -25,6 +25,7 @@ void ags_connectable_base_init(AgsConnectableInterface *interface);
  * SECTION:ags_connectable
  * @short_description: unique access to ojbects
  * @title: AgsConnectable
+ * @section_id: AgsConnectable
  * @include: ags/object/ags_connectable.h
  *
  * The #AgsConnectable interface gives you a unique access to all objects

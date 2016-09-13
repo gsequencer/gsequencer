@@ -40,7 +40,7 @@
 #define AGS_IS_CONCURRENCY_PROVIDER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_CONCURRENCY_PROVIDER))
 #define AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_CONCURRENCY_PROVIDER, AgsConcurrencyProviderInterface))
 
-typedef void AgsConcurrencyProvider;
+typedef struct _AgsConcurrencyProvider AgsConcurrencyProvider;
 typedef struct _AgsConcurrencyProviderInterface AgsConcurrencyProviderInterface;
 
 struct _AgsConcurrencyProviderInterface

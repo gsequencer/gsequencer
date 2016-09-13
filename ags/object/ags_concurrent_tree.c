@@ -27,7 +27,7 @@ void ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface);
  * SECTION:ags_concurrent_tree
  * @short_description: thread-safe locking of tree
  * @title: AgsConcurrentTree
- * @section_id:
+ * @section_id: AgsConcurrentTree
  * @include: ags/object/ags_concurrent_tree.h
  *
  * The #AgsConcurrentTree interface provides essential locks to process tree

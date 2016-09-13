@@ -192,6 +192,9 @@ void ags_audio_open_files(AgsAudio *audio,
 			  gboolean overwrite_channels,
 			  gboolean create_channels);
 
+void ags_audio_recursive_set_property(AgsAudio *audio,
+				      GParameter *parameter, gint n_params);
+
 GList* ags_audio_recursive_play_init(AgsAudio *audio,
 				     gboolean playback, gboolean sequencer, gboolean notation);
 

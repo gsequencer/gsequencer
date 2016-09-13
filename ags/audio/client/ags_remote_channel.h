@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #define AGS_TYPE_REMOTE_CHANNEL                (ags_remote_channel_get_type())
 #define AGS_REMOTE_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REMOTE_CHANNEL, AgsRemoteChannel))
 #define AGS_REMOTE_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_REMOTE_CHANNEL, AgsRemoteChannel))

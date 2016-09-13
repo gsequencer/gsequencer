@@ -23,6 +23,16 @@
 
 void ags_tree_iterator_base_init(AgsTreeIteratorInterface *interface);
 
+/**
+ * SECTION:ags_tree_iterator
+ * @short_description: treehronous run
+ * @title: AgsTreeIterator
+ * @section_id: AgsTreeIterator
+ * @include: ags/object/ags_tree_iterator.h
+ *
+ * The #AgsTreeIterator interface supports you iterating trees.
+ */
+
 GType
 ags_tree_iterator_get_type()
 {

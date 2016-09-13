@@ -32,7 +32,7 @@
 #define AGS_IS_CONCURRENT_TREE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_CONCURRENT_TREE))
 #define AGS_CONCURRENT_TREE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_CONCURRENT_TREE, AgsConcurrentTreeInterface))
 
-typedef void AgsConcurrentTree;
+typedef struct _AgsConcurrentTree AgsConcurrentTree;
 typedef struct _AgsConcurrentTreeInterface AgsConcurrentTreeInterface;
 
 struct _AgsConcurrentTreeInterface

@@ -29,7 +29,7 @@ void ags_main_loop_class_init(AgsMainLoopInterface *interface);
  * SECTION:ags_main_loop
  * @short_description: toplevel threads
  * @title: AgsMainLoop
- * @section_id:
+ * @section_id: AgsMainLoop
  * @include: ags/object/ags_main_loop.h
  *
  * The #AgsMainLoop interface gives you a unique access to toplevel

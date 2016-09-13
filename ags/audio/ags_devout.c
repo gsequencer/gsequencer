@@ -195,8 +195,8 @@ enum{
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
 
-const int i = 1;
-#define is_bigendian() ( (*(char*)&i) == 0 )
+const int endian_i = 1;
+#define is_bigendian() ( (*(char*)&endian_i) == 0 )
 
 GType
 ags_devout_get_type (void)

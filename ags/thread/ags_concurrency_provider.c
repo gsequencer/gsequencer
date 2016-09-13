@@ -27,7 +27,7 @@ void ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *interf
  * SECTION:ags_concurrency_provider
  * @short_description: concurrency interface
  * @title: AgsConcurrencyProvider
- * @section_id:
+ * @section_id: AgsConcurrencyProvider
  * @include: ags/thread/ags_concurrency_provider.h
  *
  * The #AgsConcurrencyProvider gives you unique access to threads.

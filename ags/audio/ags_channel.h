@@ -203,6 +203,9 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
+void ags_channel_recursive_set_property(AgsChannel *channel,
+					GParameter *parameter, gint n_params);
+
 AgsRecallID* ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 					     gboolean arrange_recall_id, gboolean duplicate_templates,
 					     gboolean do_playback, gboolean do_sequencer, gboolean do_notation,

@@ -20,6 +20,7 @@
 #ifndef __AGS_PLUGIN_H__
 #define __AGS_PLUGIN_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/file/ags_file.h>
@@ -31,7 +32,7 @@
 #define AGS_IS_PLUGIN_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_PLUGIN))
 #define AGS_PLUGIN_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_PLUGIN, AgsPluginInterface))
 
-typedef void AgsPlugin;
+typedef struct _AgsPlugin AgsPlugin;
 typedef struct _AgsPluginInterface AgsPluginInterface;
 
 struct _AgsPluginInterface

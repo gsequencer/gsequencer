@@ -6042,6 +6042,95 @@ ags_channel_recycling_changed(AgsChannel *channel,
 }
 
 /**
+ * ags_channel_recursive_set_property:
+ * @channel: the #AgsChannel
+ * @parameter: the #GParameter-struct array containing properties
+ * @n_params: the length of @parameter array
+ *
+ * Recursive set property for #AgsChannel.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_channel_recursive_set_property(AgsChannel *channel,
+				   GParameter *parameter, gint n_params)
+{
+  auto void ags_channel_set_property(AgsChannel *channel,
+				     GParameter *parameter, gint n_params);
+  auto void ags_channel_recurisve_set_property_down(AgsChannel *channel,
+						    GParameter *parameter, gint n_params);
+  auto void ags_channel_recurisve_set_property_down_input(AgsChannel *channel,
+							  GParameter *parameter, gint n_params);
+
+  void ags_channel_set_property(AgsChannel *channel,
+				GParameter *parameter, gint n_params){
+    guint i;
+
+    for(i = 0; i < n_params; i++){
+      g_object_set_property(channel,
+			    parameter[i].name, &(parameter[i].value));
+    }
+  }
+  
+  void ags_channel_recurisve_set_property_down(AgsChannel *channel,
+					       GParameter *parameter, gint n_params){
+    if(channel == NULL){
+      return;
+    }
+
+    ags_channel_set_property(channel,
+			     parameter, n_params);
+    
+    ags_channel_recurisve_set_property_down_input(channel,
+						  parameter, n_params);
+  }
+    
+  void ags_channel_recurisve_set_property_down_input(AgsChannel *channel,
+						     GParameter *parameter, gint n_params){
+    AgsAudio *audio;
+    AgsChannel *input;
+    
+    if(channel == NULL){
+      return;
+    }
+
+    audio = channel->audio;
+
+    if(audio == NULL){
+      return;
+    }
+    
+    input = ags_channel_nth(audio->input,
+			    channel->audio_channel);
+
+    while(input != NULL){
+      ags_channel_set_property(input,
+			       parameter, n_params);
+      
+      ags_channel_recurisve_set_property_down(input->link,
+					      parameter, n_params);
+
+      input = input->next;
+    }
+  }
+  
+  if(channel == NULL){
+    return;
+  }
+  
+  if(AGS_IS_INPUT(channel)){
+    ags_channel_set_property(channel,
+			     parameter, n_params);
+    
+    ags_channel_recurisve_set_property_down(channel->link,
+					    parameter, n_params);
+  }else{
+    ags_channel_recurisve_set_property_down(channel,
+					    parameter, n_params);
+  }
+}
+
+/**
  * ags_channel_recursive_play_init:
  * @channel: the #AgsChannel to prepare
  * @stage: valid values for @stage are: -1 for running all three stages, or the stages 0 through 2 to run
