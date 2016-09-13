@@ -1711,7 +1711,8 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   
   guint samplerate;
   guint buffer_size;
-
+  guint format;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
@@ -1747,10 +1748,11 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 			    NULL,
 			    &samplerate,
 			    &buffer_size,
-			    NULL);
+			    &format);
   g_object_set(audio,
 	       "samplerate\0", samplerate,
 	       "buffer-size\0", buffer_size,
+	       "format\0", format,
 	       NULL);
 
   /* playback domain */

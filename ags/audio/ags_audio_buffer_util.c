@@ -21,6 +21,10 @@
 
 #include <ags/object/ags_soundcard.h>
 
+#include <samplerate.h>
+
+#include <math.h>
+
 /**
  * ags_audio_buffer_util_format_from_soundcard:
  * @soundcard_format: the soundcard bit mode
@@ -423,67 +427,325 @@ ags_audio_buffer_util_morph(void *buffer, guint channels,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_audio_buffer_util_resample_s8:
+ * @buffer: the audio buffer
+ * @samplerate: the current samplerate
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 0.7.65
+ */
 signed char*
 ags_audio_buffer_util_resample_s8(signed char *buffer, guint channels,
 				  guint samplerate,
 				  guint buffer_length,
 				  guint target_samplerate)
 {
-  //TODO:JK: implement me
+  SRC_DATA secret_rabbit;
+
+  signed char *ret_buffer;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (float *) malloc(channels * buffer_length * sizeof(float));
+  ags_audio_buffer_util_copy_s8_to_float(secret_rabbit.data_in, channels,
+					 buffer, channels,
+					 buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (float *) malloc(channels * buffer_length * sizeof(float));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ret_buffer = (signed char *) malloc(channels * secret_rabbit.output_frames * sizeof(signed char));
+  ags_audio_buffer_util_copy_float_to_s8(ret_buffer, channels,
+					 secret_rabbit.data_out, channels,
+					 secret_rabbit.output_frames);
+
+  return(ret_buffer);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s16:
+ * @buffer: the audio buffer
+ * @samplerate: the current samplerate
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 0.7.65
+ */
 signed short*
 ags_audio_buffer_util_resample_s16(signed short *buffer, guint channels,
 				   guint samplerate,
 				   guint buffer_length,
 				   guint target_samplerate)
 {
-  //TODO:JK: implement me
+  SRC_DATA secret_rabbit;
+
+  signed short *ret_buffer;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (float *) malloc(channels * buffer_length * sizeof(float));
+  ags_audio_buffer_util_copy_s16_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (float *) malloc(channels * buffer_length * sizeof(float));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ret_buffer = (signed short *) malloc(channels * secret_rabbit.output_frames * sizeof(signed short));
+  ags_audio_buffer_util_copy_float_to_s16(ret_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  secret_rabbit.output_frames);
+
+  return(ret_buffer);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s24:
+ * @buffer: the audio buffer
+ * @samplerate: the current samplerate
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 0.7.65
+ */
 signed long*
 ags_audio_buffer_util_resample_s24(signed long *buffer, guint channels,
 				   guint samplerate,
 				   guint buffer_length,
 				   guint target_samplerate)
 {
-  //TODO:JK: implement me
+  SRC_DATA secret_rabbit;
+
+  signed long *ret_buffer;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (float *) malloc(channels * buffer_length * sizeof(float));
+  ags_audio_buffer_util_copy_s24_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (float *) malloc(channels * buffer_length * sizeof(float));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ret_buffer = (signed long *) malloc(channels * secret_rabbit.output_frames * sizeof(signed long));
+  ags_audio_buffer_util_copy_float_to_s24(ret_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  secret_rabbit.output_frames);
+
+  return(ret_buffer);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s32:
+ * @buffer: the audio buffer
+ * @samplerate: the current samplerate
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 0.7.65
+ */
 signed long*
 ags_audio_buffer_util_resample_s32(signed long *buffer, guint channels,
 				   guint samplerate,
 				   guint buffer_length,
 				   guint target_samplerate)
 {
-  //TODO:JK: implement me
+  SRC_DATA secret_rabbit;
+
+  signed long *ret_buffer;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (float *) malloc(channels * buffer_length * sizeof(float));
+  ags_audio_buffer_util_copy_s32_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (float *) malloc(channels * buffer_length * sizeof(float));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ret_buffer = (signed long *) malloc(channels * secret_rabbit.output_frames * sizeof(signed long));
+  ags_audio_buffer_util_copy_float_to_s32(ret_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  secret_rabbit.output_frames);
+
+  return(ret_buffer);
 }
 
+/**
+ * ags_audio_buffer_util_resample_s64:
+ * @buffer: the audio buffer
+ * @samplerate: the current samplerate
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 0.7.65
+ */
 signed long long*
 ags_audio_buffer_util_resample_s64(signed long long *buffer, guint channels,
 				   guint samplerate,
 				   guint buffer_length,
 				   guint target_samplerate)
 {
-  //TODO:JK: implement me
+  SRC_DATA secret_rabbit;
+
+  signed long long *ret_buffer;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (float *) malloc(channels * buffer_length * sizeof(float));
+  ags_audio_buffer_util_copy_s64_to_float(secret_rabbit.data_in, channels,
+					  buffer, channels,
+					  buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (float *) malloc(channels * buffer_length * sizeof(float));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ret_buffer = (signed long long *) malloc(channels * secret_rabbit.output_frames * sizeof(signed long long));
+  ags_audio_buffer_util_copy_float_to_s64(ret_buffer, channels,
+					  secret_rabbit.data_out, channels,
+					  secret_rabbit.output_frames);
+
+  return(ret_buffer);
 }
 
+/**
+ * ags_audio_buffer_util_resample_float:
+ * @buffer: the audio buffer
+ * @samplerate: the current samplerate
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 0.7.65
+ */
 float*
 ags_audio_buffer_util_resample_float(float *buffer, guint channels,
 				     guint samplerate,
 				     guint buffer_length,
 				     guint target_samplerate)
 {
-  //TODO:JK: implement me
+  SRC_DATA secret_rabbit;
+
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = buffer;
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (float *) malloc(channels * buffer_length * sizeof(float));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  return(secret_rabbit.data_out);
 }
 
+/**
+ * ags_audio_buffer_util_resample_double:
+ * @buffer: the audio buffer
+ * @samplerate: the current samplerate
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 0.7.65
+ */
 double*
 ags_audio_buffer_util_resample_double(double *buffer, guint channels,
 				      guint samplerate,
 				      guint buffer_length,
 				      guint target_samplerate)
 {
-  //TODO:JK: implement me
+  SRC_DATA secret_rabbit;
+
+  double *ret_buffer;
+
+  //FIXME:JK: lost precision
+  
+  secret_rabbit.src_ratio = target_samplerate / samplerate;
+
+  secret_rabbit.input_frames = buffer_length;
+  secret_rabbit.data_in = (float *) malloc(channels * buffer_length * sizeof(float));
+  ags_audio_buffer_util_copy_double_to_float(secret_rabbit.data_in, channels,
+					     buffer, channels,
+					     buffer_length);
+
+  secret_rabbit.output_frames = ceil(secret_rabbit.src_ratio * buffer_length);
+  secret_rabbit.data_out = (float *) malloc(channels * buffer_length * sizeof(float));
+  
+  src_simple(&secret_rabbit,
+	     SRC_SINC_BEST_QUALITY,
+	     channels);
+
+  ret_buffer = (double *) malloc(channels * secret_rabbit.output_frames * sizeof(double));
+  ags_audio_buffer_util_copy_float_to_double(ret_buffer, channels,
+					     secret_rabbit.data_out, channels,
+					     secret_rabbit.output_frames);
+
+  return(ret_buffer);
 }
 
 void*
@@ -492,7 +754,70 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
 			       guint buffer_length,
 			       guint target_samplerate)
 {
-  //TODO:JK: implement me
+  void *retval;
+
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+    {
+      retval = ags_audio_buffer_util_resample_s8((signed char *) buffer, channels,
+						 samplerate,
+						 buffer_length,
+						 target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+    {
+      retval = ags_audio_buffer_util_resample_s16((signed short *) buffer, channels,
+						  samplerate,
+						  buffer_length,
+						  target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+    {
+      retval = ags_audio_buffer_util_resample_s24((signed long *) buffer, channels,
+						  samplerate,
+						  buffer_length,
+						  target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+    {
+      retval = ags_audio_buffer_util_resample_s32((signed long *) buffer, channels,
+						  samplerate,
+						  buffer_length,
+						  target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+    {
+      retval = ags_audio_buffer_util_resample_s64((signed long long *) buffer, channels,
+						  samplerate,
+						  buffer_length,
+						  target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+    {
+      retval = ags_audio_buffer_util_resample_float((float *) buffer, channels,
+						    samplerate,
+						    buffer_length,
+						    target_samplerate);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+    {
+      retval = ags_audio_buffer_util_resample_double((double *) buffer, channels,
+						     samplerate,
+						     buffer_length,
+						     target_samplerate);
+    }
+    break;
+  default:
+    g_warning("ags_audio_buffer_util_resample() - unknown format\0");
+  }
+
+  return(retval);
 }
 
 /**
