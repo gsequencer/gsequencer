@@ -224,6 +224,9 @@ ags_soundcard_thread_set_property(GObject *gobject,
     {
       AgsSoundcard *soundcard;
 
+      guint samplerate;
+      guint buffer_size;
+
       soundcard = (AgsSoundcard *) g_value_get_object(value);
 
       if(soundcard_thread->soundcard != NULL){
@@ -232,6 +235,16 @@ ags_soundcard_thread_set_property(GObject *gobject,
 
       if(soundcard != NULL){
 	g_object_ref(G_OBJECT(soundcard));
+
+	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+				  NULL,
+				  &samplerate,
+				  &buffer_size,
+				  NULL);
+	
+	g_object_set(soundcard_thread,
+		     "frequency\0", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		     NULL);
       }
 
       soundcard_thread->soundcard = G_OBJECT(soundcard);

@@ -1918,6 +1918,10 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
   AgsMutexManager *mutex_manager;
 
   GList *list;
+  
+  guint samplerate;
+  guint buffer_size;
+  guint format;  
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -1954,6 +1958,17 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
   }
   
   channel->soundcard = (GObject *) soundcard;
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    &format);
+  g_object_set(channel,
+	       "samplerate\0", samplerate,
+	       "buffer-size\0", buffer_size,
+	       "format\0", format,
+	       NULL);
 
   /* playback */
   if(AGS_PLAYBACK(channel->playback)->channel_thread[0] != NULL){
@@ -4919,9 +4934,11 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
   }else{
     old_link_link = NULL;
   }
-  
-  g_message("set link %x %x\0", channel, link);
 
+#ifdef AGS_DEBUG
+  g_message("set link %x %x\0", channel, link);
+#endif
+  
   if(link != NULL){
     old_link_link = link->link;
   }else{
@@ -5124,6 +5141,26 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	//			  TRUE, TRUE);
       }
     }
+  }
+
+
+  /* reset soundcard */
+  if(AGS_IS_OUTPUT(channel) &&
+     AGS_IS_INPUT(link)){
+    GParameter *parameter;
+
+    parameter = g_new0(GParameter,
+		       1);
+    
+    parameter[0].name = "soundcard\0";
+
+    g_value_init(&(parameter[0].value),
+		 G_TYPE_OBJECT);
+    g_value_set_object(&(parameter[0].value),
+		       link->soundcard);
+    
+    ags_channel_recursive_set_property(channel,
+				       parameter, 1);
   }
   
   /* reset recall id */

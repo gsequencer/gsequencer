@@ -31,7 +31,7 @@ ags_audio_connection_collection_editor_parent_set_callback(GtkWidget *widget, Gt
     return(0);
 
   connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(widget, 
-								AGS_TYPE_CONNECTION_EDITOR);
+								      AGS_TYPE_CONNECTION_EDITOR);
 
   if(connection_editor != NULL &&
      connection_editor->machine != NULL){
