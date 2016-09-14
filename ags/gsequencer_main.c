@@ -1012,7 +1012,7 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
   ipatch_init();
-  //  g_log_set_fatal_mask(G_LOG_DOMAIN,
+  //  g_log_set_fatal_mask("GLib-GObject\0",
   //		       G_LOG_LEVEL_CRITICAL);
   
   /* setup */

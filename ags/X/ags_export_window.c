@@ -395,12 +395,14 @@ ags_export_window_set_property(GObject *gobject,
 
       soundcard = g_value_get_object(value);
 
-      if(export_window->soundcard == soundcard)
+      if(export_window->soundcard == soundcard){
 	return;
+      }
 
-      if(soundcard != NULL)
+      if(soundcard != NULL){
 	g_object_ref(soundcard);
-
+      }
+      
       export_window->soundcard = soundcard;
     }
     break;

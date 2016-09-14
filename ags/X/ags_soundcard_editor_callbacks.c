@@ -83,8 +83,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 {
   AgsWindow *window;
 
-  AgsSoundcard *soundcard;
-  GtkTreeIter current;
+  AgsSetOutputDevice *set_output_device;
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
@@ -92,8 +91,12 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   AgsApplicationContext *application_context;
   AgsConfig *config;
+  AgsSoundcard *soundcard;
+
+  GtkTreeIter current;
   
   gchar *str;
+  gchar *card;
 
   gboolean use_jack, use_alsa, use_oss;
   guint channels, channels_min, channels_max;
@@ -156,30 +159,34 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     use_oss = TRUE;
   }
 
-  str = gtk_combo_box_text_get_active_text(soundcard_editor->card);
+  card = gtk_combo_box_text_get_active_text(soundcard_editor->card);
 
-  if(str == NULL){
+  if(card == NULL){
     return;
   }
   
   if(use_alsa){
-    if(index(str,
+    if(index(card,
 	     ',') != NULL){
-      str = g_strndup(str,
-		      index(str,
-			    ',') - str);
+      str = g_strndup(card,
+		      index(card,
+			    ',') - card);
+
+      g_free(card);      
+      card = str;
     }
   }
   
   /* reset dialog */
   error = NULL;
   ags_soundcard_pcm_info(soundcard,
-			 str,
+			 card,
 			 &channels_min, &channels_max,
 			 &rate_min, &rate_max,
 			 &buffer_size_min, &buffer_size_max,
 			 &error);
 
+  
   if(error != NULL){
     GtkMessageDialog *dialog;
 
@@ -198,6 +205,9 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
     return;
   }
+
+  set_output_device = ags_set_output_device_new(soundcard,
+						card);
 
   gtk_spin_button_set_range(soundcard_editor->audio_channels,
 			    channels_min, channels_max);

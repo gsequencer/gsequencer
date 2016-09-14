@@ -42,10 +42,9 @@ struct _AgsChangeSoundcard
   AgsTask task;
   
   AgsApplicationContext *application_context;
-  
-  gboolean use_alsa;
-  gboolean use_oss;
-  gboolean use_jack;
+
+  GObject *new_soundcard;
+  GObject *old_soundcard;
 };
 
 struct _AgsChangeSoundcardClass
@@ -55,13 +54,8 @@ struct _AgsChangeSoundcardClass
 
 GType ags_change_soundcard_get_type();
 
-void ags_change_soundcard_alsa(AgsChangeSoundcard *change_soundcard);
-void ags_change_soundcard_oss(AgsChangeSoundcard *change_soundcard);
-void ags_change_soundcard_jack(AgsChangeSoundcard *change_soundcard);
-
 AgsChangeSoundcard* ags_change_soundcard_new(AgsApplicationContext *application_context,
-					     gboolean use_alsa,
-					     gboolean use_oss,
-					     gboolean use_jack);
+					     GObject *new_soundcard,
+					     GObject *old_soundcard);
 
 #endif /*__AGS_CHANGE_SOUNDCARD_H__*/

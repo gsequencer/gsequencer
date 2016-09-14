@@ -36,6 +36,7 @@ void ags_soundcard_class_init(AgsSoundcardInterface *interface);
 enum {
   TIC,
   OFFSET_CHANGED,
+  STOP,
   LAST_SIGNAL,
 };
 
@@ -99,6 +100,22 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
+
+  /**
+   * AgsSoundcard::stop:
+   * @soundcard: the object
+   *
+   * The ::stop signal is emitted every stop of the soundcard. This notifies
+   * about a newly played buffer.
+   */
+  soundcard_signals[STOP] =
+    g_signal_new("stop\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsSoundcardInterface, stop),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 /**
@@ -585,10 +602,7 @@ ags_soundcard_stop(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->stop);
-  soundcard_interface->stop(soundcard);
+  g_signal_emit(soundcard, soundcard_signals[STOP], 0);
 }
 
 /**

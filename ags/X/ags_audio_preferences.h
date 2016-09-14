@@ -40,9 +40,8 @@ struct _AgsAudioPreferences
   GtkVBox vbox;
 
   GtkVBox *soundcard_editor;
+  GtkButton *connect_jack;
   GtkButton *add;
-
-  GtkCheckButton *enable_jack;
   
   GtkComboBoxText *jack_driver;
   GtkButton *start_jack;

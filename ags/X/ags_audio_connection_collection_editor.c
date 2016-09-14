@@ -31,6 +31,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/task/ags_reset_audio_connection.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/X/ags_window.h>
@@ -359,8 +361,84 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(audio_connection_collection_editor->soundcard,
 				   &iter)){
+    AgsWindow *window;
+    AgsMachine *machine;
+    AgsConnectionEditor *connection_editor;
 
-    //TODO:JK: implement me
+    AgsAudio *audio;
+
+    AgsResetAudioConnection *reset_audio_connection;
+    
+    AgsMutexManager *mutex_manager;
+    AgsAudioLoop *audio_loop;
+    AgsTaskThread *task_thread;
+
+    AgsApplicationContext *application_context;
+    GObject *soundcard;
+
+    GtkTreeModel *model;
+
+    guint pad, audio_channel;
+    guint soundcard_audio_channel;
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+
+    connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(audio_connection_collection_editor),
+								      AGS_TYPE_CONNECTION_EDITOR));
+    machine = connection_editor->machine;
+    audio = machine->audio;
+
+    /* get window and application_context  */
+    window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+  
+    application_context = window->application_context;
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    /* get audio loop */
+    pthread_mutex_lock(application_mutex);
+
+    audio_loop = application_context->main_loop;
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* get task and soundcard thread */
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
+
+    /* lookup audio mutex */
+    pthread_mutex_lock(application_mutex);
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* get mapping and soundcard */
+    pad = (guint) gtk_spin_button_get_value_as_int(audio_connection_collection_editor->pad);
+    audio_channel = (guint) gtk_spin_button_get_value_as_int(audio_connection_collection_editor->audio_channel);
+
+    soundcard_audio_channel = (guint) gtk_spin_button_get_value_as_int(audio_connection_collection_editor->soundcard_audio_channel);
+
+    model = gtk_combo_box_get_model(audio_connection_collection_editor->soundcard);
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &soundcard,
+		       -1);
+
+    /* create task */
+    reset_audio_connection = ags_reset_audio_connection_new(soundcard,
+							    audio,
+							    audio_connection_collection_editor->channel_type,
+							    pad,
+							    audio_channel,
+							    soundcard_audio_channel);
+    ags_task_thread_append_task(task_thread,
+				reset_audio_connection);
   }
 }
 

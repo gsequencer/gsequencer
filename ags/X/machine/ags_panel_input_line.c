@@ -21,6 +21,7 @@
 #include <ags/X/machine/ags_panel_input_line_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/object/ags_plugin.h>
 

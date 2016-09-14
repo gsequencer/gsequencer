@@ -31,7 +31,6 @@
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/audio/task/ags_change_soundcard.h>
-#include <ags/audio/task/ags_set_output_device.h>
 #include <ags/audio/task/ags_apply_presets.h>
 
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -153,6 +152,7 @@ ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *applicab
 void
 ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 {
+  GtkScrolledWindow *scrolled_window;
   GtkTable *table;
   GtkHBox *hbox;
   GtkLabel *label;
@@ -162,16 +162,34 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   g_signal_connect_after((GObject *) audio_preferences, "parent_set\0",
 			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
 
+
+  scrolled_window = gtk_scrolled_window_new(NULL,
+					    NULL);
+  gtk_box_pack_start(audio_preferences,
+		     scrolled_window,
+		     TRUE, TRUE,
+		     0);
+  
   audio_preferences->soundcard_editor = gtk_vbox_new(FALSE,
 						     0);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					audio_preferences->soundcard_editor);
+
+  /*  */
+  hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start(audio_preferences,
-		     audio_preferences->soundcard_editor,
+		     hbox,
 		     FALSE, FALSE,
 		     0);
 
-  //  audio_preferences->add = NULL;
+  audio_preferences->connect_jack = gtk_button_new_with_label("connect jack\0");
+  gtk_box_pack_start(hbox,
+		     audio_preferences->connect_jack,
+		     FALSE, FALSE,
+		     0);
+
   audio_preferences->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start(audio_preferences,
+  gtk_box_pack_start(hbox,
 		     audio_preferences->add,
 		     FALSE, FALSE,
 		     0);
@@ -391,92 +409,6 @@ ags_audio_preferences_show(GtkWidget *widget)
   audio_preferences = AGS_AUDIO_PREFERENCES(widget);
   
   GTK_WIDGET_CLASS(ags_audio_preferences_parent_class)->show(widget);
-}
-
-void
-ags_audio_preferences_apply_jack(AgsAudioPreferences *audio_preferences,
-				 guint format,
-				 guint pcm_channels,
-				 guint buffer_size)
-{
-  AgsWindow *window;
-  AgsPreferences *preferences;
-
-  AgsChangeSoundcard *change_soundcard;
-  AgsSetOutputDevice *set_output_device;
-  AgsApplyPresets *apply_presets;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-
-  //REMOVE:ME: spaghetti
-  /* check if alsa already available * /
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
-  
-  application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop * /
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread * /
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
-  tasks = NULL;
-  
-  /* create change soundcard task * /
-  change_soundcard = ags_change_soundcard_new(application_context,
-					      FALSE,
-					      FALSE,
-					      TRUE);
-  g_signal_connect(change_soundcard, "launch\0",
-		   G_CALLBACK(ags_audio_preferences_launch_change_soundcard_callback), audio_preferences);
-    
-  tasks = g_list_prepend(tasks,
-			 change_soundcard);
-
-  /*  * /
-  str = g_strdup_printf("%u\0",
-			format);
-  ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "format\0",
-		       str);
-  g_free(str);  
-  
-
-  /* create set output device task * /
-  set_output_device = ags_set_output_device_new(window->soundcard,
-						device);
-  tasks = g_list_prepend(tasks,
-			 set_output_device);
-  
-  /* create apply presets task * /
-  apply_presets = ags_apply_presets_new((GObject *) window->soundcard,
-					channels,
-					rate,
-					buffer_size,
-					format);
-  tasks = g_list_prepend(tasks,
-			 apply_presets);
-
-  /* append AgsSetOutputDevice and AgsSetOutputDevice * /
-  tasks = g_list_reverse(tasks);  
-  ags_task_thread_append_tasks(task_thread,
-			       tasks);
-  */
 }
 
 /**

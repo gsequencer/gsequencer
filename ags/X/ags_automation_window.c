@@ -118,6 +118,22 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
 
   gobject->finalize = ags_automation_window_finalize;
 
+  /**
+   * AgsAutomationWindow:soundcard:
+   *
+   * The assigned #AgsSoundcard acting as default sink.
+   * 
+   * Since: 0.7.65
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_window;
 
@@ -142,6 +158,8 @@ ags_automation_window_init(AgsAutomationWindow *automation_window)
 	       NULL);
 
   automation_window->flags = 0;
+
+  automation_window->soundcard = NULL;
   
   automation_window->automation_editor = ags_automation_editor_new();
   gtk_container_add(automation_window,
@@ -159,6 +177,31 @@ ags_automation_window_set_property(GObject *gobject,
   automation_window = AGS_AUTOMATION_WINDOW(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      AgsSoundcard *soundcard;
+
+      soundcard = (AgsSoundcard *) g_value_get_object(value);
+
+      if(automation_window->soundcard == soundcard){
+	return;
+      }
+
+      if(automation_window->soundcard != NULL){
+	g_object_unref(automation_window->soundcard);
+      }
+      
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+      
+      automation_window->soundcard = soundcard;
+
+      g_object_set(G_OBJECT(automation_window->automation_editor),
+		   "soundcard\0", soundcard,
+		   NULL);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -176,6 +219,9 @@ ags_automation_window_get_property(GObject *gobject,
   automation_window = AGS_AUTOMATION_WINDOW(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, automation_window->soundcard);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

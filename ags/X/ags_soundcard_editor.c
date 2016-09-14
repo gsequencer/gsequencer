@@ -663,7 +663,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     if(use_alsa){
       g_free(tmp);
     }
-
     
     if(!found_card){
       nth++;

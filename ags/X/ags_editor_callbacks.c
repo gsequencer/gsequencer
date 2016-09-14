@@ -20,6 +20,7 @@
 #include <ags/X/ags_editor_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
