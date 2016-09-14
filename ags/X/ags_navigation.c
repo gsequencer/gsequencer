@@ -321,9 +321,9 @@ ags_navigation_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      AgsSoundcard *soundcard;
+      GObject *soundcard;
 
-      soundcard = (AgsSoundcard *) g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
       if(navigation->soundcard == soundcard){
 	return;
@@ -334,7 +334,7 @@ ags_navigation_set_property(GObject *gobject,
       }
       
       if(soundcard != NULL){
-	g_signal_connect_after((GObject *) soundcard, "stop\0",
+	g_signal_connect_after(soundcard, "stop\0",
 			       G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
 	
 	g_object_ref(soundcard);
@@ -420,7 +420,7 @@ ags_navigation_connect(AgsConnectable *connectable)
   //			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
   if(navigation->soundcard != NULL){
-    g_signal_connect_after((GObject *) navigation->soundcard, "stop\0",
+    g_signal_connect_after(navigation->soundcard, "stop\0",
 			   G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
   }
   

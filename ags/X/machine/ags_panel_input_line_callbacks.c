@@ -19,6 +19,8 @@
 
 #include <ags/X/machine/ags_panel_input_line_callbacks.h>
 
+#include <ags/object/ags_soundcard.h>
+
 #include <ags/audio/ags_audio_connection.h>
 
 void
@@ -26,11 +28,14 @@ ags_panel_input_line_notify_data_object_callback(GObject *audio_connection,
 						 GParamSpec *pspec,
 						 AgsPanelInputLine *panel_input_line)
 {
-  GObject *soundcard;
-
-  soundcard = AGS_CONNECTION(audio_connection)->data_object;
-
-  //TODO:JK: implement me
+  gchar *str;
+  
+  str = g_strdup_printf("%s:%s[%d]\0",
+			G_OBJECT_TYPE_NAME(AGS_LINE(panel_input_line)->channel->soundcard),
+			ags_soundcard_get_device(AGS_SOUNDCARD(AGS_CONNECTION(audio_connection)->data_object)),
+			AGS_AUDIO_CONNECTION(audio_connection)->mapped_line);
+  gtk_label_set_label(panel_input_line->soundcard_connection,
+		      str);
 }
 
 void
@@ -38,5 +43,12 @@ ags_panel_input_line_notify_mapped_line_callback(GObject *audio_connection,
 						 GParamSpec *pspec,
 						 AgsPanelInputLine *panel_input_line)
 {
-  //TODO:JK: implement me
+  gchar *str;
+  
+  str = g_strdup_printf("%s:%s[%d]\0",
+			G_OBJECT_TYPE_NAME(AGS_LINE(panel_input_line)->channel->soundcard),
+			ags_soundcard_get_device(AGS_SOUNDCARD(AGS_CONNECTION(audio_connection)->data_object)),
+			AGS_AUDIO_CONNECTION(audio_connection)->mapped_line);
+  gtk_label_set_label(panel_input_line->soundcard_connection,
+		      str);
 }

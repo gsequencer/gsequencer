@@ -45,6 +45,8 @@ struct _AgsAutomationWindow
   GtkWindow window;
 
   guint flags;
+
+  GObject *soundcard;
   
   GtkWidget *parent_window;
 

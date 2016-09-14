@@ -27,6 +27,7 @@
 
 #include <ags/plugin/ags_plugin_factory.h>
 
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/util/ags_id_generator.h>

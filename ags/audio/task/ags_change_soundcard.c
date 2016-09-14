@@ -19,17 +19,11 @@
 
 #include <ags/audio/task/ags_change_soundcard.h>
 
-#include <ags/object/ags_distributed_manager.h>
+#include <ags/object/ags_connection_manager.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_client.h>
-#include <ags/audio/jack/ags_jack_port.h>
-#include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/ags_audio_connection.h>
 
 void ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard);
 void ags_change_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -123,9 +117,8 @@ ags_change_soundcard_init(AgsChangeSoundcard *change_soundcard)
 {
   change_soundcard->application_context = NULL;
   
-  change_soundcard->use_alsa = FALSE;
-  change_soundcard->use_oss = FALSE;
-  change_soundcard->use_jack = FALSE;
+  change_soundcard->new_soundcard = NULL;
+  change_soundcard->old_soundcard = NULL;
 }
 
 void
@@ -157,239 +150,50 @@ ags_change_soundcard_launch(AgsTask *task)
 {
   AgsChangeSoundcard *change_soundcard;
 
-  GObject *alsa_soundcard, *oss_soundcard, *jack_soundcard;
-  GObject *soundcard, *old_soundcard;
+  AgsAudioConnection *audio_connection;
   
-  GList *list, *audio;
+  AgsConnectionManager *connection_manager;
+  
+  GObject *new_soundcard, *old_soundcard;
 
-  gboolean use_alsa, use_oss, use_jack;
-  gboolean found_alsa, found_oss, found_jack;
-  gboolean add_alsa, add_oss, add_jack;
+  GType soundcard_type;
+  
+  GList *list;
   
   change_soundcard = AGS_CHANGE_SOUNDCARD(task);
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context));
 
-  if(list != NULL){
-    old_soundcard = list->data;
-  }else{
-    old_soundcard = NULL;
-  }
+  connection_manager = ags_connection_manager_get_instance();
 
-  //REMOVE:ME: spaghetti
-  /* check if alsa already available * /
-  found_alsa = FALSE;
-	
-  if(use_alsa){
-    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-    while(list != NULL){
-      if(AGS_IS_DEVOUT(list->data) &&
-	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(list->data)->flags)) != 0){
-	alsa_soundcard = list->data;
-	      
-	found_alsa = TRUE;
-	      
-	break;
-      }
-
-      list = list->next;
-    }
-
-    if(!found_alsa){
-      add_alsa = TRUE;
-    }
-  }
-
-  /* check if oss already available * /
-  found_oss = FALSE;
-	
-  if(use_oss){
-    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-    while(list != NULL){
-      if(AGS_IS_DEVOUT(list->data) &&
-	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(list->data)->flags)) != 0){
-	oss_soundcard = list->data;
-
-	found_oss = TRUE;
-	      
-	break;
-      }
-
-      list = list->next;
-    }
-
-    if(!found_oss){
-      add_oss = TRUE;
-    }
-  }
-
-  /* check if jack already available * /
-  found_jack = FALSE;
-	
-  if(use_jack){
-    list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-    while(list != NULL){
-      if(AGS_IS_JACK_DEVOUT(list->data)){
-	jack_soundcard = list->data;
-
-	found_jack = TRUE;
-	      
-	break;
-      }
-
-      list = list->next;
-    }
-
-    if(!found_jack){
-      add_jack = TRUE;
-    }
-  }
-  */
+  new_soundcard = change_soundcard->new_soundcard;
+  old_soundcard = change_soundcard->old_soundcard;
   
+  list = ags_connection_manager_get_connection(connection_manager);
+  soundcard_type = G_OBJECT_TYPE(old_soundcard);
   
-  if(change_soundcard->use_alsa){
-    ags_change_soundcard_alsa(change_soundcard);
-  }
+  while((list = ags_connection_find_type_and_data_object_type(list,
+							      AGS_TYPE_AUDIO_CONNECTION,
+							      soundcard_type)) != NULL){
+    GObject *data_object;
 
-  if(change_soundcard->use_oss){
-    ags_change_soundcard_oss(change_soundcard);
-  }
-
-  if(change_soundcard->use_jack){
-    ags_change_soundcard_jack(change_soundcard);
-
-    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context));
-
-    if(list != NULL){
-      soundcard = list->data;
-    }
-  }else{
-    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context));
-    soundcard = list->data;
-
-    /* find jack */
-    while(list != NULL){
-      if(AGS_IS_JACK_DEVOUT(list->data)){
-	soundcard = list->data;
-
-	break;
-      }
-      
-      list = list->next;
-    }
-  }
-
-  /* verifiy first */
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context),
-				   g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context)),
-						 soundcard));
-
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context),
-				   g_list_prepend(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(AGS_CHANGE_SOUNDCARD(task)->application_context)),
-						  soundcard));
-  
-  /* reset audio */
-  if(old_soundcard != NULL &&
-     old_soundcard != soundcard){
-    audio = ags_soundcard_get_audio(AGS_SOUNDCARD(old_soundcard));
-    
-    ags_soundcard_set_audio(AGS_SOUNDCARD(old_soundcard),
-			    NULL);
-
-    ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			    audio);
-
-    while(audio != NULL){
-      g_object_set(audio->data,
-		   "soundcard\0", soundcard,
-		   NULL);
-
-      audio = audio->next;
-    }
-  }
-}
-
-void
-ags_change_soundcard_alsa(AgsChangeSoundcard *change_soundcard)
-{
-  GObject *soundcard;
-  
-  soundcard = ags_devout_new(change_soundcard->application_context);
-  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
-  AGS_DEVOUT(soundcard)->flags |= (AGS_DEVOUT_ALSA);
-
-  AGS_DEVOUT(soundcard)->out.alsa.device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
-  
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(change_soundcard->application_context),
-				   g_list_prepend(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(change_soundcard->application_context)),
-						  soundcard));
-  g_object_ref(G_OBJECT(soundcard));
-}
-
-void
-ags_change_soundcard_oss(AgsChangeSoundcard *change_soundcard)
-{
-  GObject *soundcard;
-  
-  soundcard = ags_devout_new(change_soundcard->application_context);
-  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
-  AGS_DEVOUT(soundcard)->flags |= (AGS_DEVOUT_OSS);
-
-  AGS_DEVOUT(soundcard)->out.oss.device = AGS_DEVOUT_DEFAULT_OSS_DEVICE;
-  
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(change_soundcard->application_context),
-				   g_list_prepend(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(change_soundcard->application_context)),
-						  soundcard));
-  g_object_ref(G_OBJECT(soundcard));
-}
-
-void
-ags_change_soundcard_jack(AgsChangeSoundcard *change_soundcard)
-{
-  AgsJackServer *jack_server;
-
-  AgsConfig *config;
-  
-  GObject *soundcard;
-  GObject *tmp;
-
-  config = change_soundcard->application_context->config;
-  
-  jack_server = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(change_soundcard->application_context))->data;
-  tmp = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
-						   TRUE);
-
-  if(tmp != NULL){
-    jack_nframes_t samplerate;
-
-    soundcard = tmp;
-    ags_soundcard_set_application_context(AGS_SOUNDCARD(soundcard),
-					  change_soundcard->application_context);
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(change_soundcard->application_context),
-				     g_list_prepend(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(change_soundcard->application_context)),
-						    soundcard));
-
-    samplerate = jack_get_sample_rate(AGS_JACK_CLIENT(AGS_JACK_PORT(AGS_JACK_DEVOUT(soundcard)->jack_port)->jack_client)->client);
-    ags_config_set_value(config,
-			 AGS_CONFIG_SOUNDCARD,
-			 "samplerate\0",
-			 g_strdup_printf("%d\0", samplerate));
-    g_object_set(soundcard,
-		 "samplerate\0", samplerate,
+    g_object_get(G_OBJECT(list->data),
+		 "data-object\0", &data_object,
 		 NULL);
-    
-    g_object_ref(G_OBJECT(soundcard));
+	    
+    if(AGS_IS_SOUNDCARD(data_object)){
+      g_object_set(audio_connection,
+		   "data-object\0", new_soundcard,
+		   NULL);
+    }
+
+    list = list->next;
   }
 }
 
 /**
  * ags_change_soundcard_new:
  * @application_context: the #AgsApplicationContext
- * @use_alsa: add alsa soundcard
- * @use_oss:  add oss soundcard
- * @use_jack: add jack soundcard
+ * @new_soundcard: the #AgsSoundcard to set
+ * @old_soundcard: the #AgsSoundcard to unset
  *
  * Creates an #AgsChangeSoundcard.
  *
@@ -399,9 +203,8 @@ ags_change_soundcard_jack(AgsChangeSoundcard *change_soundcard)
  */
 AgsChangeSoundcard*
 ags_change_soundcard_new(AgsApplicationContext *application_context,
-			 gboolean use_alsa,
-			 gboolean use_oss,
-			 gboolean use_jack)
+			 GObject *new_soundcard,
+			 GObject *old_soundcard)
 {
   AgsChangeSoundcard *change_soundcard;
 
@@ -410,9 +213,8 @@ ags_change_soundcard_new(AgsApplicationContext *application_context,
 
   change_soundcard->application_context = application_context;
   
-  change_soundcard->use_alsa = use_alsa;
-  change_soundcard->use_oss = use_oss;
-  change_soundcard->use_jack = use_jack;
+  change_soundcard->new_soundcard = new_soundcard;
+  change_soundcard->old_soundcard = old_soundcard;
   
   return(change_soundcard);
 }

@@ -123,10 +123,16 @@ gboolean ags_devout_is_playing(AgsSoundcard *soundcard);
 
 gchar* ags_devout_get_uptime(AgsSoundcard *soundcard);
 
+void ags_devout_delegate_play_init(AgsSoundcard *soundcard,
+				   GError **error);
+void ags_devout_delegate_play(AgsSoundcard *soundcard,
+			      GError **error);
+void ags_devout_delegate_stop(AgsSoundcard *soundcard);
+
 void ags_devout_oss_init(AgsSoundcard *soundcard,
-			  GError **error);
+			 GError **error);
 void ags_devout_oss_play(AgsSoundcard *soundcard,
-			  GError **error);
+			 GError **error);
 void ags_devout_oss_free(AgsSoundcard *soundcard);
 
 void ags_devout_alsa_init(AgsSoundcard *soundcard,
@@ -507,31 +513,6 @@ ags_devout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent
 void
 ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
-  AgsConfig *config;
-
-  gchar *str;
-
-  gboolean use_alsa;
-  
-  config = ags_config_get_instance();
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "backend\0");
- 
-#ifdef AGS_WITH_ALSA
-  use_alsa = TRUE;
-#else
-  use_alsa = FALSE;
-#endif
-  
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "oss\0",
-			  4)){
-    use_alsa = FALSE;
-  }
-
   soundcard->set_application_context = ags_devout_set_application_context;
   soundcard->get_application_context = ags_devout_get_application_context;
 
@@ -556,22 +537,13 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_uptime = ags_devout_get_uptime;
   
-  if(use_alsa){
-    soundcard->play_init = ags_devout_alsa_init;
-    soundcard->play = ags_devout_alsa_play;
-  }else{
-    soundcard->play_init = ags_devout_oss_init;
-    soundcard->play = ags_devout_oss_play;
-  }
-
+  soundcard->play_init = ags_devout_delegate_play_init;
+  soundcard->play = ags_devout_delegate_play;
+  
   soundcard->record_init = NULL;
   soundcard->record = NULL;
-
-  if(use_alsa){
-    soundcard->stop = ags_devout_alsa_free;
-  }else{
-    soundcard->stop = ags_devout_oss_free;
-  }
+  
+  soundcard->stop = ags_devout_delegate_stop;
 
   soundcard->tic = ags_devout_tic;
   soundcard->offset_changed = ags_devout_offset_changed;
@@ -1956,6 +1928,54 @@ ags_devout_get_uptime(AgsSoundcard *soundcard)
   }
   
   return(uptime);
+}
+
+void
+ags_devout_delegate_play_init(AgsSoundcard *soundcard,
+			      GError **error)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    ags_devout_alsa_init(soundcard,
+			 error);
+  }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+    ags_devout_oss_init(soundcard,
+			error);
+  }
+}
+
+void
+ags_devout_delegate_play(AgsSoundcard *soundcard,
+			 GError **error)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    ags_devout_alsa_play(soundcard,
+			 error);
+  }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+    ags_devout_oss_play(soundcard,
+			error);
+  }
+}
+
+void
+ags_devout_delegate_stop(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    ags_devout_alsa_free(soundcard);
+  }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+    ags_devout_oss_free(soundcard);
+  }
 }
 
 void

@@ -22,7 +22,6 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -425,14 +424,13 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     GError *error;
 
     pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_loop_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
     machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_collection_editor),
 								AGS_TYPE_MACHINE_EDITOR));
     machine = machine_editor->machine;
-    audio = machine_editor->machine->audio;
+    audio = machine->audio;
 
     /* get window and application_context  */
     window = (AgsWindow *) gtk_widget_get_toplevel(machine);
@@ -447,14 +445,6 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
     audio_loop = application_context->main_loop;
 
-    pthread_mutex_unlock(application_mutex);
-
-    /* lookup audio loop mutex */
-    pthread_mutex_lock(application_mutex);
-      
-    audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-						(GObject *) audio_loop);
-  
     pthread_mutex_unlock(application_mutex);
 
     /* get task and soundcard thread */

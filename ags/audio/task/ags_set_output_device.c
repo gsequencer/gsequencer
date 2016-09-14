@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device);
 void ags_set_output_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_output_device_init(AgsSetOutputDevice *set_output_device);
@@ -143,17 +145,30 @@ ags_set_output_device_finalize(GObject *gobject)
 void
 ags_set_output_device_launch(AgsTask *task)
 {
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsSetOutputDevice *set_output_device;
   char *card_id;
 
   set_output_device = AGS_SET_OUTPUT_DEVICE(task);
 
-  soundcard = AGS_SOUNDCARD(set_output_device->soundcard);
+  soundcard = set_output_device->soundcard;
   card_id = set_output_device->card_id;
 
+  if(AGS_IS_DEVOUT(soundcard) &&
+     (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
+    if(index(card_id, ',') == NULL){
+      gchar *tmp;
+    
+      tmp = g_strdup_printf("%s,0\0",
+			    card_id);
+      
+      g_free(card_id);
+      card_id = tmp;
+    }
+  }
+  
   /* perform task */
-  ags_soundcard_set_device(soundcard,
+  ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
 			   card_id);
 }
 

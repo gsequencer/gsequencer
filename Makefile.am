@@ -937,6 +937,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_remove_recall_container.h \
 	ags/audio/task/ags_remove_recall.h \
 	ags/audio/task/ags_remove_region_from_selection.h \
+	ags/audio/task/ags_reset_audio_connection.h \
 	ags/audio/task/ags_resize_audio.h \
 	ags/audio/task/ags_save_file.h \
 	ags/audio/task/ags_seek_soundcard.h \
@@ -994,6 +995,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_remove_recall.c \
 	ags/audio/task/ags_remove_recall_container.c \
 	ags/audio/task/ags_remove_region_from_selection.c \
+	ags/audio/task/ags_reset_audio_connection.c \
 	ags/audio/task/ags_resize_audio.c \
 	ags/audio/task/ags_save_file.c \
 	ags/audio/task/ags_seek_soundcard.c \

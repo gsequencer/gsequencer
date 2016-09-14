@@ -18,7 +18,6 @@
 
 #include <ags/X/ags_effect_line_callbacks.h>
 
-
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 

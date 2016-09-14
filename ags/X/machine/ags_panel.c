@@ -22,6 +22,7 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_connection_manager.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -394,9 +395,13 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 {
   AgsAudioConnection *audio_connection;
 
+  AgsConnectionManager *connection_manager;
+
   GList *list;
   
   guint i, j;
+
+  connection_manager = ags_connection_manager_get_instance();
 
   if(audio_channels > audio_channels_old){
     for(i = 0; i < audio->input_pads; i++){
@@ -449,6 +454,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 	
 	ags_audio_add_audio_connection(audio,
 				       audio_connection);
+	ags_connection_manager_add_connection(connection_manager,
+					      audio_connection);
       }
     }
   }else{
@@ -469,6 +476,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 	  if(AGS_IS_SOUNDCARD(data_object)){
 	    ags_audio_remove_audio_connection(audio,
 					      audio_connection);
+	    ags_connection_manager_remove_connection(connection_manager,
+						     audio_connection);
 	    break;
 	  }
 
@@ -486,9 +495,13 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 {
   AgsAudioConnection *audio_connection;
 
+  AgsConnectionManager *connection_manager;
+
   GList *list;
   
   guint i, j;
+
+  connection_manager = ags_connection_manager_get_instance();
   
   if(type == AGS_TYPE_INPUT){
     if(pads > pads_old){
@@ -512,6 +525,8 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 	  
 	  ags_audio_add_audio_connection(audio,
 					 audio_connection);
+	  ags_connection_manager_add_connection(connection_manager,
+						audio_connection);
 	}
       }
     }else{
@@ -532,6 +547,8 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 	    if(AGS_IS_SOUNDCARD(data_object)){
 	      ags_audio_remove_audio_connection(audio,
 						audio_connection);
+	      ags_connection_manager_remove_connection(connection_manager,
+						       audio_connection);
 	      break;
 	    }
 

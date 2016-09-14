@@ -146,7 +146,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 0.4
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "assigned soundcard\0",
@@ -295,6 +295,9 @@ ags_automation_editor_set_property(GObject *gobject,
       
       if(soundcard != NULL){
 	g_object_ref(soundcard);
+
+	g_signal_connect(soundcard, "tic\0",
+			 ags_automation_editor_tic_callback, automation_editor);
       }
       
       automation_editor->soundcard = soundcard;
@@ -340,9 +343,11 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_CONNECTED;
   
   /*  */
-  g_signal_connect(automation_editor->soundcard, "tic\0",
-		   ags_automation_editor_tic_callback, automation_editor);
-
+  if(automation_editor->soundcard != NULL){
+    g_signal_connect(automation_editor->soundcard, "tic\0",
+		     ags_automation_editor_tic_callback, automation_editor);
+  }
+  
   
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed\0",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
@@ -839,7 +844,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
  *
  * Is emitted as machine changed of automation editor.
  *
- * Since: 0.4.2
+ * Since: 0.7.0
  */
 void
 ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
@@ -1696,7 +1701,7 @@ ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
  *
  * Returns: a new #AgsAutomationEditor
  *
- * Since: 0.4.2
+ * Since: 0.7.0
  */
 AgsAutomationEditor*
 ags_automation_editor_new()

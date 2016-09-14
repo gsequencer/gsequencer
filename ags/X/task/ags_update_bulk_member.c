@@ -80,9 +80,9 @@ ags_update_bulk_member_get_type()
     };
 
     ags_type_update_bulk_member = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsUpdateBulkMember\0",
-						 &ags_update_bulk_member_info,
-						 0);
+							 "AgsUpdateBulkMember\0",
+							 &ags_update_bulk_member_info,
+							 0);
 
     g_type_add_interface_static(ags_type_update_bulk_member,
 				AGS_TYPE_CONNECTABLE,

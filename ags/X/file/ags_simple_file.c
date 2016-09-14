@@ -21,8 +21,10 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_marshal.h>
 
 #include <ags/file/ags_file_stock.h>
@@ -1149,319 +1151,229 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-sf-config\0",
 		     child->name,
-		     13)){
-	AgsChangeSoundcard *change_soundcard;
+		     13)){	
+	AgsJackServer *jack_server;
 	
-	AgsApplyPresets *apply_presets;
-
-	GObject *alsa_soundcard, *oss_soundcard;
-	GObject *soundcard;
 	AgsConfig *config;
 
-	AgsThread *thread;
+	AgsThread *thread, *next_thread;
 
-	GList *jack_soundcard;
+	GObject *current;
+
+	GList *soundcard;
+	GList *jack_soundcard, *alsa_soundcard, *oss_soundcard;
 	GList *list;
-	
-	gchar *str;
+
+	gchar *soundcard_group;
 	gchar *backend;
-	gchar *alsa_device, *oss_device;
+	gchar *device;
+	gchar *str;
 
 	guint pcm_channels;
 	guint samplerate;
 	guint buffer_size;
 	guint format;
-	gboolean use_alsa, use_oss, use_jack;
-	gboolean found_alsa, found_oss, found_jack;
-	gboolean add_alsa, add_oss, add_jack;
+	guint i;
+	gboolean use_jack, use_alsa, use_oss;
+	gboolean found_jack, found_alsa, found_oss;
 	
-#ifdef AGS_WITH_ALSA
-	use_alsa = TRUE;
-#else
+	use_jack = FALSE;
 	use_alsa = FALSE;
-#endif
+	use_oss = FALSE;
 
-	use_jack = TRUE;
+	found_jack = FALSE;
+	found_alsa = FALSE;	
+	found_oss = FALSE;
 
-	add_alsa = FALSE;
-	add_oss = FALSE;
-	add_jack = FALSE;
+	if(AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager != NULL){
+	  jack_server = AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager->data;
+	}
 	
 	config = ags_config_get_instance();
 	ags_simple_file_read_config(simple_file,
 				    child,
 				    (GObject **) &config);
 
-	soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
+	soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
 
-	/* change soundcard */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "jack\0");
+	/* parse configuration */
+	soundcard_group = g_strdup(AGS_CONFIG_SOUNDCARD);
+  
+	for(i = 0; ; i++){
+	  guint pcm_channels, buffer_size, samplerate, format;
+	  gboolean use_jack, use_alsa, use_oss;
 
-	if(str != NULL &&
-	   !g_ascii_strncasecmp(str,
-				"disabled\0",
-				9)){
-	  use_jack = FALSE;
-	}
-	
-	backend = ags_config_get_value(config,
-				       AGS_CONFIG_SOUNDCARD,
-				       "backend\0");
-
-	if(backend != NULL){
-	  if(!g_ascii_strncasecmp(backend,
-				  "alsa\0",
-				  5)){
-	    use_alsa = TRUE;
-	  }else if(!g_ascii_strncasecmp(backend,
-					"oss\0",
-					4)){
-	    use_oss = TRUE;
-	  }
-	}
-
-	/* check if alsa already available */
-	found_alsa = FALSE;
-	
-	if(use_alsa){
-	  list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-	  while(list != NULL){
-	    if(AGS_IS_DEVOUT(list->data) &&
-	       (AGS_DEVOUT_ALSA & (AGS_DEVOUT(list->data)->flags)) != 0){
-	      alsa_soundcard = list->data;
-	      
-	      found_alsa = TRUE;
-	      
+	  if(!g_key_file_has_group(config->key_file,
+				   soundcard_group)){
+	    if(i == 0){
+	      g_free(soundcard_group);
+	      soundcard_group = g_strdup_printf("%s-%d\0",
+						AGS_CONFIG_SOUNDCARD,
+						i);
+	      continue;
+	    }else{
 	      break;
 	    }
-
-	    list = list->next;
 	  }
 
-	  if(!found_alsa){
-	    add_alsa = TRUE;
-	  }
-	}
-
-	/* check if oss already available */
-	found_oss = FALSE;
-	
-	if(use_oss){
-	  list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
+	  current = NULL;
+	  backend = ags_config_get_value(config,
+					 soundcard_group,
+					 "backend\0");
 	  
-	  while(list != NULL){
-	    if(AGS_IS_DEVOUT(list->data) &&
-	       (AGS_DEVOUT_OSS & (AGS_DEVOUT(list->data)->flags)) != 0){
-	      oss_soundcard = list->data;
-
-	      found_oss = TRUE;
-	      
-	      break;
-	    }
-
-	    list = list->next;
-	  }
-
-	  if(!found_oss){
-	    add_oss = TRUE;
-	  }
-	}
-
-	/* check if jack already available */
-	jack_soundcard = NULL;
-	found_jack = FALSE;
+	  g_free(soundcard_group);
+	  soundcard_group = g_strdup_printf("%s-%d\0",
+					    AGS_CONFIG_SOUNDCARD,
+					    i);
 	
-	if(use_jack){
-	  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager == NULL){
-	    AgsJackServer *jack_server;
+	  /* change soundcard */
+	  if(backend != NULL){
+	    if(!g_ascii_strncasecmp(backend,
+				    "jack\0",
+				    5)){
+	      use_jack = TRUE;
+	    }else if(!g_ascii_strncasecmp(backend,
+					  "alsa\0",
+					  5)){
+	      use_alsa = TRUE;
+	    }else if(!g_ascii_strncasecmp(backend,
+					  "oss\0",
+					  4)){
+	      use_oss = TRUE;
+	    }
+	  }
+
+	  if(soundcard != NULL &&
+	     (use_jack ||
+	      use_alsa ||
+	      use_oss)){
+	    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = NULL;
+	    g_list_free_full(soundcard,
+			     g_object_unref);
+
+	    soundcard = NULL;
+
+	    thread = application_context->main_loop;
 	    
-	    jack_server = ags_jack_server_new(application_context,
-					      NULL);
-	    AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager = g_list_prepend(AGS_XORG_APPLICATION_CONTEXT(application_context)->distributed_manager,
-												    jack_server);
-	    g_object_ref(G_OBJECT(jack_server));
-	  }
+	    while((thread = ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
+	      next_thread = g_atomic_pointer_get(&(thread->next));
 
-	  /* find jack devout */
-	  list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-	  
-	  while(list != NULL){
-	    if(AGS_IS_JACK_DEVOUT(list->data)){
-	      jack_soundcard = g_list_prepend(jack_soundcard,
-					      list->data);
+	      ags_thread_remove_child(application_context->main_loop,
+				      thread);
 
-	      found_jack = TRUE;
+	      thread = next_thread;
 	    }
+	  }
+	  
+	  /* jack */
+	  jack_soundcard = NULL;
+	
+	  if(use_jack){
+	    current = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+								 TRUE);
+	    
 
-	    list = list->next;
+	    use_jack = FALSE;
 	  }
 
-	  if(!found_jack){
-	    add_jack = TRUE;
-	  }else{
-	    jack_soundcard = g_list_reverse(jack_soundcard);
-	  }
-	}
+	  /* alsa */	
+	  if(use_alsa){
+	    current = ags_devout_new(application_context);
+	    AGS_DEVOUT(current)->flags &= (~AGS_DEVOUT_OSS);
+	    AGS_DEVOUT(current)->flags |= AGS_DEVOUT_ALSA;
 
-	/* add soundcard as needed */
-	change_soundcard = ags_change_soundcard_new(application_context,
-						    add_alsa,
-						    add_oss,
-						    add_jack);
-
-	if(add_alsa){
-	  ags_change_soundcard_alsa(change_soundcard);
-	}
-
-	if(add_oss){
-	  ags_change_soundcard_oss(change_soundcard);
-	}
-
-	if(add_jack){
-	  ags_change_soundcard_jack(change_soundcard);
-	}
-
-	g_object_unref(change_soundcard);
-
-	/* reset default card */
-	if(found_jack){
-	  soundcard = jack_soundcard->data;
-	}else{
-	  soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
-	}
-	
-	g_object_set(AGS_XORG_APPLICATION_CONTEXT(application_context)->window,
-		     "soundcard\0", soundcard,
-		     NULL);
-	
-	/* ensure jack first card */
-	if(!add_jack &&
-	   jack_soundcard != NULL){
-	  GList *list;
-
-	  jack_soundcard = 
-	    list = g_list_reverse(jack_soundcard);
-
-	  while(list != NULL){
-	    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = g_list_remove(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
-											 list->data);
-	    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = g_list_prepend(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
-											  list->data);
-
-	    list = list->next;
+	    use_alsa = FALSE;
 	  }
 
-	  jack_soundcard = g_list_reverse(jack_soundcard);
-	}
-	
-	/* reset presets of soundcard */
-	alsa_device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
-	oss_device = AGS_DEVOUT_DEFAULT_OSS_DEVICE;
-	
-	pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
-	format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-	samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-	buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+	  /* oss */	
+	  if(use_oss){
+	    current = ags_devout_new(application_context);
+	    AGS_DEVOUT(current)->flags &= (~AGS_DEVOUT_ALSA);
+	    AGS_DEVOUT(current)->flags |= AGS_DEVOUT_OSS;
 
-	/* device */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "alsa-handle\0");
+	    use_oss = FALSE;
+	  }
 
-	if(str != NULL){
-	  alsa_device = str;
-	}
+	  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard = g_list_append(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
+										       current);
+	  
+	  /* reset presets of soundcard */
+	  pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+	  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+	  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+	  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "oss-handle\0");
+	  /* device */
+	  device = ags_config_get_value(config,
+					soundcard_group,
+					"device\0");
 
-	if(str != NULL){
-	  oss_device = str;
-	}
+	  if(device != NULL){
+	    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+				     device);
+	    g_free(device);
+	  }
 
-	if(use_alsa){
-	  ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-				   oss_device);
-	}
+	  /* presets */
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "pcm-channels\0");
 
-	/* presets */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "pcm-channels\0");
-
-	if(str != NULL){
-	  pcm_channels = g_ascii_strtoull(str,
+	  if(str != NULL){
+	    pcm_channels = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+	    g_free(str);
+	  }
+  
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "samplerate\0");
+  
+	  if(str != NULL){
+	    samplerate = g_ascii_strtoull(str,
 					  NULL,
 					  10);
-	  g_free(str);
-	}
-  
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "samplerate\0");
-  
-	if(str != NULL){
-	  samplerate = g_ascii_strtoull(str,
-					NULL,
-					10);
-	  free(str);
-	}
-
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "buffer-size\0");
-	if(str != NULL){
-	  buffer_size = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-	  free(str);
-	}
-
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "format\0");
-	if(str != NULL){
-	  format = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-	  free(str);
-
-	}
-	
-	if(jack_soundcard != NULL){
-	  GList *list;
-
-	  list = jack_soundcard;
-
-	  while(list != NULL){
-	    apply_presets = ags_apply_presets_new(list->data,
-						  pcm_channels,
-						  samplerate,
-						  buffer_size,
-						  format);
-	    ags_apply_presets_soundcard(apply_presets,
-					list->data);
-
-	    list = list->next;
+	    free(str);
 	  }
-	}else{
-	  apply_presets = ags_apply_presets_new(soundcard,
-						pcm_channels,
-						samplerate,
-						buffer_size,
-						format);
-	  ags_apply_presets_soundcard(apply_presets,
-				      soundcard);
-	}
 
-	g_object_set(AGS_XORG_APPLICATION_CONTEXT(application_context)->window,
-		     "soundcard\0", soundcard,
-		     NULL);
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "buffer-size\0");
+	  if(str != NULL){
+	    buffer_size = g_ascii_strtoull(str,
+					   NULL,
+					   10);
+	    free(str);
+	  }
+
+	  str = ags_config_get_value(config,
+				     soundcard_group,
+				     "format\0");
+	  if(str != NULL){
+	    format = g_ascii_strtoull(str,
+				      NULL,
+				      10);
+	    free(str);
+
+	  }
+
+	  ags_soundcard_set_presets(AGS_SOUNDCARD(current),
+				    pcm_channels,
+				    samplerate,
+				    buffer_size,
+				    format);
+	}
 	
+	/* reset default card */
+	soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
+	
+	if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard != NULL){
+	  g_object_set(AGS_XORG_APPLICATION_CONTEXT(application_context)->window,
+		       "soundcard\0", soundcard->data,
+		       NULL);
+	}
+		
 	/* calculate frequency of audio loop */
 	AGS_THREAD(application_context->main_loop)->tic_delay = 0;
 	AGS_THREAD(application_context->main_loop)->freq = ceil(samplerate / buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
@@ -1476,42 +1388,21 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
       	thread->tic_delay = 0;
 	thread->freq = ceil(samplerate / buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-	/* add missing threads */
-	if(add_alsa){
-	  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(alsa_soundcard);
-	  ags_thread_add_child_extended(AGS_THREAD(application_context->main_loop),
-					AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread,
+	/* AgsSoundcardThread */
+	AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = NULL;
+	list = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
+    
+	while(list != NULL){
+	  thread = (AgsThread *) ags_soundcard_thread_new(list->data);
+	  ags_thread_add_child_extended(application_context->main_loop,
+					thread,
 					TRUE, TRUE);
-	}
 
-	if(add_oss){
-	  AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(oss_soundcard);
-	  ags_thread_add_child_extended(AGS_THREAD(application_context->main_loop),
-					AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread,
-					TRUE, TRUE);
-	}
-	
-	if(add_jack){
-	  GList *list;
-	  gboolean initial_set;
-
-	  list = jack_soundcard;
-	  initial_set = TRUE;
-	  
-	  while(list != NULL){
-	    thread = (AgsThread *) ags_soundcard_thread_new(list->data);
-	    ags_thread_add_child_extended(AGS_THREAD(application_context->main_loop),
-					  thread,
-					  TRUE, TRUE);
-	    
-	    if(initial_set){
-	      AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = thread;
-
-	      initial_set = FALSE;
-	    }
-
-	    list = list->next;
+	  if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread == NULL){
+	    AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard_thread = thread;
 	  }
+    
+	  list = list->next;      
 	}
       }else if(!xmlStrncmp("ags-sf-window\0",
 			   child->name,

@@ -246,13 +246,19 @@ ags_window_set_property(GObject *gobject,
 
       soundcard = g_value_get_object(value);
 
-      if(window->soundcard == soundcard)
+      if(window->soundcard == soundcard){
 	return;
-
-      if(soundcard != NULL)
+      }
+      
+      if(soundcard != NULL){
 	g_object_ref(soundcard);
-
+      }
+      
       window->soundcard = soundcard;
+
+      g_object_set(G_OBJECT(window->automation_window),
+		   "soundcard\0", soundcard,
+		   NULL);
 
       g_object_set(G_OBJECT(window->editor),
 		   "soundcard\0", soundcard,
