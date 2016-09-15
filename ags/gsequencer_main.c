@@ -1012,7 +1012,7 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
   ipatch_init();
-  //  g_log_set_fatal_mask("GLib-GObject\0",
+  //  g_log_set_fatal_mask(G_LOG_DOMAIN, //"GLib-GObject\0"
   //		       G_LOG_LEVEL_CRITICAL);
   
   /* setup */
@@ -1036,20 +1036,6 @@ main(int argc, char **argv)
   g_free(config_file);
   
   ags_setup(argc, argv);
-
-  /* JACK */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "jack\0");
-  jack_enabled = (str != NULL && !g_ascii_strncasecmp(str, "enabled\0", 8)) ? TRUE: FALSE;
-
-  if(str != NULL){
-    free(str);
-  }
-  
-  if(jack_enabled){
-    //    jackctl_setup_signals(0);
-  }
 
   /* autosave thread */
   str = ags_config_get_value(config,

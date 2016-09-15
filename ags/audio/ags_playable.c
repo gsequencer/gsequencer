@@ -516,9 +516,16 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     
     config = ags_config_get_instance();
 
+    /* samplerate */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD,
 			       "samplerate\0");
+
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "samplerate\0");
+    }
     
     if(str != NULL){
       samplerate = g_ascii_strtoull(str,
@@ -530,9 +537,16 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
       samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
     }
 
+    /* buffer-size */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD,
 			       "buffer-size\0");
+
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "buffer-size\0");
+    }
     
     if(str != NULL){
       buffer_size = g_ascii_strtoull(str,

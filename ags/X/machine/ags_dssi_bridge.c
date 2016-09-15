@@ -1209,10 +1209,17 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   unsigned long i;
 
   config = ags_config_get_instance();
-  
+
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
   
   if(str != NULL){
     samplerate = g_ascii_strtoull(str,

@@ -105,6 +105,12 @@ ags_ladspa_conversion_init(AgsLadspaConversion *ladspa_conversion)
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+  
   if(str != NULL){
     ladspa_conversion->samplerate = g_ascii_strtoull(str,
 						     NULL,

@@ -611,11 +611,18 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
   port = NULL;
 
   config = ags_config_get_instance();
-  
+
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
   if(str != NULL){
     buffer_size = g_ascii_strtoull(str,
 				   NULL,
@@ -625,10 +632,17 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }
 
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+  
   if(str != NULL){  
     samplerate = g_ascii_strtoull(str,
 				  NULL,
@@ -637,7 +651,8 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
   }else{
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
-  
+
+  /*  */
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
 

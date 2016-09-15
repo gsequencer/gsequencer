@@ -51,6 +51,8 @@ struct _AgsPreferences
 
   GtkWindow *window;
 
+  GtkNotebook *notebook;
+
   AgsGenericPreferences *generic_preferences;
   AgsAudioPreferences *audio_preferences;
   AgsPerformancePreferences *performance_preferences;

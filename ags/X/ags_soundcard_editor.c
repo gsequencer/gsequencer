@@ -594,6 +594,8 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   soundcard = soundcard_editor->soundcard;
   
   /* refresh */
+  config = ags_config_get_instance();
+
   use_jack = TRUE;
   use_alsa = FALSE;
   use_oss = FALSE;
@@ -1057,7 +1059,7 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
   application_context = window->application_context;
 
   application_mutex = window->application_mutex;
-    
+
   /* create soundcard */
   pthread_mutex_lock(application_mutex);
 
@@ -1099,6 +1101,11 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
     card_id = card_id->next;
   }
 
+  /*  */
+  gtk_widget_set_sensitive(soundcard_editor->buffer_size,
+			   FALSE);
+  gtk_widget_set_sensitive(soundcard_editor->samplerate,
+			   FALSE);
   pthread_mutex_unlock(application_mutex);
 }
 
@@ -1112,6 +1119,7 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 
   AgsApplicationContext *application_context;
 
+  GList *list;
   GList *card_id;
 
   pthread_mutex_t *application_mutex;
@@ -1154,6 +1162,19 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   ags_soundcard_editor_add_soundcard(soundcard_editor,
 				     devout);
 
+  /*  */
+  list = gtk_container_get_children(GTK_WIDGET(soundcard_editor)->parent);
+  
+  if(list->data == soundcard_editor){
+    gtk_widget_set_sensitive(soundcard_editor->buffer_size,
+			     TRUE);
+  }
+
+  g_list_free(list);
+  
+  gtk_widget_set_sensitive(soundcard_editor->samplerate,
+			   TRUE);
+
   pthread_mutex_unlock(application_mutex);
 }
 
@@ -1167,6 +1188,7 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 
   AgsApplicationContext *application_context;
 
+  GList *list;
   GList *card_id;
 
   pthread_mutex_t *application_mutex;
@@ -1208,6 +1230,19 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
   /* add new */
   ags_soundcard_editor_add_soundcard(soundcard_editor,
 				     devout);
+
+  /*  */
+  list = gtk_container_get_children(GTK_WIDGET(soundcard_editor)->parent);
+  
+  if(list->data == soundcard_editor){
+    gtk_widget_set_sensitive(soundcard_editor->buffer_size,
+			     TRUE);
+  }
+
+  g_list_free(list);
+
+  gtk_widget_set_sensitive(soundcard_editor->samplerate,
+			   TRUE);
 
   pthread_mutex_unlock(application_mutex);
 }

@@ -33,18 +33,27 @@
 
 int
 ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
-{
-  AgsWindow *window;
+{  
+  AgsPreferences *preferences;
 
-  AgsSoundcard *soundcard;
-  GtkListStore *model;
-
-  GtkTreeIter iter;
-  GList *card_id, *card_name;
-  
   if(old_parent != NULL){
     return(0);
   }
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+
+  audio_preferences->connect_jack = gtk_button_new_with_label("connect jack\0");
+  gtk_box_pack_end(GTK_DIALOG(preferences)->action_area,
+		   audio_preferences->connect_jack,
+		   TRUE, FALSE,
+		   0);  
+
+  audio_preferences->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_end(GTK_DIALOG(preferences)->action_area,
+		   audio_preferences->add,
+		   TRUE, FALSE,
+		   0);  
 
   return(0);
 }
@@ -101,6 +110,16 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   application_mutex = window->application_mutex;
 
   soundcard_editor = ags_soundcard_editor_new();
+
+  list = gtk_container_get_children(audio_preferences->soundcard_editor);
+  
+  if(list != NULL){
+    gtk_widget_set_sensitive(soundcard_editor->buffer_size,
+			     FALSE);
+  }
+
+  g_list_free(list);
+  
   gtk_box_pack_start(audio_preferences->soundcard_editor,
 		     soundcard_editor,
 		     FALSE, FALSE,
@@ -160,7 +179,7 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   soundcard = NULL;
   
   pthread_mutex_lock(application_mutex);
-
+  
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   if(list != NULL){
@@ -172,6 +191,17 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   g_object_set(window,
 	       "soundcard\0", soundcard,
 	       NULL);
+
+  /*  */
+  list = gtk_container_get_children(audio_preferences->soundcard_editor);
+  
+  if(list != NULL){
+    gtk_widget_set_sensitive(AGS_SOUNDCARD_EDITOR(list->data)->buffer_size,
+			     TRUE);
+  }
+
+  g_list_free(list);
+
 }
 
 void

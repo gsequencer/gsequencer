@@ -674,10 +674,16 @@ ags_channel_init(AgsChannel *channel)
   channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   channel->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
-  /* read presets of config */
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
   
   if(str != NULL){
     channel->samplerate = g_ascii_strtoull(str,
@@ -685,11 +691,20 @@ ags_channel_init(AgsChannel *channel)
 					   10);
 
     free(str);
+  }else{
+    channel->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
 
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
   
   if(str != NULL){
     channel->buffer_size = g_ascii_strtoull(str,
@@ -697,11 +712,20 @@ ags_channel_init(AgsChannel *channel)
 					    10);
 
     free(str);
+  }else{
+    channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }
 
+  /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "format\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "format\0");
+  }
   
   if(str != NULL){
     channel->format = g_ascii_strtoull(str,
@@ -709,6 +733,8 @@ ags_channel_init(AgsChannel *channel)
 				       10);
 
     free(str);
+  }else{
+    channel->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   }
 
   /* inter-connected channels */

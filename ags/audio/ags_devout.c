@@ -629,6 +629,12 @@ ags_devout_init(AgsDevout *devout)
 			     AGS_CONFIG_SOUNDCARD,
 			     "backend\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "backend\0");
+  }
+  
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
 			  "oss\0",
@@ -650,21 +656,36 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   /* read config */
+  /* dsp channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "dsp-channels\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "dsp-channels\0");
+  }
+  
   if(str != NULL){
     devout->dsp_channels = g_ascii_strtoull(str,
 					    NULL,
 					    10);
+	  
     g_free(str);
   }
 
+  /* pcm channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "pcm-channels\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "pcm-channels\0");
+  }
+  
   if(str != NULL){
     devout->pcm_channels = g_ascii_strtoull(str,
 					    NULL,
@@ -672,10 +693,17 @@ ags_devout_init(AgsDevout *devout)
 	  
     g_free(str);
   }
-  
+
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
   
   if(str != NULL){
     devout->samplerate = g_ascii_strtoull(str,
@@ -684,9 +712,17 @@ ags_devout_init(AgsDevout *devout)
     free(str);
   }
 
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
   if(str != NULL){
     devout->buffer_size = g_ascii_strtoull(str,
 					   NULL,
@@ -694,9 +730,17 @@ ags_devout_init(AgsDevout *devout)
     free(str);
   }
 
+  /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "format\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "format\0");
+  }
+  
   if(str != NULL){
     devout->format = g_ascii_strtoull(str,
 				      NULL,
@@ -704,6 +748,7 @@ ags_devout_init(AgsDevout *devout)
     free(str);
   }
 
+  /*  */
   if(use_alsa){
     devout->out.alsa.handle = NULL;
     devout->out.alsa.device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
@@ -801,21 +846,36 @@ ags_devout_set_property(GObject *gobject,
 	
 	config = ags_config_get_instance();
 
+	/* dsp channels */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "dsp-channels\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "dsp-channels\0");
+	}
+  
 	if(str != NULL){
 	  devout->dsp_channels = g_ascii_strtoull(str,
 						  NULL,
 						  10);
+	  
 	  g_free(str);
 	}
 
+	/* pcm channels */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "pcm-channels\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "pcm-channels\0");
+	}
+  
 	if(str != NULL){
 	  devout->pcm_channels = g_ascii_strtoull(str,
 						  NULL,
@@ -823,43 +883,62 @@ ags_devout_set_property(GObject *gobject,
 	  
 	  g_free(str);
 	}
-	
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "format\0");
 
-	if(str != NULL){
-	  devout->format = g_ascii_strtoull(str,
-					    NULL,
-					    10);
-	  
-	  g_free(str);
-	}
-
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "buffer-size\0");
-
-	if(str != NULL){
-	  devout->buffer_size = g_ascii_strtoull(str,
-						 NULL,
-						 10);
-	  
-	  g_free(str);
-	}
-
+	/* samplerate */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "samplerate\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "samplerate\0");
+	}
+  
 	if(str != NULL){
 	  devout->samplerate = g_ascii_strtoull(str,
 						NULL,
 						10);
-	  
-	  g_free(str);
+	  free(str);
 	}
-	
+
+	/* buffer size */
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "buffer-size\0");
+
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "buffer-size\0");
+	}
+  
+	if(str != NULL){
+	  devout->buffer_size = g_ascii_strtoull(str,
+						 NULL,
+						 10);
+	  free(str);
+	}
+
+	/* format */
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "format\0");
+
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "format\0");
+	}
+  
+	if(str != NULL){
+	  devout->format = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+	  free(str);
+	}
+
+	/* segmentation */
 	segmentation = ags_config_get_value(config,
 					    AGS_CONFIG_GENERIC,
 					    "segmentation\0");
@@ -880,10 +959,16 @@ ags_devout_set_property(GObject *gobject,
 	  devout->out.alsa.handle = NULL;
 	  device = ags_config_get_value(config,
 					AGS_CONFIG_SOUNDCARD,
-					"alsa-handle\0");
+					"device\0");
 
+	  if(device == NULL){
+	    device = ags_config_get_value(config,
+					  AGS_CONFIG_SOUNDCARD_0,
+					  "device\0");
+	  }
+	  
 	  if(device != NULL){
-	    devout->out.alsa.device = g_strdup(device);
+	    devout->out.alsa.device = device;
 	    g_message("ALSA device %s\n", devout->out.alsa.device);
 	  }	  
 	}else{
@@ -892,10 +977,16 @@ ags_devout_set_property(GObject *gobject,
 	  devout->out.oss.device_fd = -1;
 	  device = ags_config_get_value(config,
 					AGS_CONFIG_SOUNDCARD,
-					"oss-handle\0");
+					"device\0");
 
+	  if(device == NULL){
+	    device = ags_config_get_value(config,
+					  AGS_CONFIG_SOUNDCARD_0,
+					  "device\0");
+	  }
+	  
 	  if(device != NULL){
-	    devout->out.oss.device = g_strdup(device);
+	    devout->out.oss.device = device;
 	   
 	    g_message("OSS device %s\n", devout->out.oss.device);
 	  }

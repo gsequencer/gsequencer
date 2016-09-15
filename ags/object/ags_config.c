@@ -379,11 +379,12 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global\0", "ags-thread\0");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
 
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "jack\0", "enabled\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "samplerate\0", "44100\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "buffer-size\0", "512\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "backend\0", "jack\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "pcm-channels\0", "2\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "dsp-channels\0", "2\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "samplerate\0", "48000\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "buffer-size\0", "512\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "format\0", "16\0");
 
 #ifdef AGS_WITH_ALSA
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "backend\0", "alsa\0");

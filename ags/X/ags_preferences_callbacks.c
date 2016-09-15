@@ -53,3 +53,30 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
     }
   }
 }
+
+void
+ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
+					      gpointer page,
+					      guint page_n,
+					      AgsPreferences *preferences)
+{
+  GList *list, *list_start;
+
+  list_start = 
+    list = gtk_container_get_children(GTK_DIALOG(preferences)->action_area);
+  list = g_list_nth(list,
+		    3);
+  
+  while(list != NULL){
+    gtk_widget_hide(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  if(page_n == 1){
+    gtk_widget_show(preferences->audio_preferences->connect_jack);
+    gtk_widget_show(preferences->audio_preferences->add);
+  }
+}

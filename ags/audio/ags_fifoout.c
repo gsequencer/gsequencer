@@ -610,21 +610,36 @@ ags_fifoout_init(AgsFifoout *fifoout)
   fifoout->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   /* read config */
+  /* dsp channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "dsp-channels\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "dsp-channels\0");
+  }
+  
   if(str != NULL){
     fifoout->dsp_channels = g_ascii_strtoull(str,
 					     NULL,
 					     10);
+	  
     g_free(str);
   }
 
+  /* pcm channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "pcm-channels\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "pcm-channels\0");
+  }
+  
   if(str != NULL){
     fifoout->pcm_channels = g_ascii_strtoull(str,
 					     NULL,
@@ -632,10 +647,17 @@ ags_fifoout_init(AgsFifoout *fifoout)
 	  
     g_free(str);
   }
-  
+
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
   
   if(str != NULL){
     fifoout->samplerate = g_ascii_strtoull(str,
@@ -644,9 +666,17 @@ ags_fifoout_init(AgsFifoout *fifoout)
     free(str);
   }
 
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
   if(str != NULL){
     fifoout->buffer_size = g_ascii_strtoull(str,
 					    NULL,
@@ -654,9 +684,17 @@ ags_fifoout_init(AgsFifoout *fifoout)
     free(str);
   }
 
+  /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "format\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "format\0");
+  }
+  
   if(str != NULL){
     fifoout->format = g_ascii_strtoull(str,
 				       NULL,
@@ -664,6 +702,7 @@ ags_fifoout_init(AgsFifoout *fifoout)
     free(str);
   }
 
+  /*  */
   fifoout->device = NULL;
   fifoout->fifo_fd = -1;
 
@@ -757,21 +796,36 @@ ags_fifoout_set_property(GObject *gobject,
 	
 	config = ags_config_get_instance();
 
+	/* dsp channels */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "dsp-channels\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "dsp-channels\0");
+	}
+  
 	if(str != NULL){
 	  fifoout->dsp_channels = g_ascii_strtoull(str,
 						   NULL,
 						   10);
+	  
 	  g_free(str);
 	}
 
+	/* pcm channels */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "pcm-channels\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "pcm-channels\0");
+	}
+  
 	if(str != NULL){
 	  fifoout->pcm_channels = g_ascii_strtoull(str,
 						   NULL,
@@ -779,43 +833,62 @@ ags_fifoout_set_property(GObject *gobject,
 	  
 	  g_free(str);
 	}
-	
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "format\0");
 
-	if(str != NULL){
-	  fifoout->format = g_ascii_strtoull(str,
-					     NULL,
-					     10);
-	  
-	  g_free(str);
-	}
-
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "buffer-size\0");
-
-	if(str != NULL){
-	  fifoout->buffer_size = g_ascii_strtoull(str,
-						  NULL,
-						  10);
-	  
-	  g_free(str);
-	}
-
+	/* samplerate */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "samplerate\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "samplerate\0");
+	}
+  
 	if(str != NULL){
 	  fifoout->samplerate = g_ascii_strtoull(str,
 						 NULL,
 						 10);
-	  
-	  g_free(str);
+	  free(str);
 	}
-	
+
+	/* buffer size */
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "buffer-size\0");
+
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "buffer-size\0");
+	}
+  
+	if(str != NULL){
+	  fifoout->buffer_size = g_ascii_strtoull(str,
+						  NULL,
+						  10);
+	  free(str);
+	}
+
+	/* format */
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "format\0");
+
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "format\0");
+	}
+  
+	if(str != NULL){
+	  fifoout->format = g_ascii_strtoull(str,
+					     NULL,
+					     10);
+	  free(str);
+	}
+
+	/* segmentation */
 	segmentation = ags_config_get_value(config,
 					    AGS_CONFIG_GENERIC,
 					    "segmentation\0");
@@ -833,10 +906,15 @@ ags_fifoout_set_property(GObject *gobject,
 	fifoout->fifo_fd = -1;
 	device = ags_config_get_value(config,
 				      AGS_CONFIG_SOUNDCARD,
-				      "fifo-handle\0");
+				      "device\0");
 
+	if(device == NULL){
+	  device = ags_config_get_value(config,
+					AGS_CONFIG_SOUNDCARD_0,
+					"device\0");
+	}
 	if(device != NULL){
-	  fifoout->device = g_strdup(device);
+	  fifoout->device = device;
 	  g_message("FIFO device %s\n", fifoout->device);
 	}	  
 
