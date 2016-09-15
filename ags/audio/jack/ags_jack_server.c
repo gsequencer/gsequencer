@@ -494,8 +494,11 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
       str = g_strdup_printf("ags-soundcard%d-%04d\0",
 			    jack_server->n_soundcards,
 			    i);
+
+#ifdef AGS_DEBUG
       g_message("%s\0", str);
-    
+#endif
+      
       jack_port = ags_jack_port_new(default_client);
       ags_jack_client_add_port(default_client,
 			       jack_port);
@@ -532,12 +535,15 @@ void
 ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
 				     GObject *soundcard)
 {
+  AgsJackServer *jack_server;
   AgsJackClient *default_client;
 
   GList *list;
+
+  jack_server = AGS_JACK_SERVER(distributed_manager);
   
   /* the default client */
-  default_client = AGS_JACK_SERVER(distributed_manager)->default_client;
+  default_client = jack_server->default_client;
 
   if(default_client == NULL){
     g_warning("GSequencer - no jack client\0");
@@ -549,8 +555,14 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
 
   while(list != NULL){
     ags_jack_port_unregister(list->data);
-
+    ags_jack_client_remove_port(default_client,
+				list->data);
+    
     list = list->next;
+  }
+
+  if(default_client->port == NULL){
+    jack_server->n_soundcards = 0;
   }
 }
 
@@ -587,9 +599,12 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 
   default_client = jack_server->default_client;
 
+  str = g_strdup_printf("ags-midiin-%d\0",
+			jack_server->n_soundcards);
   jack_midiin = ags_jack_midiin_new(jack_server->application_context);
-  g_object_set(AGS_JACK_DEVOUT(jack_midiin),
+  g_object_set(AGS_JACK_MIDIIN(jack_midiin),
 	       "jack-client\0", default_client,
+	       "device\0", str,
 	       NULL);
   default_client->device = g_list_prepend(default_client->device,
 					  jack_midiin);
@@ -597,8 +612,11 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   /* register sequencer */
   str = g_strdup_printf("ags-sequencer%d\0",
 			jack_server->n_sequencers);
-  g_message("%s\0", str);
 
+#ifdef AGS_DEBUG
+  g_message("%s\0", str);
+#endif
+  
   jack_port = ags_jack_port_new(default_client);
   ags_jack_client_add_port(default_client,
 			   jack_port);
@@ -617,12 +635,15 @@ void
 ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
 				     GObject *sequencer)
 {
+  AgsJackServer *jack_server;
   AgsJackClient *default_client;
 
   GList *list;
   
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
   /* the default client */
-  default_client = AGS_JACK_SERVER(distributed_manager)->default_client;
+  default_client = jack_server->default_client;
 
   if(default_client == NULL){
     g_warning("GSequencer - no jack client\0");
@@ -634,8 +655,15 @@ ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
 
   while(list != NULL){
     ags_jack_port_unregister(list->data);
+    ags_jack_client_remove_port(default_client,
+				list->data);
+    
 
     list = list->next;
+  }
+
+  if(default_client->port == NULL){
+    jack_server->n_sequencers = 0;
   }
 }
 
@@ -684,7 +712,10 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   for(i = 0; i < jack_devout->pcm_channels; i++){
     str = g_strdup_printf("ags-default-soundcard-%04d\0",
 			  i);
+
+#ifdef AGS_DEBUG
     g_message("%s\0", str);
+#endif
     
     jack_port = ags_jack_port_new(default_client);
     ags_jack_client_add_port(default_client,
@@ -854,6 +885,28 @@ ags_jack_server_remove_client(AgsJackServer *jack_server,
   jack_server->client = g_list_remove(jack_server->client,
 				      jack_client);
   g_object_unref(jack_client);
+}
+
+/**
+ * ags_jack_server_connect_client:
+ * @jack_server: the #AgsJackServer
+ *
+ * Connect all clients.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_jack_server_connect_client(AgsJackServer *jack_server)
+{
+  GList *client;
+
+  client = jack_server->client;
+
+  while(client != NULL){
+    ags_jack_client_activate(client->data);
+
+    client = client->next;
+  }
 }
 
 /**

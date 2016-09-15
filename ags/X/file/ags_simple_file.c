@@ -1243,6 +1243,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	    }
 	  }
 
+	  /* remove old */
 	  if(soundcard != NULL &&
 	     (use_jack ||
 	      use_alsa ||

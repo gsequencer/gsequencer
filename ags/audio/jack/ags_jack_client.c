@@ -320,7 +320,26 @@ ags_jack_client_open(AgsJackClient *jack_client,
 void
 ags_jack_client_activate(AgsJackClient *jack_client)
 {
-  jack_activate(jack_client->client);
+  GList *port;
+  
+  int ret;
+  
+  ret = jack_activate(jack_client->client);
+
+  if(ret == 0){
+    jack_client->flags |= AGS_JACK_CLIENT_ACTIVATED;
+  }
+
+  port = jack_client->port;
+
+  while(port != NULL){
+    ags_jack_port_register(port->data,
+			   AGS_JACK_PORT(port->data)->name,
+			   (((AGS_JACK_PORT_IS_AUDIO & (AGS_JACK_PORT(port->data)->flags)) != 0) ? TRUE: FALSE), (((AGS_JACK_PORT_IS_MIDI & (AGS_JACK_PORT(port->data)->flags)) != 0) ? TRUE: FALSE),
+			   (((AGS_JACK_PORT_IS_OUTPUT & (AGS_JACK_PORT(port->data)->flags)) != 0) ? TRUE: FALSE));
+    
+    port = port->next;
+  }
 }
 
 /**
@@ -335,6 +354,8 @@ void
 ags_jack_client_deactivate(AgsJackClient *jack_client)
 {
   jack_deactivate(jack_client->client);
+
+  jack_client->flags &= (~AGS_JACK_CLIENT_ACTIVATED);
 }
 
 /**

@@ -65,6 +65,7 @@ void ags_jack_port_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_JACK_CLIENT,
+  PROP_PORT_NAME,
 };
 
 static gpointer ags_jack_port_parent_class = NULL;
@@ -138,6 +139,22 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
   g_object_class_install_property(gobject,
 				  PROP_JACK_CLIENT,
 				  param_spec);
+
+  /**
+   * AgsJackPort:port-name:
+   *
+   * The jack soundcard indentifier
+   * 
+   * Since: 0.7.65
+   */
+  param_spec = g_param_spec_string("port-name\0",
+				   "port name\0",
+				   "The port name\0",
+				   "hw:0\0",
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_NAME,
+				  param_spec);
 }
 
 void
@@ -192,6 +209,25 @@ ags_jack_port_set_property(GObject *gobject,
       jack_port->jack_client = jack_client;
     }
     break;
+  case PROP_PORT_NAME:
+    {
+      gchar *port_name;
+
+      port_name = g_value_get_string(value);
+
+      if(port_name == jack_port->name){
+	return;
+      }
+
+      if(jack_port->name != NULL){
+	g_free(jack_port->name);
+      }
+
+      jack_port->name = port_name;
+      jack_port_set_name(jack_port->port,
+			 port_name);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -212,6 +248,11 @@ ags_jack_port_get_property(GObject *gobject,
   case PROP_JACK_CLIENT:
     {
       g_value_set_object(value, jack_port->jack_client);
+    }
+    break;
+  case PROP_PORT_NAME:
+    {
+      g_value_set_string(value, jack_port->name);
     }
     break;
   default:
@@ -289,6 +330,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
   AgsJackServer *jack_server;
 
   GList *list;
+
+  gchar *name, uuid;
   
   if(!AGS_IS_JACK_PORT(jack_port) ||
      port_name == NULL){
@@ -310,13 +353,21 @@ ags_jack_port_register(AgsJackPort *jack_port,
   }
 
   /* create sequencer or soundcard */
+  if(is_output){
+    jack_port->flags |= AGS_JACK_PORT_IS_OUTPUT;
+  }
+
   if(is_audio){
+    jack_port->flags |= AGS_JACK_PORT_IS_AUDIO;
+    
     jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
 					 port_name,
 					 JACK_DEFAULT_AUDIO_TYPE,
 					 (is_output ? JackPortIsOutput: JackPortIsInput),
 					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
   }else if(is_midi){
+    jack_port->flags |= AGS_JACK_PORT_IS_MIDI;
+    
     jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
 					 port_name,
 					 JACK_DEFAULT_MIDI_TYPE,
@@ -324,6 +375,9 @@ ags_jack_port_register(AgsJackPort *jack_port,
 					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
   }
 
+  uuid = jack_port->uuid;
+  name = jack_port->name;
+  
 #ifdef HAVE_JACK_PORT_UUID
   if(jack_port->port != NULL){
     jack_port->uuid = jack_port_uuid(jack_port->port);
@@ -331,6 +385,9 @@ ags_jack_port_register(AgsJackPort *jack_port,
 #endif
 
   jack_port->name = g_strdup(port_name);
+
+  g_free(uuid);
+  g_free(name);
 }
 
 void
