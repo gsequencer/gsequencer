@@ -301,6 +301,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_add_recall.lo \
 	ags/audio/task/libags_audio_la-ags_add_recall_container.lo \
 	ags/audio/task/libags_audio_la-ags_add_region_to_selection.lo \
+	ags/audio/task/libags_audio_la-ags_add_soundcard.lo \
 	ags/audio/task/libags_audio_la-ags_append_audio.lo \
 	ags/audio/task/libags_audio_la-ags_append_audio_threaded.lo \
 	ags/audio/task/libags_audio_la-ags_append_channel.lo \
@@ -329,6 +330,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_remove_recall.lo \
 	ags/audio/task/libags_audio_la-ags_remove_recall_container.lo \
 	ags/audio/task/libags_audio_la-ags_remove_region_from_selection.lo \
+	ags/audio/task/libags_audio_la-ags_remove_soundcard.lo \
 	ags/audio/task/libags_audio_la-ags_reset_audio_connection.lo \
 	ags/audio/task/libags_audio_la-ags_resize_audio.lo \
 	ags/audio/task/libags_audio_la-ags_save_file.lo \
@@ -2121,6 +2123,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_add_recall_container.h \
 	ags/audio/task/ags_add_recall.h \
 	ags/audio/task/ags_add_region_to_selection.h \
+	ags/audio/task/ags_add_soundcard.h \
 	ags/audio/task/ags_append_audio.h \
 	ags/audio/task/ags_append_audio_threaded.h \
 	ags/audio/task/ags_append_channel.h \
@@ -2149,6 +2152,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_remove_recall_container.h \
 	ags/audio/task/ags_remove_recall.h \
 	ags/audio/task/ags_remove_region_from_selection.h \
+	ags/audio/task/ags_remove_soundcard.h \
 	ags/audio/task/ags_reset_audio_connection.h \
 	ags/audio/task/ags_resize_audio.h \
 	ags/audio/task/ags_save_file.h \
@@ -2178,6 +2182,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_add_recall.c \
 	ags/audio/task/ags_add_recall_container.c \
 	ags/audio/task/ags_add_region_to_selection.c \
+	ags/audio/task/ags_add_soundcard.c \
 	ags/audio/task/ags_append_audio.c \
 	ags/audio/task/ags_append_audio_threaded.c \
 	ags/audio/task/ags_append_channel.c \
@@ -2206,6 +2211,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_remove_recall.c \
 	ags/audio/task/ags_remove_recall_container.c \
 	ags/audio/task/ags_remove_region_from_selection.c \
+	ags/audio/task/ags_remove_soundcard.c \
 	ags/audio/task/ags_reset_audio_connection.c \
 	ags/audio/task/ags_resize_audio.c \
 	ags/audio/task/ags_save_file.c \
@@ -3213,6 +3219,9 @@ ags/audio/task/libags_audio_la-ags_add_recall_container.lo:  \
 ags/audio/task/libags_audio_la-ags_add_region_to_selection.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/libags_audio_la-ags_add_soundcard.lo:  \
+	ags/audio/task/$(am__dirstamp) \
+	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_append_audio.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
@@ -3295,6 +3304,9 @@ ags/audio/task/libags_audio_la-ags_remove_recall_container.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_remove_region_from_selection.lo:  \
+	ags/audio/task/$(am__dirstamp) \
+	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/libags_audio_la-ags_remove_soundcard.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_reset_audio_connection.lo:  \
@@ -4806,6 +4818,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_add_recall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_add_recall_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_add_region_to_selection.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_add_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_audio_threaded.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_channel.Plo@am__quote@
@@ -4834,6 +4847,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_recall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_recall_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_region_from_selection.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_audio_connection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_resize_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_save_file.Plo@am__quote@
@@ -5861,6 +5875,13 @@ ags/audio/task/libags_audio_la-ags_add_region_to_selection.lo: ags/audio/task/ag
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_add_region_to_selection.lo `test -f 'ags/audio/task/ags_add_region_to_selection.c' || echo '$(srcdir)/'`ags/audio/task/ags_add_region_to_selection.c
 
+ags/audio/task/libags_audio_la-ags_add_soundcard.lo: ags/audio/task/ags_add_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_add_soundcard.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_add_soundcard.Tpo -c -o ags/audio/task/libags_audio_la-ags_add_soundcard.lo `test -f 'ags/audio/task/ags_add_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_add_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_add_soundcard.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_add_soundcard.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_add_soundcard.c' object='ags/audio/task/libags_audio_la-ags_add_soundcard.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_add_soundcard.lo `test -f 'ags/audio/task/ags_add_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_add_soundcard.c
+
 ags/audio/task/libags_audio_la-ags_append_audio.lo: ags/audio/task/ags_append_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_append_audio.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_audio.Tpo -c -o ags/audio/task/libags_audio_la-ags_append_audio.lo `test -f 'ags/audio/task/ags_append_audio.c' || echo '$(srcdir)/'`ags/audio/task/ags_append_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_audio.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_audio.Plo
@@ -6056,6 +6077,13 @@ ags/audio/task/libags_audio_la-ags_remove_region_from_selection.lo: ags/audio/ta
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_remove_region_from_selection.c' object='ags/audio/task/libags_audio_la-ags_remove_region_from_selection.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_remove_region_from_selection.lo `test -f 'ags/audio/task/ags_remove_region_from_selection.c' || echo '$(srcdir)/'`ags/audio/task/ags_remove_region_from_selection.c
+
+ags/audio/task/libags_audio_la-ags_remove_soundcard.lo: ags/audio/task/ags_remove_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_remove_soundcard.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Tpo -c -o ags/audio/task/libags_audio_la-ags_remove_soundcard.lo `test -f 'ags/audio/task/ags_remove_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_remove_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_remove_soundcard.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_remove_soundcard.c' object='ags/audio/task/libags_audio_la-ags_remove_soundcard.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_remove_soundcard.lo `test -f 'ags/audio/task/ags_remove_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_remove_soundcard.c
 
 ags/audio/task/libags_audio_la-ags_reset_audio_connection.lo: ags/audio/task/ags_reset_audio_connection.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_reset_audio_connection.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_reset_audio_connection.Tpo -c -o ags/audio/task/libags_audio_la-ags_reset_audio_connection.lo `test -f 'ags/audio/task/ags_reset_audio_connection.c' || echo '$(srcdir)/'`ags/audio/task/ags_reset_audio_connection.c

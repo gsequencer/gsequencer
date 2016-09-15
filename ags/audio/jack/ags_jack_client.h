@@ -37,6 +37,7 @@ typedef struct _AgsJackClientClass AgsJackClientClass;
 
 typedef enum{
   AGS_JACK_CLIENT_CONNECTED       = 1,
+  AGS_JACK_CLIENT_ACTIVATED       = 1 <<  1,
 }AgsJackClientFlags;
 
 struct _AgsJackClient

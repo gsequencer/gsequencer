@@ -157,8 +157,9 @@ ags_change_soundcard_launch(AgsTask *task)
   GObject *new_soundcard, *old_soundcard;
 
   GType soundcard_type;
-  
-  GList *list;
+
+  GParameter *parameter;
+  GList *list, *old_audio, *new_audio;
   
   change_soundcard = AGS_CHANGE_SOUNDCARD(task);
 
@@ -169,7 +170,44 @@ ags_change_soundcard_launch(AgsTask *task)
   
   list = ags_connection_manager_get_connection(connection_manager);
   soundcard_type = G_OBJECT_TYPE(old_soundcard);
+
+  /* move audio */
+  new_audio = ags_soundcard_get_audio(AGS_SOUNDCARD(new_soundcard));
+  old_audio = ags_soundcard_get_audio(AGS_SOUNDCARD(old_soundcard));
   
+  if(old_audio != NULL){
+    if(new_audio != NULL){
+      ags_soundcard_set_audio(AGS_SOUNDCARD(new_soundcard),
+			      g_list_concat(old_audio,
+					    new_audio));
+    }else{
+      ags_soundcard_set_audio(AGS_SOUNDCARD(new_soundcard),
+			      old_audio);
+    }
+  }
+  
+  ags_soundcard_set_audio(AGS_SOUNDCARD(old_soundcard),
+			  NULL);
+  
+  /* reset soundcard */
+  parameter = (GParameter *) g_new0(GParameter,
+				    1);
+
+  parameter[0].name = "soundcard\0";
+  
+  g_value_init(&(parameter[0].value),
+	       G_TYPE_OBJECT);
+  g_value_set_object(&(parameter[0].value),
+		     new_soundcard);
+  
+  while(old_audio != NULL){
+    ags_audio_recursive_set_property(old_audio->data,
+				     parameter, 1);
+
+    old_audio = old_audio->next;
+  }
+
+  /* reset audio connection */
   while((list = ags_connection_find_type_and_data_object_type(list,
 							      AGS_TYPE_AUDIO_CONNECTION,
 							      soundcard_type)) != NULL){

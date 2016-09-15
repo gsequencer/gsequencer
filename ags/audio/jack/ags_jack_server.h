@@ -90,6 +90,8 @@ void ags_jack_server_add_client(AgsJackServer *jack_server,
 void ags_jack_server_remove_client(AgsJackServer *jack_server,
 				   GObject *jack_client);
 
+void ags_jack_server_connect_client(AgsJackServer *jack_server);
+
 AgsJackServer* ags_jack_server_new(GObject *application_context,
 				   gchar *url);
 

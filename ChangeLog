@@ -9,8 +9,9 @@ ags (0.7.65)
 	* implemented ags_time_get_uptime_from_offset()
 	* implemented AgsConnectionManager and AgsConnection
 	* implemented AgsAudioConnection to assign ressources to channels
-	* implemented soundcard property of AgsAutomationWindow
-	* TODO:implemented AgsChangeSoundcard task
+	* implemented ags_jack_server_connect_client() to connect at an arbitrary time
+	* implemented AgsChangeSoundcard task to reset AgsAudioConnection
+	* implemented AgsAddSoundcard and AgsRemoveSoundcard task
 	* refactored AgsAudioPreferences to use AgsAudioSettings
 	* refactored AgsAudioApplicationContext and AgsXorgApplicationContext to load multiple soundcards
 	* extended AgsAudio to use AgsAudioConnection

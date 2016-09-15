@@ -179,19 +179,19 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start(audio_preferences,
 		     hbox,
-		     FALSE, FALSE,
+		     TRUE, FALSE,
 		     0);
 
   audio_preferences->connect_jack = gtk_button_new_with_label("connect jack\0");
   gtk_box_pack_start(hbox,
 		     audio_preferences->connect_jack,
-		     FALSE, FALSE,
+		     TRUE, FALSE,
 		     0);
 
   audio_preferences->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start(hbox,
 		     audio_preferences->add,
-		     FALSE, FALSE,
+		     TRUE, FALSE,
 		     0);
   
   /*  */

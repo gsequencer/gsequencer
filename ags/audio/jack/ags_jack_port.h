@@ -37,6 +37,9 @@ typedef struct _AgsJackPortClass AgsJackPortClass;
 
 typedef enum{
   AGS_JACK_PORT_CONNECTED       = 1,
+  AGS_JACK_PORT_IS_AUDIO        = 1 <<  1,
+  AGS_JACK_PORT_IS_MIDI         = 1 <<  2,
+  AGS_JACK_PORT_IS_OUTPUT       = 1 <<  3,
 }AgsJackPortFlags;
 
 struct _AgsJackPort

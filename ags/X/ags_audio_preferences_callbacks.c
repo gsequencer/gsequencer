@@ -49,7 +49,38 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
   return(0);
 }
 
-void ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
+void
+ags_audio_preferences_connect_jack_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsJackServer *jack_server;
+  
+  AgsApplicationContext *application_context;
+
+  GList *list;
+  
+  pthread_mutex_t *application_mutex;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = preferences->window;
+
+  application_context = window->application_context;
+  application_mutex = window->application_mutex;
+
+  list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+
+  if(list != NULL){
+    jack_server = list->data;
+
+    ags_jack_server_connect_client(jack_server);
+  }
+}
+
+void
+ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
   AgsPreferences *preferences;
