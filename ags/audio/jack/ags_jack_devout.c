@@ -604,10 +604,17 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   /* read config */
+  /* dsp channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "dsp-channels\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "dsp-channels\0");
+  }
+  
   if(str != NULL){
     jack_devout->dsp_channels = g_ascii_strtoull(str,
 						 NULL,
@@ -616,10 +623,17 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
     g_free(str);
   }
 
+  /* pcm channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "pcm-channels\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "pcm-channels\0");
+  }
+  
   if(str != NULL){
     jack_devout->pcm_channels = g_ascii_strtoull(str,
 						 NULL,
@@ -627,10 +641,17 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
 	  
     g_free(str);
   }
-  
+
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
   
   if(str != NULL){
     jack_devout->samplerate = g_ascii_strtoull(str,
@@ -639,9 +660,17 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
     free(str);
   }
 
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
   if(str != NULL){
     jack_devout->buffer_size = g_ascii_strtoull(str,
 						NULL,
@@ -649,16 +678,25 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
     free(str);
   }
 
+  /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "format\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "format\0");
+  }
+  
   if(str != NULL){
     jack_devout->format = g_ascii_strtoull(str,
 					   NULL,
 					   10);
     free(str);
   }
-  
+
+  /*  */
   jack_devout->card_uri = NULL;
   jack_devout->jack_client = NULL;
 
@@ -758,21 +796,36 @@ ags_jack_devout_set_property(GObject *gobject,
 	
 	config = ags_config_get_instance();
 
+	/* dsp channels */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "dsp-channels\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "dsp-channels\0");
+	}
+  
 	if(str != NULL){
 	  jack_devout->dsp_channels = g_ascii_strtoull(str,
 						       NULL,
 						       10);
+	  
 	  g_free(str);
 	}
 
+	/* pcm channels */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "pcm-channels\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "pcm-channels\0");
+	}
+  
 	if(str != NULL){
 	  jack_devout->pcm_channels = g_ascii_strtoull(str,
 						       NULL,
@@ -780,32 +833,62 @@ ags_jack_devout_set_property(GObject *gobject,
 	  
 	  g_free(str);
 	}
-	
-	jack_devout->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "buffer-size\0");
 
-	if(str != NULL){
-	  jack_devout->buffer_size = g_ascii_strtoull(str,
-						      NULL,
-						      10);
-	  
-	  g_free(str);
-	}
-
+	/* samplerate */
 	str = ags_config_get_value(config,
 				   AGS_CONFIG_SOUNDCARD,
 				   "samplerate\0");
 
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "samplerate\0");
+	}
+  
 	if(str != NULL){
 	  jack_devout->samplerate = g_ascii_strtoull(str,
 						     NULL,
 						     10);
-	  
-	  g_free(str);
+	  free(str);
+	}
+
+	/* buffer size */
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "buffer-size\0");
+
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "buffer-size\0");
+	}
+  
+	if(str != NULL){
+	  jack_devout->buffer_size = g_ascii_strtoull(str,
+						      NULL,
+						      10);
+	  free(str);
+	}
+
+	/* format */
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "format\0");
+
+	if(str == NULL){
+	  str = ags_config_get_value(config,
+				     AGS_CONFIG_SOUNDCARD_0,
+				     "format\0");
+	}
+  
+	if(str != NULL){
+	  jack_devout->format = g_ascii_strtoull(str,
+						 NULL,
+						 10);
+	  free(str);
 	}
 	
+	/* segmentation */
 	segmentation = ags_config_get_value(config,
 					    AGS_CONFIG_GENERIC,
 					    "segmentation\0");
@@ -1588,9 +1671,6 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   memset(jack_devout->buffer[2], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   memset(jack_devout->buffer[3], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
 
-  jack_set_buffer_size(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
-		       jack_devout->pcm_channels * jack_devout->buffer_size);
-  
   /*  */
   jack_devout->tact_counter = 0.0;
   jack_devout->delay_counter = 0.0;
@@ -2082,6 +2162,76 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
   default:
     g_warning("ags_jack_devout_realloc_buffer(): unsupported word size\0");
     return;
+  }
+
+  if(g_list_length(jack_devout->jack_port) < jack_devout->pcm_channels){
+    AgsJackPort *jack_port;
+
+    gchar *str;
+    
+    guint nth_soundcard;
+    guint i;
+
+    if(jack_devout->card_uri != NULL){
+      sscanf(jack_devout->card_uri,
+	     "ags-jack-devout-%u\0",
+	     &nth_soundcard);
+    }else{
+      g_warning("ags_jack_devout_realloc_buffer() - card uri not set\0");
+      
+      return;
+    }
+    
+    for(i = g_list_length(jack_devout->jack_port); i < jack_devout->pcm_channels; i++){
+      str = g_strdup_printf("ags-soundcard%d-%04d\0",
+			    nth_soundcard,
+			    i);
+      
+      jack_port = ags_jack_port_new(jack_devout->jack_client);
+      ags_jack_client_add_port(jack_devout->jack_client,
+			       jack_port);
+
+      jack_devout->jack_port = g_list_prepend(jack_devout->jack_port,
+					      jack_port);
+
+      if(jack_devout->port_name == NULL){
+	jack_devout->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+	jack_devout->port_name[0] = g_strdup(str);
+      }else{
+	jack_devout->port_name = (gchar **) realloc(jack_devout->port_name,
+						    (i + 2) * sizeof(gchar *));
+	jack_devout->port_name[i] = g_strdup(str);
+      }
+    
+      ags_jack_port_register(jack_port,
+			     str,
+			     TRUE, FALSE,
+			     TRUE);
+    }
+
+    jack_devout->port_name[jack_devout->pcm_channels] = NULL;    
+  }else if(g_list_length(jack_devout->jack_port) > jack_devout->pcm_channels){
+    GList *jack_port, *jack_port_next;
+
+    guint i;
+    
+    jack_port = jack_devout->jack_port;
+
+    for(i = 0; i < g_list_length(jack_devout->jack_port) - jack_devout->pcm_channels; i++){
+      jack_port_next = jack_port->next;
+
+      jack_devout->jack_port = g_list_remove(jack_devout->jack_port,
+					     jack_port->data);
+      ags_jack_port_unregister(jack_port->data);
+      
+      g_object_unref(jack_port->data);
+      
+      jack_port = jack_port_next;
+    }
+
+    jack_devout->port_name = (gchar **) realloc(jack_devout->port_name,
+					        (jack_devout->pcm_channels + 1) * sizeof(gchar *));
+    jack_devout->port_name[jack_devout->pcm_channels] = NULL;
   }
   
   /* AGS_JACK_DEVOUT_BUFFER_0 */

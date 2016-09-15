@@ -199,15 +199,9 @@ ags_set_format_recycling(AgsSetFormat *set_format, AgsRecycling *recycling)
 void
 ags_set_format_channel(AgsSetFormat *set_format, AgsChannel *channel)
 {
-  AgsRecycling *recycling;
-
-  recycling = channel->first_recycling;
-  
-  while(recycling != NULL){
-    ags_set_format_recycling(set_format, recycling);
-
-    recycling = recycling->next;
-  }
+  g_object_set(channel,
+	       "format\0", set_format->format,
+	       NULL);
 }
 
 void

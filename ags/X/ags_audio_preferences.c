@@ -157,11 +157,10 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   GtkHBox *hbox;
   GtkLabel *label;
 
-  gchar *str;
-  
-  g_signal_connect_after((GObject *) audio_preferences, "parent_set\0",
-			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
+  gchar *str;  
 
+  g_signal_connect_after((GObject *) audio_preferences, "parent-set\0",
+			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
 
   scrolled_window = gtk_scrolled_window_new(NULL,
 					    NULL);
@@ -176,23 +175,8 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 					audio_preferences->soundcard_editor);
 
   /*  */
-  hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
-  gtk_box_pack_start(audio_preferences,
-		     hbox,
-		     TRUE, FALSE,
-		     0);
-
-  audio_preferences->connect_jack = gtk_button_new_with_label("connect jack\0");
-  gtk_box_pack_start(hbox,
-		     audio_preferences->connect_jack,
-		     TRUE, FALSE,
-		     0);
-
-  audio_preferences->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start(hbox,
-		     audio_preferences->add,
-		     TRUE, FALSE,
-		     0);
+  audio_preferences->connect_jack = NULL;
+  audio_preferences->add = NULL;
   
   /*  */
   table = (GtkTable *) gtk_table_new(2, 9, FALSE);
@@ -280,9 +264,16 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
   
   audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
 
-  g_signal_connect(G_OBJECT(audio_preferences->add), "clicked\0",
-		   G_CALLBACK(ags_audio_preferences_add_callback), audio_preferences);
-
+  if(audio_preferences->add != NULL){
+    g_signal_connect(G_OBJECT(audio_preferences->add), "clicked\0",
+		     G_CALLBACK(ags_audio_preferences_add_callback), audio_preferences);
+  }
+  
+  if(audio_preferences->connect_jack != NULL){
+    g_signal_connect(G_OBJECT(audio_preferences->connect_jack), "clicked\0",
+		     G_CALLBACK(ags_audio_preferences_connect_jack_callback), audio_preferences);    
+  }
+  
   str = ags_config_get_value(ags_config_get_instance(),
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature\0");
@@ -353,8 +344,6 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 
   GObject *soundcard;
   
-  AgsConfig *config;
-
   GList *list_start, *list;
 
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
@@ -393,6 +382,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 		       0);
     
     ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
+    ags_connectable_connect(soundcard_editor);
     
     list = list->next;
   }

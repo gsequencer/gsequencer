@@ -55,6 +55,7 @@ void ags_jack_client_connect(AgsConnectable *connectable);
 void ags_jack_client_disconnect(AgsConnectable *connectable);
 void ags_jack_client_finalize(GObject *gobject);
 
+void ags_jack_client_shutdown(void *arg);
 int ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr);
 
 /**
@@ -155,14 +156,45 @@ ags_jack_client_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_jack_client_init(AgsJackClient *jack_client)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  /* insert client mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) jack_client,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* flags */
   jack_client->flags = 0;
 
+  /* server */
   jack_client->jack_server = NULL;
   
   jack_client->uuid = NULL;
 
+  /* client */
   jack_client->client = NULL;
 
+  /* device */
   jack_client->device = NULL;
   jack_client->port = NULL;
 }
@@ -291,6 +323,14 @@ ags_jack_client_open(AgsJackClient *jack_client,
      client_name == NULL){
     return;
   }
+
+  if(jack_client->client != NULL){
+    g_message("Advanced Gtk+ Sequencer JACK client already open\0");
+    
+    return;
+  } 
+  
+  g_message("Advanced Gtk+ Sequencer open JACK client\0");
   
   jack_client->name = g_strdup(client_name);
   jack_client->client = jack_client_open(jack_client->name,
@@ -300,13 +340,15 @@ ags_jack_client_open(AgsJackClient *jack_client,
   if(jack_client->client != NULL){
     jack_client->uuid = jack_get_uuid_for_client_name(jack_client->client,
 						      jack_client->name);
+
+    jack_on_shutdown(jack_client->client,
+		     ags_jack_client_shutdown,
+		     jack_client);
+  
+    jack_set_process_callback(jack_client->client,
+			      ags_jack_client_process_callback,
+			      jack_client);
   }
-
-  jack_set_process_callback(jack_client->client,
-			    ags_jack_client_process_callback,
-			    jack_client);
-
-  g_message("Advanced Gtk+ Sequencer open JACK client\0");
 }
 
 /**
@@ -320,14 +362,44 @@ ags_jack_client_open(AgsJackClient *jack_client,
 void
 ags_jack_client_activate(AgsJackClient *jack_client)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *port;
   
   int ret;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) jack_client);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  //TODO:JK: make thread-safe
+  pthread_mutex_lock(mutex);
+  
+  if((AGS_JACK_CLIENT_ACTIVATED & (jack_client->flags)) != 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
   
   ret = jack_activate(jack_client->client);
 
   if(ret == 0){
     jack_client->flags |= AGS_JACK_CLIENT_ACTIVATED;
+  }else{
+    pthread_mutex_unlock(mutex);
+    
+    return;
   }
 
   port = jack_client->port;
@@ -340,6 +412,8 @@ ags_jack_client_activate(AgsJackClient *jack_client)
     
     port = port->next;
   }
+
+  pthread_mutex_unlock(mutex);
 }
 
 /**
@@ -401,6 +475,48 @@ ags_jack_client_remove_port(AgsJackClient *jack_client,
   jack_client->port = g_list_remove(jack_client->port,
 				    jack_port);
   g_object_unref(jack_port);
+}
+
+void
+ags_jack_client_shutdown(void *ptr)
+{
+  AgsJackClient *jack_client;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *port;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) ptr);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  //TODO:JK: make thread-safe
+  pthread_mutex_lock(mutex);
+  
+  jack_client = ptr;
+  
+  jack_client->flags &= (~AGS_JACK_CLIENT_ACTIVATED);
+
+  port = jack_client->port;
+
+  while(port != NULL){
+    AGS_JACK_PORT(port->data)->flags &= (~AGS_JACK_PORT_REGISTERED);
+    
+    port = port->next;
+  }
+
+  pthread_mutex_unlock(mutex);
 }
 
 int

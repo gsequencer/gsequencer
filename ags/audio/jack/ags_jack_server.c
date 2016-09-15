@@ -451,6 +451,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 
   gchar *str;  
 
+  gboolean initial_set;
   guint i;
   
   if(!is_output){
@@ -459,6 +460,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   }
 
   jack_server = AGS_JACK_SERVER(distributed_manager);
+  initial_set = FALSE;
   
   /* the default client */
   if(jack_server->default_client == NULL){
@@ -468,7 +470,8 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     
     ags_jack_client_open(jack_server->default_client,
 			 "ags-default-client\0");
-
+    initial_set = TRUE;
+    
     if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
       g_warning("ags_jack_server.c - can't open JACK client");
     }
@@ -479,7 +482,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   /* the soundcard */
   if(is_output){
     jack_devout = ags_jack_devout_new(jack_server->application_context);
-    str = g_strdup_printf("ags-devout-%d\0",
+    str = g_strdup_printf("ags-jack-devout-%d\0",
 			  jack_server->n_soundcards);
     g_object_set(AGS_JACK_DEVOUT(jack_devout),
 		 "jack-client\0", default_client,
@@ -489,6 +492,11 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     default_client->device = g_list_prepend(default_client->device,
 					    jack_devout);
 
+    if(initial_set){
+      jack_set_buffer_size(default_client->client,
+			   jack_devout->buffer_size);
+    }
+    
     /* register ports */
     for(i = 0; i < jack_devout->pcm_channels; i++){
       str = g_strdup_printf("ags-soundcard%d-%04d\0",
@@ -600,7 +608,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   default_client = jack_server->default_client;
 
   str = g_strdup_printf("ags-midiin-%d\0",
-			jack_server->n_soundcards);
+			jack_server->n_sequencers);
   jack_midiin = ags_jack_midiin_new(jack_server->application_context);
   g_object_set(AGS_JACK_MIDIIN(jack_midiin),
 	       "jack-client\0", default_client,
@@ -903,6 +911,8 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
   client = jack_server->client;
 
   while(client != NULL){
+    ags_jack_client_open(client->data,
+			 AGS_JACK_CLIENT(client->data)->name);
     ags_jack_client_activate(client->data);
 
     client = client->next;

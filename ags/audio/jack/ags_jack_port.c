@@ -344,6 +344,10 @@ ags_jack_port_register(AgsJackPort *jack_port,
     return;
   }
 
+  if((AGS_JACK_PORT_REGISTERED & (jack_port->flags)) != 0){
+    return;
+  }
+
   /* get jack server and application context */
   if(jack_port->jack_client != NULL &&
      AGS_JACK_CLIENT(jack_port->jack_client)->jack_server != NULL){
@@ -375,6 +379,10 @@ ags_jack_port_register(AgsJackPort *jack_port,
 					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
   }
 
+  if(jack_port->port != NULL){
+    jack_port->flags |= AGS_JACK_PORT_REGISTERED;
+  }
+  
   uuid = jack_port->uuid;
   name = jack_port->name;
   

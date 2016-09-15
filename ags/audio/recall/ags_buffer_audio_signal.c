@@ -253,13 +253,25 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   
   pthread_mutex_lock(application_mutex);
 
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
 
   pthread_mutex_unlock(application_mutex);
 
@@ -387,29 +399,66 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   stream_destination = destination->stream_current;
 
   if(stream_destination != NULL){
+    void *buffer_source;
+
+    gboolean resample;
+    
     copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination->format),
 						    ags_audio_buffer_util_format_from_soundcard(source->format));
+    resample = FALSE;
     
     if(stream_destination->next == NULL){
       ags_audio_signal_add_stream(destination);
     }
-  
-    //TODO:JK: in future release buffer size may differ
+
+    /* check if resample */
+    buffer_source = stream_source->data;
+
+    if(source->samplerate != destination->samplerate){
+      buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
+						     ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
+						     source->length,
+						     destination->samplerate);
+      
+      resample = TRUE;
+    }
+    
+    /* copy */
     if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
       AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
       ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
-						  stream_source->data, 1, 0,
+						  buffer_source, 1, 0,
 						  soundcard_buffer_size - source->attack, copy_mode);
     }else{
       if(source->attack != 0 && stream_source->prev != NULL){
+	void *buffer_source_prev;
+	
+	buffer_source_prev = stream_source->prev->data;
+
+	if(resample){
+	  buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
+							      ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
+							      source->length,
+							      destination->samplerate);
+
+	}
+	
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
-						    stream_source->prev->data, 1, soundcard_buffer_size - source->attack,
+						    buffer_source_prev, 1, soundcard_buffer_size - source->attack,
 						    source->attack, copy_mode);
+
+	if(resample){
+	  free(buffer_source_prev);
+	}
       }
 
       ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
-						  stream_source->data, 1, 0,
+						  buffer_source, 1, 0,
 						  soundcard_buffer_size - source->attack, copy_mode);
+    }
+
+    if(resample){
+      free(buffer_source);
     }
   }
 }

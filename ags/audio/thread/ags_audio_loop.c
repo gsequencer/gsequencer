@@ -297,9 +297,22 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
 			      "samplerate\0");
+
+  if(str0 == NULL){
+    str0 = ags_config_get_value(config,
+				AGS_CONFIG_SOUNDCARD_0,
+				"samplerate\0");
+  }
+  
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
 			      "buffer-size\0");
+
+  if(str1 == NULL){
+    str1 = ags_config_get_value(config,
+				AGS_CONFIG_SOUNDCARD_0,
+				"buffer-size\0");
+  }
 
   pthread_mutex_unlock(application_mutex);
 

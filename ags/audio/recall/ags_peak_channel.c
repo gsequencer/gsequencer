@@ -344,10 +344,22 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+
+  
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
 
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;

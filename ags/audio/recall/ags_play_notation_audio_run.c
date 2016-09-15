@@ -671,7 +671,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   guint notation_counter;
   guint audio_channel;
   guint samplerate;
-  guint buffer_length;
+  guint buffer_size;
   guint i;
   
   GValue value = {0,};
@@ -701,22 +701,48 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   /* read config and audio mutex */
   pthread_mutex_lock(application_mutex);
   
+
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_length = g_ascii_strtoull(str,
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
 				   NULL,
 				   10);
-  free(str);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
 
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+  
+  if(str != NULL){  
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+
+  /*  */
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   

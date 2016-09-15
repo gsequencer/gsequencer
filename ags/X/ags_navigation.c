@@ -712,22 +712,46 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
 
   config = ags_config_get_instance();
   
-  /* retrieve some presets */
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
   
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
+  /* buffer-size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
 
   /* calculate delays */
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;

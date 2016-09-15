@@ -226,12 +226,16 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   GList *stream;
 
-  signed short *buffer0, *buffer1;
+  void *buffer_source;
+  void *buffer0, *buffer1;
+  
   gboolean muted;
   guint audio_channel, pcm_channels;
+  guint samplerate;
   guint buffer_size, soundcard_buffer_size;
   guint soundcard_format;
   guint copy_mode;
+  gboolean resample;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
@@ -265,7 +269,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &pcm_channels,
-			    NULL,
+			    &samplerate,
 			    &soundcard_buffer_size,
 			    &soundcard_format);
   
@@ -321,23 +325,56 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   buffer_size = source->buffer_size;
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(soundcard_format),
 						  ags_audio_buffer_util_format_from_soundcard(source->format));
+  resample = FALSE;
+
+  /* check if resample */
+  buffer_source = stream->data;
+
+  if(source->samplerate != samplerate){
+    buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
+						   ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
+						   source->length,
+						   samplerate);
+      
+    resample = TRUE;
+  }
   
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + source->attack,
-						stream->data, 1, 0,
+						buffer_source, 1, 0,
 						soundcard_buffer_size - source->attack, copy_mode);
   }else{
     if(source->attack != 0 && stream->prev != NULL){
+      void *buffer_source_prev;
+	
+      buffer_source_prev = stream->prev->data;
+
+      if(resample){
+	buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
+							    ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
+							    source->length,
+							    samplerate);
+
+      }
+	
       ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel,
-						  stream->prev->data, 1, soundcard_buffer_size - source->attack,
+						  buffer_source_prev, 1, soundcard_buffer_size - source->attack,
 						  source->attack, copy_mode);
+
+      if(resample){
+	free(buffer_source_prev);
+      }
     }
 
     ags_audio_buffer_util_copy_buffer_to_buffer(audio_channel, pcm_channels, audio_channel + source->attack * pcm_channels,
-						stream->data, 1, 0,
+						buffer_source, 1, 0,
 						soundcard_buffer_size - source->attack, copy_mode);
   }
-  
+
+  if(resample){
+    free(buffer_source);
+  }
+
   pthread_mutex_unlock(soundcard_mutex);
   
   /* call parent */

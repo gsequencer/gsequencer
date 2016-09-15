@@ -19,9 +19,11 @@
 
 #include <ags/audio/task/ags_set_samplerate.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -177,8 +179,8 @@ ags_set_samplerate_launch(AgsTask *task)
 void
 ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal *audio_signal)
 {
-  ags_audio_signal_morph_samplerate(audio_signal,
-				    set_samplerate->samplerate, 0.0);
+  ags_audio_signal_set_samplerate(audio_signal,
+				  set_samplerate->samplerate);
 }
 
 void
@@ -198,15 +200,21 @@ ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *rec
 void
 ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel)
 {
-  AgsRecycling *recycling;
+  GObject *soundcard;
 
-  recycling = channel->first_recycling;
+  guint samplerate, buffer_size;
+
+  soundcard = channel->soundcard;
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    NULL);
   
-  while(recycling != NULL){
-    ags_set_samplerate_recycling(set_samplerate, recycling);
-
-    recycling = recycling->next;
-  }
+  g_object_set(channel,
+	       "samplerate\0", samplerate,
+	       "buffer-size\0", buffer_size,
+	       NULL);
 }
 
 void
@@ -236,6 +244,8 @@ ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
 void
 ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcard)
 {
+  AgsApplicationContext *application_context;
+  
   GList *list;
 
   guint channels;
@@ -243,6 +253,9 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
   guint buffer_size;
   guint format;
 
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+
+  /*  */
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
 			    &samplerate,
@@ -254,6 +267,33 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 			    set_samplerate->samplerate,
 			    buffer_size,
 			    format);
+
+  /* reset soundcards */
+  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    if(list->data != soundcard){
+      guint target_channels;
+      guint target_samplerate;
+      guint target_buffer_size;
+      guint target_format;
+
+      ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
+				&target_channels,
+				&target_samplerate,
+				&target_buffer_size,
+				&target_format);
+      
+
+      ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				target_channels,
+				target_samplerate,
+				buffer_size * (target_samplerate / set_samplerate->samplerate),
+				target_format);
+    }
+
+    list = list->next;
+  }
 
   /* AgsAudio */
   list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));

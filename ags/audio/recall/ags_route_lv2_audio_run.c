@@ -694,7 +694,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   long seq_length;
   long velocity, pressure;
   guint samplerate;
-  guint buffer_length;
+  guint buffer_size;
   guint audio_channel;
   gdouble notation_delay;
   guint start_frame, end_frame;
@@ -716,22 +716,47 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   config = ags_config_get_instance();
 
   pthread_mutex_lock(application_mutex);
+
   
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_length = g_ascii_strtoull(str,
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
 				   NULL,
 				   10);
-  free(str);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
 
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+  
+  if(str != NULL){  
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
 
   pthread_mutex_unlock(application_mutex);
 
@@ -975,7 +1000,7 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
  
   gchar *str;
   guint samplerate;
-  guint buffer_length;
+  guint buffer_size;
   gdouble bpm;
   gdouble notation_delay;
   gdouble x;
@@ -1005,21 +1030,45 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
 
   bpm = ags_soundcard_get_bpm(soundcard);
   
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_length = g_ascii_strtoull(str,
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
 				   NULL,
 				   10);
-  free(str);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
 
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+  
+  if(str != NULL){  
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
 
   pthread_mutex_unlock(application_mutex);
   
@@ -1032,7 +1081,7 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
   g_value_unset(&value);
 
   /*  */
-  x = (((count_beats_audio_run->notation_counter * notation_delay) + delay_audio_run->notation_counter) * buffer_length);
+  x = (((count_beats_audio_run->notation_counter * notation_delay) + delay_audio_run->notation_counter) * buffer_size);
   
   route_lv2_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USEC_PER_SEC);
 }

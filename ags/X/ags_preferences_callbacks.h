@@ -27,4 +27,9 @@
 
 void ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data);
 
+void ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
+						   gpointer page,
+						   guint page_n,
+						   AgsPreferences *preferences);
+
 #endif /*__AGS_PREFERENCES_CALLBACKS_H__*/

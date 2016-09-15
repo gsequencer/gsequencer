@@ -707,22 +707,46 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   config = ags_config_get_instance();
 
   pthread_mutex_lock(application_mutex);
-  
+
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_length = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-  free(str);
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+
+  if(str != NULL){
+    buffer_length = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+    free(str);
+  }else{
+    buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
+
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
 
   pthread_mutex_unlock(application_mutex);
 
@@ -993,22 +1017,46 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
   pthread_mutex_lock(application_mutex);
 
   bpm = ags_soundcard_get_bpm(soundcard);
-  
+
+  /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "buffer-size\0");
-  buffer_length = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-  free(str);
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+
+  if(str != NULL){
+    buffer_length = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+    free(str);
+  }else{
+    buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
+
+  /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
 
   pthread_mutex_unlock(application_mutex);
   

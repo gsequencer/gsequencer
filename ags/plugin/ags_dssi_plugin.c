@@ -363,6 +363,12 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 			     AGS_CONFIG_SOUNDCARD,
 			     "samplerate\0");
 
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+  
   if(str != NULL){
     samplerate = g_ascii_strtoull(str,
 				  NULL,
