@@ -1017,7 +1017,7 @@ ags_stream_alloc(guint buffer_size,
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      buffer = (signed short *) malloc(buffer_size * sizeof(signed char));
+      buffer = (signed char *) malloc(buffer_size * sizeof(signed char));
       word_size = sizeof(signed char);
     }
     break;
@@ -1029,20 +1029,20 @@ ags_stream_alloc(guint buffer_size,
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      buffer = (signed short *) malloc(buffer_size * sizeof(signed long));
+      buffer = (signed long *) malloc(buffer_size * sizeof(signed long));
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
       word_size = sizeof(signed long);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      buffer = (signed short *) malloc(buffer_size * sizeof(signed long));
+      buffer = (signed long *) malloc(buffer_size * sizeof(signed long));
       word_size = sizeof(signed long);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      buffer = (signed short *) malloc(buffer_size * sizeof(signed long long));
+      buffer = (signed long long *) malloc(buffer_size * sizeof(signed long long));
       word_size = sizeof(signed long long);
     }
     break;
