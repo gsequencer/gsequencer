@@ -452,6 +452,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   gchar *str;  
 
   gboolean initial_set;
+  int rc;
   guint i;
   
   if(!is_output){
@@ -493,8 +494,12 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 					    jack_devout);
 
     if(initial_set){
-      jack_set_buffer_size(default_client->client,
-			   jack_devout->buffer_size);
+      rc = jack_set_buffer_size(default_client->client,
+				jack_devout->buffer_size);
+
+      if(rc != 0){
+	g_message("%s\0", strerror(rc));
+      }
     }
     
     /* register ports */
@@ -511,7 +516,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
       ags_jack_client_add_port(default_client,
 			       jack_port);
 
-      jack_devout->jack_port = g_list_prepend(jack_devout->jack_port,
+      jack_devout->jack_port = g_list_append(jack_devout->jack_port,
 					      jack_port);
 
       if(jack_devout->port_name == NULL){
@@ -533,6 +538,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
       jack_devout->port_name[jack_devout->pcm_channels] = NULL;
     }
 
+    ags_jack_devout_realloc_buffer(jack_devout);
     jack_server->n_soundcards += 1;
   }
   
@@ -685,6 +691,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   gchar *str;
   
   guint i;
+  int rc;
   
   /* the default client */
   if(jack_server->default_client == NULL){
@@ -713,9 +720,13 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   default_client->device = g_list_prepend(default_client->device,
 					  jack_devout);
   
-  jack_set_buffer_size(default_client->client,
-		       jack_devout->buffer_size);
+  rc = jack_set_buffer_size(default_client->client,
+			    jack_devout->buffer_size);
 
+  if(rc != 0){
+    g_message("%s\0", strerror(rc));
+  }
+  
   /* register ports */
   for(i = 0; i < jack_devout->pcm_channels; i++){
     str = g_strdup_printf("ags-default-soundcard-%04d\0",

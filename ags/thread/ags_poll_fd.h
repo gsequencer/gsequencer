@@ -57,6 +57,9 @@ struct _AgsPollFd
   int fd;
 
   struct pollfd *poll_fd;
+
+  gdouble delay;
+  gdouble delay_counter;
 };
 
 struct _AgsPollFdClass

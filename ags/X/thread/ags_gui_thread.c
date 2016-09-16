@@ -163,8 +163,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   thread = AGS_THREAD(gui_thread);
 
   g_atomic_int_or(&(thread->sync_flags),
-		  (AGS_THREAD_RESUME_INTERRUPTED |
-		   AGS_THREAD_TIMELOCK_RUN));
+		  (AGS_THREAD_RESUME_INTERRUPTED | AGS_THREAD_TIMELOCK_RUN)); 
   
   thread->freq = AGS_GUI_THREAD_DEFAULT_JIFFIE;
 
@@ -349,7 +348,7 @@ ags_gui_thread_run(AgsThread *thread)
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
   }
-  
+
   /* acquire main context */
   if(!g_main_context_acquire(main_context)){
     gboolean got_ownership = FALSE;
@@ -364,24 +363,6 @@ ags_gui_thread_run(AgsThread *thread)
 
     g_mutex_unlock(&(gui_thread->mutex));
   }
-
-  /*  */
-  list_start = 
-    list = g_list_copy(gui_thread->poll_fd);
-  
-  while(list != NULL){
-    pthread_mutex_lock(application_mutex);
-    
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) list->data);
-    g_object_ref(list->data);
-    
-    pthread_mutex_unlock(application_mutex);
-
-    pthread_mutex_lock(mutex);
-
-    list = list->next;
-  }
   
   /*  */
   allocated_nfds = gui_thread->cached_poll_array_size;
@@ -390,6 +371,8 @@ ags_gui_thread_run(AgsThread *thread)
   /* query new */
   g_main_context_prepare(main_context, &gui_thread->max_priority);
 
+  timeout = 4;
+  
   while((nfds = g_main_context_query(main_context, gui_thread->max_priority, &timeout, fds,
 				     allocated_nfds)) > allocated_nfds){
     g_free (fds);
@@ -406,25 +389,9 @@ ags_gui_thread_run(AgsThread *thread)
     g_atomic_int_set(&(gui_thread->dispatching),
 		     FALSE);
   }
-  
-  list = list_start;
-  
-  while(list != NULL){
-    pthread_mutex_lock(application_mutex);
     
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) list->data);
-    g_object_unref(list->data);
-    
-    pthread_mutex_unlock(application_mutex);
-
-    pthread_mutex_unlock(mutex);
-
-    list = list->next;
-  }
-  
   ags_gui_thread_complete_task();  
-
+  
   g_main_context_release(main_context);
   
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
@@ -554,8 +521,12 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
     
     if(position < 0){
       poll_fd = ags_poll_fd_new();
+      
       poll_fd->fd = fds[i].fd;
       poll_fd->poll_fd = &(fds[i]);
+
+      poll_fd->delay = 5.0;
+      
       g_signal_connect(poll_fd, "dispatch\0",
 		       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
       

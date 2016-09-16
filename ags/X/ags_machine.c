@@ -1498,7 +1498,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_loop_mutex;
-  
+
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = (AgsApplicationContext *) window->application_context;

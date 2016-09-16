@@ -163,6 +163,10 @@ ags_poll_fd_init(AgsPollFd *poll_fd)
   poll_fd->polling_thread = NULL;
 
   poll_fd->poll_fd = NULL;
+
+  /*  */
+  poll_fd->delay = 0.0;
+  poll_fd->delay_counter = 0.0;
 }
 
 void

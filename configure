@@ -3142,7 +3142,7 @@ ac_config_headers="$ac_config_headers ags/config.h"
 if test "${enable_alsa+set}" = set; then :
   enableval=$enable_alsa;
 else
-  enable_alsa=no
+  enable_alsa=yes
 fi
 
 

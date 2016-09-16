@@ -16,7 +16,7 @@ AC_CONFIG_MACRO_DIR(m4)
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 				    [enable alsa (default is yes)])],
 	      [],
-	      [enable_alsa=no])
+	      [enable_alsa=yes])
 
 AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],

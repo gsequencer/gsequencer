@@ -384,15 +384,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "dsp-channels\0", "2\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "samplerate\0", "48000\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "buffer-size\0", "512\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "format\0", "16\0");
-
-#ifdef AGS_WITH_ALSA
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "backend\0", "alsa\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "alsa-handle\0", "hw:0,0\0");
-#else
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "backend\0", "oss\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "oss-handle\0", "/dev/dsp\0");
-#endif
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "format\0", "32\0");
   
   ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
 }

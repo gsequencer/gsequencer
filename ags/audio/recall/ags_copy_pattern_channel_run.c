@@ -469,9 +469,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     recycling = source->first_recycling;
     
     //TODO:JK: unclear
-    attack = 0;
-    delay = 0.0;
- 
+
     if(recycling != NULL){
       AgsRecallID *child_recall_id;
 
@@ -502,7 +500,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 					    child_recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal,
-							delay, attack);
+							0.0, 0);
 	audio_signal->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
 	audio_signal->stream_current = audio_signal->stream_beginning;
 	ags_audio_signal_connect(audio_signal);

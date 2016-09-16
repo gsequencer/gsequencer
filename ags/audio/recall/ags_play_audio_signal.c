@@ -325,10 +325,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   buffer_size = source->buffer_size;
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(soundcard_format),
 						  ags_audio_buffer_util_format_from_soundcard(source->format));
-  resample = FALSE;
 
   /* check if resample */
   buffer_source = stream->data;
+  resample = FALSE;
 
   if(source->samplerate != samplerate){
     buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
@@ -340,7 +340,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   }
   
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
-    ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + source->attack,
+    ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + source->attack * pcm_channels,
 						buffer_source, 1, 0,
 						soundcard_buffer_size - source->attack, copy_mode);
   }else{
@@ -366,7 +366,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       }
     }
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(audio_channel, pcm_channels, audio_channel + source->attack * pcm_channels,
+    ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + source->attack * pcm_channels,
 						buffer_source, 1, 0,
 						soundcard_buffer_size - source->attack, copy_mode);
   }

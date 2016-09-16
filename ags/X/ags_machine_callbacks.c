@@ -582,6 +582,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
     if((AGS_MACHINE_BLOCK_PLAY & (machine->flags)) != 0){
+      
       return;
     }
 
@@ -596,6 +597,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
     machine->flags &= (~AGS_MACHINE_BLOCK_PLAY);
   }else{
     if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
+      
       return;
     }
 

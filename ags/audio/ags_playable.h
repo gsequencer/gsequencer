@@ -71,6 +71,10 @@ struct _AgsPlayableInterface
 	       guint *channels, guint *frames,
 	       guint *loop_start, guint *loop_end,
 	       GError **error);
+  
+  guint (*get_samplerate)(AgsPlayable *playable);
+  guint (*get_format)(AgsPlayable *playable);
+  
   gdouble* (*read)(AgsPlayable *playable,
 		   guint channel,
 		   GError **error);
@@ -116,6 +120,10 @@ void ags_playable_info(AgsPlayable *playable,
 		       guint *channels, guint *frames,
 		       guint *loop_start, guint *loop_end,
 		       GError **error);
+
+guint ags_playable_get_samplerate(AgsPlayable *playable);
+guint ags_playable_get_format(AgsPlayable *playable);
+
 gdouble* ags_playable_read(AgsPlayable *playable,
 			   guint channel,
 			   GError **error);

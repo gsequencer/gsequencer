@@ -240,7 +240,7 @@ ags_polling_thread_run(AgsThread *thread)
       if(AGS_POLL_FD(list->data)->poll_fd != NULL){
 	AGS_POLL_FD(list->data)->poll_fd->events = polling_thread->fds[position].events;
       }
-      
+
       list = list->next;
     }  
 
@@ -256,37 +256,43 @@ ags_polling_thread_run(AgsThread *thread)
     list = polling_thread->poll_fd;
 
     while(list != NULL){
-      position = ags_polling_thread_fd_position(polling_thread,
-						AGS_POLL_FD(list->data)->fd);
+      if(AGS_POLL_FD(list->data)->delay_counter >= AGS_POLL_FD(list->data)->delay){
+	position = ags_polling_thread_fd_position(polling_thread,
+						  AGS_POLL_FD(list->data)->fd);
 
-      if((POLLIN & (polling_thread->fds[position].revents)) != 0){
-	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_INPUT;
-      }
+	if((POLLIN & (polling_thread->fds[position].revents)) != 0){
+	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_INPUT;
+	}
 
-      if((POLLPRI & (polling_thread->fds[position].revents)) != 0){
-	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_PRIORITY_INPUT;
-      }
+	if((POLLPRI & (polling_thread->fds[position].revents)) != 0){
+	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_PRIORITY_INPUT;
+	}
 
-      if((POLLOUT & (polling_thread->fds[position].revents)) != 0){
-	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_OUTPUT;
-      }
+	if((POLLOUT & (polling_thread->fds[position].revents)) != 0){
+	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_OUTPUT;
+	}
 
-      if((POLLHUP & (polling_thread->fds[position].revents)) != 0){
-	AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_HANG_UP;
-      }
+	if((POLLHUP & (polling_thread->fds[position].revents)) != 0){
+	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_HANG_UP;
+	}
 
-      /* do legacy */
-      if(AGS_POLL_FD(list->data)->poll_fd != NULL){
-	AGS_POLL_FD(list->data)->poll_fd->revents = polling_thread->fds[position].revents;
-      }
+	/* do legacy */
+	if(AGS_POLL_FD(list->data)->poll_fd != NULL){
+	  AGS_POLL_FD(list->data)->poll_fd->revents = polling_thread->fds[position].revents;
+	}
 
-      ags_poll_fd_dispatch(list->data);
+	ags_poll_fd_dispatch(list->data);
       
-      AGS_POLL_FD(list->data)->flags &= (~(AGS_POLL_FD_INPUT |
-					   AGS_POLL_FD_OUTPUT |
-					   AGS_POLL_FD_HANG_UP));
-      AGS_POLL_FD(list->data)->poll_fd->revents = 0;
-      
+	AGS_POLL_FD(list->data)->flags &= (~(AGS_POLL_FD_INPUT |
+					     AGS_POLL_FD_OUTPUT |
+					     AGS_POLL_FD_HANG_UP));
+	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
+
+	AGS_POLL_FD(list->data)->delay_counter = 0.0;
+      }else{
+	AGS_POLL_FD(list->data)->delay_counter += 1.0;
+      }
+	
       list = list->next;
     }  
   }

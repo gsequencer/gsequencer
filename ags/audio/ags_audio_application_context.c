@@ -325,6 +325,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 			      5)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							       TRUE);
+	ags_jack_server_connect_client(jack_server);
 	
 	use_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,

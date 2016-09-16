@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_distributed_manager.h>
+#include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_soundcard.h>
@@ -335,6 +336,7 @@ ags_jack_client_open(AgsJackClient *jack_client,
   jack_client->name = g_strdup(client_name);
   jack_client->client = jack_client_open(jack_client->name,
 					 0,
+					 NULL,
 					 NULL);
   
   if(jack_client->client != NULL){
@@ -570,6 +572,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   if(jack_client->jack_server != NULL){
     application_context = AGS_JACK_SERVER(jack_client->jack_server)->application_context;
   }
+
+  device = jack_client->device;
   
   pthread_mutex_unlock(mutex);
   
@@ -683,6 +687,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	}
 	break;
       default:
+	pthread_mutex_unlock(device_mutex);
+	
 	pthread_mutex_unlock(mutex);
 
 	g_warning("ags_jack_devout_process_callback(): unsupported word size\0");
@@ -695,15 +701,17 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	jack_port = port->data;
 	
 	out = jack_port_get_buffer(jack_port->port,
-				   nframes);
-  
-	if(!no_event){
-	  ags_audio_buffer_util_clear_float(out, jack_devout->pcm_channels,
-					    nframes);
+				   jack_devout->buffer_size);
 
+	if(out != NULL){
+	  ags_audio_buffer_util_clear_float(out, 1,
+					    jack_devout->buffer_size);
+	}
+	
+	if(!no_event && out != NULL){
 	  ags_audio_buffer_util_copy_buffer_to_buffer(out, 1, 0,
 						      jack_devout->buffer[j], jack_devout->pcm_channels, i,
-						      nframes, copy_mode);
+						      jack_devout->buffer_size, copy_mode);
 	}
 
 	port = port->next;
@@ -718,23 +726,20 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	  memset(jack_devout->buffer[0], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
 	}else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
 	  memset(jack_devout->buffer[1], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
-
-	  /* tic */
-	  ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
-	  
-	  /* reset - switch buffer flags */
-	  ags_jack_devout_switch_buffer_flag(jack_devout);  
 	}	
       }
     }
 
+    /* tic */
+    ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
+	  
+    /* reset - switch buffer flags */
+    ags_jack_devout_switch_buffer_flag(jack_devout);
+    
     pthread_mutex_unlock(device_mutex);
     
     device = device->next;
   }
-  
-  pthread_mutex_unlock(mutex);
-
 
   return(0);
 }

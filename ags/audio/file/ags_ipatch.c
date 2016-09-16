@@ -22,6 +22,7 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_playable.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
@@ -55,6 +56,8 @@ void ags_ipatch_info(AgsPlayable *playable,
 		     guint *channels, guint *frames,
 		     guint *loop_start, guint *loop_end,
 		     GError **error);
+guint ags_ipatch_get_samplerate(AgsPlayable *playable);
+guint ags_ipatch_get_format(AgsPlayable *playable);
 gdouble* ags_ipatch_read(AgsPlayable *playable, guint channel,
 			 GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
@@ -216,6 +219,10 @@ ags_ipatch_playable_interface_init(AgsPlayableInterface *playable)
   playable->iter_next = ags_ipatch_iter_next;
 
   playable->info = ags_ipatch_info;
+
+  playable->get_samplerate = ags_ipatch_get_samplerate;
+  playable->get_format = ags_ipatch_get_format;
+
   playable->read = ags_ipatch_read;
 
   playable->close = ags_ipatch_close;
@@ -870,6 +877,102 @@ ags_ipatch_info(AgsPlayable *playable,
   //TODO:JK: verify me
   if(channels != NULL){
     *channels = AGS_IPATCH_DEFAULT_CHANNELS;
+  }
+}
+
+guint
+ags_ipatch_get_samplerate(AgsPlayable *playable)
+{
+  AgsIpatch *ipatch;
+  IpatchSample *sample;
+
+  guint samplerate;
+  
+  ipatch = AGS_IPATCH(playable);
+
+  if(ipatch->nth_level == 3){
+    if(ipatch->iter != NULL){
+      sample = IPATCH_SAMPLE(ipatch->iter->data);
+    }else{
+      sample = NULL;
+    }
+  }else{
+    sample = NULL;
+
+    if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+      AgsIpatchSF2Reader *reader;
+
+      reader = AGS_IPATCH_SF2_READER(ipatch->reader);
+      sample = (IpatchSample *) ipatch_sf2_find_sample(reader->sf2,
+						       reader->selected[3],
+						       NULL);
+    }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }
+  }
+
+  g_object_get(sample,
+	       "sample-rate\0", samplerate,
+	       NULL);
+  
+  return(samplerate);
+}
+
+guint
+ags_ipatch_get_format(AgsPlayable *playable)
+{
+  AgsIpatch *ipatch;
+  IpatchSample *sample;
+
+  guint format;
+  
+  ipatch = AGS_IPATCH(playable);
+
+  if(ipatch->nth_level == 3){
+    if(ipatch->iter != NULL){
+      sample = IPATCH_SAMPLE(ipatch->iter->data);
+    }else{
+      sample = NULL;
+    }
+  }else{
+    sample = NULL;
+
+    if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+      AgsIpatchSF2Reader *reader;
+
+      reader = AGS_IPATCH_SF2_READER(ipatch->reader);
+      sample = (IpatchSample *) ipatch_sf2_find_sample(reader->sf2,
+						       reader->selected[3],
+						       NULL);
+    }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }
+  }
+
+  g_object_get(sample,
+	       "sample-format\0", format,
+	       NULL);
+
+  switch(format){
+  case IPATCH_SAMPLE_8BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S8);
+  case IPATCH_SAMPLE_16BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S16);
+  case IPATCH_SAMPLE_24BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S24);
+  case IPATCH_SAMPLE_32BIT:
+    return(AGS_AUDIO_BUFFER_UTIL_S32);
+  case IPATCH_SAMPLE_FLOAT:
+    return(AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  case IPATCH_SAMPLE_DOUBLE:
+    return(AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  default:
+    g_warning("ags_ipatch_get_format() - unknown format");
+    return(0);
   }
 }
 
