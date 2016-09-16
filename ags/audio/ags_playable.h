@@ -75,13 +75,13 @@ struct _AgsPlayableInterface
   guint (*get_samplerate)(AgsPlayable *playable);
   guint (*get_format)(AgsPlayable *playable);
   
-  gdouble* (*read)(AgsPlayable *playable,
-		   guint channel,
-		   GError **error);
+  double* (*read)(AgsPlayable *playable,
+		  guint channel,
+		  GError **error);
 
   /* write sample data */
   void (*write)(AgsPlayable *playable,
-		gdouble *buffer, guint buffer_length);
+		double *buffer, guint buffer_length);
   void (*flush)(AgsPlayable *playable);
 
   /* position */
@@ -124,12 +124,12 @@ void ags_playable_info(AgsPlayable *playable,
 guint ags_playable_get_samplerate(AgsPlayable *playable);
 guint ags_playable_get_format(AgsPlayable *playable);
 
-gdouble* ags_playable_read(AgsPlayable *playable,
-			   guint channel,
-			   GError **error);
+double* ags_playable_read(AgsPlayable *playable,
+			  guint channel,
+			  GError **error);
 
 void ags_playable_write(AgsPlayable *playable,
-			gdouble *buffer, guint buffer_length);
+			double *buffer, guint buffer_length);
 void ags_playable_flush(AgsPlayable *playable);
 
 void ags_playable_seek(AgsPlayable *playable,

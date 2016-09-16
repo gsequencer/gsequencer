@@ -411,7 +411,7 @@ ags_playable_get_format(AgsPlayable *playable)
  *
  * Since: 0.4.2
  */
-gdouble*
+double*
 ags_playable_read(AgsPlayable *playable,
 		  guint channel,
 		  GError **error)
@@ -438,7 +438,7 @@ ags_playable_read(AgsPlayable *playable,
  */
 void
 ags_playable_write(AgsPlayable *playable,
-		   gdouble *buffer, guint buffer_length)
+		   double *buffer, guint buffer_length)
 {
   AgsPlayableInterface *playable_interface;
 
@@ -536,7 +536,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   
   gchar *str;
   
-  gdouble *buffer;
+  double *buffer;
 
   guint copy_mode;
   guint channels;
@@ -614,6 +614,27 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     }else{
       buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     }
+
+    /* format */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "format\0");
+
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "format\0");
+    }
+    
+    if(str != NULL){
+      format = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+      
+      g_free(str);
+    }else{
+      format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+    }
   }else{
     application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
@@ -652,6 +673,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   length = (guint) ceil((double)(resampled_frames) / (double)(buffer_size));
 
 #ifdef AGS_DEBUG
+  g_message("%d-%d %d %d\0", samplerate, target_samplerate, buffer_size, format);
   g_message("ags_playable_read_audio_signal:\n  frames = %u\n  buffer_size = %u\n  length = %u\n\0", frames, buffer_size, length);
 #endif
   
@@ -678,7 +700,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   list_beginning = list;
 
   j_stop = (guint) floor((double)(resampled_frames) / (double)(buffer_size));
-
+  
   for(i = start_channel; list != NULL; i++){
     audio_signal = AGS_AUDIO_SIGNAL(list->data);
     ags_audio_signal_stream_resize(audio_signal, length);
@@ -698,7 +720,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 
     if(buffer != NULL){
       if(resample){
-	gdouble *tmp;
+	double *tmp;
 
 	tmp = buffer;
 	buffer = ags_audio_buffer_util_resample(buffer, 1,

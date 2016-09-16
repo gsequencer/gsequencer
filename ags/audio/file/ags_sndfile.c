@@ -50,8 +50,8 @@ void ags_sndfile_info(AgsPlayable *playable,
 		      GError **error);
 guint ags_sndfile_get_samplerate(AgsPlayable *playable);
 guint ags_sndfile_get_format(AgsPlayable *playable);
-gdouble* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
-void ags_sndfile_write(AgsPlayable *playable, gdouble *buffer, guint buffer_length);
+double* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
+void ags_sndfile_write(AgsPlayable *playable, double *buffer, guint buffer_length);
 void ags_sndfile_flush(AgsPlayable *playable);
 void ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence);
 void ags_sndfile_close(AgsPlayable *playable);
@@ -227,7 +227,7 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
   sndfile->info->format = 0;
   sndfile->info->channels = 0;
-  sndfile->info->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  sndfile->info->samplerate = 0;
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
@@ -396,11 +396,11 @@ ags_sndfile_get_format(AgsPlayable *playable)
   }
 }
 
-gdouble*
+double*
 ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 {
   AgsSndfile *sndfile;
-  gdouble *buffer, *source;
+  double *buffer, *source;
   guint i;
   guint num_read;
 
@@ -408,9 +408,11 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 
   if(sndfile->buffer == NULL){
     sndfile->buffer = 
-      source = (gdouble *) malloc((size_t) sndfile->info->channels *
+      source = (double *) malloc((size_t) sndfile->info->channels *
 				  sndfile->info->frames *
-				  sizeof(gdouble));
+				  sizeof(double));
+    ags_audio_buffer_util_clear_double(source, sndfile->info->channels,
+				       sndfile->info->frames);
     
     //FIXME:JK: work-around comment me out
     //    sf_seek(sndfile->file, 0, SEEK_SET);  
@@ -424,12 +426,14 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
   }
 
   if(sndfile->info->frames != 0){
-    buffer = (gdouble *) malloc((size_t) sndfile->info->frames *
-				sizeof(gdouble));
+    buffer = (double *) malloc((size_t) sndfile->info->frames *
+			       sizeof(double));
+    ags_audio_buffer_util_clear_double(buffer, 1,
+				       sndfile->info->frames);
     
-    for(i = 0; i < sndfile->info->frames; i++){
-      buffer[i] = source[i * sndfile->info->channels + channel];
-    }
+    ags_audio_buffer_util_copy_double_to_double(buffer, 1,
+						&(source[channel]), sndfile->info->channels,
+						sndfile->info->frames);
   }else{
     buffer = NULL;
   }
@@ -438,7 +442,7 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 }
 
 void
-ags_sndfile_write(AgsPlayable *playable, gdouble *buffer, guint buffer_length)
+ags_sndfile_write(AgsPlayable *playable, double *buffer, guint buffer_length)
 {
   AgsSndfile *sndfile;
   sf_count_t multi_frames, retval;

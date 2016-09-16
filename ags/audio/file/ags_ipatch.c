@@ -58,8 +58,8 @@ void ags_ipatch_info(AgsPlayable *playable,
 		     GError **error);
 guint ags_ipatch_get_samplerate(AgsPlayable *playable);
 guint ags_ipatch_get_format(AgsPlayable *playable);
-gdouble* ags_ipatch_read(AgsPlayable *playable, guint channel,
-			 GError **error);
+double* ags_ipatch_read(AgsPlayable *playable, guint channel,
+			GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
 
 /**
@@ -976,13 +976,13 @@ ags_ipatch_get_format(AgsPlayable *playable)
   }
 }
 
-gdouble*
+double*
 ags_ipatch_read(AgsPlayable *playable, guint channel,
 		GError **error)
 {
   AgsIpatch *ipatch;
   IpatchSample *sample;
-  gdouble *buffer, *source;
+  double *buffer, *source;
   guint channels, frames;
   guint loop_start, loop_end;
   guint i;
@@ -1000,7 +1000,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
     g_warning("%s\0", this_error->message);
   }
 
-  buffer = (gdouble *) malloc(channels * frames * sizeof(gdouble));
+  buffer = (double *) malloc(channels * frames * sizeof(double));
   
   if(ipatch->nth_level == 3){
     if(ipatch->iter != NULL){
