@@ -1313,10 +1313,33 @@ EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 \
 	docs/reference/libags_gui/libags_gui-sections.txt \
 	docs/reference/libags_gui/libags_gui.types libags.pc.in \
 	libags_audio.pc.in libags_gui.pc.in gsequencer.desktop.in \
-	docs/reference/libags docs/reference/libags_audio \
-	docs/reference/libags_gui $(manpages) $(userdoc) \
-	$(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings) \
-	$(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl \
+	docs/reference/libags/git.mk \
+	docs/reference/libags/gtk-doc.make \
+	docs/reference/libags/Makefile.am \
+	docs/reference/libags/Makefile.in \
+	docs/reference/libags/libags-overrides.txt \
+	docs/reference/libags/libags-sections.txt \
+	docs/reference/libags/libags.types \
+	docs/reference/libags/libags.xml \
+	docs/reference/libags_audio/git.mk \
+	docs/reference/libags_audio/gtk-doc.make \
+	docs/reference/libags_audio/Makefile.am \
+	docs/reference/libags_audio/Makefile.in \
+	docs/reference/libags_audio/libags_audio-overrides.txt \
+	docs/reference/libags_audio/libags_audio-sections.txt \
+	docs/reference/libags_audio/libags_audio.types \
+	docs/reference/libags_audio/libags_audio.xml \
+	docs/reference/libags_gui/git.mk \
+	docs/reference/libags_gui/gtk-doc.make \
+	docs/reference/libags_gui/Makefile.am \
+	docs/reference/libags_gui/Makefile.in \
+	docs/reference/libags_gui/libags_gui-overrides.txt \
+	docs/reference/libags_gui/libags_gui-sections.txt \
+	docs/reference/libags_gui/libags_gui.types \
+	docs/reference/libags_gui/libags_gui.xml $(manpages) \
+	$(userdoc) $(userdocimages) $(devdoc) $(devdocimages) \
+	$(devdoclistings) $(top_srcdir)/ags/file/ags_file.dtd \
+	$(top_srcdir)/ags.xsl \
 	$(top_srcdir)/ags/object/ags_marshallers.list
 man1_MANS = gsequencer.1 midi2xml.1
 
@@ -1331,6 +1354,7 @@ pkgconfig_DATA = libags.pc libags_audio.pc libags_gui.pc
 # desktop file
 appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
+
 # EXTRA_DIST += docs/reference/libgsequencer
 
 # include
@@ -9234,7 +9258,7 @@ distclean: distclean-am
 	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-local distclean-tags
+	distclean-hdr distclean-libtool distclean-tags
 
 dvi: dvi-am
 
@@ -9312,13 +9336,13 @@ uninstall-man: uninstall-man1
 	dist dist-all dist-bzip2 dist-gzip dist-lzip dist-shar \
 	dist-tarZ dist-xz dist-zip distcheck distclean \
 	distclean-compile distclean-generic distclean-hdr \
-	distclean-libtool distclean-local distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-appdataDATA \
-	install-binPROGRAMS install-data install-data-am \
-	install-data-local install-docDATA install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
+	distclean-libtool distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-appdataDATA install-binPROGRAMS \
+	install-data install-data-am install-data-local \
+	install-docDATA install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-libLTLIBRARIES \
 	install-libgsequencerLTLIBRARIES install-man install-man1 \
 	install-nobase_includeHEADERS install-pdf install-pdf-am \
 	install-pkgconfigDATA install-ps install-ps-am install-strip \
@@ -9423,14 +9447,9 @@ clean-local:
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
-	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags
-	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags_audio
-	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags_gui
-
-distclean-local:
-	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags
-	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags_audio
-	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags_gui
+	rm -f $(top_builddir)/docs/reference/libags/Makefile
+	rm -f $(top_builddir)/docs/reference/libags_audio/Makefile
+	rm -f $(top_builddir)/docs/reference/libags_gui/Makefile
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
