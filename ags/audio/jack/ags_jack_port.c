@@ -356,6 +356,11 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_server = NULL;
   }
 
+  uuid = jack_port->uuid;
+  name = jack_port->name;
+
+  jack_port->name = g_strdup(port_name);
+
   /* create sequencer or soundcard */
   if(is_output){
     jack_port->flags |= AGS_JACK_PORT_IS_OUTPUT;
@@ -365,34 +370,29 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_port->flags |= AGS_JACK_PORT_IS_AUDIO;
     
     jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-					 port_name,
+					 jack_port->name,
 					 JACK_DEFAULT_AUDIO_TYPE,
 					 (is_output ? JackPortIsOutput: JackPortIsInput),
-					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
+					 0);
   }else if(is_midi){
     jack_port->flags |= AGS_JACK_PORT_IS_MIDI;
     
     jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-					 port_name,
+					 jack_port->name,
 					 JACK_DEFAULT_MIDI_TYPE,
 					 (is_output ? JackPortIsOutput: JackPortIsInput),
-					 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
+					 0);
   }
 
   if(jack_port->port != NULL){
     jack_port->flags |= AGS_JACK_PORT_REGISTERED;
   }
-  
-  uuid = jack_port->uuid;
-  name = jack_port->name;
-  
+    
 #ifdef HAVE_JACK_PORT_UUID
   if(jack_port->port != NULL){
     jack_port->uuid = jack_port_uuid(jack_port->port);
   }
 #endif
-
-  jack_port->name = g_strdup(port_name);
 
   g_free(uuid);
   g_free(name);

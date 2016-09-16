@@ -612,17 +612,35 @@ ags_audio_signal_set_property(GObject *gobject,
     {
       GObject *soundcard;
 
+      guint samplerate;
+      guint buffer_size;
+      guint format;
+      
       soundcard = g_value_get_object(value);
 
       if(audio_signal->soundcard == soundcard)
 	return;
 
-      if(audio_signal->soundcard != NULL)
+      if(audio_signal->soundcard != NULL){
 	g_object_unref(audio_signal->soundcard);
-
-      if(soundcard != NULL)
+      }
+      
+      if(soundcard != NULL){
 	g_object_ref(soundcard);
 
+	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+				  NULL,
+				  &samplerate,
+				  &buffer_size,
+				  &format);
+
+	g_object_set(audio_signal,
+		     "samplerate\0", samplerate,
+		     "buffer-size\0", buffer_size,
+		     "format\0", format,
+		     NULL);
+      }
+      
       audio_signal->soundcard = soundcard;
     }
     break;

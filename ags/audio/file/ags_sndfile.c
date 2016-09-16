@@ -23,6 +23,7 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_playable.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 void ags_sndfile_class_init(AgsSndfileClass *sndfile);
 void ags_sndfile_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -47,6 +48,8 @@ void ags_sndfile_info(AgsPlayable *playable,
 		      guint *channels, guint *frames,
 		      guint *loop_start, guint *loop_end,
 		      GError **error);
+guint ags_sndfile_get_samplerate(AgsPlayable *playable);
+guint ags_sndfile_get_format(AgsPlayable *playable);
 gdouble* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
 void ags_sndfile_write(AgsPlayable *playable, gdouble *buffer, guint buffer_length);
 void ags_sndfile_flush(AgsPlayable *playable);
@@ -169,6 +172,10 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
   playable->iter_next = ags_sndfile_iter_next;
 
   playable->info = ags_sndfile_info;
+
+  playable->get_samplerate = ags_sndfile_get_samplerate;
+  playable->get_format = ags_sndfile_get_format;
+
   playable->read = ags_sndfile_read;
 
   playable->write = ags_sndfile_write;
@@ -220,6 +227,7 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
   sndfile->info->format = 0;
   sndfile->info->channels = 0;
+  sndfile->info->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
@@ -345,6 +353,47 @@ ags_sndfile_info(AgsPlayable *playable,
   *frames = sndfile->info->frames;
   *loop_start = 0;
   *loop_end = 0;
+}
+
+guint
+ags_sndfile_get_samplerate(AgsPlayable *playable)
+{
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  return(sndfile->info->samplerate);
+}
+
+guint
+ags_sndfile_get_format(AgsPlayable *playable)
+{
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  switch(((SF_FORMAT_PCM_S8 |
+	   SF_FORMAT_PCM_16 |
+	   SF_FORMAT_PCM_24 |
+	   SF_FORMAT_PCM_32 |
+	   SF_FORMAT_FLOAT |
+	   SF_FORMAT_DOUBLE ) & sndfile->info->format)){
+  case SF_FORMAT_PCM_S8:
+    return(AGS_AUDIO_BUFFER_UTIL_S8);
+  case SF_FORMAT_PCM_16:
+    return(AGS_AUDIO_BUFFER_UTIL_S16);
+  case SF_FORMAT_PCM_24:
+    return(AGS_AUDIO_BUFFER_UTIL_S24);
+  case SF_FORMAT_PCM_32:
+    return(AGS_AUDIO_BUFFER_UTIL_S32);
+  case SF_FORMAT_FLOAT:
+    return(AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  case SF_FORMAT_DOUBLE:
+    return(AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  default:
+    g_warning("ags_sndfile_get_format() - unknown format");
+    return(0);
+  }
 }
 
 gdouble*

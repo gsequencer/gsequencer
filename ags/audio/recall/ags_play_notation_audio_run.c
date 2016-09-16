@@ -900,7 +900,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
 	    ags_recycling_create_audio_signal_with_defaults(recycling,
 							    audio_signal,
-							    delay, attack);
+							    0.0, 0);
 	  }else{
 	    gdouble notation_delay;
 
@@ -917,7 +917,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	    ags_recycling_create_audio_signal_with_frame_count(recycling,
 							       audio_signal,
 							       (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0])),
-							       delay, attack);
+							       0.0, 0);
 	  }
 	  
 	  ags_audio_signal_connect(audio_signal);

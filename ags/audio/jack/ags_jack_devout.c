@@ -282,7 +282,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
   param_spec = g_param_spec_string("device\0",
 				   "the device identifier\0",
 				   "The device to perform output to\0",
-				   "hw:0\0",
+				   "ags-jack-devout-0\0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,

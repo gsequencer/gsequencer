@@ -2477,7 +2477,8 @@ ags_thread_real_clock(AgsThread *thread)
 
       if(relative_time_spent < 0.0){
 	thread->time_late = -1.25 * relative_time_spent;
-      }else if(relative_time_spent > 0.0){
+      }else if(relative_time_spent > 0.0 &&
+	       relative_time_spent < time_cycle){
 	thread->time_late = 0;
 	timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
       
@@ -3154,6 +3155,8 @@ ags_thread_timelock_loop(void *ptr)
 
   thread = AGS_THREAD(ptr);
 
+  //FIXME:JK: not thread safe
+  
   flags = g_atomic_int_get(&(thread->flags));
   
   sync_flags = g_atomic_int_get(&(thread->sync_flags));

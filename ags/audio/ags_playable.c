@@ -25,6 +25,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <math.h>
 
@@ -353,6 +354,52 @@ ags_playable_info(AgsPlayable *playable,
 }
 
 /**
+ * ags_playable_get_samplerate:
+ * @playable: the #AgsPlayable
+ *
+ * Get samplerate.
+ *
+ * Returns: the samplerate
+ * 
+ * Since: 0.7.65
+ */
+guint
+ags_playable_get_samplerate(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
+		       0);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->get_samplerate,
+		       0);
+  playable_interface->get_samplerate(playable);
+}
+
+/**
+ * ags_playable_get_format:
+ * @playable: the #AgsPlayable
+ *
+ * Get format.
+ *
+ * Returns: the format
+ * 
+ * Since: 0.7.65
+ */
+guint
+ags_playable_get_format(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
+		       0);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->get_format,
+		       0);
+  playable_interface->get_format(playable);
+}
+
+/**
  * ags_playable_read:
  * @playable: an #AgsPlayable
  * @channel: nth channel
@@ -371,9 +418,11 @@ ags_playable_read(AgsPlayable *playable,
 {
   AgsPlayableInterface *playable_interface;
 
-  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
+		       NULL);
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
-  g_return_if_fail(playable_interface->read);
+  g_return_val_if_fail(playable_interface->read,
+		       NULL);
   playable_interface->read(playable, channel, error);
 }
 
@@ -484,16 +533,24 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   AgsMutexManager *mutex_manager;
   
   GList *stream, *list, *list_beginning;
+  
+  gchar *str;
+  
   gdouble *buffer;
+
+  guint copy_mode;
   guint channels;
   guint frames;
+  guint resampled_frames;
   guint loop_start;
   guint loop_end;
   guint length;
-  guint buffer_size;
   guint samplerate;
+  guint buffer_size;
+  guint format;
+  guint target_samplerate;
   guint i, j, k, i_stop, j_stop;
-  gchar *str;
+  gboolean resample;
 
   GError *error;
 
@@ -528,13 +585,13 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     }
     
     if(str != NULL){
-      samplerate = g_ascii_strtoull(str,
+      target_samplerate = g_ascii_strtoull(str,
 				    NULL,
 				    10);
 
       g_free(str);
     }else{
-      samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+      target_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
     }
 
     /* buffer-size */
@@ -576,14 +633,23 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      NULL,
-			      &samplerate,
+			      &target_samplerate,
 			      &buffer_size,
-			      NULL);
+			      &format);
 
     pthread_mutex_unlock(soundcard_mutex);
   }
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+  samplerate = ags_playable_get_samplerate(playable);
   
-  length = (guint) ceil((double)(frames) / (double)(buffer_size));
+  if(target_samplerate != samplerate){
+    resampled_frames = (target_samplerate / samplerate) * frames;
+    resample = TRUE;
+  }    
+  
+  length = (guint) ceil((double)(resampled_frames) / (double)(buffer_size));
 
 #ifdef AGS_DEBUG
   g_message("ags_playable_read_audio_signal:\n  frames = %u\n  buffer_size = %u\n  length = %u\n\0", frames, buffer_size, length);
@@ -598,14 +664,20 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 					NULL,
 					NULL);
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    g_object_set(audio_signal,
+		 "samplerate\0", target_samplerate,
+		 "buffer-size\0", buffer_size,
+		 "format\0", format,
+		 NULL);
+    
     list = g_list_prepend(list, audio_signal);
 
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
   }
-
+  
   list_beginning = list;
 
-  j_stop = (guint) floor((double)(frames) / (double)(buffer_size));
+  j_stop = (guint) floor((double)(resampled_frames) / (double)(buffer_size));
 
   for(i = start_channel; list != NULL; i++){
     audio_signal = AGS_AUDIO_SIGNAL(list->data);
@@ -625,52 +697,31 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     }
 
     if(buffer != NULL){
+      if(resample){
+	gdouble *tmp;
+
+	tmp = buffer;
+	buffer = ags_audio_buffer_util_resample(buffer, 1,
+						AGS_AUDIO_BUFFER_UTIL_DOUBLE, samplerate,
+						frames,
+						target_samplerate);
+	free(tmp);
+      }
+      
       stream = audio_signal->stream_beginning;
 
       for(j = 0; j < j_stop && stream != NULL; j++){
-	for(k = 0; k < buffer_size; k++){
-	  switch(audio_signal->format){
-	  case AGS_SOUNDCARD_SIGNED_8_BIT:
-	    ((signed char *) stream->data)[k] = 127.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_16_BIT:
-	    ((signed short *) stream->data)[k] = 32767.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_24_BIT:
-	    ((signed long *) stream->data)[k] = 8388607.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_32_BIT:
-	    ((signed long *) stream->data)[k] = 2147483647.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_64_BIT:
-	    ((signed long long *) stream->data)[k] = 9223372036854775807.0 * buffer[j * buffer_size + k];
-	    break;
-	  }
-	}
-
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						    buffer, 1, j * buffer_size,
+						    buffer_size, copy_mode);
+	
 	stream = stream->next;
       }
     
-      if(frames % buffer_size != 0){
-	for(k = 0; k < frames % buffer_size; k++){
-	  switch(audio_signal->format){
-	  case AGS_SOUNDCARD_SIGNED_8_BIT:
-	    ((signed char *) stream->data)[k] = 127.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_16_BIT:
-	    ((signed short *) stream->data)[k] = 32767.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_24_BIT:
-	    ((signed long *) stream->data)[k] = 8388607.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_32_BIT:
-	    ((signed long *) stream->data)[k] = 2147483647.0 * buffer[j * buffer_size + k];
-	    break;
-	  case AGS_SOUNDCARD_SIGNED_64_BIT:
-	    ((signed long long *) stream->data)[k] = 9223372036854775807.0 * buffer[j * buffer_size + k];
-	    break;
-	  }
-	}
+      if(resampled_frames % buffer_size != 0){
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						    buffer, 1, j * buffer_size,
+						    resampled_frames % buffer_size, copy_mode);
       }
 
       free(buffer);
