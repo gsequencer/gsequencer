@@ -63,9 +63,15 @@ EXTRA_DIST += gsequencer.desktop.in
 CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
 
 # extra
-EXTRA_DIST += docs/reference/libags
-EXTRA_DIST += docs/reference/libags_audio
-EXTRA_DIST += docs/reference/libags_gui
+EXTRA_DIST += docs/reference/libags/git.mk docs/reference/libags/gtk-doc.make docs/reference/libags/Makefile.am docs/reference/libags/Makefile.in
+EXTRA_DIST += docs/reference/libags/libags-overrides.txt docs/reference/libags/libags-sections.txt docs/reference/libags/libags.types docs/reference/libags/libags.xml
+
+EXTRA_DIST += docs/reference/libags_audio/git.mk docs/reference/libags_audio/gtk-doc.make docs/reference/libags_audio/Makefile.am docs/reference/libags_audio/Makefile.in
+EXTRA_DIST += docs/reference/libags_audio/libags_audio-overrides.txt  docs/reference/libags_audio/libags_audio-sections.txt docs/reference/libags_audio/libags_audio.types docs/reference/libags_audio/libags_audio.xml
+
+EXTRA_DIST += docs/reference/libags_gui/git.mk docs/reference/libags_gui/gtk-doc.make docs/reference/libags_gui/Makefile.am docs/reference/libags_gui/Makefile.in
+EXTRA_DIST += docs/reference/libags_gui/libags_gui-overrides.txt docs/reference/libags_gui/libags_gui-sections.txt docs/reference/libags_gui/libags_gui.types docs/reference/libags_gui/libags_gui.xml
+
 # EXTRA_DIST += docs/reference/libgsequencer
 
 # include
@@ -1615,11 +1621,6 @@ clean-local:
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
-	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags
-	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags_audio
-	$(MAKE) clean -C $(top_srcdir)/docs/reference/libags_gui
-
-distclean-local:
-	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags
-	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags_audio
-	$(MAKE) distclean -C $(top_srcdir)/docs/reference/libags_gui
+	rm -f $(top_builddir)/docs/reference/libags/Makefile
+	rm -f $(top_builddir)/docs/reference/libags_audio/Makefile
+	rm -f $(top_builddir)/docs/reference/libags_gui/Makefile
