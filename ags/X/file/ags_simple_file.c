@@ -3101,15 +3101,23 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   AgsPad *pad;
   GObject *gobject;
 
+  AgsConfig *config;
+  GObject *soundcard;
+  
   AgsFileLaunch *file_launch;
   AgsFileIdRef *file_id_ref;
-  
+
   xmlNode *child;
 
+  GList *list;
+
+  gchar *soundcard_group;
+  xmlChar *device;
   xmlChar *str;
   
   guint nth_line;
-
+  guint i;
+  
   auto void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator *oscillator);
   auto void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);
 
@@ -3322,6 +3330,104 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 					  "node\0", node,
 					  "reference\0", gobject,
 					  NULL));
+
+  /* device */
+  config = ags_config_get_instance();
+  
+  /* find soundcard */
+  soundcard = NULL;
+  device = xmlGetProp(node,
+		      "soundcard-device\0");  
+  if(device != NULL){
+    list = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard;
+    soundcard_group = g_strdup("soundcard\0");
+  
+    for(i = 0; list != NULL; i++){
+      gboolean use_jack, use_alsa, use_oss;
+
+      soundcard = list->data;
+
+      if(!g_key_file_has_group(config->key_file,
+			       soundcard_group)){
+	if(i == 0){
+	  g_free(soundcard_group);
+	  soundcard_group = g_strdup_printf("%s-%d\0",
+					    AGS_CONFIG_SOUNDCARD,
+					    i);
+	  continue;
+	}else{
+	  break;
+	}
+      }
+
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "backend\0");
+
+      g_free(soundcard_group);
+      soundcard_group = g_strdup_printf("%s-%d\0",
+					AGS_CONFIG_SOUNDCARD,
+					i);
+
+      if(str != NULL){
+	if(!g_ascii_strncasecmp(str,
+				"jack\0",
+				5)){
+	  use_jack = TRUE;
+	}else if(!g_ascii_strncasecmp(str,
+				      "alsa\0",
+				      5)){
+	  use_alsa = TRUE;
+	}else if(!g_ascii_strncasecmp(str,
+				      "oss\0",
+				      4)){
+	  use_oss = TRUE;
+	}else{
+	  g_warning("unknown soundcard backend\0");
+
+	  continue;
+	}
+      }else{
+	g_warning("unknown soundcard backend\0");
+      
+	continue;
+      }
+
+      /* device */
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "device\0");
+
+      if(str != NULL &&
+	 !g_ascii_strcasecmp(str,
+			     device)){
+	soundcard = list->data;
+
+	g_free(str);
+	break;
+      }
+
+      /* iterate soundcard */
+      list = list->next;
+    }
+  }
+  
+  if(soundcard == NULL &&
+     AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard != NULL){
+    soundcard = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->soundcard->data;
+  }
+
+  if(AGS_IS_LINE(gobject)){
+    g_object_set(AGS_LINE(gobject)->channel,
+		 "soundcard\0", soundcard,
+		 NULL);
+  }else if(AGS_IS_CHANNEL(gobject)){
+    g_object_set(AGS_CHANNEL(gobject),
+		 "soundcard\0", soundcard,
+		 NULL);
+  }
+  
+  g_free(soundcard_group);
   
   /* children */
   child = node->children;
@@ -5026,6 +5132,20 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		   g_strdup_printf("%d\0",
 				   channel->line));
 
+	/* device */
+	if(channel != NULL &&
+	   channel->soundcard != NULL){
+	  gchar *device;
+
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(channel->soundcard));
+    
+	  if(device != NULL){
+	    xmlNewProp(line,
+		       (xmlChar *) "soundcard-device\0",
+		       (xmlChar *) g_strdup(device));
+	  }
+	}
+
 	/* link */
 	if(channel->link != NULL){
 	  AgsFileLookup *file_lookup;
@@ -5937,6 +6057,20 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 	     "nth-line\0",
 	     g_strdup_printf("%d\0", line->channel->line));
   
+  /* device */
+  if(line->channel != NULL &&
+     line->channel->soundcard != NULL){
+    gchar *device;
+
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(line->channel->soundcard));
+    
+    if(device != NULL){
+      xmlNewProp(node,
+		 (xmlChar *) "soundcard-device\0",
+		 (xmlChar *) g_strdup(device));
+    }
+  }
+
   /* group */
   if(!gtk_toggle_button_get_active(line->group)){
     xmlNewProp(node,

@@ -93,11 +93,12 @@
 
 <!ELEMENT ags-sf-line (ags-sf-effect-list, ags-sf-oscillator?, ags-sf-property-list?)>
 <!ATTLIST ags-sf-line
-	  id             CDATA      #REQUIRED
-	  nth-line       NMTOKEN    #REQUIRED
-	  is-grouped     CDATA      "true"
-	  link           CDATA      "(null)"
-	  file-channel   NMTOKEN    0
+	  id                      CDATA      #REQUIRED
+	  nth-line                NMTOKEN    #REQUIRED
+	  soundcard-device        CDATA      #IMPLIED
+	  is-grouped              CDATA      "true"
+	  link                    CDATA      "(null)"
+	  file-channel            NMTOKEN    0
 	  >
 
 <!-- effect -->

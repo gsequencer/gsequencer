@@ -1,3 +1,9 @@
+ags (0.7.67)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing soundcard info of ags-sf-line
+	* updated ags_simple_file.dtd
+
 ags (0.7.66)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
