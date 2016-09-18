@@ -321,6 +321,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     use_alsa = FALSE;
     use_oss = FALSE;
     
+    /* change soundcard */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
 			      "jack\0",

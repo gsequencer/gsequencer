@@ -51,7 +51,8 @@
 	  instrument              CDATA     #IMPLIED
 	  plugin-file             CDATA     #IMPLIED
 	  effect                  CDATA     #IMPLIED
-	  midi_device             CDATA     #IMPLIED
+	  midi-device             CDATA     #IMPLIED
+	  soundcard-device        CDATA     #IMPLIED
 	  program                 CDATA     #IMPLIED
 	  bank_0                  NMTOKEN   0
 	  bank_1                  NMTOKEN   0

@@ -1,3 +1,9 @@
+ags (0.7.66)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed chrash while reading configuration with AgsSimpleFile
+	* fixed persisting/restore of AgsSoundcard from configuration with AgsSimpleFile
+
 ags (0.7.65)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
