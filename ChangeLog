@@ -1,3 +1,8 @@
+ags (0.7.69)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed stop all soundcard threads because only one was stopped
+
 ags (0.7.68)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

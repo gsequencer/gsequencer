@@ -729,16 +729,20 @@ ags_audio_loop_run(AgsThread *thread)
     AgsThread *soundcard_thread;
     AgsThread *export_thread;
 
-    soundcard_thread = ags_thread_find_type(thread,
-					    AGS_TYPE_SOUNDCARD_THREAD);
+    soundcard_thread = thread;
 
+    while((soundcard_thread = ags_thread_find_type(soundcard_thread,
+						   AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0){
+	ags_thread_stop(soundcard_thread);
+      }
+
+      soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+    }
+
+    /* export thread */
     export_thread = ags_thread_find_type(thread,
 					 AGS_TYPE_EXPORT_THREAD);
-
-    if(soundcard_thread != NULL &&
-       (AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0){
-      ags_thread_stop(soundcard_thread);
-    }
 
     if(export_thread != NULL &&
        (AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
