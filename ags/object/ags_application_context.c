@@ -48,6 +48,8 @@ void ags_application_context_finalize(GObject *gobject);
 void ags_application_context_real_load_config(AgsApplicationContext *application_context);
 void ags_application_context_real_register_types(AgsApplicationContext *application_context);
 
+void ags_application_context_real_quit(AgsApplicationContext *application_context);
+
 /**
  * SECTION:ags_application_context
  * @short_description: The application context
@@ -63,6 +65,7 @@ void ags_application_context_real_register_types(AgsApplicationContext *applicat
 enum{
   LOAD_CONFIG,
   REGISTER_TYPES,
+  QUIT,
   LAST_SIGNAL,
 };
 
@@ -183,12 +186,15 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 
   /* AgsApplicationContextClass */
   application_context->load_config = ags_application_context_real_load_config;
+
   application_context->register_types = ags_application_context_real_register_types;
   
+  application_context->quit = ags_application_context_real_quit;
+
   /* signals */
   /**
    * AgsApplicationContext::load-config:
-   * @application_context: the object to play
+   * @application_context: the #AgsApplicationContext
    *
    * The ::load-config notifies to load configuration.
    */
@@ -203,7 +209,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 
   /**
    * AgsApplicationContext::register-types:
-   * @application_context: the object to play
+   * @application_context: the  #AgsApplicationContext
    *
    * The ::register-types signal should be implemented to load
    * your types.
@@ -213,6 +219,23 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 		 G_TYPE_FROM_CLASS (application_context),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsApplicationContextClass, register_types),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsApplicationContext::quit:
+   * @application_context: the #AgsApplicationContext
+   *
+   * The ::quit notifies to load configuration.
+   *
+   * Since: 0.7.68
+   */
+  application_context_signals[QUIT] =
+    g_signal_new("quit\0",
+		 G_TYPE_FROM_CLASS (application_context),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsApplicationContextClass, quit),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -518,6 +541,13 @@ ags_application_context_find_main_loop(GList *application_context)
   return(application_context);
 }
 
+void
+ags_application_context_real_quit(AgsApplicationContext *application_context)
+{
+  //TODO:JK: enhance me
+  exit(0);
+}
+
 /**
  * ags_application_context_quit:
  * @application_context: the context to quit
@@ -529,8 +559,13 @@ ags_application_context_find_main_loop(GList *application_context)
 void
 ags_application_context_quit(AgsApplicationContext *application_context)
 {
-  //TODO:JK: enhance me
-  exit(0);
+  g_return_if_fail(AGS_IS_APPLICATION_CONTEXT(application_context));
+
+  g_object_ref(G_OBJECT(application_context));
+  g_signal_emit(G_OBJECT(application_context),
+		application_context_signals[QUIT], 0);
+  g_object_unref(G_OBJECT(application_context));
+  g_object_unref(application_context);
 }
 
 /**

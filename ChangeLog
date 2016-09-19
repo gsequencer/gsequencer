@@ -1,3 +1,13 @@
+ags (0.7.68)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed close JACK client while ags_application_context_quit()
+	* fixed configure.ac to check for atk-1.0 with AC_CHECK_LIB
+	* fixed add/remove soundcards using AgsAudioPreferences
+	* modified on file open failure to call ags_application_context_quit() instead of exit(-1) because JACK needs clean-up
+	* improved configure.ac to give hint that ALSA and OSS is enabled
+	* added --enable-oss argument to configure.ac
+
 ags (0.7.67)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -373,7 +373,7 @@ ags_launch_filename(gchar *filename,
     if(error != NULL){
       ags_show_file_error(filename,
 			  error);
-      exit(-1);
+      ags_application_context_quit(ags_application_context);
     }
     
     /* start engine */
@@ -470,7 +470,8 @@ ags_launch_filename(gchar *filename,
       if(error != NULL){
 	ags_show_file_error(filename,
 			    error);
-	exit(-1);
+	
+	ags_application_context_quit(ags_application_context);
       }
     
       ags_file_read(file);
@@ -890,18 +891,12 @@ ags_show_file_error(gchar *filename,
 int
 main(int argc, char **argv)
 {  
-  AgsLadspaManager *ladspa_manager;
-  AgsDssiManager *dssi_manager;
-  AgsLv2Manager *lv2_manager;;
-
   AgsConfig *config;
 
   gchar *filename;
   gchar *str;
 
-  gboolean autosave_thread_enabled;
   gboolean single_thread_enabled;
-  gboolean jack_enabled;
   guint i;
 
   struct sched_param param;
@@ -923,7 +918,6 @@ main(int argc, char **argv)
   putenv("LC_ALL=C\0");
   putenv("LANG=C\0");
 
-  autosave_thread_enabled = FALSE;
   single_thread_enabled = FALSE;
   
   //  mtrace();
@@ -976,7 +970,7 @@ main(int argc, char **argv)
     if(!strncmp(argv[i], "--help\0", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n\0");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n\0",
 	     "--filename file     open file\0",
 	     "--single-thread     run in single thread mode\0",     
@@ -1037,12 +1031,6 @@ main(int argc, char **argv)
   
   ags_setup(argc, argv);
 
-  /* autosave thread */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "autosave-thread\0");
-  autosave_thread_enabled = (str != NULL && !g_ascii_strncasecmp(str, "true\0", 8)) ? TRUE: FALSE;
-
   /* launch GUI */
   if(filename != NULL){
 #ifdef AGS_USE_TIMER
@@ -1062,75 +1050,7 @@ main(int argc, char **argv)
 #endif
   }
   
-  /* free managers */
-  ladspa_manager = ags_ladspa_manager_get_instance();
-  g_object_unref(ladspa_manager);
-
-  dssi_manager = ags_dssi_manager_get_instance();
-  g_object_unref(dssi_manager);
-
-  lv2_manager = ags_lv2_manager_get_instance();
-  g_object_unref(lv2_manager);
-  
-  /* delete autosave file */
-  if(autosave_thread_enabled){
-    GFile *autosave_file;
-
-    struct passwd *pw;
-
-    gchar *autosave_filename;
-
-    uid_t uid;
-    
-    uid = getuid();
-    pw = getpwuid(uid);
-
-    if(g_strcmp0(ags_config_get_value(ags_application_context->config,
-				      AGS_CONFIG_GENERIC,
-				      "simple-file\0"),
-		 "false\0")){
-
-      gchar *filename, *offset;
-    
-      filename = g_strdup_printf("%s/%s/%s\0",
-				 pw->pw_dir,
-				 AGS_DEFAULT_DIRECTORY,
-				 AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
-
-      if((offset = strstr(filename,
-			  "{PID}")) != NULL){
-	gchar *tmp;
-
-	tmp = g_strndup(filename,
-			offset - filename);
-	autosave_filename = g_strdup_printf("%s%d%s",
-					    tmp,
-					    getpid(),
-					    &(offset[5]));
-
-	g_free(tmp);
-	g_free(filename);
-      }
-    }else{
-      autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
-					  pw->pw_dir,
-					  AGS_DEFAULT_DIRECTORY,
-					  getpid(),
-					  AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
-    }
-
-    autosave_file = g_file_new_for_path(autosave_filename);
-  
-    if(g_file_query_exists(autosave_file,
-			   NULL)){
-      g_file_delete(autosave_file,
-		    NULL,
-		    NULL);
-    }
-    
-    g_free(autosave_filename);
-    g_object_unref(autosave_file);
-  }
+  ags_application_context_quit(ags_application_context);
   
   //  muntrace();
 

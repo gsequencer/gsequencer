@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.67],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.7.68],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -17,6 +17,11 @@ AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 				    [enable alsa (default is yes)])],
 	      [],
 	      [enable_alsa=yes])
+
+AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
+				   [enable oss (default is yes)])],
+	      [],
+	      [enable_oss=yes])
 
 AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],
@@ -72,9 +77,10 @@ AC_SUBST(UUID_LIBS)
 AS_IF([test "x$enable_alsa" != xno],
       [PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
        AC_SUBST(LIBASOUND2_CFLAGS)
-       AC_SUBST(LIBASOUND2_LIBS)]
-       AC_DEFINE([AGS_WITH_ALSA], [1], [ALSA enabled]),
-      [AC_MSG_NOTICE([alsa disabled])
+       AC_SUBST(LIBASOUND2_LIBS)
+       AC_DEFINE([AGS_WITH_ALSA], [1], [ALSA enabled])
+       AC_MSG_NOTICE([ALSA enabled])],
+      [AC_MSG_NOTICE([ALSA disabled])
        AC_CHECK_HEADERS([alsa/seq_event.h],
 			[AC_DEFINE([HAVE_ALSA_SEQ_EVENT_H], [1], [ALSA sequencer event available])]
 			[PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.5])
@@ -88,8 +94,9 @@ AS_IF([test "x$enable_alsa" != xno],
 			])])
 
 AS_IF([test "x$enable_oss" != xno],
-      AC_DEFINE([AGS_WITH_OSS], [1], [OSS enabled]),
-      AC_MSG_NOTICE([oss disabled]))
+      [AC_DEFINE([AGS_WITH_OSS], [1], [OSS enabled])
+       AC_MSG_NOTICE([OSS enabled])],
+      AC_MSG_NOTICE([OSS disabled]))
 
 PKG_CHECK_MODULES([JACK], [jack])
 AC_SUBST(JACK_CFLAGS)
@@ -123,8 +130,8 @@ PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
-AC_CHECK_FUNC([atk_value_get_value_and_text],
-	      [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
+AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
+             [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
 
 PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
 AC_SUBST(LIBINSTPATCH_CFLAGS)

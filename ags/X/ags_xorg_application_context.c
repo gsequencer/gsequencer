@@ -36,6 +36,10 @@
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
+
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_midiin.h>
@@ -50,8 +54,10 @@
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
+#include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
+#include <ags/X/thread/ags_simple_autosave_thread.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -94,6 +100,8 @@ GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *so
 void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
+
+void ags_xorg_application_context_quit(AgsApplicationContext *application_context);
 
 void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
@@ -207,7 +215,10 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
   application_context = (AgsApplicationContextClass *) xorg_application_context;
   
   application_context->load_config = ags_xorg_application_context_load_config;
+
   application_context->register_types = ags_xorg_application_context_register_types;
+  
+  application_context->quit = ags_xorg_application_context_quit;
 
   application_context->write = ags_xorg_application_context_write;
   application_context->read = ags_xorg_application_context_read;
@@ -839,6 +850,126 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_ladspa_bridge_get_type();
   ags_lv2_bridge_get_type();
   ags_dssi_bridge_get_type();
+}
+
+void
+ags_xorg_application_context_quit(AgsApplicationContext *application_context)
+{
+  AgsLadspaManager *ladspa_manager;
+  AgsDssiManager *dssi_manager;
+  AgsLv2Manager *lv2_manager;;
+
+  AgsJackServer *jack_server;
+
+  AgsConfig *config;
+
+  GList *jack_client;
+  GList *list;
+
+  gchar *filename;
+  gchar *str;
+
+  gboolean autosave_thread_enabled;
+
+  config = application_context->config;
+  
+  /* autosave thread */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "autosave-thread\0");
+  autosave_thread_enabled = (str != NULL && !g_ascii_strncasecmp(str, "true\0", 8)) ? TRUE: FALSE;
+
+  /* free managers */
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  g_object_unref(ladspa_manager);
+
+  dssi_manager = ags_dssi_manager_get_instance();
+  g_object_unref(dssi_manager);
+
+  lv2_manager = ags_lv2_manager_get_instance();
+  g_object_unref(lv2_manager);
+  
+  /* delete autosave file */
+  if(autosave_thread_enabled){
+    GFile *autosave_file;
+
+    struct passwd *pw;
+
+    gchar *autosave_filename;
+
+    uid_t uid;
+    
+    uid = getuid();
+    pw = getpwuid(uid);
+
+    if(g_strcmp0(ags_config_get_value(config,
+				      AGS_CONFIG_GENERIC,
+				      "simple-file\0"),
+		 "false\0")){
+
+      gchar *filename, *offset;
+    
+      filename = g_strdup_printf("%s/%s/%s\0",
+				 pw->pw_dir,
+				 AGS_DEFAULT_DIRECTORY,
+				 AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+
+      if((offset = strstr(filename,
+			  "{PID}")) != NULL){
+	gchar *tmp;
+
+	tmp = g_strndup(filename,
+			offset - filename);
+	autosave_filename = g_strdup_printf("%s%d%s",
+					    tmp,
+					    getpid(),
+					    &(offset[5]));
+
+	g_free(tmp);
+	g_free(filename);
+      }
+    }else{
+      autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
+					  pw->pw_dir,
+					  AGS_DEFAULT_DIRECTORY,
+					  getpid(),
+					  AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+    }
+
+    autosave_file = g_file_new_for_path(autosave_filename);
+  
+    if(g_file_query_exists(autosave_file,
+			   NULL)){
+      g_file_delete(autosave_file,
+		    NULL,
+		    NULL);
+    }
+    
+    g_free(autosave_filename);
+    g_object_unref(autosave_file);
+  }
+
+  /* retrieve JACK server */
+  list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+  
+  if(list != NULL){
+    jack_server = list->data;
+  }else{
+    jack_server = NULL;
+  }
+
+  /* close client */
+  if(jack_server != NULL){
+    jack_client = jack_server->client;
+
+    while(jack_client != NULL){
+      jack_client_close(AGS_JACK_CLIENT(jack_client->data)->client);
+
+      jack_client = jack_client->next;
+    }
+  }
+
+  exit(0);
 }
 
 void
