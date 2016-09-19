@@ -26,8 +26,10 @@
 #include <ags/thread/ags_task.h>
 
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_devout.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -136,10 +138,18 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   config = ags_config_get_instance();
 
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "backend\0");
-
+  str = NULL;
+  
+  if(AGS_IS_JACK_DEVOUT(soundcard)){
+    str = "jack\0";
+  }else if(AGS_IS_DEVOUT(soundcard)){
+    if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
+      str = "alsa\0";
+    }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard)->flags)) != 0){
+      str = "oss\0";
+    }
+  }
+  
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
 			  "jack\0",

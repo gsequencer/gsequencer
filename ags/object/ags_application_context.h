@@ -99,6 +99,8 @@ struct _AgsApplicationContextClass
 
   void (*read)(AgsFile *file, xmlNode *node, GObject **gobject);
   xmlNode* (*write)(AgsFile *file, xmlNode *parent, GObject *gobject);
+
+  void (*quit)(AgsApplicationContext *application_context);
 };
 
 GType ags_application_context_get_type();

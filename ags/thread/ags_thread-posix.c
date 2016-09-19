@@ -610,8 +610,10 @@ ags_thread_finalize(GObject *gobject)
   thread_attr = thread->thread_attr;
   thread_ptr = thread->thread;
 
+#ifdef AGS_DEBUG
   g_message("fin %s\0", G_OBJECT_TYPE_NAME(gobject));
-
+#endif
+  
   if((parent = g_atomic_pointer_get(&(thread->parent))) != NULL){
     pthread_mutex_lock(parent->start_mutex);
 

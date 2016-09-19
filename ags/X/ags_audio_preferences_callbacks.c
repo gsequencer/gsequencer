@@ -20,9 +20,14 @@
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 #include <ags/audio/ags_sound_provider.h>
+
 #include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_devout.h>
+
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -95,6 +100,8 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
+  AgsSoundcardThread *soundcard_thread;
+  
   AgsApplicationContext *application_context;
 
   GList *list;
@@ -109,8 +116,26 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   application_context = window->application_context;
   application_mutex = window->application_mutex;
 
-  soundcard_editor = ags_soundcard_editor_new();
+  /* retrieve first soundcard */
+  soundcard = NULL;
+  
+  pthread_mutex_lock(application_mutex);
 
+  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  if(list != NULL){
+    soundcard = list->data;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* soundcard editor */
+  soundcard_editor = ags_soundcard_editor_new();
+  soundcard_editor->soundcard = soundcard;
+  soundcard_editor->soundcard_thread = ags_thread_find_type(application_context->main_loop,
+							    AGS_TYPE_SOUNDCARD_THREAD);
+
+  
   list = gtk_container_get_children(audio_preferences->soundcard_editor);
   
   if(list != NULL){
@@ -124,24 +149,14 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 		     soundcard_editor,
 		     FALSE, FALSE,
 		     0);
+  
+  ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
   ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
   g_signal_connect(soundcard_editor->remove, "clicked\0",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
   gtk_widget_show_all(soundcard_editor);
 
-  /* reset default card */
-  soundcard = NULL;
-  
-  pthread_mutex_lock(application_mutex);
-
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  if(list != NULL){
-    soundcard = list->data;
-  }
-
-  pthread_mutex_unlock(application_mutex);
-  
+  /* reset default card */  
   g_object_set(window,
 	       "soundcard\0", soundcard,
 	       NULL);
@@ -171,8 +186,12 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 
   soundcard_editor = gtk_widget_get_ancestor(button,
 					     AGS_TYPE_SOUNDCARD_EDITOR);
-  ags_soundcard_editor_remove_soundcard(soundcard_editor,
-					gtk_combo_box_text_get_active_text(soundcard_editor->card));
+
+  if(!AGS_IS_JACK_DEVOUT(soundcard_editor->soundcard)){
+    ags_soundcard_editor_remove_soundcard(soundcard_editor,
+					  soundcard_editor->soundcard);
+  }
+  
   gtk_widget_destroy(soundcard_editor);
 
   /* reset default card */
@@ -201,7 +220,6 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   }
 
   g_list_free(list);
-
 }
 
 void

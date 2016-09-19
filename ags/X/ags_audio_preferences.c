@@ -383,6 +383,8 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
     
     ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
     ags_connectable_connect(soundcard_editor);
+    g_signal_connect(soundcard_editor->remove, "clicked\0",
+		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
     
     list = list->next;
   }
