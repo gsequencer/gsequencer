@@ -649,7 +649,7 @@ ags_thread_finalize(GObject *gobject)
   pthread_attr_getstack(thread_attr,
 			&stackaddr, &stacksize);
   
-  pthread_mutexattr_destroy(&(thread->mutexattr));
+  pthread_mutexattr_destroy(thread->mutexattr);
   pthread_mutex_destroy(thread->mutex);
   free(thread->mutex);
 
@@ -692,7 +692,7 @@ ags_thread_finalize(GObject *gobject)
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
   
-  pthread_detach(thread_ptr);
+  pthread_detach(*thread_ptr);
 
   pthread_mutex_unlock(application_mutex);
 
@@ -999,7 +999,7 @@ ags_thread_lock(AgsThread *thread)
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   thread);
+				   (GObject *) thread);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -1040,7 +1040,7 @@ ags_thread_trylock(AgsThread *thread)
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   thread);
+				   (GObject *) thread);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -1082,7 +1082,7 @@ ags_thread_unlock(AgsThread *thread)
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   thread);
+				   (GObject *) thread);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -2362,7 +2362,7 @@ ags_thread_real_clock(AgsThread *thread)
 
   /* async-queue */
   if(AGS_IS_MAIN_LOOP(main_loop)){
-    async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
+    async_queue = (AgsThread *) ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
     async_queue_running = FALSE;
 
     if(async_queue != NULL){
@@ -2380,9 +2380,9 @@ ags_thread_real_clock(AgsThread *thread)
   pthread_mutex_lock(application_mutex);
 
   main_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     main_loop);
+					     (GObject *) main_loop);
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   thread);
+				   (GObject *) thread);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -2717,7 +2717,7 @@ ags_thread_loop(void *ptr)
   thread = (AgsThread *) ptr;
   
   pthread_once(&ags_thread_key_once, ags_thread_self_create);
-  pthread_setspecific(&ags_thread_key, thread);
+  pthread_setspecific(ags_thread_key, thread);
   
   main_loop = ags_thread_get_toplevel(thread);
 
@@ -2727,7 +2727,7 @@ ags_thread_loop(void *ptr)
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   thread);
+				   (GObject *) thread);
   
   pthread_mutex_unlock(application_mutex);
   
@@ -3296,10 +3296,11 @@ ags_thread_interrupted(AgsThread *thread,
 
   pthread_mutex_unlock(&class_mutex);
 
-  g_return_if_fail(AGS_IS_THREAD(thread));
+  g_return_val_if_fail(AGS_IS_THREAD(thread),
+		       0);
 
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
-    return;
+    return(0);
   }
 
   g_object_ref(G_OBJECT(thread));
@@ -3351,7 +3352,7 @@ ags_thread_hangcheck(AgsThread *thread)
     }
 
     /* iterate tree */
-    child = thread->children;
+    child = g_atomic_pointer_get(&(thread->children));
 
     while(child != NULL){
       ags_thread_hangcheck_recursive(child);

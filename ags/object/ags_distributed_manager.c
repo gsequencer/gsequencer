@@ -135,7 +135,7 @@ ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
  */
 guint*
 ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager,
-				  guint *port_count)
+				  guint port_count)
 {
   AgsDistributedManagerInterface *distributed_manager_interface;
 

@@ -75,9 +75,9 @@ ags_concurrent_tree_set_parent_locked(AgsConcurrentTree *concurrent_tree,
 {
   AgsConcurrentTreeInterface *concurrent_tree_interface;
 
-  g_return_val_if_fail(AGS_IS_CONCURRENT_TREE(concurrent_tree), NULL);
+  g_return_if_fail(AGS_IS_CONCURRENT_TREE(concurrent_tree));
   concurrent_tree_interface = AGS_CONCURRENT_TREE_GET_INTERFACE(concurrent_tree);
-  g_return_val_if_fail(concurrent_tree_interface->set_parent_locked, NULL);
+  g_return_if_fail(concurrent_tree_interface->set_parent_locked);
 
   concurrent_tree_interface->set_parent_locked(concurrent_tree,
 					       parent_locked);
@@ -98,9 +98,9 @@ ags_concurrent_tree_get_parent_locked(AgsConcurrentTree *concurrent_tree)
 {
   AgsConcurrentTreeInterface *concurrent_tree_interface;
 
-  g_return_val_if_fail(AGS_IS_CONCURRENT_TREE(concurrent_tree), NULL);
+  g_return_val_if_fail(AGS_IS_CONCURRENT_TREE(concurrent_tree), FALSE);
   concurrent_tree_interface = AGS_CONCURRENT_TREE_GET_INTERFACE(concurrent_tree);
-  g_return_val_if_fail(concurrent_tree_interface->get_parent_locked, NULL);
+  g_return_val_if_fail(concurrent_tree_interface->get_parent_locked, FALSE);
 
   return(concurrent_tree_interface->get_parent_locked(concurrent_tree));
 }

@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_complex.h>
 
+#include <stdlib.h>
+
 /**
  * SECTION:ags_complex
  * @short_description: Boxed type of complex

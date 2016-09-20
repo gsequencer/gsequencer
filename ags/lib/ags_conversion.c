@@ -274,7 +274,8 @@ ags_conversion_convert(AgsConversion *conversion,
 {
   gdouble retval;
   
-  g_return_if_fail(AGS_IS_CONVERSION(conversion));
+  g_return_val_if_fail(AGS_IS_CONVERSION(conversion),
+		       value);
 
   g_object_ref((GObject *) conversion);
   g_signal_emit(G_OBJECT(conversion),

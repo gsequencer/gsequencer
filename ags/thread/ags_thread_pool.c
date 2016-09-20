@@ -223,12 +223,14 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
 		       list);
 
   //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
   thread_pool->idle_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(thread_pool->idle_mutex, &attr);
+  pthread_mutex_init(thread_pool->idle_mutex, attr);
   
   thread_pool->idle_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(thread_pool->idle_cond, NULL);
@@ -346,7 +348,7 @@ ags_thread_pool_creation_thread(void *ptr)
   pthread_mutex_lock(application_mutex);
 
   parent_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  thread_pool->parent);
+					  (GObject *) thread_pool->parent);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -412,7 +414,7 @@ ags_thread_pool_creation_thread(void *ptr)
     for(i = 0; i < i_stop; i++){
       guint val;
 
-      returnable_thread = ags_returnable_thread_new(thread_pool);
+      returnable_thread = ags_returnable_thread_new((GObject *) thread_pool);
       g_object_ref(returnable_thread);
       ags_thread_add_child_extended(thread_pool->parent,
 				    returnable_thread,
@@ -556,7 +558,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   pthread_mutex_lock(application_mutex);
 
   parent_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  thread_pool->parent);
+					  (GObject *) thread_pool->parent);
   
   pthread_mutex_unlock(application_mutex);
 

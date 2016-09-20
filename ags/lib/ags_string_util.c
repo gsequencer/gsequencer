@@ -19,6 +19,9 @@
 
 #include <ags/lib/ags_string_util.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 gchar*
 ags_string_util_escape_single_quote(gchar *str)
 {

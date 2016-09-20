@@ -23,6 +23,13 @@
 
 #include <ags/thread/ags_poll_fd.h>
 
+#include <stdlib.h>
+#include <string.h>
+
+#define _GNU_SOURCE
+#include <signal.h>
+#include <poll.h>
+
 void ags_polling_thread_class_init(AgsPollingThreadClass *polling_thread);
 void ags_polling_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_polling_thread_init(AgsPollingThread *polling_thread);
@@ -34,9 +41,9 @@ void ags_polling_thread_start(AgsThread *thread);
 void ags_polling_thread_run(AgsThread *thread);
 void ags_polling_thread_stop(AgsThread *thread);
 
-void ags_polling_thread_interrupted(AgsThread *thread,
-				    int sig,
-				    guint time_cycle, guint *time_spent);
+guint ags_polling_thread_interrupted(AgsThread *thread,
+				     int sig,
+				     guint time_cycle, guint *time_spent);
 
 /**
  * SECTION:ags_polling_thread
@@ -122,7 +129,7 @@ ags_polling_thread_init(AgsPollingThread *polling_thread)
 {
   AgsThread *thread;
 
-  thread = polling_thread;
+  thread = (AgsThread *) polling_thread;
   g_atomic_int_or(&(thread->sync_flags),
 		  (AGS_THREAD_RESUME_INTERRUPTED));
 
@@ -209,7 +216,7 @@ ags_polling_thread_run(AgsThread *thread)
 
   timeout.tv_sec = 0;
 
-  if(main_loop->time_late != NULL){
+  if(main_loop->time_late != 0){
     timeout.tv_nsec = 0;
   }else{
     if(main_loop->tic_delay == main_loop->delay){
@@ -307,19 +314,21 @@ ags_polling_thread_stop(AgsThread *thread)
   AGS_THREAD_CLASS(ags_polling_thread_parent_class)->stop(thread);  
 }
 
-void
+guint
 ags_polling_thread_interrupted(AgsThread *thread,
 			       int sig,
 			       guint time_cycle, guint *time_spent)
 {
   AgsPollingThread *polling_thread;
 
-  polling_thread = thread;
+  polling_thread = (AgsPollingThread *) thread;
   
   if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
     g_atomic_int_or(&(polling_thread->flags),
 		    AGS_POLLING_THREAD_OMIT);
   }
+
+  return(0);
 }
 
 gint
@@ -353,7 +362,7 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
 
 
   nth = g_list_position(polling_thread->poll_fd,
-			gobject);
+			(gpointer) gobject);
 
   if(nth >= 0){
     pthread_mutex_unlock(polling_thread->fd_mutex);
@@ -402,7 +411,7 @@ ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
   
   /* find fd */
   nth = g_list_position(polling_thread->poll_fd,
-			gobject);
+			(gpointer) gobject);
 
   if(nth < 0){
     pthread_mutex_unlock(polling_thread->fd_mutex);

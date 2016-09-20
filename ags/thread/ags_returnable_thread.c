@@ -24,9 +24,11 @@
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <math.h>
+
 #include <unistd.h>
 #include <errno.h>
 
@@ -237,8 +239,8 @@ ags_returnable_thread_run(AgsThread *thread)
       unref_thread = TRUE;
     }
 
-    task_thread = ags_thread_find_type(ags_thread_get_toplevel(AGS_THREAD_POOL(returnable_thread->thread_pool)->parent),
-				       AGS_TYPE_TASK_THREAD);
+    task_thread = (AgsTaskThread *) ags_thread_find_type(ags_thread_get_toplevel(AGS_THREAD_POOL(returnable_thread->thread_pool)->parent),
+							 AGS_TYPE_TASK_THREAD);
     ags_task_thread_clear_cache(task_thread);
   }
 

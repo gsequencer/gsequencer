@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_time.h>
 
+#include <math.h>
+
 /**
  * ags_time_get_uptime_from_offset:
  * @offset: the offset in tics

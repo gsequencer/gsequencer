@@ -67,6 +67,8 @@ struct _AgsThreadApplicationContextClass
 
 GType ags_thread_application_context_get_type();
 
+void ags_thread_application_context_register_types(AgsApplicationContext *application_context);
+
 AgsThreadApplicationContext* ags_thread_application_context_new();
 
 #endif /*__AGS_THREAD_APPLICATION_CONTEXT_H__*/

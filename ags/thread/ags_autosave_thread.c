@@ -23,6 +23,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
 
@@ -197,9 +198,9 @@ ags_autosave_thread_set_property(GObject *gobject,
     {
       AgsApplicationContext *application_context;
 
-      application_context = g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(autosave_thread->application_context == application_context){
+      if(autosave_thread->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -211,7 +212,7 @@ ags_autosave_thread_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      autosave_thread->application_context = application_context;
+      autosave_thread->application_context = (GObject *) application_context;
     }
     break;
   default:

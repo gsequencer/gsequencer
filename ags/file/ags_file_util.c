@@ -411,7 +411,7 @@ ags_file_util_write_value(AgsFile *file,
   xmlChar *content;
 
   if(value == NULL){
-    return;
+    return(NULL);
   }
 
   node = xmlNewNode(NULL,
@@ -480,11 +480,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%d\0", arr[i]);
+	    content = g_strdup_printf("%lld\0", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %d\0", str, arr[i]);
+	    content = g_strdup_printf("%s %lld\0", str, arr[i]);
 
 	    g_free(str);
 	  }
@@ -498,11 +498,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%d\0", arr[i]);
+	    content = g_strdup_printf("%llu\0", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %d\0", str, arr[i]);
+	    content = g_strdup_printf("%s %llu\0", str, arr[i]);
 
 	    g_free(str);
 	  }
@@ -716,7 +716,7 @@ ags_file_util_write_parameter(AgsFile *file,
   guint i;
 
   if(parameter == NULL){
-    return;
+    return(NULL);
   }
 
   node = xmlNewNode(NULL,
@@ -865,7 +865,7 @@ ags_file_util_write_object(AgsFile *file,
   guint i;
 
   if(gobject == NULL){
-    return;
+    return(NULL);
   }
 
   id = ags_id_generator_create_uuid();
@@ -997,7 +997,7 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
   gchar *filename;
 
   if(file_link == NULL){
-    return;
+    return(NULL);
   }
 
   /* allocate new node with uuid */

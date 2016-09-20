@@ -229,7 +229,7 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_pointer_set(&(task_thread->queue),
 		       NULL);
 
-  task_thread->thread_pool = ags_thread_pool_new(task_thread);
+  task_thread->thread_pool = ags_thread_pool_new((AgsThread *) task_thread);
   task_thread->thread_pool->parent = (AgsThread *) task_thread;
 }
 

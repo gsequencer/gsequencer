@@ -501,8 +501,10 @@ void
 ags_config_load_from_data(AgsConfig *config,
 			  char *buffer, gsize buffer_length)
 {
-  g_message("loading preferences from data[0x%x]\0", buffer);
-
+#ifdef AGS_DEBUG
+  g_message("loading preferences from data[0x%x]\0", (unsigned int) buffer);
+#endif
+  
   if(buffer == NULL){
     ags_config_load_defaults(config);
   }else{
@@ -664,7 +666,7 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
 {
   AgsApplicationContext *application_context;
 
-  application_context = config->application_context;
+  application_context = (AgsApplicationContext *) config->application_context;
 
   g_key_file_set_value(config->key_file, group, key, value);
 }
@@ -753,12 +755,7 @@ AgsConfig*
 ags_config_get_instance()
 {
   if(ags_config == NULL){
-    AgsApplicationContext *application_context;
-
-    application_context = ags_application_context_get_instance();
-    
-    ags_config = ags_config_new(application_context);
-    application_context->config = ags_config;
+    ags_config = ags_config_new(NULL);
   }
 
   return(ags_config);
