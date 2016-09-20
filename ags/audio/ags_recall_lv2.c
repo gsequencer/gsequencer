@@ -64,8 +64,6 @@ void ags_recall_lv2_finalize(GObject *gobject);
 void ags_recall_lv2_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_recall_lv2_load(AgsRecallLv2 *recall_lv2);
-
 /**
  * SECTION:ags_recall_lv2
  * @short_description: The object interfacing with LV2

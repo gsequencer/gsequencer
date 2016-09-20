@@ -330,7 +330,7 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 			"mode\0", AGS_IPATCH_READ,
 			"filename\0", filename,
 			NULL);
-  ags_ipatch_open(ipatch, filename);
+  ags_playable_open(AGS_PLAYABLE(ipatch), filename);
 
   sf2_reader = ags_ipatch_sf2_reader_new();
   sf2_reader->ipatch =  ipatch;

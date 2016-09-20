@@ -986,10 +986,10 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
       ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
 			       "/dev/dsp0\0");
     }else{
-      g_warning("unknow soundcard implementation\0");
+      g_warning("unknown soundcard implementation\0");
     }
   }else{
-    g_warning("unknow soundcard implementation\0");
+    g_warning("unknown soundcard implementation\0");
   }
   
   /*  */

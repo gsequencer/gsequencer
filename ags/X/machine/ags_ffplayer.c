@@ -707,7 +707,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			    "filename\0", filename,
 			    NULL);
     ipatch->soundcard = window->soundcard;
-    ags_ipatch_open(ipatch, filename);
+    ags_playable_open(AGS_PLAYABLE(ipatch), filename);
 
     playable = AGS_PLAYABLE(ipatch);
       

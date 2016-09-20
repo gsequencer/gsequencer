@@ -53,11 +53,11 @@
 #include <ags/audio/file/ags_audio_file.h>
 
 /* AgsSoundcard */
-void ags_file_read_devout(AgsFile *file, xmlNode *node, GObject **devout);
-xmlNode* ags_file_write_devout(AgsFile *file, xmlNode *parent, GObject *devout);
+void ags_file_read_soundcard(AgsFile *file, xmlNode *node, GObject **soundcard);
+xmlNode* ags_file_write_soundcard(AgsFile *file, xmlNode *parent, GObject *soundcard);
 
-void ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout);
-xmlNode* ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout);
+void ags_file_read_soundcard_list(AgsFile *file, xmlNode *node, GList **soundcard);
+xmlNode* ags_file_write_soundcard_list(AgsFile *file, xmlNode *parent, GList *soundcard);
 
 void ags_file_read_playback(AgsFile *file, xmlNode *node, AgsPlayback **playback);
 xmlNode* ags_file_write_playback(AgsFile *file, xmlNode *parent, AgsPlayback *playback);

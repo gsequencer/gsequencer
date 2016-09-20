@@ -68,8 +68,6 @@ void ags_recall_dssi_finalize(GObject *gobject);
 void ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_recall_dssi_load(AgsRecallDssi *recall_dssi);
-
 /**
  * SECTION:ags_recall_dssi
  * @short_description: The object interfacing with DSSI

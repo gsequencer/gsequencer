@@ -86,8 +86,6 @@ gboolean ags_dial_key_release(GtkWidget *widget,
 gboolean ags_dial_motion_notify(GtkWidget *widget,
 				GdkEventMotion *event);
 
-void ags_dial_draw(AgsDial *dial);
-
 void ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 					  AgsDial *dial);
 

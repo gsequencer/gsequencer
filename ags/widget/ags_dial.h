@@ -88,6 +88,8 @@ struct _AgsDialClass
 
 GType ags_dial_get_type(void);
 
+void ags_dial_draw(AgsDial *dial);
+
 void ags_dial_value_changed(AgsDial *dial);
 
 AgsDial* ags_dial_new();
