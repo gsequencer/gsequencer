@@ -66,6 +66,7 @@ struct _AgsRecallDssiClass
 
 GType ags_recall_dssi_get_type();
 
+void ags_recall_dssi_load(AgsRecallDssi *recall_dssi);
 GList* ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi);
 void ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 				     GObject *port,

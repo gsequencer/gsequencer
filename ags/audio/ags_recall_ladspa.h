@@ -63,6 +63,7 @@ struct _AgsRecallLadspaClass
 
 GType ags_recall_ladspa_get_type();
 
+void ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa);
 GList* ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa);
 void ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
 				       GObject *port,

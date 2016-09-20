@@ -52,6 +52,7 @@
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_audio_file_xml.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 #include <ags/X/file/ags_simple_file.h>

@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -1594,7 +1595,7 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 						      audio_signal,
 						      0.0, 0);
       audio_signal->stream_current = audio_signal->stream_beginning;
-      ags_audio_signal_connect(audio_signal);
+      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
   
       /*
        * emit add_audio_signal on AgsRecycling

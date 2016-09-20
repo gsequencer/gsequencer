@@ -1,6 +1,12 @@
 ags (0.7.69)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor fixes to API removed non-existing symbols and alike
+	* added symbols file libags.sym, libags_audio.sym and libags_gui.sym
+
+ags (0.7.69)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed stop all soundcard threads because only one was stopped
 
 ags (0.7.68)

@@ -65,8 +65,6 @@ void ags_recall_ladspa_finalize(GObject *gobject);
 void ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa);
-
 /**
  * SECTION:ags_recall_ladspa
  * @short_description: The object interfacing with LADSPA

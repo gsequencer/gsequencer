@@ -43,7 +43,7 @@ struct _AgsDynamicConnectableInterface
 
 GType ags_dynamic_connectable_get_type();
 
-void ags_dynamic_connectable_connect(AgsDynamicConnectable *connectable);
-void ags_dynamic_connectable_disconnect(AgsDynamicConnectable *connectable);
+void ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable);
+void ags_dynamic_connectable_disconnect_dynamic(AgsDynamicConnectable *connectable);
 
 #endif /*__AGS_DYNAMIC_CONNECTABLE_H__*/
