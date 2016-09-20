@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_thread_application_context.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
@@ -32,7 +34,9 @@
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_returnable_thread.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/thread/file/ags_thread_file_xml.h>
 
@@ -56,7 +60,6 @@ AgsThreadPool* ags_thread_application_context_get_thread_pool(AgsConcurrencyProv
 void ags_thread_application_context_finalize(GObject *gobject);
 
 void ags_thread_application_context_load_config(AgsApplicationContext *application_context);
-void ags_thread_application_context_register_types(AgsApplicationContext *application_context);
 void ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_thread_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
@@ -213,8 +216,8 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
   thread_application_context->flags = 0;
 
   /* AgsGenericMainLoop */
-  AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop = 
-    generic_main_loop = (AgsThread *) ags_generic_main_loop_new(thread_application_context);
+  generic_main_loop = (AgsGenericMainLoop *) ags_generic_main_loop_new((GObject *) thread_application_context);
+  AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop = (GObject *) generic_main_loop;
   g_object_set(thread_application_context,
 	       "main-loop\0", generic_main_loop,
 	       NULL);
@@ -223,9 +226,9 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
   ags_connectable_connect(AGS_CONNECTABLE(generic_main_loop));
 
   /* AgsTaskThread */
-  AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
+  AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread = (GObject *) ags_task_thread_new();
   ags_thread_add_child_extended(AGS_THREAD(generic_main_loop),
-				AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread,
+				AGS_THREAD(AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread),
 				TRUE, TRUE);
 
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(generic_main_loop),
@@ -255,16 +258,18 @@ ags_thread_application_context_set_property(GObject *gobject,
       
       autosave_thread = (AgsAutosaveThread *) g_value_get_object(value);
 
-      if(autosave_thread == thread_application_context->autosave_thread)
+      if(autosave_thread == (AgsAutosaveThread *) thread_application_context->autosave_thread)
 	return;
 
-      if(thread_application_context->autosave_thread != NULL)
+      if(thread_application_context->autosave_thread != NULL){
 	g_object_unref(thread_application_context->autosave_thread);
-
-      if(autosave_thread != NULL)
+      }
+      
+      if(autosave_thread != NULL){
 	g_object_ref(G_OBJECT(autosave_thread));
-
-      thread_application_context->autosave_thread = autosave_thread;
+      }
+      
+      thread_application_context->autosave_thread = (AgsThread *) autosave_thread;
     }
     break;
   case PROP_THREAD_POOL:
@@ -356,19 +361,19 @@ ags_thread_application_context_disconnect(AgsConnectable *connectable)
 AgsThread*
 ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
 }
 
 AgsThread*
 ags_thread_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
 }
 
 AgsThreadPool*
 ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+  return((AgsThreadPool *) AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
 }
 
 void
@@ -394,18 +399,18 @@ ags_thread_application_context_load_config(AgsApplicationContext *application_co
 			       "model\0");
     
   if(model != NULL){
-    if(!strncmp(model,
-		"single-threaded\0",
-		16)){
+    if(!g_ascii_strncasecmp(model,
+			    "single-threaded\0",
+			    16)){
       //TODO:JK: implement me
 	
-    }else if(!strncmp(model,
-		      "multi-threaded",
-		      15)){
+    }else if(!g_ascii_strncasecmp(model,
+				  "multi-threaded",
+				  15)){
       //TODO:JK: implement me
-    }else if(!strncmp(model,
-		      "super-threaded",
-		      15)){
+    }else if(!g_ascii_strncasecmp(model,
+				  "super-threaded",
+				  15)){
       //TODO:JK: implement me
     }
   }
@@ -432,15 +437,15 @@ ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **appl
   xmlNode *child;
 
   if(*application_context == NULL){
-    gobject = g_object_new(AGS_TYPE_THREAD_APPLICATION_CONTEXT,
-			   NULL);
+    gobject = (AgsThreadApplicationContext *) g_object_new(AGS_TYPE_THREAD_APPLICATION_CONTEXT,
+							   NULL);
 
     *application_context = (GObject *) gobject;
   }else{
     gobject = (AgsApplicationContext *) *application_context;
   }
 
-  file->application_context = gobject;
+  file->application_context = (GObject *) gobject;
 
   g_object_set(G_OBJECT(file),
 	       "application-context\0", gobject,
@@ -567,14 +572,14 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
 	return;
       }
       
-      autosave_thread = thread_application_context->autosave_thread;
+      autosave_thread = (AgsAutosaveThread *) thread_application_context->autosave_thread;
 
       if(!strncmp(value,
 		  "true\0",
 		  5)){
-	ags_thread_start(autosave_thread);
+	ags_thread_start((AgsThread *) autosave_thread);
       }else{
-	ags_thread_stop(autosave_thread);
+	ags_thread_stop((AgsThread *) autosave_thread);
       }
     }
   }else if(!strncmp(group,

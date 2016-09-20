@@ -396,8 +396,8 @@ ags_turtle_read_blank_node_label(gchar *offset,
   if(g_str_has_prefix(offset,
 		      "_:\0") &&
      ((tmp = ags_turtle_read_pn_chars_u(offset + 2,
-					end_ptr) != NULL) ||
-      g_ascii_isdigit(offset[2]))){
+					end_ptr)) != NULL) ||
+      g_ascii_isdigit(offset[2])){
     if(tmp == NULL){
       str = g_strdup_printf("_:%c\0", offset[2]);
       offset += 3;
@@ -883,7 +883,7 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
 		      "\"\"\"\0")){
     while((end = strstr(offset + 3,
 			"\"\"\"\0")) != NULL &&
-	  end - 1 == '\\'){
+	  *(end - 1) == '\\'){
       offset++;
     }
 
@@ -919,7 +919,7 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
 		      "'''\0")){
     while((end = strstr(offset + 3,
 			"'''\0")) != NULL &&
-	  end - 1 == '\\'){
+	  *(end - 1) == '\\'){
       offset++;
     }
 
@@ -1014,7 +1014,7 @@ ags_turtle_read_echar(gchar *offset,
   
   str = NULL;
 
-  if(offset == '\\'){
+  if(*offset == '\\'){
     if(index(echar,
 	     offset[1]) != NULL){
       str = g_strndup(offset,
@@ -1521,7 +1521,7 @@ ags_turtle_read_hex(gchar *offset,
 
   str = NULL;
 
-  if(g_ascii_isxdigit(offset)){
+  if(g_ascii_isxdigit(*offset)){
     str = g_strndup(offset,
 		    1);
   }
@@ -1683,11 +1683,13 @@ ags_turtle_load(AgsTurtle *turtle,
   xmlDoc *doc;
   xmlNode *root_node, *rdf_statement_node;
   FILE *file;
+
+  struct stat *sb;
   
   gchar *buffer, *iter;
-  
-  struct stat *sb;
 
+  size_t n_read;
+  
   auto gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter);
   auto xmlNode* ags_turtle_load_read_iriref(gchar **iter);
   auto xmlNode* ags_turtle_load_read_anon(gchar **iter);
@@ -2345,7 +2347,7 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;    
 
-    rdf_blank_node_label = ags_turtle_read_blank_node_label(&look_ahead,
+    rdf_blank_node_label = ags_turtle_read_blank_node_label(look_ahead,
 							    &(buffer[sb->st_size]));
     
     if(rdf_blank_node_label != NULL){
@@ -2900,7 +2902,7 @@ ags_turtle_load(AgsTurtle *turtle,
       return(NULL);
     }
 
-    if(look_ahead == '('){
+    if(*look_ahead == '('){
       start_ptr = look_ahead;
       look_ahead++;
 
@@ -3036,16 +3038,21 @@ ags_turtle_load(AgsTurtle *turtle,
 	       "r\0");
 
   if(file == NULL){
-    return;
+    return(NULL);
   }
 
   buffer = (gchar *) malloc((sb->st_size + 1) * sizeof(gchar));
 
   if(buffer == NULL){
-    return;
+    return(NULL);
   }
   
-  fread(buffer, sizeof(gchar), sb->st_size, file);
+  n_read = fread(buffer, sizeof(gchar), sb->st_size, file);
+
+  if(n_read != sb->st_size){
+    g_critical("number of read bytes doesn't match buffer size\0");
+  }
+  
   buffer[sb->st_size] = '\0';
   fclose(file);
 

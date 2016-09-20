@@ -32,6 +32,7 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/thread/ags_thread_application_context.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
@@ -60,7 +61,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     GType type;
 
     if(!thread_type_is_registered){
-      ags_thread_application_context_register_types();
+      ags_thread_application_context_register_types(AGS_APPLICATION_CONTEXT(file->application_context));
 
       thread_type_is_registered = TRUE;
     }
@@ -181,7 +182,7 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
   gchar *id;
 
   if(AGS_IS_RETURNABLE_THREAD(thread)){
-    return;
+    return(NULL);
   }
 
   id = ags_id_generator_create_uuid();
@@ -218,7 +219,7 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 	      node);
 
   /* child elements */
-  current = thread->children;
+  current = g_atomic_pointer_get(&(thread->children));
 
   child = xmlNewNode(NULL,
 		     "ags-thread-list\0");
@@ -229,7 +230,8 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
     ags_file_write_thread(file,
 			  child,
 			  current);
-    current = current->next;
+    
+    current = g_atomic_pointer_get(&(current->next));
   }
 }
 

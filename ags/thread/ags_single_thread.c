@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <math.h>
+
 void ags_single_thread_class_init(AgsSingleThreadClass *single_thread);
 void ags_single_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_single_thread_init(AgsSingleThread *single_thread);
@@ -171,7 +173,7 @@ ags_single_thread_run(AgsThread *thread)
 {
   AgsSingleThread *single_thread;
 
-  GList *list;
+  AgsThread *child;
   
   struct timespec play_start, play_exceeded, play_idle, current;
 
@@ -184,12 +186,12 @@ ags_single_thread_run(AgsThread *thread)
     /* initial value to calculate timing */
     clock_gettime(CLOCK_MONOTONIC, &play_start);
 
-    list = AGS_THREAD(single_thread)->children;
+    child = g_atomic_pointer_get(&(AGS_THREAD(single_thread)->children));
 
-    while(list != NULL){
-      ags_thread_run(AGS_THREAD(list->data));
+    while(child != NULL){
+      ags_thread_run(child);
 
-      list = list->next;
+      child = g_atomic_pointer_get(&(child->next));
     }
     
     /* do timing */

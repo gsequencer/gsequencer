@@ -24,6 +24,13 @@
 
 #include <ags/server/ags_server_application_context.h>
 
+#include <stdlib.h>
+#include <string.h>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 void ags_server_class_init(AgsServerClass *server);
 void ags_server_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_init(AgsServer *server);
@@ -186,9 +193,9 @@ ags_server_set_property(GObject *gobject,
     {
       AgsApplicationContext *application_context;
 
-      application_context = g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(server->application_context == application_context){
+      if(server->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -197,11 +204,9 @@ ags_server_set_property(GObject *gobject,
       }
 
       if(application_context != NULL){
-	AgsConfig *config;
-	
 	g_object_ref(G_OBJECT(application_context));
 
-	server->application_mutex = &(application_context->mutex);
+	server->application_mutex = application_context->mutex;
       }else{
 	server->application_mutex = NULL;
       }

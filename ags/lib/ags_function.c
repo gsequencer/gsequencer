@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_function.h>
 
+#include <stdlib.h>
+
 #include <regex.h>
 
 /**
@@ -389,12 +391,12 @@ ags_function_find_literals(AgsFunction *function,
     if(regexec(&literal_regex, str, max_matches, match_arr, 0) == 0){
       literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
 
-      literals[n_literals] = g_strndup(match_arr[0].rm_so,
+      literals[n_literals] = g_strndup(str,
 				       match_arr[0].rm_eo - match_arr[0].rm_so);
       n_literals++;
 
-      if(match_arr[0].rm_eo != '\0'){
-	str = match_arr[0].rm_eo + 1;
+      if(str[match_arr[0].rm_eo - match_arr[0].rm_so] != '\0'){
+	str += (match_arr[0].rm_eo - match_arr[0].rm_so);
       }else{
 	break;
       }

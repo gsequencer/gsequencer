@@ -1405,7 +1405,7 @@ ags_file_read_config(AgsFile *file, xmlNode *node, GObject **config)
   char *buffer;
   gsize buffer_length;
 
-  gobject = config;
+  gobject = *config;
   gobject->version = xmlGetProp(node,
 				AGS_FILE_VERSION_PROP);
 
@@ -1459,7 +1459,7 @@ ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *config)
 	      node);
 
   /* cdata */
-  ags_config_to_data(config,
+  ags_config_to_data(AGS_CONFIG(config),
 		     &buffer,
 		     &buffer_length);
 
@@ -1480,7 +1480,7 @@ ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **applic
   context = xmlGetProp(node,
 		       "context\0");
 
-  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->register_types(file->application_context);
+  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->register_types(AGS_APPLICATION_CONTEXT(file->application_context));
   AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->read(file,
 								     node,
 								     application_context);
@@ -1489,7 +1489,7 @@ ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **applic
 void
 ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *application_context)
 {
-  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->register_types(file->application_context);
+  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->register_types(AGS_APPLICATION_CONTEXT(file->application_context));
   AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->write(file,
 								parent,
 								application_context);

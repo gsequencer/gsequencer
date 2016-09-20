@@ -26,8 +26,9 @@
 #include <ags/lib/ags_time.h>
 
 #define _GNU_SOURCE
-
 #include <signal.h>
+
+#define _GNU_SOURCE
 #include <pthread.h>
 
 #define AGS_TYPE_THREAD                (ags_thread_get_type())

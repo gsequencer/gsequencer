@@ -299,7 +299,7 @@ ags_application_context_set_property(GObject *gobject,
     {
       AgsConfig *config;
       
-      config = (AgsApplicationContext *) g_value_get_object(value);
+      config = (AgsConfig *) g_value_get_object(value);
 
       if(config == application_context->config)
 	return;
@@ -310,7 +310,7 @@ ags_application_context_set_property(GObject *gobject,
       if(config != NULL)
 	g_object_ref(G_OBJECT(config));
 
-      application_context->config = (GObject *) config;
+      application_context->config = config;
     }
     break;
   case PROP_MAIN_LOOP:
@@ -335,7 +335,7 @@ ags_application_context_set_property(GObject *gobject,
     {
       AgsFile *file;
       
-      file = (AgsApplicationContext *) g_value_get_object(value);
+      file = (AgsFile *) g_value_get_object(value);
 
       if(file == application_context->file)
 	return;
@@ -346,7 +346,7 @@ ags_application_context_set_property(GObject *gobject,
       if(file != NULL)
 	g_object_ref(G_OBJECT(file));
 
-      application_context->file = (GObject *) file;
+      application_context->file = (AgsFile *) file;
     }
     break;
   default:

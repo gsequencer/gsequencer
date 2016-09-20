@@ -19,13 +19,13 @@
 
 #include <ags/server/ags_registry.h>
 
-#include <stdlib.h>
-
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_connectable.h>
 
 #include <ags/server/ags_server.h>
+
+#include <stdlib.h>
 
 void ags_registry_class_init(AgsRegistryClass *registry);
 void ags_registry_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -208,9 +208,9 @@ ags_registry_entry_find(AgsRegistry *registry,
   while(current != NULL){
     entry = (AgsRegistryEntry *) current->data;
 
-    if(!strncmp(entry->id,
-		id,
-		registry->id_length)){
+    if(!g_ascii_strncasecmp(entry->id,
+			    id,
+			    registry->id_length)){
       return(entry);
     }
 
