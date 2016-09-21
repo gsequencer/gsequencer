@@ -922,7 +922,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_sin_s16((signed char *) buffer,
+      ags_synth_util_sin_s16((signed short *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -930,7 +930,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_sin_s24((signed char *) buffer,
+      ags_synth_util_sin_s24((signed long *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -938,7 +938,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_sin_s32((signed char *) buffer,
+      ags_synth_util_sin_s32((signed long *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -946,7 +946,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_sin_s64((signed char *) buffer,
+      ags_synth_util_sin_s64((signed long long *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -954,7 +954,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
     {
-      ags_synth_util_sin_float((signed char *) buffer,
+      ags_synth_util_sin_float((float *) buffer,
 			       freq, phase, volume,
 			       samplerate,
 			       offset, n_frames);
@@ -962,7 +962,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
     {
-      ags_synth_util_sin_double((signed char *) buffer,
+      ags_synth_util_sin_double((double *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1092,7 +1092,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_triangle_s16((signed char *) buffer,
+      ags_synth_util_triangle_s16((signed short *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1100,7 +1100,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_triangle_s24((signed char *) buffer,
+      ags_synth_util_triangle_s24((signed long *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1108,7 +1108,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_triangle_s32((signed char *) buffer,
+      ags_synth_util_triangle_s32((signed long *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1116,7 +1116,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_triangle_s64((signed char *) buffer,
+      ags_synth_util_triangle_s64((signed long long *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1124,7 +1124,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
     {
-      ags_synth_util_triangle_float((signed char *) buffer,
+      ags_synth_util_triangle_float((float *) buffer,
 				    freq, phase, volume,
 				    samplerate,
 				    offset, n_frames);
@@ -1132,7 +1132,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
     {
-      ags_synth_util_triangle_double((signed char *) buffer,
+      ags_synth_util_triangle_double((double *) buffer,
 				     freq, phase, volume,
 				     samplerate,
 				     offset, n_frames);
@@ -1177,7 +1177,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_square_s16((signed char *) buffer,
+      ags_synth_util_square_s16((signed short *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1185,7 +1185,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_square_s24((signed char *) buffer,
+      ags_synth_util_square_s24((signed long *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1193,7 +1193,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_square_s32((signed char *) buffer,
+      ags_synth_util_square_s32((signed long *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1201,7 +1201,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_square_s64((signed char *) buffer,
+      ags_synth_util_square_s64((signed long long *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1209,7 +1209,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
     {
-      ags_synth_util_square_float((signed char *) buffer,
+      ags_synth_util_square_float((float *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1217,7 +1217,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
     {
-      ags_synth_util_square_double((signed char *) buffer,
+      ags_synth_util_square_double((double *) buffer,
 				   freq, phase, volume,
 				   samplerate,
 				   offset, n_frames);

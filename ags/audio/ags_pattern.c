@@ -48,10 +48,10 @@ void ags_pattern_connect(AgsConnectable *connectable);
 void ags_pattern_disconnect(AgsConnectable *connectable);
 void ags_pattern_finalize(GObject *gobject);
 
-void ags_pattern_change_bpm(AgsTactable *tactable, gdouble bpm);
+void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
-void ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port);
-AgsPort* ags_pattern_get_port(AgsPortlet *portlet);
+void ags_pattern_set_port(AgsPortlet *portlet, GObject *port);
+GObject* ags_pattern_get_port(AgsPortlet *portlet);
 GList* ags_pattern_list_safe_properties(AgsPortlet *portlet);
 void ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
@@ -542,20 +542,20 @@ ags_pattern_finalize(GObject *gobject)
 }
 
 void
-ags_pattern_change_bpm(AgsTactable *tactable, gdouble bpm)
+ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port)
+ags_pattern_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
 	       "port\0", port,
 	       NULL);
 }
 
-AgsPort*
+GObject*
 ags_pattern_get_port(AgsPortlet *portlet)
 {
   AgsPort *port;
@@ -564,7 +564,7 @@ ags_pattern_get_port(AgsPortlet *portlet)
 	       "port\0", &port,
 	       NULL);
 
-  return(port);
+  return((GObject *) port);
 }
 
 GList*

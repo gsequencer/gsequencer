@@ -55,6 +55,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <math.h>
+
 /**
  * SECTION:ags_audio
  * @short_description: A container of channels organizing them as input or output
@@ -936,7 +938,7 @@ ags_audio_init(AgsAudio *audio)
   audio->input = NULL;
 
   /* playback domain */
-  audio->playback_domain = ags_playback_domain_new();
+  audio->playback_domain = (GObject *) ags_playback_domain_new();
   AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = (GObject *) audio;
 
   /* thread model */
@@ -968,15 +970,15 @@ ags_audio_init(AgsAudio *audio)
 			AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
 
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
-											    audio);
+											    (GObject *) audio);
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0]->freq = freq;
 	
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
-											    audio);
+											    (GObject *) audio);
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->freq = freq;
 
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
-											    audio);
+											    (GObject *) audio);
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->freq = freq;
       }
     }
@@ -1191,7 +1193,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_audio_connection(audio,
-				     audio_connection);
+				     (GObject *) audio_connection);
     }
     break;
   case PROP_PLAYBACK_DOMAIN:
@@ -1200,7 +1202,7 @@ ags_audio_set_property(GObject *gobject,
 
       playback_domain = (AgsPlaybackDomain *) g_value_get_object(value);
 
-      if(audio->playback_domain == playback_domain){
+      if(audio->playback_domain == (GObject *) playback_domain){
 	return;
       }
 
@@ -1212,7 +1214,7 @@ ags_audio_set_property(GObject *gobject,
 	g_object_ref(playback_domain);
       }
 
-      audio->playback_domain = playback_domain;
+      audio->playback_domain = (GObject *) playback_domain;
     }
     break;
   case PROP_NOTATION:
@@ -1227,7 +1229,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_notation(audio,
-			     notation);
+			     (GObject *) notation);
     }
     break;
   case PROP_AUTOMATION:
@@ -1242,7 +1244,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_automation(audio,
-			       automation);
+			       (GObject *) automation);
     }
     break;
   case PROP_RECALL_ID:
@@ -1257,7 +1259,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_recall_id(audio,
-			      recall_id);
+			      (GObject *) recall_id);
     }
     break;
   case PROP_RECYCLING_CONTEXT:
@@ -1272,7 +1274,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_recycling_context(audio,
-				      recycling_context);
+				      (GObject *) recycling_context);
     }
     break;
   case PROP_RECALL_CONTAINER:
@@ -1287,7 +1289,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_recall_container(audio,
-				     recall_container);
+				     (GObject *) recall_container);
     }
     break;
   case PROP_PLAY:
@@ -1302,7 +1304,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_recall(audio,
-			   recall,
+			   (GObject *) recall,
 			   TRUE);
     }
     break;
@@ -1318,7 +1320,7 @@ ags_audio_set_property(GObject *gobject,
       }
 
       ags_audio_add_recall(audio,
-			   recall,
+			   (GObject *) recall,
 			   FALSE);
     }
     break;
@@ -2430,7 +2432,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       list = list->next;
 
     ags_audio_set_audio_channels_grow_notation0:
-      list->data = (gpointer) ags_notation_new(audio,
+      list->data = (gpointer) ags_notation_new((GObject *) audio,
 					       i);
     } 
   }
@@ -2875,7 +2877,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       list = list->next;
     ags_audio_set_pads_alloc_notation0:
 
-      list->data = (gpointer) ags_notation_new(audio,
+      list->data = (gpointer) ags_notation_new((GObject *) audio,
 					       i);
     }
   }
@@ -3055,12 +3057,16 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       for(i = 0; i < audio->output_pads - pads; i++){
 	AgsPlayback *playback;
+	GList *list;
 
-	playback = g_list_last(playback_domain->playback);
-	playback_domain->playback = g_list_remove(playback_domain->playback,
-						  playback);
+	list = g_list_last(playback_domain->playback);
+
+	if(list != NULL){
+	  playback = list->data;
+	  playback_domain->playback = g_list_remove(playback_domain->playback,
+						    playback);
+	}
       }
-
     }
 
     /* apply new size */
@@ -3931,7 +3937,7 @@ ags_audio_init_run(AgsAudio *audio)
 
   if(!AGS_IS_AUDIO(audio)){
     pthread_mutex_unlock(mutex);
-    return;
+    return(NULL);
   }
 
   /* emit */
@@ -4078,7 +4084,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
       /* append to AgsAudio */
       ags_audio_add_recall(audio,
-			   copy,
+			   (GObject *) copy,
 			   ((recall_id->recycling_context->parent == NULL) ? TRUE: FALSE));
 
       /* connect */
@@ -4678,7 +4684,7 @@ ags_audio_remove(AgsAudio *audio,
 
     ags_recall_remove(recall);
     ags_audio_remove_recall(audio,
-			    recall,
+			    (GObject *) recall,
 			    play);
     
     list = list_next;
@@ -5005,7 +5011,7 @@ ags_audio_recursive_set_property(AgsAudio *audio,
     guint i;
 
     for(i = 0; i < n_params; i++){
-      g_object_set_property(audio,
+      g_object_set_property(G_OBJECT(audio),
 			    parameter[i].name, &(parameter[i].value));
     }
   }
@@ -5016,7 +5022,7 @@ ags_audio_recursive_set_property(AgsAudio *audio,
       return;
     }
 
-    ags_audio_set_property(channel->audio,
+    ags_audio_set_property(G_OBJECT(channel->audio),
 			   parameter, n_params);
     
     ags_audio_recurisve_set_property_down_input(channel,
@@ -5032,7 +5038,7 @@ ags_audio_recursive_set_property(AgsAudio *audio,
       return;
     }
 
-    audio = channel->audio;
+    audio = (AgsAudio *) channel->audio;
 
     if(audio == NULL){
       return;
@@ -5098,7 +5104,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
   pthread_mutex_t *mutex, *channel_mutex;
 
   if(audio == NULL){
-    return;
+    return(NULL);
   }
   
   /* lookup mutex */

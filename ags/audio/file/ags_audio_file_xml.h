@@ -31,7 +31,6 @@
 #include <ags/file/ags_file_link.h>
 
 #include <ags/thread/ags_task.h>
-#include <ags/thread/ags_timestamp.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -205,13 +204,6 @@ xmlNode* ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task);
 
 void ags_file_read_task_list(AgsFile *file, xmlNode *node, GList **task);
 xmlNode* ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task);
-
-/* AgsTimestamp */
-void ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp);
-xmlNode* ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp);
-
-void ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp);
-xmlNode* ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp);
 
 /* embedded audio */
 void ags_file_read_embedded_audio(AgsFile *file, xmlNode *node, gchar **embedded_audio);

@@ -188,7 +188,7 @@ ags_append_audio_launch(AgsTask *task)
   
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
   
-  audio = append_audio->audio;
+  audio = (AgsAudio *) append_audio->audio;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -196,13 +196,13 @@ ags_append_audio_launch(AgsTask *task)
   pthread_mutex_lock(application_mutex);
 
   audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      audio_loop);
+					      (GObject *) audio_loop);
   
   pthread_mutex_unlock(application_mutex);
 
   /* append to AgsAudioLoop */
   ags_audio_loop_add_audio(audio_loop,
-			   audio);
+			   (GObject *) audio);
 
   /**/
   config = ags_config_get_instance();
@@ -234,7 +234,7 @@ ags_append_audio_launch(AgsTask *task)
 	pthread_mutex_lock(application_mutex);
 
 	audio_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
-						      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
+						      (GObject *) AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
   
 	pthread_mutex_unlock(application_mutex);
 
@@ -286,7 +286,7 @@ ags_append_audio_launch(AgsTask *task)
 	pthread_mutex_lock(application_mutex);
 
 	audio_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
-						      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]);
+						      (GObject *) AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]);
   
 	pthread_mutex_unlock(application_mutex);
 
@@ -349,7 +349,7 @@ ags_append_audio_launch(AgsTask *task)
 				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
 
 	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->parent == NULL){
-	  ags_thread_add_child_extended(audio_loop,
+	  ags_thread_add_child_extended((AgsThread *) audio_loop,
 					AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
 					TRUE, TRUE);
 	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]));
@@ -366,7 +366,7 @@ ags_append_audio_launch(AgsTask *task)
 				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]);
 
 	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->parent == NULL){
-	  ags_thread_add_child_extended(audio_loop,
+	  ags_thread_add_child_extended((AgsThread *) audio_loop,
 					AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
 					TRUE, TRUE);
 	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]));

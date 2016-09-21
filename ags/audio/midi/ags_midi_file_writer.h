@@ -50,7 +50,7 @@ struct _AgsMidiFileWriterClass
 GType ags_midi_file_writer_get_type(void);
 
 void ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
-				      unsigned char buffer,
+				      unsigned char *buffer,
 				      guint buffer_length);
 
 void ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,

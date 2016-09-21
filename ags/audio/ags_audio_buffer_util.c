@@ -23,6 +23,8 @@
 
 #include <samplerate.h>
 
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 /**
@@ -3525,7 +3527,7 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT:
     {
-      ags_audio_buffer_util_copy_s32_to_s8((float *) destination + doffset, dchannels,
+      ags_audio_buffer_util_copy_s32_to_s8((signed char *) destination + doffset, dchannels,
 					   (signed long *) source + soffset, schannels,
 					   count);
     }

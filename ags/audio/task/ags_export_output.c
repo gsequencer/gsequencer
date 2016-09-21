@@ -156,7 +156,7 @@ ags_export_output_launch(AgsTask *task)
   GObject *soundcard;
   AgsAudioFile *audio_file;
   gchar *filename;
-  guint dsp_channels;
+  guint pcm_channels;
   guint samplerate;
   guint format;
   guint tic;
@@ -170,7 +170,7 @@ ags_export_output_launch(AgsTask *task)
   tic = export_output->tic;
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			    &dsp_channels,
+			    &pcm_channels,
 			    &samplerate,
 			    NULL,
 			    &format);
@@ -178,53 +178,41 @@ ags_export_output_launch(AgsTask *task)
   /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
 				  soundcard,
-				  0, dsp_channels);
-  g_message("dsp - %d\0", dsp_channels);
+				  0, pcm_channels);
+  g_message("pcm - %d\0", pcm_channels);
   
   audio_file->samplerate = (int) samplerate;
-  audio_file->channels = dsp_channels;
+  audio_file->channels = pcm_channels;
 
   //TODO:JK: more formats
-  major_format = SF_FORMAT_WAV;
-  
   if(g_str_has_suffix(filename,
-		      ".flac\0")){
+		      ".wav\0")){
+    major_format = SF_FORMAT_WAV;
+
+    audio_file->format = major_format | SF_FORMAT_PCM_16;
+  }else if(g_str_has_suffix(filename,
+		      ".flac\0")){    
     major_format = SF_FORMAT_FLAC;
+
+    audio_file->format = major_format | SF_FORMAT_PCM_24;
   }else if(g_str_has_suffix(filename,
 			    ".ogg\0")){
     major_format = SF_FORMAT_OGG;
-  }
-  
-  switch(format){
-  case AGS_SOUNDCARD_SIGNED_8_BIT:
-    {
-      audio_file->format = major_format | SF_FORMAT_PCM_S8;
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_16_BIT:
-    {
-      audio_file->format = major_format | SF_FORMAT_PCM_16;
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_24_BIT:
-    {
-      audio_file->format = major_format | SF_FORMAT_PCM_24;
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_32_BIT:
-    {
-      audio_file->format = major_format | SF_FORMAT_PCM_32;
-    }
-    break;
-  default:
+
+    audio_file->format = major_format | SF_FORMAT_FLOAT;
+  }else{
+    major_format = SF_FORMAT_WAV;
+
     audio_file->format = major_format | SF_FORMAT_PCM_16;
   }
   
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
 
+#ifdef AGS_DEBUG
   g_message("export output\0");
-
+#endif
+  
   /* start export thread */
   export_thread->tic = tic;
   g_object_set(G_OBJECT(export_thread),

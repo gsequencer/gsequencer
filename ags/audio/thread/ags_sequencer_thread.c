@@ -186,7 +186,7 @@ ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread)
 
   sequencer_thread->sequencer = NULL;
 
-  sequencer_thread->timestamp_thread = ags_timestamp_thread_new();
+  sequencer_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   ags_thread_add_child(thread, sequencer_thread->timestamp_thread);
 
   sequencer_thread->error = NULL;
@@ -250,7 +250,7 @@ ags_sequencer_thread_connect(AgsConnectable *connectable)
 {
   AgsThread *audio_loop, *sequencer_thread;
 
-  sequencer_thread = AGS_SEQUENCER_THREAD(connectable);
+  sequencer_thread = AGS_THREAD(connectable);
 
   if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(sequencer_thread->flags)))) != 0){
     return;

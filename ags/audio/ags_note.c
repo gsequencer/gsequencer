@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/midi/ags_midi_buffer_util.h>
+
 #include <stdlib.h>
 
 void ags_note_class_init(AgsNoteClass *note);
@@ -376,15 +378,7 @@ ags_note_set_property(GObject *gobject,
 
       attack = (AgsComplex *) g_value_get_boxed(value);
 
-      if(note->attack == attack){
-	return;
-      }
-
-      if(note->attack != NULL){
-	ags_complex_free(note->attack);
-      }
-
-      ags_complex_set(note->attack,
+      ags_complex_set(&(note->attack),
 		      ags_complex_get(attack));
     }
     break;
@@ -394,15 +388,7 @@ ags_note_set_property(GObject *gobject,
 
       sustain = (AgsComplex *) g_value_get_boxed(value);
 
-      if(note->sustain == sustain){
-	return;
-      }
-
-      if(note->sustain != NULL){
-	ags_complex_free(note->sustain);
-      }
-
-      ags_complex_set(note->sustain,
+      ags_complex_set(&(note->sustain),
 		      ags_complex_get(sustain));
     }
     break;
@@ -412,15 +398,7 @@ ags_note_set_property(GObject *gobject,
 
       decay = (AgsComplex *) g_value_get_boxed(value);
 
-      if(note->decay == decay){
-	return;
-      }
-
-      if(note->decay != NULL){
-	ags_complex_free(note->decay);
-      }
-
-      ags_complex_set(note->decay,
+      ags_complex_set(&(note->decay),
 		      ags_complex_get(decay));
     }
     break;
@@ -430,15 +408,7 @@ ags_note_set_property(GObject *gobject,
 
       release = (AgsComplex *) g_value_get_boxed(value);
 
-      if(note->release == release){
-	return;
-      }
-
-      if(note->release != NULL){
-	ags_complex_free(note->release);
-      }
-
-      ags_complex_set(note->release,
+      ags_complex_set(&(note->release),
 		      ags_complex_get(release));
     }
     break;
@@ -448,15 +418,7 @@ ags_note_set_property(GObject *gobject,
 
       ratio = (AgsComplex *) g_value_get_boxed(value);
 
-      if(note->ratio == ratio){
-	return;
-      }
-
-      if(note->ratio != NULL){
-	ags_complex_free(note->ratio);
-      }
-
-      ags_complex_set(note->ratio,
+      ags_complex_set(&(note->ratio),
 		      ags_complex_get(ratio));
     }
     break;
@@ -660,7 +622,7 @@ ags_note_to_raw_midi(AgsNote *note,
   current_length++;
 
   /* velocity */
-  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(note->attack))));
+  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(&(note->attack)))));
   current_length++;
 
   /* prepare buffer */
@@ -700,7 +662,7 @@ ags_note_to_raw_midi(AgsNote *note,
 
       /* pressure */
       //TODO:JK: verify
-      pressure = (0x7f & (unsigned char) (128 * (((ags_complex_get(note->decay) / i) - (i * ags_complex_get(note->sustain))))));
+      pressure = (0x7f & (unsigned char) (128 * (((ags_complex_get(&(note->decay)) / i) - (i * ags_complex_get(&(note->sustain)))))));
       current_length++;
 
       /* prepare buffer */
@@ -736,7 +698,7 @@ ags_note_to_raw_midi(AgsNote *note,
   current_length++;
 
   /* velocity */
-  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(note->attack))));
+  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(&(note->attack)))));
   current_length++;
 
   /* prepare buffer */

@@ -26,6 +26,8 @@
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <math.h>
+
 void ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio);
 void ags_recall_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_packable_interface_init(AgsPackableInterface *packable);
@@ -364,7 +366,7 @@ ags_recall_audio_load_automation(AgsRecall *recall,
   while(automation_port != NULL){
     if(ags_automation_find_port(automation,
 				automation_port->data) == NULL){
-      current = ags_automation_new(audio,
+      current = ags_automation_new((GObject *) audio,
 				   0,
 				   G_TYPE_NONE,
 				   AGS_PORT(automation_port->data)->specifier);
@@ -372,10 +374,10 @@ ags_recall_audio_load_automation(AgsRecall *recall,
 		   "port\0", automation_port->data,
 		   NULL);
       ags_audio_add_automation(audio,
-			       current);
+			       (GObject *) current);
 
       //TODO:JK: property
-      AGS_PORT(automation_port->data)->automation = current;
+      AGS_PORT(automation_port->data)->automation = (GObject *) current;
     }
     
     automation_port = automation_port->next;
@@ -398,10 +400,10 @@ ags_recall_audio_unload_automation(AgsRecall *recall)
   automation_port = recall->automation_port;
   
   while(automation_port != NULL){
-    if((current = ags_automation_find_port(audio->automation,
-					   automation_port->data)) != NULL){
+    if((current = ags_automation_find_port((AgsAutomation *) audio->automation,
+					   (GObject *) automation_port->data)) != NULL){
       ags_audio_remove_automation(audio,
-				  current);
+				  (GObject *) current);
     }
     
     automation_port = automation_port->next;
@@ -470,7 +472,7 @@ ags_recall_audio_automate(AgsRecall *recall)
   step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   while(port != NULL){
-    automation = AGS_PORT(port->data)->automation;
+    automation = (AgsAutomation *) AGS_PORT(port->data)->automation;
 
     if(automation != NULL &&
        (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){

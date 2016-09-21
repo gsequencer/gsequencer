@@ -462,7 +462,7 @@ ags_jack_midiin_set_property(GObject *gobject,
 
       application_context = g_value_get_object(value);
 
-      if(jack_midiin->application_context == application_context){
+      if(jack_midiin->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -491,7 +491,7 @@ ags_jack_midiin_set_property(GObject *gobject,
 	jack_midiin->application_mutex = NULL;
       }
 
-      jack_midiin->application_context = application_context;
+      jack_midiin->application_context = (GObject *) application_context;
     }
     break;
   case PROP_APPLICATION_MUTEX:
@@ -544,7 +544,7 @@ ags_jack_midiin_set_property(GObject *gobject,
 
       jack_client = g_value_get_object(value);
 
-      if(jack_midiin->jack_client == jack_client){
+      if(jack_midiin->jack_client == (GObject *) jack_client){
 	return;
       }
 
@@ -552,7 +552,7 @@ ags_jack_midiin_set_property(GObject *gobject,
 	g_object_unref(G_OBJECT(jack_midiin->jack_client));
       }
 
-      jack_midiin->jack_client = jack_client;
+      jack_midiin->jack_client = (GObject *) jack_client;
     }
     break;
   default:
@@ -747,7 +747,7 @@ ags_jack_midiin_set_application_context(AgsSequencer *sequencer,
   AgsJackMidiin *jack_midiin;
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
-  jack_midiin->application_context = application_context;
+  jack_midiin->application_context = (GObject *) application_context;
 }
 
 AgsApplicationContext*
@@ -757,7 +757,7 @@ ags_jack_midiin_get_application_context(AgsSequencer *sequencer)
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
-  return(jack_midiin->application_context);
+  return((AgsApplicationContext *) jack_midiin->application_context);
 }
 
 void
@@ -814,7 +814,7 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
-  application_context = jack_midiin->application_context;
+  application_context = (AgsApplicationContext *) jack_midiin->application_context;
 
   if(application_context == NULL){
     return;
@@ -928,11 +928,8 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   jack_midiin->note_offset = 0;
 
   /* port setup */
-  jack_set_process_callback(AGS_JACK_PORT(jack_midiin->jack_port)->jack_client,
-			    ags_jack_midiin_process_thread,
-			    jack_midiin);
-  jack_activate(AGS_JACK_PORT(jack_midiin->jack_port)->port);
-
+  //TODO:JK: implement me
+  
   /*  */
   jack_midiin->tact_counter = 0.0;
   jack_midiin->delay_counter = 0.0;
@@ -980,9 +977,6 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
     return;
   }
 
-  jack_cycle_signal(AGS_JACK_PORT(jack_midiin->jack_port)->jack_client,
-		    0);
-
   pthread_mutex_unlock(mutex);
 }
 
@@ -1013,14 +1007,6 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   }
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  jack_cycle_signal(AGS_JACK_PORT(jack_midiin->jack_port)->jack_client,
-		    -1);
-
-  ags_jack_port_unregister(AGS_JACK_PORT(jack_midiin->jack_port));
-  jack_set_process_callback(AGS_JACK_PORT(jack_midiin->jack_port)->jack_client,
-			    NULL,
-			    NULL);
 
   jack_midiin->flags &= (~(AGS_JACK_MIDIIN_BUFFER0 |
 			   AGS_JACK_MIDIIN_BUFFER1 |
@@ -1142,7 +1128,7 @@ ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
 			   guint *buffer_length)
 {
   AgsJackMidiin *jack_midiin;
-  signed short *buffer;
+  char *buffer;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
@@ -1160,16 +1146,18 @@ ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
   }
   
   /* return the buffer's length */
-  if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
-    buffer = jack_midiin->buffer[0];
-  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-    buffer = jack_midiin->buffer[1];
-  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-    buffer = jack_midiin->buffer[2];
-  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
-    buffer = jack_midiin->buffer[3];
-  }else{
-    buffer = NULL;
+  if(buffer_length != NULL){
+    if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[0];
+    }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[1];
+    }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[2];
+    }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[3];
+    }else{
+      *buffer_length = 0;
+    }
   }
 
   return(buffer);

@@ -198,9 +198,9 @@ ags_reset_audio_connection_launch(AgsTask *task)
 				    "data-object\0", reset_audio_connection->soundcard,
 				    NULL);
     ags_audio_add_audio_connection(audio,
-				   audio_connection);
+				   (GObject *) audio_connection);
     ags_connection_manager_add_connection(connection_manager,
-					  audio_connection);
+					  (AgsConnection *) audio_connection);
   }
 
   g_object_set(audio_connection,

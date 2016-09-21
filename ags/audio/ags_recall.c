@@ -1344,7 +1344,7 @@ ags_recall_finalize(GObject *gobject)
 		   g_object_unref);
   
   if(recall->container != NULL){
-    ags_packable_unpack(recall);
+    ags_packable_unpack(AGS_PACKABLE(recall));
   }
 
   
@@ -1969,7 +1969,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_context)
        !AGS_IS_RECALL_AUDIO(recall) &&
        !AGS_IS_RECALL_CHANNEL(recall) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == (GObject *) recycling_context){
+       recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 	//	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
@@ -2132,7 +2132,8 @@ ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_depende
 
   g_object_ref(recall_dependency);
   
-  recall->dependencies = g_list_prepend(recall->dependencies, recall_dependency);
+  recall->dependencies = g_list_prepend(recall->dependencies,
+					recall_dependency);
   
   ags_connectable_connect(AGS_CONNECTABLE(recall_dependency));
 }
@@ -2267,7 +2268,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 
     child->flags |= (inheritated_flags_mask & (parent->flags));
 
-    parent->children = g_list_prepend(parent->children, child);
+    parent->children = g_list_prepend(parent->children,
+				      child);
 
     g_object_set(G_OBJECT(child),
 		 "soundcard\0", parent->soundcard,
@@ -2534,8 +2536,9 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
 	   recall_i);
 
   while((current = va_arg(ap, GType)) != G_TYPE_NONE){
+    //FIXME:JK: rather gulong_to_pointer
     list = g_list_prepend(list,
-			  current);
+			  GUINT_TO_POINTER(current));
   }
   
   va_end(ap);
@@ -2548,7 +2551,8 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
     list = start;
     
     while(list != NULL){
-      current = list->data;
+      //FIXME:JK: rather gpointer_to_ulong
+      current = GPOINTER_TO_UINT(list->data);
       
       if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
 	 G_TYPE_CHECK_INSTANCE_TYPE((recall), current)){
@@ -2591,7 +2595,7 @@ ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject
 
     if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == (GObject *) recycling_context)
+       recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context)
       return(recall_i);
 
     recall_i = recall_i->next;
@@ -2630,7 +2634,7 @@ ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context)
 #endif
 
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == recycling_context){
+       recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
 	return(recall_i);
     }
 

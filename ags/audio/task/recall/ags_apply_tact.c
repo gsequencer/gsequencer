@@ -270,7 +270,7 @@ ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
   ags_soundcard_set_delay_factor(AGS_SOUNDCARD(soundcard), apply_tact->tact);
 
   /* AgsAudio */
-  list = ags_soundcard_get_audio(soundcard);
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 
   while(list != NULL){
     ags_apply_tact_audio(apply_tact,

@@ -203,7 +203,7 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   /*  */
   soundcard_thread->soundcard = NULL;
 
-  soundcard_thread->timestamp_thread = ags_timestamp_thread_new();
+  soundcard_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   //  ags_thread_add_child(thread, soundcard_thread->timestamp_thread);
 
   soundcard_thread->error = NULL;
@@ -283,7 +283,7 @@ ags_soundcard_thread_connect(AgsConnectable *connectable)
 {
   AgsThread *audio_loop, *soundcard_thread;
 
-  soundcard_thread = AGS_SOUNDCARD_THREAD(connectable);
+  soundcard_thread = AGS_THREAD(connectable);
 
   if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0){
     return;
@@ -349,8 +349,8 @@ ags_soundcard_thread_start(AgsThread *thread)
   }
 
   /* find polling thread */
-  polling_thread = ags_thread_find_type(main_loop,
-					AGS_TYPE_POLLING_THREAD);
+  polling_thread = (AgsPollingThread *) ags_thread_find_type(main_loop,
+							     AGS_TYPE_POLLING_THREAD);
     
   /* add poll fd and connect dispatch */
   poll_fd = ags_soundcard_get_poll_fd(soundcard);
@@ -388,7 +388,7 @@ ags_soundcard_thread_run(AgsThread *thread)
   GError *error;
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
-  audio_loop = ags_thread_get_toplevel(thread);
+  audio_loop = (AgsAudioLoop *) ags_thread_get_toplevel(thread);
   
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -449,7 +449,7 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
   
   guint time_spent;
 
-  audio_loop = ags_thread_get_toplevel(soundcard_thread);
+  audio_loop = (AgsAudioLoop *) ags_thread_get_toplevel(soundcard_thread);
 
   if(ags_soundcard_is_available(AGS_SOUNDCARD(soundcard_thread->soundcard))){
     pthread_mutex_lock(audio_loop->timing_mutex);

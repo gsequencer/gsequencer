@@ -387,7 +387,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	gchar *plugin_name;
 	gchar *specifier;
 	
-	plugin_name = g_strdup_printf("ladspa-%lu\0", ladspa_plugin->unique_id);
+	plugin_name = g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id);
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 	
 	list = port;
@@ -407,12 +407,12 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	
 	current->port_descriptor = port_descriptor->data;
 	ags_recall_ladspa_load_conversion(recall_ladspa,
-					  current,
+					  (GObject *) current,
 					  port_descriptor->data);
 	
 	current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
 	
-	g_message("connecting port: %d/%d\0", i, port_count);      
+	g_message("connecting port: %lu/%lu\0", i, port_count);      
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_ladspa->input_port == NULL){
@@ -530,7 +530,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "index\0",
-	     g_strdup_printf("%d\0", recall_ladspa->index));
+	     g_strdup_printf("%ul\0", recall_ladspa->index));
 
   xmlAddChild(parent,
 	      node);
@@ -608,13 +608,13 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	gchar *plugin_name;
 	gchar *specifier;
 	
-	plugin_name = g_strdup_printf("ladspa-%lu\0", ladspa_plugin->unique_id);
+	plugin_name = g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id);
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 
 	current = g_object_new(AGS_TYPE_PORT,
 			       "plugin-name\0", plugin_name,
 			       "specifier\0", specifier,
-			       "control-port\0", g_strdup_printf("%d/%d\0",
+			       "control-port\0", g_strdup_printf("%lu/%lu\0",
 								 i,
 								 port_count),
 			       "port-value-is-pointer\0", FALSE,
@@ -624,7 +624,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	
 	current->port_descriptor = port_descriptor->data;	
 	ags_recall_ladspa_load_conversion(recall_ladspa,
-					  current,
+					  (GObject *) current,
 					  port_descriptor->data);
 
 	current->port_value.ags_port_ladspa = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);

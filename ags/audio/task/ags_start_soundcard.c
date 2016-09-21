@@ -148,8 +148,8 @@ ags_start_soundcard_finalize(GObject *gobject)
   application_context = ags_soundcard_get_application_context(soundcard);
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
-  soundcard_thread = ags_thread_find_type(audio_loop,
-					  AGS_TYPE_SOUNDCARD_THREAD);
+  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
+								 AGS_TYPE_SOUNDCARD_THREAD);
 
   if(soundcard_thread->error != NULL){
     g_error_free(soundcard_thread->error);
@@ -192,8 +192,8 @@ ags_start_soundcard_launch(AgsTask *task)
   */
   soundcard_thread = audio_loop;
   
-  while((soundcard_thread = ags_thread_find_type(soundcard_thread,
-						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
+  while((soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) soundcard_thread,
+									AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
     /* append to AgsSoundcard */
     soundcard_thread->error = NULL;
 

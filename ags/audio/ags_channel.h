@@ -213,8 +213,8 @@ AgsRecallID* ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 					     AgsRecallID *recall_id);
 void ags_channel_recursive_play_threaded(AgsChannel *channel,
 					 AgsRecallID *recall_id, gint stage);
-inline void ags_channel_recursive_play(AgsChannel *channel,
-				       AgsRecallID *recall_id, gint stage);
+void ags_channel_recursive_play(AgsChannel *channel,
+				AgsRecallID *recall_id, gint stage);
 
 void ags_channel_tillrecycling_cancel(AgsChannel *channel, AgsRecallID *recall_id);
 

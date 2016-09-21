@@ -827,8 +827,9 @@ void
 ags_midi_builder_real_on_error(AgsMidiBuilder *midi_builder,
 			       GError **error)
 {
-  if(error != NULL){
-    g_warning("%s\0", error);
+  if(error != NULL &&
+     *error != NULL){
+    g_warning("%s\0", (*error)->message);
   }
 }
 

@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <math.h>
+
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
 void ags_export_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_thread_init(AgsExportThread *export_thread);

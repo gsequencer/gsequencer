@@ -156,7 +156,7 @@ ags_add_audio_launch(AgsTask *task)
   list = ags_soundcard_get_audio(AGS_SOUNDCARD(add_audio->soundcard));
   list = g_list_prepend(list,
 			add_audio->audio);
-  ags_soundcard_set_audio(add_audio->soundcard,
+  ags_soundcard_set_audio(AGS_SOUNDCARD(add_audio->soundcard),
 			  list);
   
   /* AgsAudio */

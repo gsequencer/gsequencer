@@ -685,7 +685,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     return;
   }
 
-  recall_id = audio_signal->recall_id;
+  recall_id = (AgsRecallID *) audio_signal->recall_id;
 
   if(recall_id->recycling_context == NULL){
     pthread_mutex_unlock(mutex);

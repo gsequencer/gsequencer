@@ -170,7 +170,7 @@ ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data)
     }
 
     g_list_free_full(lv2_worker->response_data,
-		     ags_lv2_worker_free_response_data);
+		     (GDestroyNotify) ags_lv2_worker_free_response_data);
     lv2_worker->response_data = NULL;
   
     lv2_worker->worker_interface->end_run(lv2_worker->handle);

@@ -336,7 +336,7 @@ ags_ipatch_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      g_value_set_string(value, ipatch->soundcard);
+      g_value_set_object(value, ipatch->soundcard);
     }
     break;
   case PROP_FILENAME:
@@ -752,7 +752,9 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	  while(tmp != NULL){
 	    list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
 
-	    if(!strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20)){
+	    if(!g_ascii_strncasecmp(IPATCH_SF2_SAMPLE(list->data)->name,
+				    sublevel_name,
+				    20)){
 	      ipatch_sf2_reader->sample = (IpatchContainer *) IPATCH_SF2_SAMPLE(list->data);
 	    }
 

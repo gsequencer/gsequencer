@@ -50,7 +50,7 @@ void ags_recycling_thread_get_property(GObject *gobject,
 void ags_recycling_thread_connect(AgsConnectable *connectable);
 void ags_recycling_thread_disconnect(AgsConnectable *connectable);
 void ags_recycling_thread_finalize(GObject *gobject);
-void ags_recycling_thread_queue(void *data);
+void* ags_recycling_thread_queue(void *data);
 
 void ags_recycling_thread_start(AgsThread *thread);
 void ags_recycling_thread_run(AgsThread *thread);
@@ -285,7 +285,7 @@ ags_recycling_thread_set_property(GObject *gobject,
 
        first_recycling = (AgsRecycling *) g_value_get_object(value);
 
-       if(recycling_thread->first_recycling == first_recycling){
+       if(recycling_thread->first_recycling == (GObject *) first_recycling){
 	 return;
        }
 
@@ -297,7 +297,7 @@ ags_recycling_thread_set_property(GObject *gobject,
 	 g_object_ref(first_recycling);
        }
        
-       recycling_thread->first_recycling = first_recycling;
+       recycling_thread->first_recycling = (GObject *) first_recycling;
      }
      break;
    case PROP_LAST_RECYCLING:
@@ -306,7 +306,7 @@ ags_recycling_thread_set_property(GObject *gobject,
 
        last_recycling = (AgsRecycling *) g_value_get_object(value);
 
-       if(recycling_thread->last_recycling == last_recycling){
+       if(recycling_thread->last_recycling == (GObject *) last_recycling){
 	 return;
        }
 
@@ -318,7 +318,7 @@ ags_recycling_thread_set_property(GObject *gobject,
 	 g_object_ref(last_recycling);
        }
        
-       recycling_thread->last_recycling = last_recycling;
+       recycling_thread->last_recycling = (GObject *) last_recycling;
      }
      break;
   default:
@@ -384,7 +384,7 @@ ags_recycling_thread_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recycling_thread_parent_class)->finalize(gobject);
 }
 
-void
+void*
 ags_recycling_thread_queue(void *data)
 {
   AgsRecyclingThread *recycling_thread;
@@ -458,9 +458,11 @@ ags_recycling_thread_queue(void *data)
     ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(recycling_thread->first_recycling));
 
     /* notify iterator thread, signal fifo */
-    ags_iterator_thread_children_ready(recycling_thread->iterator_thread,
-				       recycling_thread);
+    ags_iterator_thread_children_ready((AgsIteratorThread *) recycling_thread->iterator_thread,
+				       (AgsThread *) recycling_thread);
   }
+
+  pthread_exit(NULL);
 }
 
 void
@@ -471,7 +473,7 @@ ags_recycling_thread_start(AgsThread *thread)
   recycling_thread = AGS_RECYCLING_THREAD(thread);
 
   pthread_create(recycling_thread->worker_queue, NULL,
-		 &ags_recycling_thread_queue, thread);
+		 ags_recycling_thread_queue, thread);
   
   AGS_THREAD_CLASS(ags_recycling_thread_parent_class)->start(thread);
 }
@@ -533,7 +535,7 @@ void
 ags_recycling_thread_add_worker(AgsRecyclingThread *recycling_thread,
 				AgsRecyclingThreadWorker *worker)
 {
-  recycling_thread->worker = g_list_prepend(recycling_thread,
+  recycling_thread->worker = g_list_prepend(recycling_thread->worker,
 					    worker);
 }
 
@@ -541,7 +543,7 @@ void
 ags_recycling_thread_remove_worker(AgsRecyclingThread *recycling_thread,
 				   AgsRecyclingThreadWorker *worker)
 {
-  recycling_thread->worker = g_list_remove(recycling_thread,
+  recycling_thread->worker = g_list_remove(recycling_thread->worker,
 					   worker);
 }
 

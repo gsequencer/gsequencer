@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_audio_application_context.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
@@ -41,6 +43,13 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_midiin.h>
+#include <ags/audio/ags_recall_channel_run_dummy.h>
+#include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_ladspa_run.h>
+#include <ags/audio/ags_recall_lv2.h>
+#include <ags/audio/ags_recall_lv2_run.h>
+#include <ags/audio/ags_recall_dssi.h>
+#include <ags/audio/ags_recall_dssi_run.h>
 
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_server.h>
@@ -48,7 +57,37 @@
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/recall/ags_play_audio.h>
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_play_channel_run_master.h>
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/recall/ags_loop_channel.h>
+#include <ags/audio/recall/ags_loop_channel_run.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_volume_channel_run.h>
+#include <ags/audio/recall/ags_peak_channel.h>
+#include <ags/audio/recall/ags_peak_channel_run.h>
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_buffer_channel.h>
+#include <ags/audio/recall/ags_buffer_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
+
 #include <ags/audio/file/ags_audio_file_xml.h>
+
+#include <ags/audio/thread/ags_record_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -277,7 +316,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   audio_application_context->distributed_manager = NULL;
 
   /* jack server */
-  jack_server = ags_jack_server_new(audio_application_context,
+  jack_server = ags_jack_server_new((GObject *) audio_application_context,
 				    NULL);
   audio_application_context->distributed_manager = g_list_prepend(audio_application_context->distributed_manager,
 								  jack_server);
@@ -331,7 +370,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa\0",
 				    5)){
-	soundcard = ags_devout_new(audio_application_context);
+	soundcard = ags_devout_new((GObject *) audio_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
 		
@@ -339,7 +378,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       }else if(!g_ascii_strncasecmp(str,
 				    "oss\0",
 				    4)){
-	soundcard = ags_devout_new(audio_application_context);
+	soundcard = ags_devout_new((GObject *) audio_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
 
@@ -437,7 +476,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   /* AgsSequencer */
   audio_application_context->sequencer = NULL;
 
-  sequencer = ags_midiin_new(audio_application_context);
+  sequencer = ags_midiin_new((GObject *) audio_application_context);
   audio_application_context->sequencer = g_list_prepend(audio_application_context->sequencer,
 							sequencer);
   g_object_ref(G_OBJECT(sequencer));
@@ -461,11 +500,11 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   */
   
   /* AgsServer */
-  audio_application_context->server = ags_server_new(audio_application_context);
+  audio_application_context->server = ags_server_new((GObject *) audio_application_context);
 
   /* AgsAudioLoop */
-  audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
-						audio_application_context);
+  audio_loop = ags_audio_loop_new((GObject *) soundcard,
+				  (GObject *) audio_application_context);
   g_object_set(audio_application_context,
 	       "main-loop\0", audio_loop,
 	       NULL);
@@ -474,11 +513,11 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
   /* AgsTaskThread */
-  AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
+  AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread = (GObject *) ags_task_thread_new();
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
 				AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread,
+				AGS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread),
 				TRUE, TRUE);
   
   /* AgsSoundcardThread */
@@ -521,7 +560,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       if(str != NULL){
 	if(g_strcmp0(str,
 		     "false\0")){
-	  audio_application_context->autosave_thread = ags_autosave_thread_new(audio_application_context);
+	  audio_application_context->autosave_thread = (GObject *) ags_autosave_thread_new(audio_application_context);
 	  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 					audio_application_context->autosave_thread,
 					TRUE, TRUE);
@@ -637,13 +676,13 @@ ags_audio_application_context_disconnect(AgsConnectable *connectable)
 AgsThread*
 ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
 }
 
 AgsThread*
 ags_audio_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
 }
 
 AgsThreadPool*
@@ -668,14 +707,14 @@ ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
 GObject*
 ags_audio_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
 {
-  return(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
+  return((AgsThread *) AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
 }
 
 void
 ags_audio_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
 							   GObject *soundcard_thread)
 {
-  AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard_thread = soundcard_thread;
+  AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard_thread = (AgsThread *) soundcard_thread;
 }
 
 GList*
@@ -904,12 +943,12 @@ ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **appli
   xmlNode *child;
 
   if(*application_context == NULL){
-    gobject = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
-			   NULL);
+    gobject = (AgsAudioApplicationContext *) g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
+							  NULL);
 
     *application_context = (GObject *) gobject;
   }else{
-    gobject = (AgsApplicationContext *) *application_context;
+    gobject = (AgsAudioApplicationContext *) *application_context;
   }
 
   file->application_context = gobject;

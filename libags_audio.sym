@@ -249,10 +249,6 @@ ags_file_read_task
 ags_file_write_task
 ags_file_read_task_list
 ags_file_write_task_list
-ags_file_read_timestamp
-ags_file_write_timestamp
-ags_file_read_timestamp_list
-ags_file_write_timestamp_list
 ags_file_read_embedded_audio
 ags_file_write_embedded_audio
 ags_file_read_embedded_audio_list
@@ -666,8 +662,11 @@ ags_channel_iter_free
 ags_channel_iter_prev
 ags_channel_iter_next
 ags_jack_client_get_type
+ags_jack_client_find_uuid
 ags_jack_client_find
 ags_jack_client_open
+ags_jack_client_add_device
+ags_jack_client_remove_device
 ags_jack_client_add_port
 ags_jack_client_remove_port
 ags_jack_client_activate
@@ -683,7 +682,7 @@ ags_jack_port_unregister
 ags_jack_port_new
 ags_jack_devout_get_type
 ags_jack_devout_error_quark
-ags_jack_devout_process_callback
+ags_jack_devout_switch_buffer_flag
 ags_jack_devout_adjust_delay_and_attack
 ags_jack_devout_realloc_buffer
 ags_jack_devout_new
@@ -846,7 +845,6 @@ ags_recall_id_set_run_stage
 ags_recall_id_unset_run_stage
 ags_recall_id_find_recycling_context
 ags_recall_id_find_parent_recycling_context
-ags_recall_id_add
 ags_recall_id_new
 ags_fifoout_get_type
 ags_fifoout_error_quark

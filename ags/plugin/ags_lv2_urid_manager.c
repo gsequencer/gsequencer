@@ -295,15 +295,22 @@ const char*
 ags_lv2_urid_manager_unmap(LV2_URID_Map_Handle handle,
 			   uint32_t urid)
 {
-  GValue value = {0,};
+  AgsLv2UridManager *lv2_urid_manager;
   gchar *retval;
+  
+  GValue value = {0,};
 
+  lv2_urid_manager = ags_lv2_urid_manager_get_instance();
+  
   g_value_init(&value,
 	       G_TYPE_ULONG);
   g_value_set_ulong(&value,
 		    urid);
 
-  retval = (gchar *) g_hash_table_find(ags_lv2_urid_manager_get_instance(), (GHRFunc) ags_lv2_urid_manager_finder, &value);
+  retval = (gchar *) g_hash_table_find(lv2_urid_manager->urid,
+				       (GHRFunc) ags_lv2_urid_manager_finder,
+				       &value);
+  //TODO:JK: unmap
   
   return(retval);
 }

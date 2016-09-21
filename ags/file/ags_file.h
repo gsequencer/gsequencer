@@ -101,13 +101,13 @@ struct _AgsFileClass
   GObjectClass object;
 
   void (*open)(AgsFile *file,
-	       GError *error);
+	       GError **error);
   void (*open_from_data)(AgsFile *file,
 			 gchar *data, guint length,
-			 GError *error);
+			 GError **error);
   void (*rw_open)(AgsFile *file,
 		  gboolean create,
-		  GError *error);
+		  GError **error);
 
   void (*write)(AgsFile *file);
   void (*write_concurrent)(AgsFile *file);

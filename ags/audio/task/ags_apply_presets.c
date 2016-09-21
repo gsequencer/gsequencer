@@ -182,13 +182,13 @@ ags_apply_presets_launch(AgsTask *task)
 				apply_presets->scope);
   }else if(AGS_IS_AUDIO(apply_presets->scope)){
     ags_apply_presets_audio(apply_presets,
-			    apply_presets->scope);
+			    (AgsAudio *) apply_presets->scope);
   }else if(AGS_IS_CHANNEL(apply_presets->scope)){
     ags_apply_presets_channel(apply_presets,
-			      apply_presets->scope);
+			      (AgsChannel *) apply_presets->scope);
   }else if(AGS_IS_AUDIO_SIGNAL(apply_presets->scope)){
     ags_apply_presets_audio_signal(apply_presets,
-				   apply_presets->scope);
+				   (AgsAudioSignal *) apply_presets->scope);
   }else{
     g_warning("ags_apply_presets_launch() - unsupported scope %s\0", G_OBJECT_TYPE_NAME(apply_presets->scope));
   }
@@ -212,7 +212,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   guint channels;
   
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
   
   freq = ceil((gdouble) apply_presets->samplerate / (gdouble) apply_presets->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 

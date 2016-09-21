@@ -162,7 +162,7 @@ ags_set_format_launch(AgsTask *task)
   gobject = set_format->gobject;
 
   if(AGS_IS_SOUNDCARD(gobject)){
-    ags_set_format_soundcard(set_format, AGS_SOUNDCARD(gobject));
+    ags_set_format_soundcard(set_format, gobject);
   }else if(AGS_IS_AUDIO(gobject)){
     ags_set_format_audio(set_format, AGS_AUDIO(gobject));
   }else if(AGS_IS_CHANNEL(gobject)){
@@ -239,13 +239,13 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
   guint format;
   
   /*  */
-  ags_soundcard_get_presets(soundcard,
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
 			    &samplerate,
 			    &buffer_size,
 			    &format);
 
-  ags_soundcard_set_presets(soundcard,
+  ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			    channels,
 			    samplerate,
 			    buffer_size,

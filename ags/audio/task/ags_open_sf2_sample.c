@@ -185,7 +185,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
 
   if(AGS_IS_INPUT(channel)){
     if(AGS_INPUT(channel)->file_link == NULL){
-      AGS_INPUT(channel)->file_link = ags_audio_file_link_new();
+      AGS_INPUT(channel)->file_link = (GObject *) ags_audio_file_link_new();
     }
 
     g_object_set(AGS_INPUT(channel)->file_link,

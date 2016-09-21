@@ -300,7 +300,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     audio_channel = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel;
   }else{
     play_channel_run = AGS_RECALL_CHANNEL_RUN(recall->parent->parent);
-    play_channel = play_channel_run->recall_channel;
+    play_channel = (AgsPlayChannel *) play_channel_run->recall_channel;
 
     g_value_init(&muted_value, G_TYPE_BOOLEAN);
     ags_port_safe_read(play_channel->muted,

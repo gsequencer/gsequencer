@@ -453,7 +453,7 @@ ags_recall_audio_run_remove(AgsRecall *recall)
   if(AGS_RECALL_AUDIO_RUN(recall)->recall_audio != NULL &&
      AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio != NULL){
     ags_audio_remove_recall(AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio,
-			    recall,
+			    (GObject *) recall,
 			    ((recall->recall_id->recycling_context->parent) ? TRUE: FALSE));
   }
   

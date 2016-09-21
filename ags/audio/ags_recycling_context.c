@@ -215,7 +215,7 @@ ags_recycling_context_set_property(GObject *gobject,
 
       recall_id = (AgsRecallID *) g_value_get_object(value);
 
-      if((AgsRecallID *) recall_id == recycling_context->recall_id){
+      if(recycling_context->recall_id == (GObject *) recall_id){
 	return;
       }
 
@@ -227,7 +227,7 @@ ags_recycling_context_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(recall_id));
       }
 
-      recycling_context->recall_id = recall_id;
+      recycling_context->recall_id = (GObject *) recall_id;
     }
     break;
   default:
@@ -316,7 +316,7 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
   gint new_length;
 
   if(recycling_context == NULL){
-    return;
+    return(NULL);
   }
 
   new_length = recycling_context->length + 1;

@@ -169,7 +169,7 @@ ags_init_channel_launch(AgsTask *task)
   gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
 
   init_channel = AGS_INIT_CHANNEL(task);
-  playback_domain = AGS_AUDIO(AGS_CHANNEL(init_channel->channel)->audio)->playback_domain;
+  playback_domain = (AgsPlaybackDomain *) AGS_AUDIO(AGS_CHANNEL(init_channel->channel)->audio)->playback_domain;
   
   list = NULL;
   list_start = NULL;

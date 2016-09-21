@@ -35,6 +35,8 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 
+#include <ags/thread/ags_timestamp.h>
+
 void ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread);
 xmlNode* ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread);
 
@@ -43,5 +45,12 @@ xmlNode* ags_file_write_thread_list(AgsFile *file, xmlNode *parent, GList *threa
 
 void ags_file_read_thread_pool(AgsFile *file, xmlNode *node, AgsThreadPool **thread_pool);
 xmlNode* ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread_pool);
+
+/* AgsTimestamp */
+void ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp);
+xmlNode* ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp);
+
+void ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp);
+xmlNode* ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp);
 
 #endif /*__AGS_FILE_THREAD_H__*/

@@ -549,7 +549,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   /* get main loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -560,7 +560,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,
 					  AGS_PLAYBACK(channel->playback)->recall_id[0],
-					  AGS_PLAYBACK(channel->playback));
+					  channel->playback);
   
   /* append AgsCancelAudio */
   ags_task_thread_append_task((AgsTaskThread *) async_queue,

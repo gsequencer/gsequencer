@@ -25,6 +25,7 @@
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_playable.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_sndfile.h>
 
@@ -375,7 +376,7 @@ ags_audio_file_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      g_value_set_string(value, audio_file->soundcard);
+      g_value_set_object(value, audio_file->soundcard);
     }
     break;
   case PROP_FILENAME:
@@ -686,8 +687,20 @@ void
 ags_audio_file_write(AgsAudioFile *audio_file,
 		     signed short *buffer, guint buffer_size)
 {
+  double *playable_buffer;
+
+  playable_buffer = (double *) malloc(audio_file->channels * buffer_size * sizeof(double));
+  ags_audio_buffer_util_clear_double(buffer, audio_file->channels,
+				     buffer_size);
+  
+  ags_audio_buffer_util_copy_s16_to_double(playable_buffer, audio_file->channels,
+					   buffer, audio_file->channels,
+					   buffer_size);
+					   
   ags_playable_write(AGS_PLAYABLE(audio_file->playable),
-		     buffer, buffer_size);
+		     playable_buffer, buffer_size);
+  
+  free(playable_buffer);
 }
 
 /**

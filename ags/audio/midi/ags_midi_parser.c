@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <string.h>
+
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -2119,7 +2121,7 @@ ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type)
   
   xmlNewProp(node,
 	     "tempo\0",
-	     g_strdup_printf("%ld\0", tempo));
+	     g_strdup_printf("%d\0", tempo));
   
   return(node);
 }
@@ -2206,7 +2208,7 @@ ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type)
 
   xmlNewProp(node,
 	     "keysig\0",
-	     g_strdup_printf("%d %s\0", (sf>127?sf-256:sf), (mi?"minor":"major")));
+	     g_strdup_printf("%d %s\0", (sf > 127 ? sf - 256: sf), (mi ? "minor\0": "major\0")));
   
   return(node);
 }

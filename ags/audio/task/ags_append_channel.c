@@ -182,7 +182,7 @@ ags_append_channel_launch(AgsTask *task)
 
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
 
-  channel = append_channel->channel;
+  channel = (AgsChannel *) append_channel->channel;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -190,7 +190,7 @@ ags_append_channel_launch(AgsTask *task)
   pthread_mutex_lock(application_mutex);
 
   audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      audio_loop);
+					      (GObject *) audio_loop);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -228,7 +228,7 @@ ags_append_channel_launch(AgsTask *task)
 				     AGS_PLAYBACK(channel->playback)->channel_thread[0]);
 	
 	if(g_atomic_pointer_get(&(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent)) == NULL){
-	  ags_thread_add_child_extended(audio_loop,
+	  ags_thread_add_child_extended((AgsThread *) audio_loop,
 					AGS_PLAYBACK(channel->playback)->channel_thread[0],
 					TRUE, TRUE);
 	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(channel->playback)->channel_thread[0]));

@@ -217,7 +217,7 @@ ags_jack_client_set_property(GObject *gobject,
 
       jack_server = (AgsJackServer *) g_value_get_object(value);
 
-      if(jack_server == jack_client->jack_server){
+      if(jack_client->jack_server == (GObject *) jack_server){
 	return;
       }
 
@@ -229,7 +229,7 @@ ags_jack_client_set_property(GObject *gobject,
 	g_object_ref(jack_server);
       }
       
-      jack_client->jack_server = jack_server;
+      jack_client->jack_server = (GObject *) jack_server;
     }
     break;
   default:
@@ -280,6 +280,32 @@ ags_jack_client_finalize(GObject *gobject)
   jack_client = AGS_JACK_CLIENT(gobject);
 
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_jack_client_find_uuid:
+ * @jack_client: a #GList
+ * @client_uuid: the client uuid to find
+ *
+ * Finds next match of @client_uuid in @jack_client.
+ *
+ * Returns: a #GList or %NULL
+ * 
+ * Since: 0.7.71
+ */
+GList*
+ags_jack_client_find_uuid(GList *jack_client,
+			  gchar *client_uuid)
+{
+  while(jack_client != NULL){
+    if(!g_ascii_strcasecmp(jack_get_uuid_for_client_name(AGS_JACK_CLIENT(jack_client->data)->client,
+							 jack_get_client_name(AGS_JACK_CLIENT(jack_client->data)->client)),
+			   client_uuid)){
+      return(jack_client);
+    }
+  }
+
+  return(NULL);
 }
 
 /**
@@ -435,6 +461,52 @@ ags_jack_client_deactivate(AgsJackClient *jack_client)
 }
 
 /**
+ * ags_jack_client_add_device:
+ * @jack_client: the #AgsJackClient
+ * @jack_device: an #AgsJackeDevout or #AgsJackMidiin
+ *
+ * Add @jack_device to @jack_client.
+ *
+ * Since: 0.7.71
+ */
+void
+ags_jack_client_add_device(AgsJackClient *jack_client,
+			   GObject *jack_device)
+{
+  if(!AGS_IS_JACK_CLIENT(jack_client) ||
+     (!AGS_IS_JACK_DEVOUT(jack_device) &&
+      !AGS_IS_JACK_MIDIIN(jack_device))){
+    return;
+  }
+
+  g_object_ref(jack_device);
+  jack_client->device = g_list_prepend(jack_client->device,
+				     jack_device);
+}
+
+/**
+ * ags_jack_client_remove_device:
+ * @jack_client: the #AgsJackClient
+ * @jack_device: an #AgsJackeDevout or #AgsJackMidiin
+ *
+ * Remove @jack_device from @jack_client.
+ *
+ * Since: 0.7.71
+ */
+void
+ags_jack_client_remove_device(AgsJackClient *jack_client,
+			      GObject *jack_device)
+{
+  if(!AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+  
+  jack_client->device = g_list_remove(jack_client->device,
+				    jack_device);
+  g_object_unref(jack_device);
+}
+
+/**
  * ags_jack_client_add_port:
  * @jack_client: the #AgsJackClient
  * @jack_port: an #AgsJackPort
@@ -570,7 +642,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   jack_client = AGS_JACK_CLIENT(ptr);
 
   if(jack_client->jack_server != NULL){
-    application_context = AGS_JACK_SERVER(jack_client->jack_server)->application_context;
+    application_context = (AgsApplicationContext *) AGS_JACK_SERVER(jack_client->jack_server)->application_context;
   }
 
   device = jack_client->device;
@@ -580,7 +652,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   /*  */  
   pthread_mutex_lock(application_mutex);
     
-  audio_loop = application_context->main_loop;
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
   
   pthread_mutex_unlock(application_mutex);
   

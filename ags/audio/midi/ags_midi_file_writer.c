@@ -145,7 +145,7 @@ ags_midi_file_writer_finalize(GObject *gobject)
  */
 void
 ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
-				 unsigned char buffer,
+				 unsigned char *buffer,
 				 guint buffer_length)
 {
   //TODO:JK: implement me

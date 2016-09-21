@@ -133,7 +133,7 @@ GType ags_jack_devout_get_type();
 
 GQuark ags_jack_devout_error_quark();
 
-int ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr);
+void ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout);
 
 void ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout);
 void ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout);

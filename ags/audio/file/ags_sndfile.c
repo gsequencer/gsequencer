@@ -25,6 +25,8 @@
 #include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <string.h>
+
 void ags_sndfile_class_init(AgsSndfileClass *sndfile);
 void ags_sndfile_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_sndfile_playable_interface_init(AgsPlayableInterface *playable);

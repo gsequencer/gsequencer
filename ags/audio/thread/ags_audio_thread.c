@@ -32,6 +32,8 @@
 
 #include <ags/audio/thread/ags_channel_thread.h>
 
+#include <math.h>
+
 void ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread);
 void ags_audio_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_thread_init(AgsAudioThread *audio_thread);
@@ -300,7 +302,7 @@ ags_audio_thread_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(audio == audio_thread->audio){
+      if(audio == (GObject *) audio_thread->audio){
 	return;
       }
       
@@ -312,7 +314,7 @@ ags_audio_thread_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(audio));
       }
 
-      audio_thread->audio = G_OBJECT(audio);
+      audio_thread->audio = (GObject *) audio;
     }
     break;
   default:
@@ -433,8 +435,8 @@ ags_audio_thread_run(AgsThread *thread)
   
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
   
-  audio = audio_thread->audio;
-  playback_domain = audio->playback_domain;
+  audio = (AgsAudio *) audio_thread->audio;
+  playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -498,16 +500,22 @@ ags_audio_thread_run(AgsThread *thread)
       ags_audio_thread_play_channel_super_threaded(audio_thread, playback);
     }else{
       for(stage = 0; stage < 3; stage++){
-	if(audio_thread == playback_domain->audio_thread[0]){
-	  ags_channel_recursive_play(output, playback->recall_id[0], stage);
+	if((AgsThread *) audio_thread == playback_domain->audio_thread[0]){
+	  ags_channel_recursive_play(output,
+				     playback->recall_id[0],
+				     stage);
 	}
 
-	if(audio_thread == playback_domain->audio_thread[1]){
-	  ags_channel_recursive_play(output, playback->recall_id[1], stage);
+	if((AgsThread *) audio_thread == playback_domain->audio_thread[1]){
+	  ags_channel_recursive_play(output,
+				     playback->recall_id[1],
+				     stage);
 	}
 
-	if(audio_thread == playback_domain->audio_thread[2]){
-	  ags_channel_recursive_play(output, playback->recall_id[2], stage);
+	if((AgsThread *) audio_thread == playback_domain->audio_thread[2]){
+	  ags_channel_recursive_play(output,
+				     playback->recall_id[2],
+				     stage);
 	}
       }
     }
@@ -535,7 +543,7 @@ ags_audio_thread_run(AgsThread *thread)
     /* get playback */
     pthread_mutex_lock(output_mutex);
     
-    playback = output->playback;
+    playback = (AgsPlayback *) output->playback;
       
     pthread_mutex_unlock(output_mutex);
 
@@ -573,12 +581,12 @@ ags_audio_thread_stop(AgsThread *thread)
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->stop(thread);
 
   /* stop channel */
-  child = thread->children;
+  child = g_atomic_pointer_get(&(thread->children));
 
   while(child != NULL){
     ags_thread_stop(child);
     
-    child = child->next;
+    child = g_atomic_pointer_get(&(child->next));
   }
 
   /* ensure synced */
@@ -602,15 +610,15 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 
   gboolean do_playback, do_sequencer, do_notation;
 
-  audio = audio_thread->audio;
-  playback_domain = audio->playback_domain;
+  audio = (AgsAudio *) audio_thread->audio;
+  playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
 
   /* super threaded audio level */
   do_sequencer = FALSE;
   do_notation = FALSE;
 
   /* sequencer */
-  if(audio_thread == playback_domain->audio_thread[1]){
+  if((AgsThread *) audio_thread == playback_domain->audio_thread[1]){
     AgsThread *thread;
     AgsChannelThread *channel_thread;
 
@@ -635,7 +643,7 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   }
 
   /* notation */
-  if(audio_thread == playback_domain->audio_thread[2]){
+  if((AgsThread *) audio_thread == playback_domain->audio_thread[2]){
     AgsThread *thread;
     AgsChannelThread *channel_thread;
 
@@ -668,14 +676,14 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 
   gboolean do_sequencer, do_notation;
 
-  audio = audio_thread->audio;
-  playback_domain = audio->playback_domain;
+  audio = (AgsAudio *) audio_thread->audio;
+  playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
   
   do_sequencer = FALSE;
   do_notation = FALSE;
 
   /* sequencer */
-  if(audio_thread == playback_domain->audio_thread[1]){
+  if((AgsThread *) audio_thread == playback_domain->audio_thread[1]){
     AgsChannelThread *channel_thread;
 
     channel_thread = (AgsChannelThread *) playback->channel_thread[1];
@@ -705,7 +713,7 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   }
 
   /* notation */
-  if(audio_thread == playback_domain->audio_thread[2]){
+  if((AgsThread *) audio_thread == playback_domain->audio_thread[2]){
     AgsChannelThread *channel_thread;
     
     channel_thread = (AgsChannelThread *) playback->channel_thread[2];
