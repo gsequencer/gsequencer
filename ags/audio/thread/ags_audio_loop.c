@@ -642,8 +642,8 @@ ags_audio_loop_run(AgsThread *thread)
   static gboolean initialized = FALSE;
   
   audio_loop = AGS_AUDIO_LOOP(thread);
-  polling_thread = ags_thread_find_type(thread,
-					AGS_TYPE_POLLING_THREAD);
+  polling_thread = (AgsPollingThread *) ags_thread_find_type(thread,
+							     AGS_TYPE_POLLING_THREAD);
   
   main_context = audio_loop->main_context;
 
@@ -779,7 +779,7 @@ ags_audio_loop_timing_thread(void *ptr)
   pthread_cond_t *timing_cond;
   
   audio_loop = AGS_AUDIO_LOOP(ptr);
-  thread = audio_loop;
+  thread = (AgsThread *) audio_loop;
 
   timing_mutex = audio_loop->timing_mutex;
   timing_cond = audio_loop->timing_cond;
@@ -1051,7 +1051,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	}
 
 	if(remove_play){
-	  ags_audio_loop_remove_channel(audio_loop, channel);
+	  ags_audio_loop_remove_channel(audio_loop,
+					(GObject *) channel);
 	}	  
       }
     }
@@ -1300,7 +1301,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	    AgsChannel *channel;
 
 	    ags_audio_loop_remove_audio(audio_loop,
-					audio);
+					(GObject *) audio);
 	    channel = audio->output;
 	
 	    while(channel != NULL){
@@ -1347,7 +1348,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       output = audio->output;
 
       while(output != NULL){
-	playback = output->playback; // ags_playback_find_source(playback_domain->playback,
+	playback = (AgsPlayback *) output->playback; // ags_playback_find_source(playback_domain->playback,
 
 	if(playback == NULL){
 	  output = output->next;

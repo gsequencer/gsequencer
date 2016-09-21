@@ -28,6 +28,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback.h>
 
+#include <math.h>
+
 void ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread);
 void ags_channel_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_channel_thread_init(AgsChannelThread *channel_thread);
@@ -293,7 +295,7 @@ ags_channel_thread_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(channel == channel_thread->channel){
+      if(channel_thread->channel == (GObject *) channel){
 	return;
       }
       
@@ -305,7 +307,7 @@ ags_channel_thread_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(channel));
       }
 
-      channel_thread->channel = G_OBJECT(channel);
+      channel_thread->channel = (GObject *) channel;
     }
     break;
   default:
@@ -427,7 +429,7 @@ ags_channel_thread_run(AgsThread *thread)
 
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
 
-  channel = channel_thread->channel;
+  channel = (AgsChannel *) channel_thread->channel;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -443,7 +445,7 @@ ags_channel_thread_run(AgsThread *thread)
   /* get soundcard play */
   pthread_mutex_lock(channel_mutex);
 
-  playback = channel->playback;
+  playback = (AgsPlayback *) channel->playback;
   current_thread = playback->channel_thread[0];
   
   pthread_mutex_unlock(channel_mutex);

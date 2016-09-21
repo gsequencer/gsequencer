@@ -279,7 +279,7 @@ ags_dssi_manager_load_file(gchar *dssi_path,
 	dssi_plugin = ags_dssi_plugin_new(path,
 					  plugin_descriptor->LADSPA_Plugin->Name,
 					  i);
-	ags_base_plugin_load_plugin(dssi_plugin);
+	ags_base_plugin_load_plugin((AgsBasePlugin *) dssi_plugin);
 	dssi_manager->dssi_plugin = g_list_prepend(dssi_manager->dssi_plugin,
 						   dssi_plugin);
       }

@@ -44,7 +44,7 @@ struct _AgsDistributedManagerInterface
   void (*set_ports)(AgsDistributedManager *distributed_manager,
 		    guint *ports, guint port_count);
   guint* (*get_ports)(AgsDistributedManager *distributed_manager,
-		      guint port_count);
+		      guint *port_count);
   
   void (*set_soundcard)(AgsDistributedManager *distributed_manager,
 			gchar *client_uuid,
@@ -78,7 +78,7 @@ gchar* ags_distributed_manager_get_url(AgsDistributedManager *distributed_manage
 void ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
 				       guint *port, guint port_count);
 guint* ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager,
-					 guint port_count);
+					 guint *port_count);
 
 void ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager,
 					   gchar *client_uuid,

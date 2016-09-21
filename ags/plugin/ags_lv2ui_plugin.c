@@ -197,7 +197,7 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
     break;
   case PROP_TURTLE:
     {
-      GObject *turtle;
+      AgsTurtle *turtle;
 
       turtle = g_value_get_object(value);
 

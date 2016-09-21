@@ -31,6 +31,8 @@
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <math.h>
+
 void ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel);
 void ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_channel_packable_interface_init(AgsPackableInterface *packable);
@@ -433,13 +435,13 @@ ags_recall_channel_load_automation(AgsRecall *recall,
 		   "port\0", automation_port->data,
 		   NULL);
       ags_audio_add_automation(channel->audio,
-			       current);
+			       (GObject *) current);
 
       //TODO:JK: property
-      AGS_PORT(automation_port->data)->automation = current;
+      AGS_PORT(automation_port->data)->automation = (GObject *) current;
     }else{
       //TODO:JK: property
-      AGS_PORT(automation_port->data)->automation = automation->data;
+      AGS_PORT(automation_port->data)->automation = (GObject *) automation->data;
     }
     
     automation_port = automation_port->next;
@@ -474,7 +476,7 @@ ags_recall_channel_unload_automation(AgsRecall *recall)
     if((current = ags_automation_find_port(audio->automation,
 					   automation_port->data)) != NULL){
       ags_audio_remove_automation(audio,
-				  current);
+				  (GObject *) current);
     }
     
     automation_port = automation_port->next;
@@ -505,7 +507,7 @@ ags_recall_channel_automate(AgsRecall *recall)
   guint ret_x;
   gboolean return_prev_on_failure;
 
-  audio = AGS_CHANNEL(AGS_RECALL_CHANNEL(recall)->source)->audio;
+  audio = (AgsAudio *) AGS_CHANNEL(AGS_RECALL_CHANNEL(recall)->source)->audio;
   soundcard = audio->soundcard;
 
   /* retrieve position */
@@ -543,7 +545,7 @@ ags_recall_channel_automate(AgsRecall *recall)
   step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   while(port != NULL){
-    automation = AGS_PORT(port->data)->automation;
+    automation = (AgsAutomation *) AGS_PORT(port->data)->automation;
 
     if(automation != NULL &&
        (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){

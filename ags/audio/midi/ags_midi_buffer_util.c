@@ -22,6 +22,9 @@
 #include <alsa/seq_midi_event.h>
 #include <alsa/seq_event.h>
 
+#include <math.h>
+#include <string.h>
+
 /**
  * SECTION:ags_midi_buffer_util
  * @short_description: MIDI buffer util

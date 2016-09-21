@@ -1142,11 +1142,11 @@ ags_file_real_write_concurrent(AgsFile *file)
   xmlNode *parent, *node, *child;
   gchar *id;
 
-  main_loop = AGS_APPLICATION_CONTEXT(file->application_context)->main_loop;
+  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(file->application_context)->main_loop;
   //gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
   //task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
 
-  application_context = file->application_context;
+  application_context = (AgsApplicationContext *) file->application_context;
 
   file->doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "ags\0");
@@ -1405,7 +1405,7 @@ ags_file_read_config(AgsFile *file, xmlNode *node, GObject **config)
   char *buffer;
   gsize buffer_length;
 
-  gobject = *config;
+  gobject = (AgsConfig *) *config;
   gobject->version = xmlGetProp(node,
 				AGS_FILE_VERSION_PROP);
 

@@ -164,7 +164,7 @@ ags_set_buffer_size_launch(AgsTask *task)
   gobject = set_buffer_size->gobject;
 
   if(AGS_IS_SOUNDCARD(gobject)){
-    ags_set_buffer_size_soundcard(set_buffer_size, AGS_SOUNDCARD(gobject));
+    ags_set_buffer_size_soundcard(set_buffer_size, gobject);
   }else if(AGS_IS_AUDIO(gobject)){
     ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(gobject));
   }else if(AGS_IS_CHANNEL(gobject)){

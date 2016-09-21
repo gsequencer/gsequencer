@@ -36,6 +36,8 @@
 #include <ags/config.h>
 
 #include <stdlib.h>
+
+#include <math.h>
 #include <errno.h>
 
 void ags_automation_class_init(AgsAutomationClass *automation);
@@ -54,8 +56,8 @@ void ags_automation_connect(AgsConnectable *connectable);
 void ags_automation_disconnect(AgsConnectable *connectable);
 void ags_automation_finalize(GObject *object);
 
-void ags_automation_set_port(AgsPortlet *portlet, AgsPort *port);
-AgsPort* ags_automation_get_port(AgsPortlet *portlet);
+void ags_automation_set_port(AgsPortlet *portlet, GObject *port);
+GObject* ags_automation_get_port(AgsPortlet *portlet);
 GList* ags_automation_list_safe_properties(AgsPortlet *portlet);
 void ags_automation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
@@ -456,7 +458,7 @@ ags_automation_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(automation->audio == audio){
+      if(automation->audio == (GObject *) audio){
 	return;
       }
 
@@ -468,7 +470,7 @@ ags_automation_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      automation->audio = audio;
+      automation->audio = (GObject *) audio;
     }
     break;
   case PROP_LINE:
@@ -508,7 +510,7 @@ ags_automation_set_property(GObject *gobject,
 
       port = g_value_get_object(value);
 
-      if(port == automation->port){
+      if(automation->port == (GObject *) port){
 	return;
       }
 
@@ -520,7 +522,7 @@ ags_automation_set_property(GObject *gobject,
 	g_object_ref(port);
       }
 
-      automation->port = port;
+      automation->port = (GObject *) port;
 
       if(port->port_descriptor != NULL){
 	automation->lower = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->lower_value);
@@ -622,7 +624,7 @@ ags_automation_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
-      if(timestamp == (AgsTimestamp *) automation->timestamp){
+      if(automation->timestamp == (GObject *) timestamp){
 	return;
       }
 
@@ -738,17 +740,17 @@ ags_automation_finalize(GObject *gobject)
 }
 
 void
-ags_automation_set_port(AgsPortlet *portlet, AgsPort *port)
+ags_automation_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
 	       "port\0", port,
 	       NULL);
 }
 
-AgsPort*
+GObject*
 ags_automation_get_port(AgsPortlet *portlet)
 {
-  AgsPort *port;
+  GObject *port;
 
   g_object_get(G_OBJECT(portlet),
 	       "port\0", &port,
@@ -833,7 +835,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
       continue;
     }
 
-    current_timestamp = AGS_AUTOMATION(automation->data)->timestamp;
+    current_timestamp = AGS_TIMESTAMP(AGS_AUTOMATION(automation->data)->timestamp);
 
     if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
       if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){

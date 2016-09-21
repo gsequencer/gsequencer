@@ -263,7 +263,7 @@ ags_apply_synth_launch(AgsTask *task)
   for(i = 0; channel != NULL && i < apply_synth->count; i++){
     if(AGS_IS_INPUT(channel)){
       if(AGS_INPUT(channel)->synth_generator == NULL){
-	AGS_INPUT(channel)->synth_generator = ags_synth_generator_new();
+	AGS_INPUT(channel)->synth_generator = (GObject *) ags_synth_generator_new();
       }
       
       g_object_set(AGS_INPUT(channel)->synth_generator,

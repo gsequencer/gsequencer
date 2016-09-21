@@ -71,8 +71,6 @@ void ags_jack_devout_disconnect(AgsConnectable *connectable);
 void ags_jack_devout_connect(AgsConnectable *connectable);
 void ags_jack_devout_finalize(GObject *gobject);
 
-void ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout);
-
 void ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
 					     AgsApplicationContext *application_context);
 AgsApplicationContext* ags_jack_devout_get_application_context(AgsSoundcard *soundcard);
@@ -142,9 +140,9 @@ guint ags_jack_devout_get_note_offset(AgsSoundcard *soundcard);
 void ags_jack_devout_set_loop(AgsSoundcard *soundcard,
 			      guint loop_left, guint loop_right,
 			      gboolean do_loop);
-guint ags_jack_devout_get_loop(AgsSoundcard *soundcard,
-			       guint *loop_left, guint *loop_right,
-			       gboolean *do_loop);
+void ags_jack_devout_get_loop(AgsSoundcard *soundcard,
+			      guint *loop_left, guint *loop_right,
+			      gboolean *do_loop);
 
 guint ags_jack_devout_get_loop_offset(AgsSoundcard *soundcard);
 
@@ -773,9 +771,9 @@ ags_jack_devout_set_property(GObject *gobject,
     {
       AgsApplicationContext *application_context;
 
-      application_context = g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(jack_devout->application_context == application_context){
+      if(jack_devout->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -814,7 +812,7 @@ ags_jack_devout_set_property(GObject *gobject,
 	jack_devout->application_mutex = NULL;
       }
 
-      jack_devout->application_context = application_context;
+      jack_devout->application_context = (GObject *) application_context;
     }
     break;
   case PROP_APPLICATION_MUTEX:
@@ -944,9 +942,9 @@ ags_jack_devout_set_property(GObject *gobject,
     {
       AgsJackClient *jack_client;
 
-      jack_client = g_value_get_object(value);
+      jack_client = (AgsJackClient *) g_value_get_object(value);
 
-      if(jack_devout->jack_client == jack_client){
+      if(jack_devout->jack_client == (GObject *) jack_client){
 	return;
       }
 
@@ -954,7 +952,7 @@ ags_jack_devout_set_property(GObject *gobject,
 	g_object_unref(G_OBJECT(jack_devout->jack_client));
       }
 
-      jack_devout->jack_client = jack_client;
+      jack_devout->jack_client = (GObject *) jack_client;
     }
     break;
   default:
@@ -1171,7 +1169,7 @@ ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
   AgsJackDevout *jack_devout;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
-  jack_devout->application_context = application_context;
+  jack_devout->application_context = (GObject *) application_context;
 }
 
 AgsApplicationContext*
@@ -1181,7 +1179,7 @@ ags_jack_devout_get_application_context(AgsSoundcard *soundcard)
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
-  return(jack_devout->application_context);
+  return((AgsApplicationContext *) jack_devout->application_context);
 }
 
 void
@@ -1347,7 +1345,7 @@ ags_jack_devout_list_cards(AgsSoundcard *soundcard,
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
-  application_context = jack_devout->application_context;
+  application_context = (AgsApplicationContext *) jack_devout->application_context;
 
   if(application_context == NULL){
     return;
@@ -1925,7 +1923,7 @@ ags_jack_devout_set_loop(AgsSoundcard *soundcard,
   }
 }
 
-guint
+void
 ags_jack_devout_get_loop(AgsSoundcard *soundcard,
 			 guint *loop_left, guint *loop_right,
 			 gboolean *do_loop)  
@@ -2090,8 +2088,8 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 			    i);
       
       jack_port = ags_jack_port_new(jack_devout->jack_client);
-      ags_jack_client_add_port(jack_devout->jack_client,
-			       jack_port);
+      ags_jack_client_add_port((AgsJackClient *) jack_devout->jack_client,
+			       (GObject *) jack_port);
 
       jack_devout->jack_port = g_list_prepend(jack_devout->jack_port,
 					      jack_port);

@@ -544,7 +544,7 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 				      "uri\0", uri,
 				      "effect-index\0", i,
 				      NULL);
-	    ags_base_plugin_load_plugin(lv2_plugin);
+	    ags_base_plugin_load_plugin((AgsBasePlugin *) lv2_plugin);
 	    lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 						     lv2_plugin);
 	  }
@@ -712,15 +712,15 @@ ags_lv2_manager_load_default_directory()
 	  }
 
 	  /* load turtle doc */
-	  if((turtle = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
-					       turtle_path)) == NULL){
+	  if((turtle = (AgsTurtle *) ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+							     turtle_path)) == NULL){
 	    turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
 						    plugin_path,
 						    turtle_path));
 	    ags_turtle_load(turtle,
 			    NULL);
 	    ags_turtle_manager_add(ags_turtle_manager_get_instance(),
-				   turtle);
+				   (GObject *) turtle);
 	  }
 	
 	  /* load specified plugin */

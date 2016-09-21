@@ -64,11 +64,18 @@ struct _AgsJackClientClass
 
 GType ags_jack_client_get_type();
 
+GList* ags_jack_client_find_uuid(GList *jack_client,
+				 gchar *client_uuid);
 GList* ags_jack_client_find(GList *jack_client,
 			    gchar *client_name);
 
 void ags_jack_client_open(AgsJackClient *jack_client,
 			  gchar *client_name);
+
+void ags_jack_client_add_device(AgsJackClient *jack_client,
+				GObject *jack_device);
+void ags_jack_client_remove_device(AgsJackClient *jack_client,
+				   GObject *jack_device);
 
 void ags_jack_client_add_port(AgsJackClient *jack_client,
 			      GObject *jack_port);

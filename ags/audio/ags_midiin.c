@@ -441,7 +441,7 @@ ags_midiin_set_property(GObject *gobject,
 
       application_context = g_value_get_object(value);
 
-      if(midiin->application_context == application_context){
+      if(midiin->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -450,23 +450,9 @@ ags_midiin_set_property(GObject *gobject,
       }
 
       if(application_context != NULL){
-	AgsConfig *config;
-
-	gchar *str;
-	gchar *segmentation;
-	guint discriminante, nominante;
-	
 	g_object_ref(G_OBJECT(application_context));
 
 	midiin->application_mutex = application_context->mutex;
-	
-	config = ags_config_get_instance();
-
-	//  midiin->in.oss.device = NULL;
-	midiin->in.alsa.handle = NULL;
-	midiin->in.alsa.device = ags_config_get_value(config,
-						      AGS_CONFIG_SEQUENCER,
-						      "alsa-midi-handle\0");
       }else{
 	midiin->application_mutex = NULL;
       }
@@ -1085,10 +1071,6 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   /* reset - switch buffer flags */
   ags_midiin_switch_buffer_flag(midiin);
 
-#ifdef AGS_WITH_ALSA
-  snd_pcm_prepare(midiin->in.alsa.handle);
-#endif
-
   pthread_mutex_unlock(mutex);
 }
 
@@ -1245,7 +1227,7 @@ ags_midiin_get_buffer(AgsSequencer *sequencer,
 		      guint *buffer_length)
 {
   AgsMidiin *midiin;
-  signed short *buffer;
+  char *buffer;
   
   midiin = AGS_MIDIIN(sequencer);
 
@@ -1285,7 +1267,7 @@ ags_midiin_get_next_buffer(AgsSequencer *sequencer,
 			   guint *buffer_length)
 {
   AgsMidiin *midiin;
-  signed short *buffer;
+  char *buffer;
   
   midiin = AGS_MIDIIN(sequencer);
 

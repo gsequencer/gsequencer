@@ -164,7 +164,7 @@ ags_set_samplerate_launch(AgsTask *task)
   gobject = set_samplerate->gobject;
 
   if(AGS_IS_SOUNDCARD(gobject)){
-    ags_set_samplerate_soundcard(set_samplerate, AGS_SOUNDCARD(gobject));
+    ags_set_samplerate_soundcard(set_samplerate, gobject);
   }else if(AGS_IS_AUDIO(gobject)){
     ags_set_samplerate_audio(set_samplerate, AGS_AUDIO(gobject));
   }else if(AGS_IS_CHANNEL(gobject)){

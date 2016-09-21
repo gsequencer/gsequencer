@@ -22,6 +22,9 @@
 #include <ags/lib/ags_string_util.h>
 
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
+
+#include <ags/audio/midi/ags_midi_buffer_util.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -208,9 +211,9 @@ ags_lv2_plugin_set_property(GObject *gobject,
     break;
   case PROP_TURTLE:
     {
-      GObject *turtle;
+      AgsTurtle *turtle;
 
-      turtle = g_value_get_object(value);
+      turtle = (AgsTurtle *) g_value_get_object(value);
 
       if(lv2_plugin->turtle == turtle){
 	return;
@@ -933,7 +936,7 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
   success = TRUE;
 
   for(i = 0; i < event_count; i++){
-    if(offset >= AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size){
+    if(offset >= (void *) AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size){
       return(FALSE);
     }
 
@@ -1064,7 +1067,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   /* find offset */
   aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
   
-  while(aev < atom_sequence + sequence_size){
+  while((void *) aev < atom_sequence + sequence_size){
     if(aev->body.size == 0){
       break;
     }
@@ -1077,7 +1080,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   success = TRUE;
 
   for(i = 0; i < event_count; i++){
-    if(aev >= atom_sequence + sequence_size){
+    if((void *) aev >= atom_sequence + sequence_size){
       return(FALSE);
     }
   

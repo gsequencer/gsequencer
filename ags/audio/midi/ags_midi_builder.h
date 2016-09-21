@@ -97,6 +97,7 @@ struct _AgsMidiBuilderClass
 				   guint pitch,
 				   guint transmitter);
   void (*append_change_program)(AgsMidiBuilder *midi_builder,
+				guint delta_time,
 				guint channel,
 				guint program);
   void (*append_change_pressure)(AgsMidiBuilder *midi_builder,
@@ -130,11 +131,13 @@ struct _AgsMidiBuilderClass
 		       guint delta_time,
 		       guint hr, guint mn, guint se, guint fr, guint ff);
   void (*append_tempo)(AgsMidiBuilder *midi_builder,
+		       guint delta_time,
 		       guint tempo);  
   void (*append_time_signature)(AgsMidiBuilder *midi_builder,
 				guint delta_time,
 				guint nn, guint dd, guint cc, guint bb);
   void (*append_key_signature)(AgsMidiBuilder *midi_builder,
+			       guint delta_time,
 			       guint sf, guint mi);
   void (*append_sequencer_meta_event)(AgsMidiBuilder *midi_builder,
 				      guint delta_time,

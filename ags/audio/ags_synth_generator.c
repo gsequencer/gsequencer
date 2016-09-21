@@ -19,9 +19,13 @@
 
 #include <ags/audio/ags_synth_generator.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_timestamp.h>
+
+#include <ags/thread/file/ags_thread_file_xml.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file.h>
@@ -362,11 +366,11 @@ ags_synth_generator_set_property(GObject *gobject,
     break;
   case PROP_TIMESTAMP:
     {
-      GObject *timestamp;
+      AgsTimestamp *timestamp;
 
-      timestamp = (GObject *) g_value_get_object(value);
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
 
-      if((AgsTimestamp *) timestamp == synth_generator->timestamp){
+      if(synth_generator->timestamp == (GObject *) timestamp){
 	return;
       }
 
@@ -378,7 +382,7 @@ ags_synth_generator_set_property(GObject *gobject,
 	g_object_ref(timestamp);
       }
 
-      synth_generator->timestamp = (AgsTimestamp *) timestamp;
+      synth_generator->timestamp = (GObject *) timestamp;
     }
     break;
   default:

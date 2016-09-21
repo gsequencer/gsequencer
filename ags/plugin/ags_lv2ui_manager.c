@@ -394,14 +394,14 @@ ags_lv2ui_manager_uri_index(gchar *filename,
 
   if(filename == NULL ||
      uri == NULL){
-    return(G_MAXULONG);
+    return(0);
   }
   
   /* load plugin */
   lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(filename);
 
   if(lv2ui_plugin == NULL){
-    return(G_MAXULONG);
+    return(0);
   }
     
   if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so == NULL){
@@ -412,7 +412,7 @@ ags_lv2ui_manager_uri_index(gchar *filename,
     plugin_so = AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so;
   }
   
-  uri_index = G_MAXULONG;
+  uri_index = 0;
 
   if(plugin_so){
     lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(plugin_so,

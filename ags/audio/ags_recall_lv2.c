@@ -369,7 +369,7 @@ ags_recall_lv2_set_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      uint32_t *index;
+      uint32_t index;
       
       index = g_value_get_ulong(value);
 
@@ -504,7 +504,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 
 	current->port_descriptor = port_descriptor->data;
 	ags_recall_lv2_load_conversion(recall_lv2,
-				       current,
+				       (GObject *) current,
 				       port_descriptor->data);
 	
 	current->port_value.ags_port_float = (float) ags_conversion_convert(current->conversion,
@@ -517,22 +517,22 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->input_port == NULL){
-	    recall_lv2->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_lv2->input_port = (uint32_t *) malloc(sizeof(uint32_t));
 	    recall_lv2->input_port[0] = i;
 	  }else{
-	    recall_lv2->input_port = (unsigned long *) realloc(recall_lv2->input_port,
-								  (recall_lv2->input_lines + 1) * sizeof(unsigned long));
+	    recall_lv2->input_port = (uint32_t *) realloc(recall_lv2->input_port,
+								  (recall_lv2->input_lines + 1) * sizeof(uint32_t));
 	    recall_lv2->input_port[recall_lv2->input_lines] = i;
 	  }
 
 	  recall_lv2->input_lines += 1;
 	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->output_port == NULL){
-	    recall_lv2->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_lv2->output_port = (uint32_t *) malloc(sizeof(uint32_t));
 	    recall_lv2->output_port[0] = i;
 	  }else{
-	    recall_lv2->output_port = (unsigned long *) realloc(recall_lv2->output_port,
-								   (recall_lv2->output_lines + 1) * sizeof(unsigned long));
+	    recall_lv2->output_port = (uint32_t *) realloc(recall_lv2->output_port,
+								   (recall_lv2->output_lines + 1) * sizeof(uint32_t));
 	    recall_lv2->output_port[recall_lv2->output_lines] = i;
 	  }
 
@@ -699,8 +699,8 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   GList *port;
   GList *port_descriptor;
 
-  unsigned long port_count;
-  unsigned long i;
+  uint32_t port_count;
+  uint32_t i;
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
 #ifdef AGS_DEBUG
@@ -749,7 +749,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	current = g_object_new(AGS_TYPE_PORT,
 			       "plugin-name\0", plugin_name,
 			       "specifier\0", specifier,
-			       "control-port\0", g_strdup_printf("%d/%d\0",
+			       "control-port\0", g_strdup_printf("%lu/%lu\0",
 								 i,
 								 port_count),
 			       "port-value-is-pointer\0", FALSE,
@@ -758,7 +758,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 
 	current->port_descriptor = port_descriptor->data;
 	ags_recall_lv2_load_conversion(recall_lv2,
-				       current,
+				       (GObject *) current,
 				       port_descriptor->data);
 
 	current->port_value.ags_port_float = (float) ags_conversion_convert(current->conversion,
@@ -774,22 +774,22 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->input_port == NULL){
-	    recall_lv2->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_lv2->input_port = (uint32_t *) malloc(sizeof(uint32_t));
 	    recall_lv2->input_port[0] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }else{
-	    recall_lv2->input_port = (unsigned long *) realloc(recall_lv2->input_port,
-								  (recall_lv2->input_lines + 1) * sizeof(unsigned long));
+	    recall_lv2->input_port = (uint32_t *) realloc(recall_lv2->input_port,
+								  (recall_lv2->input_lines + 1) * sizeof(uint32_t));
 	    recall_lv2->input_port[recall_lv2->input_lines] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }
 	  
 	  recall_lv2->input_lines += 1;
 	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->output_port == NULL){
-	    recall_lv2->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_lv2->output_port = (uint32_t *) malloc(sizeof(uint32_t));
 	    recall_lv2->output_port[0] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }else{
-	    recall_lv2->output_port = (unsigned long *) realloc(recall_lv2->output_port,
-								   (recall_lv2->output_lines + 1) * sizeof(unsigned long));
+	    recall_lv2->output_port = (uint32_t *) realloc(recall_lv2->output_port,
+								   (recall_lv2->output_lines + 1) * sizeof(uint32_t));
 	    recall_lv2->output_port[recall_lv2->output_lines] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }
 	  

@@ -497,13 +497,13 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
 					    (GObject *) recycling,
-					    child_recall_id);
+					    (GObject *) child_recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal,
 							0.0, 0);
 	audio_signal->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
 	audio_signal->stream_current = audio_signal->stream_beginning;
-	ags_audio_signal_connect(audio_signal);
+	ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 	
 	/*
 	 * emit add_audio_signal on AgsRecycling

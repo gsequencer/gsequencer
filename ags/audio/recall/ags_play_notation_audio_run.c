@@ -689,7 +689,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
-  delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+  delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
   
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
 
@@ -787,7 +787,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   /*  */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
   
   pthread_mutex_unlock(application_mutex);
 
@@ -920,7 +920,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 							       0.0, 0);
 	  }
 	  
-	  ags_audio_signal_connect(audio_signal);
+	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 
 	  audio_signal->stream_current = audio_signal->stream_beginning;
 

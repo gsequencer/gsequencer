@@ -437,13 +437,13 @@ ags_file_util_write_value(AgsFile *file,
     break;
   case G_TYPE_INT64:
     {
-      content = BAD_CAST g_strdup_printf("%lld\0", g_value_get_int64(value));
+      content = BAD_CAST g_strdup_printf("%ld\0", g_value_get_int64(value));
       type_str = AGS_FILE_INT64_PROP;
     }
     break;
   case G_TYPE_UINT64:
     {
-      content = BAD_CAST g_strdup_printf("%lld\0", g_value_get_uint64(value));
+      content = BAD_CAST g_strdup_printf("%ld\0", g_value_get_uint64(value));
       type_str = AGS_FILE_UINT64_PROP;
     }
     break;
@@ -480,11 +480,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%lld\0", arr[i]);
+	    content = g_strdup_printf("%ld\0", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %lld\0", str, arr[i]);
+	    content = g_strdup_printf("%s %ld\0", str, arr[i]);
 
 	    g_free(str);
 	  }
@@ -498,11 +498,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%llu\0", arr[i]);
+	    content = g_strdup_printf("%lu\0", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %llu\0", str, arr[i]);
+	    content = g_strdup_printf("%s %lu\0", str, arr[i]);
 
 	    g_free(str);
 	  }

@@ -2603,7 +2603,7 @@ ags_thread_real_start(AgsThread *thread)
 
   /*  */
   pthread_create(thread->thread, thread->thread_attr,
-		 &ags_thread_loop, thread);
+		 ags_thread_loop, thread);
 }
 
 /**

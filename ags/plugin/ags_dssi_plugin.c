@@ -207,7 +207,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 void
 ags_dssi_plugin_init(AgsDssiPlugin *dssi_plugin)
 {
-  dssi_plugin->unique_id = NULL;
+  dssi_plugin->unique_id = 0;
   dssi_plugin->program = NULL;
 }
 
@@ -262,7 +262,7 @@ ags_dssi_plugin_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_UNIQUE_ID:
-    g_value_set_string(value, dssi_plugin->unique_id);
+    g_value_set_uint(value, dssi_plugin->unique_id);
     break;
   case PROP_PROGRAM:
     g_value_set_string(value, dssi_plugin->program);
@@ -443,102 +443,100 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	g_value_set_float(port->default_value,
 			  0.0);
 
-	if(hint_descriptor != NULL){
-	  if(LADSPA_IS_HINT_TOGGLED(hint_descriptor)){
-	    /* is toggled */
-	    port->flags |= AGS_PORT_DESCRIPTOR_TOGGLED;
+	if(LADSPA_IS_HINT_TOGGLED(hint_descriptor)){
+	  /* is toggled */
+	  port->flags |= AGS_PORT_DESCRIPTOR_TOGGLED;
 
-	    /* set default */
-	    if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				0.0);
-	    }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				1.0);
-	    }
-	  }else{
-	    /* set lower */
-	    g_value_set_float(port->lower_value,
-			      range_hint->LowerBound);
+	  /* set default */
+	  if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
+	    g_value_set_float(port->default_value,
+			      0.0);
+	  }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
+	    g_value_set_float(port->default_value,
+			      1.0);
+	  }
+	}else{
+	  /* set lower */
+	  g_value_set_float(port->lower_value,
+			    range_hint->LowerBound);
 	    
-	    /* set upper */
-	    g_value_set_float(port->upper_value,
-			      range_hint->UpperBound);
+	  /* set upper */
+	  g_value_set_float(port->upper_value,
+			    range_hint->UpperBound);
 
-	    /* set default */
+	  /* set default */
+	  g_value_set_float(port->default_value,
+			    range_hint->LowerBound);
+
+	  /* bounds */
+	  if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
+	    if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
+	      port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
+			      AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
+	      g_value_set_float(port->lower_value,
+				range_hint->LowerBound);
+	    }
+	  }
+
+	  if(LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)){
+	    if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
+	      port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
+			      AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
+	      g_value_set_float(port->upper_value,
+				range_hint->UpperBound);
+	    }
+	  }
+
+	  /* integer */
+	  if(LADSPA_IS_HINT_INTEGER(hint_descriptor)){
+	    port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
+	  }
+
+	  /* logarithmic */
+	  if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+	    port->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
+	  }
+
+	  /* set default value */
+	  if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
+	    g_value_set_float(port->default_value,
+			      0.0);
+	  }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
+	    g_value_set_float(port->default_value,
+			      1.0);
+	  }else if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
 	    g_value_set_float(port->default_value,
 			      range_hint->LowerBound);
+	  }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){
+	    float default_value;
 
-	    /* bounds */
-	    if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
-	      if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
-		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
-				AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
-		g_value_set_float(port->lower_value,
-				  range_hint->LowerBound);
-	      }
-	    }
-
-	    if(LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)){
-	      if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
-		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
-				AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
-		g_value_set_float(port->upper_value,
-				  range_hint->UpperBound);
-	      }
-	    }
-
-	    /* integer */
-	    if(LADSPA_IS_HINT_INTEGER(hint_descriptor)){
-	      port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
-	    }
-
-	    /* logarithmic */
-	    if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
-	      port->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
-	    }
-
-	    /* set default value */
-	    if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				0.0);
-	    }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				1.0);
-	    }else if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				range_hint->LowerBound);
-	    }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){
-	      float default_value;
-
-	      default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
+	    default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
 	      
-	      g_value_set_float(port->default_value,
-				default_value);
-	    }else if(LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor)){
-	      float default_value;
+	    g_value_set_float(port->default_value,
+			      default_value);
+	  }else if(LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor)){
+	    float default_value;
 
-	      default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
+	    default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
 	      
-	      g_value_set_float(port->default_value,
-				default_value);
-	    }else if(LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor)){
-	      float default_value;
+	    g_value_set_float(port->default_value,
+			      default_value);
+	  }else if(LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor)){
+	    float default_value;
 
-	      default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
+	    default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
 
-	      g_value_set_float(port->default_value,
-				default_value);
-	    }else if(LADSPA_IS_HINT_DEFAULT_MAXIMUM(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				range_hint->UpperBound);
-	    }else if(LADSPA_IS_HINT_DEFAULT_100(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				100.0);
-	    }else if(LADSPA_IS_HINT_DEFAULT_440(hint_descriptor)){
-	      g_value_set_float(port->default_value,
-				440.0);
-	    }
+	    g_value_set_float(port->default_value,
+			      default_value);
+	  }else if(LADSPA_IS_HINT_DEFAULT_MAXIMUM(hint_descriptor)){
+	    g_value_set_float(port->default_value,
+			      range_hint->UpperBound);
+	  }else if(LADSPA_IS_HINT_DEFAULT_100(hint_descriptor)){
+	    g_value_set_float(port->default_value,
+			      100.0);
+	  }else if(LADSPA_IS_HINT_DEFAULT_440(hint_descriptor)){
+	    g_value_set_float(port->default_value,
+			      440.0);
 	  }
 	}
       }

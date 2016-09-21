@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <stdlib.h>
+
 void ags_base_plugin_class_init(AgsBasePluginClass *base_plugin);
 void ags_base_plugin_init (AgsBasePlugin *base_plugin);
 void ags_base_plugin_set_property(GObject *gobject,
@@ -557,7 +559,8 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
 {
   gpointer retval;
   
-  g_return_if_fail(AGS_IS_BASE_PLUGIN(base_plugin));
+  g_return_val_if_fail(AGS_IS_BASE_PLUGIN(base_plugin),
+		       NULL);
   g_object_ref(G_OBJECT(base_plugin));
   g_signal_emit(G_OBJECT(base_plugin),
 		base_plugin_signals[INSTANTIATE], 0,

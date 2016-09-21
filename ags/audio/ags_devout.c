@@ -168,9 +168,9 @@ guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
 void ags_devout_set_loop(AgsSoundcard *soundcard,
 			 guint loop_left, guint loop_right,
 			 gboolean do_loop);
-guint ags_devout_get_loop(AgsSoundcard *soundcard,
-			  guint *loop_left, guint *loop_right,
-			  gboolean *do_loop);
+void ags_devout_get_loop(AgsSoundcard *soundcard,
+			 guint *loop_left, guint *loop_right,
+			 gboolean *do_loop);
 
 guint ags_devout_get_loop_offset(AgsSoundcard *soundcard);
 
@@ -823,9 +823,9 @@ ags_devout_set_property(GObject *gobject,
     {
       AgsApplicationContext *application_context;
 
-      application_context = g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(devout->application_context == application_context){
+      if(devout->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -866,7 +866,7 @@ ags_devout_set_property(GObject *gobject,
 	devout->application_mutex = NULL;
       }
 
-      devout->application_context = application_context;
+      devout->application_context = (GObject *) application_context;
     }
     break;
   case PROP_APPLICATION_MUTEX:
@@ -1096,7 +1096,7 @@ ags_devout_get_lock(AgsConcurrentTree *concurrent_tree)
   pthread_mutex_lock(application_mutex);
   
   devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  AGS_DEVOUT(concurrent_tree));
+					  G_OBJECT(concurrent_tree));
 
   pthread_mutex_unlock(application_mutex);
 
@@ -1262,7 +1262,7 @@ ags_devout_set_application_context(AgsSoundcard *soundcard,
   AgsDevout *devout;
 
   devout = AGS_DEVOUT(soundcard);
-  devout->application_context = application_context;
+  devout->application_context = (GObject *) application_context;
 }
 
 AgsApplicationContext*
@@ -1272,7 +1272,7 @@ ags_devout_get_application_context(AgsSoundcard *soundcard)
 
   devout = AGS_DEVOUT(soundcard);
 
-  return(devout->application_context);
+  return((AgsApplicationContext *) devout->application_context);
 }
 
 void
@@ -2222,6 +2222,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   gchar *str;
   
   guint word_size;
+
+  int n_write;
   
   pthread_mutex_t *mutex;
 
@@ -2376,9 +2378,13 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 					 devout->pcm_channels,
 					 devout->buffer_size);
 
-    write(devout->out.oss.device_fd,
-	  devout->ring_buffer[0],
-	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+    n_write = write(devout->out.oss.device_fd,
+		    devout->ring_buffer[0],
+		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+
+    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
+      g_critical("write() return doesn't match written bytes\0");
+    }
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
 
@@ -2388,9 +2394,13 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 					 devout->pcm_channels,
 					 devout->buffer_size);
 
-    write(devout->out.oss.device_fd,
-	  devout->ring_buffer[1],
-	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+    n_write = write(devout->out.oss.device_fd,
+		    devout->ring_buffer[1],
+		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+
+    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
+      g_critical("write() return doesn't match written bytes\0");
+    }
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
       
@@ -2400,9 +2410,13 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 					 devout->pcm_channels,
 					 devout->buffer_size);
 
-    write(devout->out.oss.device_fd,
-	  devout->ring_buffer[0],
-	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+    n_write = write(devout->out.oss.device_fd,
+		    devout->ring_buffer[0],
+		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+
+    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
+      g_critical("write() return doesn't match written bytes\0");
+    }
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
       
@@ -2414,9 +2428,13 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 					 devout->pcm_channels,
 					 devout->buffer_size);
 
-    write(devout->out.oss.device_fd,
-	  devout->ring_buffer[1],
-	  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+    n_write = write(devout->out.oss.device_fd,
+		    devout->ring_buffer[1],
+		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+
+    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
+      g_critical("write() return doesn't match written bytes\0");
+    }
   }
 #endif
   
@@ -2426,12 +2444,12 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   ags_soundcard_tic(soundcard);
 
   /* reset - switch buffer flags */
-  task_thread = ags_thread_find_type(application_context->main_loop,
+  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
   
-  switch_buffer_flag = ags_switch_buffer_flag_new(devout);
-  ags_task_thread_append_task(task_thread,
-			      switch_buffer_flag);
+  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+			      (AgsTask *) switch_buffer_flag);
 }
 
 void
@@ -2793,7 +2811,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(mutex);
 
     str = snd_strerror(err);
-    g_warning("Unable to set buffer size %i for playback: %s\0", size, str);
+    g_warning("Unable to set buffer size %lu for playback: %s\0", size, str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3280,12 +3298,12 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   ags_soundcard_tic(soundcard);
 
   /* reset - switch buffer flags */
-  task_thread = ags_thread_find_type(application_context->main_loop,
+  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
   
-  switch_buffer_flag = ags_switch_buffer_flag_new(devout);
-  ags_task_thread_append_task(task_thread,
-			      switch_buffer_flag);
+  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+			      (AgsTask *) switch_buffer_flag);
   
 #ifdef AGS_WITH_ALSA
   snd_pcm_prepare(devout->out.alsa.handle);
@@ -3557,7 +3575,7 @@ ags_devout_set_loop(AgsSoundcard *soundcard,
   }
 }
 
-guint
+void
 ags_devout_get_loop(AgsSoundcard *soundcard,
 		    guint *loop_left, guint *loop_right,
 		    gboolean *do_loop)

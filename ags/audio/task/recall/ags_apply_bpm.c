@@ -269,7 +269,7 @@ ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
   ags_soundcard_set_bpm(AGS_SOUNDCARD(soundcard), apply_bpm->bpm);
 
   /* AgsAudio */
-  list = ags_soundcard_get_audio(soundcard);
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 
   while(list != NULL){
     ags_apply_bpm_audio(apply_bpm,

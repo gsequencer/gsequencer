@@ -190,7 +190,7 @@ ags_add_audio_signal_launch(AgsTask *task)
 						  audio_signal,
 						  delay, attack);
   audio_signal->stream_current = audio_signal->stream_beginning;
-  ags_audio_signal_connect(audio_signal);
+  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
   
   /*
    * emit add_audio_signal on AgsRecycling

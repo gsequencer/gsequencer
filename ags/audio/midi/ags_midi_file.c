@@ -20,6 +20,8 @@
 #include <ags/audio/midi/ags_midi_file.h>
 
 #include <stdlib.h>
+#include <string.h>
+
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -288,6 +290,8 @@ ags_midi_file_read(AgsMidiFile *midi_file)
 {
   struct stat sb;
 
+  size_t n_read;
+  
   if(midi_file == NULL ||
      midi_file->filename == NULL ||
      midi_file->file == NULL){
@@ -299,8 +303,12 @@ ags_midi_file_read(AgsMidiFile *midi_file)
   midi_file->buffer_length = sb.st_size + 1;
   midi_file->buffer = (gchar *) malloc(midi_file->buffer_length * sizeof(gchar));
   midi_file->buffer[sb.st_size] = EOF;
-  fread(midi_file->buffer, sizeof(unsigned char), sb.st_size, midi_file->file);
+  n_read = fread(midi_file->buffer, sizeof(unsigned char), sb.st_size, midi_file->file);
 
+  if(n_read != sb.st_size){
+    g_critical("fread() number of bytes read doesn't match buffer size\0");
+  }
+  
   midi_file->iter = midi_file->buffer;
   
   return(midi_file->buffer);
@@ -872,7 +880,7 @@ ags_midi_file_read_track_data(AgsMidiFile *midi_file,
   
   while(n < 4 &&
 	midi_file->iter < &(midi_file->buffer[midi_file->buffer_length])){
-    c = midi_file->iter;
+    c = midi_file->iter[0];
     midi_file->iter += 1;
     
     if(c == track[n]){
@@ -892,7 +900,7 @@ ags_midi_file_read_track_data(AgsMidiFile *midi_file,
   while(!end_of_track){
     delta_time = ags_midi_file_read_varlength(midi_file);
     
-    status = midi_file->iter;
+    status = midi_file->iter[0];
     midi_file->iter += 1;
     
     if((0xf0 & (0xf0 & status)) != 0xf0){
@@ -908,7 +916,7 @@ ags_midi_file_read_track_data(AgsMidiFile *midi_file,
       case 0xf0:
 	{
 	  /* start of system exclusive */
-	  while(midi_file->iter != 0xf7 &&
+	  while(midi_file->iter[0] != 0xf7 &&
 		midi_file->iter < &(midi_file->buffer[midi_file->buffer_length])){
 	    midi_file->iter += 1;
 	  }

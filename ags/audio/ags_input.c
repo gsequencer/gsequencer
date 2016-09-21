@@ -174,7 +174,7 @@ ags_input_set_property(GObject *gobject,
 
       file_link = (AgsFileLink *) g_value_get_object(value);
 
-      if(input->file_link == file_link){
+      if(input->file_link == (GObject *) file_link){
 	return;
       }
       

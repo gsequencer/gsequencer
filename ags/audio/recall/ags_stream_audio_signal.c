@@ -163,7 +163,7 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 {
   if(AGS_RECALL_AUDIO_SIGNAL(gobject)->source != NULL &&
      AGS_RECALL_AUDIO_SIGNAL(gobject)->source->recycling != NULL){
-    ags_recycling_remove_audio_signal(AGS_RECALL_AUDIO_SIGNAL(gobject)->source->recycling,
+    ags_recycling_remove_audio_signal((AgsRecycling *) AGS_RECALL_AUDIO_SIGNAL(gobject)->source->recycling,
 				      AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
   }
 

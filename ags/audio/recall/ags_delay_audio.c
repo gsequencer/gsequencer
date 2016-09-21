@@ -25,6 +25,8 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <math.h>
+
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_delay_audio_plugin_interface_init(AgsPluginInterface *plugin);

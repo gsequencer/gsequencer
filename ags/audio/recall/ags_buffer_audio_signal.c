@@ -311,7 +311,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   ags_audio_signal_stream_resize(destination,
 				 length);
 
-  ags_audio_signal_connect(destination);
+  ags_connectable_connect(AGS_CONNECTABLE(destination));
   
   destination->stream_current = destination->stream_beginning;
 

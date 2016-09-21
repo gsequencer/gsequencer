@@ -741,7 +741,7 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(seekable);
   delay_audio_run = count_beats_audio_run->delay_audio_run;
-  delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+  delay_audio = (AgsDelayAudio *) AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
 
   soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
   
@@ -1054,7 +1054,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   /* get main loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -1062,7 +1062,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   async_queue = (AgsThread *) ags_thread_find_type(main_loop,
 						   AGS_TYPE_TASK_THREAD);
 
-  ags_recall_done(count_beats_audio_run->delay_audio_run);
+  ags_recall_done((AgsRecall *) count_beats_audio_run->delay_audio_run);
   ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
 		 AGS_RECALL(count_beats_audio_run)->recall_id);
 
@@ -1548,7 +1548,7 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
   GValue loop_sequencer = {0,};
   GValue loop_end_sequencer = {0,};
 
-  count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   /* check for loop or notation */
   g_value_init(&loop_sequencer,
@@ -1575,7 +1575,7 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
     }
   
     /* you're done */
-    ags_count_beats_audio_run_done(count_beats_audio_run);
+    ags_recall_done((AgsRecall *) count_beats_audio_run);
   }
 }
 
@@ -1586,7 +1586,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   if(!notation){
     if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) != 0){
       //TODO:JK: enhance me
-      ags_count_beats_audio_run_done(count_beats_audio_run);
+      ags_recall_done((AgsRecall *) count_beats_audio_run);
     }
   }else{
     //    ags_count_beats_audio_run_done(count_beats_audio_run);

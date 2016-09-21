@@ -442,7 +442,7 @@ ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **appl
 
     *application_context = (GObject *) gobject;
   }else{
-    gobject = (AgsApplicationContext *) *application_context;
+    gobject = (AgsThreadApplicationContext *) *application_context;
   }
 
   file->application_context = (GObject *) gobject;
@@ -559,12 +559,12 @@ void
 ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
 						  AgsThreadApplicationContext *thread_application_context)
 {
-  if(!strncmp(group,
-	      AGS_CONFIG_GENERIC,
-	      8)){
-    if(!strncmp(key,
-		"autosave-thread\0",
-		15)){
+  if(!g_ascii_strncasecmp(group,
+			  AGS_CONFIG_GENERIC,
+			  8)){
+    if(!g_ascii_strncasecmp(key,
+			    "autosave-thread\0",
+			    15)){
       AgsAutosaveThread *autosave_thread;
 
       if(thread_application_context == NULL ||
@@ -574,28 +574,28 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
       
       autosave_thread = (AgsAutosaveThread *) thread_application_context->autosave_thread;
 
-      if(!strncmp(value,
-		  "true\0",
-		  5)){
+      if(!g_ascii_strncasecmp(value,
+			      "true\0",
+			      5)){
 	ags_thread_start((AgsThread *) autosave_thread);
       }else{
 	ags_thread_stop((AgsThread *) autosave_thread);
       }
     }
-  }else if(!strncmp(group,
-		    AGS_CONFIG_THREAD,
-		    7)){
-    if(!strncmp(key,
-		"model\0",
-		6)){
+  }else if(!g_ascii_strncasecmp(group,
+				AGS_CONFIG_THREAD,
+				7)){
+    if(!g_ascii_strncasecmp(key,
+			    "model\0",
+			    6)){
       //TODO:JK: implement me
-    }else if(!strncmp(key,
-		      "lock-global\0",
-		      11)){
+    }else if(!g_ascii_strncasecmp(key,
+				  "lock-global\0",
+				  11)){
       //TODO:JK: implement me
-    }else if(!strncmp(key,
-		      "lock-parent\0",
-		      11)){
+    }else if(!g_ascii_strncasecmp(key,
+				  "lock-parent\0",
+				  11)){
       //TODO:JK: implement me
     }
   }

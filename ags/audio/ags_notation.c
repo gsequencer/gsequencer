@@ -48,10 +48,10 @@ void ags_notation_connect(AgsConnectable *connectable);
 void ags_notation_disconnect(AgsConnectable *connectable);
 void ags_notation_finalize(GObject *object);
 
-void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm);
+void ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
-void ags_notation_set_port(AgsPortlet *portlet, AgsPort *port);
-AgsPort* ags_notation_get_port(AgsPortlet *portlet);
+void ags_notation_set_port(AgsPortlet *portlet, GObject *port);
+GObject* ags_notation_get_port(AgsPortlet *portlet);
 GList* ags_notation_list_safe_properties(AgsPortlet *portlet);
 void ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
@@ -361,7 +361,7 @@ ags_notation_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(notation->audio == audio){
+      if(notation->audio == (GObject *) audio){
 	return;
       }
 
@@ -373,7 +373,7 @@ ags_notation_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      notation->audio = audio;
+      notation->audio = (GObject *) audio;
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -622,20 +622,20 @@ ags_notation_finalize(GObject *gobject)
 }
 
 void
-ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm)
+ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_notation_set_port(AgsPortlet *portlet, AgsPort *port)
+ags_notation_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
 	       "port\0", port,
 	       NULL);
 }
 
-AgsPort*
+GObject*
 ags_notation_get_port(AgsPortlet *portlet)
 {
   AgsPort *port;

@@ -19,9 +19,13 @@
 
 #include <ags/audio/file/ags_audio_file_link.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_timestamp.h>
+
+#include <ags/thread/file/ags_thread_file_xml.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file.h>

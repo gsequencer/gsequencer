@@ -156,9 +156,9 @@ guint ags_fifoout_get_note_offset(AgsSoundcard *soundcard);
 void ags_fifoout_set_loop(AgsSoundcard *soundcard,
 			  guint loop_left, guint loop_right,
 			  gboolean do_loop);
-guint ags_fifoout_get_loop(AgsSoundcard *soundcard,
-			   guint *loop_left, guint *loop_right,
-			   gboolean *do_loop);
+void ags_fifoout_get_loop(AgsSoundcard *soundcard,
+			  guint *loop_left, guint *loop_right,
+			  gboolean *do_loop);
 
 guint ags_fifoout_get_loop_offset(AgsSoundcard *soundcard);
 
@@ -774,7 +774,7 @@ ags_fifoout_set_property(GObject *gobject,
 
       application_context = g_value_get_object(value);
 
-      if(fifoout->application_context == application_context){
+      if(fifoout->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -785,7 +785,6 @@ ags_fifoout_set_property(GObject *gobject,
       if(application_context != NULL){
 	AgsConfig *config;
 
-	gchar *device;
 	gchar *str;
 	gchar *segmentation;
 	guint discriminante, nominante;
@@ -795,98 +794,6 @@ ags_fifoout_set_property(GObject *gobject,
 	fifoout->application_mutex = application_context->mutex;
 	
 	config = ags_config_get_instance();
-
-	/* dsp channels */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "dsp-channels\0");
-
-	if(str == NULL){
-	  str = ags_config_get_value(config,
-				     AGS_CONFIG_SOUNDCARD_0,
-				     "dsp-channels\0");
-	}
-  
-	if(str != NULL){
-	  fifoout->dsp_channels = g_ascii_strtoull(str,
-						   NULL,
-						   10);
-	  
-	  g_free(str);
-	}
-
-	/* pcm channels */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "pcm-channels\0");
-
-	if(str == NULL){
-	  str = ags_config_get_value(config,
-				     AGS_CONFIG_SOUNDCARD_0,
-				     "pcm-channels\0");
-	}
-  
-	if(str != NULL){
-	  fifoout->pcm_channels = g_ascii_strtoull(str,
-						   NULL,
-						   10);
-	  
-	  g_free(str);
-	}
-
-	/* samplerate */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "samplerate\0");
-
-	if(str == NULL){
-	  str = ags_config_get_value(config,
-				     AGS_CONFIG_SOUNDCARD_0,
-				     "samplerate\0");
-	}
-  
-	if(str != NULL){
-	  fifoout->samplerate = g_ascii_strtoull(str,
-						 NULL,
-						 10);
-	  free(str);
-	}
-
-	/* buffer size */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "buffer-size\0");
-
-	if(str == NULL){
-	  str = ags_config_get_value(config,
-				     AGS_CONFIG_SOUNDCARD_0,
-				     "buffer-size\0");
-	}
-  
-	if(str != NULL){
-	  fifoout->buffer_size = g_ascii_strtoull(str,
-						  NULL,
-						  10);
-	  free(str);
-	}
-
-	/* format */
-	str = ags_config_get_value(config,
-				   AGS_CONFIG_SOUNDCARD,
-				   "format\0");
-
-	if(str == NULL){
-	  str = ags_config_get_value(config,
-				     AGS_CONFIG_SOUNDCARD_0,
-				     "format\0");
-	}
-  
-	if(str != NULL){
-	  fifoout->format = g_ascii_strtoull(str,
-					     NULL,
-					     10);
-	  free(str);
-	}
 
 	/* segmentation */
 	segmentation = ags_config_get_value(config,
@@ -902,21 +809,6 @@ ags_fifoout_set_property(GObject *gobject,
 
 	  g_free(segmentation);
 	}
-
-	fifoout->fifo_fd = -1;
-	device = ags_config_get_value(config,
-				      AGS_CONFIG_SOUNDCARD,
-				      "device\0");
-
-	if(device == NULL){
-	  device = ags_config_get_value(config,
-					AGS_CONFIG_SOUNDCARD_0,
-					"device\0");
-	}
-	if(device != NULL){
-	  fifoout->device = device;
-	  g_message("FIFO device %s\n", fifoout->device);
-	}	  
 
 	ags_fifoout_adjust_delay_and_attack(fifoout);
 	ags_fifoout_realloc_buffer(fifoout);
@@ -1764,7 +1656,7 @@ ags_fifoout_set_loop(AgsSoundcard *soundcard,
   }
 }
 
-guint
+void
 ags_fifoout_get_loop(AgsSoundcard *soundcard,
 		     guint *loop_left, guint *loop_right,
 		     gboolean *do_loop)

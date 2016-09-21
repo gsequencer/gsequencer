@@ -240,7 +240,7 @@ ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run)
   record_midi_audio_run->delay_audio_run = NULL;
   record_midi_audio_run->count_beats_audio_run = NULL;
 
-  record_midi_audio_run->midi_file_writer = ags_midi_file_writer_new(NULL);
+  record_midi_audio_run->midi_file_writer = (GObject *) ags_midi_file_writer_new(NULL);
 }
 
 void
@@ -641,14 +641,14 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
     g_object_unref(record_midi_audio_run->midi_parser);
   }
 
-  record_midi_audio_run->midi_parser = ags_midi_parser_new(NULL);
+  record_midi_audio_run->midi_parser = (GObject *) ags_midi_parser_new(NULL);
   
   /* midi file writer */
   if(record_midi_audio_run->midi_file_writer != NULL){
     g_object_unref(record_midi_audio_run->midi_file_writer);
   }
   
-  record_midi_audio_run->midi_file_writer = ags_midi_file_writer_new(NULL);
+  record_midi_audio_run->midi_file_writer = (GObject *) ags_midi_file_writer_new(NULL);
   
   AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_init_pre(recall);
 }
@@ -663,7 +663,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   AgsDelayAudioRun *delay_audio_run;
   AgsDelayAudioRun *count_beats_audio_run;
 
-  AgsSequencer *sequencer;
+  GObject *sequencer;
 
   GList *feed_midi;
   
@@ -708,7 +708,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
       note->x[1] = x + 64;
       note->y = y;
       //TODO:JK: enhance me
-      ags_complex_set(note->attack,
+      ags_complex_set(&(note->attack),
 		      velocity);
 
       list = g_list_prepend(list,
@@ -728,14 +728,17 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 					  10);
 	  
 
-      note = ags_note_find_prev(list,
+      list = ags_note_find_prev(list,
 				x, y);
-	    
-      note->x[1] = x;
-      note->y = y;
-      //TODO:JK: enhance me
-      ags_complex_set(note->release,
-		      velocity);
+
+      if(list != NULL){
+	note = list->data;
+	note->x[1] = x;
+	note->y = y;
+	//TODO:JK: enhance me
+	ags_complex_set(&(note->release),
+			velocity);
+      }
     }else if(!xmlStrncmp(xmlGetProp(child,
 				    "event\0"),
 			 "polyphonic\0",
@@ -750,16 +753,19 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 					  NULL,
 					  10);
       
-      note = ags_note_find_prev(list,
+      list = ags_note_find_prev(list,
 				x, y);
-	    
-      note->x[1] = x + 64;
-      note->y = y;
-      //TODO:JK: enhance me
-      ags_complex_set(note->sustain,
-		      pressure);
-    }
 
+      if(list != NULL){
+	note = list->data;
+	note->x[1] = x + 64;
+	note->y = y;
+	//TODO:JK: enhance me
+	ags_complex_set(&(note->sustain),
+			pressure);
+      }
+    }
+    
     /* parse children */
     child = node->children;
 
@@ -787,7 +793,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(recall);
 
   delay_audio_run = record_midi_audio_run->delay_audio_run;
-  count_beats_audio_run = record_midi_audio_run->count_beats_audio_run;
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(record_midi_audio_run->count_beats_audio_run);
   
   audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
   sequencer = audio->sequencer;
@@ -828,7 +834,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
       gdouble attack;
 
       /* parse sequencer data */
-      node = ags_midi_parser_parse_bytes(record_midi_audio_run->midi_parser,
+      node = ags_midi_parser_parse_bytes((AgsMidiParser *) record_midi_audio_run->midi_parser,
 					 midi_buffer,
 					 buffer_length);
       
@@ -857,7 +863,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
     /* record */
     if(record){
-      ags_midi_file_writer_write_bytes(record_midi_audio_run->midi_file_writer,
+      ags_midi_file_writer_write_bytes((AgsMidiFileWriter *) record_midi_audio_run->midi_file_writer,
 				       midi_buffer,
 				       buffer_length);
     }

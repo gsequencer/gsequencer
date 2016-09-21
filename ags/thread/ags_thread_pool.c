@@ -414,7 +414,7 @@ ags_thread_pool_creation_thread(void *ptr)
     for(i = 0; i < i_stop; i++){
       guint val;
 
-      returnable_thread = ags_returnable_thread_new((GObject *) thread_pool);
+      returnable_thread = (AgsThread *) ags_returnable_thread_new((GObject *) thread_pool);
       g_object_ref(returnable_thread);
       ags_thread_add_child_extended(thread_pool->parent,
 				    returnable_thread,

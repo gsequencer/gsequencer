@@ -27,6 +27,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_channel.h>
 
 #include <string.h>
@@ -369,7 +370,7 @@ ags_recycling_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(channel == (AgsChannel *) recycling->channel){
+      if(recycling->channel == (GObject *) channel){
 	return;
       }
 
@@ -538,7 +539,7 @@ ags_recycling_get_lock(AgsConcurrentTree *concurrent_tree)
   pthread_mutex_lock(application_mutex);
   
   recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     AGS_RECYCLING(concurrent_tree));
+					     G_OBJECT(concurrent_tree));
 
   pthread_mutex_unlock(application_mutex);
 
@@ -561,7 +562,7 @@ ags_recycling_get_parent_lock(AgsConcurrentTree *concurrent_tree)
 
   if(AGS_RECYCLING(concurrent_tree)->parent != NULL){
     parent_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    AGS_RECYCLING(concurrent_tree)->parent);
+					    (GObject *) AGS_RECYCLING(concurrent_tree)->parent);
   }else{
     parent_mutex = ags_mutex_manager_lookup(mutex_manager,
 					    AGS_RECYCLING(concurrent_tree)->soundcard);
@@ -950,7 +951,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   audio_signal->soundcard = template->soundcard;
 
-  soundcard = AGS_SOUNDCARD(audio_signal->soundcard);
+  soundcard = audio_signal->soundcard;
 
   audio_signal->recycling = (GObject *) recycling;
 

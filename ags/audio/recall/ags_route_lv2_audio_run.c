@@ -852,7 +852,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	      route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
 							      note);
   
-	      recall_lv2_run->route_lv2_audio_run = route_lv2_audio_run;
+	      recall_lv2_run->route_lv2_audio_run = (GObject *) route_lv2_audio_run;
 	      
 	      /* key on */
 	      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
@@ -865,7 +865,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	      seq_event->data.note.velocity = 127;
 
 	      AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->audio_channel = audio_channel;
-	      recall_lv2_run->note = note;
+	      recall_lv2_run->note = (GObject *) note;
 
 	      /* write to port */
 	      if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
@@ -970,7 +970,7 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     //FIXME:JK: should consider delay
     if(note->x[0] == route_lv2_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
       //      g_object_ref(note);
-      ags_route_lv2_audio_run_feed_midi(route_lv2_audio_run,
+      ags_route_lv2_audio_run_feed_midi((AgsRecall *) route_lv2_audio_run,
 					note);      
     }else if(note->x[0] > route_lv2_audio_run->count_beats_audio_run->notation_counter){
       break;

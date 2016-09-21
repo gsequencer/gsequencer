@@ -26,6 +26,7 @@
 
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <stdint.h>
 //TODO:JK: do vector optimization
@@ -791,8 +792,8 @@ ags_audio_signal_set_property(GObject *gobject,
 		     data) != NULL){
       }
 
-      audio_signal = g_list_append(audio_signal->stream_beginning,
-				   data);
+      audio_signal->stream_beginning = g_list_append(audio_signal->stream_beginning,
+						     data);
       audio_signal->stream_end = g_list_last(audio_signal->stream_beginning);
     }
     break;
@@ -974,7 +975,7 @@ ags_audio_signal_finalize(GObject *gobject)
   
   if(audio_signal->stream_beginning != NULL){
     g_list_free_full(audio_signal->stream_beginning,
-		     ags_stream_free);
+		     (GDestroyNotify) ags_stream_free);
   }
 
   if(audio_signal->note != NULL){

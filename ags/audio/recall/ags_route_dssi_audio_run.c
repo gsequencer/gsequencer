@@ -842,7 +842,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	      route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
 							       note);
 	      
-	      recall_dssi_run->route_dssi_audio_run = route_dssi_audio_run;
+	      recall_dssi_run->route_dssi_audio_run = (GObject *) route_dssi_audio_run;
 	      
 	      /* key on */
 	      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
@@ -856,7 +856,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	      seq_event->data.note.velocity = 127;
 
 	      AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->audio_channel = audio_channel;
-	      recall_dssi_run->note = note;
+	      recall_dssi_run->note = (GObject *) note;
 		  
 	      recall_dssi_run->event_buffer = (snd_seq_event_t **) malloc(2 * sizeof(snd_seq_event_t *));
 	      recall_dssi_run->event_buffer[0] = seq_event;
@@ -958,7 +958,7 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
        note->y < audio->audio_end_mapping &&
        note->x[0] == route_dssi_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
       //      g_object_ref(note);
-      ags_route_dssi_audio_run_feed_midi(route_dssi_audio_run,
+      ags_route_dssi_audio_run_feed_midi((AgsRecall *) route_dssi_audio_run,
 					 note);      
     }else if(note->x[0] > route_dssi_audio_run->count_beats_audio_run->notation_counter){
       break;
@@ -982,7 +982,7 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 
   AgsApplicationContext *application_context;
   AgsConfig *config;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   
   AgsMutexManager *mutex_manager;
  
@@ -1009,7 +1009,7 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 
   audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio;
   
-  soundcard = (GObject *) audio->soundcard;
+  soundcard = audio->soundcard;
 
   /* read config */
   config = ags_config_get_instance();

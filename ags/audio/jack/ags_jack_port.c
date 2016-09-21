@@ -194,7 +194,7 @@ ags_jack_port_set_property(GObject *gobject,
 
       jack_client = (AgsJackClient *) g_value_get_object(value);
 
-      if(jack_client == jack_port->jack_client){
+      if(jack_port->jack_client == (GObject *) jack_client){
 	return;
       }
 
@@ -206,7 +206,7 @@ ags_jack_port_set_property(GObject *gobject,
 	g_object_ref(jack_client);
       }
       
-      jack_port->jack_client = jack_client;
+      jack_port->jack_client = (GObject *) jack_client;
     }
     break;
   case PROP_PORT_NAME:
@@ -331,7 +331,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
 
   GList *list;
 
-  gchar *name, uuid;
+  gchar *name, *uuid;
   
   if(!AGS_IS_JACK_PORT(jack_port) ||
      port_name == NULL){
@@ -351,7 +351,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
   /* get jack server and application context */
   if(jack_port->jack_client != NULL &&
      AGS_JACK_CLIENT(jack_port->jack_client)->jack_server != NULL){
-    jack_server = AGS_JACK_CLIENT(jack_port->jack_client)->jack_server;
+    jack_server = (AgsJackServer *) AGS_JACK_CLIENT(jack_port->jack_client)->jack_server;
   }else{
     jack_server = NULL;
   }
