@@ -39,7 +39,8 @@ ags_line_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 int
 ags_line_editor_show_callback(GtkWidget *widget, AgsLineEditor *line_editor)
 {
-  ags_line_editor_show(widget);
+  gtk_widget_show((GtkWidget *) line_editor->link_editor);
+  gtk_widget_show((GtkWidget *) line_editor->member_editor);
 
   return(0);
 }

@@ -355,8 +355,8 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
   AgsConnectionEditor *connection_editor;
   
   if(machine->connection_editor == NULL){
-    connection_editor =
-      machine->connection_editor = (GtkDialog *) ags_connection_editor_new(machine);
+    connection_editor = ags_connection_editor_new(machine);
+    machine->connection_editor = (GtkDialog *) connection_editor;
     
     g_signal_connect(connection_editor, "delete-event\0",
 		     G_CALLBACK(ags_machine_connection_editor_delete_event_callback), machine);
@@ -386,8 +386,8 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
   AgsMidiDialog *midi_dialog;
   
   if(machine->midi_dialog == NULL){
-    midi_dialog =
-      machine->midi_dialog = (GtkDialog *) ags_midi_dialog_new(machine);
+    midi_dialog = ags_midi_dialog_new(machine);
+    machine->midi_dialog = (GtkDialog *) midi_dialog;
     midi_dialog->flags |= AGS_MIDI_DIALOG_MAPPING;
     
     g_signal_connect(midi_dialog, "delete-event\0",
@@ -551,7 +551,8 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 	       !g_strcmp0("..\0", current_filename))
 	      continue;
 
-	    if(!ags_file_selection_contains_file(file_selection, current_filename) &&
+	    if(!ags_file_selection_contains_file(file_selection,
+						 current_filename) &&
 	       g_slist_find(filenames, current_filename) == NULL){
 	      gtk_file_chooser_unselect_filename(GTK_FILE_CHOOSER(file_chooser),
 						 current_filename);
@@ -632,7 +633,7 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
 	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
       
 	while(pad_list != NULL){
-	  line_list = gtk_container_get_children(AGS_PAD(pad_list->data)->expander_set);
+	  line_list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad_list->data)->expander_set);
 	  line_list = g_list_nth(line_list,
 				 audio_channels_old);
 	

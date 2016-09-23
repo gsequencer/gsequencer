@@ -299,7 +299,7 @@ ags_automation_editor_set_property(GObject *gobject,
 	g_object_ref(soundcard);
 
 	g_signal_connect(soundcard, "tic\0",
-			 ags_automation_editor_tic_callback, automation_editor);
+			 G_CALLBACK(ags_automation_editor_tic_callback), automation_editor);
       }
       
       automation_editor->soundcard = soundcard;

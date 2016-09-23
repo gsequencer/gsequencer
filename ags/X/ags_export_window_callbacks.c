@@ -84,7 +84,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsMachine *machine;
   
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -105,12 +105,12 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = (AgsAudioLoop *) application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
   
   machines_start = NULL;
@@ -122,7 +122,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     gchar *filename;
     gboolean live_performance;
 
-    export_thread = (AgsExportThread *) ags_thread_find_type(audio_loop,
+    export_thread = (AgsExportThread *) ags_thread_find_type(main_loop,
 							     AGS_TYPE_EXPORT_THREAD);
 
     filename = gtk_entry_get_text(export_window->filename);

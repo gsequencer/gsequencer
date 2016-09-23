@@ -233,8 +233,8 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   gdk_threads_enter();
   
-  window = gtk_widget_get_ancestor((GtkWidget *) matrix,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix,
+						 AGS_TYPE_WINDOW);
 
   application_context = (AgsApplicationContext *) window->application_context;
 

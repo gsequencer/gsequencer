@@ -145,19 +145,19 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
-		     hbox,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
-  label = gtk_label_new("Plugin type:\0");
+  label = (GtkLabel *) gtk_label_new("Plugin type:\0");
   gtk_box_pack_start((GtkBox *) hbox,
-		     label,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
-  plugin_browser->plugin_type = gtk_combo_box_text_new();
+  plugin_browser->plugin_type = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
-		     plugin_browser->plugin_type,
+		     (GtkWidget *) plugin_browser->plugin_type,
 		     FALSE, FALSE,
 		     0);
   
@@ -170,7 +170,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   
   plugin_browser->lv2_browser = (GtkWidget *) ags_lv2_browser_new();
   gtk_box_pack_start((GtkBox *) vbox,
-		     plugin_browser->lv2_browser,
+		     (GtkWidget *) plugin_browser->lv2_browser,
 		     FALSE, FALSE,
 		     0);
 
@@ -178,7 +178,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   
   plugin_browser->ladspa_browser = (GtkWidget *) ags_ladspa_browser_new();
   gtk_box_pack_start((GtkBox *) vbox,
-		     plugin_browser->ladspa_browser,
+		     (GtkWidget *) plugin_browser->ladspa_browser,
 		     FALSE, FALSE,
 		     0);
 

@@ -417,8 +417,8 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 
   cell_pattern = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
-  key_press = gdk_event_new(GDK_KEY_PRESS);
-  key_release = gdk_event_new(GDK_KEY_RELEASE);
+  key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
 
   switch(i){
   case AGS_CELL_PATTERN_MOVE_LEFT:
@@ -487,8 +487,8 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_c;
 
       /* create modifier */
-      modifier_press = gdk_event_new(GDK_KEY_PRESS);
-      modifier_release = gdk_event_new(GDK_KEY_RELEASE);
+      modifier_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+      modifier_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
 
       modifier_press->keyval =
 	modifier_release->keyval = GDK_KEY_Control_R;
@@ -796,7 +796,7 @@ ags_cell_pattern_blink_worker(void *data)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						 AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -817,7 +817,7 @@ ags_cell_pattern_blink_worker(void *data)
     blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
 								  !(AGS_CELL_PATTERN_CURSOR_ON & (cell_pattern->flags)));
     ags_task_thread_append_task(task_thread,
-				(AgsTaskThread *) blink_cell_pattern_cursor);
+				(AgsTask *) blink_cell_pattern_cursor);
 
     /* delay */
     usleep(blink_delay);
@@ -827,7 +827,7 @@ ags_cell_pattern_blink_worker(void *data)
   blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
 								FALSE);
   ags_task_thread_append_task(task_thread,
-			      (AgsTaskThread *) blink_cell_pattern_cursor);
+			      (AgsTask *) blink_cell_pattern_cursor);
 
   return(NULL);
 }
@@ -870,8 +870,8 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     gdk_threads_enter();
 
-    machine = gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
-				      AGS_TYPE_MACHINE);
+    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						     AGS_TYPE_MACHINE);
 
     if(machine == NULL){
       gdk_threads_leave();

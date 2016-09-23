@@ -266,7 +266,7 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->mapped_input_pad = 0;
   matrix->mapped_output_pad = 0;
 
-  ags_machine_popup_add_edit_options(matrix,
+  ags_machine_popup_add_edit_options((AgsMachine *) matrix,
 				     (AGS_MACHINE_POPUP_COPY_PATTERN));
   
   /* create widgets */

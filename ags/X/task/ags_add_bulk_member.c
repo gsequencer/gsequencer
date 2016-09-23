@@ -191,7 +191,7 @@ ags_add_bulk_member_launch(AgsTask *task)
  */
 AgsAddBulkMember*
 ags_add_bulk_member_new(GtkWidget *effect_bulk,
-			AgsLineMember *bulk_member,
+			AgsBulkMember *bulk_member,
 			guint x, guint y,
 			guint width, guint height)
 {

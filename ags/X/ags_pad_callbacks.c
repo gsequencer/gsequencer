@@ -135,7 +135,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -300,7 +300,7 @@ ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
   task = (AgsTask *) task_completion->task;
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						 AGS_TYPE_WINDOW);
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
+  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
 								 AGS_TYPE_SOUNDCARD_THREAD);
 
   if(soundcard_thread->error != NULL){
@@ -358,7 +358,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   /* get audio loop and audio mutex */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
   
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) input_pad->channel->audio);

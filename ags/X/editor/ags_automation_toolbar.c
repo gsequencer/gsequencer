@@ -170,7 +170,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 						       "relief\0", GTK_RELIEF_NONE,
 						       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
-			    automation_toolbar->cut,
+			    (GtkWidget *) automation_toolbar->cut,
 			    (GtkWidget *) "cut automation\0",
 			    NULL);
 

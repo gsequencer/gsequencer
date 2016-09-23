@@ -905,7 +905,7 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
 
   /* find output bulk ports */
   if(effect_bridge->bulk_output != NULL){
-    tmp_port = ags_effect_bulk_find_port(effect_bridge->bulk_output);
+    tmp_port = ags_effect_bulk_find_port((AgsEffectBulk *) effect_bridge->bulk_output);
 
     if(port != NULL){
       port = g_list_concat(port,
@@ -917,7 +917,7 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
 
   /* find input bulk ports */
   if(effect_bridge->bulk_output != NULL){
-    tmp_port = ags_effect_bulk_find_port(effect_bridge->bulk_output);
+    tmp_port = ags_effect_bulk_find_port((AgsEffectBulk *) effect_bridge->bulk_output);
 
     if(port != NULL){
       port = g_list_concat(port,

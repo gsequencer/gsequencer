@@ -235,7 +235,7 @@ ags_pattern_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigu
   /* reset ruler */
   gtk_adjustment_set_value(pattern_edit->ruler->adjustment,
 			   GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value / (double) pattern_edit->control_current.control_width);
-  gtk_widget_queue_draw(pattern_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
 
   /* reset vertically */
   pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_VERTICALLY;
@@ -1552,7 +1552,7 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   channel = AGS_INIT_CHANNEL(task)->channel;
 
-  soundcard = AGS_SOUNDCARD(AGS_AUDIO(channel->audio)->soundcard);
+  soundcard = AGS_AUDIO(channel->audio)->soundcard;
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
   

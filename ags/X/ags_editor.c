@@ -274,7 +274,7 @@ ags_editor_set_property(GObject *gobject,
       
       if(soundcard != NULL){
 	g_signal_connect(soundcard, "tic\0",
-			 ags_editor_tic_callback, editor);
+			 G_CALLBACK(ags_editor_tic_callback), editor);
 	g_object_ref(soundcard);
       }
       

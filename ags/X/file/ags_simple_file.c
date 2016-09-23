@@ -1164,7 +1164,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	GList *jack_soundcard, *alsa_soundcard, *oss_soundcard;
 	GList *list;
 
-	gchar *soundcard_group;
+	gchar *soundcard_group, *next_soundcard_group;
 	gchar *backend;
 	gchar *device;
 	gchar *str;
@@ -1201,7 +1201,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
 	/* parse configuration */
 	soundcard_group = g_strdup(AGS_CONFIG_SOUNDCARD);
-  
+	next_soundcard_group = NULL;
+	
 	for(i = 0; ; i++){
 	  guint pcm_channels, buffer_size, samplerate, format;
 	  gboolean use_jack, use_alsa, use_oss;
@@ -1209,10 +1210,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	  if(!g_key_file_has_group(config->key_file,
 				   soundcard_group)){
 	    if(i == 0){
-	      g_free(soundcard_group);
-	      soundcard_group = g_strdup_printf("%s-%d\0",
-						AGS_CONFIG_SOUNDCARD,
-						i);
+	      next_soundcard_group = g_strdup_printf("%s-%d\0",
+						     AGS_CONFIG_SOUNDCARD,
+						     i);
 	      continue;
 	    }else{
 	      break;
@@ -1223,12 +1223,15 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	  backend = ags_config_get_value(config,
 					 soundcard_group,
 					 "backend\0");
+
+	  if(next_soundcard_group != NULL){
+	    g_free(soundcard_group);
+	    soundcard_group = next_soundcard_group;
+	  }
 	  
-	  g_free(soundcard_group);
-	  soundcard_group = g_strdup_printf("%s-%d\0",
-					    AGS_CONFIG_SOUNDCARD,
-					    i);
-	
+	  next_soundcard_group = g_strdup_printf("%s-%d\0",
+						 AGS_CONFIG_SOUNDCARD,
+						 i);
 	  /* change soundcard */
 	  if(backend != NULL){
 	    if(backend != NULL){
@@ -1273,15 +1276,14 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	    }
 	  
 	    /* jack */
-	    if(!g_ascii_strncasecmp(str,
+	    if(!g_ascii_strncasecmp(backend,
 				    "jack\0",
 				    5)){
 	      current = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 								   TRUE);
-	      ags_jack_server_connect_client(jack_server);
 	
 	      use_jack = TRUE;
-	    }else if(!g_ascii_strncasecmp(str,
+	    }else if(!g_ascii_strncasecmp(backend,
 					  "alsa\0",
 					  5)){
 	      current = (GObject *) ags_devout_new((GObject *) application_context);
@@ -1289,7 +1291,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 	      AGS_DEVOUT(current)->flags |= AGS_DEVOUT_ALSA;
 		
 	      use_alsa = TRUE;
-	    }else if(!g_ascii_strncasecmp(str,
+	    }else if(!g_ascii_strncasecmp(backend,
 					  "oss\0",
 					  4)){
 	      current = (GObject *) ags_devout_new((GObject *) application_context);
@@ -1323,8 +1325,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 					"device\0");
 
 	  if(device != NULL){
-	    ags_soundcard_set_device(AGS_SOUNDCARD(current),
-				     device);
+	    g_message("!!! %s\0", device);
+	    //	    ags_soundcard_set_device(AGS_SOUNDCARD(current),
+	    //			     device);
 	    g_free(device);
 	  }
 
@@ -2350,11 +2353,11 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   ags_connectable_connect(AGS_CONNECTABLE(gobject));
 
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
-    ags_ladspa_bridge_load(gobject);
+    ags_ladspa_bridge_load((AgsLadspaBridge *) gobject);
   }else if(AGS_IS_DSSI_BRIDGE(gobject)){
-    ags_dssi_bridge_load(gobject);
+    ags_dssi_bridge_load((AgsDssiBridge *) gobject);
   }else if(AGS_IS_LV2_BRIDGE(gobject)){
-    ags_lv2_bridge_load(gobject);
+    ags_lv2_bridge_load((AgsLv2Bridge *) gobject);
   }
 
   /* retrieve midi mapping */
@@ -2625,7 +2628,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     gchar *value;
 
     /* program */
-    model = gtk_combo_box_get_model(dssi_bridge->program);
+    model = gtk_combo_box_get_model((GtkComboBox *) dssi_bridge->program);
 
     str = xmlGetProp(node,
 		     "program\0");
@@ -5983,7 +5986,7 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     
       xmlNewProp(control_node,
 		 "value\0",
-		 ((gtk_toggle_button_get_active(child_widget)) ? g_strdup("true\0"): g_strdup("false\0")));
+		 ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? g_strdup("true\0"): g_strdup("false\0")));
     }else if(AGS_IS_DIAL(child_widget)){
       control_node = xmlNewNode(NULL,
 				"ags-sf-control\0");
@@ -6209,7 +6212,7 @@ ags_simple_file_write_line_resolve_link(AgsFileLookup *file_lookup,
   
   xmlChar *xpath;
 
-  list = ags_simple_file_find_id_ref_by_reference(file_lookup->file,
+  list = ags_simple_file_find_id_ref_by_reference((AgsSimpleFile *) file_lookup->file,
 						  channel->link);
   
   if(list != NULL){
@@ -6372,7 +6375,7 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
 
       xmlNewProp(control_node,
 		 "value\0",
-		 ((gtk_toggle_button_get_active(child_widget)) ? g_strdup("true\0"): g_strdup("false\0")));
+		 ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? g_strdup("true\0"): g_strdup("false\0")));
     }else if(AGS_IS_DIAL(child_widget)){
       control_node = xmlNewNode(NULL,
 				"ags-sf-control\0");
@@ -6557,8 +6560,8 @@ ags_simple_file_write_editor_resolve_machine(AgsFileLookup *file_lookup,
 		 "name\0",
 		 "machine\0");
 
-      file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_reference(file_lookup->file,
-									      AGS_MACHINE_RADIO_BUTTON(list->data)->machine);
+      file_id_ref = ags_simple_file_find_id_ref_by_reference((AgsSimpleFile *) file_lookup->file,
+							     AGS_MACHINE_RADIO_BUTTON(list->data)->machine);
       if(file_id_ref != NULL){
 	xpath = g_strdup_printf("xpath=//ags-sf-machine[@id='%s']\0",
 				xmlGetProp(AGS_FILE_ID_REF(file_id_ref->data)->node,
@@ -6613,7 +6616,7 @@ ags_simple_file_write_automation_editor(AgsSimpleFile *simple_file, xmlNode *par
 
   xmlNewProp(node,
 	     "zoom\0",
-	     gtk_combo_box_text_get_active_text(automation_editor->automation_toolbar->zoom));
+	     gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(automation_editor->automation_toolbar->zoom)));
 
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", simple_file,
@@ -6664,8 +6667,8 @@ ags_simple_file_write_automation_editor_resolve_machine(AgsFileLookup *file_look
 		 "name\0",
 		 "machine\0");
 
-      file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_reference(file_lookup->file,
-									      AGS_MACHINE_RADIO_BUTTON(list->data)->machine);
+      file_id_ref = ags_simple_file_find_id_ref_by_reference((AgsSimpleFile *) file_lookup->file,
+							     AGS_MACHINE_RADIO_BUTTON(list->data)->machine);
       if(file_id_ref != NULL){
 	xpath = g_strdup_printf("xpath=//ags-sf-machine[@id='%s']\0",
 				xmlGetProp(AGS_FILE_ID_REF(file_id_ref->data)->node,

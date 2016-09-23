@@ -537,7 +537,7 @@ ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "index\0",
-	     g_strdup_printf("%ul\0", recall_dssi->index));
+	     g_strdup_printf("%lu\0", recall_dssi->index));
 
   xmlAddChild(parent,
 	      node);
@@ -619,7 +619,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	current = g_object_new(AGS_TYPE_PORT,
 			       "plugin-name\0", plugin_name,
 			       "specifier\0", specifier,
-			       "control-port\0", g_strdup_printf("%ul/%ul\0",
+			       "control-port\0", g_strdup_printf("%lu/%lu\0",
 								 i,
 								 port_count),
 			       "port-value-is-pointer\0", FALSE,

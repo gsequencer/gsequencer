@@ -471,7 +471,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 

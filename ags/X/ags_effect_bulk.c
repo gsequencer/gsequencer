@@ -431,7 +431,7 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 					    "xalign\0", 1.0,
 					    NULL);
   gtk_box_pack_start((GtkBox *) effect_bulk,
-		     alignment,
+		     (GtkWidget *) alignment,
 		     FALSE, FALSE,
 		     0);
 
@@ -447,14 +447,14 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     (GtkWidget *) effect_bulk->add,
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_show(effect_bulk->add);
+  gtk_widget_show((GtkWidget *) effect_bulk->add);
   
   effect_bulk->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) effect_bulk->remove,
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_show(effect_bulk->remove);
+  gtk_widget_show((GtkWidget *) effect_bulk->remove);
   
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
@@ -478,7 +478,7 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new(effect_bulk);
+  effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) effect_bulk);
 }
 
 void
@@ -2279,7 +2279,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
       /* create task */
-      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+      update_bulk_member = ags_update_bulk_member_new((GtkWidget *) effect_bulk,
 						      list->data,
 						      new_size,
 						      old_size,
@@ -2427,7 +2427,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
       /* create task */
-      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+      update_bulk_member = ags_update_bulk_member_new((GtkWidget *) effect_bulk,
 						      list->data,
 						      new_size,
 						      old_size,

@@ -141,7 +141,7 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  expander = gtk_expander_new("show/hide\0");
+  expander = (GtkExpander *) gtk_expander_new("show/hide\0");
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) expander);
 

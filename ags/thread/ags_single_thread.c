@@ -218,16 +218,16 @@ void
 ags_single_thread_stop(AgsThread *thread)
 {
   AgsSingleThread *single_thread;
-  GList *list;
+  AgsThread *child;
   
   single_thread = AGS_SINGLE_THREAD(thread);
 
-  list = AGS_THREAD(single_thread)->children;
+  child = g_atomic_pointer_get(&(AGS_THREAD(single_thread)->children));
 
-  while(list != NULL){
-    ags_thread_run(AGS_THREAD(list->data));
+  while(child != NULL){
+    ags_thread_run(child);
 
-    list = list->next;
+    child = g_atomic_pointer_get(&(child->next));
   }    
 }
 

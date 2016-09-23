@@ -167,8 +167,8 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
   pthread_mutex_unlock(application_mutex);
 
   /* find task thread */
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 		  
   if(toggle_button->active){
     AgsPlayback *playback;
@@ -346,7 +346,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsThread *task_thread;
+  AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
   
@@ -357,8 +357,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(drum_input_pad),
 					     AGS_TYPE_DRUM);
 
-  window = gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
+						 AGS_TYPE_WINDOW);
 
   file_chooser = drum_input_pad->file_chooser;
 
@@ -397,7 +397,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
     /* task */
     if(AGS_PAD(drum_input_pad)->group->active){
-      open_single_file = ags_open_single_file_new((GObject *) AGS_PAD(drum_input_pad)->channel,
+      open_single_file = ags_open_single_file_new(AGS_PAD(drum_input_pad)->channel,
 						  AGS_AUDIO(AGS_MACHINE(drum)->audio)->soundcard,
 						  name0,
 						  0, AGS_AUDIO(AGS_MACHINE(drum)->audio)->audio_channels);
@@ -408,7 +408,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       list = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set));
       line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
-      open_single_file = ags_open_single_file_new((GObject *) line->channel,
+      open_single_file = ags_open_single_file_new(line->channel,
 						  AGS_AUDIO(AGS_MACHINE(drum)->audio)->soundcard,
 						  name0,
 						  (guint) spin_button->adjustment->value, 1);

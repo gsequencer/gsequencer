@@ -82,8 +82,6 @@ pthread_mutex_t* ags_devout_get_lock(AgsConcurrentTree *concurrent_tree);
 pthread_mutex_t* ags_devout_get_parent_lock(AgsConcurrentTree *concurrent_tree);
 void ags_devout_finalize(GObject *gobject);
 
-void ags_devout_switch_buffer_flag(AgsDevout *devout);
-
 void ags_devout_set_application_context(AgsSoundcard *soundcard,
 					AgsApplicationContext *application_context);
 AgsApplicationContext* ags_devout_get_application_context(AgsSoundcard *soundcard);

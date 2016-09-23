@@ -298,7 +298,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   GList *list;
   JSList *jslist;
 
-  gchar *soundcard_group;
+  gchar *soundcard_group, *next_soundcard_group;
   gchar *str;
 
   guint i;
@@ -327,6 +327,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   soundcard = NULL;
   
   soundcard_group = g_strdup("soundcard\0");
+  next_soundcard_group = NULL;
   
   for(i = 0; ; i++){
     guint pcm_channels, buffer_size, samplerate, format;
@@ -335,10 +336,9 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       if(i == 0){
-	g_free(soundcard_group);
-	soundcard_group = g_strdup_printf("%s-%d\0",
-					  AGS_CONFIG_SOUNDCARD,
-					  i);
+	next_soundcard_group = g_strdup_printf("%s-%d\0",
+					       AGS_CONFIG_SOUNDCARD,
+					       i);
 	continue;
       }else{
 	break;
@@ -349,10 +349,14 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 			       soundcard_group,
 			       "backend\0");
 
-    g_free(soundcard_group);
-    soundcard_group = g_strdup_printf("%s-%d\0",
-				      AGS_CONFIG_SOUNDCARD,
-				      i);
+    if(next_soundcard_group != NULL){
+      g_free(soundcard_group);
+      soundcard_group = next_soundcard_group;
+    }
+	    
+    next_soundcard_group = g_strdup_printf("%s-%d\0",
+					   AGS_CONFIG_SOUNDCARD,
+					   i);
 
     use_jack = FALSE;
     use_alsa = FALSE;
@@ -364,7 +368,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 			      5)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							       TRUE);
-	ags_jack_server_connect_client(jack_server);
 	
 	use_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,

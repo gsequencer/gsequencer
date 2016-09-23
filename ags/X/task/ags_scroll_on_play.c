@@ -214,7 +214,7 @@ ags_scroll_on_play_launch(AgsTask *task)
     }
 
     count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
-    count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
     
     if(AGS_IS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
       AgsNoteEdit *note_edit;

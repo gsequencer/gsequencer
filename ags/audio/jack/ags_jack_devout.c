@@ -636,7 +636,7 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
     jack_devout->pcm_channels = g_ascii_strtoull(str,
 						 NULL,
 						 10);
-	  
+    g_message("???? %d", jack_devout->pcm_channels);
     g_free(str);
   }
 
@@ -1218,19 +1218,21 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
-  if(jack_devout->card_uri == device){
+  if(jack_devout->card_uri == device ||
+     !g_ascii_strcasecmp(jack_devout->card_uri,
+			 device)){
     return;
   }
 
   if(!g_str_has_prefix(device,
-		       "ags-soundcard\0")){
+		       "ags-jack-devout-\0")){
     g_warning("invalid JACK device prefix");
 
     return;
   }
 
   ret = sscanf(device,
-	       "ags-soundcard%u\0",
+	       "ags-jack-devout-%u\0",
 	       &nth_card);
 
   if(ret != 1){
@@ -1255,7 +1257,7 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
 			  i);
     
     g_object_set(jack_port->data,
-		 "port-name/0", str,
+		 "port-name\0", str,
 		 NULL);
     g_free(str);
 

@@ -391,9 +391,9 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   bulk_member->port_flags = 0;
   
   bulk_member->widget_type = AGS_TYPE_DIAL;
-  dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
-				    "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
-				    NULL);
+  dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
+				  "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
+				  NULL);
   gtk_widget_set_size_request((GtkWidget *) dial,
 			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
 			      2 * (dial->radius + dial->outline_strength + 1));

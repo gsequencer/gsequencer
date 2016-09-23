@@ -41,7 +41,7 @@ main(int argc, char **argv)
 
   if(argc == 2){
 
-    if(!strncmp(argv[1], "--help\0", 7)){
+    if(!g_ascii_strncasecmp(argv[1], "--help\0", 7)){
       printf("midi2xml converts MIDI to XML\n\n\0");
 
       printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
@@ -51,7 +51,7 @@ main(int argc, char **argv)
 	     "<file>              the file to be processed\0");
       
       exit(0);
-    }else if(!strncmp(argv[1], "--version\0", 10)){
+    }else if(!g_ascii_strncasecmp(argv[1], "--version\0", 10)){
       printf("midi2xml 1.0.0\n\n\0");
       
       printf("%s\n%s\n%s\n\n\0",

@@ -607,7 +607,7 @@ ags_line_member_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel(line_member);
+	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line_member);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s\0",
@@ -1100,7 +1100,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	  if(AGS_IS_DIAL(gtk_bin_get_child((GtkBin *) line_member))){
 	    AgsDial *dial;
 
-	    dial = gtk_bin_get_child((GtkBin *) line_member);
+	    dial = (AgsDial *) gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = dial->adjustment->upper;
 	    lower = dial->adjustment->lower;
@@ -1109,7 +1109,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	  }else if(GTK_IS_RANGE(gtk_bin_get_child((GtkBin *) line_member))){
 	    GtkRange *range;
 
-	    range = gtk_bin_get_child((GtkBin *) line_member);
+	    range = (GtkRange *) gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = range->adjustment->upper;
 	    lower = range->adjustment->lower;
@@ -1118,7 +1118,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	  }else if(GTK_IS_SPIN_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
 	    GtkSpinButton *spin_button;
 
-	    spin_button = gtk_bin_get_child((GtkBin *) line_member);
+	    spin_button = (GtkSpinButton *) gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = spin_button->adjustment->upper;
 	    lower = spin_button->adjustment->lower;

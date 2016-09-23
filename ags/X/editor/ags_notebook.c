@@ -151,8 +151,8 @@ ags_notebook_init(AgsNotebook *notebook)
 		     0);
 
   /* viewport with selection */
-  notebook->viewport = (GtkScrolledWindow *) gtk_viewport_new(NULL,
-							      NULL);
+  notebook->viewport = (GtkViewport *) gtk_viewport_new(NULL,
+							NULL);
   gtk_container_add(GTK_CONTAINER(hbox),
 		    GTK_WIDGET(notebook->viewport));
   
@@ -248,7 +248,7 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
 
   
   /*  */
-  gtk_widget_get_child_requisition(notebook->viewport,
+  gtk_widget_get_child_requisition((GtkWidget *) notebook->viewport,
 				   &child_requisition);
 
   child_allocation.x = allocation->x + 2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
@@ -279,7 +279,7 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
   
   child_allocation.height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
 
-  gtk_widget_size_allocate(notebook->hbox,
+  gtk_widget_size_allocate((GtkWidget *) notebook->hbox,
 			   &child_allocation);
 
   x = 0;
@@ -343,10 +343,9 @@ ags_notebook_connect(AgsConnectable *connectable)
 
   notebook = AGS_NOTEBOOK(connectable);
 
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
+  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook,
+						 AGS_TYPE_EDITOR);
 
-  g_message("connect\0");
-  
   notebook->scroll_prev_handler = g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked\0",
 						   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);
   notebook->scroll_next_handler = g_signal_connect(G_OBJECT(notebook->scroll_next), "clicked\0",
@@ -431,7 +430,7 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 	       "yalign\0", 0.0,
 	       NULL);
   gtk_toggle_button_set_active(tab->toggle, TRUE);
-  gtk_widget_set_size_request(tab->toggle,
+  gtk_widget_set_size_request((GtkWidget *) tab->toggle,
 			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);  
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),
@@ -505,7 +504,7 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 	       "xalign\0", 0.0,
 	       "yalign\0", 0.0,
 	       NULL);
-  gtk_widget_set_size_request(tab->toggle,
+  gtk_widget_set_size_request((GtkWidget *) tab->toggle,
 			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),

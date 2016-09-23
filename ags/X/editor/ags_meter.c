@@ -34,8 +34,6 @@ void ags_meter_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_meter_init(AgsMeter *meter);
 void ags_meter_connect(AgsConnectable *connectable);
 void ags_meter_disconnect(AgsConnectable *connectable);
-void ags_meter_destroy(GtkObject *object);
-void ags_meter_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_meter
@@ -121,12 +119,6 @@ ags_meter_connect(AgsConnectable *connectable)
 
   meter = AGS_METER(connectable);
 
-  g_signal_connect((GObject *) meter, "destroy\0",
-		   G_CALLBACK(ags_meter_destroy_callback), (gpointer) meter);
-
-  g_signal_connect_after((GObject *) meter, "show\0",
-			 G_CALLBACK(ags_meter_show_callback), (gpointer) meter);
-
   g_signal_connect((GObject *) meter, "expose_event\0",
   		   G_CALLBACK(ags_meter_expose_event), (gpointer) meter);
 
@@ -136,16 +128,6 @@ ags_meter_connect(AgsConnectable *connectable)
 
 void
 ags_meter_disconnect(AgsConnectable *connectable)
-{
-}
-
-void
-ags_meter_destroy(GtkObject *object)
-{
-}
-
-void
-ags_meter_show(GtkWidget *widget)
 {
 }
 

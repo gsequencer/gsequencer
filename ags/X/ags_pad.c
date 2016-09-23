@@ -793,7 +793,7 @@ ags_pad_play(AgsPad *pad)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -1032,7 +1032,7 @@ ags_pad_play(AgsPad *pad)
       /* create cancel task or set flags */
       pthread_mutex_lock(channel_mutex);
 
-      playback = channel->playback;
+      playback = (AgsPlayback *) channel->playback;
       flags = g_atomic_int_get(&(playback->flags));
 
       recall_id = playback->recall_id[0];

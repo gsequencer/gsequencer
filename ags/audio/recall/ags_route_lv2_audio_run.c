@@ -994,7 +994,7 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
 
   AgsApplicationContext *application_context;
   AgsConfig *config;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   
   AgsMutexManager *mutex_manager;
  
@@ -1021,14 +1021,14 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
 
   audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio;
   
-  soundcard = (GObject *) audio->soundcard;
+  soundcard = audio->soundcard;
 
   /* read config */
   config = ags_config_get_instance();
 
   pthread_mutex_lock(application_mutex);
 
-  bpm = ags_soundcard_get_bpm(soundcard);
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
   
   /* buffer size */
   str = ags_config_get_value(config,

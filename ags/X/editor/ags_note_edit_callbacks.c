@@ -1677,7 +1677,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 void
 ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 {
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsChannel *channel;
   AgsRecycling *recycling;
 
@@ -1709,8 +1709,8 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 			    NULL);
   
   main_loop = (AgsThread *) application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
   g_message("launch\0");

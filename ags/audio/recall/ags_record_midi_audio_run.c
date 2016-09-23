@@ -622,7 +622,7 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   AgsRecordMidiAudio *record_midi_audio;
   AgsRecordMidiAudioRun *record_midi_audio_run;
   
-  AgsSequencer *sequencer;
+  GObject *sequencer;
   
   gboolean playback, record;
 
@@ -661,7 +661,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   AgsRecordMidiAudio *record_midi_audio;
   AgsRecordMidiAudioRun *record_midi_audio_run;
   AgsDelayAudioRun *delay_audio_run;
-  AgsDelayAudioRun *count_beats_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
 
   GObject *sequencer;
 
