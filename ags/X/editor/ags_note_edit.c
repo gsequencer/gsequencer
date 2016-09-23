@@ -351,7 +351,7 @@ ags_note_edit_get_accessible(GtkWidget *widget)
     g_object_set_qdata(G_OBJECT(widget),
 		       quark_accessible_object,
 		       accessible);
-    gtk_accessible_set_widget(accessible,
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
 			      widget);
   }
   
@@ -374,19 +374,19 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 
   note_edit = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
-  key_press = gdk_event_new(GDK_KEY_PRESS);
-  key_release = gdk_event_new(GDK_KEY_RELEASE);
+  key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
 
   /* create modifier */
-  modifier_press = gdk_event_new(GDK_KEY_PRESS);
-  modifier_release = gdk_event_new(GDK_KEY_RELEASE);
+  modifier_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  modifier_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
   
   modifier_press->keyval =
     modifier_release->keyval = GDK_KEY_Control_R;
 
   /* create second level */
-  second_level_press = gdk_event_new(GDK_KEY_PRESS);
-  second_level_release = gdk_event_new(GDK_KEY_RELEASE);
+  second_level_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  second_level_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
   
   second_level_press->keyval =
     second_level_release->keyval = GDK_KEY_Shift_R;

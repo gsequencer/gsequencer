@@ -255,7 +255,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   ladspa_bridge->effect_index = 0;
 
   AGS_MACHINE(ladspa_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child(ladspa_bridge),
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) ladspa_bridge),
 		    (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);

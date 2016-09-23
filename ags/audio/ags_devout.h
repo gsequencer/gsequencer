@@ -156,6 +156,8 @@ GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
 
+void ags_devout_switch_buffer_flag(AgsDevout *devout);
+
 void ags_devout_adjust_delay_and_attack(AgsDevout *devout);
 void ags_devout_realloc_buffer(AgsDevout *devout);
 

@@ -2758,7 +2758,7 @@ ags_recall_find_provider_with_recycling_context(GList *recall_i, GObject *provid
     recall = AGS_RECALL(recall_i->data);
     
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == (GObject *) recycling_context){
+       recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
       return(recall_i);
     }
 

@@ -147,7 +147,7 @@ struct _AgsMidiBuilderClass
 			    gchar *text, guint length);
 };
 
-typedef struct _AgsMidiBuilderHeader
+struct _AgsMidiBuilderHeader
 {
   guint offset;
   guint format;
@@ -158,7 +158,7 @@ typedef struct _AgsMidiBuilderHeader
   guint clicks;
 };
 
-typedef struct _AgsMidiBuilderTrack
+struct _AgsMidiBuilderTrack
 {
   gchar *track_name;
   

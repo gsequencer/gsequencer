@@ -147,7 +147,7 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 
   expander = gtk_expander_new("show/hide\0");
   gtk_container_add((GtkContainer *) frame,
-		    expander);
+		    (GtkWidget *) expander);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_container_add((GtkContainer *) expander,

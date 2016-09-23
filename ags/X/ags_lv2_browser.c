@@ -326,7 +326,7 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
   filename = GTK_COMBO_BOX_TEXT(list->next->data);
   g_list_free(list);
 
-  return(gtk_combo_box_text_get_active_text((GtkComboBox *) filename));
+  return(gtk_combo_box_text_get_active_text(filename));
 }
 
 /**
@@ -383,7 +383,7 @@ ags_lv2_browser_combo_box_boolean_controls_new()
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
-  return(combo_box);
+  return((GtkWidget *) combo_box);
 }
 
 /**
@@ -414,7 +414,7 @@ ags_lv2_browser_combo_box_controls_new()
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
-  return(combo_box);
+  return((GtkWidget *) combo_box);
 }
 
 GtkWidget*

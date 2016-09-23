@@ -432,7 +432,7 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   drum = ags_drum_new(G_OBJECT(window->soundcard));
 
-  sequencer = ags_midiin_new((GObject *) application_context);
+  sequencer = (GObject *) ags_midiin_new((GObject *) application_context);
   g_object_set(AGS_MACHINE(drum)->audio,
 	       "sequencer\0", sequencer,
 	       NULL);
@@ -610,7 +610,7 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   
   ffplayer = ags_ffplayer_new(G_OBJECT(window->soundcard));
 
-  sequencer = ags_midiin_new((GObject *) application_context);
+  sequencer = (GObject *) ags_midiin_new((GObject *) application_context);
   g_object_set(AGS_MACHINE(ffplayer)->audio,
 	       "sequencer\0", sequencer,
 	       NULL);

@@ -19,7 +19,9 @@
 
 #include <ags/widget/ags_ruler.h>
 
-#include <pango/pangocairo.h>
+#include <pango/pango.h>
+#include <pango/pangofc-fontmap.h>
+
 #include <math.h>
 
 void ags_ruler_class_init(AgsRulerClass *ruler);

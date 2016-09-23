@@ -223,13 +223,13 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   soundcard_editor->add_jack = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start((GtkBox *) soundcard_editor->jack_hbox,
-		     soundcard_editor->add_jack,
+		     (GtkWidget *) soundcard_editor->add_jack,
 		     FALSE, FALSE,
 		     0);
   
   soundcard_editor->remove_jack = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) soundcard_editor->jack_hbox,
-		     soundcard_editor->remove_jack,
+		     (GtkWidget *) soundcard_editor->remove_jack,
 		     FALSE, FALSE,
 		     0);
   
@@ -246,7 +246,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		   0, 0);
 
   soundcard_editor->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 24.0, 1.0);
-  gtk_spin_button_set_value(GTK_COMBO_BOX(soundcard_editor->audio_channels),
+  gtk_spin_button_set_value(soundcard_editor->audio_channels,
 			    2);
   gtk_table_attach(table,
 		   GTK_WIDGET(soundcard_editor->audio_channels),
@@ -532,7 +532,7 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   g_free(str);
   
   /* device */
-  model = gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card));
+  model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card)));
   
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(soundcard_editor->card),
 				   &current)){
@@ -660,7 +660,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   card_id = NULL;
   card_name = NULL;
 
-  ags_soundcard_list_cards(soundcard,
+  ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard),
 			   &card_id_start, &card_name_start);
 
   card_id = card_id_start;

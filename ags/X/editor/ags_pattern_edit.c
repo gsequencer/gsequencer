@@ -345,7 +345,7 @@ ags_pattern_edit_get_accessible(GtkWidget *widget)
     g_object_set_qdata(G_OBJECT(widget),
 		       quark_accessible_object,
 		       accessible);
-    gtk_accessible_set_widget(accessible,
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
 			      widget);
   }
   

@@ -74,7 +74,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 	g_object_set(midi_import_wizard->track_collection,
 		     "midi-document\0", midi_doc,
 		      NULL);
-	ags_track_collection_parse(midi_import_wizard->track_collection);
+	ags_track_collection_parse((AgsTrackCollection *) midi_import_wizard->track_collection);
       }
     }
     break;

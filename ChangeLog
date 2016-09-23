@@ -1,3 +1,13 @@
+ags (0.7.71)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed restore JACK from file
+
+ags (0.7.70)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed most compiler warnings
+
 ags (0.7.69)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -377,7 +377,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
     soundcard_editor->soundcard_thread = (GObject *) ags_soundcard_thread_find_soundcard((AgsSoundcardThread *) soundcard_thread,
 											 list->data);
     gtk_box_pack_start((GtkBox *) audio_preferences->soundcard_editor,
-		       soundcard_editor,
+		       (GtkWidget *) soundcard_editor,
 		       FALSE, FALSE,
 		       0);
     

@@ -85,7 +85,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
   gobject->finalize = ags_ladspa_conversion_finalize;
 
   /* AgsConversionClass */
-  conversion = (AgsLadspaConversion *) ladspa_conversion;
+  conversion = (AgsConversionClass *) ladspa_conversion;
     
   conversion->convert = ags_ladspa_conversion_convert;
 }

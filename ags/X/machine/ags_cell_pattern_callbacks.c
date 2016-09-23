@@ -117,8 +117,8 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 
     pthread_mutex_unlock(application_mutex);
   
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
+    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+							 AGS_TYPE_TASK_THREAD);
         
     i = (guint) floor((double) event->y / (double) cell_pattern->cell_height);
     j = (guint) floor((double) event->x / (double) cell_pattern->cell_width);

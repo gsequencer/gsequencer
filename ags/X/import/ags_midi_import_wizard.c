@@ -153,12 +153,12 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 		     0);
   
   midi_import_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
-  gtk_container_add(alignment,
+  gtk_container_add((GtkContainer *) alignment,
 		    midi_import_wizard->file_chooser);
 
   /**/
-  alignment = gtk_alignment_new(0.0, 0.0,
-				1.0, 1.0);
+  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.0,
+						 1.0, 1.0);
   gtk_widget_set_no_show_all((GtkWidget *) alignment,
 			     TRUE);
   gtk_box_pack_start((GtkBox *) midi_import_wizard->dialog.vbox,

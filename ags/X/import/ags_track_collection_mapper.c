@@ -261,7 +261,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		     TRUE, TRUE,
 		     0);
     
-  track_collection_mapper->machine_type = gtk_combo_box_text_new();
+  track_collection_mapper->machine_type = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->machine_type,
 		   1, 2,
@@ -381,10 +381,10 @@ ags_track_collection_mapper_get_property(GObject *gobject,
     g_value_set_pointer(value, g_list_copy(track_collection_mapper->track));
     break;
   case PROP_INSTRUMENT:
-    g_value_set_pointer(value, g_list_copy(track_collection_mapper->instrument));
+    g_value_set_string(value, track_collection_mapper->instrument);
     break;
   case PROP_SEQUENCE:
-    g_value_set_pointer(value, g_list_copy(track_collection_mapper->sequence));
+    g_value_set_string(value, track_collection_mapper->sequence);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -539,7 +539,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
   xmlNode *current, *child;
   GList *track, *notation_start, *notation;
-
+  GList *list;
+  
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
@@ -630,13 +631,16 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					      10);
 	  
 	  while(notation != NULL){
-	    note = ags_note_find_prev(AGS_NOTATION(notation->data)->notes,
+	    list = ags_note_find_prev(AGS_NOTATION(notation->data)->notes,
 				      x, y);
-	    
-	    note->x[1] = x;
-	    note->y = y;
-	    ags_complex_set(&(note->release),
-			    velocity);
+
+	    if(list != NULL){
+	      note = list->data;
+	      note->x[1] = x;
+	      note->y = y;
+	      ags_complex_set(&(note->release),
+			      velocity);
+	    }
 	    
 	    notation = notation->next;
 	  }

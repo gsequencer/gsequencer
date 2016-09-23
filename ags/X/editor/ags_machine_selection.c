@@ -150,7 +150,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
     list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
   machine = NULL;
 
-  vbox = GTK_DIALOG(machine_selection)->vbox;
+  vbox = (GtkVBox *) GTK_DIALOG(machine_selection)->vbox;
   group = NULL;
 
   while(list != NULL){

@@ -442,8 +442,8 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 
   pattern_box = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
-  key_press = gdk_event_new(GDK_KEY_PRESS);
-  key_release = gdk_event_new(GDK_KEY_RELEASE);
+  key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
 
   switch(i){
   case AGS_PATTERN_BOX_MOVE_LEFT:
@@ -512,8 +512,8 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_c;
 
       /* create modifier */
-      modifier_press = gdk_event_new(GDK_KEY_PRESS);
-      modifier_release = gdk_event_new(GDK_KEY_RELEASE);
+      modifier_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+      modifier_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
 
       modifier_press->keyval =
 	modifier_release->keyval = GDK_KEY_Control_R;

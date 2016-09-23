@@ -171,7 +171,7 @@ ags_machine_selector_connect(AgsConnectable *connectable)
   machine_selector = AGS_MACHINE_SELECTOR(connectable);
   
   list =
-    list_start = gtk_container_get_children(machine_selector);
+    list_start = gtk_container_get_children((GtkContainer *) machine_selector);
   
   list = list->next;
   

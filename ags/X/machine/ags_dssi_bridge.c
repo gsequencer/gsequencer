@@ -298,7 +298,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   AGS_MACHINE(dssi_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				      AGS_MACHINE_REVERSE_NOTATION);
 
-  ags_machine_popup_add_connection_options(dssi_bridge,
+  ags_machine_popup_add_connection_options((AgsMachine *) dssi_bridge,
 					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
@@ -348,7 +348,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  AGS_MACHINE(dssi_bridge)->bridge = (GtkWidget *) ags_effect_bridge_new(audio);
+  AGS_MACHINE(dssi_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge,
 		     FALSE, FALSE,
@@ -356,7 +356,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 
   
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_box_pack_start((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),
+  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),
 		     (GtkWidget *) table,
 		     FALSE, FALSE,
 		     0);
@@ -434,7 +434,7 @@ ags_dssi_bridge_set_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      unsigned long *effect_index;
+      unsigned long effect_index;
       
       effect_index = (unsigned long) g_value_get_uint(value);
 

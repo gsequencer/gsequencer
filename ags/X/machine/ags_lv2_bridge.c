@@ -404,7 +404,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 		    (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_box_pack_start(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge),
+  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge),
 		     (GtkWidget *) table,
 		     FALSE, FALSE,
 		     0);
@@ -441,14 +441,14 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
     gtk_widget_show((GtkWidget *) item);
   
     lv2_bridge->lv2_menu = gtk_menu_new();
-    gtk_menu_item_set_submenu(item,
+    gtk_menu_item_set_submenu((GtkMenuItem *) item,
 			      (GtkWidget *) lv2_bridge->lv2_menu);
 
     item = gtk_image_menu_item_new_with_label("show GUI\0");
     gtk_menu_shell_append((GtkMenuShell *) lv2_bridge->lv2_menu,
 			  (GtkWidget *) item);
 
-    gtk_widget_show_all(lv2_bridge->lv2_menu);
+    gtk_widget_show_all((GtkWidget *) lv2_bridge->lv2_menu);
   }
 }
 
@@ -1517,7 +1517,7 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 		 "midi-end-mapping\0", 128,
 		 NULL);
     
-    ags_machine_popup_add_connection_options(lv2_bridge,
+    ags_machine_popup_add_connection_options((AgsMachine *) lv2_bridge,
 					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
   }
   

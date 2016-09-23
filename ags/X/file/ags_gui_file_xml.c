@@ -1873,8 +1873,6 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   gchar *task_type;
   guint width, height;
 
-  static gboolean widget_type_is_registered = FALSE;
-
   if(*line_member == NULL){
     gobject = g_object_new(AGS_TYPE_LINE_MEMBER,
 			   NULL);
@@ -1895,12 +1893,6 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
-
-  if(!widget_type_is_registered){
-    ags_xorg_application_context_register_types();
-
-    widget_type_is_registered = TRUE;
-  }
 
   widget_type = (gchar *) xmlGetProp(node, "widget-type\0");
   g_object_set(gobject,
@@ -3204,8 +3196,6 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
   gchar *task_type;
   guint width, height;
 
-  static gboolean widget_type_is_registered = FALSE;
-
   if(*bulk_member == NULL){
     gobject = g_object_new(AGS_TYPE_BULK_MEMBER,
 			   NULL);
@@ -3226,12 +3216,6 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
-
-  if(!widget_type_is_registered){
-    ags_xorg_application_context_register_types();
-
-    widget_type_is_registered = TRUE;
-  }
 
   widget_type = (gchar *) xmlGetProp(node, "widget-type\0");
   g_object_set(gobject,

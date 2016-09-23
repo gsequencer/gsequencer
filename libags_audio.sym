@@ -341,6 +341,7 @@ ags_recall_audio_run_get_type
 ags_recall_audio_run_new
 ags_devout_get_type
 ags_devout_error_quark
+ags_devout_switch_buffer_flag
 ags_devout_adjust_delay_and_attack
 ags_devout_realloc_buffer
 ags_devout_new

@@ -1021,7 +1021,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
     AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
 
-    soundcard = AGS_SOUNDCARD(AGS_AUDIO(recall_channel_run->source->audio)->soundcard);
+    soundcard = AGS_AUDIO(recall_channel_run->source->audio)->soundcard;
     destination_recycling = old_start_changed_region;
     
     while(destination_recycling != old_end_changed_region->next){

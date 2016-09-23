@@ -1331,7 +1331,7 @@ ags_notation_copy_selection(AgsNotation *notation)
   xmlNewProp(notation_node, BAD_CAST "type\0", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
   xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
   xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-  xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup_printf("%u\0", notation->base_frequency));
+  xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup_printf("%f\0", notation->base_frequency));
   xmlNewProp(notation_node, BAD_CAST "audio-channel\0", BAD_CAST g_strdup_printf("%u\0", notation->audio_channel));
 
   selection = notation->selection;

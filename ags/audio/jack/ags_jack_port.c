@@ -224,8 +224,11 @@ ags_jack_port_set_property(GObject *gobject,
       }
 
       jack_port->name = port_name;
-      jack_port_set_name(jack_port->port,
-			 port_name);
+
+      if(jack_port->port != NULL){
+	jack_port_set_name(jack_port->port,
+			   port_name);
+      }
     }
     break;
   default:
@@ -354,11 +357,17 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_server = (AgsJackServer *) AGS_JACK_CLIENT(jack_port->jack_client)->jack_server;
   }else{
     jack_server = NULL;
+
+    return;
   }
 
   uuid = jack_port->uuid;
   name = jack_port->name;
 
+  if(AGS_JACK_CLIENT(jack_port->jack_client)->client == NULL){
+    return;
+  }
+  
   jack_port->name = g_strdup(port_name);
 
   /* create sequencer or soundcard */

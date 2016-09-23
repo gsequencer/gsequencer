@@ -167,8 +167,8 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 
   track_collection->midi_doc = NULL;
 
-  scrolled_window = gtk_scrolled_window_new(NULL,
-					    NULL);
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
+								  NULL);
   gtk_box_pack_start(GTK_BOX(track_collection),
 		     (GtkWidget *) scrolled_window,
 		     TRUE, TRUE,

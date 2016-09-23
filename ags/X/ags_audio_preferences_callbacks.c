@@ -146,7 +146,7 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   g_list_free(list);
   
   gtk_box_pack_start((GtkBox *) audio_preferences->soundcard_editor,
-		     soundcard_editor,
+		     (GtkWidget *) soundcard_editor,
 		     FALSE, FALSE,
 		     0);
   

@@ -189,7 +189,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   
   /* reset dialog */
   error = NULL;
-  ags_soundcard_pcm_info(soundcard,
+  ags_soundcard_pcm_info(AGS_SOUNDCARD(soundcard),
 			 card,
 			 &channels_min, &channels_max,
 			 &rate_min, &rate_max,
@@ -315,7 +315,7 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 						     AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsSetAudioChannels *set_audio_channels;
 
   AgsMutexManager *mutex_manager;
@@ -328,7 +328,7 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
+  soundcard = window->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -360,7 +360,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 						 AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsSetSamplerate *set_samplerate;
 
   AgsMutexManager *mutex_manager;
@@ -373,7 +373,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
+  soundcard = window->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -392,7 +392,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
-  set_samplerate = ags_set_samplerate_new((GObject *) soundcard,
+  set_samplerate = ags_set_samplerate_new(soundcard,
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
@@ -405,7 +405,7 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
 						  AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsSetBufferSize *set_buffer_size;
 
   AgsMutexManager *mutex_manager;
@@ -418,7 +418,7 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
+  soundcard = window->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -437,7 +437,7 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
-  set_buffer_size = ags_set_buffer_size_new((GObject *) soundcard,
+  set_buffer_size = ags_set_buffer_size_new(soundcard,
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */
@@ -450,7 +450,7 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 					     AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsSetFormat *set_format;
 
   AgsMutexManager *mutex_manager;
@@ -465,7 +465,7 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = AGS_SOUNDCARD(window->soundcard);
+  soundcard = window->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 

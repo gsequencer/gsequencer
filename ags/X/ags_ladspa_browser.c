@@ -421,7 +421,7 @@ ags_ladspa_browser_combo_box_controls_new()
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
-  return(combo_box);
+  return((GtkWidget *) combo_box);
 }
 
 GtkWidget*

@@ -40,7 +40,6 @@ void ags_line_editor_disconnect(AgsConnectable *connectable);
 void ags_line_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_line_editor_apply(AgsApplicable *applicable);
 void ags_line_editor_reset(AgsApplicable *applicable);
-void ags_line_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_line_editor
@@ -263,15 +262,6 @@ ags_line_editor_reset(AgsApplicable *applicable)
   if(line_editor->member_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->member_editor));
   }
-}
-
-void
-ags_line_editor_show(GtkWidget *widget)
-{
-  AgsLineEditor *line_editor = (AgsLineEditor *) widget;
-
-  gtk_widget_show((GtkWidget *) line_editor->link_editor);
-  gtk_widget_show((GtkWidget *) line_editor->member_editor);
 }
 
 /**

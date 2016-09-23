@@ -162,8 +162,8 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   
   generic_preferences->segmentation = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_set_model((GtkComboBox *) generic_preferences->segmentation,
-			  ags_generic_preferences_create_segmentation());
-  gtk_combo_box_set_active(generic_preferences->segmentation,
+			  (GtkTreeModel *) ags_generic_preferences_create_segmentation());
+  gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->segmentation),
 			   2);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(generic_preferences->segmentation),

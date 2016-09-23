@@ -31,6 +31,7 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <string.h>
 #include <errno.h>
 
 void ags_jack_server_class_init(AgsJackServerClass *jack_server);
@@ -413,8 +414,8 @@ ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
   
   jack_server = AGS_JACK_SERVER(distributed_manager);
 
-  jack_client = ags_jack_server_find_client(jack_server,
-					    client_uuid);
+  jack_client = (AgsJackClient *) ags_jack_server_find_client(jack_server,
+							      client_uuid);
 
   device = jack_client->device;
   list = NULL;
@@ -468,8 +469,8 @@ ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
   
   jack_server = AGS_JACK_SERVER(distributed_manager);
 
-  jack_client = ags_jack_server_find_client(jack_server,
-					    client_uuid);
+  jack_client = (AgsJackClient *) ags_jack_server_find_client(jack_server,
+							      client_uuid);
 
   device = jack_client->device;
   list = NULL;
@@ -514,14 +515,8 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     jack_server->default_client = ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
-    
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
+
     initial_set = TRUE;
-    
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
   }
 
   default_client = (AgsJackClient *) jack_server->default_client;
@@ -648,13 +643,6 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
     jack_server->default_client = (GObject *) ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
-    
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
   }
 
   default_client = (AgsJackClient *) jack_server->default_client;
@@ -744,15 +732,6 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
     jack_server->default_client = (GObject *) ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
-    
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-      
-      return(NULL);
-    }
   }
 
   default_client = (AgsJackClient *) jack_server->default_client;

@@ -23,7 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
-#include <ags/X/ags_line_member.h>
+#include <ags/X/ags_bulk_member.h>
 
 #define AGS_TYPE_ADD_BULK_MEMBER                (ags_add_bulk_member_get_type())
 #define AGS_ADD_BULK_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ADD_BULK_MEMBER, AgsAddBulkMember))
@@ -40,7 +40,7 @@ struct _AgsAddBulkMember
   AgsTask task;
 
   GtkWidget *effect_bulk;
-  AgsLineMember *bulk_member;
+  AgsBulkMember *bulk_member;
 
   guint x;
   guint y;
@@ -56,7 +56,7 @@ struct _AgsAddBulkMemberClass
 GType ags_add_bulk_member_get_type();
 
 AgsAddBulkMember* ags_add_bulk_member_new(GtkWidget *effect_bulk,
-					  AgsLineMember *bulk_member,
+					  AgsBulkMember *bulk_member,
 					  guint x, guint y,
 					  guint width, guint height);
 

@@ -85,7 +85,7 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
   gobject->finalize = ags_lv2_conversion_finalize;
 
   /* AgsConversionClass */
-  conversion = (AgsLv2Conversion *) lv2_conversion;
+  conversion = (AgsConversionClass *) lv2_conversion;
     
   conversion->convert = ags_lv2_conversion_convert;
 }
