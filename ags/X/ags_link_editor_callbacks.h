@@ -27,8 +27,6 @@
 #include <ags/X/ags_link_editor.h>
 
 int ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLinkEditor *link_editor);
-int ags_link_editor_destroy_callback(GtkObject *object, AgsLinkEditor *link_editor);
-int ags_link_editor_show_callback(GtkWidget *widget, AgsLinkEditor *link_editor);
 
 void ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor);
 

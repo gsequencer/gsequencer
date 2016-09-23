@@ -28,10 +28,6 @@
 
 void ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
 					gpointer data);
-gboolean ags_navigation_destroy_callback(GtkObject *object,
-					 gpointer data);
-void ags_navigation_show_callback(GtkWidget *widget,
-				  gpointer data);
 
 void ags_navigation_expander_callback(GtkWidget *widget,
 				      AgsNavigation *navigation);

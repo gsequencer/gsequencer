@@ -816,7 +816,7 @@ ags_fifoout_set_property(GObject *gobject,
 	fifoout->application_mutex = NULL;
       }
 
-      fifoout->application_context = application_context;
+      fifoout->application_context = (GObject *) application_context;
     }
     break;
   case PROP_APPLICATION_MUTEX:
@@ -1038,7 +1038,7 @@ ags_fifoout_get_lock(AgsConcurrentTree *concurrent_tree)
   pthread_mutex_lock(application_mutex);
   
   fifoout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   AGS_FIFOOUT(concurrent_tree));
+					   G_OBJECT(concurrent_tree));
 
   pthread_mutex_unlock(application_mutex);
 
@@ -1204,7 +1204,7 @@ ags_fifoout_set_application_context(AgsSoundcard *soundcard,
   AgsFifoout *fifoout;
 
   fifoout = AGS_FIFOOUT(soundcard);
-  fifoout->application_context = application_context;
+  fifoout->application_context = (GObject *) application_context;
 }
 
 AgsApplicationContext*
@@ -1214,7 +1214,7 @@ ags_fifoout_get_application_context(AgsSoundcard *soundcard)
 
   fifoout = AGS_FIFOOUT(soundcard);
 
-  return(fifoout->application_context);
+  return((AgsApplicationContext *) fifoout->application_context);
 }
 
 void

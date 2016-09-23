@@ -427,7 +427,7 @@ ags_drum_connect(AgsConnectable *connectable)
 		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
 
-  ags_connectable_connect(drum->pattern_box);
+  ags_connectable_connect(AGS_CONNECTABLE(drum->pattern_box));
 
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "done\0",
@@ -444,7 +444,8 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   drum = AGS_DRUM(connectable);
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum,
+					      AGS_TYPE_WINDOW));
 
   //TODO:JK: implement me
 }
@@ -488,8 +489,8 @@ ags_drum_map_recall(AgsMachine *machine)
     return;
   }
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
   
   audio = machine->audio;
 
@@ -720,7 +721,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
   if(!g_strcmp0(xmlGetProp(node,
 			   "loop\0"),
 		AGS_FILE_TRUE)){
-    gtk_button_clicked(drum->loop_button);
+    gtk_button_clicked((GtkButton *) drum->loop_button);
   }
 
   /* index */
@@ -730,7 +731,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
 			   10);
 
   if(index != 0){
-    gtk_button_clicked(drum->index0[index]);
+    gtk_button_clicked((GtkButton *) drum->index0[index]);
   }
 
   index = g_ascii_strtoull(xmlGetProp(node,
@@ -739,7 +740,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
 			   10);
 
   if(index != 0){
-    gtk_button_clicked(drum->index1[index]);
+    gtk_button_clicked((GtkButton *) drum->index1[index]);
   }
 }
 
@@ -818,9 +819,9 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
       if(pads_old == 0){
 	GtkToggleButton *selected_edit_button;
 
-	AGS_MACHINE(drum)->selected_input_pad = 
-	  drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
-	
+	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum->selected_pad;
+
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
       }
@@ -830,11 +831,12 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
 	drum->selected_pad = NULL;
 	drum->selected_edit_button = NULL;
       }else{
-	drum_input_pad = AGS_DRUM_INPUT_PAD(gtk_widget_get_ancestor(GTK_WIDGET(drum->selected_edit_button), AGS_TYPE_PAD));
+	drum_input_pad = AGS_DRUM_INPUT_PAD(gtk_widget_get_ancestor(GTK_WIDGET(drum->selected_edit_button),
+								    AGS_TYPE_PAD));
 
 	if(drum_input_pad->pad.channel->pad > pads){
-	  AGS_MACHINE(drum)->selected_input_pad = 
-	    drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	  drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	  AGS_MACHINE(drum)->selected_input_pad = (GtkWidget *) drum->selected_pad;
 	  
 	  drum->selected_edit_button = drum->selected_pad->edit;
 	  gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);

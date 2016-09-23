@@ -28,6 +28,8 @@
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_task_completion.h>
 
+#include <gdk/gdk.h>
+
 #include <fontconfig/fontconfig.h>
 #include <math.h>
 
@@ -46,9 +48,9 @@ void ags_gui_thread_suspend(AgsThread *thread);
 void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
-void ags_gui_thread_interrupted(AgsThread *thread,
-				int sig,
-				guint time_cycle, guint *time_spent);
+guint ags_gui_thread_interrupted(AgsThread *thread,
+				 int sig,
+				 guint time_cycle, guint *time_spent);
 
 void ags_gui_thread_dispatch_callback(AgsPollFd *poll,
 				      AgsGuiThread *gui_thread);
@@ -294,8 +296,8 @@ ags_gui_thread_run(AgsThread *thread)
     
   /* real-time setup */  
   main_loop = ags_thread_get_toplevel(thread);
-  polling_thread = ags_thread_find_type(main_loop,
-					AGS_TYPE_POLLING_THREAD);
+  polling_thread = (AgsPollingThread *) ags_thread_find_type(main_loop,
+							     AGS_TYPE_POLLING_THREAD);
   
   main_context = gui_thread->main_context;
 
@@ -400,14 +402,14 @@ ags_gui_thread_run(AgsThread *thread)
   //  FcFini();
 }
 
-void
+guint
 ags_gui_thread_interrupted(AgsThread *thread,
 			   int sig,
 			   guint time_cycle, guint *time_spent)
 {
   AgsGuiThread *gui_thread;
 
-  gui_thread = thread;
+  gui_thread = (AgsGuiThread *) thread;
   
   if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
     g_atomic_int_or(&(thread->sync_flags),
@@ -424,6 +426,8 @@ ags_gui_thread_interrupted(AgsThread *thread,
 #endif
     }
   }
+
+  return(0);
 }
 
 void
@@ -474,7 +478,7 @@ ags_gui_thread_dispatch_callback(AgsPollFd *poll_fd,
 {
   AgsThread *thread;
 
-  thread = gui_thread;
+  thread = (AgsThread *) gui_thread;
   g_atomic_int_set(&(gui_thread->dispatching),
 		   TRUE);
 
@@ -506,7 +510,7 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
   gint position;
   guint i;
 
-  polling_thread = thread;
+  polling_thread = (AgsPollingThread *) thread;
   
   fds = gui_thread->cached_poll_array;
   
@@ -531,7 +535,7 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 		       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
       
       ags_polling_thread_add_poll_fd(polling_thread,
-				     poll_fd);
+				     (GObject *) poll_fd);
       
       /* add poll fd to gui thread */
       gui_thread->poll_fd = g_list_prepend(gui_thread->poll_fd,

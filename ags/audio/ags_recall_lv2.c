@@ -749,7 +749,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	current = g_object_new(AGS_TYPE_PORT,
 			       "plugin-name\0", plugin_name,
 			       "specifier\0", specifier,
-			       "control-port\0", g_strdup_printf("%lu/%lu\0",
+			       "control-port\0", g_strdup_printf("%u/%u\0",
 								 i,
 								 port_count),
 			       "port-value-is-pointer\0", FALSE,

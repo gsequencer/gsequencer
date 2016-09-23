@@ -1043,9 +1043,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_htimebar.h \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
-	ags/widget/ags_menu.h \
-	ags/widget/ags_menu_item.h \
-	ags/widget/ags_option_menu.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
@@ -1065,9 +1062,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_htimebar.c \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
-	ags/widget/ags_menu.c \
-	ags/widget/ags_menu_item.c \
-	ags/widget/ags_option_menu.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \

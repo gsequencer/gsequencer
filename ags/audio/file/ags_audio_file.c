@@ -690,7 +690,7 @@ ags_audio_file_write(AgsAudioFile *audio_file,
   double *playable_buffer;
 
   playable_buffer = (double *) malloc(audio_file->channels * buffer_size * sizeof(double));
-  ags_audio_buffer_util_clear_double(buffer, audio_file->channels,
+  ags_audio_buffer_util_clear_double(playable_buffer, audio_file->channels,
 				     buffer_size);
   
   ags_audio_buffer_util_copy_s16_to_double(playable_buffer, audio_file->channels,

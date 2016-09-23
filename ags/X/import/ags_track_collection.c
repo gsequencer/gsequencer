@@ -170,14 +170,14 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
   scrolled_window = gtk_scrolled_window_new(NULL,
 					    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection),
-		     scrolled_window,
+		     (GtkWidget *) scrolled_window,
 		     TRUE, TRUE,
 		     0);
   
   track_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
 						     0);
   gtk_scrolled_window_add_with_viewport(scrolled_window,
-					track_collection->child);
+					(GtkWidget *) track_collection->child);
 }
 
 void
@@ -240,7 +240,7 @@ ags_track_collection_connect(AgsConnectable *connectable)
 
   /* children */
   list_start = 
-    list = gtk_container_get_children(track_collection->child);
+    list = gtk_container_get_children((GtkContainer *) track_collection->child);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -261,7 +261,7 @@ ags_track_collection_disconnect(AgsConnectable *connectable)
 
   /* children */
   list_start = 
-    list = gtk_container_get_children(track_collection->child);
+    list = gtk_container_get_children((GtkContainer *) track_collection->child);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -281,7 +281,7 @@ ags_track_collection_set_update(AgsApplicable *applicable, gboolean update)
   track_collection = AGS_TRACK_COLLECTION(applicable);
 
   list_start = 
-    list = gtk_container_get_children(track_collection->child);
+    list = gtk_container_get_children((GtkContainer *) track_collection->child);
 
   while(list != NULL){
     ags_applicable_set_update(AGS_APPLICABLE(list->data), update);
@@ -301,7 +301,7 @@ ags_track_collection_apply(AgsApplicable *applicable)
   track_collection = AGS_TRACK_COLLECTION(applicable);
 
   list_start = 
-    list = gtk_container_get_children(track_collection->child);
+    list = gtk_container_get_children((GtkContainer *) track_collection->child);
 
   while(list != NULL){
     ags_applicable_apply(AGS_APPLICABLE(list->data));
@@ -321,7 +321,7 @@ ags_track_collection_reset(AgsApplicable *applicable)
   track_collection = AGS_TRACK_COLLECTION(applicable);
 
   list_start = 
-    list = gtk_container_get_children(track_collection->child);
+    list = gtk_container_get_children((GtkContainer *) track_collection->child);
 
   while(list != NULL){
     ags_applicable_reset(AGS_APPLICABLE(list->data));
@@ -449,7 +449,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  }
 	}
 
-	list = gtk_container_get_children(track_collection->child);
+	list = gtk_container_get_children((GtkContainer *) track_collection->child);
 	track_collection_mapper = ags_track_collection_mapper_find_instrument_with_sequence(list,
 											    instrument, sequence);
 	      
@@ -474,7 +474,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   
   /* map */
   list_start =
-    list = gtk_container_get_children(track_collection->child);
+    list = gtk_container_get_children((GtkContainer *) track_collection->child);
 
   while(list != NULL){
     ags_track_collection_mapper_map(list->data);

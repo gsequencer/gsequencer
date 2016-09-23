@@ -434,7 +434,7 @@ ags_recall_channel_load_automation(AgsRecall *recall,
       g_object_set(current,
 		   "port\0", automation_port->data,
 		   NULL);
-      ags_audio_add_automation(channel->audio,
+      ags_audio_add_automation((AgsAudio *) channel->audio,
 			       (GObject *) current);
 
       //TODO:JK: property
@@ -473,8 +473,10 @@ ags_recall_channel_unload_automation(AgsRecall *recall)
   automation_port = recall->automation_port;
     
   while(automation_port != NULL){
-    if((current = ags_automation_find_port(audio->automation,
-					   automation_port->data)) != NULL){
+    if((automation = ags_automation_find_port(audio->automation,
+					      automation_port->data)) != NULL){
+      current = automation->data;
+      
       ags_audio_remove_automation(audio,
 				  (GObject *) current);
     }

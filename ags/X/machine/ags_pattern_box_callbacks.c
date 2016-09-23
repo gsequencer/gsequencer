@@ -45,9 +45,9 @@ ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPattern
 {
   GList *list;
 
-  list = gtk_container_get_children(pattern_box->pattern);
-  gtk_widget_set_state(g_list_nth_data(list,
-				       pattern_box->cursor_x),
+  list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+						     pattern_box->cursor_x),
 		       GTK_STATE_PRELIGHT);
   g_list_free(list);
   
@@ -59,16 +59,16 @@ ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatter
 {
   GList *list;
 
-  list = gtk_container_get_children(pattern_box->pattern);
+  list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-  if(!gtk_toggle_button_get_active(g_list_nth_data(list,
-						   pattern_box->cursor_x - 1))){
-    gtk_widget_set_state(g_list_nth_data(list,
-					 pattern_box->cursor_x),
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+								       pattern_box->cursor_x - 1))){
+    gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+						       pattern_box->cursor_x),
 			 GTK_STATE_NORMAL);
   }else{
-    gtk_widget_set_state(g_list_nth_data(list,
-					 pattern_box->cursor_x),
+    gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+						       pattern_box->cursor_x),
 			 GTK_STATE_ACTIVE);
   }
   
@@ -89,7 +89,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   AgsTogglePatternBit *toggle_pattern_bit;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -102,8 +102,8 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *application_mutex;
   
-  machine = gtk_widget_get_ancestor(pattern_box,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
+						   AGS_TYPE_MACHINE);
 
   if(machine->selected_input_pad == NULL){
     return;
@@ -118,10 +118,10 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
     return;
   }
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -129,13 +129,13 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -232,8 +232,8 @@ ags_pattern_box_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsPatter
       if((AGS_PATTERN_BOX_KEY_L_CONTROL & (pattern_box->key_mask)) != 0 || (AGS_PATTERN_BOX_KEY_R_CONTROL & (pattern_box->key_mask)) != 0){
 	AgsMachine *machine;
 
-	machine = gtk_widget_get_ancestor(pattern_box,
-					  AGS_TYPE_MACHINE);
+	machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
+							 AGS_TYPE_MACHINE);
 	
 	ags_machine_copy_pattern(machine);
       }
@@ -251,7 +251,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   AgsMachine *machine;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -262,13 +262,13 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
     return(FALSE);
   }
   
-  machine = gtk_widget_get_ancestor(pattern_box,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
+						   AGS_TYPE_MACHINE);
+  
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
-
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -276,13 +276,13 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   
   switch(event->keyval){
@@ -304,27 +304,27 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	
 	pattern_box->cursor_x -= 1;
 
-	list = gtk_container_get_children(pattern_box->pattern);
+	list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 	
-	gtk_widget_set_state(g_list_nth_data(list,
-					     pattern_box->cursor_x),
+	gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+							   pattern_box->cursor_x),
 			     GTK_STATE_PRELIGHT);
 
-	if(!gtk_toggle_button_get_active(g_list_nth_data(list,
-							 pattern_box->cursor_x + 1))){
-	  gtk_widget_set_state(g_list_nth_data(list,
-					       pattern_box->cursor_x + 1),
+	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+									     pattern_box->cursor_x + 1))){
+	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+							     pattern_box->cursor_x + 1),
 			       GTK_STATE_NORMAL);
 	}else{
-	  gtk_widget_set_state(g_list_nth_data(list,
-					       pattern_box->cursor_x + 1),
+	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+							     pattern_box->cursor_x + 1),
 			       GTK_STATE_ACTIVE);
 	}
 
-	if(gtk_toggle_button_get_active(g_list_nth_data(list,
-							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  /* give audible feedback */
-	  ags_pad_play(machine->selected_input_pad);
+	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
 	
 	g_list_free(list);
@@ -339,27 +339,27 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	
 	pattern_box->cursor_x += 1;
 
-	list = gtk_container_get_children(pattern_box->pattern);
+	list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-      	gtk_widget_set_state(g_list_nth_data(list,
-					     pattern_box->cursor_x),
+      	gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+							   pattern_box->cursor_x),
 			     GTK_STATE_PRELIGHT);
 	
-	if(!gtk_toggle_button_get_active(g_list_nth_data(list,
-							 pattern_box->cursor_x - 1))){
-	  gtk_widget_set_state(g_list_nth_data(list,
-					       pattern_box->cursor_x - 1),
+	if(!gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+									     pattern_box->cursor_x - 1))){
+	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+							     pattern_box->cursor_x - 1),
 			       GTK_STATE_NORMAL);
 	}else{	  
-	  gtk_widget_set_state(g_list_nth_data(list,
-					       pattern_box->cursor_x - 1),
+	  gtk_widget_set_state((GtkWidget *) g_list_nth_data(list,
+							     pattern_box->cursor_x - 1),
 			       GTK_STATE_ACTIVE);
 	}
 
-	if(gtk_toggle_button_get_active(g_list_nth_data(list,
-							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(list,
+									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  /* give audible feedback */
-	  ags_pad_play(machine->selected_input_pad);
+	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
 	
 	g_list_free(list);
@@ -374,7 +374,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 
 	pattern_box->cursor_y -= 1;
 
-	list = gtk_container_get_children(pattern_box->offset);
+	list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
       	gtk_button_clicked(g_list_nth_data(list,
 					   pattern_box->cursor_y));
@@ -382,11 +382,11 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	g_list_free(list);
 
 	/* give audible feedback */
-	pad = gtk_container_get_children(pattern_box->pattern);
+	pad = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-	if(gtk_toggle_button_get_active(g_list_nth_data(pad,
-							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
-	  ags_pad_play(machine->selected_input_pad);
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(pad,
+									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
+	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
       }
     }
@@ -397,7 +397,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       if(pattern_box->cursor_y + 1 < pattern_box->n_indices){
 	GList *list, *pad;
 
-	list = gtk_container_get_children(pattern_box->offset);
+	list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 	pattern_box->cursor_y += 1;
 
 	gtk_button_clicked(g_list_nth_data(list,
@@ -406,11 +406,11 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	g_list_free(list);
 	
 	/* give audible feedback */
-	pad = gtk_container_get_children(pattern_box->pattern);
+	pad = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-	if(gtk_toggle_button_get_active(g_list_nth_data(pad,
-							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
-	  ags_pad_play(machine->selected_input_pad);
+	if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(pad,
+									    pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
+	  ags_pad_play((AgsPad *) machine->selected_input_pad);
 	}
       }
     }
@@ -468,7 +468,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 				   tasks);
 
       /* give audible feedback */
-      ags_pad_play(machine->selected_input_pad);
+      ags_pad_play((AgsPad *) machine->selected_input_pad);
     }
     break;
   }
@@ -486,29 +486,29 @@ ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 
   GList *radio;
   
-  machine = gtk_widget_get_ancestor(pattern_box,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
+						   AGS_TYPE_MACHINE);
     
   channel = ags_channel_nth(machine->audio->input,
 			    toggle_pattern_bit->line);
 
-  if(!gtk_toggle_button_get_active(AGS_LINE(channel->line_widget)->group)){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_LINE(channel->line_widget)->group)){
     return;
   }
   
-  radio = gtk_container_get_children(pattern_box->offset);
+  radio = gtk_container_get_children((GtkContainer *) pattern_box->offset);
   
-  if(gtk_toggle_button_get_active(g_list_nth_data(radio,
-						  toggle_pattern_bit->bit / pattern_box->n_controls))){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(radio,
+								      toggle_pattern_bit->bit / pattern_box->n_controls))){
     GList *list;
 
     /* apply pattern to GUI */
-    list = gtk_container_get_children(pattern_box->pattern);
+    list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
     pattern_box->flags |= AGS_PATTERN_BOX_BLOCK_PATTERN;
     
-    gtk_toggle_button_set_active(g_list_nth_data(list,
-						 toggle_pattern_bit->bit % pattern_box->n_controls),
+    gtk_toggle_button_set_active((GtkToggleButton *) g_list_nth_data(list,
+								     toggle_pattern_bit->bit % pattern_box->n_controls),
 				 TRUE);
     
     pattern_box->flags &= (~AGS_PATTERN_BOX_BLOCK_PATTERN);
@@ -516,7 +516,7 @@ ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
     g_list_free(list);
     
     /* give audible feedback */
-    ags_pad_play(AGS_PAD(machine->selected_input_pad));
+    ags_pad_play((AgsPad *) machine->selected_input_pad);
   }
 
   g_list_free(radio);

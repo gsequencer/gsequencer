@@ -39,7 +39,7 @@ ags_notebook_scroll_prev_callback(GtkWidget *button,
 			     0.0);
   }
 
-  gtk_widget_show_all(notebook->hbox);
+  gtk_widget_show_all((GtkWidget *) notebook->hbox);
 }
 
 void
@@ -62,6 +62,6 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
 			     adjustment->upper - adjustment->page_size);
   }
 
-  gtk_widget_show_all(notebook->hbox);
+  gtk_widget_show_all((GtkWidget *) notebook->hbox);
 }
 

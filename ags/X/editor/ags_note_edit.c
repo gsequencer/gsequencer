@@ -35,6 +35,8 @@
 
 #include <atk/atk.h>
 
+#include <math.h>
+
 static GType ags_accessible_note_edit_get_type(void);
 void ags_note_edit_class_init(AgsNoteEditClass *note_edit);
 void ags_accessible_note_edit_class_init(AtkObject *object);
@@ -210,7 +212,7 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 			| GDK_CONTROL_MASK
 			| GDK_KEY_PRESS_MASK
 			| GDK_KEY_RELEASE_MASK);
-  gtk_widget_set_can_focus(note_edit->drawing_area,
+  gtk_widget_set_can_focus((GtkWidget *) note_edit->drawing_area,
 			   TRUE);
   
   gtk_table_attach(GTK_TABLE(note_edit),
@@ -370,7 +372,7 @@ ags_accessible_note_edit_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  note_edit = gtk_accessible_get_widget(ATK_OBJECT(action));
+  note_edit = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = gdk_event_new(GDK_KEY_PRESS);
   key_release = gdk_event_new(GDK_KEY_RELEASE);
@@ -396,8 +398,10 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 1:
@@ -406,8 +410,10 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Right;
       
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 2:
@@ -416,8 +422,10 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
     
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 3:
@@ -426,8 +434,10 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 4:
@@ -436,8 +446,10 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_space;
       
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 5:
@@ -446,10 +458,14 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, second_level_press);
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
-      gtk_widget_event(note_edit->drawing_area, second_level_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
     }
     break;
   case 6:
@@ -458,10 +474,14 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Right;
       
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, second_level_press);
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
-      gtk_widget_event(note_edit->drawing_area, second_level_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
     }
     break;
   case 7:
@@ -470,8 +490,10 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Delete;
       
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 8:
@@ -480,10 +502,14 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_c;
 
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, modifier_press);
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
-      gtk_widget_event(note_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }    
     break;
   case 9:
@@ -492,10 +518,14 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_x;
 
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, modifier_press);
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
-      gtk_widget_event(note_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }
     break;
   case 10:
@@ -504,10 +534,14 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_v;
 
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, modifier_press);
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
-      gtk_widget_event(note_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }
     break;
   case 11:
@@ -516,10 +550,14 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_a;
 
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, modifier_press);
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
-      gtk_widget_event(note_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }
     break;
   case 12:
@@ -528,10 +566,14 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_i;
 
       /* send event */
-      gtk_widget_event(note_edit->drawing_area, modifier_press);
-      gtk_widget_event(note_edit->drawing_area, key_press);
-      gtk_widget_event(note_edit->drawing_area, key_release);
-      gtk_widget_event(note_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) note_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }
     break;
   }
@@ -688,8 +730,8 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  window = gtk_widget_get_ancestor(editor,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) editor,
+						 AGS_TYPE_WINDOW);
 
   zoom_factor = 0.25;
 

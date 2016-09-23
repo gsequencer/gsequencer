@@ -41,7 +41,7 @@ typedef struct _AgsFFPlayerClass AgsFFPlayerClass;
 
 typedef enum{
   AGS_FFPLAYER_NO_LOAD          = 1,
-};
+}AgsFFPlayerFlags;
 
 struct _AgsFFPlayer
 {

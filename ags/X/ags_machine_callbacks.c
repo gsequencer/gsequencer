@@ -150,7 +150,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -163,7 +163,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   g_object_ref(machine->audio);
@@ -179,9 +179,9 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   while(list != NULL){
     if(AGS_EDITOR_CHILD(list->data)->machine == machine){
-      gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->notebook);
-      gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->meter);
-      gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->edit_widget);
+      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->notebook);
+      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->meter);
+      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->edit_widget);
       break;
     }
 
@@ -189,7 +189,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   }
   
   list =
-    list_start = gtk_container_get_children(window->editor->machine_selector);
+    list_start = gtk_container_get_children((GtkContainer *) window->editor->machine_selector);
 
   list = list->next;
 
@@ -247,7 +247,7 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
 
     GList *list, *list_start;
     
-    window = gtk_widget_get_toplevel(machine);
+    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
     
     if(machine->name != NULL){
       g_free(machine->name);
@@ -256,7 +256,7 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data), 0, -1);
     machine->name = g_strdup(text);
 
-    gtk_menu_tool_button_set_menu((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
+    gtk_menu_tool_button_set_menu((GtkMenuToolButton *) gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)),
 				  NULL);
     gtk_widget_destroy(gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)));
     menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
@@ -264,12 +264,12 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
 				    "menu\0", machine->popup,
 				    NULL);
     gtk_frame_set_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
-			       menu_tool_button);
-    gtk_widget_show_all(menu_tool_button);
+			       (GtkWidget *) menu_tool_button);
+    gtk_widget_show_all((GtkWidget *) menu_tool_button);
     
     /* update editor */
     list =
-      list_start = gtk_container_get_children(window->editor->machine_selector);
+      list_start = gtk_container_get_children((GtkContainer *) window->editor->machine_selector);
 
     while(list != NULL){
       if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
@@ -288,7 +288,7 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
 
     /* update automation editor */
     list =
-      list_start = gtk_container_get_children(window->automation_window->automation_editor->machine_selector);
+      list_start = gtk_container_get_children((GtkContainer *) window->automation_window->automation_editor->machine_selector);
     list = list->next;
 
     while(list != NULL){
@@ -356,7 +356,7 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
   
   if(machine->connection_editor == NULL){
     connection_editor =
-      machine->connection_editor = ags_connection_editor_new(machine);
+      machine->connection_editor = (GtkDialog *) ags_connection_editor_new(machine);
     
     g_signal_connect(connection_editor, "delete-event\0",
 		     G_CALLBACK(ags_machine_connection_editor_delete_event_callback), machine);
@@ -364,12 +364,12 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
     ags_connectable_connect(AGS_CONNECTABLE(connection_editor));
     ags_applicable_reset(AGS_APPLICABLE(connection_editor));
 
-    gtk_widget_show_all(connection_editor);
+    gtk_widget_show_all((GtkWidget *) connection_editor);
   }else{
     connection_editor = machine->connection_editor;
   }
 
-  gtk_widget_show_all(connection_editor);
+  gtk_widget_show_all((GtkWidget *) connection_editor);
   
   return(0);
 }
@@ -387,7 +387,7 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
   
   if(machine->midi_dialog == NULL){
     midi_dialog =
-      machine->midi_dialog = ags_midi_dialog_new(machine);
+      machine->midi_dialog = (GtkDialog *) ags_midi_dialog_new(machine);
     midi_dialog->flags |= AGS_MIDI_DIALOG_MAPPING;
     
     g_signal_connect(midi_dialog, "delete-event\0",
@@ -396,12 +396,12 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
     ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
     ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
 
-    gtk_widget_show_all(midi_dialog);
+    gtk_widget_show_all((GtkWidget *) midi_dialog);
   }else{
-    midi_dialog = machine->midi_dialog;
+    midi_dialog = (GtkDialog *) machine->midi_dialog;
   }
 
-  gtk_widget_show_all(midi_dialog);
+  gtk_widget_show_all((GtkWidget *) midi_dialog);
   
   return(0);
 }
@@ -586,7 +586,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
       return;
     }
 
-    printf("machine: on\n\0");
+    g_message("machine: on\0");
 
     machine->flags |= AGS_MACHINE_BLOCK_PLAY;
 
@@ -601,7 +601,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
       return;
     }
 
-    printf("machine: off\n\0");
+    g_message("machine: off\0");
 
     machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
@@ -650,7 +650,7 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
 	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
       
 	while(pad_list != NULL){
-	  line_list = gtk_container_get_children(AGS_PAD(pad_list->data)->expander_set);
+	  line_list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad_list->data)->expander_set);
 	  line_list = g_list_nth(line_list,
 				 audio_channels_old);
 	
@@ -754,9 +754,9 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
   gdk_threads_enter();
 
   task = (AgsTask *) task_completion->task;
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
+  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
 								 AGS_TYPE_SOUNDCARD_THREAD);
 
   if(soundcard_thread->error != NULL){

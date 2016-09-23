@@ -125,7 +125,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     }
 
     /* update UI */
-    bulk_member_start = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
+    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
   
     for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
       /* find bulk member */
@@ -145,16 +145,16 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 
 	  AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
 
-	  child_widget = gtk_bin_get_child(AGS_BULK_MEMBER(bulk_member->data));
+	  child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(bulk_member->data));
 	  
-	  ladspa_conversion = AGS_BULK_MEMBER(bulk_member->data)->conversion;
+	  ladspa_conversion = (AgsLadspaConversion *) AGS_BULK_MEMBER(bulk_member->data)->conversion;
 	  
 	  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 	    if(dssi_bridge->port_values[i] == 0.0){
-	      gtk_toggle_button_set_active(child_widget,
+	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					   FALSE);
 	    }else{
-	      gtk_toggle_button_set_active(child_widget,
+	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					   TRUE);
 	    }
 	  }else if(AGS_IS_DIAL(child_widget)){
@@ -169,7 +169,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	    }
 	    
 	    AGS_DIAL(child_widget)->adjustment->value = val;
-	    ags_dial_draw(child_widget);
+	    ags_dial_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
 	    g_message(" --- %f\0", dssi_bridge->port_values[i]);

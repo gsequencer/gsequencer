@@ -446,9 +446,6 @@ am__objects_15 = $(am__objects_1) \
 	ags/widget/libags_gui_la-ags_htimebar.lo \
 	ags/widget/libags_gui_la-ags_indicator.lo \
 	ags/widget/libags_gui_la-ags_led.lo \
-	ags/widget/libags_gui_la-ags_menu.lo \
-	ags/widget/libags_gui_la-ags_menu_item.lo \
-	ags/widget/libags_gui_la-ags_option_menu.lo \
 	ags/widget/libags_gui_la-ags_ruler.lo \
 	ags/widget/libags_gui_la-ags_table.lo \
 	ags/widget/libags_gui_la-ags_timebar.lo \
@@ -2268,9 +2265,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_htimebar.h \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
-	ags/widget/ags_menu.h \
-	ags/widget/ags_menu_item.h \
-	ags/widget/ags_option_menu.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
@@ -2289,9 +2283,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_htimebar.c \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
-	ags/widget/ags_menu.c \
-	ags/widget/ags_menu_item.c \
-	ags/widget/ags_option_menu.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
@@ -3661,13 +3652,6 @@ ags/widget/libags_gui_la-ags_indicator.lo: ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
 ags/widget/libags_gui_la-ags_led.lo: ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
-ags/widget/libags_gui_la-ags_menu.lo: ags/widget/$(am__dirstamp) \
-	ags/widget/$(DEPDIR)/$(am__dirstamp)
-ags/widget/libags_gui_la-ags_menu_item.lo: ags/widget/$(am__dirstamp) \
-	ags/widget/$(DEPDIR)/$(am__dirstamp)
-ags/widget/libags_gui_la-ags_option_menu.lo:  \
-	ags/widget/$(am__dirstamp) \
-	ags/widget/$(DEPDIR)/$(am__dirstamp)
 ags/widget/libags_gui_la-ags_ruler.lo: ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
 ags/widget/libags_gui_la-ags_table.lo: ags/widget/$(am__dirstamp) \
@@ -4999,9 +4983,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_htimebar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_indicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_led.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_menu.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_menu_item.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_option_menu.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_ruler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_timebar.Plo@am__quote@
@@ -6823,27 +6804,6 @@ ags/widget/libags_gui_la-ags_led.lo: ags/widget/ags_led.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_led.c' object='ags/widget/libags_gui_la-ags_led.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_led.lo `test -f 'ags/widget/ags_led.c' || echo '$(srcdir)/'`ags/widget/ags_led.c
-
-ags/widget/libags_gui_la-ags_menu.lo: ags/widget/ags_menu.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_menu.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_menu.Tpo -c -o ags/widget/libags_gui_la-ags_menu.lo `test -f 'ags/widget/ags_menu.c' || echo '$(srcdir)/'`ags/widget/ags_menu.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_menu.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_menu.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_menu.c' object='ags/widget/libags_gui_la-ags_menu.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_menu.lo `test -f 'ags/widget/ags_menu.c' || echo '$(srcdir)/'`ags/widget/ags_menu.c
-
-ags/widget/libags_gui_la-ags_menu_item.lo: ags/widget/ags_menu_item.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_menu_item.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_menu_item.Tpo -c -o ags/widget/libags_gui_la-ags_menu_item.lo `test -f 'ags/widget/ags_menu_item.c' || echo '$(srcdir)/'`ags/widget/ags_menu_item.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_menu_item.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_menu_item.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_menu_item.c' object='ags/widget/libags_gui_la-ags_menu_item.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_menu_item.lo `test -f 'ags/widget/ags_menu_item.c' || echo '$(srcdir)/'`ags/widget/ags_menu_item.c
-
-ags/widget/libags_gui_la-ags_option_menu.lo: ags/widget/ags_option_menu.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_option_menu.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_option_menu.Tpo -c -o ags/widget/libags_gui_la-ags_option_menu.lo `test -f 'ags/widget/ags_option_menu.c' || echo '$(srcdir)/'`ags/widget/ags_option_menu.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_option_menu.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_option_menu.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_option_menu.c' object='ags/widget/libags_gui_la-ags_option_menu.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_option_menu.lo `test -f 'ags/widget/ags_option_menu.c' || echo '$(srcdir)/'`ags/widget/ags_option_menu.c
 
 ags/widget/libags_gui_la-ags_ruler.lo: ags/widget/ags_ruler.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_ruler.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_ruler.Tpo -c -o ags/widget/libags_gui_la-ags_ruler.lo `test -f 'ags/widget/ags_ruler.c' || echo '$(srcdir)/'`ags/widget/ags_ruler.c

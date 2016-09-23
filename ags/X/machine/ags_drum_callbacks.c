@@ -118,13 +118,13 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
-  drum->open_dialog = 
-    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
-									(GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
-									GTK_FILE_CHOOSER_ACTION_OPEN,
-									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
-									NULL);
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
+								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
+								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
+								      NULL);
+  drum->open_dialog = (GtkWidget *) file_chooser;
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
@@ -212,8 +212,8 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   AgsApplySequencerLength *apply_sequencer_length;
   
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
-  AgsThread *task_thread;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
   
@@ -222,9 +222,9 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   pthread_mutex_t *application_mutex;
 
   /* get window and application_context  */
-  window = (AgsWindow *) gtk_widget_get_toplevel(drum);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -232,18 +232,18 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /*  */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
-  apply_sequencer_length = ags_apply_sequencer_length_new(AGS_MACHINE(drum)->audio,
+  apply_sequencer_length = ags_apply_sequencer_length_new((GObject *) AGS_MACHINE(drum)->audio,
 							  length);
 
   ags_task_thread_append_task(task_thread,

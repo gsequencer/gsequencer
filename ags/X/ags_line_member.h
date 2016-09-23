@@ -83,7 +83,7 @@ struct _AgsLineMember
   guint steps;
 
   AgsConversion *conversion;
-    
+  
   AgsPort *port;
   gpointer port_data;
   gboolean active;

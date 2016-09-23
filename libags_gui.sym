@@ -1,5 +1,3 @@
-ags_option_menu_get_type
-ags_option_menu_new
 ags_hindicator_get_type
 ags_hindicator_new
 ags_led_get_type
@@ -13,10 +11,6 @@ ags_dial_value_changed
 ags_dial_new
 ags_indicator_get_type
 ags_indicator_new
-ags_menu_get_type
-ags_menu_new
-ags_menu_item_get_type
-ags_menu_item_new
 ags_expander_get_type
 ags_expander_child_alloc
 ags_expander_child_find

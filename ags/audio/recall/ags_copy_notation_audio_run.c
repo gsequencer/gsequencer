@@ -444,9 +444,8 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
 						(GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id);
 	  }
 
-	  ags_audio_signal_connect(audio_signal);
+	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 
-	  g_message("add\0");
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
 

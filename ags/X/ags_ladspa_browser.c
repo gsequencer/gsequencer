@@ -233,8 +233,8 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
   
-  table = gtk_table_new(256, 2,
-			FALSE);
+  table = (GtkTable *) gtk_table_new(256, 2,
+				     FALSE);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
@@ -301,10 +301,10 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
   g_list_free(list);
 
-  gtk_combo_box_set_active(filename,
+  gtk_combo_box_set_active((GtkComboBox *) filename,
 			   0);
 }
 
@@ -358,8 +358,8 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
-  effect = GTK_COMBO_BOX(list->next->next->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   g_list_free(list_start);
 
@@ -387,10 +387,10 @@ ags_ladspa_browser_combo_box_boolean_controls_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "toggle button\0");
 
-  gtk_combo_box_set_active(combo_box,
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
-  return(combo_box);
+  return((GtkWidget *) combo_box);
 }
 
 /**
@@ -418,7 +418,7 @@ ags_ladspa_browser_combo_box_controls_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "horizontal scale\0");
 
-  gtk_combo_box_set_active(combo_box,
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
   return(combo_box);

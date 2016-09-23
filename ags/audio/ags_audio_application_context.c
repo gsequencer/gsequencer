@@ -127,8 +127,8 @@ void ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provide
 GList* ags_audio_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
 void ags_audio_application_context_finalize(GObject *gobject);
 
-void ags_audio_application_context_load_config(AgsApplicationContext *application_context);
 void ags_audio_application_context_register_types(AgsApplicationContext *application_context);
+void ags_audio_application_context_load_config(AgsApplicationContext *application_context);
 void ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_audio_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
@@ -370,7 +370,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa\0",
 				    5)){
-	soundcard = ags_devout_new((GObject *) audio_application_context);
+	soundcard = (GObject *) ags_devout_new((GObject *) audio_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
 		
@@ -378,7 +378,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       }else if(!g_ascii_strncasecmp(str,
 				    "oss\0",
 				    4)){
-	soundcard = ags_devout_new((GObject *) audio_application_context);
+	soundcard = (GObject *) ags_devout_new((GObject *) audio_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
 
@@ -476,7 +476,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   /* AgsSequencer */
   audio_application_context->sequencer = NULL;
 
-  sequencer = ags_midiin_new((GObject *) audio_application_context);
+  sequencer = (GObject *) ags_midiin_new((GObject *) audio_application_context);
   audio_application_context->sequencer = g_list_prepend(audio_application_context->sequencer,
 							sequencer);
   g_object_ref(G_OBJECT(sequencer));
@@ -560,7 +560,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       if(str != NULL){
 	if(g_strcmp0(str,
 		     "false\0")){
-	  audio_application_context->autosave_thread = (GObject *) ags_autosave_thread_new(audio_application_context);
+	  audio_application_context->autosave_thread = (GObject *) ags_autosave_thread_new((GObject *) audio_application_context);
 	  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 					audio_application_context->autosave_thread,
 					TRUE, TRUE);
@@ -707,7 +707,7 @@ ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
 GObject*
 ags_audio_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
 {
-  return((AgsThread *) AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
+  return((GObject *) AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
 }
 
 void
@@ -951,7 +951,7 @@ ags_audio_application_context_read(AgsFile *file, xmlNode *node, GObject **appli
     gobject = (AgsAudioApplicationContext *) *application_context;
   }
 
-  file->application_context = gobject;
+  file->application_context = (GObject *) gobject;
 
   g_object_set(G_OBJECT(file),
 	       "application-context\0", gobject,

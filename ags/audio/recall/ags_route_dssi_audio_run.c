@@ -1016,7 +1016,7 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 
   pthread_mutex_lock(application_mutex);
 
-  bpm = ags_soundcard_get_bpm(soundcard);
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
 
   /* buffer size */
   str = ags_config_get_value(config,

@@ -153,7 +153,7 @@ ags_blink_cell_pattern_cursor_launch(AgsTask *task)
     blink_cell_pattern_cursor->cell_pattern->flags &= (~AGS_CELL_PATTERN_CURSOR_ON);
   }
 
-  gtk_widget_queue_draw(blink_cell_pattern_cursor->cell_pattern);
+  gtk_widget_queue_draw((GtkWidget *) blink_cell_pattern_cursor->cell_pattern);
 }
 
 /**

@@ -22,6 +22,8 @@
 
 #include <ags/audio/midi/ags_midi_parser.h>
 
+#include <ags/X/import/ags_track_collection.h>
+
 #include <libxml/tree.h>
 
 void

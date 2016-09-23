@@ -59,22 +59,6 @@ ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
   navigation->soundcard = window->soundcard;
 }
 
-gboolean
-ags_navigation_destroy_callback(GtkObject *object,
-				gpointer data)
-{
-  ags_navigation_destroy(object);
-
-  return(FALSE);
-}
-
-void
-ags_navigation_show_callback(GtkWidget *widget,
-			     gpointer data)
-{
-  ags_navigation_show(widget);
-}
-
 void
 ags_navigation_expander_callback(GtkWidget *widget,
 				 AgsNavigation *navigation)
@@ -107,7 +91,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsApplyBpm *apply_bpm;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -117,7 +101,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -125,12 +109,12 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   apply_bpm = ags_apply_bpm_new(G_OBJECT(window->soundcard),
@@ -208,7 +192,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(machine,
 				   TRUE,
-				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
+				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE);
     }
 
     machines = machines->next;
@@ -239,7 +223,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
       ags_machine_set_run_extended(machine,
 				   FALSE,
-				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
+				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE);
     }
 
     machines = machines->next;

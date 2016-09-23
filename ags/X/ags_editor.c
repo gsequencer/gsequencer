@@ -260,9 +260,9 @@ ags_editor_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      AgsSoundcard *soundcard;
+      GObject *soundcard;
 
-      soundcard = (AgsSoundcard *) g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
       if(editor->soundcard == soundcard){
 	return;
@@ -329,7 +329,7 @@ ags_editor_connect(AgsConnectable *connectable)
   /*  */
   if(editor->soundcard != NULL){
     g_signal_connect(editor->soundcard, "tic\0",
-		     ags_editor_tic_callback, editor);
+		     G_CALLBACK(ags_editor_tic_callback), editor);
   }
   
   g_signal_connect((GObject *) editor->machine_selector, "changed\0",
@@ -390,9 +390,9 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   }
 
   if(editor->current_notebook != NULL){
-    gtk_widget_hide(editor->current_notebook);
-    gtk_widget_hide(editor->current_meter);
-    gtk_widget_hide(editor->current_edit_widget);
+    gtk_widget_hide((GtkWidget *) editor->current_notebook);
+    gtk_widget_hide((GtkWidget *) editor->current_meter);
+    gtk_widget_hide((GtkWidget *) editor->current_edit_widget);
   }
   
   editor->current_notebook = NULL;
@@ -401,7 +401,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 
   /* instantiate note edit or pattern edit */
   list_start = 
-    list = gtk_container_get_children(editor->machine_selector->popup);
+    list = gtk_container_get_children((GtkContainer *) editor->machine_selector->popup);
   list = g_list_nth(list,
 		    3);
 
@@ -443,13 +443,14 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
       //TODO:JK: make it advanced
       ags_notebook_insert_tab(editor_child->notebook,
 			      i);
-      AGS_NOTEBOOK_TAB(editor_child->notebook->tabs->data)->notation = g_list_nth(machine->audio->notation,
-									   i);
+      list = g_list_nth(machine->audio->notation,
+			i);
+      AGS_NOTEBOOK_TAB(editor_child->notebook->tabs->data)->notation = G_OBJECT(list->data);
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(editor_child->notebook->tabs->data)->toggle,
 				   TRUE);
     }
     ags_connectable_connect(AGS_CONNECTABLE(editor_child->notebook));
-    gtk_widget_show_all(editor_child->notebook);
+    gtk_widget_show_all((GtkWidget *) editor_child->notebook);
     
     pads = machine->audio->input_pads;
 
@@ -461,11 +462,11 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
     ags_connectable_connect(AGS_CONNECTABLE(editor_child->meter));
-    gtk_widget_show_all(editor_child->meter);
+    gtk_widget_show_all((GtkWidget *) editor_child->meter);
 
     if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       editor_child->edit_widget = 
-	editor->current_edit_widget = ags_note_edit_new();
+	editor->current_edit_widget = (GtkWidget *) ags_note_edit_new();
       g_object_ref(editor_child->edit_widget);
       gtk_table_attach(editor->table, (GtkWidget *) editor_child->edit_widget,
 		       1, 2, y + 1, y + 2,
@@ -473,13 +474,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		       0, 0);
 
       ags_connectable_connect(AGS_CONNECTABLE(editor_child->edit_widget));
-      gtk_widget_show_all(editor_child->edit_widget);
+      gtk_widget_show_all((GtkWidget *) editor_child->edit_widget);
 
-      ags_note_edit_set_map_height(editor_child->edit_widget,
+      ags_note_edit_set_map_height((AgsNoteEdit *) editor_child->edit_widget,
 				   pads * AGS_NOTE_EDIT(editor_child->edit_widget)->control_height);
     }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
       editor_child->edit_widget =
-	editor->current_edit_widget = ags_pattern_edit_new();
+	editor->current_edit_widget = (GtkWidget *) ags_pattern_edit_new();
       g_object_ref(editor_child->edit_widget);
       gtk_table_attach(editor->table, (GtkWidget *) editor_child->edit_widget,
 		       1, 2, y + 1, y + 2,
@@ -487,9 +488,9 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		       0, 0);
 
       ags_connectable_connect(AGS_CONNECTABLE(editor_child->edit_widget));
-      gtk_widget_show_all(editor_child->edit_widget);
+      gtk_widget_show_all((GtkWidget *) editor_child->edit_widget);
 
-      ags_pattern_edit_set_map_height(editor_child->edit_widget,
+      ags_pattern_edit_set_map_height((AgsPatternEdit *) editor_child->edit_widget,
 				      pads * AGS_PATTERN_EDIT(editor_child->edit_widget)->control_height);
     }
   }else{
@@ -503,9 +504,9 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     editor->current_edit_widget = editor_child->edit_widget;
 
     /* show */
-    gtk_widget_show_all(editor_child->notebook);
-    gtk_widget_show_all(editor_child->meter);
-    gtk_widget_show_all(editor_child->edit_widget);
+    gtk_widget_show_all((GtkWidget *) editor_child->notebook);
+    gtk_widget_show_all((GtkWidget *) editor_child->meter);
+    gtk_widget_show_all((GtkWidget *) editor_child->edit_widget);
   }
 }
 
@@ -588,8 +589,10 @@ ags_editor_select_all(AgsEditor *editor)
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
       cairo_push_group(cr);
       
-      ags_note_edit_draw_segment(editor->current_edit_widget, cr);
-      ags_note_edit_draw_notation(editor->current_edit_widget, cr);
+      ags_note_edit_draw_segment((AgsNoteEdit *) editor->current_edit_widget,
+				 cr);
+      ags_note_edit_draw_notation((AgsNoteEdit *) editor->current_edit_widget,
+				  cr);
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
@@ -597,8 +600,10 @@ ags_editor_select_all(AgsEditor *editor)
       cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
       cairo_push_group(cr);
       
-      ags_pattern_edit_draw_segment(editor->current_edit_widget, cr);
-      ags_pattern_edit_draw_notation(editor->current_edit_widget, cr);
+      ags_pattern_edit_draw_segment((AgsPatternEdit *) editor->current_edit_widget,
+				    cr);
+      ags_pattern_edit_draw_notation((AgsPatternEdit *) editor->current_edit_widget,
+				     cr);
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
@@ -856,8 +861,10 @@ ags_editor_paste(AgsEditor *editor)
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
       cairo_push_group(cr);
       
-      ags_note_edit_draw_segment(editor->current_edit_widget, cr);
-      ags_note_edit_draw_notation(editor->current_edit_widget, cr);
+      ags_note_edit_draw_segment((AgsNoteEdit *) editor->current_edit_widget,
+				 cr);
+      ags_note_edit_draw_notation((AgsNoteEdit *) editor->current_edit_widget,
+				  cr);
 
       if(paste_from_position){
 	gint big_step, small_step;
@@ -871,7 +878,8 @@ ags_editor_paste(AgsEditor *editor)
 	  AGS_NOTE_EDIT(editor->current_edit_widget)->selected_x = small_step;
 	}
 	
-	ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
+	ags_note_edit_draw_position((AgsNoteEdit *) editor->current_edit_widget,
+				    cr);
       }
     
       cairo_pop_group_to_source(cr);
@@ -880,8 +888,10 @@ ags_editor_paste(AgsEditor *editor)
       cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
       cairo_push_group(cr);
       
-      ags_pattern_edit_draw_segment(editor->current_edit_widget, cr);
-      ags_pattern_edit_draw_notation(editor->current_edit_widget, cr);
+      ags_pattern_edit_draw_segment((AgsPatternEdit *) editor->current_edit_widget,
+				    cr);
+      ags_pattern_edit_draw_notation((AgsPatternEdit *) editor->current_edit_widget,
+				     cr);
 
       if(paste_from_position){
 	gint big_step, small_step;
@@ -895,7 +905,8 @@ ags_editor_paste(AgsEditor *editor)
 	  AGS_PATTERN_EDIT(editor->current_edit_widget)->selected_x = small_step;
 	}
 
-	ags_pattern_edit_draw_position(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
+	ags_pattern_edit_draw_position((AgsPatternEdit *) editor->current_edit_widget,
+				       cr);
       }
       
       cairo_pop_group_to_source(cr);

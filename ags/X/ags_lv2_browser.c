@@ -231,8 +231,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
   
-  table = gtk_table_new(256, 2,
-			FALSE);
+  table = (GtkTable *) gtk_table_new(256, 2,
+				     FALSE);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
@@ -299,10 +299,10 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
 
   list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
   g_list_free(list);
 
-  gtk_combo_box_set_active(filename,
+  gtk_combo_box_set_active((GtkComboBox *) filename,
 			   0);
 }
 
@@ -326,7 +326,7 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
   filename = GTK_COMBO_BOX_TEXT(list->next->data);
   g_list_free(list);
 
-  return(gtk_combo_box_text_get_active_text(filename));
+  return(gtk_combo_box_text_get_active_text((GtkComboBox *) filename));
 }
 
 /**
@@ -351,8 +351,9 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
-  effect = GTK_COMBO_BOX(list->next->next->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
+
   effect_name = gtk_combo_box_text_get_active_text(effect);
   
   return(effect_name);
@@ -379,7 +380,7 @@ ags_lv2_browser_combo_box_boolean_controls_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "toggle button\0");
 
-  gtk_combo_box_set_active(combo_box,
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
   return(combo_box);
@@ -410,7 +411,7 @@ ags_lv2_browser_combo_box_controls_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "horizontal scale\0");
 
-  gtk_combo_box_set_active(combo_box,
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
 
   return(combo_box);

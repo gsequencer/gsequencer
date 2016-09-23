@@ -644,7 +644,7 @@ ags_notation_get_port(AgsPortlet *portlet)
 	       "port\0", &port,
 	       NULL);
 
-  return(port);
+  return((GObject *) port);
 }
 
 GList*

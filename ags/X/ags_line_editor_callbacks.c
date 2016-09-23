@@ -37,14 +37,6 @@ ags_line_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 }
 
 int
-ags_line_editor_destroy_callback(GtkObject *object, AgsLineEditor *line_editor)
-{
-  ags_line_editor_destroy(object);
-
-  return(0);
-}
-
-int
 ags_line_editor_show_callback(GtkWidget *widget, AgsLineEditor *line_editor)
 {
   ags_line_editor_show(widget);

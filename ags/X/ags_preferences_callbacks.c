@@ -63,7 +63,7 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
   GList *list, *list_start;
 
   list_start = 
-    list = gtk_container_get_children(GTK_DIALOG(preferences)->action_area);
+    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(preferences)->action_area);
   list = g_list_nth(list,
 		    3);
   
@@ -76,7 +76,7 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
   g_list_free(list_start);
   
   if(page_n == 1){
-    gtk_widget_show(preferences->audio_preferences->connect_jack);
-    gtk_widget_show(preferences->audio_preferences->add);
+    gtk_widget_show((GtkWidget *) preferences->audio_preferences->connect_jack);
+    gtk_widget_show((GtkWidget *) preferences->audio_preferences->add);
   }
 }

@@ -160,7 +160,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 					     "relief\0", GTK_RELIEF_NONE,
 					     NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
-			    automation_toolbar->copy,
+			    (GtkWidget *) automation_toolbar->copy,
 			    "copy automation\0",
 			    NULL);
 
@@ -171,7 +171,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 						       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    automation_toolbar->cut,
-			    "cut automation\0",
+			    (GtkWidget *) "cut automation\0",
 			    NULL);
 
   automation_toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
@@ -180,30 +180,31 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 							 "relief\0", GTK_RELIEF_NONE,
 							 NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
-			    automation_toolbar->paste,
+			    (GtkWidget *) automation_toolbar->paste,
 			    "paste automation\0",
 			    NULL);
 
   /*  */
   automation_toolbar->zoom_history = 4;
   
-  label = gtk_label_new("zoom\0");
+  label = (GtkLabel *) gtk_label_new("zoom\0");
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
-		    label);
+		    (GtkWidget *) label);
 
   automation_toolbar->zoom = ags_zoom_combo_box_new();
-  gtk_combo_box_set_active(automation_toolbar->zoom, 2);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(automation_toolbar->zoom),
+			   2);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->zoom,
 			    NULL,
 			    NULL);
 
   /*  */
-  label = gtk_label_new("port\0");
+  label = (GtkLabel *) gtk_label_new("port\0");
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
-		    label);
+		    (GtkWidget *) label);
 
-  automation_toolbar->port = gtk_combo_box_new();
+  automation_toolbar->port = (GtkComboBox *) gtk_combo_box_new();
 
   cell_renderer = gtk_cell_renderer_toggle_new();
   gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->port),
@@ -212,7 +213,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
 				 "active\0", 0,
 				 NULL);
-  gtk_cell_renderer_toggle_set_activatable(cell_renderer,
+  gtk_cell_renderer_toggle_set_activatable(GTK_CELL_RENDERER_TOGGLE(cell_renderer),
 					   TRUE);
   
   cell_renderer = gtk_cell_renderer_text_new();
@@ -236,8 +237,8 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   AgsAutomationToolbar *automation_toolbar;
 
   automation_toolbar = AGS_AUTOMATION_TOOLBAR(connectable);
-  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
 
   /*  */
   g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed\0",
@@ -305,8 +306,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
   machine = automation_editor->selected_machine;
 
   if(machine == NULL){
@@ -387,8 +388,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
   machine = automation_editor->selected_machine;
 
   model = gtk_combo_box_get_model(automation_toolbar->port);
@@ -484,66 +485,66 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       if(AGS_AUTOMATION(list->data)->channel_type == G_TYPE_NONE &&
 	 !found_audio){
-	scale_area = ags_scale_area_new(automation_editor->current_audio_scale,
+	scale_area = ags_scale_area_new((GtkDrawingArea *) automation_editor->current_audio_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
 					AGS_AUTOMATION(list->data)->upper,
 					AGS_AUTOMATION(list->data)->steps);
 	ags_scale_add_area(automation_editor->current_audio_scale,
 			   scale_area);
-	gtk_widget_queue_draw(automation_editor->current_audio_scale);
+	gtk_widget_queue_draw((GtkWidget *) automation_editor->current_audio_scale);
 	
 	automation_area = ags_automation_area_new(AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->drawing_area,
 						  audio,
 						  G_TYPE_NONE,
 						  control_name);
-	ags_automation_edit_add_area(automation_editor->current_audio_automation_edit,
+	ags_automation_edit_add_area((AgsAutomationEdit *) automation_editor->current_audio_automation_edit,
 				     automation_area);
-	gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->drawing_area);
+	gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->drawing_area);
 
 	found_audio = TRUE;
       }
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_OUTPUT &&
 	 !found_output){
-	scale_area = ags_scale_area_new(automation_editor->current_output_scale,
+	scale_area = ags_scale_area_new((GtkDrawingArea *) automation_editor->current_output_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
 					AGS_AUTOMATION(list->data)->upper,
 					AGS_AUTOMATION(list->data)->steps);
 	ags_scale_add_area(automation_editor->current_output_scale,
 			   scale_area);
-	gtk_widget_queue_draw(automation_editor->current_output_scale);
+	gtk_widget_queue_draw((GtkWidget *) automation_editor->current_output_scale);
 	
 	automation_area = ags_automation_area_new(AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->drawing_area,
 						  audio,
 						  AGS_TYPE_OUTPUT,
 						  control_name);
-	ags_automation_edit_add_area(automation_editor->current_output_automation_edit,
+	ags_automation_edit_add_area((AgsAutomationEdit *) automation_editor->current_output_automation_edit,
 				     automation_area);
-	gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->drawing_area);
+	gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->drawing_area);
 	
 	found_output = TRUE;
       }
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_INPUT &&
 	 !found_input){
-	scale_area = ags_scale_area_new(automation_editor->current_input_scale,
+	scale_area = ags_scale_area_new((GtkDrawingArea *) automation_editor->current_input_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
 					AGS_AUTOMATION(list->data)->upper,
 					AGS_AUTOMATION(list->data)->steps);
 	ags_scale_add_area(automation_editor->current_input_scale,
 			   scale_area);
-	gtk_widget_queue_draw(automation_editor->current_input_scale);
+	gtk_widget_queue_draw((GtkWidget *) automation_editor->current_input_scale);
 	
 	automation_area = ags_automation_area_new(AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->drawing_area,
 						  audio,
 						  AGS_TYPE_INPUT,
 						  control_name);
-	ags_automation_edit_add_area(automation_editor->current_input_automation_edit,
+	ags_automation_edit_add_area((AgsAutomationEdit *) automation_editor->current_input_automation_edit,
 				     automation_area);
-	gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->drawing_area);
+	gtk_widget_queue_draw((GtkWidget *) AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->drawing_area);
 	
 	found_input = TRUE;
       }
@@ -594,11 +595,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       ags_scale_remove_area(scale,
 			    scale_area->data);
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
 
       ags_automation_edit_remove_area(automation_edit,
 				      automation_area->data);
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
     
     /* remove output port */
@@ -614,11 +615,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       ags_scale_remove_area(scale,
 			    scale_area->data);
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
 
       ags_automation_edit_remove_area(automation_edit,
 				      automation_area->data);
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
 
     /* remove input port */
@@ -634,11 +635,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       ags_scale_remove_area(scale,
 			    scale_area->data);
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
 
       ags_automation_edit_remove_area(automation_edit,
 				      automation_area->data);
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
   }
 }

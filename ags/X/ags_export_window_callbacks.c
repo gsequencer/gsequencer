@@ -34,6 +34,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 
+#include <glib/gstdio.h>
+
 void ags_export_window_stop_callback(AgsThread *thread,
 				     AgsExportWindow *export_window);
 
@@ -95,7 +97,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
   window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -103,12 +105,12 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
 						       AGS_TYPE_TASK_THREAD);
   
   machines_start = NULL;
@@ -141,11 +143,11 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	return;
       }
 
-      dialog = gtk_message_dialog_new((GtkWindow *) export_window,
-				      GTK_DIALOG_MODAL,
-				      GTK_MESSAGE_QUESTION,
-				      GTK_BUTTONS_OK_CANCEL,
-				      "Replace existing file?\0");
+      dialog = (GtkDialog *)gtk_message_dialog_new((GtkWindow *) export_window,
+						   GTK_DIALOG_MODAL,
+						   GTK_MESSAGE_QUESTION,
+						   GTK_BUTTONS_OK_CANCEL,
+						   "Replace existing file?\0");
       response = gtk_dialog_run(dialog);
       gtk_widget_destroy((GtkWidget *) dialog);
 
@@ -174,11 +176,11 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
 	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-	printf("found machine to play!\n\0");
+	g_message("found machine to play!\0");
 
 	ags_machine_set_run_extended(machine,
 				     TRUE,
-				     !gtk_toggle_button_get_active(export_window->exclude_sequencer), TRUE);
+				     !gtk_toggle_button_get_active((GtkToggleButton *) export_window->exclude_sequencer), TRUE);
 	success = TRUE;
       }
 

@@ -313,10 +313,10 @@ ags_dial_init(AgsDial *dial)
 {
   AtkObject *accessible;
 
-  gtk_widget_set_can_focus(dial,
+  gtk_widget_set_can_focus((GtkWidget *) dial,
 			   TRUE);
 
-  accessible = gtk_widget_get_accessible(dial);
+  accessible = gtk_widget_get_accessible((GtkWidget *) dial);
 
   g_object_set(accessible,
 	       "accessible-name\0", "dial\0",
@@ -488,7 +488,7 @@ ags_accessible_dial_set_value(AtkValue *value,
   dial = (AgsDial *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
   gtk_adjustment_set_value(dial->adjustment,
 			   new_value);
-  gtk_widget_queue_draw(dial);
+  gtk_widget_queue_draw((GtkWidget *) dial);
 }
 
 gboolean
@@ -503,7 +503,7 @@ ags_accessible_dial_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  dial = gtk_accessible_get_widget(ATK_OBJECT(action));
+  dial = (AgsDial *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = gdk_event_new(GDK_KEY_PRESS);
   key_release = gdk_event_new(GDK_KEY_RELEASE);
@@ -515,8 +515,10 @@ ags_accessible_dial_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
     
       /* send event */
-      gtk_widget_event(dial, key_press);
-      gtk_widget_event(dial, key_release);
+      gtk_widget_event((GtkWidget *) dial,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) dial,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_DIAL_DECREMENT:
@@ -525,8 +527,10 @@ ags_accessible_dial_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(dial, key_press);
-      gtk_widget_event(dial, key_release);
+      gtk_widget_event((GtkWidget *) dial,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) dial,
+		       (GdkEvent *) key_release);
     }
     break;
   }
@@ -709,7 +713,7 @@ ags_dial_get_accessible(GtkWidget *widget)
   AtkObject* accessible;
 
   accessible = g_object_get_qdata(G_OBJECT(widget),
-				    quark_accessible_object);
+				  quark_accessible_object);
   
   if(!accessible){
     accessible = g_object_new(ags_accessible_dial_get_type(),
@@ -718,7 +722,7 @@ ags_dial_get_accessible(GtkWidget *widget)
     g_object_set_qdata(G_OBJECT(widget),
 		       quark_accessible_object,
 		       accessible);
-    gtk_accessible_set_widget(accessible,
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
 			      widget);
   }
   

@@ -83,8 +83,8 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {
   GtkFileChooserDialog *file_chooser;
 
-  ffplayer->open_dialog = 
-    file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
+  file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
+  ffplayer->open_dialog = (GtkWidget *) file_chooser;
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 
@@ -146,7 +146,7 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 			    &error);
 
   /* select first instrument */
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->instrument)));
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
   ags_ffplayer_load_instrument(ffplayer);
   
@@ -169,7 +169,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsAddAudioSignal *add_audio_signal;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -197,8 +197,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     return;
   }
   
-  window = (AgsWindow *) gtk_widget_get_toplevel(ffplayer);
-  application_context = window->application_context;
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
+  application_context = (AgsApplicationContext *) window->application_context;
   audio = AGS_MACHINE(ffplayer)->audio;
 
   mutex_manager = ags_mutex_manager_get_instance();
@@ -207,12 +207,12 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* lookup audio mutex */

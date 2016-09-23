@@ -227,10 +227,11 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
 {
   AgsEditor *editor;
   AgsMachineRadioButton *machine_radio_button;
+  
   GList *list, *list_start;
 
-  editor = gtk_widget_get_ancestor(machine_selector,
-				   AGS_TYPE_EDITOR);
+  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+						 AGS_TYPE_EDITOR);
 
   /* emit changed */
   machine_radio_button = NULL;
@@ -254,10 +255,10 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
       list = editor->editor_child;
 
       while(list != NULL){
-	if(AGS_EDITOR_CHILD(list->data) == machine_radio_button->machine){
-	  gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->notebook);
-	  gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->meter);
-	  gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->edit_widget);
+	if(AGS_EDITOR_CHILD(list->data)->machine == machine_radio_button->machine){
+	  gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->notebook);
+	  gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->meter);
+	  gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->edit_widget);
 	
 	  break;
 	}
@@ -306,7 +307,7 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
 
   /* decide if link to editor or change index */
   if(existing_radio_button != NULL){
-    gtk_button_clicked(existing_radio_button);
+    gtk_button_clicked((GtkButton *) existing_radio_button);
   }else{
     g_object_set(G_OBJECT(machine_radio_button),
 		 "machine\0", machine,
@@ -403,7 +404,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 
     keys = (GtkMenu *) gtk_menu_new();
     gtk_menu_item_set_submenu(item,
-			      keys);
+			      (GtkWidget *) keys);
 
     item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("A\0"));
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);

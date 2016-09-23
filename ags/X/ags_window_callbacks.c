@@ -64,7 +64,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   if(response == GTK_RESPONSE_YES){
     AgsApplicationContext *application_context;
 
-    application_context = window->application_context;
+    application_context = (AgsApplicationContext *) window->application_context;
 
     if(g_strcmp0(ags_config_get_value(application_context->config,
 				      AGS_CONFIG_GENERIC,

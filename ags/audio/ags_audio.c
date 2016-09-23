@@ -969,16 +969,16 @@ ags_audio_init(AgsAudio *audio)
 	g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 			AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
 
-	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
-											    (GObject *) audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = (AgsThread *) ags_audio_thread_new(NULL,
+													  (GObject *) audio);
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0]->freq = freq;
 	
-	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
-											    (GObject *) audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = (AgsThread *) ags_audio_thread_new(NULL,
+													  (GObject *) audio);
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->freq = freq;
 
-	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
-											    (GObject *) audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = (AgsThread *) ags_audio_thread_new(NULL,
+													  (GObject *) audio);
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->freq = freq;
       }
     }
@@ -5022,7 +5022,7 @@ ags_audio_recursive_set_property(AgsAudio *audio,
       return;
     }
 
-    ags_audio_set_property(G_OBJECT(channel->audio),
+    ags_audio_set_property(AGS_AUDIO(channel->audio),
 			   parameter, n_params);
     
     ags_audio_recurisve_set_property_down_input(channel,

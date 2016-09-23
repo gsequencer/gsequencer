@@ -28,6 +28,9 @@
 #include <ags/X/file/ags_simple_file.h>
 #include <ags/X/task/ags_simple_file_write.h>
 
+#include <string.h>
+
+#include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
 
@@ -208,9 +211,9 @@ ags_simple_autosave_thread_set_property(GObject *gobject,
     {
       AgsApplicationContext *application_context;
 
-      application_context = g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(simple_autosave_thread->application_context == application_context){
+      if(simple_autosave_thread->application_context == (GObject *) application_context){
 	return;
       }
 
@@ -222,7 +225,7 @@ ags_simple_autosave_thread_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      simple_autosave_thread->application_context = application_context;
+      simple_autosave_thread->application_context = (GObject *) application_context;
     }
     break;
   default:
@@ -293,7 +296,7 @@ ags_simple_autosave_thread_run(AgsThread *thread)
   AgsTaskThread *task_thread;
   
   simple_autosave_thread = AGS_SIMPLE_AUTOSAVE_THREAD(thread);
-  task_thread = AGS_APPLICATION_CONTEXT(simple_autosave_thread->application_context)->task_thread;
+  task_thread = (AgsTaskThread *) AGS_APPLICATION_CONTEXT(simple_autosave_thread->application_context)->task_thread;
 
   if(simple_autosave_thread->counter != simple_autosave_thread->delay){
     simple_autosave_thread->counter += 1;
@@ -303,14 +306,14 @@ ags_simple_autosave_thread_run(AgsThread *thread)
     
     simple_autosave_thread->counter = 0;
     
-    simple_file = (AgsFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-					   "application-context\0", simple_autosave_thread->application_context,
-					   "filename\0", simple_file->filename,
-					   NULL);
+    simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						 "application-context\0", simple_autosave_thread->application_context,
+						 "filename\0", simple_autosave_thread->filename,
+						 NULL);
 
-    simple_file_write = ags_simple_file_write_new(simple_file_write);
+    simple_file_write = ags_simple_file_write_new((GObject *) simple_file_write);
     ags_task_thread_append_task(task_thread,
-				simple_file_write);
+				(AgsTask *) simple_file_write);
 
     g_object_unref(simple_file);
   }

@@ -147,20 +147,21 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     FALSE, FALSE,
 		     0);
 
-  hbox = gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
   gtk_box_pack_start(GTK_BOX(generic_preferences),
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
 		     0);
 
-  label = gtk_label_new("segmentation\0");
+  label = (GtkLabel *) gtk_label_new("segmentation\0");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
   
-  generic_preferences->segmentation = gtk_combo_box_text_new();
-  gtk_combo_box_set_model(generic_preferences->segmentation,
+  generic_preferences->segmentation = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_combo_box_set_model((GtkComboBox *) generic_preferences->segmentation,
 			  ags_generic_preferences_create_segmentation());
   gtk_combo_box_set_active(generic_preferences->segmentation,
 			   2);

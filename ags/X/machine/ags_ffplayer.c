@@ -360,7 +360,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     0);
 
   /* effect bridge */
-  AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
+  AGS_MACHINE(ffplayer)->bridge = (GtkContainer *) ags_ffplayer_bridge_new(audio);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
@@ -391,8 +391,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   ffplayer = AGS_FFPLAYER(machine);
   
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   audio = machine->audio;
 
@@ -441,7 +441,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		      TRUE);
 
     g_value_init(&value, G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value, gtk_toggle_button_get_active(window->navigation->loop));
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
 			&value);
   }
@@ -698,7 +698,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     GError *error;
 
     /* clear preset, instrument and sample*/
-    gtk_list_store_clear(GTK_LIST_STORE(ffplayer->instrument));
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
     /* Ipatch related */
     ffplayer->ipatch =
@@ -1191,11 +1191,11 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 
     GError *error;
 
-    window = gtk_widget_get_toplevel(ffplayer);
+    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
     
     /* clear preset and instrument */
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->preset)));
-    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->instrument)));
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset))));
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
     /* Ipatch related */
     ipatch = g_object_new(AGS_TYPE_IPATCH,

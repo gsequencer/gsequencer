@@ -197,13 +197,13 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = gtk_label_new("pad\0");
+  label = (GtkLabel *) gtk_label_new("pad\0");
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
-  audio_connection_collection_editor->pad = gtk_spin_button_new_with_range(-1.0,
-									   -1.0,
-									   1.0);
+  audio_connection_collection_editor->pad = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0,
+											     -1.0,
+											     1.0);
   gtk_table_attach(GTK_TABLE(audio_connection_collection_editor),
 		   GTK_WIDGET(audio_connection_collection_editor->pad),
 		   1, 2,
@@ -221,13 +221,13 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = gtk_label_new("audio channel\0");
+  label = (GtkLabel *) gtk_label_new("audio channel\0");
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
-  audio_connection_collection_editor->audio_channel = gtk_spin_button_new_with_range(-1.0,
-										     -1.0,
-										     1.0);
+  audio_connection_collection_editor->audio_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0,
+												       -1.0,
+												       1.0);
   gtk_table_attach(GTK_TABLE(audio_connection_collection_editor),
 		   GTK_WIDGET(audio_connection_collection_editor->audio_channel),
 		   1, 2,
@@ -245,11 +245,11 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = gtk_label_new("soundcard\0");
+  label = (GtkLabel *) gtk_label_new("soundcard\0");
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
-  audio_connection_collection_editor->soundcard = gtk_combo_box_text_new();
+  audio_connection_collection_editor->soundcard = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_table_attach(GTK_TABLE(audio_connection_collection_editor),
 		   GTK_WIDGET(audio_connection_collection_editor->soundcard),
 		   1, 2,
@@ -267,13 +267,13 @@ ags_audio_connection_collection_editor_init(AgsAudioConnectionCollectionEditor *
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = gtk_label_new("soundcard audio channel\0");
+  label = (GtkLabel *) gtk_label_new("soundcard audio channel\0");
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
-  audio_connection_collection_editor->soundcard_audio_channel = gtk_spin_button_new_with_range(-1.0,
-											       -1.0,
-											       1.0);
+  audio_connection_collection_editor->soundcard_audio_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0,
+														 -1.0,
+														 1.0);
   gtk_table_attach(GTK_TABLE(audio_connection_collection_editor),
 		   GTK_WIDGET(audio_connection_collection_editor->soundcard_audio_channel),
 		   1, 2,
@@ -359,7 +359,7 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
 
   audio_connection_collection_editor = AGS_AUDIO_CONNECTION_COLLECTION_EDITOR(applicable);
 
-  if(gtk_combo_box_get_active_iter(audio_connection_collection_editor->soundcard,
+  if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(audio_connection_collection_editor->soundcard),
 				   &iter)){
     AgsWindow *window;
     AgsMachine *machine;
@@ -390,9 +390,9 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
     audio = machine->audio;
 
     /* get window and application_context  */
-    window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+    window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine));
   
-    application_context = window->application_context;
+    application_context = (AgsApplicationContext *) window->application_context;
     
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -400,12 +400,12 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
     /* get audio loop */
     pthread_mutex_lock(application_mutex);
 
-    audio_loop = application_context->main_loop;
+    audio_loop = (AgsAudioLoop *) application_context->main_loop;
 
     pthread_mutex_unlock(application_mutex);
 
     /* get task and soundcard thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+    task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
 							 AGS_TYPE_TASK_THREAD);
 
     /* lookup audio mutex */
@@ -424,7 +424,7 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
 
     soundcard_audio_channel = (guint) gtk_spin_button_get_value_as_int(audio_connection_collection_editor->soundcard_audio_channel);
 
-    model = gtk_combo_box_get_model(audio_connection_collection_editor->soundcard);
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(audio_connection_collection_editor->soundcard));
     gtk_tree_model_get(model,
 		       &iter,
 		       1, &soundcard,
@@ -438,7 +438,7 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
 							    audio_channel,
 							    soundcard_audio_channel);
     ags_task_thread_append_task(task_thread,
-				reset_audio_connection);
+				(AgsTask *) reset_audio_connection);
   }
 }
 
@@ -487,7 +487,7 @@ ags_audio_connection_collection_editor_check(AgsAudioConnectionCollectionEditor 
 			    0.0,
 			    audio->audio_channels - 1.0);
 
-  if(gtk_combo_box_get_active_iter(audio_connection_collection_editor->soundcard,
+  if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(audio_connection_collection_editor->soundcard),
 				   &iter)){    
     GObject *soundcard;
     
@@ -496,7 +496,7 @@ ags_audio_connection_collection_editor_check(AgsAudioConnectionCollectionEditor 
     guint soundcard_audio_channels;
     
     /* soundcard connection */
-    model = gtk_combo_box_get_model(audio_connection_collection_editor->soundcard);
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(audio_connection_collection_editor->soundcard));
     gtk_tree_model_get(model,
 		       &iter,
 		       1, &soundcard,

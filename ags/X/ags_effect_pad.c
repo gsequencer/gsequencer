@@ -255,8 +255,8 @@ ags_effect_pad_init(AgsEffectPad *effect_pad)
   effect_pad->channel = NULL;
 
   effect_pad->cols = AGS_EFFECT_PAD_COLUMNS_COUNT;
-  effect_pad->table = gtk_table_new(1, AGS_EFFECT_PAD_COLUMNS_COUNT,
-				    TRUE);
+  effect_pad->table = (GtkTable *) gtk_table_new(1, AGS_EFFECT_PAD_COLUMNS_COUNT,
+						 TRUE);
   gtk_box_pack_start(GTK_BOX(effect_pad),
 		     GTK_WIDGET(effect_pad->table),
 		     FALSE, TRUE,
@@ -297,7 +297,7 @@ ags_effect_pad_set_property(GObject *gobject,
       effect_pad->channel = channel;
 
       effect_line =
-	effect_line_start = gtk_container_get_children(effect_pad->table);
+	effect_line_start = gtk_container_get_children((GtkContainer *) effect_pad->table);
 
       while(effect_line != NULL){
 	g_object_set(G_OBJECT(effect_line->data),
@@ -462,7 +462,7 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
       }
     }
   }else{
-    list = gtk_container_get_children(effect_pad->table);
+    list = gtk_container_get_children((GtkContainer *) effect_pad->table);
     list = g_list_nth(list,
 		      audio_channels);
 
@@ -531,7 +531,7 @@ ags_effect_pad_real_find_port(AgsEffectPad *effect_pad)
   /* find output ports */
   if(effect_pad->table != NULL){
     effect_line_start = 
-      effect_line = gtk_container_get_children(effect_pad->table);
+      effect_line = gtk_container_get_children((GtkContainer *) effect_pad->table);
 
     while(effect_line != NULL){
       tmp_port = ags_effect_line_find_port(AGS_EFFECT_LINE(effect_line->data));

@@ -21,6 +21,8 @@
 
 #include <ags/X/ags_automation_editor.h>
 
+#include <math.h>
+
 void
 ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
 						AgsMachine *machine,
@@ -37,8 +39,8 @@ ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAuto
 {
   AgsAutomationEditor *automation_editor;
 
-  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
   
   if(toggle_button == automation_toolbar->selected_edit_mode){
     if(!gtk_toggle_button_get_active(toggle_button)){
@@ -52,9 +54,9 @@ ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAuto
     gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
   }
 
-  gtk_widget_queue_draw(automation_editor->current_audio_automation_edit);
-  gtk_widget_queue_draw(automation_editor->current_output_automation_edit);
-  gtk_widget_queue_draw(automation_editor->current_input_automation_edit);
+  gtk_widget_queue_draw((GtkWidget *) automation_editor->current_audio_automation_edit);
+  gtk_widget_queue_draw((GtkWidget *) automation_editor->current_output_automation_edit);
+  gtk_widget_queue_draw((GtkWidget *) automation_editor->current_input_automation_edit);
 }
 
 void
@@ -110,7 +112,8 @@ ags_automation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsAutomationTool
 {
   AgsAutomationEditor *automation_editor;
 
-  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar), AGS_TYPE_AUTOMATION_EDITOR));
+  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar),
+								    AGS_TYPE_AUTOMATION_EDITOR));
 
   if(widget == (GtkWidget *) automation_toolbar->copy){
     ags_automation_editor_copy(automation_editor);
@@ -124,7 +127,8 @@ ags_automation_toolbar_paste_callback(GtkWidget *widget, AgsAutomationToolbar *a
 {
   AgsAutomationEditor *automation_editor;
 
-  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar), AGS_TYPE_AUTOMATION_EDITOR));
+  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar),
+								    AGS_TYPE_AUTOMATION_EDITOR));
 
   ags_automation_editor_paste(automation_editor);
 }
@@ -153,7 +157,7 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   /* refresh automation edit */
   if(automation_editor->current_audio_automation_edit != NULL){
     AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally(automation_editor->current_audio_automation_edit,
+    ags_automation_edit_reset_horizontally((AgsAutomationEdit *) automation_editor->current_audio_automation_edit,
 					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
 					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
     AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
@@ -161,7 +165,7 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   
   if(automation_editor->current_output_automation_edit != NULL){
     AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally(automation_editor->current_output_automation_edit,
+    ags_automation_edit_reset_horizontally((AgsAutomationEdit *) automation_editor->current_output_automation_edit,
 					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
 					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
     AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
@@ -169,7 +173,7 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
 
   if(automation_editor->current_input_automation_edit != NULL){
     AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally(automation_editor->current_input_automation_edit,
+    ags_automation_edit_reset_horizontally((AgsAutomationEdit *) automation_editor->current_input_automation_edit,
 					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
 					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
     AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);

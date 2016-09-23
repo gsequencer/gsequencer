@@ -457,7 +457,7 @@ ags_midiin_set_property(GObject *gobject,
 	midiin->application_mutex = NULL;
       }
 
-      midiin->application_context = application_context;
+      midiin->application_context = (GObject *) application_context;
     }
     break;
   case PROP_APPLICATION_MUTEX:
@@ -699,7 +699,7 @@ ags_midiin_set_application_context(AgsSequencer *sequencer,
   AgsMidiin *midiin;
 
   midiin = AGS_MIDIIN(sequencer);
-  midiin->application_context = application_context;
+  midiin->application_context = (GObject *) application_context;
 }
 
 AgsApplicationContext*
@@ -709,7 +709,7 @@ ags_midiin_get_application_context(AgsSequencer *sequencer)
 
   midiin = AGS_MIDIIN(sequencer);
 
-  return(midiin->application_context);
+  return((AgsApplicationContext *) midiin->application_context);
 }
 
 void

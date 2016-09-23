@@ -254,13 +254,13 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   ladspa_bridge->effect = NULL;
   ladspa_bridge->effect_index = 0;
 
-  AGS_MACHINE(ladspa_bridge)->bridge = ags_effect_bridge_new(audio);
-  gtk_container_add(gtk_bin_get_child(ladspa_bridge),
+  AGS_MACHINE(ladspa_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  gtk_container_add((GtkContainer *) gtk_bin_get_child(ladspa_bridge),
 		    (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_box_pack_start(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge),
-		     table,
+  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge),
+		     (GtkWidget *) table,
 		     FALSE, FALSE,
 		     0);
 
@@ -270,7 +270,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 												AGS_EFFECT_BULK_HIDE_ENTRIES |
 												AGS_EFFECT_BULK_SHOW_LABELS);
   gtk_table_attach(table,
-		   AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
@@ -307,7 +307,7 @@ ags_ladspa_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = gtk_widget_get_toplevel(ladspa_bridge);
+	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ladspa_bridge);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s\0",
@@ -337,7 +337,7 @@ ags_ladspa_bridge_set_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      unsigned long *effect_index;
+      unsigned long effect_index;
       
       effect_index = g_value_get_ulong(value);
 
@@ -490,7 +490,7 @@ ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladsp
 
   /* block update bulk port */
   list_start = 
-    list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->table);
+    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -535,9 +535,9 @@ ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladsp
 	    if(AGS_IS_DIAL(child_widget)){
 	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw(child_widget);
+	      ags_dial_draw((AgsDial *) child_widget);
 	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active(child_widget,
+	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
 	    }
 
@@ -607,7 +607,7 @@ ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
   g_message("%s %s\0",ladspa_bridge->filename, ladspa_bridge->effect);
 #endif
   
-  ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
+  ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 			     NULL,
 			     ladspa_bridge->filename,
 			     ladspa_bridge->effect);

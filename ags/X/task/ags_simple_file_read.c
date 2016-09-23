@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <gdk/gdk.h>
+
 void ags_simple_file_read_class_init(AgsSimpleFileReadClass *simple_file_read);
 void ags_simple_file_read_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_simple_file_read_init(AgsSimpleFileRead *simple_file_read);

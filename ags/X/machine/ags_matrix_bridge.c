@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_matrix_bridge.h>
@@ -135,23 +136,24 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
   GtkTable *table;
 
   frame = (GtkFrame *) gtk_frame_new("input bridge\0");
-  gtk_box_pack_start(AGS_EFFECT_BRIDGE(matrix_bridge),
-		     frame,
+  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(matrix_bridge),
+		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
   expander = gtk_expander_new("show/hide\0");
-  gtk_container_add(frame,
-		    expander);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) expander);
 
-  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_container_add(expander,
-		    table);
+  table = (GtkTable *) gtk_table_new(1, 2,
+				     FALSE);
+  gtk_container_add((GtkContainer *) expander,
+		    (GtkWidget *)  table);
 
   AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input = (GtkWidget *) ags_matrix_bulk_input_new(NULL,
 											 AGS_TYPE_INPUT);
   gtk_table_attach(table,
-		   AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(matrix_bridge)->bulk_input,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,

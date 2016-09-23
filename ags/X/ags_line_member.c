@@ -420,15 +420,15 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->port_flags = 0;
 
   line_member->widget_type = AGS_TYPE_DIAL;
-  dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
-				       "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
-				       NULL);
-  gtk_widget_set_size_request(dial,
+  dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
+				  "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
+				  NULL);
+  gtk_widget_set_size_request((GtkWidget *) dial,
 			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
 			      2 * (dial->radius + dial->outline_strength + 1));
   
   gtk_container_add(GTK_CONTAINER(line_member),
-		    dial);
+		    (GtkWidget *) dial);
 
   line_member->widget_label = NULL;
 
@@ -496,7 +496,7 @@ ags_line_member_set_property(GObject *gobject,
       }else if(AGS_IS_DIAL(child)){
 	adjustment = AGS_DIAL(child)->adjustment;
       }else if(GTK_IS_TOGGLE_BUTTON(child)){
-	active = gtk_toggle_button_get_active(child);
+	active = gtk_toggle_button_get_active((GtkToggleButton *) child);
       }
       
       if(adjustment != NULL){
@@ -516,9 +516,9 @@ ags_line_member_set_property(GObject *gobject,
       if(AGS_IS_DIAL(new_child)){
 	AgsDial *dial;
 
-	dial = new_child;
+	dial = (AgsDial *) new_child;
 	
-	gtk_widget_set_size_request(dial,
+	gtk_widget_set_size_request((GtkWidget *) dial,
 				    2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
 				    2 * (dial->radius + dial->outline_strength + 1));
       }
@@ -548,9 +548,9 @@ ags_line_member_set_property(GObject *gobject,
 
 	gtk_adjustment_set_value(AGS_DIAL(new_child)->adjustment,
 				 adjustment->value);
-	ags_dial_draw(new_child);
+	ags_dial_draw((AgsDial *) new_child);
       }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
-	gtk_toggle_button_set_active(new_child,
+	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
       }else{
 	g_warning("ags_line_member_set_property() - unknown child type %s\0", g_type_name(widget_type));
@@ -607,7 +607,7 @@ ags_line_member_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = gtk_widget_get_toplevel(line_member);
+	  window = (AgsWindow *) gtk_widget_get_toplevel(line_member);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s\0",
@@ -966,7 +966,7 @@ ags_line_member_set_label(AgsLineMember *line_member,
 		 "label\0", label,
 		 NULL);
   }else{
-    gtk_frame_set_label_widget(line_member,
+    gtk_frame_set_label_widget((GtkFrame *) line_member,
 			       g_object_new(GTK_TYPE_LABEL,
 					    "wrap\0", TRUE,
 					    "wrap-mode\0", PANGO_WRAP_CHAR,
@@ -1027,28 +1027,28 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
 	  success = FALSE;
 	    
-	  if(AGS_IS_DIAL(gtk_bin_get_child(line_member))){
+	  if(AGS_IS_DIAL(gtk_bin_get_child((GtkBin *) line_member))){
 	    AgsDial *dial;
 
-	    dial = gtk_bin_get_child(line_member);
+	    dial = (AgsDial *) gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = dial->adjustment->upper;
 	    lower = dial->adjustment->lower;
 
 	    success = TRUE;
-	  }else if(GTK_IS_RANGE(gtk_bin_get_child(line_member))){
+	  }else if(GTK_IS_RANGE(gtk_bin_get_child((GtkBin *) line_member))){
 	    GtkRange *range;
 
-	    range = gtk_bin_get_child(line_member);
+	    range = (GtkRange *) gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = range->adjustment->upper;
 	    lower = range->adjustment->lower;
 
 	    success = TRUE;
-	  }else if(GTK_IS_SPIN_BUTTON(gtk_bin_get_child(line_member))){
+	  }else if(GTK_IS_SPIN_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
 	    GtkSpinButton *spin_button;
 
-	    spin_button = gtk_bin_get_child(line_member);
+	    spin_button = (GtkSpinButton *) gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = spin_button->adjustment->upper;
 	    lower = spin_button->adjustment->lower;
@@ -1097,28 +1097,28 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
 	  success = FALSE;
 	    
-	  if(AGS_IS_DIAL(gtk_bin_get_child(line_member))){
+	  if(AGS_IS_DIAL(gtk_bin_get_child((GtkBin *) line_member))){
 	    AgsDial *dial;
 
-	    dial = gtk_bin_get_child(line_member);
+	    dial = gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = dial->adjustment->upper;
 	    lower = dial->adjustment->lower;
 
 	    success = TRUE;
-	  }else if(GTK_IS_RANGE(gtk_bin_get_child(line_member))){
+	  }else if(GTK_IS_RANGE(gtk_bin_get_child((GtkBin *) line_member))){
 	    GtkRange *range;
 
-	    range = gtk_bin_get_child(line_member);
+	    range = gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = range->adjustment->upper;
 	    lower = range->adjustment->lower;
 
 	    success = TRUE;
-	  }else if(GTK_IS_SPIN_BUTTON(gtk_bin_get_child(line_member))){
+	  }else if(GTK_IS_SPIN_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
 	    GtkSpinButton *spin_button;
 
-	    spin_button = gtk_bin_get_child(line_member);
+	    spin_button = gtk_bin_get_child((GtkBin *) line_member);
 
 	    upper = spin_button->adjustment->upper;
 	    lower = spin_button->adjustment->lower;
@@ -1194,7 +1194,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
     AgsWindow *window;
 
     AgsMutexManager *mutex_manager;
-    AgsThread *audio_loop;
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsTask *task;
 
@@ -1202,10 +1202,10 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
     pthread_mutex_t *application_mutex;
 
-    window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line_member,
-						    AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) line_member,
+						   AGS_TYPE_WINDOW);
   
-    application_context = window->application_context;
+    application_context = (AgsApplicationContext *) window->application_context;
 
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -1213,12 +1213,12 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
     /* get audio loop */
     pthread_mutex_lock(application_mutex);
 
-    audio_loop = application_context->main_loop;
+    main_loop = (AgsThread *) application_context->main_loop;
 
     pthread_mutex_unlock(application_mutex);
 
     /* get task and soundcard thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 							 AGS_TYPE_TASK_THREAD);
 
     task = (AgsTask *) g_object_new(line_member->task_type,
@@ -1327,7 +1327,7 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     if(parent != NULL){
       channel = AGS_EFFECT_LINE(parent)->channel;
     }else{
-      return;
+      return(NULL);
     }
   }    
   

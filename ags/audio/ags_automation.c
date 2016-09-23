@@ -1741,8 +1741,10 @@ gchar**
 ags_automation_get_specifier_unique(GList *automation)
 {
   gchar **specifier, **current;
+
   guint length, i;
-  
+  gboolean contains_control_name;
+    
   specifier = (gchar **) malloc(sizeof(gchar*));
   specifier[0] = NULL;
   length = 1;
@@ -1751,12 +1753,14 @@ ags_automation_get_specifier_unique(GList *automation)
     current = specifier;
     
 #ifdef HAVE_GLIB_2_44
-    if(!g_strv_contains(specifier,
-			AGS_AUTOMATION(automation->data)->control_name)){
+    contains_control_name = g_strv_contains(specifier,
+					    AGS_AUTOMATION(automation->data)->control_name);
 #else
-    if(!ags_strv_contains(specifier,
-			  AGS_AUTOMATION(automation->data)->control_name)){
+    contains_control_name = ags_strv_contains(specifier,
+					      AGS_AUTOMATION(automation->data)->control_name);
 #endif
+    
+    if(!contains_control_name){
       specifier = (gchar **) realloc(specifier,
 				     (length + 1) * sizeof(gchar *));
       specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;
@@ -1764,14 +1768,14 @@ ags_automation_get_specifier_unique(GList *automation)
 
       length++;
     }
-
+      
     automation = automation->next;
   }
-
+    
   return(specifier);
 }
 
-/**
+  /**
  * ags_automation_find_specifier:
  * @automation: a #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
@@ -1833,8 +1837,15 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 
 /**
  * ags_automation_get_value:
+ * @automation: the #AgsAutomation
+ * @x:
+ * @x_end:
+ * @use_prev_on_failure:
+ * @value:
  *
+ * Get automation value.
  *
+ * Returns: the x_offset
  *
  * Since: 0.7.32
  */
@@ -1850,7 +1861,7 @@ ags_automation_get_value(AgsAutomation *automation,
 
   guint ret_x;
   
-  port = automation->port;
+  port = (AgsPort *) automation->port;
   acceleration = automation->acceleration;
 
   ret_x = 0;

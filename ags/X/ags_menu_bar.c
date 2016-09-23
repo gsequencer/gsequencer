@@ -50,8 +50,6 @@ void ags_menu_bar_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_menu_bar_connect(AgsConnectable *connectable);
 void ags_menu_bar_disconnect(AgsConnectable *connectable);
-void ags_menu_bar_destroy(GtkObject *object);
-void ags_menu_bar_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_menu_bar
@@ -233,12 +231,6 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   menu_bar = AGS_MENU_BAR(connectable);
 
   /* File */
-  g_signal_connect((GObject *) menu_bar, "destroy\0",
-		   G_CALLBACK(ags_menu_bar_destroy_callback), (gpointer) menu_bar);
-
-  g_signal_connect((GObject *) menu_bar, "show\0",
-		   G_CALLBACK(ags_menu_bar_show_callback), (gpointer) menu_bar);
-
   list0 = GTK_MENU_SHELL(menu_bar)->children;
 
   list1_start = 
@@ -372,19 +364,6 @@ ags_menu_bar_disconnect(AgsConnectable *connectable)
 {
   /* empty */
 }
-
-void
-ags_menu_bar_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
-void
-ags_menu_bar_show(GtkWidget *widget)
-{
-  gtk_widget_show_all(widget);
-}
-
 
 GtkMenu*
 ags_zoom_menu_new()
@@ -601,9 +580,9 @@ ags_ladspa_bridge_menu_new()
   while(list != NULL){    
 	
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
-    g_object_set_data(item,
+    g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
-    g_object_set_data(item,
+    g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
     gtk_menu_shell_append((GtkMenuShell *) menu,
 			  (GtkWidget *) item);
@@ -633,9 +612,9 @@ ags_dssi_bridge_menu_new()
   while(list != NULL){    
 	
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
-    g_object_set_data(item,
+    g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
-    g_object_set_data(item,
+    g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
     gtk_menu_shell_append((GtkMenuShell *) menu,
 			  (GtkWidget *) item);
@@ -665,9 +644,9 @@ ags_lv2_bridge_menu_new()
   while(list != NULL){    
 	
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
-    g_object_set_data(item,
+    g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
-    g_object_set_data(item,
+    g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
     g_message("%s %s\0", AGS_BASE_PLUGIN(list->data)->filename, AGS_BASE_PLUGIN(list->data)->effect);
     

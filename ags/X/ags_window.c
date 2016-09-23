@@ -220,7 +220,7 @@ ags_window_init(AgsWindow *window)
 
   window->dialog = NULL;
 
-  window->automation_window = ags_automation_window_new(window);
+  window->automation_window = ags_automation_window_new((GtkWidget *) window);
 
   window->export_window = ags_export_window_new();
   window->import_window = NULL;
@@ -242,7 +242,7 @@ ags_window_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      AgsSoundcard *soundcard;
+      GObject *soundcard;
 
       soundcard = g_value_get_object(value);
 
@@ -564,15 +564,12 @@ ags_window_show_error(AgsWindow *window,
 {
   GtkDialog *dialog;
 
-  dialog = gtk_message_dialog_new(window,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_ERROR,
-				  GTK_BUTTONS_OK,
-				  "%s\0", message);
-  gtk_widget_show_all(dialog);
-
-  g_signal_connect(dialog, "response\0",
-		   G_CALLBACK(gtk_main_quit), NULL);
+  dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) window,
+						GTK_DIALOG_MODAL,
+						GTK_MESSAGE_ERROR,
+						GTK_BUTTONS_OK,
+						"%s\0", message);
+  gtk_widget_show_all((GtkWidget *) dialog);
 }
 
 /**

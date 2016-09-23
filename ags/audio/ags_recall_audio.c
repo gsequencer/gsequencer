@@ -400,7 +400,7 @@ ags_recall_audio_unload_automation(AgsRecall *recall)
   automation_port = recall->automation_port;
   
   while(automation_port != NULL){
-    if((current = ags_automation_find_port((AgsAutomation *) audio->automation,
+    if((current = ags_automation_find_port(audio->automation,
 					   (GObject *) automation_port->data)) != NULL){
       ags_audio_remove_automation(audio,
 				  (GObject *) current);

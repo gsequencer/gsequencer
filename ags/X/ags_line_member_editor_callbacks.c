@@ -63,7 +63,7 @@ void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
-  gtk_widget_show_all(line_member_editor->plugin_browser);
+  gtk_widget_show_all((GtkWidget *) line_member_editor->plugin_browser);
 }
 
 void
@@ -121,19 +121,19 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
-      machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
+      machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								    AGS_TYPE_MACHINE_EDITOR);
-      line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
+      line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							      AGS_TYPE_LINE_EDITOR);
 
       machine = machine_editor->machine;
 
-      window = gtk_widget_get_toplevel(machine);
+      window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
       g_object_get(window,
 		   "application-context\0" , &application_context,
 		   NULL);
 
-      main_loop = application_context->main_loop;
+      main_loop = (AgsThread *) application_context->main_loop;
 
       task_thread = ags_thread_find_type(main_loop,
 					 AGS_TYPE_TASK_THREAD);
@@ -158,10 +158,10 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	
 	if(is_output){
 	  pad_start = 
-	    pad = gtk_container_get_children(machine_editor->machine->output);
+	    pad = gtk_container_get_children((GtkContainer *) machine_editor->machine->output);
 	}else{
 	  pad_start = 
-	    pad = gtk_container_get_children(machine_editor->machine->input);
+	    pad = gtk_container_get_children((GtkContainer *) machine_editor->machine->input);
 	}
 
 	pad = g_list_nth(pad,
@@ -169,7 +169,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	if(pad != NULL){
 	  list_start =
-	    list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+	    list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
 
 	  while(list != NULL){
 	    if(AGS_LINE(list->data)->channel == line_editor->channel){
@@ -208,24 +208,24 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(line->channel,
 					    filename,
 					    effect);
-	    ags_task_thread_append_task(task_thread,
-					add_effect);
+	    ags_task_thread_append_task((AgsTaskThread *) task_thread,
+					(AgsTask *) add_effect);
 	  }
 	}
       }else{
 	AgsEffectBridge *effect_bridge;
 	AgsEffectLine *effect_line;
 	
-	effect_bridge = machine->bridge;
+	effect_bridge = (AgsEffectBridge *) machine->bridge;
 	effect_line = NULL;
 	
 	/* find effect pad and effect line */
 	if(is_output){
 	  pad_start = 
-	    pad = gtk_container_get_children(effect_bridge->output);
+	    pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
 	}else{
 	  pad_start = 
-	    pad = gtk_container_get_children(effect_bridge->input);
+	    pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
 	}
 
 	pad = g_list_nth(pad,
@@ -233,7 +233,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
 	if(pad != NULL){
 	  list_start =
-	    list = gtk_container_get_children(AGS_EFFECT_PAD(pad->data)->table);
+	    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->table);
 
 	  while(list != NULL){
 	    if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){
@@ -272,8 +272,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(effect_line->channel,
 					    filename,
 					    effect);
-	    ags_task_thread_append_task(task_thread,
-					add_effect);
+	    ags_task_thread_append_task((AgsTaskThread *) task_thread,
+					(AgsTask *) add_effect);
 	  }
 	}
       }
@@ -309,9 +309,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     return;
   }
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								AGS_TYPE_MACHINE_EDITOR);
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
+  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
   line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
@@ -338,10 +338,10 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     if(AGS_IS_OUTPUT(line_editor->channel)){
       pad_start = 
-	pad = gtk_container_get_children(machine->output);
+	pad = gtk_container_get_children((GtkContainer *) machine->output);
     }else{
       pad_start = 
-	pad = gtk_container_get_children(machine->input);
+	pad = gtk_container_get_children((GtkContainer *) machine->input);
     }
 
     pad = g_list_nth(pad,
@@ -349,7 +349,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     if(pad != NULL){
       list_start =
-	list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+	list = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
 
       while(list != NULL){
 	if(AGS_LINE(list->data)->channel == line_editor->channel){
@@ -371,7 +371,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     if(line != NULL){
       for(nth = 0; line_member != NULL; nth++){
 
-	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
+	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
 	  ags_line_member_editor_plugin_browser_response_destroy_entry();
@@ -393,10 +393,10 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     /* retrieve effect line and effect pad */
     if(is_output){
       pad_start = 
-	pad = gtk_container_get_children(effect_bridge->output);
+	pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
     }else{
       pad_start = 
-	pad = gtk_container_get_children(effect_bridge->input);
+	pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
     }
 
     pad = g_list_nth(pad,
@@ -404,7 +404,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     if(pad != NULL){
       list_start =
-	list = gtk_container_get_children(AGS_EFFECT_PAD(pad->data)->table);
+	list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(pad->data)->table);
 
       while(list != NULL){
 	if(AGS_EFFECT_LINE(list->data)->channel == line_editor->channel){

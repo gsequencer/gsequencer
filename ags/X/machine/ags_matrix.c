@@ -426,7 +426,7 @@ ags_matrix_set_audio_channels(AgsAudio *audio,
 			      guint audio_channels, guint audio_channels_old,
 			      gpointer data)
 {
-  printf("AgsMatrix only pads can be adjusted\n\0");
+  g_message("AgsMatrix only pads can be adjusted\0");
   //  _ags_audio_set_audio_channels(audio, audio_channels);
 }
 
@@ -556,7 +556,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       source = ags_channel_nth(audio->output, pads_old);
 
       if(source != NULL){
-	AgsSoundcard *soundcard;
+	GObject *soundcard;
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
@@ -582,7 +582,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	pthread_mutex_unlock(source_mutex);
 
 	/* instantiate template audio signal */
-	audio_signal = ags_audio_signal_new((GObject *) soundcard,
+	audio_signal = ags_audio_signal_new(soundcard,
 					    (GObject *) recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -631,8 +631,8 @@ ags_matrix_map_recall(AgsMachine *machine)
     return;
   }
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   matrix = AGS_MATRIX(machine);
   audio = machine->audio;
@@ -676,11 +676,11 @@ ags_matrix_map_recall(AgsMachine *machine)
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(audio->soundcard),
+		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
 		      TRUE);
 
     g_value_init(&value, G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value, gtk_toggle_button_get_active(window->navigation->loop));
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
 			&value);
   }
@@ -722,7 +722,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 
       copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
 	  
-      ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
+      ags_portlet_set_port(AGS_PORTLET(pattern),
+			   (GObject *) copy_pattern_channel->pattern);
 	  
       channel = channel->next;
     }

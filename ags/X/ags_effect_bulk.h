@@ -64,7 +64,7 @@ struct _AgsEffectBulk
   gchar *version;
   gchar *build_id;
 
-  GType *channel_type;
+  GType channel_type;
   AgsAudio *audio;
 
   GtkButton *add;
@@ -82,6 +82,7 @@ struct _AgsEffectBulkClass
   GtkVBoxClass vbox;
 
   GList* (*add_effect)(AgsEffectBulk *effect_bulk,
+		       GList *control_type_name,
 		       gchar *filename,
 		       gchar *effect);
   void (*remove_effect)(AgsEffectBulk *effect_bulk,

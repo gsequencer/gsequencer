@@ -1168,7 +1168,7 @@ ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer,
 				guint *buffer_length)
 {
   AgsJackMidiin *jack_midiin;
-  signed short *buffer;
+  unsigned char *buffer;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 

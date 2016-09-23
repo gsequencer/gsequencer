@@ -176,7 +176,7 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
 
-  panel_input_line->soundcard_connection = gtk_label_new("(null)\0");
+  panel_input_line->soundcard_connection = (GtkLabel *) gtk_label_new("(null)\0");
   ags_expander_add(AGS_LINE(panel_input_line)->expander,
 		   GTK_WIDGET(panel_input_line->soundcard_connection),
 		   0, 0,

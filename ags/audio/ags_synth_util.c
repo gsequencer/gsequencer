@@ -1007,7 +1007,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_sawtooth_s16((signed char *) buffer,
+      ags_synth_util_sawtooth_s16((signed short *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1015,7 +1015,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_sawtooth_s24((signed char *) buffer,
+      ags_synth_util_sawtooth_s24((signed long *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1023,7 +1023,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_sawtooth_s32((signed char *) buffer,
+      ags_synth_util_sawtooth_s32((signed long long *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1039,7 +1039,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
     {
-      ags_synth_util_sawtooth_float((signed char *) buffer,
+      ags_synth_util_sawtooth_float((float *) buffer,
 				    freq, phase, volume,
 				    samplerate,
 				    offset, n_frames);
@@ -1047,7 +1047,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
     {
-      ags_synth_util_sawtooth_double((signed char *) buffer,
+      ags_synth_util_sawtooth_double((double *) buffer,
 				     freq, phase, volume,
 				     samplerate,
 				     offset, n_frames);

@@ -52,8 +52,8 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
-  effect = GTK_COMBO_BOX(list->next->next->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   gtk_list_store_clear(GTK_LIST_STORE(effect));
 
@@ -69,7 +69,7 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
     base_plugin = base_plugin->next;
   }
   
-  gtk_combo_box_set_active(effect,
+  gtk_combo_box_set_active((GtkComboBox *) effect,
   			   0);
 }
 
@@ -97,8 +97,8 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
 
-  filename = GTK_COMBO_BOX(list->next->data);
-  effect = GTK_COMBO_BOX(list->next->next->next->data);
+  filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   g_list_free(list_start);
 
@@ -112,7 +112,7 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
-  plugin_index = (unsigned long) gtk_combo_box_get_active(effect);
+  plugin_index = (unsigned long) gtk_combo_box_get_active((GtkComboBox *) effect);
 
   if(plugin_index != -1 &&
      plugin_so){
@@ -195,7 +195,7 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	y++;
       }
 
-      gtk_widget_show_all(table);
+      gtk_widget_show_all((GtkWidget *) table);
     }
   }else{
     /* update ui - empty */

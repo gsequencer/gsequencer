@@ -162,17 +162,17 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   g_signal_connect_after((GObject *) audio_preferences, "parent-set\0",
 			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
 
-  scrolled_window = gtk_scrolled_window_new(NULL,
-					    NULL);
-  gtk_box_pack_start(audio_preferences,
-		     scrolled_window,
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
+								  NULL);
+  gtk_box_pack_start((GtkBox *) audio_preferences,
+		     (GtkWidget *) scrolled_window,
 		     TRUE, TRUE,
 		     0);
   
-  audio_preferences->soundcard_editor = gtk_vbox_new(FALSE,
-						     0);
+  audio_preferences->soundcard_editor = (GtkVBox *) gtk_vbox_new(FALSE,
+								 0);
   gtk_scrolled_window_add_with_viewport(scrolled_window,
-					audio_preferences->soundcard_editor);
+					(GtkWidget *) audio_preferences->soundcard_editor);
 
   /*  */
   audio_preferences->connect_jack = NULL;
@@ -198,7 +198,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     audio_preferences->stop_jack = NULL;
   }else{
 
-    label = gtk_label_new("JACK driver\0");
+    label = (GtkLabel *) gtk_label_new("JACK driver\0");
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
@@ -214,7 +214,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
   
-    label = gtk_label_new("JACK server\0");
+    label = (GtkLabel *) gtk_label_new("JACK server\0");
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
@@ -243,12 +243,12 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		       0);
   
     /* set default insensitive */
-    gtk_widget_set_sensitive(audio_preferences->jack_driver,
+    gtk_widget_set_sensitive((GtkWidget *) audio_preferences->jack_driver,
 			     FALSE);
   
-    gtk_widget_set_sensitive(audio_preferences->start_jack,
+    gtk_widget_set_sensitive((GtkWidget *) audio_preferences->start_jack,
 			     FALSE);
-    gtk_widget_set_sensitive(audio_preferences->stop_jack,
+    gtk_widget_set_sensitive((GtkWidget *) audio_preferences->stop_jack,
 			     FALSE);
   }
 
@@ -319,7 +319,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
 
   list =
-    list_start = gtk_container_get_children(audio_preferences->soundcard_editor);
+    list_start = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
 
   while(list != NULL){
     ags_applicable_apply(AGS_APPLICABLE(list->data));
@@ -349,18 +349,18 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
+  window = (AgsWindow *) preferences->window;
   
-  application_context = window->application_context;
-  soundcard_thread = ags_thread_find_type(application_context->main_loop,
+  application_context = (AgsApplicationContext *) window->application_context;
+  soundcard_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   /* clear */
   list =
-    list_start = gtk_container_get_children(audio_preferences->soundcard_editor);
+    list_start = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
 
   while(list != NULL){
-    gtk_widget_destroy(AGS_APPLICABLE(list->data));
+    gtk_widget_destroy(GTK_WIDGET(list->data));
 
     list = list->next;
   }
@@ -374,22 +374,22 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
     soundcard_editor = ags_soundcard_editor_new();    
 
     soundcard_editor->soundcard = list->data;
-    soundcard_editor->soundcard_thread = ags_soundcard_thread_find_soundcard(soundcard_thread,
-									     list->data);
-    gtk_box_pack_start(audio_preferences->soundcard_editor,
+    soundcard_editor->soundcard_thread = (GObject *) ags_soundcard_thread_find_soundcard((AgsSoundcardThread *) soundcard_thread,
+											 list->data);
+    gtk_box_pack_start((GtkBox *) audio_preferences->soundcard_editor,
 		       soundcard_editor,
 		       FALSE, FALSE,
 		       0);
     
     ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
-    ags_connectable_connect(soundcard_editor);
+    ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
     g_signal_connect(soundcard_editor->remove, "clicked\0",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
     
     list = list->next;
   }
 
-  gtk_widget_show_all(audio_preferences->soundcard_editor);
+  gtk_widget_show_all((GtkWidget *) audio_preferences->soundcard_editor);
 }
 
 void

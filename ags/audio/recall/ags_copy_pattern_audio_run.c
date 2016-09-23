@@ -245,7 +245,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
       AgsDelayAudioRun *delay_audio_run;
       gboolean is_template;
 
-      delay_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
+      delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
 
       if(copy_pattern_audio_run->delay_audio_run == delay_audio_run)
 	return;

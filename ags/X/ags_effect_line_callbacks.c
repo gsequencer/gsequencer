@@ -94,21 +94,21 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
   
   gdk_threads_enter();
 
-  machine = gtk_widget_get_ancestor(effect_line,
-				    AGS_TYPE_MACHINE);
-  machine_editor = machine->properties;
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
+						   AGS_TYPE_MACHINE);
+  machine_editor = (AgsMachineEditor *) machine->properties;
 
   control_type_name = NULL;  
 
   if(machine_editor != NULL){
     pad_editor_start = 
-      pad_editor = gtk_container_get_children(machine_editor->input_editor->child);
+      pad_editor = gtk_container_get_children((GtkContainer *) machine_editor->input_editor->child);
     pad_editor = g_list_nth(pad_editor,
 			    channel->pad);
     
     if(pad_editor != NULL){
       line_editor_start =
-	line_editor = gtk_container_get_children(AGS_PAD_EDITOR(pad_editor->data)->line_editor);
+	line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
       line_editor = g_list_nth(line_editor,
 			       channel->audio_channel);
   
@@ -131,13 +131,13 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
 	
 	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
 	}else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children((GtkContainer *) AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
 	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
 	}else{
 	  g_message("ags_effect_line_callbacks.c unsupported plugin browser\0");
 	}

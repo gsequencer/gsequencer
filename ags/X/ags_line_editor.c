@@ -40,7 +40,6 @@ void ags_line_editor_disconnect(AgsConnectable *connectable);
 void ags_line_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_line_editor_apply(AgsApplicable *applicable);
 void ags_line_editor_reset(AgsApplicable *applicable);
-void ags_line_editor_destroy(GtkObject *object);
 void ags_line_editor_show(GtkWidget *widget);
 
 /**
@@ -213,9 +212,6 @@ ags_line_editor_connect(AgsConnectable *connectable)
 
   line_editor = AGS_LINE_EDITOR(connectable);
 
-  g_signal_connect((GObject *) line_editor, "destroy\0",
-		   G_CALLBACK(ags_line_editor_destroy_callback), (gpointer) line_editor);
-
   g_signal_connect((GObject *) line_editor, "show\0",
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
 
@@ -267,11 +263,6 @@ ags_line_editor_reset(AgsApplicable *applicable)
   if(line_editor->member_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->member_editor));
   }
-}
-
-void
-ags_line_editor_destroy(GtkObject *object)
-{
 }
 
 void

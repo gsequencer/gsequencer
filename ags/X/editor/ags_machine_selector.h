@@ -68,12 +68,12 @@ struct _AgsMachineSelectorClass
 
 GType ags_machine_selector_get_type(void);
 
-void ags_machine_selector_popup_add_index(AgsMachineSelector *machine_selector);
-void ags_machine_selector_popup_remove_index(AgsMachineSelector *machine_selector,
-					     guint nth);
+void ags_machine_selector_add_index(AgsMachineSelector *machine_selector);
+void ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
+				       guint nth);
 
-void ags_machine_selector_popup_link_index(AgsMachineSelector *machine_selector,
-					   AgsMachine *machine);
+void ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
+				     AgsMachine *machine);
 
 void ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
 

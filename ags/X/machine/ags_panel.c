@@ -443,7 +443,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 				    AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
 				    AGS_AUDIO_CONNECTION_SCOPE_LINE);
 	
-	audio_connection->audio = audio;
+	audio_connection->audio = (GObject *) audio;
 	audio_connection->channel_type = AGS_TYPE_INPUT;
 
 	audio_connection->pad = i;
@@ -453,9 +453,9 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 	audio_connection->mapped_line = audio_connection->line;
 	
 	ags_audio_add_audio_connection(audio,
-				       audio_connection);
+				       (GObject *) audio_connection);
 	ags_connection_manager_add_connection(connection_manager,
-					      audio_connection);
+					      (AgsConnection *) audio_connection);
       }
     }
   }else{
@@ -475,9 +475,9 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 	    
 	  if(AGS_IS_SOUNDCARD(data_object)){
 	    ags_audio_remove_audio_connection(audio,
-					      audio_connection);
+					      (GObject *) audio_connection);
 	    ags_connection_manager_remove_connection(connection_manager,
-						     audio_connection);
+						     (AgsConnection *) audio_connection);
 	    break;
 	  }
 
@@ -514,7 +514,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 				      AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
 				      AGS_AUDIO_CONNECTION_SCOPE_LINE);
 
-	  audio_connection->audio = audio;
+	  audio_connection->audio = (GObject *) audio;
 	  audio_connection->channel_type = AGS_TYPE_INPUT;
 
 	  audio_connection->pad = i;
@@ -524,9 +524,9 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 	  audio_connection->mapped_line = audio_connection->line;
 	  
 	  ags_audio_add_audio_connection(audio,
-					 audio_connection);
+					 (GObject *) audio_connection);
 	  ags_connection_manager_add_connection(connection_manager,
-						audio_connection);
+						(AgsConnection *) audio_connection);
 	}
       }
     }else{
@@ -546,9 +546,9 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 	    
 	    if(AGS_IS_SOUNDCARD(data_object)){
 	      ags_audio_remove_audio_connection(audio,
-						audio_connection);
+						(GObject *) audio_connection);
 	      ags_connection_manager_remove_connection(connection_manager,
-						       audio_connection);
+						       (AgsConnection *) audio_connection);
 	      break;
 	    }
 

@@ -69,6 +69,8 @@ struct _AgsSynthClass
 
 GType ags_synth_get_type(void);
 
+void ags_synth_update(AgsSynth *synth);
+
 AgsSynth* ags_synth_new(GObject *soundcard);
 
 #endif /*__AGS_SYNTH_H__*/

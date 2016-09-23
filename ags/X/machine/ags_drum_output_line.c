@@ -243,7 +243,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
-  audio = channel->audio;
+  audio = (AgsAudio *) channel->audio;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);

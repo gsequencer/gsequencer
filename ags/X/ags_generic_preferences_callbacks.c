@@ -40,7 +40,7 @@ ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button
   application_context = (AgsApplicationContext *) AGS_WINDOW(preferences->window)->application_context;
   autosave_thread = (AgsAutosaveThread *) application_context->autosave_thread;
 
-  if(gtk_toggle_button_get_active(check_button)){
+  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button))){
     ags_thread_start((AgsThread *) autosave_thread);
   }else{
     ags_thread_stop((AgsThread *) autosave_thread);

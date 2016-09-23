@@ -322,7 +322,7 @@ ags_drum_input_pad_launch_task(AgsFileLaunch *file_launch, AgsDrumInputPad *drum
 			    "edit\0"),
 		 AGS_FILE_TRUE,
 		 5)){
-    gtk_button_clicked(drum_input_pad->edit);
+    gtk_button_clicked((GtkButton *) drum_input_pad->edit);
   }
 }
 
