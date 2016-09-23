@@ -394,12 +394,12 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
 				    "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				    NULL);
-  gtk_widget_set_size_request(dial,
+  gtk_widget_set_size_request((GtkWidget *) dial,
 			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
 			      2 * (dial->radius + dial->outline_strength + 1));
   
   gtk_container_add(GTK_CONTAINER(bulk_member),
-		    dial);
+		    (GtkWidget *) dial);
 
   bulk_member->widget_label = NULL;
 
@@ -455,9 +455,9 @@ ags_bulk_member_set_property(GObject *gobject,
       if(AGS_IS_DIAL(new_child)){
 	AgsDial *dial;
 	
-	dial = new_child;
+	dial = (AgsDial *) new_child;
 	
-	gtk_widget_set_size_request(dial,
+	gtk_widget_set_size_request((GtkWidget *) dial,
 				    2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
 				    2 * (dial->radius + dial->outline_strength + 1));
       }
@@ -513,7 +513,7 @@ ags_bulk_member_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = gtk_widget_get_toplevel(bulk_member);
+	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) bulk_member);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s\0",
@@ -786,7 +786,7 @@ ags_bulk_member_finalize(GObject *gobject)
 GtkWidget*
 ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
 {
-  return(gtk_bin_get_child(bulk_member));
+  return(gtk_bin_get_child(GTK_BIN(bulk_member)));
 }
 
 /**
@@ -858,13 +858,13 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 		 "label\0", label,
 		 NULL);
   }else{
-    gtk_frame_set_label_widget(bulk_member,
-			       g_object_new(GTK_TYPE_LABEL,
-					    "wrap\0", TRUE,
-					    "wrap-mode\0", PANGO_WRAP_CHAR,
-					    "use-markup\0", TRUE,
-					    "label", g_markup_printf_escaped("<small>%s</small>", label),
-					    NULL));
+    gtk_frame_set_label_widget((GtkFrame *) bulk_member,
+			       (GtkWidget *) g_object_new(GTK_TYPE_LABEL,
+							  "wrap\0", TRUE,
+							  "wrap-mode\0", PANGO_WRAP_CHAR,
+							  "use-markup\0", TRUE,
+							  "label", g_markup_printf_escaped("<small>%s</small>", label),
+							  NULL));
   }
 
 
@@ -925,10 +925,10 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	    success = FALSE;
 	    
-	    if(AGS_IS_DIAL(gtk_bin_get_child(bulk_member))){
+	    if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
 	      AgsDial *dial;
 
-	      dial = gtk_bin_get_child(bulk_member);
+	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
 
 	      upper = dial->adjustment->upper;
 	      lower = dial->adjustment->lower;
@@ -977,10 +977,10 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	    success = FALSE;
 	    
-	    if(AGS_IS_DIAL(gtk_bin_get_child(bulk_member))){
+	    if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
 	      AgsDial *dial;
 
-	      dial = gtk_bin_get_child(bulk_member);
+	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
 
 	      upper = dial->adjustment->upper;
 	      lower = dial->adjustment->lower;
@@ -1050,15 +1050,15 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
     }
   }
   
-  window = gtk_widget_get_ancestor(bulk_member,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) bulk_member,
+						 AGS_TYPE_WINDOW);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
   
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
     ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);
@@ -1155,13 +1155,13 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 
   if(bulk_member == NULL ||
      !AGS_IS_BULK_MEMBER(bulk_member)){
-    return;
+    return(NULL);
   }
 
   specifier = bulk_member->specifier;
 
   if(specifier == NULL){
-    return;
+    return(NULL);
   }
 
   effect_bulk = gtk_widget_get_ancestor(GTK_WIDGET(bulk_member),

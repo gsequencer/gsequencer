@@ -128,17 +128,17 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     guint line;
     gboolean is_audio, is_output, is_input;
   
-    if(automation_edit == automation_editor->current_audio_automation_edit){
+    if(automation_editor->current_audio_automation_edit == (GtkWidget *) automation_edit){
       notebook = NULL;
       channel_type = G_TYPE_NONE;
 
       is_audio = TRUE;
-    }else if(automation_edit == automation_editor->current_output_automation_edit){
+    }else if(automation_editor->current_output_automation_edit == (GtkWidget *) automation_edit){
       notebook = automation_editor->current_output_notebook;
       channel_type = AGS_TYPE_OUTPUT;
       
       is_output = TRUE;
-    }else if(automation_edit == automation_editor->current_input_automation_edit){
+    }else if(automation_editor->current_input_automation_edit == (GtkWidget *) automation_edit){
       notebook = automation_editor->current_input_notebook;
       channel_type = AGS_TYPE_INPUT;
       
@@ -307,7 +307,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
   
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
-  gtk_widget_grab_focus(automation_edit->drawing_area);
+  gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
 
   if(automation_editor->selected_machine != NULL &&
      event->button == 1){
@@ -340,7 +340,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
       automation_edit->edit_x = x;
       automation_edit->edit_y = y;
       
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }else if(automation_toolbar->selected_edit_mode == automation_toolbar->edit){
       automation_edit->flags |= AGS_AUTOMATION_EDIT_ADDING_ACCELERATION;
 
@@ -419,17 +419,17 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     guint line;
     gboolean is_audio, is_output, is_input;
     
-    if(automation_edit == automation_editor->current_audio_automation_edit){
+    if(automation_editor->current_audio_automation_edit == (GtkWidget *) automation_edit){
       notebook = NULL;
       channel_type = G_TYPE_NONE;
 
       is_audio = TRUE;
-    }else if(automation_edit == automation_editor->current_output_automation_edit){
+    }else if(automation_editor->current_output_automation_edit == (GtkWidget *) automation_edit){
       notebook = automation_editor->current_output_notebook;
       channel_type = AGS_TYPE_OUTPUT;
       
       is_output = TRUE;
-    }else if(automation_edit == automation_editor->current_input_automation_edit){
+    }else if(automation_editor->current_input_automation_edit == (GtkWidget *) automation_edit){
       notebook = automation_editor->current_input_notebook;
       channel_type = AGS_TYPE_INPUT;
       
@@ -630,17 +630,17 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     guint line;
     gboolean is_audio, is_output, is_input;
 
-    if(automation_edit == automation_editor->current_audio_automation_edit){
+    if(automation_editor->current_audio_automation_edit == (GtkWidget *) automation_edit){
       notebook = NULL;
       channel_type = G_TYPE_NONE;
 
       is_audio = TRUE;
-    }else if(automation_edit == automation_editor->current_output_automation_edit){
+    }else if(automation_editor->current_output_automation_edit == (GtkWidget *) automation_edit){
       notebook = automation_editor->current_output_notebook;
       channel_type = AGS_TYPE_OUTPUT;
       
       is_output = TRUE;
-    }else if(automation_edit == automation_editor->current_input_automation_edit){
+    }else if(automation_editor->current_input_automation_edit == (GtkWidget *) automation_edit){
       notebook = automation_editor->current_input_notebook;
       channel_type = AGS_TYPE_INPUT;
       
@@ -817,7 +817,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       pthread_mutex_unlock(audio_mutex);
 
       /* redraw */
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }else if((AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS);
 
@@ -832,7 +832,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       pthread_mutex_unlock(audio_mutex);
 
       /* redraw */
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
   }
   
@@ -861,7 +861,7 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
     guint x0_viewport, x1_viewport, y0_viewport, y1_viewport;
 
     /* get viewport */
-    gtk_widget_get_allocation(widget, &allocation);
+    gtk_widget_get_allocation((GtkWidget *) widget, &allocation);
 
     x0_viewport = (guint) GTK_RANGE(automation_edit->hscrollbar)->adjustment->value / tact;
     x1_viewport = (guint) (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + allocation.width) / tact;
@@ -1457,7 +1457,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								 TRUE,
 								 FALSE,
 								 FALSE);
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
     break;
   case GDK_KEY_Right:
@@ -1476,7 +1476,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								 TRUE,
 								 FALSE,
 								 FALSE);
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
     break;
   case GDK_KEY_Up:
@@ -1528,7 +1528,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								   TRUE,
 								   FALSE,
 								   FALSE);
-	gtk_widget_queue_draw(automation_edit->drawing_area);
+	gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
       }
 
       g_list_free(list_start);
@@ -1585,7 +1585,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								   TRUE,
 								   FALSE,
 								   FALSE);
-	gtk_widget_queue_draw(automation_edit->drawing_area);
+	gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
       }
       
       g_list_free(list_start);
@@ -1597,7 +1597,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								 TRUE,
 								 TRUE,
 								 FALSE);
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
     break;
   case GDK_KEY_Delete:
@@ -1606,7 +1606,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 								 TRUE,
 								 FALSE,
 								 TRUE);
-      gtk_widget_queue_draw(automation_edit->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
     }
     break;
   }
@@ -1651,7 +1651,7 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
   /* reset ruler */
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,
 			   GTK_RANGE(automation_edit->hscrollbar)->adjustment->value / AGS_AUTOMATION_EDIT_DEFAULT_WIDTH);
-  gtk_widget_queue_draw(automation_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
 
   /* update automation edit */
   automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;

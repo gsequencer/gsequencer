@@ -140,23 +140,23 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
 
   frame = (GtkFrame *) gtk_frame_new("input bridge\0");
-  gtk_box_pack_start(AGS_EFFECT_BRIDGE(ffplayer_bridge),
-		     frame,
+  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(ffplayer_bridge),
+		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
   expander = gtk_expander_new("show/hide\0");
-  gtk_container_add(frame,
+  gtk_container_add((GtkContainer *) frame,
 		    expander);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_container_add(expander,
-		    table);
+  gtk_container_add((GtkContainer *) expander,
+		    (GtkWidget *) table);
 
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input = (GtkWidget *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
 									      NULL);
   gtk_table_attach(table,
-		   AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->bulk_input,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
@@ -164,7 +164,7 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,
-		   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(ffplayer_bridge)->input,
 		   1, 2,
 		   0, 1,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,

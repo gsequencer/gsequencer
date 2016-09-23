@@ -38,61 +38,61 @@ ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(widget));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
   
   if(!g_ascii_strncasecmp("alsa\0",
 			  str,
 			  4)){
-    gtk_widget_set_sensitive(midi_dialog->jack_server,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->jack_server,
 			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->server_name,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->server_name,
 			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->add_server,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_server,
 			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->remove_server,
-			     FALSE);
-
-    gtk_widget_set_sensitive(midi_dialog->jack_client,
-			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->client_name,
-			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->add_client,
-			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->remove_client,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_server,
 			     FALSE);
 
-    gtk_widget_set_sensitive(midi_dialog->port_name,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->jack_client,
 			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->add_port,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->client_name,
 			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->remove_port,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_client,
+			     FALSE);
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_client,
+			     FALSE);
+
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->port_name,
+			     FALSE);
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_port,
+			     FALSE);
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_port,
 			     FALSE);
   }else if(!g_ascii_strncasecmp("jack\0",
 				str,
 				4)){
-    gtk_widget_set_sensitive(midi_dialog->jack_server,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->jack_server,
 			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->server_name,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->server_name,
 			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->add_server,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_server,
 			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->remove_server,
-			     TRUE);
-
-    gtk_widget_set_sensitive(midi_dialog->jack_client,
-			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->client_name,
-			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->add_client,
-			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->remove_client,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_server,
 			     TRUE);
 
-    gtk_widget_set_sensitive(midi_dialog->port_name,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->jack_client,
 			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->add_port,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->client_name,
 			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->remove_port,
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_client,
+			     TRUE);
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_client,
+			     TRUE);
+
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->port_name,
+			     TRUE);
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_port,
+			     TRUE);
+    gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_port,
 			     TRUE);
   }
 
@@ -106,7 +106,7 @@ ags_midi_dialog_add_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
 
   if(str == NULL ||
      g_utf8_strlen(str,
@@ -134,8 +134,8 @@ ags_midi_dialog_add_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
     
     machine = midi_dialog->machine;
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						   AGS_TYPE_WINDOW);
 
     /* application context and mutex manager */
     application_context = (AgsApplicationContext *) window->application_context;
@@ -144,7 +144,7 @@ ags_midi_dialog_add_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
     /* add server */
-    jack_server = ags_jack_server_new(application_context,
+    jack_server = ags_jack_server_new((GObject *) application_context,
 				      server);
     
     pthread_mutex_lock(application_mutex);
@@ -173,7 +173,7 @@ ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_di
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
 
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
@@ -197,8 +197,8 @@ ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_di
     
     machine = midi_dialog->machine;
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						   AGS_TYPE_WINDOW);
 
     /* application context and mutex manager */
     application_context = (AgsApplicationContext *) window->application_context;
@@ -230,7 +230,7 @@ ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_di
 
     /* update GUI */
     gtk_combo_box_text_remove(midi_dialog->jack_server,
-			      gtk_combo_box_get_active(midi_dialog->jack_server));
+			      gtk_combo_box_get_active(GTK_COMBO_BOX(midi_dialog->jack_server)));
   }
   
   return(0);
@@ -241,7 +241,7 @@ ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
 
   if(str == NULL ||
      g_utf8_strlen(str,
@@ -271,8 +271,8 @@ ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
     
     machine = midi_dialog->machine;
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						   AGS_TYPE_WINDOW);
 
     /* application context and mutex manager */
     application_context = (AgsApplicationContext *) window->application_context;
@@ -298,9 +298,9 @@ ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
     pthread_mutex_unlock(application_mutex);
 
     /* add client */
-    jack_client = ags_jack_client_new(jack_server);
+    jack_client = ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
-			       jack_client);
+			       (GObject *) jack_client);
     
     /* fill combo box and open client */
     client = gtk_entry_get_text(midi_dialog->client_name);
@@ -320,7 +320,7 @@ ags_midi_dialog_remove_client_callback(GtkWidget *widget, AgsMidiDialog *midi_di
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
 
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
@@ -345,8 +345,8 @@ ags_midi_dialog_remove_client_callback(GtkWidget *widget, AgsMidiDialog *midi_di
     
     machine = midi_dialog->machine;
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						   AGS_TYPE_WINDOW);
 
     /* application context and mutex manager */
     application_context = (AgsApplicationContext *) window->application_context;
@@ -388,7 +388,7 @@ ags_midi_dialog_remove_client_callback(GtkWidget *widget, AgsMidiDialog *midi_di
     
     /* update GUI */
     gtk_combo_box_text_remove(midi_dialog->jack_client,
-			      gtk_combo_box_get_active(midi_dialog->jack_client));
+			      gtk_combo_box_get_active(GTK_COMBO_BOX(midi_dialog->jack_client)));
   }
   
   return(0);
@@ -399,7 +399,7 @@ ags_midi_dialog_add_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
 
   if(str == NULL ||
      g_utf8_strlen(str,
@@ -433,8 +433,8 @@ ags_midi_dialog_add_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
     
     machine = midi_dialog->machine;
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						   AGS_TYPE_WINDOW);
 
     /* application context and mutex manager */
     application_context = (AgsApplicationContext *) window->application_context;
@@ -475,9 +475,9 @@ ags_midi_dialog_add_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
     }
     
     /* add port */
-    jack_port = ags_jack_port_new(jack_client);
+    jack_port = ags_jack_port_new((GObject *) jack_client);
     ags_jack_client_add_port(jack_client,
-			     jack_port);
+			     (GObject *) jack_port);
 
     /* fill combo box and register port */
     port = gtk_entry_get_text(midi_dialog->port_name);
@@ -499,7 +499,7 @@ ags_midi_dialog_remove_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dial
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
 
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
@@ -527,8 +527,8 @@ ags_midi_dialog_remove_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dial
     
     machine = midi_dialog->machine;
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						   AGS_TYPE_WINDOW);
 
     /* application context and mutex manager */
     application_context = (AgsApplicationContext *) window->application_context;
@@ -583,7 +583,7 @@ ags_midi_dialog_remove_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dial
     
     /* update GUI */
     gtk_combo_box_text_remove(midi_dialog->midi_device,
-			      gtk_combo_box_get_active(midi_dialog->midi_device));
+			      gtk_combo_box_get_active(GTK_COMBO_BOX(midi_dialog->midi_device)));
   }
 
   return(0);

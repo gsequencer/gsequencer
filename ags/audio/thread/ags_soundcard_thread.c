@@ -449,7 +449,7 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
   
   guint time_spent;
 
-  audio_loop = (AgsAudioLoop *) ags_thread_get_toplevel(soundcard_thread);
+  audio_loop = (AgsAudioLoop *) ags_thread_get_toplevel((AgsThread *) soundcard_thread);
 
   if(ags_soundcard_is_available(AGS_SOUNDCARD(soundcard_thread->soundcard))){
     pthread_mutex_lock(audio_loop->timing_mutex);

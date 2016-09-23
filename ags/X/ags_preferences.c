@@ -216,12 +216,12 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   preferences = AGS_PREFERENCES(connectable);
 
-  ags_connectable_connect(preferences->generic_preferences);
-  ags_connectable_connect(preferences->audio_preferences);
-  ags_connectable_connect(preferences->performance_preferences);
+  ags_connectable_connect(AGS_CONNECTABLE(preferences->generic_preferences));
+  ags_connectable_connect(AGS_CONNECTABLE(preferences->audio_preferences));
+  ags_connectable_connect(AGS_CONNECTABLE(preferences->performance_preferences));
 
   if(preferences->server_preferences != NULL){
-    ags_connectable_connect(preferences->server_preferences);
+    ags_connectable_connect(AGS_CONNECTABLE(preferences->server_preferences));
   }
   
   g_signal_connect_after(G_OBJECT(preferences), "response\0",
@@ -315,12 +315,12 @@ ags_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
   
   list_start = 
-    list = gtk_container_get_children(GTK_DIALOG(widget)->action_area);
+    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->action_area);
   list = g_list_nth(list,
 		    3);
   
   while(list != NULL){
-    gtk_widget_hide(list->data);
+    gtk_widget_hide((GtkWidget *) list->data);
 
     list = list->next;
   }
@@ -336,7 +336,7 @@ ags_preferences_show_all(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show_all(widget);
 
   list_start = 
-    list = gtk_container_get_children(GTK_DIALOG(widget)->action_area);
+    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->action_area);
   list = g_list_nth(list,
 		    3);
   

@@ -427,56 +427,58 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 
   effect_bulk->plugin = NULL;
 
-  alignment = g_object_new(GTK_TYPE_ALIGNMENT,
-			   "xalign\0", 1.0,
-			   NULL);
-  gtk_box_pack_start(effect_bulk,
+  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
+					    "xalign\0", 1.0,
+					    NULL);
+  gtk_box_pack_start((GtkBox *) effect_bulk,
 		     alignment,
 		     FALSE, FALSE,
 		     0);
 
-  hbox = gtk_hbox_new(FALSE, 0);
-  gtk_widget_set_no_show_all(hbox,
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_widget_set_no_show_all((GtkWidget *) hbox,
 			     TRUE);
-  gtk_container_add(alignment,
-		    hbox);
+  gtk_container_add((GtkContainer *) alignment,
+		    (GtkWidget *) hbox);
 
-  effect_bulk->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start(hbox,
-		     effect_bulk->add,
+  effect_bulk->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) effect_bulk->add,
 		     FALSE, FALSE,
 		     0);
   gtk_widget_show(effect_bulk->add);
   
-  effect_bulk->remove = gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start(hbox,
-		     effect_bulk->remove,
+  effect_bulk->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) effect_bulk->remove,
 		     FALSE, FALSE,
 		     0);
   gtk_widget_show(effect_bulk->remove);
   
-  hbox = gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(effect_bulk,
-		     hbox,
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start((GtkBox *) effect_bulk,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
   effect_bulk->bulk_member = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_widget_set_no_show_all(effect_bulk->bulk_member,
+  gtk_widget_set_no_show_all((GtkWidget *) effect_bulk->bulk_member,
 			     TRUE);
-  gtk_box_pack_start(hbox,
-		     effect_bulk->bulk_member,
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) effect_bulk->bulk_member,
 		     FALSE, FALSE,
 		     0);
 
   effect_bulk->table = (GtkTable *) gtk_table_new(1, AGS_EFFECT_BULK_COLUMNS_COUNT,
 						  FALSE);
-  gtk_box_pack_start(hbox,
-		     effect_bulk->table,
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) effect_bulk->table,
 		     FALSE, FALSE,
 		     0);
 
-  effect_bulk->plugin_browser = ags_plugin_browser_new(effect_bulk);
+  effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new(effect_bulk);
 }
 
 void
@@ -621,7 +623,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
   }
 
   list =
-    list_start = gtk_container_get_children(effect_bulk->table);
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -710,7 +712,7 @@ ags_effect_bulk_show(GtkWidget *widget)
   }
 
   if((AGS_EFFECT_BULK_HIDE_ENTRIES & (effect_bulk->flags)) == 0){
-    gtk_widget_show(effect_bulk->bulk_member);
+    gtk_widget_show((GtkWidget *) effect_bulk->bulk_member);
   }
 }
 
@@ -776,10 +778,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_t *channel_mutex;
 
   /* get window and application context */
-  window = gtk_widget_get_ancestor(effect_bulk,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget * )effect_bulk,
+						 AGS_TYPE_WINDOW);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -796,12 +798,12 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   /* get main loop and task thread */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -848,7 +850,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       /* ladspa play */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
-				     recall_container);
+				     (GObject *) recall_container);
 
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
@@ -867,7 +869,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       ags_recall_ladspa_load(recall_ladspa);
       port = ags_recall_ladspa_load_ports(recall_ladspa);
       ags_channel_add_recall(current,
-			     recall_ladspa,
+			     (GObject *) recall_ladspa,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
 
@@ -888,14 +890,14 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						      AGS_RECALL_NOTATION |
 						      AGS_RECALL_BULK_MODE);
       ags_channel_add_recall(current,
-			     recall_channel_run_dummy,
+			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
       /* ladspa recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
-				     recall_container);
+				     (GObject *) recall_container);
 
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
@@ -914,7 +916,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       ags_recall_ladspa_load(recall_ladspa);
       recall_port = ags_recall_ladspa_load_ports(recall_ladspa);
       ags_channel_add_recall(current,
-			     recall_ladspa,
+			     (GObject *) recall_ladspa,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
 
@@ -935,7 +937,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						      AGS_RECALL_NOTATION |
 						      AGS_RECALL_BULK_MODE);
       ags_channel_add_recall(current,
-			     recall_channel_run_dummy,
+			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
@@ -985,7 +987,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	x = 0;
 	y++;
 	gtk_table_resize(effect_bulk->table,
-			     y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
       }
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -1004,11 +1006,11 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type\0", widget_type,
 						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("ladspa-%lu\0", ladspa_plugin->unique_id),
+						   "plugin-name\0", g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id),
 						   "filename\0", filename,
 						   "effect\0", effect,
 						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%d/%d\0",
+						   "control-port\0", g_strdup_printf("%u/%u\0",
 										     k,
 										     port_count),
 						   "steps\0", step_count,
@@ -1053,7 +1055,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
       }
 
-      bulk_member->conversion = ladspa_conversion;
+      bulk_member->conversion = (AgsConversion *) ladspa_conversion;
       
       /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -1071,7 +1073,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
 	LADSPA_Data lower_bound, upper_bound;
 	
-	dial = child_widget;
+	dial = (AgsDial *) child_widget;
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
@@ -1115,13 +1117,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 #endif
 
       gtk_table_attach(effect_bulk->table,
-		       bulk_member,
+		       (GtkWidget *) bulk_member,
 		       x, x + 1,
 		       y, y + 1,
 		       GTK_FILL, GTK_FILL,
 		       0, 0);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all(effect_bulk->table);
+      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
 
       x++;
     }
@@ -1184,10 +1186,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_t *channel_mutex;
 
   /* get window and application context */
-  window = gtk_widget_get_ancestor(effect_bulk,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+						 AGS_TYPE_WINDOW);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1204,12 +1206,12 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   /* get main loop and task thread */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -1255,7 +1257,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       /* dssi play */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
-				     recall_container);
+				     (GObject *) recall_container);
 
       //      add_recall_container = ags_add_recall_container_new(current->audio,
       //						  recall_container);
@@ -1281,7 +1283,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       port = ags_recall_dssi_load_ports(recall_dssi);
 
       ags_channel_add_recall(current,
-			     recall_dssi,
+			     (GObject *) recall_dssi,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
 
@@ -1302,14 +1304,14 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 		   "recall-container\0", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
-			     recall_channel_run_dummy,
+			     (GObject *) recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
       /* dssi recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
-				     recall_container);
+				     (GObject *) recall_container);
 
       //      add_recall_container = ags_add_recall_container_new(current->audio,
       //						  recall_container);
@@ -1335,7 +1337,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       recall_port = ags_recall_dssi_load_ports(recall_dssi);
       
       ags_channel_add_recall(current,
-			     recall_dssi,
+			     (GObject *) recall_dssi,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
 
@@ -1356,7 +1358,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 		   "recall-container\0", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
-			     recall_channel_run_dummy,
+			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
       
@@ -1423,11 +1425,11 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type\0", widget_type,
 						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("dssi-%lu\0", dssi_plugin->unique_id),
+						   "plugin-name\0", g_strdup_printf("dssi-%u\0", dssi_plugin->unique_id),
 						   "filename\0", filename,
 						   "effect\0", effect,
 						   "specifier\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "control-port\0", g_strdup_printf("%d/%d\0",
+						   "control-port\0", g_strdup_printf("%u/%u\0",
 										     k,
 										     port_count),
 						   "steps\0", step_count,
@@ -1473,7 +1475,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
       }
 
-      bulk_member->conversion = ladspa_conversion;
+      bulk_member->conversion = (AgsConversion *) ladspa_conversion;
 
       /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -1491,7 +1493,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	LADSPA_Data lower_bound, upper_bound;
 	LADSPA_Data default_value;
 	
-	dial = child_widget;
+	dial = (AgsDial *) child_widget;
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
@@ -1534,13 +1536,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       }
 
       gtk_table_attach(effect_bulk->table,
-		       bulk_member,
+		       (GtkWidget *) bulk_member,
 		       x, x + 1,
 		       y, y + 1,
 		       GTK_FILL, GTK_FILL,
 		       0, 0);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all(effect_bulk->table);
+      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
 
       x++;
     }
@@ -1611,10 +1613,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_t *channel_mutex;
 
   /* get window and application context */
-  window = gtk_widget_get_ancestor(effect_bulk,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+						 AGS_TYPE_WINDOW);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1631,12 +1633,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   /* get main loop and task thread */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -1682,7 +1684,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       /* lv2 play */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
-				     recall_container);
+				     (GObject *) recall_container);
 
       //      add_recall_container = ags_add_recall_container_new(current->audio,
       //						  recall_container);
@@ -1710,7 +1712,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       port = ags_recall_lv2_load_ports(recall_lv2);
 
       ags_channel_add_recall(current,
-			     recall_lv2,
+			     (GObject *) recall_lv2,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
 
@@ -1731,14 +1733,14 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 		   "recall-container\0", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
-			     recall_channel_run_dummy,
+			     (GObject *) recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
       /* lv2 recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
-				     recall_container);
+				     (GObject *) recall_container);
 
       //      add_recall_container = ags_add_recall_container_new(current->audio,
       //						  recall_container);
@@ -1766,7 +1768,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       recall_port = ags_recall_lv2_load_ports(recall_lv2);
       
       ags_channel_add_recall(current,
-			     recall_lv2,
+			     (GObject *) recall_lv2,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
 
@@ -1787,7 +1789,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 		   "recall-container\0", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
-			     recall_channel_run_dummy,
+			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
       
@@ -1858,7 +1860,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						   "filename\0", filename,
 						   "effect\0", effect,
 						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%d/%d\0",
+						   "control-port\0", g_strdup_printf("%u/%u\0",
 										     k,
 										     port_count),
 						   "steps\0", step_count,
@@ -1877,7 +1879,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
       }
 
-      bulk_member->conversion = lv2_conversion;
+      bulk_member->conversion = (AgsConversion *) lv2_conversion;
 
       /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -1894,7 +1896,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
 	float lower_bound, upper_bound;
 	
-	dial = child_widget;
+	dial = (AgsDial *) child_widget;
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
@@ -1928,13 +1930,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 #endif
       
       gtk_table_attach(effect_bulk->table,
-		       bulk_member,
+		       (GtkWidget *) bulk_member,
 		       x, x + 1,
 		       y, y + 1,
 		       GTK_FILL, GTK_FILL,
 		       0, 0);
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all(effect_bulk->table);
+      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
 
       x++;
     }
@@ -2130,7 +2132,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   nth_effect--;
   
   /* destroy control */
-  list = gtk_container_get_children(effect_bulk->table);
+  list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   filename = AGS_BULK_MEMBER(list->data)->filename;
   effect = AGS_BULK_MEMBER(list->data)->effect;
@@ -2223,10 +2225,10 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  window = gtk_widget_get_ancestor(effect_bulk,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+						 AGS_TYPE_WINDOW);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -2235,12 +2237,12 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   /*  */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
   
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -2272,7 +2274,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   /* collect bulk member */
   task = NULL;
 
-  list = gtk_container_get_children(effect_bulk->table);
+  list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -2373,10 +2375,10 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  window = gtk_widget_get_ancestor(effect_bulk,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+						 AGS_TYPE_WINDOW);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -2385,12 +2387,12 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   /*  */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -2420,7 +2422,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   /* collect bulk member */
   task = NULL;
 
-  list = gtk_container_get_children(effect_bulk->table);
+  list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -2536,7 +2538,7 @@ ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk)
 
   /* find output ports */
   bulk_member_start = 
-    bulk_member = gtk_container_get_children(effect_bulk->table);
+    bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   if(bulk_member != NULL){
     while(bulk_member != NULL){

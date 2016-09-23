@@ -38,6 +38,8 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include <math.h>
+
 void ags_scroll_on_play_class_init(AgsScrollOnPlayClass *scroll_on_play);
 void ags_scroll_on_play_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_scroll_on_play_init(AgsScrollOnPlay *scroll_on_play);
@@ -275,8 +277,8 @@ ags_scroll_on_play_launch(AgsTask *task)
 	cairo_surface_flush(cairo_get_target(cr));
 	cairo_push_group(cr);
 
-	ags_note_edit_draw_segment(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
-	ags_note_edit_draw_notation(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
+	ags_note_edit_draw_segment(note_edit, cr);
+	ags_note_edit_draw_notation(note_edit, cr);
 
 	cairo_pop_group_to_source(cr);
 	cairo_paint(cr);
@@ -356,8 +358,8 @@ ags_scroll_on_play_launch(AgsTask *task)
 	cairo_surface_flush(cairo_get_target(cr));
 	cairo_push_group(cr);
 
-	ags_pattern_edit_draw_segment(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
-	ags_pattern_edit_draw_notation(AGS_EDITOR_CHILD(editor_child->data)->edit_widget, cr);
+	ags_pattern_edit_draw_segment(pattern_edit, cr);
+	ags_pattern_edit_draw_notation(pattern_edit, cr);
 
 	cairo_pop_group_to_source(cr);
 	cairo_paint(cr);

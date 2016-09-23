@@ -812,11 +812,11 @@ ags_line_add_ladspa_effect(AgsLine *line,
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type\0", widget_type,
 						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("ladspa-%lu\0", ladspa_plugin->unique_id),
+						   "plugin-name\0", g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id),
 						   "filename\0", filename,
 						   "effect\0", effect,
 						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%d/%d\0",
+						   "control-port\0", g_strdup_printf("%u/%u\0",
 										     k,
 										     port_count),
 						   "steps\0", step_count,
@@ -861,7 +861,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
       }
 
-      line_member->conversion = ladspa_conversion;
+      line_member->conversion = (AgsConversion *) ladspa_conversion;
 
       /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -877,7 +877,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	GtkAdjustment *adjustment;
 	float lower_bound, upper_bound;
 	
-	dial = child_widget;
+	dial = (AgsDial *) child_widget;
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
@@ -911,11 +911,11 @@ ags_line_add_ladspa_effect(AgsLine *line,
 #endif
 	  
       ags_expander_add(line->expander,
-		       line_member,
+		       (GtkWidget *) line_member,
 		       x, y,
 		       1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
-      gtk_widget_show_all(line_member);
+      gtk_widget_show_all((GtkWidget *) line_member);
       
       port = port->next;
       x++;
@@ -997,7 +997,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   if(recall == NULL){
     pthread_mutex_unlock(channel_mutex);
     
-    return;
+    return(NULL);
   }
   
   recall = g_list_last(recall);
@@ -1078,7 +1078,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
       }
 
-      line_member->conversion = lv2_conversion;
+      line_member->conversion = (AgsConversion *) lv2_conversion;
 
       /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -1095,7 +1095,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 
 	float lower_bound, upper_bound;
 	
-	dial = child_widget;
+	dial = (AgsDial *) child_widget;
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
@@ -1129,11 +1129,11 @@ ags_line_add_lv2_effect(AgsLine *line,
 #endif
 
       ags_expander_add(line->expander,
-		       line_member,
+		       (GtkWidget *) line_member,
 		       x, y,
 		       1, 1);      
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
-      gtk_widget_show_all(line_member);
+      gtk_widget_show_all((GtkWidget *) line_member);
 
       port = port->next;
       x++;
@@ -1160,11 +1160,10 @@ ags_line_real_add_effect(AgsLine *line,
   
   GList *port;
 
-  window = gtk_widget_get_toplevel(line);
-  machine = gtk_widget_get_ancestor(line,
-				    AGS_TYPE_MACHINE);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
+						   AGS_TYPE_MACHINE);
   
-
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
   port = NULL;
@@ -1247,9 +1246,9 @@ ags_line_real_remove_effect(AgsLine *line,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
-  window = gtk_widget_get_toplevel(line);
-  machine = gtk_widget_get_ancestor(line,
-				    AGS_TYPE_MACHINE);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
+						   AGS_TYPE_MACHINE);
   
   /* get mutex manager and application mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1303,7 +1302,7 @@ ags_line_real_remove_effect(AgsLine *line,
   i = 0;
   
   while(port != NULL){
-    control = gtk_container_get_children(line->expander->table);
+    control = gtk_container_get_children((GtkContainer *) line->expander->table);
       
     while(control != NULL){
       if(AGS_IS_LINE_MEMBER(control->data) &&

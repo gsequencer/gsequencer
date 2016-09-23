@@ -162,8 +162,8 @@ ags_automation_window_init(AgsAutomationWindow *automation_window)
   automation_window->soundcard = NULL;
   
   automation_window->automation_editor = ags_automation_editor_new();
-  gtk_container_add(automation_window,
-		    automation_window->automation_editor);		    
+  gtk_container_add((GtkContainer *) automation_window,
+		    (GtkWidget *) automation_window->automation_editor);		    
 }
 
 void
@@ -179,9 +179,9 @@ ags_automation_window_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      AgsSoundcard *soundcard;
+      GObject *soundcard;
 
-      soundcard = (AgsSoundcard *) g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
       if(automation_window->soundcard == soundcard){
 	return;
@@ -235,7 +235,7 @@ ags_automation_window_connect(AgsConnectable *connectable)
 
   automation_window = AGS_AUTOMATION_WINDOW(connectable);
 
-  ags_connectable_connect(automation_window->automation_editor);
+  ags_connectable_connect(AGS_CONNECTABLE(automation_window->automation_editor));
 }
 
 void

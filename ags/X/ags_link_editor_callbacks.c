@@ -67,17 +67,17 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
     if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
        ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
 	((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0))){
-      gtk_list_store_append(model, &iter);
+      gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 
       if(AGS_INPUT(channel)->file_link != NULL){
-	gtk_list_store_set(model, &iter,
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 			   0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
 			   1, NULL,
 			   -1);
 	gtk_combo_box_set_active_iter(link_editor->combo,
 				      &iter);
       }else{
-	gtk_list_store_set(model, &iter,
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 			   0, "file://\0",
 			   1, NULL,
 			   -1);
@@ -89,20 +89,6 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
   gtk_combo_box_set_model(link_editor->combo,
 			  model);
 
-  return(0);
-}
-
-int
-ags_link_editor_destroy_callback(GtkObject *object, AgsLinkEditor *link_editor)
-{
-  ags_link_editor_destroy(object);
-  return(0);
-}
-
-int
-ags_link_editor_show_callback(GtkWidget *widget, AgsLinkEditor *link_editor)
-{
-  ags_link_editor_show(widget);
   return(0);
 }
 
@@ -122,7 +108,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 							  AGS_TYPE_LINE_EDITOR));
 
     channel = line_editor->channel;
-    machine = AGS_AUDIO(channel->audio)->machine;
+    machine = AGS_MACHINE(AGS_AUDIO(channel->audio)->machine);
     
     model = gtk_combo_box_get_model(link_editor->combo);
 
@@ -185,9 +171,9 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 			 FALSE, FALSE,
 			 0);
 
-      spin_button = gtk_spin_button_new_with_range(0.0,
-						   256.0,
-						   1.0);
+      spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+								     256.0,
+								     1.0);
       g_object_set_data((GObject *) link_editor->file_chooser,
 			AGS_LINK_EDITOR_OPEN_SPIN_BUTTON, spin_button);
       gtk_box_pack_start((GtkBox *) hbox,
@@ -272,7 +258,7 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
 				  NULL,
 				  gtk_tree_model_iter_n_children(model,
 								 NULL) - 1);
-    gtk_list_store_set(model, &iter,
+    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 		       0, g_strdup_printf("file://%s\0", name),
 		       -1);
 

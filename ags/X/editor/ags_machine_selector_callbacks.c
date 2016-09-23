@@ -113,7 +113,7 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   ags_machine_selection_load_defaults(machine_selection);
   g_signal_connect(G_OBJECT(machine_selection), "response\0",
 		   G_CALLBACK(ags_machine_selector_selection_response), machine_selector);
-  gtk_widget_show_all(machine_selection);
+  gtk_widget_show_all((GtkWidget *) machine_selection);
 }
 
 void
@@ -130,11 +130,11 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
   if(response == GTK_RESPONSE_ACCEPT){
     /* retrieve machine */
     machine = NULL;
-    vbox = GTK_DIALOG(machine_selection)->vbox;
+    vbox = (GtkVBox *) GTK_DIALOG(machine_selection)->vbox;
 
     if(response == GTK_RESPONSE_ACCEPT){
       list_start =
-	list = gtk_container_get_children(vbox);
+	list = gtk_container_get_children((GtkContainer *) vbox);
 
       while(list != NULL){
 	if(GTK_IS_TOGGLE_BUTTON(list->data) &&
@@ -170,11 +170,11 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
 {
   AgsEditor *editor;
 
-  editor = gtk_widget_get_ancestor(machine_selector,
-				   AGS_TYPE_EDITOR);
+  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+						 AGS_TYPE_EDITOR);
   
   if(editor->selected_machine != NULL){
-    if(gtk_check_menu_item_get_active(menu_item)){
+    if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) menu_item)){
       editor->selected_machine->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
     }else{
       editor->selected_machine->audio->flags &= (~AGS_AUDIO_REVERSE_MAPPING);
@@ -187,8 +187,8 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 {
   AgsEditor *editor;
 
-  editor = gtk_widget_get_ancestor(machine_selector,
-				   AGS_TYPE_EDITOR);
+  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+						 AGS_TYPE_EDITOR);
 
   if(editor->selected_machine != NULL){
     GList *notation;
@@ -197,7 +197,7 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 
     while(notation != NULL){
       g_free(AGS_NOTATION(notation->data)->base_note);
-      AGS_NOTATION(notation->data)->base_note = g_strdup(gtk_menu_item_get_label(menu_item));
+      AGS_NOTATION(notation->data)->base_note = g_strdup(gtk_menu_item_get_label((GtkMenuItem *) menu_item));
       
       notation = notation->next;
     }

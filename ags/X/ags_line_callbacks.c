@@ -94,7 +94,8 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
   GtkContainer *container;
   GList *list, *list_start;
 
-  pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_PAD);
+  pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line),
+					   AGS_TYPE_PAD);
 
   container = (GtkContainer *) pad->expander_set;
 
@@ -160,21 +161,21 @@ ags_line_add_effect_callback(AgsChannel *channel,
   
   gdk_threads_enter();
 
-  machine = gtk_widget_get_ancestor(line,
-				    AGS_TYPE_MACHINE);
-  machine_editor = machine->properties;
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
+						   AGS_TYPE_MACHINE);
+  machine_editor = (AgsMachineEditor *) machine->properties;
 
   control_type_name = NULL;  
 
   if(machine_editor != NULL){
     pad_editor_start = 
-      pad_editor = gtk_container_get_children(machine_editor->input_editor->child);
+      pad_editor = gtk_container_get_children((GtkContainer *) machine_editor->input_editor->child);
     pad_editor = g_list_nth(pad_editor,
 			    channel->pad);
     
     if(pad_editor != NULL){
       line_editor_start =
-	line_editor = gtk_container_get_children(AGS_PAD_EDITOR(pad_editor->data)->line_editor);
+	line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
       line_editor = g_list_nth(line_editor,
 			       channel->audio_channel);
   
@@ -197,13 +198,13 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	
 	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
 	}else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children((GtkContainer *) AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
 	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
-	    description = gtk_container_get_children(AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
+	    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
 	}else{
 	  g_message("ags_line_callbacks.c unsupported plugin browser\0");
 	}
@@ -328,7 +329,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   AgsPort *port;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -347,10 +348,10 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
   
-  window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						  AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -358,12 +359,12 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   list_start = 
@@ -385,7 +386,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
       pthread_mutex_lock(application_mutex);
 
       channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       line->channel);
+					       (GObject *) line->channel);
       
       pthread_mutex_unlock(application_mutex);
 

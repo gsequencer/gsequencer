@@ -503,7 +503,7 @@ ags_synth_generator_write(AgsFile *file,
   if(synth_generator->timestamp != NULL){
     ags_file_write_timestamp(file,
 			     node,
-			     synth_generator->timestamp);
+			     (AgsTimestamp *) synth_generator->timestamp);
   }
 }
 

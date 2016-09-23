@@ -77,7 +77,7 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
   list = editor->editor_child;
   
   while(list != NULL){
-    if(AGS_EDITOR_CHILD(list->data)->edit_widget == pattern_edit){
+    if(AGS_EDITOR_CHILD(list->data)->edit_widget == (GtkWidget *) pattern_edit){
       editor_child = AGS_EDITOR_CHILD(list->data);
       break;
     }
@@ -99,7 +99,7 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
 				   TRUE);
     }
 
-    gtk_widget_show_all(editor_child->notebook);
+    gtk_widget_show_all((GtkWidget *) editor_child->notebook);
   }else{
     for(i = audio_channels; i < audio_channels_old; i++){
       ags_notebook_remove_tab(editor_child->notebook,
@@ -137,7 +137,7 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
 				    pads * AGS_PATTERN_EDIT(pattern_edit)->control_height);
   }
   
-  gtk_widget_queue_draw(editor->current_meter);
+  gtk_widget_queue_draw((GtkWidget *) editor->current_meter);
 }
 
 gboolean
@@ -156,7 +156,7 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
 						 AGS_TYPE_EDITOR);
 
   /* calculate zoom */
-  history = gtk_combo_box_get_active(editor->toolbar->zoom);
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom));
 
   zoom = exp2((double) history - 2.0);
   zoom_old = exp2((double) editor->toolbar->zoom_history - 2.0);
@@ -294,7 +294,7 @@ ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButt
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
-  gtk_widget_grab_focus(pattern_edit->drawing_area);
+  gtk_widget_grab_focus((GtkWidget *) pattern_edit->drawing_area);
 
   if(editor->selected_machine != NULL &&
      event->button == 1 &&
@@ -322,7 +322,7 @@ ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButt
 
     if((AGS_PATTERN_EDIT_ADDING_NOTE & (pattern_edit->flags)) != 0 ||
        (AGS_PATTERN_EDIT_POSITION_CURSOR & (pattern_edit->flags)) != 0){
-      tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
       
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
@@ -709,13 +709,13 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     machine = editor->selected_machine;
     note = pattern_edit->control.note;
 
-    pattern_edit_style = gtk_widget_get_style(widget);
+    pattern_edit_style = gtk_widget_get_style((GtkWidget *) widget);
 
     /* store the events position */
     pattern_edit->control.x1_offset = (guint) round((double) pattern_edit->hscrollbar->scrollbar.range.adjustment->value);
     pattern_edit->control.y1_offset = (guint) round((double) pattern_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -1013,7 +1013,7 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     pattern_edit->control.x1_offset = (guint) round((double) pattern_edit->hscrollbar->scrollbar.range.adjustment->value);
     pattern_edit->control.y1_offset = (guint) round((double) pattern_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -1161,7 +1161,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     AgsInitChannel *init_channel;
     AgsAppendChannel *append_channel;
 
-    AgsAudioLoop *audio_loop;
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsSoundcardThread *soundcard_thread;
 
@@ -1227,14 +1227,14 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     /* get threads */
     pthread_mutex_lock(application_mutex);
 
-    audio_loop = (AgsAudioLoop *) application_context->main_loop;
+    main_loop = (AgsThread *) application_context->main_loop;
 
     pthread_mutex_unlock(application_mutex);
 
     /* get task thread and soundcard thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 							 AGS_TYPE_TASK_THREAD);
-    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(audio_loop,
+    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
 							     AGS_TYPE_SOUNDCARD_THREAD);
 
     /* create tasks */
@@ -1248,7 +1248,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     tasks = g_list_prepend(tasks, init_channel);
     
     /* append channel for playback */
-    append_channel = ags_append_channel_new((GObject *) audio_loop,
+    append_channel = ags_append_channel_new((GObject *) main_loop,
 					    (GObject *) channel);
     tasks = g_list_prepend(tasks, append_channel);
 
@@ -1313,7 +1313,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	gdouble tact;
 	guint x0_offset;
 
-	tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+	tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
       
 	if(pattern_edit->selected_x > 0){
 	  if(pattern_edit->selected_x - (1 * tact) > 0){
@@ -1332,7 +1332,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 			      x0_offset * GTK_RANGE(pattern_edit->hscrollbar)->adjustment->step_increment);
 	}
 
-	gtk_widget_queue_draw(pattern_edit);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
       }
       break;
     case GDK_KEY_Right:
@@ -1341,7 +1341,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	gdouble tact;
 	guint x0_offset;
 
-	tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+	tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
       
 	if(pattern_edit->selected_x < 16.0 * AGS_PATTERN_EDIT_MAX_CONTROLS){
 	  pattern_edit->selected_x += (1.0 * tact);
@@ -1356,7 +1356,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 			      x0_offset * GTK_RANGE(pattern_edit->hscrollbar)->adjustment->step_increment);
 	}
 
-	gtk_widget_queue_draw(pattern_edit);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
       }
       break;
     case GDK_KEY_Up:
@@ -1377,7 +1377,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 			      y0_offset * GTK_RANGE(pattern_edit->vscrollbar)->adjustment->step_increment);
 	}
 
-	gtk_widget_queue_draw(pattern_edit);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
       }
       break;
     case GDK_KEY_Down:
@@ -1398,7 +1398,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 			      y0_offset * GTK_RANGE(pattern_edit->vscrollbar)->adjustment->step_increment);
 	}
 
-	gtk_widget_queue_draw(pattern_edit);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
       }
       break;
     case GDK_KEY_space:
@@ -1435,7 +1435,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	  i++;
 	}
 
-	gtk_widget_queue_draw(pattern_edit);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
 
 	fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
       }
@@ -1469,7 +1469,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	  i++;
 	}
 
-	gtk_widget_queue_draw(pattern_edit);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
       }
       break;
     }
@@ -1541,7 +1541,7 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
   AgsAddAudioSignal *add_audio_signal;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -1556,8 +1556,8 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
   
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-  task_thread = ags_thread_find_type(audio_loop,
+  main_loop = (AgsThread *) application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
@@ -1637,7 +1637,7 @@ ags_pattern_edit_hscrollbar_value_changed(GtkRange *range, AgsPatternEdit *patte
   /* reset ruler */
   gtk_adjustment_set_value(pattern_edit->ruler->adjustment,
 			   GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value / (double) pattern_edit->control_current.control_width);
-  gtk_widget_queue_draw(pattern_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
 
   /* update pattern edit */
   pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;

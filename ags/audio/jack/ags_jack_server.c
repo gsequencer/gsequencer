@@ -31,6 +31,8 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <errno.h>
+
 void ags_jack_server_class_init(AgsJackServerClass *jack_server);
 void ags_jack_server_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_jack_server_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
@@ -586,7 +588,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     jack_server->n_soundcards += 1;
   }
   
-  return(jack_devout);
+  return((GObject *) jack_devout);
 }
 
 void
@@ -643,7 +645,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   
   /* the default client */
   if(jack_server->default_client == NULL){
-    jack_server->default_client = ags_jack_client_new((GObject *) jack_server);
+    jack_server->default_client = (GObject *) ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
     
@@ -701,7 +703,7 @@ ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
   jack_server = AGS_JACK_SERVER(distributed_manager);
 
   /* the default client */
-  default_client = jack_server->default_client;
+  default_client = (AgsJackClient *) jack_server->default_client;
 
   if(default_client == NULL){
     g_warning("GSequencer - no jack client\0");
@@ -739,7 +741,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   
   /* the default client */
   if(jack_server->default_client == NULL){
-    jack_server->default_client = ags_jack_client_new((GObject *) jack_server);
+    jack_server->default_client = (GObject *) ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
     
@@ -753,7 +755,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
     }
   }
 
-  default_client = jack_server->default_client;
+  default_client = (AgsJackClient *) jack_server->default_client;
 
   /* the soundcard */
   jack_devout = ags_jack_devout_new(jack_server->application_context);

@@ -391,7 +391,7 @@ ags_export_window_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      AgsSoundcard *soundcard;
+      GObject *soundcard;
 
       soundcard = g_value_get_object(value);
 

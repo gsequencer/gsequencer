@@ -1267,7 +1267,7 @@ ags_file_real_read(AgsFile *file)
   
   /* child elements */
   child = root_node->children;
-  application_context = file->application_context;
+  application_context = (AgsApplicationContext *) file->application_context;
   
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){

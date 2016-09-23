@@ -96,8 +96,6 @@ void ags_synth_set_pads(AgsAudio *audio, GType type,
 			guint pads, guint pads_old,
 			AgsSynth *synth);
 
-void ags_synth_update(AgsSynth *synth);
-
 /**
  * SECTION:ags_synth
  * @short_description: synth
@@ -589,7 +587,7 @@ ags_synth_update(AgsSynth *synth)
   AgsApplySynth *apply_synth;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -608,8 +606,8 @@ ags_synth_update(AgsSynth *synth)
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *application_mutex;
     
-  window = (AgsWindow *) gtk_widget_get_toplevel(synth);
-  application_context = window->application_context;
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -619,12 +617,12 @@ ags_synth_update(AgsSynth *synth)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* lookup audio mutex */

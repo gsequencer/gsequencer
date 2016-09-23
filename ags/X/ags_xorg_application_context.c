@@ -21,15 +21,20 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
-#include <ags/object/ags_main_loop.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_launch.h>
+
+#include <ags/object/ags_distributed_manager.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_main_loop.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
@@ -43,6 +48,13 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_midiin.h>
+#include <ags/audio/ags_recall_channel_run_dummy.h>
+#include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_ladspa_run.h>
+#include <ags/audio/ags_recall_lv2.h>
+#include <ags/audio/ags_recall_lv2_run.h>
+#include <ags/audio/ags_recall_dssi.h>
+#include <ags/audio/ags_recall_dssi_run.h>
 
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_server.h>
@@ -50,15 +62,58 @@
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
-#include <ags/audio/file/ags_audio_file_link.h>
-#include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/recall/ags_play_audio.h>
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_play_channel_run_master.h>
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/recall/ags_loop_channel.h>
+#include <ags/audio/recall/ags_loop_channel_run.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_volume_channel_run.h>
+#include <ags/audio/recall/ags_peak_channel.h>
+#include <ags/audio/recall/ags_peak_channel_run.h>
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_buffer_channel.h>
+#include <ags/audio/recall/ags_buffer_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
+
 #include <ags/audio/file/ags_audio_file_xml.h>
+
+#include <ags/audio/thread/ags_record_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 #include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 #include <ags/X/thread/ags_simple_autosave_thread.h>
+
+#include <ags/X/machine/ags_panel_input_pad.h>
+#include <ags/X/machine/ags_panel_input_line.h>
+#include <ags/X/machine/ags_mixer_input_pad.h>
+#include <ags/X/machine/ags_mixer_input_line.h>
+#include <ags/X/machine/ags_drum_output_pad.h>
+#include <ags/X/machine/ags_drum_output_line.h>
+#include <ags/X/machine/ags_drum_input_line.h>
+#include <ags/X/machine/ags_synth_input_pad.h>
+#include <ags/X/machine/ags_synth_input_line.h>
+#include <ags/X/machine/ags_ladspa_bridge.h>
+#include <ags/X/machine/ags_lv2_bridge.h>
+#include <ags/X/machine/ags_dssi_bridge.h>
+
+#include <pango/pango.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -291,7 +346,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->distributed_manager = NULL;
 
   /* jack server */
-  jack_server = ags_jack_server_new(xorg_application_context,
+  jack_server = ags_jack_server_new((GObject *) xorg_application_context,
 				    NULL);
   xorg_application_context->distributed_manager = g_list_prepend(xorg_application_context->distributed_manager,
 								 jack_server);
@@ -346,7 +401,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa\0",
 				    5)){
-	soundcard = ags_devout_new(xorg_application_context);
+	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
 		
@@ -354,7 +409,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       }else if(!g_ascii_strncasecmp(str,
 				    "oss\0",
 				    4)){
-	soundcard = ags_devout_new(xorg_application_context);
+	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
 
@@ -452,7 +507,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* AgsSequencer */
   xorg_application_context->sequencer = NULL;
 
-  sequencer = ags_midiin_new(xorg_application_context);
+  sequencer = ags_midiin_new((GObject *) xorg_application_context);
   xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
 						       sequencer);
   g_object_ref(G_OBJECT(sequencer));
@@ -476,7 +531,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   */
   
   /* AgsWindow */
-  window = ags_window_new(xorg_application_context);
+  window = ags_window_new((GObject *) xorg_application_context);
   g_object_set(window,
 	       "soundcard\0", soundcard,
 	       NULL);
@@ -490,12 +545,12 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   gtk_widget_show_all((GtkWidget *) window);
 
   /* AgsServer */
-  xorg_application_context->server = ags_server_new(xorg_application_context);
+  xorg_application_context->server = ags_server_new((GObject *) xorg_application_context);
 
   /* AgsAudioLoop */
   AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop = 
     audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
-						  xorg_application_context);
+						  (GObject *) xorg_application_context);
   g_object_set(xorg_application_context,
 	       "main-loop\0", audio_loop,
 	       NULL);
@@ -506,7 +561,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* AgsPollingThread */
   xorg_application_context->polling_thread = ags_polling_thread_new();
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				xorg_application_context->polling_thread,
+				(AgsThread *) xorg_application_context->polling_thread,
 				TRUE, TRUE);
   
   /* AgsTaskThread */
@@ -514,7 +569,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
 				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
+				(AgsThread *) AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				TRUE, TRUE);
   g_signal_connect(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread, "clear-cache\0",
 		   G_CALLBACK(ags_xorg_application_context_clear_cache), NULL);
@@ -527,7 +582,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   while(list != NULL){
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				  soundcard_thread,
+				  (AgsThread *) soundcard_thread,
 				  TRUE, TRUE);
 
     if(xorg_application_context->soundcard_thread == NULL){
@@ -541,14 +596,14 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
 										NULL);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				xorg_application_context->export_thread,
+				(AgsThread *) xorg_application_context->export_thread,
 				TRUE, TRUE);
 
   /* AgsGuiThread */
   //  xorg_application_context->gui_thread = NULL;
   xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-  				xorg_application_context->gui_thread,
+  				(AgsThread *) xorg_application_context->gui_thread,
   				TRUE, TRUE);
 
   /* AgsAutosaveThread */
@@ -564,7 +619,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 		 "false\0")){
       xorg_application_context->autosave_thread = ags_autosave_thread_new(xorg_application_context);
       ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				    xorg_application_context->autosave_thread,
+				    (AgsThread *) xorg_application_context->autosave_thread,
 				    TRUE, TRUE);
     }
   }
@@ -665,13 +720,13 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
 AgsThread*
 ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
 }
 
 AgsThread*
 ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
 }
 
 AgsThreadPool*
@@ -696,14 +751,14 @@ ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
 GObject*
 ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
 {
-  return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
+  return((GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
 }
 
 void
 ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
 							  GObject *soundcard_thread)
 {
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread = soundcard_thread;
+  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread = (AgsThread *) soundcard_thread;
 }
 
 GList*
@@ -985,12 +1040,12 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
   xmlNode *child;
 
   if(*application_context == NULL){
-    gobject = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
-			   NULL);
+    gobject = (AgsXorgApplicationContext *) g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
+							 NULL);
 
     *application_context = (GObject *) gobject;
   }else{
-    gobject = (AgsApplicationContext *) *application_context;
+    gobject = (AgsXorgApplicationContext *) *application_context;
   }
 
   g_object_set(G_OBJECT(file),
@@ -1031,7 +1086,7 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 		     11)){
 	ags_file_read_config(file,
 			     child,
-			     &(config));
+			     (GObject **) &(config));
       }else if(!xmlStrncmp("ags-window\0",
 		     child->name,
 		     11)){
@@ -1083,14 +1138,14 @@ ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationCon
     
   pthread_mutex_lock(application_mutex);
     
-  audio_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+  audio_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
   audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      audio_loop);
+					      (GObject *) audio_loop);
     
   pthread_mutex_unlock(application_mutex);
 
   /* show all */
-  gtk_widget_show_all(application_context->window);
+  gtk_widget_show_all((GtkWidget *) application_context->window);
 
   /* wait for audio loop */
   task_thread = ags_thread_find_type(audio_loop,
@@ -1167,7 +1222,7 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
 
   ags_file_write_config(file,
 			node,
-			config);
+			(GObject *) config);
   
   ags_file_write_soundcard_list(file,
 				node,

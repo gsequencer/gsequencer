@@ -393,7 +393,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	gchar *plugin_name;
 	gchar *specifier;
 	
-	plugin_name = g_strdup_printf("dssi-%lu\0", dssi_plugin->unique_id);
+	plugin_name = g_strdup_printf("dssi-%u\0", dssi_plugin->unique_id);
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 	
 	list = port;

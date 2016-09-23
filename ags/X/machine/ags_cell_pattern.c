@@ -245,7 +245,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY * cell_pattern->cell_width + 1, AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY * cell_pattern->cell_height + 1);
   gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
 		       cell_pattern_style);
-  gtk_table_attach(cell_pattern,
+  gtk_table_attach((GtkTable *) cell_pattern,
 		   (GtkWidget *) cell_pattern->drawing_area,
 		   0, 1,
 		   0, 1,
@@ -266,7 +266,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   cell_pattern->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_widget_set_style((GtkWidget *) cell_pattern->vscrollbar,
 		       cell_pattern_style);
-  gtk_table_attach(cell_pattern,
+  gtk_table_attach((GtkTable *) cell_pattern,
 		   (GtkWidget *) cell_pattern->vscrollbar,
 		   1, 2,
 		   0, 1,
@@ -279,7 +279,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   cell_pattern->active_led = 0;
 
   cell_pattern->led = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach(cell_pattern,
+  gtk_table_attach((GtkTable *) cell_pattern,
 		   (GtkWidget *) cell_pattern->led,
 		   0, 1,
 		   2, 3,
@@ -379,7 +379,7 @@ ags_cell_pattern_get_accessible(GtkWidget *widget)
     g_object_set_qdata(G_OBJECT(widget),
 		       quark_accessible_object,
 		       accessible);
-    gtk_accessible_set_widget(accessible,
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
 			      widget);
   }
   
@@ -415,7 +415,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  cell_pattern = gtk_accessible_get_widget(ATK_OBJECT(action));
+  cell_pattern = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = gdk_event_new(GDK_KEY_PRESS);
   key_release = gdk_event_new(GDK_KEY_RELEASE);
@@ -427,8 +427,10 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
-      gtk_widget_event(cell_pattern, key_press);
-      gtk_widget_event(cell_pattern, key_release);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_CELL_PATTERN_MOVE_RIGHT:
@@ -437,8 +439,10 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Right;
       
       /* send event */
-      gtk_widget_event(cell_pattern, key_press);
-      gtk_widget_event(cell_pattern, key_release);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_CELL_PATTERN_MOVE_UP:
@@ -447,8 +451,10 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
     
       /* send event */
-      gtk_widget_event(cell_pattern, key_press);
-      gtk_widget_event(cell_pattern, key_release);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_CELL_PATTERN_MOVE_DOWN:
@@ -457,8 +463,10 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(cell_pattern, key_press);
-      gtk_widget_event(cell_pattern, key_release);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_CELL_PATTERN_TOGGLE_PAD:
@@ -467,8 +475,10 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_space;
       
       /* send event */
-      gtk_widget_event(cell_pattern, key_press);
-      gtk_widget_event(cell_pattern, key_release);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_CELL_PATTERN_COPY_PATTERN:
@@ -484,10 +494,14 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
 	modifier_release->keyval = GDK_KEY_Control_R;
 
       /* send event */
-      gtk_widget_event(cell_pattern, modifier_press);
-      gtk_widget_event(cell_pattern, key_press);
-      gtk_widget_event(cell_pattern, key_release);
-      gtk_widget_event(cell_pattern, modifier_release);      
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) cell_pattern,
+		       (GdkEvent *) modifier_release);      
     }    
     break;
   }
@@ -603,8 +617,8 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-  machine = gtk_widget_get_ancestor(cell_pattern,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						   AGS_TYPE_MACHINE);
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -664,8 +678,8 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-  machine = gtk_widget_get_ancestor(cell_pattern,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						   AGS_TYPE_MACHINE);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -730,8 +744,8 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
   if(channel->pattern == NULL)
     return;
 
-  machine = gtk_widget_get_ancestor(cell_pattern,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						   AGS_TYPE_MACHINE);
 
   if(ags_pattern_get_bit((AgsPattern *) channel->pattern->data, machine->bank_0, machine->bank_1, j)){
     ags_cell_pattern_highlight_gutter_point(cell_pattern, j, i);
@@ -769,7 +783,7 @@ ags_cell_pattern_blink_worker(void *data)
   AgsBlinkCellPatternCursor *blink_cell_pattern_cursor;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -779,8 +793,8 @@ ags_cell_pattern_blink_worker(void *data)
   static const guint blink_delay = 1000000; // blink every second
   
   cell_pattern = AGS_CELL_PATTERN(data);
-  window = gtk_widget_get_ancestor(cell_pattern,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						 AGS_TYPE_WINDOW);
 
   application_context = window->application_context;
 
@@ -790,20 +804,20 @@ ags_cell_pattern_blink_worker(void *data)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
-  while(gtk_widget_has_focus(cell_pattern)){
+  while(gtk_widget_has_focus((GtkWidget *) cell_pattern)){
     /* blink cursor */
     blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
 								  !(AGS_CELL_PATTERN_CURSOR_ON & (cell_pattern->flags)));
     ags_task_thread_append_task(task_thread,
-				blink_cell_pattern_cursor);
+				(AgsTaskThread *) blink_cell_pattern_cursor);
 
     /* delay */
     usleep(blink_delay);
@@ -813,7 +827,7 @@ ags_cell_pattern_blink_worker(void *data)
   blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
 								FALSE);
   ags_task_thread_append_task(task_thread,
-			      blink_cell_pattern_cursor);
+			      (AgsTaskThread *) blink_cell_pattern_cursor);
 
   return(NULL);
 }
@@ -856,7 +870,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     gdk_threads_enter();
 
-    machine = gtk_widget_get_ancestor(cell_pattern,
+    machine = gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 				      AGS_TYPE_MACHINE);
 
     if(machine == NULL){
@@ -929,7 +943,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     pthread_mutex_unlock(audio_mutex);
 
     /* led */
-    list = gtk_container_get_children(cell_pattern->led);
+    list = gtk_container_get_children((GtkContainer *) cell_pattern->led);
     
     for(i = 0; list != NULL; i++){
       if(i == active_led_new){

@@ -490,7 +490,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
     pattern = AGS_PATTERN(list->data);
     copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
   
-    ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
+    ags_portlet_set_port(AGS_PORTLET(pattern),
+			 (GObject *) copy_pattern_channel->pattern);
   }
 
   /* ags-play */

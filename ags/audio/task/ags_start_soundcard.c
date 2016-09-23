@@ -166,7 +166,7 @@ ags_start_soundcard_launch(AgsTask *task)
   AgsStartSoundcard *start_soundcard;
 
   AgsAudioLoop *audio_loop;
-  AgsSoundcardThread *soundcard_thread;
+  AgsThread *soundcard_thread;
 
   AgsApplicationContext *application_context;
   AgsSoundcard *soundcard;
@@ -192,10 +192,10 @@ ags_start_soundcard_launch(AgsTask *task)
   */
   soundcard_thread = audio_loop;
   
-  while((soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) soundcard_thread,
-									AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
+  while((soundcard_thread = ags_thread_find_type(soundcard_thread,
+						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
     /* append to AgsSoundcard */
-    soundcard_thread->error = NULL;
+    AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
 
     g_message("start soundcard\0");
 
@@ -214,7 +214,7 @@ ags_start_soundcard_launch(AgsTask *task)
       }
     }
 
-    soundcard_thread = g_atomic_pointer_get(&(AGS_THREAD(soundcard_thread)->next));
+    soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
   }
 }
 

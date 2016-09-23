@@ -302,7 +302,7 @@ ags_audio_thread_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(audio == (GObject *) audio_thread->audio){
+      if(audio_thread->audio == (GObject *) audio){
 	return;
       }
       
@@ -492,7 +492,7 @@ ags_audio_thread_run(AgsThread *thread)
     /* get playback */
     pthread_mutex_lock(output_mutex);
     
-    playback = output->playback;
+    playback = (AgsPlayback *) output->playback;
       
     pthread_mutex_unlock(output_mutex);
 
@@ -623,7 +623,7 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
     AgsChannelThread *channel_thread;
 
     thread = playback->channel_thread[1];
-    channel_thread = (AgsThread *) thread;
+    channel_thread = (AgsChannelThread *) thread;
     
     do_sequencer = TRUE;
 
@@ -648,7 +648,7 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
     AgsChannelThread *channel_thread;
 
     thread = playback->channel_thread[2];
-    channel_thread = (AgsThread *) thread;
+    channel_thread = (AgsChannelThread *) thread;
 
     do_notation = TRUE;
 

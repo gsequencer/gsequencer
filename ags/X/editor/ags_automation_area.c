@@ -463,18 +463,18 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
     return(FALSE);
   }
   
-  automation_editor = gtk_widget_get_ancestor(automation_area->drawing_area,
-					      AGS_TYPE_AUTOMATION_EDITOR);
-  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_area->drawing_area,
+								      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor((GtkWidget *) automation_area->drawing_area,
+								  AGS_TYPE_AUTOMATION_EDIT);
 
-  if(automation_edit == automation_editor->current_audio_automation_edit){
+  if(automation_editor->current_audio_automation_edit == (GtkWidget *) automation_edit){
     notebook = NULL;
     channel_type = G_TYPE_NONE;
-  }else if(automation_edit == automation_editor->current_output_automation_edit){
+  }else if(automation_editor->current_output_automation_edit == (GtkWidget *) automation_edit){
     notebook = automation_editor->current_output_notebook;
     channel_type = AGS_TYPE_OUTPUT;
-  }else if(automation_edit == automation_editor->current_input_automation_edit){
+  }else if(automation_editor->current_input_automation_edit == (GtkWidget *) automation_edit){
     notebook = automation_editor->current_input_notebook;
     channel_type = AGS_TYPE_INPUT;
   }
@@ -789,10 +789,10 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   gdouble width, height;
   gdouble pos_x, pos_y;
   
-  automation_editor = gtk_widget_get_ancestor(automation_area->drawing_area,
-					      AGS_TYPE_AUTOMATION_EDITOR);
-  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
-					    AGS_TYPE_AUTOMATION_EDIT);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_area->drawing_area,
+								      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor((GtkWidget *) automation_area->drawing_area,
+								  AGS_TYPE_AUTOMATION_EDIT);
   
   zoom_factor = 1.0 / 4.0;
 

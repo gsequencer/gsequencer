@@ -17,8 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ags_ruler.h"
+#include <ags/widget/ags_ruler.h>
 
+#include <pango/pangocairo.h>
 #include <math.h>
 
 void ags_ruler_class_init(AgsRulerClass *ruler);

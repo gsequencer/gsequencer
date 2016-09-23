@@ -263,7 +263,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsResizeAudio *resize_audio;
     
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -285,19 +285,19 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get window and application_context  */
-  window = (AgsWindow *) gtk_widget_get_toplevel(machine_editor->machine);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine_editor->machine);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create task */

@@ -149,7 +149,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->plugin_browser = ags_plugin_browser_new(line_member_editor);
+  line_member_editor->plugin_browser = ags_plugin_browser_new((GtkWidget *) line_member_editor);
 }
 
 void
@@ -211,9 +211,9 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								AGS_TYPE_MACHINE_EDITOR);
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
+  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
   recall = line_editor->channel->recall;

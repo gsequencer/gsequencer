@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <gdk/gdk.h>
+
 void ags_simple_file_write_class_init(AgsSimpleFileWriteClass *simple_file_write);
 void ags_simple_file_write_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_simple_file_write_init(AgsSimpleFileWrite *simple_file_write);

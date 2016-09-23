@@ -68,9 +68,9 @@ ags_automation_editor_tic_callback(GObject *soundcard,
   pthread_mutex_t *application_mutex;
 
   automation_window = AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(automation_editor)));
-  window = automation_window->parent_window;
+  window = (AgsWindow *) automation_window->parent_window;
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -78,15 +78,15 @@ ags_automation_editor_tic_callback(GObject *soundcard,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  if(gtk_toggle_button_get_active(window->navigation->scroll)){
+  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(window->navigation->scroll))){
     AgsScrollOnPlay *scroll_on_play;
     double tact_factor, zoom_factor;
     double tact;
@@ -100,7 +100,8 @@ ags_automation_editor_tic_callback(GObject *soundcard,
     if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) > automation_editor->current_tact){
       automation_editor->current_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
       
-      scroll_on_play = ags_scroll_on_play_new(automation_editor, 64.0);
+      scroll_on_play = ags_scroll_on_play_new((GtkWidget *) automation_editor,
+					      64.0);
       ags_task_thread_append_task(task_thread,
 				  AGS_TASK(scroll_on_play));
     }

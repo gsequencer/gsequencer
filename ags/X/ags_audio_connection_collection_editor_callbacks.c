@@ -35,7 +35,7 @@ ags_audio_connection_collection_editor_parent_set_callback(GtkWidget *widget, Gt
 
   if(connection_editor != NULL &&
      connection_editor->machine != NULL){
-    gtk_combo_box_set_model(audio_connection_collection_editor->soundcard,
+    gtk_combo_box_set_model(GTK_COMBO_BOX(audio_connection_collection_editor->soundcard),
 			    GTK_TREE_MODEL(ags_machine_get_possible_audio_output_connections(connection_editor->machine)));
 
     ags_audio_connection_collection_editor_check(audio_connection_collection_editor);

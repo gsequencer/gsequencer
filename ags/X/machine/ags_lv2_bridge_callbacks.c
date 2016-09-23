@@ -28,7 +28,7 @@ void
 ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 {
   gtk_widget_show_all(lv2_bridge->lv2_gui);
-  gtk_widget_show_all(gtk_bin_get_child(lv2_bridge->lv2_gui));
+  gtk_widget_show_all(gtk_bin_get_child((GtkBin *) lv2_bridge->lv2_gui));
 }
 
 gboolean

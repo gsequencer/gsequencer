@@ -81,7 +81,7 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
   list = editor->editor_child;
   
   while(list != NULL){
-    if(AGS_EDITOR_CHILD(list->data)->edit_widget == note_edit){
+    if(AGS_EDITOR_CHILD(list->data)->edit_widget == (GtkWidget *) note_edit){
       editor_child = AGS_EDITOR_CHILD(list->data);
       break;
     }
@@ -103,7 +103,7 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
 				   TRUE);
     }
 
-    gtk_widget_show_all(editor_child->notebook);
+    gtk_widget_show_all((GtkWidget *) editor_child->notebook);
   }else{
     for(i = audio_channels; i < audio_channels_old; i++){
       ags_notebook_remove_tab(editor_child->notebook,
@@ -141,7 +141,7 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
 				    pads * AGS_NOTE_EDIT(note_edit)->control_height);
   }
 
-  gtk_widget_queue_draw(editor->current_meter);
+  gtk_widget_queue_draw((GtkWidget *) editor->current_meter);
 }
 
 gboolean
@@ -160,7 +160,7 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
 						 AGS_TYPE_EDITOR);
 
   /* calculate zoom */
-  history = gtk_combo_box_get_active(editor->toolbar->zoom);
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom));
 
   zoom = exp2((double) history - 2.0);
   zoom_old = exp2((double) editor->toolbar->zoom_history - 2.0);
@@ -305,7 +305,7 @@ ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  gtk_widget_grab_focus(note_edit->drawing_area);
+  gtk_widget_grab_focus((GtkWidget *) note_edit->drawing_area);
   
   if(editor->selected_machine != NULL &&
      event->button == 1 &&
@@ -1218,7 +1218,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     AgsAppendChannel *append_channel;
 
     AgsMutexManager *mutex_manager;
-    AgsAudioLoop *audio_loop;
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsSoundcardThread *soundcard_thread;
 
@@ -1282,15 +1282,15 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     /* get threads */
     pthread_mutex_lock(application_mutex);
 
-    audio_loop = (AgsAudioLoop *) application_context->main_loop;
+    main_loop = (AgsThread *) application_context->main_loop;
 
     pthread_mutex_unlock(application_mutex);
 
     /* get task thread and soundcard thread */
 
-    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 							 AGS_TYPE_TASK_THREAD);
-    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(audio_loop,
+    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
 								   AGS_TYPE_SOUNDCARD_THREAD);
 
     /* create tasks */
@@ -1304,7 +1304,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     tasks = g_list_prepend(tasks, init_channel);
     
     /* append channel for playback */
-    append_channel = ags_append_channel_new((GObject *) audio_loop,
+    append_channel = ags_append_channel_new((GObject *) main_loop,
 					    (GObject *) channel);
     tasks = g_list_prepend(tasks, append_channel);
 
@@ -1377,7 +1377,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       gdouble tact;
       guint x0_offset;
 
-      tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
 
       if((AGS_NOTE_EDIT_KEY_L_SHIFT & (note_edit->key_mask)) == 0 &&
 	 (AGS_NOTE_EDIT_KEY_R_SHIFT & (note_edit->key_mask)) == 0){
@@ -1435,7 +1435,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	}
       }
       
-      gtk_widget_queue_draw(note_edit);
+      gtk_widget_queue_draw((GtkWidget *) note_edit);
     }
     break;
   case GDK_KEY_Right:
@@ -1444,7 +1444,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       gdouble tact;
       guint x0_offset;
 
-      tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
       
       if((AGS_NOTE_EDIT_KEY_L_SHIFT & (note_edit->key_mask)) == 0 &&
 	 (AGS_NOTE_EDIT_KEY_R_SHIFT & (note_edit->key_mask)) == 0){
@@ -1497,7 +1497,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	}
       }
       
-      gtk_widget_queue_draw(note_edit);
+      gtk_widget_queue_draw((GtkWidget *) note_edit);
     }
     break;
   case GDK_KEY_Up:
@@ -1518,7 +1518,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 			    y0_offset * GTK_RANGE(note_edit->vscrollbar)->adjustment->step_increment);
       }
 
-      gtk_widget_queue_draw(note_edit);
+      gtk_widget_queue_draw((GtkWidget *) note_edit);
     }
     break;
   case GDK_KEY_Down:
@@ -1539,7 +1539,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 			    y0_offset * GTK_RANGE(note_edit->vscrollbar)->adjustment->step_increment);
       }
 
-      gtk_widget_queue_draw(note_edit);
+      gtk_widget_queue_draw((GtkWidget *) note_edit);
     }
     break;
   case GDK_KEY_space:
@@ -1550,7 +1550,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       i = 0;
       do_feedback = TRUE;
 
-      tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      tact = exp2(6.0 - (double) gtk_combo_box_get_active(GTK_COMBO_BOX(editor->toolbar->zoom)));
       
       while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					      i)) != -1){
@@ -1579,7 +1579,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	i++;
       }
 
-      gtk_widget_queue_draw(note_edit);
+      gtk_widget_queue_draw((GtkWidget *) note_edit);
 
       fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
     }
@@ -1612,7 +1612,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	i++;
       }
 
-      gtk_widget_queue_draw(note_edit);
+      gtk_widget_queue_draw((GtkWidget *) note_edit);
     }
     break;
   }
@@ -1683,7 +1683,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 
   AgsAddAudioSignal *add_audio_signal;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -1708,8 +1708,8 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 			    NULL,
 			    NULL);
   
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-  task_thread = ags_thread_find_type(audio_loop,
+  main_loop = (AgsThread *) application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG

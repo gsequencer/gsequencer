@@ -42,8 +42,6 @@ void ags_pad_editor_disconnect(AgsConnectable *connectable);
 void ags_pad_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_pad_editor_apply(AgsApplicable *applicable);
 void ags_pad_editor_reset(AgsApplicable *applicable);
-void ags_pad_editor_destroy(GtkObject *object);
-void ags_pad_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_pad_editor
@@ -216,12 +214,6 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 
   pad_editor = AGS_PAD_EDITOR(connectable);
 
-  g_signal_connect((GObject *) pad_editor, "destroy\0",
-		   G_CALLBACK(ags_pad_editor_destroy_callback), (gpointer) pad_editor);
-
-  g_signal_connect((GObject *) pad_editor, "show\0",
-		   G_CALLBACK(ags_pad_editor_show_callback), (gpointer) pad_editor);
-
   /* AgsAudio */
   audio = AGS_AUDIO(pad_editor->pad->audio);
 
@@ -233,7 +225,7 @@ ags_pad_editor_connect(AgsConnectable *connectable)
     line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
-    ags_line_editor_connect(AGS_CONNECTABLE(line_editor->data));
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->data));
 
     line_editor = line_editor->next;
   }
@@ -314,18 +306,6 @@ ags_pad_editor_reset(AgsApplicable *applicable)
   }
 
   g_list_free(line_editor_start);
-}
-
-void
-ags_pad_editor_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
-void
-ags_pad_editor_show(GtkWidget *widget)
-{
-  /* empty */
 }
 
 /**

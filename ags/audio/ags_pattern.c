@@ -374,7 +374,7 @@ ags_pattern_set_property(GObject *gobject,
 
       i = g_value_get_uint(value);
 
-      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
 
       pthread_mutex_lock(port->mutex);
 
@@ -390,7 +390,7 @@ ags_pattern_set_property(GObject *gobject,
 
       j = g_value_get_uint(value);
 
-      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
 
       pthread_mutex_lock(port->mutex);
 
@@ -406,7 +406,7 @@ ags_pattern_set_property(GObject *gobject,
 
       bit = g_value_get_uint(value);
 
-      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
 
       pthread_mutex_lock(port->mutex);
 
@@ -460,7 +460,7 @@ ags_pattern_get_property(GObject *gobject,
     {
       AgsPort *port;
 
-      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
 
       pthread_mutex_lock(port->mutex);
 
@@ -473,7 +473,7 @@ ags_pattern_get_property(GObject *gobject,
     {
       AgsPort *port;
 
-      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
 
       pthread_mutex_lock(port->mutex);
 
@@ -486,7 +486,7 @@ ags_pattern_get_property(GObject *gobject,
     {
       AgsPort *port;
 
-      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
 
       pthread_mutex_lock(port->mutex);
 
@@ -499,7 +499,7 @@ ags_pattern_get_property(GObject *gobject,
     {
       AgsPort *port;
 
-      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
 
       pthread_mutex_lock(port->mutex);
 

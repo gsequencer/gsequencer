@@ -48,15 +48,15 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  audio_preferences->connect_jack = gtk_button_new_with_label("connect jack\0");
-  gtk_box_pack_end(GTK_DIALOG(preferences)->action_area,
-		   audio_preferences->connect_jack,
+  audio_preferences->connect_jack = (GtkButton *) gtk_button_new_with_label("connect jack\0");
+  gtk_box_pack_end((GtkBox *) GTK_DIALOG(preferences)->action_area,
+		   (GtkWidget *) audio_preferences->connect_jack,
 		   TRUE, FALSE,
 		   0);  
 
-  audio_preferences->add = gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_end(GTK_DIALOG(preferences)->action_area,
-		   audio_preferences->add,
+  audio_preferences->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_end((GtkBox *) GTK_DIALOG(preferences)->action_area,
+		   (GtkWidget *) audio_preferences->add,
 		   TRUE, FALSE,
 		   0);  
 
@@ -79,15 +79,15 @@ ags_audio_preferences_connect_jack_callback(GtkWidget *widget, AgsAudioPreferenc
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
+  window = (AgsWindow *) preferences->window;
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
   application_mutex = window->application_mutex;
 
   list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    jack_server = list->data;
+    jack_server = (AgsJackServer *) list->data;
 
     ags_jack_server_connect_client(jack_server);
   }
@@ -111,9 +111,9 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
+  window = (AgsWindow *) preferences->window;
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
   application_mutex = window->application_mutex;
 
   /* retrieve first soundcard */
@@ -132,20 +132,20 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();
   soundcard_editor->soundcard = soundcard;
-  soundcard_editor->soundcard_thread = ags_thread_find_type(application_context->main_loop,
+  soundcard_editor->soundcard_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
 							    AGS_TYPE_SOUNDCARD_THREAD);
 
   
-  list = gtk_container_get_children(audio_preferences->soundcard_editor);
+  list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
   
   if(list != NULL){
-    gtk_widget_set_sensitive(soundcard_editor->buffer_size,
+    gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
 			     FALSE);
   }
 
   g_list_free(list);
   
-  gtk_box_pack_start(audio_preferences->soundcard_editor,
+  gtk_box_pack_start((GtkBox *) audio_preferences->soundcard_editor,
 		     soundcard_editor,
 		     FALSE, FALSE,
 		     0);
@@ -154,7 +154,7 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
   g_signal_connect(soundcard_editor->remove, "clicked\0",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
-  gtk_widget_show_all(soundcard_editor);
+  gtk_widget_show_all((GtkWidget *) soundcard_editor);
 
   /* reset default card */  
   g_object_set(window,
@@ -179,20 +179,20 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = preferences->window;
+  window = (AgsWindow *) preferences->window;
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
   application_mutex = window->application_mutex;
 
-  soundcard_editor = gtk_widget_get_ancestor(button,
-					     AGS_TYPE_SOUNDCARD_EDITOR);
+  soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
+								    AGS_TYPE_SOUNDCARD_EDITOR);
 
   if(!AGS_IS_JACK_DEVOUT(soundcard_editor->soundcard)){
     ags_soundcard_editor_remove_soundcard(soundcard_editor,
 					  soundcard_editor->soundcard);
   }
   
-  gtk_widget_destroy(soundcard_editor);
+  gtk_widget_destroy((GtkWidget *) soundcard_editor);
 
   /* reset default card */
   soundcard = NULL;
@@ -212,10 +212,10 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 	       NULL);
 
   /*  */
-  list = gtk_container_get_children(audio_preferences->soundcard_editor);
+  list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
   
   if(list != NULL){
-    gtk_widget_set_sensitive(AGS_SOUNDCARD_EDITOR(list->data)->buffer_size,
+    gtk_widget_set_sensitive((GtkWidget *) AGS_SOUNDCARD_EDITOR(list->data)->buffer_size,
 			     TRUE);
   }
 
@@ -246,7 +246,7 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 									 AGS_TYPE_PREFERENCES))->window);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -310,7 +310,7 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 									 AGS_TYPE_PREFERENCES))->window);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);

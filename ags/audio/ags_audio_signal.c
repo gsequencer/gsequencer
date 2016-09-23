@@ -1049,7 +1049,7 @@ ags_stream_alloc(guint buffer_size,
     break;
   default:
     g_warning("ags_stream_alloc(): unsupported word size\0");
-    return;
+    return(NULL);
   }
 
   memset(buffer, 0, buffer_size * word_size);

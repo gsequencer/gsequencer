@@ -164,7 +164,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	 (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0)){
 	radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										      g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
-	g_object_set_data(radio_button,
+	g_object_set_data((GObject *) radio_button,
 			  AGS_MACHINE_SELECTION_INDEX, list->data);
 	gtk_box_pack_start(GTK_BOX(vbox),
 			   GTK_WIDGET(radio_button),
@@ -178,7 +178,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
     }else if((AGS_MACHINE_SELECTION_AUTOMATION & (machine_selection->flags)) != 0){
       radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										    g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
-      g_object_set_data(radio_button,
+      g_object_set_data((GObject *) radio_button,
 			AGS_MACHINE_SELECTION_INDEX, list->data);
       gtk_box_pack_start(GTK_BOX(vbox),
 			 GTK_WIDGET(radio_button),

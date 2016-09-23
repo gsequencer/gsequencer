@@ -94,7 +94,7 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       gtk_toggle_button_set_active(toggle, FALSE);
 
       matrix->selected = (GtkToggleButton*) widget;
-      gtk_widget_queue_draw(matrix->cell_pattern);
+      gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern);
 
       /*  */
       AGS_MACHINE(matrix)->bank_1 = 
@@ -130,7 +130,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   AgsApplySequencerLength *apply_sequencer_length;
   
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -141,7 +141,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -149,13 +149,13 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
@@ -212,7 +212,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
   AgsToggleLed *toggle_led;
   
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -233,10 +233,10 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   gdk_threads_enter();
   
-  window = gtk_widget_get_ancestor(matrix,
+  window = gtk_widget_get_ancestor((GtkWidget *) matrix,
 				   AGS_TYPE_WINDOW);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -244,13 +244,13 @@ ags_matrix_tact_callback(AgsAudio *audio,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);

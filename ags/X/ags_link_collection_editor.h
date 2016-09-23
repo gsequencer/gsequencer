@@ -53,10 +53,9 @@ struct _AgsLinkCollectionEditorClass
 
 GType ags_link_collection_editor_get_type();
 
+void ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor);
 void ags_link_collection_editor_check_first_line(AgsLinkCollectionEditor *link_collection_editor);
-
 void ags_link_collection_editor_check_first_link(AgsLinkCollectionEditor *link_collection_editor);
-
 void ags_link_collection_editor_check_count(AgsLinkCollectionEditor *link_collection_editor);
 
 AgsLinkCollectionEditor* ags_link_collection_editor_new(GType channel_type);

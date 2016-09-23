@@ -327,16 +327,16 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->dssi_descriptor = NULL;
   
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add(gtk_bin_get_child(dssi_bridge),
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) dssi_bridge),
 		    (GtkWidget *) vbox);
 
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
-  label = gtk_label_new("program\0");
+  label = (GtkLabel *) gtk_label_new("program\0");
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -348,7 +348,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  AGS_MACHINE(dssi_bridge)->bridge = ags_effect_bridge_new(audio);
+  AGS_MACHINE(dssi_bridge)->bridge = (GtkWidget *) ags_effect_bridge_new(audio);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge,
 		     FALSE, FALSE,
@@ -356,8 +356,8 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 
   
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_box_pack_start(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),
-		     table,
+  gtk_box_pack_start((GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),
+		     (GtkWidget *) table,
 		     FALSE, FALSE,
 		     0);
 
@@ -404,7 +404,7 @@ ags_dssi_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = gtk_widget_get_toplevel(dssi_bridge);
+	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) dssi_bridge);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s\0",
@@ -591,7 +591,7 @@ ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_brid
 
   /* block update bulk port */
   list_start = 
-    list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
+    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -650,7 +650,7 @@ ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_brid
       
       GList *port;
 
-      child_widget = gtk_bin_get_child(list->data);
+      child_widget = gtk_bin_get_child((GtkBin *) list->data);
       
       if(recall != NULL){
 	port = AGS_RECALL(recall->data)->port;
@@ -661,9 +661,9 @@ ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_brid
 	    if(AGS_IS_DIAL(child_widget)){
 	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw(child_widget);
+	      ags_dial_draw((AgsDial *) child_widget);
 	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active(child_widget,
+	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
 	    }
 
@@ -766,7 +766,7 @@ ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
       
       while(channel != next_pad){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	audio_signal->loop_start = 0;
@@ -790,7 +790,7 @@ ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
 
       while(channel != next_pad){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_audio_signal_stream_resize(audio_signal,
@@ -851,7 +851,7 @@ ags_dssi_bridge_set_pads(AgsAudio *audio, GType type,
 
       while(channel != NULL){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	audio_signal->loop_start = 0;
@@ -881,7 +881,7 @@ ags_dssi_bridge_set_pads(AgsAudio *audio, GType type,
 
       while(channel != NULL){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_audio_signal_stream_resize(audio_signal,
@@ -928,10 +928,10 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
     return;
   }
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
-  dssi_bridge = machine;
+  dssi_bridge = (AgsDssiBridge *) machine;
   audio = machine->audio;
 
   /* ags-delay */
@@ -993,15 +993,15 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   list = ags_recall_find_type(audio->recall, AGS_TYPE_ROUTE_DSSI_AUDIO_RUN);
 
   if(list != NULL){
-    recall_notation_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(list->data);
+    recall_route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(list->data);
 
     /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
+    g_object_set(G_OBJECT(recall_route_dssi_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
 
     /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
+    g_object_set(G_OBJECT(recall_route_dssi_audio_run),
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }
@@ -1037,7 +1037,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   ags_dssi_bridge_input_map_recall(dssi_bridge, 0, 0);
 
   /* add to effect bridge */
-  ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
+  ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
 			     NULL,
 			     dssi_bridge->filename,
 			     dssi_bridge->effect);
@@ -1239,7 +1239,7 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   /*  */
-  gtk_list_store_clear(gtk_combo_box_get_model(dssi_bridge->program));
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(dssi_bridge->program))));
   
   /*  */
   effect_index = AGS_BASE_PLUGIN(dssi_plugin)->effect_index;
@@ -1311,8 +1311,8 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
     }
   }
   
-  gtk_combo_box_set_model(dssi_bridge->program,
-			  model);
+  gtk_combo_box_set_model(GTK_COMBO_BOX(dssi_bridge->program),
+			  GTK_TREE_MODEL(model));
 }
 
 /**

@@ -156,7 +156,7 @@ ags_display_tact_launch(AgsTask *task)
   display_tact = AGS_DISPLAY_TACT(task);
 
   navigation = AGS_NAVIGATION(display_tact->navigation);
-  window = gtk_widget_get_ancestor(navigation,
+  window = gtk_widget_get_ancestor((GtkWidget *) navigation,
 				   AGS_TYPE_WINDOW);
 
   navigation->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
@@ -167,8 +167,9 @@ ags_display_tact_launch(AgsTask *task)
 							ags_soundcard_get_bpm(AGS_SOUNDCARD(window->soundcard)),
 							ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
   
-  gtk_label_set_label(navigation->duration_time, timestr);
-  gtk_widget_queue_draw(navigation->duration_time);
+  gtk_label_set_label(navigation->duration_time,
+		      timestr);
+  gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   g_free(timestr);
 
   gdk_threads_leave();

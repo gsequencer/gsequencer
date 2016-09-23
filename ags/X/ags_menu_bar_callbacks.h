@@ -27,9 +27,6 @@
 
 #include <ags/X/ags_menu_bar.h>
 
-gboolean ags_menu_bar_destroy_callback(GtkObject *object, AgsMenuBar *menu_bar);
-void ags_menu_bar_show_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
-
 void ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);

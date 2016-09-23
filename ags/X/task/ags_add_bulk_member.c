@@ -25,6 +25,7 @@
 
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
+#include <ags/X/ags_bulk_member.h>
 
 void ags_add_bulk_member_class_init(AgsAddBulkMemberClass *add_bulk_member);
 void ags_add_bulk_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -161,13 +162,13 @@ ags_add_bulk_member_launch(AgsTask *task)
   add_bulk_member = AGS_ADD_BULK_MEMBER(task);
 
   gtk_table_attach(AGS_EFFECT_BULK(add_bulk_member->effect_bulk)->table,
-		   add_bulk_member->bulk_member,
+		   (GtkWidget *) add_bulk_member->bulk_member,
 		   add_bulk_member->x, add_bulk_member->x + add_bulk_member->width,
 		   add_bulk_member->y, add_bulk_member->y + add_bulk_member->height,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   ags_connectable_connect(AGS_CONNECTABLE(add_bulk_member->bulk_member));
-  gtk_widget_show_all(AGS_EFFECT_BULK(add_bulk_member->effect_bulk)->table);
+  gtk_widget_show_all((GtkWidget *) AGS_EFFECT_BULK(add_bulk_member->effect_bulk)->table);
 
   /* find ports */
   ags_bulk_member_find_port(add_bulk_member->bulk_member);

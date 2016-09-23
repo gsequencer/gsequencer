@@ -4259,8 +4259,8 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
 	 recall->recall_id->recycling_context->parent == NULL){
 	AgsRecyclingContext *parent_container;
 
-	parent_container = ags_recall_id_find_parent_recycling_context(AGS_AUDIO(channel->audio)->recall_id,
-								       recall->recall_id->recycling_context);
+	parent_container = (AgsRecyclingContext *) ags_recall_id_find_parent_recycling_context(AGS_AUDIO(channel->audio)->recall_id,
+											       recall->recall_id->recycling_context);
 	
 	if(recall_id->recycling_context->parent != parent_container){
 	  list_recall = list_recall->next;
@@ -6154,7 +6154,7 @@ ags_channel_recursive_set_property(AgsChannel *channel,
       return;
     }
 
-    ags_channel_set_property((GObject *) channel,
+    ags_channel_set_property(channel,
 			     parameter, n_params);
     
     ags_channel_recurisve_set_property_down_input(channel,
@@ -6495,7 +6495,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				 "recycling-context\0", recall_id->recycling_context,
 				 NULL);
 	ags_channel_add_recall_id(current,
-				  (GObject *) recall_id);
+				  recall_id);
 
 	if(do_playback){
 	  recall_id->flags |= AGS_RECALL_ID_PLAYBACK;

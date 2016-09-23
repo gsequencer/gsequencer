@@ -89,7 +89,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     AgsChannel *channel;
 
     AgsMutexManager *mutex_manager;
-    AgsThread *audio_loop;
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
 
     AgsApplicationContext *application_context;
@@ -99,13 +99,13 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     
     pthread_mutex_t *application_mutex;
     
-    machine = gtk_widget_get_ancestor(cell_pattern,
-				      AGS_TYPE_MACHINE);
+    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						     AGS_TYPE_MACHINE);
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						   AGS_TYPE_WINDOW);
 
-    application_context = window->application_context;
+    application_context = (AgsApplicationContext *) window->application_context;
 
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -113,11 +113,11 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     /* get audio loop */
     pthread_mutex_lock(application_mutex);
 
-    audio_loop = application_context->main_loop;
+    main_loop = (AgsThread *) application_context->main_loop;
 
     pthread_mutex_unlock(application_mutex);
   
-    task_thread = ags_thread_find_type(audio_loop,
+    task_thread = ags_thread_find_type(main_loop,
 				       AGS_TYPE_TASK_THREAD);
         
     i = (guint) floor((double) event->y / (double) cell_pattern->cell_height);
@@ -166,8 +166,8 @@ ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *ev
       if((AGS_CELL_PATTERN_KEY_L_CONTROL & (cell_pattern->key_mask)) != 0 || (AGS_CELL_PATTERN_KEY_R_CONTROL & (cell_pattern->key_mask)) != 0){
 	AgsMachine *machine;
 
-	machine = gtk_widget_get_ancestor(cell_pattern,
-					  AGS_TYPE_MACHINE);
+	machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+							 AGS_TYPE_MACHINE);
 	
 	ags_machine_copy_pattern(machine);
       }
@@ -186,7 +186,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       
   AgsChannel *channel;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   auto void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel);
@@ -200,7 +200,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     AgsAppendChannel *append_channel;
 
     AgsMutexManager *mutex_manager;
-    AgsAudioLoop *audio_loop;
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsSoundcardThread *soundcard_thread;
 
@@ -212,7 +212,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
-    application_context = window->application_context;
+    application_context = (AgsApplicationContext *) window->application_context;
     
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -228,7 +228,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     pthread_mutex_lock(channel_mutex);
   
     soundcard = channel->soundcard;
-    audio = channel->audio;
+    audio = (AgsAudio *) channel->audio;
 
     pthread_mutex_unlock(channel_mutex);
   
@@ -242,12 +242,12 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     pthread_mutex_lock(audio_mutex);
   
-    audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+    main_loop = (AgsThread *) application_context->main_loop;
     
-    task_thread = ags_thread_find_type(audio_loop,
-				       AGS_TYPE_TASK_THREAD);
-    soundcard_thread = ags_thread_find_type(audio_loop,
-					    AGS_TYPE_SOUNDCARD_THREAD);
+    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+							 AGS_TYPE_TASK_THREAD);
+    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
+								   AGS_TYPE_SOUNDCARD_THREAD);
 
     tasks = NULL;
 
@@ -259,7 +259,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     tasks = g_list_prepend(tasks, init_channel);
     
     /* append channel for playback */
-    append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
+    append_channel = ags_append_channel_new(G_OBJECT(main_loop),
 					    G_OBJECT(channel));
     tasks = g_list_prepend(tasks, append_channel);
 
@@ -279,14 +279,14 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     return(FALSE);
   }
 
-  machine = gtk_widget_get_ancestor(cell_pattern,
-				    AGS_TYPE_MACHINE);
-  window = gtk_widget_get_ancestor(cell_pattern,
-				   AGS_TYPE_WINDOW);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						   AGS_TYPE_MACHINE);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						 AGS_TYPE_WINDOW);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_APPLICATION_CONTEXT(window->application_context)->main_loop);
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop;
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -425,8 +425,8 @@ ags_cell_pattern_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 
   guint line;
   
-  machine = gtk_widget_get_ancestor(cell_pattern,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
+						   AGS_TYPE_MACHINE);
     
   channel = ags_channel_nth(machine->audio->input,
 			    toggle_pattern_bit->line);
@@ -448,7 +448,7 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   AgsAddAudioSignal *add_audio_signal;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -461,7 +461,7 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   channel = AGS_INIT_CHANNEL(task)->channel;
   soundcard = channel->soundcard;
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+  application_context = (AgsApplicationContext *) ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -475,9 +475,9 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   pthread_mutex_lock(audio_mutex);
   
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  main_loop = (AgsThread *) application_context->main_loop;
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   g_message("launch\0");
   

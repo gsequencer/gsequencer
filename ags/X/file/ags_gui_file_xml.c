@@ -19,10 +19,6 @@
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
-#include <libxml/parser.h>
-#include <libxml/xlink.h>
-#include <libxml/xpath.h>
-
 #include <ags/object/ags_application_context.h>
 
 #include <ags/plugin/ags_plugin_factory.h>
@@ -36,6 +32,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_util.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -54,6 +51,12 @@
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
+
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+
+#include <math.h>
 
 #define AGS_FILE_READ_EDITOR_PARAMETER_NAME "ags-file-read-editor-parameter-name\0"
 
@@ -549,15 +552,8 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
   AgsFileLookup *file_lookup;
   GType machine_type;
   xmlNode *child;
-  static gboolean machine_type_is_registered = FALSE;
 
   if(*machine == NULL){
-    if(!machine_type_is_registered){
-      ags_xorg_application_context_register_types();
-
-      machine_type_is_registered = TRUE;
-    }
-
     machine_type = g_type_from_name(xmlGetProp(node,
 					       AGS_FILE_TYPE_PROP));
 
@@ -688,7 +684,7 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 			   18)){
 	ags_file_read_effect_bridge(file,
 				    child,
-				    &(gobject->bridge));	
+				    (AgsEffectBridge **) &(gobject->bridge));	
       }
     }
 
@@ -715,7 +711,7 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 	       "audio\0", (AgsAudio *) id_ref->ref,
 	       NULL);
 
-  AGS_AUDIO(id_ref->ref)->machine = (GtkWidget *) machine;
+  AGS_AUDIO(id_ref->ref)->machine = (GObject *) machine;
 
   g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_machine_set_audio_channels_callback), machine);
@@ -888,7 +884,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
   if(machine->bridge != NULL){
     child = ags_file_write_effect_bridge(file,
 					 node,
-					 machine->bridge);
+					 (AgsEffectBridge *) machine->bridge);
   }
 
   return(node);
@@ -1935,16 +1931,14 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 
   /* check misc */
   if(GTK_IS_MISC(child_widget)){
-    guint xalign, yalign;
+    gfloat xalign, yalign;
     guint xpad, ypad;
 
-    xalign = (guint) g_ascii_strtoull(xmlGetProp(node, "xalign\0"),
-				      NULL,
-				      10);
+    xalign = (gfloat) g_ascii_strtod(xmlGetProp(node, "xalign\0"),
+				     NULL);
 
-    yalign = (guint) g_ascii_strtoull(xmlGetProp(node, "yalign\0"),
-				      NULL,
-				      10);
+    yalign = (gfloat) g_ascii_strtod(xmlGetProp(node, "yalign\0"),
+				     NULL);
 
     xpad = (guint) g_ascii_strtoull(xmlGetProp(node, "xpad\0"),
 				    NULL,
@@ -2100,8 +2094,8 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
     AgsRecallHandler *recall_handler;
     GList *list;
 
-    line = gtk_widget_get_ancestor(line_member,
-				   AGS_TYPE_LINE);
+    line = (AgsLine *) gtk_widget_get_ancestor((GtkWidget *) line_member,
+					       AGS_TYPE_LINE);
     source = line->channel;
     
     /* play - connect run_post */
@@ -2216,10 +2210,10 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 			   &xalign, &yalign);
     xmlNewProp(node,
 	       "xalign\0",
-	       g_strdup_printf("%d\0", xalign));
+	       g_strdup_printf("%f\0", xalign));
     xmlNewProp(node,
 	       "yalign\0",
-	       g_strdup_printf("%d\0", yalign));
+	       g_strdup_printf("%f\0", yalign));
     
     gtk_misc_get_padding(GTK_MISC(child_widget),
 			 &xpad, &ypad);
@@ -2508,11 +2502,11 @@ ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effe
 		       6)){
 	  ags_file_read_effect_bulk(file,
 				    child,
-				    &(gobject->bulk_output));
+				    (AgsEffectBulk **) &(gobject->bulk_output));
 	}else{
 	  ags_file_read_effect_bulk(file,
 				    child,
-				    &(gobject->bulk_input));
+				    (AgsEffectBulk **) &(gobject->bulk_input));
 	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-effect-pad-list\0",
@@ -2530,7 +2524,7 @@ ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effe
 		       "output\0",
 		       7)){
 	  if(!GTK_IS_BOX(gobject->output)){
-	    ags_container_add_all(gobject->output,
+	    ags_container_add_all((GtkContainer *) gobject->output,
 				  effect_pad);
 	  }else{
 	    list = effect_pad;
@@ -2546,7 +2540,7 @@ ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effe
 	  }
 	}else{
 	  if(!GTK_IS_BOX(gobject->input)){
-	    ags_container_add_all(gobject->input,
+	    ags_container_add_all((GtkContainer *) gobject->input,
 				  effect_pad);
 	  }else{
 	    list = effect_pad;
@@ -2662,7 +2656,7 @@ ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *ef
   if(effect_bridge->bulk_output != NULL){
     child = ags_file_write_effect_bulk(file,
 				       node,
-				       effect_bridge->bulk_output);
+				       (AgsEffectBulk *) effect_bridge->bulk_output);
     xmlNewProp(child,
 	       AGS_FILE_SCOPE_PROP,
 	       "output\0");
@@ -2671,7 +2665,7 @@ ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *ef
   if(effect_bridge->output != NULL){
     GList *list;
 
-    list = gtk_container_get_children(effect_bridge->output);
+    list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
     child = ags_file_write_effect_pad_list(file,
 					   node,
 					   list);
@@ -2681,13 +2675,13 @@ ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *ef
   if(effect_bridge->bulk_input != NULL){
     child = ags_file_write_effect_bulk(file,
 				       node,
-				       effect_bridge->bulk_input);
+				       (AgsEffectBulk *) effect_bridge->bulk_input);
   }
   
   if(effect_bridge->input != NULL){
     GList *list;
 
-    list = gtk_container_get_children(effect_bridge->input);
+    list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
     child = ags_file_write_effect_pad_list(file,
 					   node,
 					   list);
@@ -2849,8 +2843,8 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 
   if(*effect_bulk == NULL){
     effect_bulk_type = g_type_from_name(xmlGetProp(node,
-						     AGS_FILE_TYPE_PROP));
-
+						   AGS_FILE_TYPE_PROP));
+    
     gobject = (AgsEffectBulk *) g_object_new(effect_bulk_type,
 					       NULL);
     *effect_bulk = gobject;
@@ -3050,7 +3044,7 @@ ags_file_write_effect_bulk(AgsFile *file, xmlNode *parent, AgsEffectBulk *effect
   if(effect_bulk->table != NULL){
     GList *list;
 
-    list = gtk_container_get_children(effect_bulk->table);
+    list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
     child = ags_file_write_bulk_member_list(file,
 					    node,
 					    list);
@@ -3288,16 +3282,14 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
 
   /* check misc */
   if(GTK_IS_MISC(child_widget)){
-    guint xalign, yalign;
+    gfloat xalign, yalign;
     guint xpad, ypad;
 
-    xalign = (guint) g_ascii_strtoull(xmlGetProp(node, "xalign\0"),
-				      NULL,
-				      10);
+    xalign = (gfloat) g_ascii_strtod(xmlGetProp(node, "xalign\0"),
+				     NULL);
 
-    yalign = (guint) g_ascii_strtoull(xmlGetProp(node, "yalign\0"),
-				      NULL,
-				      10);
+    yalign = (gfloat) g_ascii_strtod(xmlGetProp(node, "yalign\0"),
+				     NULL);
 
     xpad = (guint) g_ascii_strtoull(xmlGetProp(node, "xpad\0"),
 				    NULL,
@@ -3415,8 +3407,8 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
 				     &parameter, &n_params, NULL);
 
 	for(i = 0; i < n_params; i++){
-	  file_lookup = ags_file_lookup_find_by_reference(file->lookup,
-							  &(parameter[i].value));
+	  file_lookup = (AgsFileLookup *) ags_file_lookup_find_by_reference(file->lookup,
+									    &(parameter[i].value));
 	  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
 				 G_CALLBACK(ags_file_read_bulk_member_resolve_port), gobject);
 	}
@@ -3511,8 +3503,8 @@ ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_m
 	     "height\0",
 	     g_strdup_printf("%d\0", height));
 
-  gtk_container_child_get(GTK_WIDGET(bulk_member)->parent,
-			  bulk_member,
+  gtk_container_child_get((GtkContainer *) GTK_WIDGET(bulk_member)->parent,
+			  (GtkWidget *) bulk_member,
 			  "left-attach\0", &left_attach,
 			  "right-attach\0", &right_attach,
 			  "top-attach\0", &top_attach,
@@ -3550,10 +3542,10 @@ ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_m
 			   &xalign, &yalign);
     xmlNewProp(node,
 	       "xalign\0",
-	       g_strdup_printf("%d\0", xalign));
+	       g_strdup_printf("%f\0", xalign));
     xmlNewProp(node,
 	       "yalign\0",
-	       g_strdup_printf("%d\0", yalign));
+	       g_strdup_printf("%f\0", yalign));
     
     gtk_misc_get_padding(GTK_MISC(child_widget),
 			 &xpad, &ypad);
@@ -3992,7 +3984,8 @@ ags_file_write_effect_pad(AgsFile *file, xmlNode *parent, AgsEffectPad *effect_p
     guint x0, x1;
     guint y0, y1;
 
-    gtk_container_child_get(effect_pad->table, effect_line->data,
+    gtk_container_child_get((GtkContainer *) effect_pad->table,
+			    (GtkWidget *) effect_line->data,
 			    "left-attach", &x0,
 			    "right-attach", &x1,
 			    "top-attach", &y0,
@@ -4045,7 +4038,7 @@ ags_file_read_effect_pad_resolve_channel(AgsFileLookup *file_lookup,
 							      AGS_TYPE_EFFECT_BRIDGE);
 
   if(effect_bridge->output != NULL){
-    list = gtk_container_get_children(effect_bridge->output);
+    list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
 
     if(list != NULL &&
        g_list_find(list,
@@ -4285,8 +4278,8 @@ ags_file_read_effect_line(AgsFile *file, xmlNode *node, AgsEffectLine **effect_l
 	/* remove default line members */
 	gtk_widget_destroy(GTK_WIDGET(gobject->table));
 
-	gobject->table = gtk_table_new(1, 1,
-				       FALSE);
+	gobject->table = (GtkTable *) gtk_table_new(1, 1,
+						    FALSE);
 	gtk_table_set_row_spacings(gobject->table,
 				   2);
 	gtk_table_set_col_spacings(gobject->table,
@@ -4420,12 +4413,13 @@ ags_file_write_effect_line(AgsFile *file, xmlNode *parent, AgsEffectLine *effect
       guint x0, x1;
       guint y0, y1;
       
-      list = gtk_container_get_children(effect_line->table);
+      list = gtk_container_get_children((GtkContainer *) effect_line->table);
       line_child = g_list_find(list,
 			       line_member->data)->data;
       g_list_free(list);
 
-      gtk_container_child_get(effect_line->table, line_child,
+      gtk_container_child_get((GtkContainer *) effect_line->table,
+			      (GtkWidget *) line_child->data,
 			      "left-attach", &x0,
 			      "right-attach", &x1,
 			      "top-attach", &y0,
@@ -4484,7 +4478,7 @@ ags_file_read_effect_line_resolve_channel(AgsFileLookup *file_lookup,
 
     pad = (AgsPad *) gtk_widget_get_ancestor((GtkWidget *) line,
 					     AGS_TYPE_PAD);
-    list = gtk_container_get_children(effect_bridge->output);
+    list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
 
     if(list != NULL &&
        g_list_find(list,
@@ -5258,7 +5252,7 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
     editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
 						   AGS_TYPE_EDITOR);
 
-    list = gtk_container_get_children(machine_selector);
+    list = gtk_container_get_children((GtkContainer *) machine_selector);
     
     machine_radio_button = g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
 					NULL);
@@ -6002,12 +5996,12 @@ ags_file_write_automation_edit(AgsFile *file, xmlNode *parent, AgsAutomationEdit
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x\0", automation_edit->flags));
 
-  if(g_type_is_a(automation_edit,
+  if(g_type_is_a(automation_edit->scope,
 		 AGS_TYPE_AUDIO)){
     xmlNewProp(node,
 	       AGS_FILE_SCOPE_PROP,
 	       g_strdup("audio\0"));
-  }else if(g_type_is_a(automation_edit,
+  }else if(g_type_is_a(automation_edit->scope,
 		       AGS_TYPE_OUTPUT)){
     xmlNewProp(node,
 	       AGS_FILE_SCOPE_PROP,
@@ -6184,7 +6178,7 @@ ags_file_read_automation_toolbar(AgsFile *file, xmlNode *node, AgsAutomationTool
     gtk_combo_box_set_active_iter((GtkComboBox *) gobject->zoom,
 				  &iter);
 
-    gobject->zoom_history = gtk_combo_box_get_active((GtkComboBox *) gobject->zoom);
+    gobject->zoom_history = gtk_combo_box_get_active(GTK_COMBO_BOX(gobject->zoom));
   }
 }
 
@@ -6233,7 +6227,7 @@ ags_file_write_automation_toolbar(AgsFile *file, xmlNode *parent, AgsAutomationT
 
   xmlNewProp(node,
 	     "zoom\0",
-	     g_strdup_printf("%s\0", gtk_combo_box_text_get_active_text(automation_toolbar->zoom)));
+	     g_strdup_printf("%s\0", gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(automation_toolbar->zoom))));
 
   xmlAddChild(parent,
 	      node);  

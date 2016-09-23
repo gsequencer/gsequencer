@@ -138,25 +138,25 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   GList *list;
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start(plugin_browser->dialog.vbox,
+  gtk_box_pack_start((GtkBox *) plugin_browser->dialog.vbox,
 		     GTK_WIDGET(vbox),
 		     FALSE, FALSE,
 		     0);
   
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(vbox,
+  gtk_box_pack_start((GtkBox *) vbox,
 		     hbox,
 		     FALSE, FALSE,
 		     0);
 
   label = gtk_label_new("Plugin type:\0");
-  gtk_box_pack_start(hbox,
+  gtk_box_pack_start((GtkBox *) hbox,
 		     label,
 		     FALSE, FALSE,
 		     0);
 
   plugin_browser->plugin_type = gtk_combo_box_text_new();
-  gtk_box_pack_start(hbox,
+  gtk_box_pack_start((GtkBox *) hbox,
 		     plugin_browser->plugin_type,
 		     FALSE, FALSE,
 		     0);
@@ -168,16 +168,16 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 
   plugin_browser->active_browser = NULL;
   
-  plugin_browser->lv2_browser = ags_lv2_browser_new();
-  gtk_box_pack_start(vbox,
+  plugin_browser->lv2_browser = (GtkWidget *) ags_lv2_browser_new();
+  gtk_box_pack_start((GtkBox *) vbox,
 		     plugin_browser->lv2_browser,
 		     FALSE, FALSE,
 		     0);
 
   plugin_browser->dssi_browser = NULL;
   
-  plugin_browser->ladspa_browser = ags_ladspa_browser_new();
-  gtk_box_pack_start(vbox,
+  plugin_browser->ladspa_browser = (GtkWidget *) ags_ladspa_browser_new();
+  gtk_box_pack_start((GtkBox *) vbox,
 		     plugin_browser->ladspa_browser,
 		     FALSE, FALSE,
 		     0);
@@ -185,12 +185,12 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   plugin_browser->vst_browser = NULL;
 
   /* action area */
-  gtk_dialog_add_buttons(plugin_browser,
+  gtk_dialog_add_buttons((GtkDialog *) plugin_browser,
 			 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 			 GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
 			 NULL);
 
-  list = gtk_container_get_children(gtk_dialog_get_action_area(plugin_browser));
+  list = gtk_container_get_children((GtkContainer *) gtk_dialog_get_action_area((GtkDialog *) plugin_browser));
   plugin_browser->ok = GTK_BUTTON(list->data);
   plugin_browser->cancel = GTK_BUTTON(list->next->data);
   g_list_free(list);
@@ -284,9 +284,9 @@ gchar*
 ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-    return(ags_lv2_browser_get_plugin_filename(plugin_browser->lv2_browser));
+    return(ags_lv2_browser_get_plugin_filename((AgsLv2Browser *) plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-    return(ags_ladspa_browser_get_plugin_filename(plugin_browser->ladspa_browser));
+    return(ags_ladspa_browser_get_plugin_filename((AgsLadspaBrowser *) plugin_browser->ladspa_browser));
   }else{
     return(NULL);
   }
@@ -306,9 +306,9 @@ gchar*
 ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-    return(ags_lv2_browser_get_plugin_effect(plugin_browser->lv2_browser));
+    return(ags_lv2_browser_get_plugin_effect((AgsLv2Browser *) plugin_browser->lv2_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-    return(ags_ladspa_browser_get_plugin_effect(plugin_browser->ladspa_browser));
+    return(ags_ladspa_browser_get_plugin_effect((AgsLadspaBrowser *) plugin_browser->ladspa_browser));
   }else{
     return(NULL);
   }

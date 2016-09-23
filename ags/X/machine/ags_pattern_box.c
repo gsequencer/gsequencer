@@ -242,7 +242,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   pattern_box->active_led = 0;
 
   pattern_box->led = (GtkHBox *) gtk_hbox_new(FALSE, 16);
-  gtk_table_attach(pattern_box,
+  gtk_table_attach((GtkTable *) pattern_box,
 		   (GtkWidget *) pattern_box->led,
 		   0, 1,
 		   0, 1,
@@ -260,7 +260,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   g_timeout_add(1000 / 30, (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
 
   for(i = 0; i < pattern_box->n_controls; i++){
-    led = (GtkToggleButton *) ags_led_new();
+    led = (AgsLed *) ags_led_new();
     gtk_widget_set_size_request((GtkWidget *) led,
 				AGS_PATTERN_BOX_LED_DEFAULT_WIDTH, AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT);
     gtk_box_pack_start((GtkBox *) pattern_box->led,
@@ -271,7 +271,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   /* pattern */
   pattern_box->pattern = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach(pattern_box,
+  gtk_table_attach((GtkTable *) pattern_box,
 		   (GtkWidget *) pattern_box->pattern,
 		   0, 1,
 		   1, 2,
@@ -290,7 +290,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   /* page / offset */
   pattern_box->offset = (GtkVBox*) gtk_vbox_new(FALSE, 0);
-  gtk_table_attach_defaults(pattern_box,
+  gtk_table_attach_defaults((GtkTable *) pattern_box,
 			    (GtkWidget *) pattern_box->offset,
 			    1, 2,
 			    0, 2);
@@ -404,7 +404,7 @@ ags_pattern_box_get_accessible(GtkWidget *widget)
     g_object_set_qdata(G_OBJECT(widget),
 		       quark_accessible_object,
 		       accessible);
-    gtk_accessible_set_widget(accessible,
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
 			      widget);
   }
   
@@ -440,7 +440,7 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  pattern_box = gtk_accessible_get_widget(ATK_OBJECT(action));
+  pattern_box = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = gdk_event_new(GDK_KEY_PRESS);
   key_release = gdk_event_new(GDK_KEY_RELEASE);
@@ -452,8 +452,10 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
-      gtk_widget_event(pattern_box, key_press);
-      gtk_widget_event(pattern_box, key_release);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_PATTERN_BOX_MOVE_RIGHT:
@@ -462,8 +464,10 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Right;
       
       /* send event */
-      gtk_widget_event(pattern_box, key_press);
-      gtk_widget_event(pattern_box, key_release);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_PATTERN_BOX_INDEX_DECREMENT:
@@ -472,8 +476,10 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
     
       /* send event */
-      gtk_widget_event(pattern_box, key_press);
-      gtk_widget_event(pattern_box, key_release);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_PATTERN_BOX_INDEX_INCREMENT:
@@ -482,8 +488,10 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(pattern_box, key_press);
-      gtk_widget_event(pattern_box, key_release);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_PATTERN_BOX_TOGGLE_PAD:
@@ -492,8 +500,10 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_space;
       
       /* send event */
-      gtk_widget_event(pattern_box, key_press);
-      gtk_widget_event(pattern_box, key_release);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_release);
     }
     break;
   case AGS_PATTERN_BOX_COPY_PATTERN:
@@ -509,10 +519,14 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
 	modifier_release->keyval = GDK_KEY_Control_R;
 
       /* send event */
-      gtk_widget_event(pattern_box, modifier_press);
-      gtk_widget_event(pattern_box, key_press);
-      gtk_widget_event(pattern_box, key_release);
-      gtk_widget_event(pattern_box, modifier_release);      
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) pattern_box,
+		       (GdkEvent *) modifier_release);      
     }    
     break;
   }
@@ -623,8 +637,8 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   gboolean set_active;
   guint i;
 
-  machine = gtk_widget_get_ancestor(pattern_box,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
+						   AGS_TYPE_MACHINE);
 
   if(machine->selected_input_pad == NULL){
     return;
@@ -716,8 +730,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     gdk_threads_enter();
 
-    machine = gtk_widget_get_ancestor(pattern_box,
-				      AGS_TYPE_MACHINE);
+    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
+						     AGS_TYPE_MACHINE);
 
     if(machine == NULL){
       gdk_threads_leave();
@@ -789,7 +803,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     pthread_mutex_unlock(audio_mutex);
     
     /* offset */
-    list = gtk_container_get_children(pattern_box->offset);
+    list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
     offset = 0;
     
     for(i = 0; list != NULL; i++){
@@ -804,7 +818,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     g_list_free(list);
 
     /* led */
-    list = gtk_container_get_children(pattern_box->led);
+    list = gtk_container_get_children((GtkContainer *) pattern_box->led);
     
     for(i = 0; list != NULL; i++){
       if(i == active_led_new){

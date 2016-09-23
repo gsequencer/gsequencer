@@ -25,7 +25,7 @@ void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)
 {
-  gtk_widget_show_all(effect_bulk->plugin_browser);
+  gtk_widget_show_all((GtkWidget *) effect_bulk->plugin_browser);
 }
 
 void
@@ -48,7 +48,7 @@ ags_effect_bulk_remove_callback(GtkWidget *button,
     return;
   }
 
-  bulk_member = gtk_container_get_children(effect_bulk->bulk_member);
+  bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->bulk_member);
   
   /* iterate bulk member */
   for(nth = 0; bulk_member != NULL; nth++){
@@ -109,8 +109,8 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
   case GTK_RESPONSE_ACCEPT:
     {
       /* retrieve plugin */
-      filename = ags_plugin_browser_get_plugin_filename(effect_bulk->plugin_browser);
-      effect = ags_plugin_browser_get_plugin_effect(effect_bulk->plugin_browser);
+      filename = ags_plugin_browser_get_plugin_filename((AgsPluginBrowser *) effect_bulk->plugin_browser);
+      effect = ags_plugin_browser_get_plugin_effect((AgsPluginBrowser *) effect_bulk->plugin_browser);
 
       ags_effect_bulk_plugin_browser_response_create_entry();
 	

@@ -399,13 +399,13 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   lv2_bridge->has_midi = FALSE;
 
-  AGS_MACHINE(lv2_bridge)->bridge = ags_effect_bridge_new(audio);
-  gtk_container_add(gtk_bin_get_child(lv2_bridge),
+  AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  gtk_container_add(gtk_bin_get_child((GtkBin *) lv2_bridge),
 		    (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_box_pack_start(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge),
-		     table,
+		     (GtkWidget *) table,
 		     FALSE, FALSE,
 		     0);
 
@@ -415,7 +415,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 											     AGS_EFFECT_BULK_HIDE_ENTRIES |
 											     AGS_EFFECT_BULK_SHOW_LABELS);
   gtk_table_attach(table,
-		   AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
@@ -436,17 +436,17 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 			  "experimental\0",
 			  13)){
     item = gtk_image_menu_item_new_with_label("Lv2\0");
-    gtk_menu_shell_append(AGS_MACHINE(lv2_bridge)->popup,
-			  item);
-    gtk_widget_show(item);
+    gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(lv2_bridge)->popup,
+			  (GtkWidget *) item);
+    gtk_widget_show((GtkWidget *) item);
   
     lv2_bridge->lv2_menu = gtk_menu_new();
     gtk_menu_item_set_submenu(item,
-			      lv2_bridge->lv2_menu);
+			      (GtkWidget *) lv2_bridge->lv2_menu);
 
     item = gtk_image_menu_item_new_with_label("show GUI\0");
-    gtk_menu_shell_append(lv2_bridge->lv2_menu,
-			  item);
+    gtk_menu_shell_append((GtkMenuShell *) lv2_bridge->lv2_menu,
+			  (GtkWidget *) item);
 
     gtk_widget_show_all(lv2_bridge->lv2_menu);
   }
@@ -482,7 +482,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = gtk_widget_get_toplevel(lv2_bridge);
+	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) lv2_bridge);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s\0",
@@ -529,7 +529,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      unsigned long *uri_index;
+      unsigned long uri_index;
       
       uri_index = g_value_get_ulong(value);
 
@@ -637,12 +637,12 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
 	      vbox = (GtkVBox *) gtk_vbox_new(FALSE,
 					      0);
-	      gtk_container_add(lv2_bridge->lv2_gui,
-				vbox);
+	      gtk_container_add((GtkContainer *) lv2_bridge->lv2_gui,
+				(GtkWidget *) vbox);
 	      
 	      alignment = gtk_alignment_new(0.5, 0.5, 1.0, 1.0);
 	      gtk_box_pack_start(GTK_BOX(vbox),
-				 alignment,
+				 (GtkWidget *) alignment,
 				 TRUE, TRUE,
 				 0);
 	      
@@ -658,10 +658,10 @@ ags_lv2_bridge_set_property(GObject *gobject,
 								 &widget,
 								 feature);
 	      lv2_bridge->ui_widget = widget;
-	      gtk_container_add(alignment,
+	      gtk_container_add((GtkContainer *) alignment,
 				widget);
 	      
-	      gtk_widget_show_all(vbox);
+	      gtk_widget_show_all((GtkWidget *) vbox);
 	    }
 	  }
 	}
@@ -773,7 +773,7 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
   if(!g_ascii_strncasecmp(str,
 			  "experimental\0",
 			  13)){
-    list = gtk_container_get_children(lv2_bridge->lv2_menu);
+    list = gtk_container_get_children((GtkContainer *) lv2_bridge->lv2_menu);
 
     g_signal_connect(G_OBJECT(list->data), "activate\0",
 		     G_CALLBACK(ags_lv2_bridge_show_gui_callback), lv2_bridge);
@@ -870,7 +870,7 @@ ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
 
   /* block update bulk port */
   list_start = 
-    list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
+    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -915,9 +915,9 @@ ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
 	    if(AGS_IS_DIAL(child_widget)){
 	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
-	      ags_dial_draw(child_widget);
+	      ags_dial_draw((AgsDial *) child_widget);
 	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	      gtk_toggle_button_set_active(child_widget,
+	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
 	    }
 
@@ -1010,14 +1010,14 @@ ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 
       while(channel != next_pad){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	//	audio_signal->loop_start = 0;
 	//	audio_signal->loop_end = audio_signal->buffer_size;
 	ags_audio_signal_stream_resize(audio_signal,
 				       1);
-	ags_recycling_add_audio_signal(channel->first_recycling,
+	ags_recycling_add_audio_signal((GObject *) channel->first_recycling,
 				       audio_signal);
 	
 	channel = channel->next;
@@ -1034,7 +1034,7 @@ ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 
       while(channel != next_pad){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_audio_signal_stream_resize(audio_signal,
@@ -1095,7 +1095,7 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
 
       while(channel != NULL){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	//	audio_signal->loop_start = 0;
@@ -1125,7 +1125,7 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
 
       while(channel != NULL){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
-					    channel->first_recycling,
+					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_audio_signal_stream_resize(audio_signal,
@@ -1172,10 +1172,10 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
     return;
   }
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
-  lv2_bridge = machine;
+  lv2_bridge = (AgsLv2Bridge *) machine;
   audio = machine->audio;
 
   /* ags-delay */
@@ -1283,7 +1283,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   ags_lv2_bridge_input_map_recall(lv2_bridge, 0, 0);
 
   /* add new controls */
-  ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
+  ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
 			     NULL,
 			     lv2_bridge->filename,
 			     lv2_bridge->effect);

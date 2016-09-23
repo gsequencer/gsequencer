@@ -88,11 +88,14 @@ struct _AgsSimpleFileClass
 {
   GObjectClass object;
 
-  void (*open)(AgsSimpleFile *simple_file);
+  void (*open)(AgsSimpleFile *simple_file,
+	       GError **error);
   void (*open_from_data)(AgsSimpleFile *simple_file,
-			 gchar *data, guint length);
+			 gchar *data, guint length,
+			 GError **error);
   void (*rw_open)(AgsSimpleFile *simple_file,
-		  gboolean create);
+		  gboolean create,
+		  GError **error);
 
   void (*write)(AgsSimpleFile *simple_file);
   void (*write_resolve)(AgsSimpleFile *simple_file);

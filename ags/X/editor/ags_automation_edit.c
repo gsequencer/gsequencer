@@ -223,7 +223,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 			| GDK_CONTROL_MASK
 			| GDK_KEY_PRESS_MASK
 			| GDK_KEY_RELEASE_MASK);
-  gtk_widget_set_can_focus(automation_edit->drawing_area,
+  gtk_widget_set_can_focus((GtkWidget *) automation_edit->drawing_area,
 			   TRUE);
     
   gtk_table_attach(GTK_TABLE(automation_edit),
@@ -321,7 +321,7 @@ ags_automation_edit_get_accessible(GtkWidget *widget)
     g_object_set_qdata(G_OBJECT(widget),
 		       quark_accessible_object,
 		       accessible);
-    gtk_accessible_set_widget(accessible,
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
 			      widget);
   }
   
@@ -342,7 +342,7 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  automation_edit = gtk_accessible_get_widget(ATK_OBJECT(action));
+  automation_edit = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = gdk_event_new(GDK_KEY_PRESS);
   key_release = gdk_event_new(GDK_KEY_RELEASE);
@@ -368,7 +368,8 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
       gtk_widget_event(automation_edit->drawing_area, key_release);
     }
     break;
@@ -378,8 +379,10 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Right;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 2:
@@ -388,8 +391,10 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
     
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 3:
@@ -398,8 +403,10 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;    
   case 4:
@@ -408,10 +415,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, modifier_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, modifier_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);
     }
     break;
   case 5:
@@ -420,10 +431,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, modifier_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, modifier_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);
     }
     break;
   case 6:
@@ -432,10 +447,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, second_level_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
     }
     break;
   case 7:
@@ -444,10 +463,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Right;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, second_level_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
     }
     break;
   case 8:
@@ -456,10 +479,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, second_level_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
     }
     break;
   case 9:
@@ -468,10 +495,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, second_level_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, second_level_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
     }
     break;
   case 10:
@@ -480,8 +511,10 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_space;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 11:
@@ -490,8 +523,10 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Delete;
       
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 12:
@@ -500,10 +535,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_c;
 
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, modifier_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }    
     break;
   case 13:
@@ -512,10 +551,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_x;
 
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, modifier_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }
     break;
   case 14:
@@ -524,10 +567,14 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_v;
 
       /* send event */
-      gtk_widget_event(automation_edit->drawing_area, modifier_press);
-      gtk_widget_event(automation_edit->drawing_area, key_press);
-      gtk_widget_event(automation_edit->drawing_area, key_release);
-      gtk_widget_event(automation_edit->drawing_area, modifier_release);      
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) automation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
     }
     break;
   }
@@ -660,8 +707,8 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
 {
   AgsAutomationEditor *automation_editor;
 
-  automation_editor = gtk_widget_get_ancestor(automation_edit,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
+								      AGS_TYPE_AUTOMATION_EDITOR);
   
   if((AGS_AUTOMATION_EDIT_RESET_VSCROLLBAR & flags) != 0){
     GtkAdjustment *vadjustment;
@@ -684,18 +731,18 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
     }
   }
 
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 
   /* reset scale */
   if(automation_editor->current_audio_automation_edit == automation_edit){
     automation_editor->current_audio_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
-    gtk_widget_queue_draw(automation_editor->current_audio_scale);
+    gtk_widget_queue_draw((GtkWidget *) automation_editor->current_audio_scale);
   }else if(automation_editor->current_output_automation_edit == automation_edit){
     automation_editor->current_output_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
-    gtk_widget_queue_draw(automation_editor->current_output_scale);
+    gtk_widget_queue_draw((GtkWidget *) automation_editor->current_output_scale);
   }else if(automation_editor->current_input_automation_edit == automation_edit){
     automation_editor->current_input_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
-    gtk_widget_queue_draw(automation_editor->current_input_scale);
+    gtk_widget_queue_draw((GtkWidget *) automation_editor->current_input_scale);
   }
 }
 
@@ -774,7 +821,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
 	/* reset ruler */
 	gtk_adjustment_set_value(automation_edit->ruler->adjustment,
 			       automation_edit->ruler->adjustment->upper);
-	gtk_widget_queue_draw(automation_edit->ruler);
+	gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
 
       }
     }else{
@@ -784,12 +831,12 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
       /* reset ruler */
       gtk_adjustment_set_upper(automation_edit->ruler->adjustment, 0.0);
       gtk_adjustment_set_value(automation_edit->ruler->adjustment, 0.0);
-      gtk_widget_queue_draw(automation_edit->ruler);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
     }
   }
 
-  gtk_widget_queue_draw(automation_edit->drawing_area);
-  gtk_widget_queue_draw(automation_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
 }
 
 /**
@@ -844,8 +891,8 @@ ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
   double tact;
   gdouble x_offset, y_offset;
 
-  automation_editor = gtk_widget_get_ancestor(automation_edit,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
+								      AGS_TYPE_AUTOMATION_EDITOR);
 
   zoom_factor = 1.0 / 4.0;
 

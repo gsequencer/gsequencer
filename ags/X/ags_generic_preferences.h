@@ -40,7 +40,7 @@ struct _AgsGenericPreferences
 
   GtkComboBox *audio_output_module;
 
-  GtkComboBox *segmentation;
+  GtkComboBoxText *segmentation;
 };
 
 struct _AgsGenericPreferencesClass

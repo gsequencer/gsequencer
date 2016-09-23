@@ -27,12 +27,6 @@
 #include <math.h>
 
 void
-ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar)
-{
-  ags_toolbar_show(widget);
-}
-
-void
 ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
 {
   AgsEditor *editor;

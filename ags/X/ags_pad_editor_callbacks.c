@@ -33,20 +33,6 @@ ags_pad_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ags
   return(0);
 }
 
-int
-ags_pad_editor_destroy_callback(GtkObject *object, AgsPadEditor *pad_editor)
-{
-  ags_pad_editor_destroy(object);
-  return(0);
-}
-
-int
-ags_pad_editor_show_callback(GtkWidget *widget, AgsPadEditor *pad_editor)
-{
-  ags_pad_editor_show(widget);
-  return(0);
-}
-
 void
 ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
 					   guint audio_channels, guint audio_channels_old,

@@ -1232,7 +1232,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       output = audio->output;
 
       while(output != NULL){
-	playback = output->playback; // ags_playback_find_source(playback_domain->playback,
+	playback = (AgsPlayback *) output->playback; // ags_playback_find_source(playback_domain->playback,
 	//			   (GObject *) output);
       
 	if(playback == NULL){

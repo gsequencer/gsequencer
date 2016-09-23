@@ -53,32 +53,6 @@ void ags_pad_start_complete_response(GtkWidget *dialog,
 				     AgsPad *pad);
 
 int
-ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad)
-{
-  if(old_parent != NULL)
-    return;
-}
-
-int
-ags_pad_destroy_callback(GtkObject *object, AgsPad *pad)
-{
-  ags_pad_destroy(object);
-}
-
-int
-ags_pad_show_callback(GtkWidget *widget, AgsPad *pad)
-{
-  ags_pad_show(widget);
-}
-
-int
-ags_pad_option_changed_callback(GtkWidget *widget, AgsPad *pad)
-{
-
-  return(0);
-}
-
-int
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsLine *line;
@@ -137,7 +111,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   AgsSetMuted *set_muted;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -151,9 +125,9 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
-  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -161,12 +135,12 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /*  */
@@ -324,8 +298,8 @@ ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
   AgsTask *task;
 
   task = (AgsTask *) task_completion->task;
-  window = gtk_widget_get_ancestor(pad,
-				   AGS_TYPE_WINDOW);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) pad,
+						 AGS_TYPE_WINDOW);
   soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
 								 AGS_TYPE_SOUNDCARD_THREAD);
 
@@ -360,7 +334,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 
   AgsAddAudioSignal *add_audio_signal;
 
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsMutexManager *mutex_manager;
@@ -374,9 +348,9 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  window = gtk_widget_get_ancestor(input_pad,
-				   AGS_TYPE_WINDOW);
-  application_context = window->application_context; 
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) input_pad,
+						 AGS_TYPE_WINDOW);
+  application_context = (AgsApplicationContext *) window->application_context; 
  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -384,7 +358,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   /* get audio loop and audio mutex */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
   
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) input_pad->channel->audio);
@@ -399,7 +373,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   pthread_mutex_unlock(audio_mutex);
 
   /* find task thread */
-  task_thread = ags_thread_find_type(audio_loop,
+  task_thread = ags_thread_find_type(main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
   /* get pad children */

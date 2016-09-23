@@ -80,7 +80,7 @@ ags_bulk_member_spin_button_changed_callback(GtkWidget *spin_button, AgsBulkMemb
     return;
   }
 
-  adjustment = gtk_spin_button_get_adjustment(spin_button);
+  adjustment = gtk_spin_button_get_adjustment((GtkSpinButton *) spin_button);
   ags_bulk_member_change_port(bulk_member,
 			      &(adjustment->value));
 }

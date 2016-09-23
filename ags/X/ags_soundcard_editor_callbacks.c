@@ -54,7 +54,7 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(combo);
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo));
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
@@ -62,19 +62,19 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 			    5)){
       ags_soundcard_editor_load_jack_card(soundcard_editor);
 
-      gtk_widget_show_all(soundcard_editor->jack_hbox);
+      gtk_widget_show_all((GtkWidget *) soundcard_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa\0",
 				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
-      gtk_widget_hide(soundcard_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) soundcard_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss\0",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
 
-      gtk_widget_hide(soundcard_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) soundcard_editor->jack_hbox);
     }
   }
 }
@@ -93,7 +93,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   AgsApplicationContext *application_context;
   AgsConfig *config;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
 
   GtkTreeIter current;
   
@@ -115,7 +115,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = soundcard_editor->soundcard;
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -123,7 +123,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -244,7 +244,7 @@ ags_soundcard_editor_add_jack_callback(GtkWidget *button,
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -252,7 +252,7 @@ ags_soundcard_editor_add_jack_callback(GtkWidget *button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -285,7 +285,7 @@ ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -293,7 +293,7 @@ ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -330,7 +330,7 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -338,7 +338,7 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -375,7 +375,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -383,7 +383,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -420,7 +420,7 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -428,7 +428,7 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -467,7 +467,7 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -475,7 +475,7 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
@@ -484,7 +484,7 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 						       AGS_TYPE_TASK_THREAD);
 
   /* format */
-  switch(gtk_combo_box_get_active(soundcard_editor->format)){
+  switch(gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->format))){
   case 0:
     format = AGS_SOUNDCARD_SIGNED_8_BIT;
     break;

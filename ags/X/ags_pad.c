@@ -72,8 +72,6 @@ gchar* ags_pad_get_version(AgsPlugin *plugin);
 void ags_pad_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_pad_get_build_id(AgsPlugin *plugin);
 void ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
-void ags_pad_destroy(GtkObject *object);
-void ags_pad_show(GtkWidget *widget);
 
 void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
@@ -297,9 +295,6 @@ ags_pad_init(AgsPad *pad)
   GtkMenu *menu;
   GtkHBox *hbox;
 
-  g_signal_connect((GObject *) pad, "parent_set\0",
-		   G_CALLBACK(ags_pad_parent_set_callback), (gpointer) pad);
-
   pad->flags = 0;
 
   pad->name = NULL;
@@ -400,14 +395,6 @@ ags_pad_connect(AgsConnectable *connectable)
     ags_pad_find_port(pad);
   }
 
-  /* GtkObject */
-  g_signal_connect((GObject *) pad, "destroy\0",
-		   G_CALLBACK(ags_pad_destroy_callback), (gpointer) pad);
-
-  /* GtkWidget */
-  g_signal_connect((GObject *) pad, "show\0",
-		   G_CALLBACK(ags_pad_show_callback), (gpointer) pad);
-
   /* GtkButton */
   g_signal_connect_after((GObject *) pad->group, "clicked\0",
 			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
@@ -467,20 +454,6 @@ ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
   pad = AGS_PAD(plugin);
 
   pad->build_id = build_id;
-}
-
-void
-ags_pad_destroy(GtkObject *object)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_pad_show(GtkWidget *widget)
-{
-  AgsPad *pad;
-
-  pad = AGS_PAD(widget);
 }
 
 void
@@ -619,7 +592,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 					NULL);
 
 	if(channel != NULL){
-	  channel->line_widget = (GtkWidget *) line;
+	  channel->line_widget = (GObject *) line;
 	}
 
 	ags_expander_set_add(pad->expander_set,
@@ -733,7 +706,7 @@ ags_pad_real_find_port(AgsPad *pad)
 
   /* find output ports */
   if(pad->expander_set != NULL){
-    line = gtk_container_get_children(pad->expander_set);
+    line = gtk_container_get_children((GtkContainer *) pad->expander_set);
 
     while(line != NULL){
       tmp_port = ags_line_find_port(AGS_LINE(line->data));
@@ -786,7 +759,7 @@ ags_pad_play(AgsPad *pad)
   AgsWindow *window;
   AgsMachine *machine;
 
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsChannel *channel;
 
   AgsStartSoundcard *start_soundcard;
@@ -794,7 +767,7 @@ ags_pad_play(AgsPad *pad)
   AgsAppendChannel *append_channel;
 
   AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   AgsSoundcardThread *soundcard_thread;
 
@@ -810,9 +783,9 @@ ags_pad_play(AgsPad *pad)
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
-  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -820,14 +793,14 @@ ags_pad_play(AgsPad *pad)
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  audio_loop = application_context->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(audio_loop,
+  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
 							   AGS_TYPE_SOUNDCARD_THREAD);
 
   /* lookup audio mutex */
@@ -887,8 +860,8 @@ ags_pad_play(AgsPad *pad)
 	pthread_mutex_unlock(application_mutex);
 
 	/* append channel for playback */
-	append_channel = ags_append_channel_new(audio_loop,
-						channel);
+	append_channel = ags_append_channel_new((GObject *) main_loop,
+						(GObject *) channel);
 	tasks = g_list_prepend(tasks, append_channel);
 
 	/* iterate */
@@ -906,8 +879,8 @@ ags_pad_play(AgsPad *pad)
       line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
       /* append channel for playback */
-      append_channel = ags_append_channel_new(audio_loop,
-					      line->channel);
+      append_channel = ags_append_channel_new((GObject *) main_loop,
+					      (GObject *) line->channel);
       tasks = g_list_prepend(tasks, append_channel);
 
       g_list_free(list);
@@ -918,7 +891,7 @@ ags_pad_play(AgsPad *pad)
       AgsGuiThread *gui_thread;
       AgsTaskCompletion *task_completion;
       
-      gui_thread = (AgsGuiThread *) ags_thread_find_type(audio_loop,
+      gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
 							 AGS_TYPE_GUI_THREAD);
 
       start_soundcard = ags_start_soundcard_new(window->soundcard);
@@ -965,7 +938,7 @@ ags_pad_play(AgsPad *pad)
     /* return if not playing */
     pthread_mutex_lock(channel_mutex);
 
-    playback = channel->playback;
+    playback = (AgsPlayback *) channel->playback;
     flags = g_atomic_int_get(&(playback->flags));
 
     recall_id = playback->recall_id[0];
@@ -1000,13 +973,13 @@ ags_pad_play(AgsPad *pad)
 	  /* create cancel task */
 	  pthread_mutex_lock(channel_mutex);
 
-	  playback = channel->playback;
+	  playback = (AgsPlayback *) channel->playback;
 	  recall_id = playback->recall_id[0];
 
 	  pthread_mutex_unlock(channel_mutex);
 
 	  cancel_channel = ags_cancel_channel_new(channel, recall_id,
-						  playback);
+						  (GObject *) playback);
 
 	  ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
 
@@ -1069,7 +1042,7 @@ ags_pad_play(AgsPad *pad)
       if((AGS_PLAYBACK_DONE & (flags)) == 0){
 	/* cancel request */
 	cancel_channel = ags_cancel_channel_new(channel, recall_id,
-						playback);
+						(GObject *) playback);
 
 	ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
       }else{

@@ -76,6 +76,9 @@ struct _AgsConnectionEditorClass
 
 GType ags_connection_editor_get_type(void);
 
+void ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor,
+				       AgsMachine *machine);
+
 AgsConnectionEditor* ags_connection_editor_new(AgsMachine *machine);
 
 #endif /*__AGS_CONNECTION_EDITOR_H__*/

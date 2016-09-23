@@ -28,6 +28,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <math.h>
 

@@ -530,7 +530,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "index\0",
-	     g_strdup_printf("%ul\0", recall_ladspa->index));
+	     g_strdup_printf("%lu\0", recall_ladspa->index));
 
   xmlAddChild(parent,
 	      node);

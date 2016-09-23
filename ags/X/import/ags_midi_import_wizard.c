@@ -145,7 +145,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   
   alignment = g_object_new(GTK_TYPE_ALIGNMENT,
 			   NULL);
-  gtk_widget_set_no_show_all(alignment,
+  gtk_widget_set_no_show_all((GtkWidget *) alignment,
 			     TRUE);
   gtk_box_pack_start((GtkBox *) midi_import_wizard->dialog.vbox,
 		     (GtkWidget*) alignment,
@@ -159,20 +159,20 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   /**/
   alignment = gtk_alignment_new(0.0, 0.0,
 				1.0, 1.0);
-  gtk_widget_set_no_show_all(alignment,
+  gtk_widget_set_no_show_all((GtkWidget *) alignment,
 			     TRUE);
   gtk_box_pack_start((GtkBox *) midi_import_wizard->dialog.vbox,
 		     (GtkWidget*) alignment,
 		     TRUE, TRUE,
 		     0);
 
-  midi_import_wizard->track_collection = ags_track_collection_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
-								  0,
+  midi_import_wizard->track_collection = (GtkWidget *) ags_track_collection_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
+										0,
 								  NULL);
-  gtk_container_add(alignment,
+  gtk_container_add((GtkContainer *) alignment,
 		    midi_import_wizard->track_collection);
   
-  gtk_dialog_add_buttons(midi_import_wizard,
+  gtk_dialog_add_buttons((GtkDialog *) midi_import_wizard,
 			 GTK_STOCK_GO_BACK, GTK_RESPONSE_REJECT,
 			 GTK_STOCK_GO_FORWARD, GTK_RESPONSE_ACCEPT,
 			 GTK_STOCK_OK, GTK_RESPONSE_OK,

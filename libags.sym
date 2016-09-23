@@ -208,6 +208,7 @@ ags_packable_pack
 ags_packable_unpack
 ags_application_context_get_type
 ags_application_context_load_config
+ags_application_context_register_types
 ags_application_read
 ags_application_write
 ags_application_context_add_sibling
