@@ -143,6 +143,7 @@ ags_config_set_value
 ags_config_get_value
 ags_config_to_data
 ags_config_save
+ags_config_clear
 ags_config_get_instance
 ags_config_new
 ags_applicable_get_type

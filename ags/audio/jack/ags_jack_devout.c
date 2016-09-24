@@ -636,7 +636,6 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
     jack_devout->pcm_channels = g_ascii_strtoull(str,
 						 NULL,
 						 10);
-    g_message("???? %d", jack_devout->pcm_channels);
     g_free(str);
   }
 
@@ -1249,7 +1248,7 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
 
   /* apply name to port */
   jack_port_start = 
-    jack_port = g_list_reverse(g_list_copy(jack_devout->jack_port));
+    jack_port = g_list_copy(jack_devout->jack_port);
   
   for(i = 0; i < jack_devout->pcm_channels; i++){
     str = g_strdup_printf("ags-soundcard%d-%04d\0",

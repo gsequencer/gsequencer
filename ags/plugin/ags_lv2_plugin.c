@@ -741,7 +741,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
 						     xpath,
 						     port_node);
-
+      lower_value = 0.0;
+      
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
@@ -760,7 +761,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
 						     xpath,
 						     port_node);
-
+      upper_value = 1.0;
+      
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
@@ -776,8 +778,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       /* check scale steps */
       if((AGS_PORT_DESCRIPTOR_INTEGER & (port->flags)) != 0 &&
 	 port->scale_steps == 0){
-	if(upper_value > 0 &&
-	   lower_value >= 0){
+	if(upper_value > 0.0 &&
+	   lower_value >= 0.0){
 	  port->scale_steps = upper_value - lower_value;
 	}else if(upper_value > 0 &&
 		 lower_value < 0){

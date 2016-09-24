@@ -432,9 +432,12 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature\0");
   
-  if(!g_ascii_strncasecmp(str,
+  if(str == NULL ||
+     !g_ascii_strncasecmp(str,
 			  "experimental\0",
 			  13)){
+    g_message("lv2 ui disabled\02");
+  }else{
     item = gtk_image_menu_item_new_with_label("Lv2\0");
     gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(lv2_bridge)->popup,
 			  (GtkWidget *) item);

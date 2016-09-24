@@ -215,7 +215,9 @@ ags_jack_port_set_property(GObject *gobject,
 
       port_name = g_value_get_string(value);
 
-      if(port_name == jack_port->name){
+      if(jack_port->name == port_name ||
+	 !g_ascii_strcasecmp(jack_port->name,
+			     port_name)){
 	return;
       }
 

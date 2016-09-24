@@ -190,7 +190,8 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 			     "disable-feature\0");
   
   /* JACK */  
-  if(!g_ascii_strncasecmp(str,
+  if(str == NULL ||
+     !g_ascii_strncasecmp(str,
 			  "experimental\0",
 			  13)){
     audio_preferences->jack_driver = NULL;
@@ -278,9 +279,7 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature\0");
   
-  if(g_ascii_strncasecmp(str,
-			 "experimental\0",
-			 13)){
+  if(audio_preferences->start_jack != NULL){
     g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked\0",
 		     G_CALLBACK(ags_audio_preferences_start_jack_callback), audio_preferences);
 

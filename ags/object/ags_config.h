@@ -79,6 +79,8 @@ void ags_config_to_data(AgsConfig *config,
 			char **buffer, gsize *buffer_length);
 void ags_config_save(AgsConfig *config);
 
+void ags_config_clear(AgsConfig *config);
+
 AgsConfig* ags_config_get_instance();
 AgsConfig* ags_config_new(GObject *application_context);
 

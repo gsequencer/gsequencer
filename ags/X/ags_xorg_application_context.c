@@ -334,7 +334,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   GList *list;  
   JSList *jslist;
 
-  gchar *soundcard_group, *next_soundcard_group;
+  gchar *soundcard_group;
   gchar *str;
 
   guint i;
@@ -363,7 +363,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   soundcard = NULL;
 
   soundcard_group = g_strdup("soundcard\0");
-  next_soundcard_group = NULL;
   
   for(i = 0; ; i++){
     guint pcm_channels, buffer_size, samplerate, format;
@@ -372,9 +371,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       if(i == 0){
-	next_soundcard_group = g_strdup_printf("%s-%d\0",
-					       AGS_CONFIG_SOUNDCARD,
-					       i);
+	g_free(soundcard_group);    
+	soundcard_group = g_strdup_printf("%s-%d\0",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+    	
 	continue;
       }else{
 	break;
@@ -385,15 +386,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 			       soundcard_group,
 			       "backend\0");
 
-    if(next_soundcard_group != NULL){
-      g_free(soundcard_group);
-      soundcard_group = next_soundcard_group;
-    }
-    
-    next_soundcard_group = g_strdup_printf("%s-%d\0",
-					   AGS_CONFIG_SOUNDCARD,
-					   i);
-    
     use_jack = FALSE;
     use_alsa = FALSE;
     use_oss = FALSE;
@@ -426,11 +418,21 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       }else{
 	g_warning("unknown soundcard backend\0");
 
+	g_free(soundcard_group);    
+	soundcard_group = g_strdup_printf("%s-%d\0",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+    
 	continue;
       }
     }else{
       g_warning("unknown soundcard backend\0");
-      
+
+      g_free(soundcard_group);    
+      soundcard_group = g_strdup_printf("%s-%d\0",
+					AGS_CONFIG_SOUNDCARD,
+					i);
+          
       continue;
     }
     
@@ -495,8 +497,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
     if(str != NULL){
       format = g_ascii_strtoull(str,
-				    NULL,
-				    10);
+				NULL,
+				10);
       g_free(str);
     }
 
@@ -505,6 +507,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 			      samplerate,
 			      buffer_size,
 			      format);
+
+    g_free(soundcard_group);    
+    soundcard_group = g_strdup_printf("%s-%d\0",
+				      AGS_CONFIG_SOUNDCARD,
+				      i);
   }
 
   if(xorg_application_context->soundcard != NULL){

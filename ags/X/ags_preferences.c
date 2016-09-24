@@ -185,7 +185,8 @@ ags_preferences_init(AgsPreferences *preferences)
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature\0");
   
-  if(!g_ascii_strncasecmp(str,
+  if(str == NULL ||
+     !g_ascii_strncasecmp(str,
 			  "experimental\0",
 			  13)){
     preferences->server_preferences = NULL;

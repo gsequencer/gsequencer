@@ -191,6 +191,7 @@ ags_jack_client_init(AgsJackClient *jack_client)
   jack_client->jack_server = NULL;
   
   jack_client->uuid = NULL;
+  jack_client->name = NULL;
 
   /* client */
   jack_client->client = NULL;
