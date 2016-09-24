@@ -48,9 +48,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_client.h>
-
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
@@ -64,6 +61,19 @@
 #include <ags/X/thread/ags_simple_autosave_thread.h>
 
 #include <ags/X/task/ags_simple_file_read.h>
+
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
+#include <string.h>
+
+#include <unistd.h>
+#include <sys/types.h>
 
 #include "config.h"
 
@@ -148,14 +158,84 @@ ags_setup(int argc, char **argv)
   struct passwd *pw;
 
   gchar *rc_filename;
+  gchar *filename;
   
   uid_t uid;
 
-  /* parse gtkrc */
-  uid = getuid();
-  pw = getpwuid(uid);
+  guint i;
+  
+  /* check filename */
+  filename = NULL;
 
-  /* load managers */
+  for(i = 0; i < argc; i++){
+    if(!strncmp(argv[i], "--filename\0", 11)){
+      AgsSimpleFile *simple_file;
+
+      xmlXPathContext *xpath_context; 
+      xmlXPathObject *xpath_object;
+      xmlNode **node;
+
+      xmlChar *xpath;
+      
+      gchar *buffer;
+      guint buffer_length;
+      
+      filename = argv[i + 1];
+      simple_file = ags_simple_file_new();
+      g_object_set(simple_file,
+		   "filename\0", filename,
+		   NULL);
+      ags_simple_file_open(simple_file,
+			   NULL);
+
+      xpath = "/ags-simple-file/ags-sf-config";
+
+      /* Create xpath evaluation context */
+      xpath_context = xmlXPathNewContext(simple_file->doc);
+
+      if(xpath_context == NULL) {
+	g_warning("Error: unable to create new XPath context\0");
+
+	break;
+      }
+
+      /* Evaluate xpath expression */
+      xpath_object = xmlXPathEval(xpath, xpath_context);
+
+      if(xpath_object == NULL) {
+	g_warning("Error: unable to evaluate xpath expression \"%s\"\0", xpath);
+	xmlXPathFreeContext(xpath_context); 
+
+	break;
+      }
+
+      node = xpath_object->nodesetval->nodeTab;
+  
+      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	if(node[i]->type == XML_ELEMENT_NODE){
+	  buffer = xmlNodeGetContent(node[i]);
+	  buffer_length = strlen(buffer);
+	  
+	  break;
+	}
+      }
+      
+      if(buffer != NULL){
+	//	ags_config_clear(ags_config_get_instance());
+	ags_config_load_from_data(ags_config_get_instance(),
+				  buffer, buffer_length);
+      }
+      
+      break;
+    }
+  }
+
+  /* application contex */
+  ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
+  ags_application_context->argc = argc;
+  ags_application_context->argv = argv;
+
+    /* load managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
   dssi_manager = ags_dssi_manager_get_instance();
@@ -166,13 +246,12 @@ ags_setup(int argc, char **argv)
     
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
-  ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
-  ags_application_context->argc = argc;
-  ags_application_context->argv = argv;
-
-  lv2_worker_manager->thread_pool = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->thread_pool;
+  lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
   
   /* parse rc file */
+  uid = getuid();
+  pw = getpwuid(uid);
+
   rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
 				pw->pw_dir,
 				AGS_DEFAULT_DIRECTORY);
@@ -183,8 +262,6 @@ ags_setup(int argc, char **argv)
 void
 ags_launch(gboolean single_thread)
 {
-  AgsJackServer *jack_server;
-  
   AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
@@ -206,8 +283,6 @@ ags_launch(gboolean single_thread)
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
   config = ags_application_context->config;
-
-  jack_server = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(ags_application_context))->data;
   
   pthread_mutex_unlock(application_mutex);
   
@@ -215,7 +290,7 @@ ags_launch(gboolean single_thread)
 					AGS_TYPE_POLLING_THREAD);
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
-  
+
   /* start engine */
   pthread_mutex_lock(audio_loop->start_mutex);
   
@@ -291,15 +366,6 @@ ags_launch(gboolean single_thread)
 
     /* join gui thread */
     //    gtk_main();
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-    
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
-
-    ags_jack_server_connect_client(jack_server);
-
     pthread_join(*(gui_thread->thread),
     		 NULL);
   }else{
@@ -330,15 +396,6 @@ ags_launch(gboolean single_thread)
     }
 
     /* start thread tree */
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
-
-    ags_jack_server_connect_client(jack_server);
-
     ags_thread_start((AgsThread *) single_thread);
   }
 }
@@ -347,8 +404,6 @@ void
 ags_launch_filename(gchar *filename,
 		    gboolean single_thread)
 {
-  AgsJackServer *jack_server;
-
   AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
@@ -370,7 +425,6 @@ ags_launch_filename(gchar *filename,
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
   config = ags_application_context->config;
-  jack_server = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(ags_application_context))->data;
   
   pthread_mutex_unlock(application_mutex);
 
@@ -509,15 +563,6 @@ ags_launch_filename(gchar *filename,
   
   if(!single_thread){
     /* join gui thread */
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
-
-    ags_jack_server_connect_client(jack_server);
-    
     //    gtk_main();
     pthread_join(*(gui_thread->thread),
     		 NULL);
@@ -590,8 +635,6 @@ void
 ags_timer_launch(timer_t *timer_id,
 		 gboolean single_thread)
 {
-  AgsJackServer *jack_server;
-
   AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
@@ -613,8 +656,6 @@ ags_timer_launch(timer_t *timer_id,
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
   config = ags_application_context->config;
-
-  jack_server = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(ags_application_context))->data;
   
   pthread_mutex_unlock(application_mutex);
   
@@ -701,15 +742,6 @@ ags_timer_launch(timer_t *timer_id,
     }
 
     /* join gui thread */
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
-
-    ags_jack_server_connect_client(jack_server);
-
     pthread_join(*(gui_thread->thread),
 		 NULL);
   }else{
@@ -740,15 +772,6 @@ ags_timer_launch(timer_t *timer_id,
     }
 
     /* start thread tree */
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
-
-    ags_jack_server_connect_client(jack_server);
-
     ags_thread_start((AgsThread *) single_thread);
   }
 }
@@ -757,8 +780,6 @@ void
 ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 			  gboolean single_thread)
 {
-  AgsJackServer *jack_server;
-
   AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
@@ -780,8 +801,6 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
   config = ags_application_context->config;
-
-  jack_server = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(ags_application_context))->data;
   
   pthread_mutex_unlock(application_mutex);
   
@@ -925,15 +944,6 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
   }
   
   if(!single_thread){
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
-
-    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
-      g_warning("ags_jack_server.c - can't open JACK client");
-    }
-
-    ags_jack_server_connect_client(jack_server);
-    
     /* join gui thread */
     pthread_join(*(gui_thread->thread),
 		 NULL);
@@ -1078,7 +1088,7 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
   ipatch_init();
-  //  g_log_set_fatal_mask(G_LOG_DOMAIN, //"GLib-GObject\0"
+  //  g_log_set_fatal_mask("GLib-GObject\0", //G_LOG_DOMAIN,
   //		       G_LOG_LEVEL_CRITICAL);
   
   /* setup */

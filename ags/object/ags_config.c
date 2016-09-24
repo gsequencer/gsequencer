@@ -379,12 +379,12 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global\0", "ags-thread\0");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
 
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "backend\0", "jack\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "device\0", "ags-jack-devout-0\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "pcm-channels\0", "2\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "samplerate\0", "48000\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "buffer-size\0", "512\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "format\0", "16\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend\0", "jack\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device\0", "ags-jack-devout-0\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels\0", "2\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate\0", "48000\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size\0", "512\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format\0", "16\0");
   
   ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
 }
@@ -501,17 +501,21 @@ void
 ags_config_load_from_data(AgsConfig *config,
 			  char *buffer, gsize buffer_length)
 {
-#ifdef AGS_DEBUG
+  //#ifdef AGS_DEBUG
   g_message("loading preferences from data[0x%x]\0", (unsigned int) buffer);
-#endif
+  //#endif
   
   if(buffer == NULL){
     ags_config_load_defaults(config);
   }else{
     GKeyFile *key_file;
-    gchar **groups, **groups_start;
-    gchar **keys, **keys_start;
+
+    gchar **groups;
+    gchar **keys;
     gchar *value;
+    
+    guint n_groups, n_keys;
+    guint i, j;
 
     GError *error;
 
@@ -529,38 +533,34 @@ ags_config_load_from_data(AgsConfig *config,
 
       g_error_free(error);
     }
+    
+    groups = g_key_file_get_groups(key_file,
+				   &n_groups);
+    
+    for(i = 0; i < n_groups; i++){
+      keys = g_key_file_get_keys(key_file,
+				 groups[i],
+				 &n_keys,
+				 NULL);
 
-    groups =
-      groups_start = g_key_file_get_groups(key_file,
-					   NULL);
-
-    while(*groups != NULL){
-      keys =
-	keys_start = g_key_file_get_keys(key_file,
-					 *groups,
-					 NULL,
-					 NULL);
-
-      while(*keys != NULL){
+      for(j = 0; j < n_keys; j++){
 	value = g_key_file_get_value(key_file,
-				     *groups,
-				     *keys,
+				     groups[i],
+				     keys[j],
 				     NULL);
 
 	ags_config_set_value(config,
-			     *groups,
-			     *keys,
+			     groups[i],
+			     keys[j],
 			     value);
-	
-	keys++;
+	g_message("%s\0", keys[j]);
+    	g_message("%s\0", value);
       }
 
-      g_strfreev(keys_start);
-
-      groups++;
+      g_strfreev(keys);
     }
-
-    g_strfreev(groups_start);
+    
+    g_strfreev(groups);
     g_key_file_unref(key_file);
   }
 }
@@ -740,6 +740,32 @@ ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
   g_object_unref(G_OBJECT(config));
 
   return(value);
+}
+
+/**
+ * ags_config_clear:
+ * @config: the #AgsConfig
+ *
+ * Clears configuration.
+ *
+ * Since: 0.7.72
+ */
+void
+ags_config_clear(AgsConfig *config)
+{
+  gchar **group;
+
+  guint n_group;
+  guint i;
+  
+  group = g_key_file_get_groups(config->key_file,
+				&n_group);
+
+  for(i = 0; i < n_group; i++){
+    g_key_file_remove_group(config->key_file,
+    			    group[i],
+    			    NULL);
+  }
 }
 
 /**

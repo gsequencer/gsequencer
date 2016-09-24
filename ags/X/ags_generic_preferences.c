@@ -245,12 +245,17 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
 			     "autosave-thread\0");
-  
-  gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
-			       ((!strncmp(str,
-					  "true\0",
-					  5)) ? TRUE: FALSE));
 
+  if(str != NULL){
+    gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
+				 ((!g_ascii_strncasecmp(str,
+							"true\0",
+							5)) ? TRUE: FALSE));
+  }else{
+    gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
+				 FALSE);
+  }
+  
   free(str);
 }
 

@@ -298,7 +298,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   GList *list;
   JSList *jslist;
 
-  gchar *soundcard_group, *next_soundcard_group;
+  gchar *soundcard_group;
   gchar *str;
 
   guint i;
@@ -327,8 +327,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   soundcard = NULL;
   
   soundcard_group = g_strdup("soundcard\0");
-  next_soundcard_group = NULL;
-  
+
   for(i = 0; ; i++){
     guint pcm_channels, buffer_size, samplerate, format;
     gboolean use_jack, use_alsa, use_oss;
@@ -336,9 +335,10 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       if(i == 0){
-	next_soundcard_group = g_strdup_printf("%s-%d\0",
-					       AGS_CONFIG_SOUNDCARD,
-					       i);
+	g_free(soundcard_group);    
+	soundcard_group = g_strdup_printf("%s-%d\0",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
 	continue;
       }else{
 	break;
@@ -348,15 +348,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     str = ags_config_get_value(config,
 			       soundcard_group,
 			       "backend\0");
-
-    if(next_soundcard_group != NULL){
-      g_free(soundcard_group);
-      soundcard_group = next_soundcard_group;
-    }
-	    
-    next_soundcard_group = g_strdup_printf("%s-%d\0",
-					   AGS_CONFIG_SOUNDCARD,
-					   i);
 
     use_jack = FALSE;
     use_alsa = FALSE;
@@ -389,10 +380,20 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       }else{
 	g_warning("unknown soundcard backend\0");
 
+	g_free(soundcard_group);    
+	soundcard_group = g_strdup_printf("%s-%d\0",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+
 	continue;
       }
     }else{
       g_warning("unknown soundcard backend\0");
+
+      g_free(soundcard_group);    
+      soundcard_group = g_strdup_printf("%s-%d\0",
+					AGS_CONFIG_SOUNDCARD,
+					i);
       
       continue;
     }
@@ -468,6 +469,11 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 			      samplerate,
 			      buffer_size,
 			      format);
+
+    g_free(soundcard_group);    
+    soundcard_group = g_strdup_printf("%s-%d\0",
+				      AGS_CONFIG_SOUNDCARD,
+				      i);
   }
 
   if(audio_application_context->soundcard != NULL){

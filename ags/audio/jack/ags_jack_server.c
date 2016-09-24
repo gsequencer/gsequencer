@@ -515,8 +515,14 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     jack_server->default_client = ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
-
+    
+    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
+			 "ags-default-client\0");
     initial_set = TRUE;
+    
+    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
+      g_warning("ags_jack_server.c - can't open JACK client");
+    }
   }
 
   default_client = (AgsJackClient *) jack_server->default_client;
@@ -643,6 +649,13 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
     jack_server->default_client = (GObject *) ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
+    
+    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
+			 "ags-default-client\0");
+
+    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
+      g_warning("ags_jack_server.c - can't open JACK client");
+    }
   }
 
   default_client = (AgsJackClient *) jack_server->default_client;
@@ -732,6 +745,15 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
     jack_server->default_client = (GObject *) ags_jack_client_new((GObject *) jack_server);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
+    
+    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
+			 "ags-default-client\0");
+
+    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
+      g_warning("ags_jack_server.c - can't open JACK client");
+      
+      return(NULL);
+    }
   }
 
   default_client = (AgsJackClient *) jack_server->default_client;

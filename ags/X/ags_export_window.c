@@ -195,7 +195,8 @@ ags_export_window_init(AgsExportWindow *export_window)
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature\0");
   
-  if(!g_ascii_strncasecmp(str,
+  if(str == NULL ||
+     !g_ascii_strncasecmp(str,
 			  "experimental\0",
 			  13)){
     export_window->live_export = NULL;
