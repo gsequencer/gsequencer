@@ -82,8 +82,8 @@ struct _AgsAudioSignalClass
 
 GType ags_audio_signal_get_type();
 
-signed short* ags_stream_alloc(guint buffer_size,
-			       guint format);
+void* ags_stream_alloc(guint buffer_size,
+		       guint format);
 void ags_stream_free(signed short *buffer);
 
 void ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate);

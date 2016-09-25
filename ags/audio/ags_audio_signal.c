@@ -1008,7 +1008,7 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
  *
  * Since: 0.3
  */
-signed short*
+void*
 ags_stream_alloc(guint buffer_size,
 		 guint format)
 {

@@ -5,9 +5,6 @@ ags_expander_set_get_type
 ags_hindicator_get_type
 ags_indicator_get_type
 ags_led_get_type
-ags_menu_get_type
-ags_menu_item_get_type
-ags_option_menu_get_type
 ags_ruler_get_type
 ags_table_get_type
 ags_vindicator_get_type
