@@ -76,6 +76,7 @@
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <stdlib.h>
 #include <stdio.h>
 
 #include <ladspa.h>
@@ -6554,11 +6555,11 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     
       while(input != NULL){
 	/* input recall id */
-	input_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-				       "recycling-context\0", default_recall_id->recycling_context,
-				       "recycling\0", input->first_recycling,
-				       NULL);
-	recall_id[input->pad] = input_recall_id;
+	recall_id[input->pad] = 
+	  input_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+					 "recycling-context\0", default_recall_id->recycling_context,
+					 "recycling\0", input->first_recycling,
+					 NULL);
 	ags_channel_add_recall_id(input,
 				  input_recall_id);
 

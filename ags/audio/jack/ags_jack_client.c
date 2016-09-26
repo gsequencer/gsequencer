@@ -28,6 +28,7 @@
 #include <ags/object/ags_sequencer.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_channel.h>
@@ -604,6 +605,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   AgsAudioLoop *audio_loop;
 
   AgsMutexManager *mutex_manager;
+  AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
 
@@ -621,6 +623,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutex_t *device_mutex;
+  pthread_mutex_t *callback_mutex;
   
   if(ptr == NULL){
     return(0);
@@ -654,10 +657,73 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   pthread_mutex_lock(application_mutex);
     
   audio_loop = (AgsAudioLoop *) application_context->main_loop;
+  task_thread = (AgsTaskThread *) application_context->task_thread;
   
   pthread_mutex_unlock(application_mutex);
+
+  /* interrupt GUI */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  if(audio_loop != NULL){
+    pthread_mutex_lock(audio_loop->timing_mutex);
+  
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     audio_loop->time_cycle);
+  
+    pthread_mutex_unlock(audio_loop->timing_mutex);
+  
+    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+			    AGS_THREAD_SUSPEND_SIG,
+			    0, &time_spent);
+  }
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /* wait one device */
+  if(device == NULL){
+    return;
+  }
+  
+  pthread_mutex_lock(application_mutex);
+  
+  device_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) device->data);
+
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(device_mutex);
+
+  jack_devout = (AgsJackDevout *) device->data;
+  
+  if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+    callback_mutex = jack_devout->callback_mutex;
+
+    pthread_mutex_unlock(device_mutex);
+	
+    /* give back computing time until ready */
+    pthread_mutex_lock(callback_mutex);
+    
+    if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+      g_atomic_int_or(&(jack_devout->sync_flags),
+		      AGS_JACK_DEVOUT_CALLBACK_WAIT);
+    
+      while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
+	    (AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	pthread_cond_wait(jack_devout->callback_cond,
+			  callback_mutex);
+      }
+    }
+    
+    g_atomic_int_and(&(jack_devout->sync_flags),
+		     (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
+			AGS_JACK_DEVOUT_CALLBACK_DONE)));
+    
+    pthread_mutex_unlock(callback_mutex);
+  }
   
   /* retrieve word size */
+  pthread_mutex_lock(task_thread->launch_mutex);
+  
   while(device != NULL){
     /*  */  
     pthread_mutex_lock(application_mutex);
@@ -670,53 +736,15 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     pthread_mutex_lock(device_mutex);
     
     if(AGS_IS_JACK_DEVOUT(device->data)){
-      jack_devout = device->data;
+      jack_devout = (AgsJackDevout *) device->data;
 
-      /* wait callback */
+      /* wait callback */      
       if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
 	no_event = FALSE;
-
-	pthread_mutex_unlock(device_mutex);
-    
-	/* interrupt GUI */
-	if(audio_loop != NULL){
-	  pthread_mutex_lock(audio_loop->timing_mutex);
-  
-	  g_atomic_int_set(&(audio_loop->time_spent),
-			   audio_loop->time_cycle);
-  
-	  pthread_mutex_unlock(audio_loop->timing_mutex);
-  
-	  ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
-				  AGS_THREAD_SUSPEND_SIG,
-				  0, &time_spent);
-	}
-    
-	/* give back computing time until ready */
-	pthread_mutex_lock(jack_devout->callback_mutex);
-    
-	if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-	  g_atomic_int_or(&(jack_devout->sync_flags),
-			  AGS_JACK_DEVOUT_CALLBACK_WAIT);
-    
-	  while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
-		(AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-	    pthread_cond_wait(jack_devout->callback_cond,
-			      jack_devout->callback_mutex);
-	  }
-	}
-    
-	g_atomic_int_and(&(jack_devout->sync_flags),
-			 (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
-			    AGS_JACK_DEVOUT_CALLBACK_DONE)));
-    
-	pthread_mutex_unlock(jack_devout->callback_mutex);
-
-	pthread_mutex_lock(device_mutex);
       }else{
 	no_event = TRUE;
       }
-
+      
       /* get buffer */
       if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
 	j = 0;
@@ -761,8 +789,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	break;
       default:
 	pthread_mutex_unlock(device_mutex);
-	
-	pthread_mutex_unlock(mutex);
 
 	g_warning("ags_jack_devout_process_callback(): unsupported word size\0");
 	return(0);
@@ -811,9 +837,15 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     
     pthread_mutex_unlock(device_mutex);
     
+    pthread_mutex_lock(mutex);
+    
     device = device->next;
-  }
 
+    pthread_mutex_unlock(mutex);
+  }
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  
   return(0);
 }
 

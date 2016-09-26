@@ -124,7 +124,7 @@ struct _AgsThread
   guint current_tic;
 
   guint cycle_iteration;
-  guint time_late;
+  volatile guint time_late;
   struct timespec *computing_time;
   
   pthread_t *thread;

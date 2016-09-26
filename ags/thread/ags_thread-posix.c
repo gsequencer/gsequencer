@@ -402,7 +402,8 @@ ags_thread_init(AgsThread *thread)
   thread->current_tic = 0;
 
   thread->cycle_iteration = 0;
-  thread->time_late = 0;
+  g_atomic_int_set(&(thread->time_late),
+		   0);
   thread->computing_time = (struct timespec *) malloc(sizeof(struct timespec));
   thread->computing_time->tv_sec = 0;
   thread->computing_time->tv_nsec = 0;
@@ -2305,9 +2306,9 @@ ags_thread_real_clock(AgsThread *thread)
 	  pthread_cond_wait(thread->cond,
 			    thread->mutex);
 	}
+
+	pthread_mutex_unlock(thread->mutex);
       }
-      
-      pthread_mutex_unlock(thread->mutex);
     }else{
       /* async-queue */
       if(async_queue != NULL){
@@ -2475,13 +2476,15 @@ ags_thread_real_clock(AgsThread *thread)
 
       time_cycle = NSEC_PER_SEC / thread->freq;
       
-      relative_time_spent = time_cycle - time_spent - thread->time_late - AGS_THREAD_TOLERANCE;
+      relative_time_spent = time_cycle - time_spent - g_atomic_int_get(&(thread->time_late)) - AGS_THREAD_TOLERANCE;
 
       if(relative_time_spent < 0.0){
-	thread->time_late = -1.25 * relative_time_spent;
+	g_atomic_int_set(&(thread->time_late),
+			 (guint) ceil(-1.25 * relative_time_spent));
       }else if(relative_time_spent > 0.0 &&
 	       relative_time_spent < time_cycle){
-	thread->time_late = 0;
+	g_atomic_int_set(&(thread->time_late),
+			 0);
 	timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
       
 	nanosleep(&timed_sleep, NULL);

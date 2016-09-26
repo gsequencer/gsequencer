@@ -916,7 +916,7 @@ ags_ipatch_get_samplerate(AgsPlayable *playable)
   }
 
   g_object_get(sample,
-	       "sample-rate\0", samplerate,
+	       "sample-rate\0", &samplerate,
 	       NULL);
   
   return(samplerate);

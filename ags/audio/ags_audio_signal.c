@@ -628,7 +628,11 @@ ags_audio_signal_set_property(GObject *gobject,
       
       if(soundcard != NULL){
 	g_object_ref(soundcard);
+      }
+      
+      audio_signal->soundcard = soundcard;
 
+      if(soundcard != NULL){
 	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 				  NULL,
 				  &samplerate,
@@ -641,8 +645,6 @@ ags_audio_signal_set_property(GObject *gobject,
 		     "format\0", format,
 		     NULL);
       }
-      
-      audio_signal->soundcard = soundcard;
     }
     break;
   case PROP_RECYCLING:
