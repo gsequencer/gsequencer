@@ -914,8 +914,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint loop_length;
   guint loop_frame_count;
   guint n_frames;
+  guint copy_n_frames;
   guint i, j, k;
-
   guint copy_mode;
   
   pthread_mutex_t *application_mutex;
@@ -1012,41 +1012,60 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   /* loop related copying */
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
 						  ags_audio_buffer_util_format_from_soundcard(template->format));
+  
+  for(i = 0, j = 0, k = attack; i < frame_count;){    
+    /* compute count of frames to copy */
+    copy_n_frames = audio_signal->buffer_size;
 
-  for(i = 0, j = 0; i < loop_frame_count; i++){
-    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, i % audio_signal->buffer_size,
-						template_stream->data, 1, j,
-						1, copy_mode);
-    
+    /* limit nth loop */
     if(i > template->loop_start &&
-       i > template->loop_start + (template->loop_end - template->loop_start) &&
-       (i - template->loop_start) / (template->loop_end - template->loop_start) < (loop_frame_count - template->loop_start) / (template->loop_end - template->loop_start) &&
-       (i - template->loop_start) % (template->loop_end - template->loop_start) == 0){
-	j = template->loop_start % template->buffer_size;
-
-	template_stream = g_list_nth(template->stream_beginning,
-				     floor(template->loop_start / loop_frame_count));
-    }else{
-      j++;
+       i + copy_n_frames > template->loop_start + (template->loop_end - template->loop_start) &&
+       i + copy_n_frames < template->loop_start + loop_frame_count &&
+       template->loop_start + ((i - template->loop_start) % (template->loop_end - template->loop_start)) + copy_n_frames >= template->loop_end - template->loop_start){
+      copy_n_frames = template->loop_end - (template->loop_start + ((i - template->loop_start) % (template->loop_end - template->loop_start)));
     }
 
-    if(i != 0 &&
-       (i + 1) % audio_signal->buffer_size == 0){
+    /* check boundaries */
+    if((k % audio_signal->buffer_size) + copy_n_frames > audio_signal->buffer_size){
+      copy_n_frames = audio_signal->buffer_size - (k % audio_signal->buffer_size);
+    }
+
+    if(j + copy_n_frames > audio_signal->buffer_size){
+      copy_n_frames = audio_signal->buffer_size - j;
+    }
+
+    /* copy */
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, k % audio_signal->buffer_size,
+						template_stream->data, 1, j,
+						copy_n_frames, copy_mode);
+
+    /* increment and iterate */
+    if((i + copy_n_frames) % audio_signal->buffer_size == 0){
       stream = stream->next;
     }
+
+    if(j + copy_n_frames == template->buffer_size){
+      template_stream = template_stream->next;
+    }
     
+    if(i > template->loop_start &&
+       i + copy_n_frames > template->loop_start + (template->loop_end - template->loop_start) &&
+       i + copy_n_frames < template->loop_start + loop_frame_count &&
+       template->loop_start + ((i - template->loop_start) % (template->loop_end - template->loop_start)) + copy_n_frames >= template->loop_end - template->loop_start){
+      j = template->loop_start % template->buffer_size;
+      template_stream = g_list_nth(template->stream_beginning,
+				   floor(template->loop_start / template->buffer_size));
+    }else{
+      j += copy_n_frames;
+    }
+    
+    i += copy_n_frames;
+    k += copy_n_frames;
+
     if(j == template->buffer_size){
       j = 0;
-      
-      if(template_stream->next != NULL){
-	template_stream = template_stream->next;
-      }else{
-	template_stream = g_list_nth(template->stream_beginning,
-				     floor(template->loop_start / loop_frame_count));
-      }
     }
   }
-
 
   /* release lock */
   pthread_mutex_unlock(recycling_mutex);

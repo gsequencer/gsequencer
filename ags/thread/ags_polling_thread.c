@@ -216,7 +216,7 @@ ags_polling_thread_run(AgsThread *thread)
 
   timeout.tv_sec = 0;
 
-  if(main_loop->time_late != 0){
+  if(g_atomic_int_get(&(main_loop->time_late)) != 0){
     timeout.tv_nsec = 0;
   }else{
     if(main_loop->tic_delay == main_loop->delay){
