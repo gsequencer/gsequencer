@@ -979,10 +979,10 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   if(template->loop_end > template->loop_start){
     loop_length = template->loop_end - template->loop_start;
-    loop_frame_count = ((frame_count - template->loop_start) / loop_length) * template->buffer_size;
+    loop_frame_count = ((frame_count - template->loop_start) / loop_length) * template->buffer_size + (template->loop_end - template->loop_start);
 
     ags_audio_signal_stream_resize(audio_signal,
-				   (guint) ceil(loop_frame_count / audio_signal->buffer_size) + 1);
+				   (guint) ceil(frame_count / audio_signal->buffer_size) + 1);
     
   }else{
     ags_audio_signal_duplicate_stream(audio_signal,

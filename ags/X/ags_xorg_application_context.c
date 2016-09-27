@@ -338,6 +338,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   gchar *str;
 
   guint i;
+  gboolean has_jack;
   
   AGS_APPLICATION_CONTEXT(xorg_application_context)->log = NULL;
 
@@ -357,6 +358,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->distributed_manager = g_list_prepend(xorg_application_context->distributed_manager,
 								 jack_server);
   g_object_ref(G_OBJECT(jack_server));
+
+  has_jack = FALSE;
   
   /* AgsSoundcard */
   xorg_application_context->soundcard = NULL;
@@ -399,6 +402,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 							       TRUE);
 	
 	use_jack = TRUE;
+	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa\0",
 				    5)){
@@ -527,7 +531,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
 						       sequencer);
   g_object_ref(G_OBJECT(sequencer));
-
+  
   //TODO:JK: comment out
   /*
   if(jack_enabled){
@@ -642,6 +646,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   
   /* AgsThreadPool */
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
+
+  /* launch */
+  if(has_jack){
+    ags_jack_server_connect_client(jack_server);
+  }
 }
 
 void

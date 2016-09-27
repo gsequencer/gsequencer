@@ -794,6 +794,8 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
   navigation = AGS_NAVIGATION(widget);
 
   if(navigation->soundcard == NULL){
+    gdk_threads_leave();
+    
     return(TRUE);
   }
   
