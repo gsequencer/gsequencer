@@ -3,7 +3,9 @@ ags (0.7.73)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed removed types of libags_gui.types of gtkdoc
 	* fixed return value to be void * of ags_stream_alloc()
+	* fixed ags_audio_set_pads() to shrink correctly
 	* improved ags_recycling_create_audio_signal_with_frame_count() to reduce overhead
+	* improved JACK synchronization
 
 ags (0.7.72)
 

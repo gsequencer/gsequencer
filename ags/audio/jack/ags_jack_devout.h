@@ -67,6 +67,8 @@ typedef enum{
   AGS_JACK_DEVOUT_PASS_THROUGH                   = 1,
   AGS_JACK_DEVOUT_CALLBACK_WAIT                  = 1 <<  1,
   AGS_JACK_DEVOUT_CALLBACK_DONE                  = 1 <<  2,
+  AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT           = 1 <<  3,
+  AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE           = 1 <<  4,
 }AgsJackDevoutSyncFlags;
 
 #define AGS_JACK_DEVOUT_ERROR (ags_jack_devout_error_quark())
@@ -116,7 +118,10 @@ struct _AgsJackDevout
 
   pthread_mutex_t *callback_mutex;
   pthread_cond_t *callback_cond;
-  
+
+  pthread_mutex_t *callback_finish_mutex;
+  pthread_cond_t *callback_finish_cond;
+
   GObject *application_context;
   pthread_mutex_t *application_mutex;
 

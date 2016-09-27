@@ -3293,6 +3293,8 @@ ags_thread_interrupted(AgsThread *thread,
   guint retval;
   guint thread_signal;
 
+  return(0);
+  
   pthread_mutex_lock(&class_mutex);
 
   thread_signal = thread_signals[INTERRUPTED];

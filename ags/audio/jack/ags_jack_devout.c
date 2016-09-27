@@ -747,6 +747,14 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->callback_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(jack_devout->callback_cond, NULL);
 
+  /* callback finish mutex */
+  jack_devout->callback_finish_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(jack_devout->callback_finish_mutex,
+		     NULL);
+
+  jack_devout->callback_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(jack_devout->callback_finish_cond, NULL);
+
   /* parent */
   jack_devout->application_context = NULL;
   jack_devout->application_mutex = NULL;
@@ -1583,6 +1591,8 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   
   g_atomic_int_and(&(jack_devout->sync_flags),
 		   (~(AGS_JACK_DEVOUT_PASS_THROUGH)));
+  g_atomic_int_or(&(jack_devout->sync_flags),
+		  (AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE));
 
   pthread_mutex_unlock(mutex);
 }
@@ -1591,19 +1601,24 @@ void
 ags_jack_devout_port_play(AgsSoundcard *soundcard,
 			  GError **error)
 {
+  AgsJackClient *jack_client;
   AgsJackDevout *jack_devout;
 
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
+  gboolean jack_client_activated;
+  
   pthread_mutex_t *mutex;
+  pthread_mutex_t *callback_mutex;
+  pthread_mutex_t *callback_finish_mutex;
+  pthread_mutex_t *client_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   application_context = ags_soundcard_get_application_context(soundcard);
-
-  /*
-    /*  */
+  
+  /* mutics */
   pthread_mutex_lock(application_context->mutex);
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1612,6 +1627,15 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
 				   (GObject *) jack_devout);
   
   pthread_mutex_unlock(application_context->mutex);
+
+  pthread_mutex_lock(mutex);
+
+  jack_client = (AgsJackClient *) jack_devout->jack_client;
+  
+  callback_mutex = jack_devout->callback_mutex;
+  callback_finish_mutex = jack_devout->callback_finish_mutex;
+
+  pthread_mutex_unlock(mutex);
 
   /* do playback */
   pthread_mutex_lock(mutex);
@@ -1623,22 +1647,56 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     
     return;
   }
+
   pthread_mutex_unlock(mutex);
 
-  /* signal */
-  pthread_mutex_lock(jack_devout->callback_mutex);
+  /*  */
+  pthread_mutex_lock(application_context->mutex);
+  
+  client_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) jack_client);
+  
+  pthread_mutex_unlock(application_context->mutex);
 
-  g_atomic_int_or(&(jack_devout->sync_flags),
-		  AGS_JACK_DEVOUT_CALLBACK_DONE);
+  pthread_mutex_lock(client_mutex);
+
+  jack_client_activated = ((AGS_JACK_CLIENT_ACTIVATED & (jack_client->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(client_mutex);
+
+  if(jack_client_activated){
+    /* signal */
+    pthread_mutex_lock(callback_mutex);
+
+    g_atomic_int_or(&(jack_devout->sync_flags),
+		    AGS_JACK_DEVOUT_CALLBACK_DONE);
     
-  if((AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-    pthread_cond_signal(jack_devout->callback_cond);
+    if((AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+      pthread_cond_signal(jack_devout->callback_cond);
+    }
+
+    pthread_mutex_unlock(callback_mutex);
+
+    /* wait callback */	
+    pthread_mutex_lock(callback_finish_mutex);
+    
+    if((AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+      g_atomic_int_or(&(jack_devout->sync_flags),
+		      AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT);
+    
+      while((AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
+	    (AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	pthread_cond_wait(jack_devout->callback_finish_cond,
+			  callback_finish_mutex);
+      }
+    }
+    
+    g_atomic_int_and(&(jack_devout->sync_flags),
+		     (~(AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT |
+			AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE)));
+    
+    pthread_mutex_unlock(callback_finish_mutex);
   }
-
-  pthread_mutex_unlock(jack_devout->callback_mutex);
-
-  //  jack_cycle_signal(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
-  //		    0);
 }
 
 void
@@ -1673,17 +1731,6 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
     return;
   }
 
-  pthread_mutex_lock(jack_devout->callback_mutex);
-
-  g_atomic_int_or(&(jack_devout->sync_flags),
-		  AGS_JACK_DEVOUT_CALLBACK_DONE);
-    
-  if((AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-    pthread_cond_signal(jack_devout->callback_cond);
-  }
-
-  pthread_mutex_unlock(jack_devout->callback_mutex);
-
   //  jack_cycle_signal(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
   //		    -1);
 
@@ -1696,7 +1743,32 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
 
   g_atomic_int_or(&(jack_devout->sync_flags),
 		  AGS_JACK_DEVOUT_PASS_THROUGH);
+  
+  /* signal callback */
+  pthread_mutex_lock(jack_devout->callback_mutex);
 
+  g_atomic_int_or(&(jack_devout->sync_flags),
+		  AGS_JACK_DEVOUT_CALLBACK_DONE);
+    
+  if((AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+    pthread_cond_signal(jack_devout->callback_cond);
+  }
+
+  pthread_mutex_unlock(jack_devout->callback_mutex);
+
+  /* signal thread */
+  pthread_mutex_lock(jack_devout->callback_finish_mutex);
+
+  g_atomic_int_or(&(jack_devout->sync_flags),
+		  AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
+    
+  if((AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+    pthread_cond_signal(jack_devout->callback_finish_cond);
+  }
+
+  pthread_mutex_unlock(jack_devout->callback_finish_mutex);
+  
+  /*  */
   switch(jack_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {

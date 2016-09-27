@@ -624,6 +624,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   pthread_mutex_t *mutex;
   pthread_mutex_t *device_mutex;
   pthread_mutex_t *callback_mutex;
+  pthread_mutex_t *callback_finish_mutex;
   
   if(ptr == NULL){
     return(0);
@@ -679,51 +680,11 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  /* wait one device */
   if(device == NULL){
     return;
   }
-  
-  pthread_mutex_lock(application_mutex);
-  
-  device_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) device->data);
 
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(device_mutex);
-
-  jack_devout = (AgsJackDevout *) device->data;
-  
-  if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-    callback_mutex = jack_devout->callback_mutex;
-
-    pthread_mutex_unlock(device_mutex);
-	
-    /* give back computing time until ready */
-    pthread_mutex_lock(callback_mutex);
-    
-    if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-      g_atomic_int_or(&(jack_devout->sync_flags),
-		      AGS_JACK_DEVOUT_CALLBACK_WAIT);
-    
-      while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
-	    (AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-	pthread_cond_wait(jack_devout->callback_cond,
-			  callback_mutex);
-      }
-    }
-    
-    g_atomic_int_and(&(jack_devout->sync_flags),
-		     (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
-			AGS_JACK_DEVOUT_CALLBACK_DONE)));
-    
-    pthread_mutex_unlock(callback_mutex);
-  }
-  
   /* retrieve word size */
-  pthread_mutex_lock(task_thread->launch_mutex);
-  
   while(device != NULL){
     /*  */  
     pthread_mutex_lock(application_mutex);
@@ -741,10 +702,36 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       /* wait callback */      
       if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
 	no_event = FALSE;
+
+	pthread_mutex_lock(device_mutex);
+
+	callback_mutex = jack_devout->callback_mutex;
+
+	pthread_mutex_unlock(device_mutex);
+	
+	/* give back computing time until ready */
+	pthread_mutex_lock(callback_mutex);
+    
+	if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+	  g_atomic_int_or(&(jack_devout->sync_flags),
+			  AGS_JACK_DEVOUT_CALLBACK_WAIT);
+    
+	  while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
+		(AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	    pthread_cond_wait(jack_devout->callback_cond,
+			      callback_mutex);
+	  }
+	}
+    
+	g_atomic_int_and(&(jack_devout->sync_flags),
+			 (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
+			    AGS_JACK_DEVOUT_CALLBACK_DONE)));
+    
+	pthread_mutex_unlock(callback_mutex);
       }else{
 	no_event = TRUE;
       }
-      
+
       /* get buffer */
       if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
 	j = 0;
@@ -827,6 +814,20 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	  memset(jack_devout->buffer[1], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
 	}	
       }
+
+      /*  */
+      if(!no_event){
+	pthread_mutex_lock(callback_finish_mutex);
+
+	g_atomic_int_or(&(jack_devout->sync_flags),
+			AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
+    
+	if((AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	  pthread_cond_signal(jack_devout->callback_finish_cond);
+	}
+
+	pthread_mutex_unlock(callback_finish_mutex);
+      }
     }
 
     /* tic */
@@ -836,15 +837,21 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     ags_jack_devout_switch_buffer_flag(jack_devout);
     
     pthread_mutex_unlock(device_mutex);
-    
+
+    /* signal finish */
+    pthread_mutex_lock(device_mutex);
+
+    callback_finish_mutex = jack_devout->callback_finish_mutex;
+
+    pthread_mutex_unlock(device_mutex);
+
+    /* iterate */
     pthread_mutex_lock(mutex);
     
     device = device->next;
 
     pthread_mutex_unlock(mutex);
   }
-  
-  pthread_mutex_unlock(task_thread->launch_mutex);
   
   return(0);
 }

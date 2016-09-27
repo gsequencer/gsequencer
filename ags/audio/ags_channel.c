@@ -6550,16 +6550,16 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
       input = ags_channel_nth(audio->input, output->audio_channel);
 
-      recall_id = (AgsRecallID **) malloc((audio->input_pads + 1) * sizeof(AgsRecallID*));
+      recall_id = (AgsRecallID **) malloc((audio->input_pads + 1) * sizeof(AgsRecallID *));
       recall_id[audio->input_pads] = NULL;
     
       while(input != NULL){
 	/* input recall id */
-	recall_id[input->pad] = 
-	  input_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-					 "recycling-context\0", default_recall_id->recycling_context,
-					 "recycling\0", input->first_recycling,
-					 NULL);
+	input_recall_id = (AgsRecallID *) g_object_new(AGS_TYPE_RECALL_ID,
+						       "recycling-context\0", default_recall_id->recycling_context,
+						       "recycling\0", input->first_recycling,
+						       NULL);
+	recall_id[input->pad] = input_recall_id;
 	ags_channel_add_recall_id(input,
 				  input_recall_id);
 
@@ -6670,7 +6670,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 								 NULL);
 	ags_audio_add_recycling_context(audio,
 					(GObject *) recycling_context);
-
+	ags_recycling_context_add_child(recall_id->recycling_context,
+					recycling_context);
+	
 	/* set up recycling container */
 	recycling = output->first_recycling;
 	
@@ -6744,7 +6746,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							       NULL);
       ags_audio_add_recycling_context(audio,
 				      (GObject *) recycling_context);
-
+      ags_recycling_context_add_child(recall_id->recycling_context,
+				      recycling_context);
+	
       /* set up recycling container */
       recycling = input->first_recycling;
       

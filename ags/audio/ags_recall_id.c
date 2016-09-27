@@ -197,8 +197,9 @@ ags_recall_id_set_property(GObject *gobject,
 
       recycling_context = g_value_get_object(value);
 
-      if(recall_id->recycling_context == recycling_context)
+      if(recall_id->recycling_context == recycling_context){
 	return;
+      }
 
       if(recall_id->recycling_context != NULL){
 	g_object_unref(recall_id->recycling_context);

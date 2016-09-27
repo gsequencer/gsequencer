@@ -65,10 +65,16 @@ void ags_audio_test_resolve_recall_callback(AgsRecall *recall,
 #define AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS (2)
 #define AGS_AUDIO_TEST_SET_PADS_INPUT_PADS (12)
 #define AGS_AUDIO_TEST_SET_PADS_OUTPUT_PADS (5)
+#define AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS (18)
+#define AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS (8)
+#define AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS (3)
+#define AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS (1)
 
 #define AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_AUDIO_CHANNELS (3)
 #define AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_INPUT_PADS (1)
 #define AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_OUTPUT_PADS (7)
+#define AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_GROW_AUDIO_CHANNELS (5)
+#define AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_SHRINK_AUDIO_CHANNELS (1)
 
 #define AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS (2)
 #define AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_INPUT_PADS (8)
@@ -192,11 +198,37 @@ ags_audio_test_set_pads()
 
   CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
 
+  /* verify reverse pad count */
+  channel = ags_channel_last(audio->input);
+  
+  for(i = 0; channel != ags_channel_last(audio->input)->prev_pad; i++){
+    current = channel;
+    
+    for(j = 0; current != NULL; j++){
+      current = current->prev_pad;
+    }
+
+    g_message("--- %d\0", j);
+    CU_ASSERT(j == AGS_AUDIO_TEST_SET_PADS_INPUT_PADS);
+    channel = channel->prev;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+  
   /* verify line count */
   channel = audio->input;
   
   for(i = 0; channel != NULL; i++){
     channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_INPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /* verify reverse line count */
+  channel = ags_channel_last(audio->input);
+  
+  for(i = 0; channel != NULL; i++){
+    channel = channel->prev;
   }
 
   CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_INPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
@@ -232,6 +264,141 @@ ags_audio_test_set_pads()
   }
 
   CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_OUTPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /*
+   * grow pads
+   */
+  /* set input pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS);
+
+  CU_ASSERT(audio->input_pads == AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS);
+
+  /* verify pad count */
+  channel = audio->input;
+  
+  for(i = 0; channel != audio->input->next_pad; i++){
+    current = channel;
+    
+    for(j = 0; current != NULL; j++){
+      current = current->next_pad;
+    }
+    
+    CU_ASSERT(j == AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS);
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /* verify line count */
+  channel = audio->input;
+  
+  for(i = 0; channel != NULL; i++){
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  
+  /* set output pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS);
+
+  CU_ASSERT(audio->output_pads == AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS);
+
+  /* verify pad count */
+  channel = audio->output;
+  
+  for(i = 0; channel != audio->output->next_pad; i++){
+    current = channel;
+    
+    for(j = 0; current != NULL; j++){
+      current = current->next_pad;
+    }
+    
+    CU_ASSERT(j == AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS);
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /* verify line count */
+  channel = audio->output;
+  
+  for(i = 0; channel != NULL; i++){
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /*
+   * shrink pads
+   */
+  /* set input pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS);
+
+  CU_ASSERT(audio->input_pads == AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS);
+
+  /* verify pad count */
+  channel = audio->input;
+  
+  for(i = 0; channel != audio->input->next_pad; i++){
+    current = channel;
+    
+    for(j = 0; current != NULL; j++){
+      current = current->next_pad;
+    }
+    
+    CU_ASSERT(j == AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS);
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /* verify line count */
+  channel = audio->input;
+  
+  for(i = 0; channel != NULL; i++){
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /* set output pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS);
+
+  CU_ASSERT(audio->output_pads == AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS);
+
+  /* verify pad count */
+  channel = audio->output;
+  
+  for(i = 0; channel != audio->output->next_pad; i++){
+    current = channel;
+    
+    for(j = 0; current != NULL; j++){
+      current = current->next_pad;
+    }
+    
+    CU_ASSERT(j == AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS);
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
+
+  /* verify line count */
+  channel = audio->output;
+  
+  for(i = 0; channel != NULL; i++){
+    channel = channel->next;
+  }
+
+  CU_ASSERT(i == AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS * AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS);
 }
 
 void
