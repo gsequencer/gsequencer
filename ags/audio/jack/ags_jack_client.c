@@ -703,8 +703,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
 	no_event = FALSE;
 
-	pthread_mutex_lock(device_mutex);
-
 	callback_mutex = jack_devout->callback_mutex;
 
 	pthread_mutex_unlock(device_mutex);
@@ -728,6 +726,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 			    AGS_JACK_DEVOUT_CALLBACK_DONE)));
     
 	pthread_mutex_unlock(callback_mutex);
+
+	pthread_mutex_lock(device_mutex);
       }else{
 	no_event = TRUE;
       }
