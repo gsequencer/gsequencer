@@ -681,7 +681,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   if(device == NULL){
-    return;
+    return(0);
   }
 
   /* retrieve word size */
