@@ -803,7 +803,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     AGS_RECALL(recall_lv2)->port = g_list_reverse(port);
   }
   
-  return(AGS_RECALL(recall_lv2)->port);
+  return(g_list_copy(AGS_RECALL(recall_lv2)->port));
 }
 
 /**

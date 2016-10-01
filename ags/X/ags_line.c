@@ -925,7 +925,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
     k++;
   }
 
-  return(port);
+  return(g_list_concat(g_list_copy(port),
+		       g_list_copy(recall_port)));
 }
 
 GList*
@@ -1143,7 +1144,8 @@ ags_line_add_lv2_effect(AgsLine *line,
     k++;
   }
   
-  return(port);
+  return(g_list_concat(g_list_copy(port),
+		       g_list_copy(recall_port)));
 }
 
 GList*
@@ -1153,7 +1155,6 @@ ags_line_real_add_effect(AgsLine *line,
 			 gchar *effect)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   AgsLadspaPlugin *ladspa_plugin;
   AgsLv2Plugin *lv2_plugin;
@@ -1161,8 +1162,6 @@ ags_line_real_add_effect(AgsLine *line,
   GList *port;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
-						   AGS_TYPE_MACHINE);
   
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);

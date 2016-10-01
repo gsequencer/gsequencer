@@ -92,7 +92,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
-  AgsConfig *config;
   GObject *soundcard;
 
   GtkTreeIter current;
@@ -100,12 +99,10 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   gchar *str;
   gchar *card;
 
-  gboolean use_jack, use_alsa, use_oss;
+  gboolean use_alsa;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
-
-  GValue value =  {0,};
 
   GError *error;
 
@@ -132,11 +129,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 						       AGS_TYPE_TASK_THREAD);
   
   /*  */
-  use_jack = TRUE;
   use_alsa = FALSE;
-  use_alsa = FALSE;
-
-  config = ags_config_get_instance();
 
   str = NULL;
   
@@ -149,33 +142,18 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
       str = "oss\0";
     }
   }
-  
+
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
-			  "jack\0",
+			  "alsa\0",
 			  5)){
-    use_jack = TRUE;
-  }else if(str != NULL &&
-	   !g_ascii_strncasecmp(str,
-				"alsa\0",
-				5)){
-    use_jack = FALSE;
     use_alsa = TRUE;
-  }else if(str != NULL &&
-	   !g_ascii_strncasecmp(str,
-				"oss\0",
-				4)){
-    use_jack = FALSE;
-    use_oss = TRUE;
   }
 
   card = gtk_combo_box_text_get_active_text(soundcard_editor->card);
-
-  if(card == NULL){
-    return;
-  }
   
-  if(use_alsa){
+  if(card != NULL &&
+     use_alsa){
     if(index(card,
 	     ',') != NULL){
       str = g_strndup(card,
@@ -218,7 +196,9 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   set_output_device = ags_set_output_device_new(soundcard,
 						card);
-
+  ags_task_thread_append_task(task_thread,
+			      (AgsTask *) set_output_device);
+  
   gtk_spin_button_set_range(soundcard_editor->audio_channels,
 			    channels_min, channels_max);
   gtk_spin_button_set_range(soundcard_editor->samplerate,

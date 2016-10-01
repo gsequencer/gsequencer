@@ -35,10 +35,16 @@
 typedef struct _AgsAudioPreferences AgsAudioPreferences;
 typedef struct _AgsAudioPreferencesClass AgsAudioPreferencesClass;
 
+typedef enum{
+  AGS_AUDIO_PREFERENCES_CONNECTED    = 1,
+}AgsAudioPreferencesFlags;
+
 struct _AgsAudioPreferences
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   GtkVBox *soundcard_editor;
   GtkButton *connect_jack;
   GtkButton *add;

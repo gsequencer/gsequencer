@@ -37,7 +37,8 @@ typedef struct _AgsAutomationWindow AgsAutomationWindow;
 typedef struct _AgsAutomationWindowClass AgsAutomationWindowClass;
 
 typedef enum{
-  AGS_AUTOMATION_WINDOW_LIVE_AUTOMATION   = 1,
+  AGS_AUTOMATION_WINDOW_CONNECTED         = 1,
+  AGS_AUTOMATION_WINDOW_LIVE_AUTOMATION   = 1 << 1,
 }AgsAutomationWindowFlags;
 
 struct _AgsAutomationWindow

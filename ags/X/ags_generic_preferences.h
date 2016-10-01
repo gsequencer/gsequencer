@@ -32,10 +32,16 @@
 typedef struct _AgsGenericPreferences AgsGenericPreferences;
 typedef struct _AgsGenericPreferencesClass AgsGenericPreferencesClass;
 
+typedef enum{
+  AGS_GENERIC_PREFERENCES_CONNECTED      = 1,
+}AgsGenericPreferencesFlags;
+
 struct _AgsGenericPreferences
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   GtkCheckButton *autosave_thread;
 
   GtkComboBox *audio_output_module;

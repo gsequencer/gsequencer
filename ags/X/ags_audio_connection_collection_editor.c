@@ -338,16 +338,21 @@ ags_audio_connection_collection_editor_connect(AgsConnectable *connectable)
 void
 ags_audio_connection_collection_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor;
+
+  /* AgsAudioConnectionCollectionEditor */
+  audio_connection_collection_editor = AGS_AUDIO_CONNECTION_COLLECTION_EDITOR(connectable);
+
+  g_object_disconnect(G_OBJECT(audio_connection_collection_editor->soundcard),
+		      "changed\0",
+		      G_CALLBACK(ags_audio_connection_collection_editor_soundcard_callback),
+		      audio_connection_collection_editor,
+		      NULL);
 }
 
 void
 ags_audio_connection_collection_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor;
-
-  audio_connection_collection_editor = AGS_AUDIO_CONNECTION_COLLECTION_EDITOR(applicable);
-
   /* empty */
 }
 
@@ -382,7 +387,6 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
     guint soundcard_audio_channel;
 
     pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
 
     connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(audio_connection_collection_editor),
 								      AGS_TYPE_CONNECTION_EDITOR));
@@ -407,16 +411,6 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
     /* get task and soundcard thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
 							 AGS_TYPE_TASK_THREAD);
-
-    /* lookup audio mutex */
-    pthread_mutex_lock(application_mutex);
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-    
-    pthread_mutex_unlock(application_mutex);
 
     /* get mapping and soundcard */
     pad = (guint) gtk_spin_button_get_value_as_int(audio_connection_collection_editor->pad);
@@ -445,10 +439,6 @@ ags_audio_connection_collection_editor_apply(AgsApplicable *applicable)
 void
 ags_audio_connection_collection_editor_reset(AgsApplicable *applicable)
 {
-  AgsAudioConnectionCollectionEditor *audio_connection_collection_editor;
-
-  audio_connection_collection_editor = AGS_AUDIO_CONNECTION_COLLECTION_EDITOR(applicable);
-
   /* empty */
 }
 

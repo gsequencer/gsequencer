@@ -211,7 +211,7 @@ ags_file_link_set_property(GObject *gobject,
 	return;
       }
 
-      file_link->data = data;
+      file_link->data = g_strdup(data);
     }
     break;
   default:
@@ -348,6 +348,16 @@ ags_file_link_finalize(GObject *gobject)
   AgsFileLink *file_link;
 
   file_link = AGS_FILE_LINK(gobject);
+
+  /* filename */
+  if(file_link->filename != NULL){
+    g_free(file_link->filename);
+  }
+
+  /* data */
+  if(file_link->data != NULL){
+    g_free(file_link->data);
+  }
 }
 
 /**

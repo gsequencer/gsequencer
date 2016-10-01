@@ -92,13 +92,19 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
   GList *line_editor, *line_editor_start;
   GList *control_type_name;
   
+  /* lock gdk threads */
   gdk_threads_enter();
 
+  /* get machine and machine editor */
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
 						   AGS_TYPE_MACHINE);
   machine_editor = (AgsMachineEditor *) machine->properties;
 
+  /* get control type */
   control_type_name = NULL;  
+
+  pad_editor_start = NULL;
+  line_editor_start = NULL;
 
   if(machine_editor != NULL){
     pad_editor_start = 
@@ -110,16 +116,13 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
       line_editor_start =
 	line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
       line_editor = g_list_nth(line_editor,
-			       channel->audio_channel);
-  
-      g_list_free(pad_editor);
+			       channel->audio_channel);      
     }else{
       line_editor = NULL;
     }
 
     if(line_editor != NULL){
       line_member_editor = AGS_LINE_EDITOR(line_editor->data)->member_editor;
-
       plugin_browser = line_member_editor->plugin_browser;
 
       if(plugin_browser != NULL &&
@@ -128,6 +131,10 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
 	GList *port_control, *port_control_start;
 
 	gchar *controls;
+
+	/* get plugin browser */
+	description_start = NULL;
+	port_control_start = NULL;
 	
 	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
@@ -142,12 +149,12 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
 	  g_message("ags_effect_line_callbacks.c unsupported plugin browser\0");
 	}
 
+	/* get port description */
 	if(description != NULL){
 	  description = g_list_last(description);
 	  
 	  port_control_start =
 	    port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
-	  g_list_free(description_start);
 	  
 	  if(port_control != NULL){
 	    while(port_control != NULL){
@@ -187,22 +194,32 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
 	      
 	      port_control = port_control->next;
 	      port_control = port_control->next;
-	    }
+	    }   
 	  }
+
+	  /* free lists */
+	  g_list_free(description_start);
+	  g_list_free(port_control_start);
 	}
       }
       
-      line_member_editor->plugin_browser;
+      //      line_member_editor->plugin_browser;
     }
   }else{
     control_type_name = NULL;
   }
-  
+
+  /* add effect */
   ags_effect_line_add_effect(effect_line,
 			     control_type_name,
 			     filename,
 			     effect);
 
+  /* free container children list */
+  g_list_free(pad_editor_start);
+  g_list_free(line_editor_start);
+
+  /* unlock gdk threads */
   gdk_threads_leave();
 }
 
@@ -211,10 +228,13 @@ ags_effect_line_remove_effect_callback(AgsChannel *channel,
 				       guint nth,
 				       AgsEffectLine *effect_line)
 {
+  /* lock gdk threads */
   gdk_threads_enter();
 
+  /* remove effect */
   ags_effect_line_remove_effect(effect_line,
 				nth);
 
+  /* unlock gdk threads */
   gdk_threads_leave();
 }

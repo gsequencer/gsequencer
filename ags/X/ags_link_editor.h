@@ -39,8 +39,9 @@ typedef struct _AgsLinkEditor AgsLinkEditor;
 typedef struct _AgsLinkEditorClass AgsLinkEditorClass;
 
 typedef enum{
-  AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE = 1,
-  AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER     = 1 <<  1,
+  AGS_LINK_EDITOR_CONNECTED               = 1,
+  AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE  = 1 <<  1,
+  AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER      = 1 <<  2,
 }AgsLinkEditorFlags;
 
 struct _AgsLinkEditor

@@ -88,15 +88,8 @@ ags_automation_editor_tic_callback(GObject *soundcard,
 
   if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(window->navigation->scroll))){
     AgsScrollOnPlay *scroll_on_play;
-    double tact_factor, zoom_factor;
-    double tact;
     gdouble step;
     
-    zoom_factor = 0.25;
-
-    tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_editor->automation_toolbar->zoom));
-    tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_editor->automation_toolbar->zoom) - 2.0);
-
     if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) > automation_editor->current_tact){
       automation_editor->current_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
       

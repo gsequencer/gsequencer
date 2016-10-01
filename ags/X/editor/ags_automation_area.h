@@ -72,6 +72,8 @@ GType ags_automation_area_get_type(void);
 
 GList* ags_automation_area_find_specifier(GList *automation_area,
 					  gchar *specifier);
+GList* ags_automation_area_find_position(GList *automation_area,
+					 guint x, guint y);
 
 void ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
 				    cairo_t *cr,

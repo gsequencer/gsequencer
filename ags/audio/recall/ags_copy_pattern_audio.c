@@ -301,6 +301,16 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
   
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
 
+  /* bank index 0 */
+  if(copy_pattern_audio->bank_index_0 != NULL){
+    g_object_unref(copy_pattern_audio->bank_index_0);
+  }
+
+  /* bank index 1 */
+  if(copy_pattern_audio->bank_index_1 != NULL){
+    g_object_unref(copy_pattern_audio->bank_index_1);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_pattern_audio_parent_class)->finalize(gobject);
 }

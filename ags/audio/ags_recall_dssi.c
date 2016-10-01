@@ -671,7 +671,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 
   //  g_message("output lines: %d\0", recall_dssi->output_lines);
 
-  return(AGS_RECALL(recall_dssi)->port);
+  return(g_list_copy(AGS_RECALL(recall_dssi)->port));
 }
 
 /**

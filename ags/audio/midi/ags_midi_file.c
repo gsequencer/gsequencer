@@ -303,7 +303,7 @@ ags_midi_file_read(AgsMidiFile *midi_file)
   midi_file->buffer_length = sb.st_size + 1;
   midi_file->buffer = (gchar *) malloc(midi_file->buffer_length * sizeof(gchar));
   midi_file->buffer[sb.st_size] = EOF;
-  n_read = fread(midi_file->buffer, sizeof(unsigned char), sb.st_size, midi_file->file);
+  n_read = fread(midi_file->buffer, sizeof(gchar), sb.st_size, midi_file->file);
 
   if(n_read != sb.st_size){
     g_critical("fread() number of bytes read doesn't match buffer size\0");

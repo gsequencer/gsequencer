@@ -369,8 +369,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   
   for(i = 0; ; i++){
     guint pcm_channels, buffer_size, samplerate, format;
-    gboolean use_jack, use_alsa, use_oss;
-    
+
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       if(i == 0){
@@ -388,10 +387,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     str = ags_config_get_value(config,
 			       soundcard_group,
 			       "backend\0");
-
-    use_jack = FALSE;
-    use_alsa = FALSE;
-    use_oss = FALSE;
     
     /* change soundcard */
     if(str != NULL){
@@ -400,8 +395,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 			      5)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							       TRUE);
-	
-	use_jack = TRUE;
+
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa\0",
@@ -409,16 +403,12 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
-		
-	use_alsa = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "oss\0",
 				    4)){
 	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
-
-	use_oss = TRUE;
       }else{
 	g_warning("unknown soundcard backend\0");
 

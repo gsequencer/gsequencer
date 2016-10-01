@@ -1182,7 +1182,7 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
  *
  * Draws the cursor.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)

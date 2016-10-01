@@ -33,15 +33,13 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_ladspa_plugin.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_lv2_conversion.h>
 
@@ -761,8 +759,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
   AgsApplicationContext *application_context;
   
+  GList *retport;
   GList *port, *recall_port;
-  GList *list, *list_start;
+  GList *list;
   GList *task;
   GList *port_descriptor;
 
@@ -836,6 +835,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
 
   task = NULL;
+  retport = NULL;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -867,7 +867,16 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					   AGS_RECALL_NOTATION |
 					   AGS_RECALL_BULK_MODE);
       ags_recall_ladspa_load(recall_ladspa);
+
       port = ags_recall_ladspa_load_ports(recall_ladspa);
+
+      if(retport == NULL){
+	retport = port;
+      }else{
+	retport = g_list_concat(retport,
+				port);
+      }
+      
       ags_channel_add_recall(current,
 			     (GObject *) recall_ladspa,
 			     TRUE);
@@ -914,7 +923,16 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					   AGS_RECALL_NOTATION |
 					   AGS_RECALL_BULK_MODE);
       ags_recall_ladspa_load(recall_ladspa);
+
       recall_port = ags_recall_ladspa_load_ports(recall_ladspa);
+
+      if(retport == NULL){
+	retport = recall_port;
+      }else{
+	retport = g_list_concat(retport,
+				recall_port);
+      }
+
       ags_channel_add_recall(current,
 			     (GObject *) recall_ladspa,
 			     FALSE);
@@ -954,8 +972,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   x = 0;
   y = 0;
   
-  list_start = 
-    list = effect_bulk->table->children;
+  list = effect_bulk->table->children;
 
   while(list != NULL){
     if(y <= ((GtkTableChild *) list->data)->top_attach){
@@ -1137,7 +1154,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   ags_task_thread_append_tasks(task_thread,
 			       task);
 
-  return(port);
+  return(retport);
 }
 
 GList*
@@ -1168,9 +1185,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
-  
+
+  GList *retport;
   GList *port, *recall_port;
-  GList *list, *list_start;
+  GList *list;
   GList *task;
   GList *port_descriptor;
 
@@ -1242,8 +1260,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   /* load plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
-  task = NULL;
 
+  task = NULL;
+  retport = NULL;
+  
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
       /* get channel mutex */
@@ -1280,7 +1300,15 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						     AGS_RECALL_NOTATION |
 						     AGS_RECALL_BULK_MODE));
       ags_recall_dssi_load(recall_dssi);
+
       port = ags_recall_dssi_load_ports(recall_dssi);
+
+      if(retport == NULL){
+	retport = port;
+      }else{
+	retport = g_list_concat(retport,
+				port);
+      }
 
       ags_channel_add_recall(current,
 			     (GObject *) recall_dssi,
@@ -1334,8 +1362,16 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						     AGS_RECALL_NOTATION |
 						     AGS_RECALL_BULK_MODE));
       ags_recall_dssi_load(recall_dssi);
+
       recall_port = ags_recall_dssi_load_ports(recall_dssi);
-      
+
+      if(retport == NULL){
+	retport = port;
+      }else{
+	retport = g_list_concat(retport,
+				recall_port);
+      }
+
       ags_channel_add_recall(current,
 			     (GObject *) recall_dssi,
 			     FALSE);
@@ -1375,8 +1411,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   x = 0;
   y = 0;
   
-  list_start = 
-    list = effect_bulk->table->children;
+  list = effect_bulk->table->children;
 
   while(list != NULL){
     if(y <= ((GtkTableChild *) list->data)->top_attach){
@@ -1556,7 +1591,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   ags_task_thread_append_tasks(task_thread,
 			       task);
 
-  return(port);
+  return(retport);
 }
 
 GList*
@@ -1589,9 +1624,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsApplicationContext *application_context;
 
   xmlNode *parent;
-  
+
+  GList *retport;
   GList *port, *recall_port;
-  GList *list, *list_start;
+  GList *list;
   GList *task;
   GList *port_descriptor;
 
@@ -1669,8 +1705,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
-  task = NULL;
 
+  task = NULL;
+  retport = NULL;
+  
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
       /* get channel mutex */
@@ -1709,7 +1747,15 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						    AGS_RECALL_NOTATION |
 						    AGS_RECALL_BULK_MODE));
       ags_recall_lv2_load(recall_lv2);
+
       port = ags_recall_lv2_load_ports(recall_lv2);
+
+      if(retport == NULL){
+	retport = port;
+      }else{
+	retport = g_list_concat(retport,
+				port);
+      }
 
       ags_channel_add_recall(current,
 			     (GObject *) recall_lv2,
@@ -1765,8 +1811,16 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						    AGS_RECALL_NOTATION |
 						    AGS_RECALL_BULK_MODE));
       ags_recall_lv2_load(recall_lv2);
+
       recall_port = ags_recall_lv2_load_ports(recall_lv2);
-      
+
+      if(retport == NULL){
+	retport = port;
+      }else{
+	retport = g_list_concat(retport,
+				recall_port);
+      }
+
       ags_channel_add_recall(current,
 			     (GObject *) recall_lv2,
 			     FALSE);
@@ -1806,8 +1860,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   x = 0;
   y = 0;
   
-  list_start = 
-    list = effect_bulk->table->children;
+  list = effect_bulk->table->children;
 
   while(list != NULL){
     if(y <= ((GtkTableChild *) list->data)->top_attach){
@@ -1950,7 +2003,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   ags_task_thread_append_tasks(task_thread,
 			       task);
 
-  return(port);
+  return(retport);
 }
 
 GList*
