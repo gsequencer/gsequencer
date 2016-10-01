@@ -306,7 +306,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
       }
 
       if(list == NULL){
-	//	port_data[i] = 0.0;
+	port_data[i] = 0.0;
 
 	//	g_warning("didn't find port\0");
       }else{

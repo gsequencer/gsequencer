@@ -112,8 +112,8 @@ GType ags_automation_edit_get_type(void);
 void ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags);
 void ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags);
 
-void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit);
-void ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit,
+void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *cr);
+void ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
 				     gdouble position);
 
 void ags_automation_edit_paint(AgsAutomationEdit *automation_edit,

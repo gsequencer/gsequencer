@@ -741,6 +741,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	j = 2;
       }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
 	j = 3;
+      }else{
+	j = 0;
+	
+	g_critical("jack devout buffer flag not set\0");
       }
 
       /* get copy mode */

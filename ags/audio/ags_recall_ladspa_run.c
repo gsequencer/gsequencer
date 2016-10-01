@@ -377,10 +377,11 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
 	specifier = plugin_descriptor->PortNames[i];
 
+	current = NULL;
 	list = port;
 
 	while(list != NULL){
-	  current = port->data;
+	  current = AGS_PORT(port->data);
 
 	  if(!g_strcmp0(specifier,
 			current->specifier)){
@@ -390,13 +391,20 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	  list = list->next;
 	}
 
-	for(j = 0; j < j_stop; j++){
-	  g_message("connecting port[%lu]: %lu/%lu\0", j, i, port_count);
-	  port_data = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
-	  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[j],
-							 i,
-							 port_data);
+	if(current != NULL){
+	  for(j = 0; j < j_stop; j++){
+	    port_data = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
+	    recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[j],
+							   i,
+							   port_data);
+	  
+#ifdef AGS_DEBUG
+	    g_message("connecting port[%lu]: %lu/%lu\0", j, i, port_count);
+#endif	  
+	  }
 	}
+      }else{
+	g_critical("LADSPA port not found\0");
       }
     }
   }

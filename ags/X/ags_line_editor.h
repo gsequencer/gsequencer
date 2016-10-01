@@ -42,9 +42,15 @@
 typedef struct _AgsLineEditor AgsLineEditor;
 typedef struct _AgsLineEditorClass AgsLineEditorClass;
 
+typedef enum{
+  AGS_LINE_EDITOR_CONNECTED    = 1,
+}AgsLineEditorFlags;
+
 struct _AgsLineEditor
 {
   GtkVBox vbox;
+
+  guint flags;
 
   gchar *version;
   gchar *build_id;

@@ -35,10 +35,16 @@
 typedef struct _AgsSoundcardEditor AgsSoundcardEditor;
 typedef struct _AgsSoundcardEditorClass AgsSoundcardEditorClass;
 
+typedef enum{
+  AGS_SOUNDCARD_EDITOR_CONNECTED    = 1,
+}AgsSoundcardEditorFlags;
+
 struct _AgsSoundcardEditor
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   GObject *soundcard;
   GObject *soundcard_thread;
   

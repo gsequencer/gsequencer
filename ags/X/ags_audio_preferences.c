@@ -52,7 +52,6 @@ void ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update
 void ags_audio_preferences_apply(AgsApplicable *applicable);
 void ags_audio_preferences_reset(AgsApplicable *applicable);
 static void ags_audio_preferences_finalize(GObject *gobject);
-void ags_audio_preferences_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_audio_preferences
@@ -125,11 +124,6 @@ ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preferences)
   gobject = (GObjectClass *) audio_preferences;
 
   gobject->finalize = ags_audio_preferences_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) audio_preferences;
-
-  widget->show = ags_audio_preferences_show;
 }
 
 void
@@ -158,10 +152,13 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   GtkLabel *label;
 
   gchar *str;  
-
+  
   g_signal_connect_after((GObject *) audio_preferences, "parent-set\0",
 			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
 
+  audio_preferences->flags = 0;
+
+  /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 								  NULL);
   gtk_box_pack_start((GtkBox *) audio_preferences,
@@ -261,10 +258,14 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 {
   AgsAudioPreferences *audio_preferences;
 
-  gchar *str;
-  
   audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
 
+  if((AGS_AUDIO_PREFERENCES_CONNECTED & (audio_preferences->flags)) != 0){
+    return;
+  }
+
+  audio_preferences->flags |= AGS_AUDIO_PREFERENCES_CONNECTED;
+  
   if(audio_preferences->add != NULL){
     g_signal_connect(G_OBJECT(audio_preferences->add), "clicked\0",
 		     G_CALLBACK(ags_audio_preferences_add_callback), audio_preferences);
@@ -274,26 +275,66 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
     g_signal_connect(G_OBJECT(audio_preferences->connect_jack), "clicked\0",
 		     G_CALLBACK(ags_audio_preferences_connect_jack_callback), audio_preferences);    
   }
-  
-  str = ags_config_get_value(ags_config_get_instance(),
-			     AGS_CONFIG_GENERIC,
-			     "disable-feature\0");
-  
+    
+  /* experimental */
   if(audio_preferences->start_jack != NULL){
     g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked\0",
 		     G_CALLBACK(ags_audio_preferences_start_jack_callback), audio_preferences);
+  }
 
+  if(audio_preferences->stop_jack != NULL){
     g_signal_connect(G_OBJECT(audio_preferences->stop_jack), "clicked\0",
 		     G_CALLBACK(ags_audio_preferences_stop_jack_callback), audio_preferences);
   }
-
-  g_free(str);
 }
 
 void
 ags_audio_preferences_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAudioPreferences *audio_preferences;
+
+  gchar *str;
+  
+  audio_preferences = AGS_AUDIO_PREFERENCES(connectable);
+
+  if((AGS_AUDIO_PREFERENCES_CONNECTED & (audio_preferences->flags)) == 0){
+    return;
+  }
+
+  audio_preferences->flags &= (~AGS_AUDIO_PREFERENCES_CONNECTED);
+
+  if(audio_preferences->add != NULL){
+    g_object_disconnect(G_OBJECT(audio_preferences->add),
+			"clicked\0",
+			G_CALLBACK(ags_audio_preferences_add_callback),
+			audio_preferences,
+			NULL);
+  }
+  
+  if(audio_preferences->connect_jack != NULL){
+    g_object_disconnect(G_OBJECT(audio_preferences->connect_jack),
+			"clicked\0",
+			G_CALLBACK(ags_audio_preferences_connect_jack_callback),
+			audio_preferences,
+			NULL);
+  }
+
+  /* experimental */
+  if(audio_preferences->start_jack != NULL){
+    g_object_disconnect(G_OBJECT(audio_preferences->start_jack),
+			"clicked\0",
+			G_CALLBACK(ags_audio_preferences_start_jack_callback),
+			audio_preferences,
+			NULL);
+  }
+  
+  if(audio_preferences->stop_jack != NULL){
+    g_object_disconnect(G_OBJECT(audio_preferences->stop_jack),
+			"clicked\0",
+			G_CALLBACK(ags_audio_preferences_stop_jack_callback),
+			audio_preferences,
+			NULL);
+  }
 }
 
 static void
@@ -389,17 +430,6 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   }
 
   gtk_widget_show_all((GtkWidget *) audio_preferences->soundcard_editor);
-}
-
-void
-ags_audio_preferences_show(GtkWidget *widget)
-{
-  AgsAudioPreferences *audio_preferences;
-  pthread_t thread;
-
-  audio_preferences = AGS_AUDIO_PREFERENCES(widget);
-  
-  GTK_WIDGET_CLASS(ags_audio_preferences_parent_class)->show(widget);
 }
 
 /**

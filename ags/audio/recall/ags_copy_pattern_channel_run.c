@@ -450,14 +450,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   /*  */
   if(current_bit){
-    GObject *soundcard;
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
+
     gdouble delay;
     guint attack;
   
-    soundcard = AGS_RECALL(copy_pattern_channel_run)->soundcard;
-
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
     //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);

@@ -44,7 +44,6 @@ void ags_automation_window_get_property(GObject *gobject,
 void ags_automation_window_finalize(GObject *gobject);
 void ags_automation_window_connect(AgsConnectable *connectable);
 void ags_automation_window_disconnect(AgsConnectable *connectable);
-void ags_automation_window_show(GtkWidget *widget);
 gboolean ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
@@ -137,7 +136,6 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_window;
 
-  widget->show = ags_automation_window_show;
   widget->delete_event = ags_automation_window_delete_event;
 }
 
@@ -235,14 +233,33 @@ ags_automation_window_connect(AgsConnectable *connectable)
 
   automation_window = AGS_AUTOMATION_WINDOW(connectable);
 
-  ags_connectable_connect(AGS_CONNECTABLE(automation_window->automation_editor));
+  if((AGS_AUTOMATION_WINDOW_CONNECTED & (automation_window->flags)) != 0){
+    return;
+  }
+
+  automation_window->flags |= AGS_AUTOMATION_WINDOW_CONNECTED;
+  
+  if(automation_window->automation_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(automation_window->automation_editor));
+  }
 }
 
 void
 ags_automation_window_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK:
-  /* implement me */
+  AgsAutomationWindow *automation_window;
+
+  automation_window = AGS_AUTOMATION_WINDOW(connectable);
+
+  if((AGS_AUTOMATION_WINDOW_CONNECTED & (automation_window->flags)) == 0){
+    return;
+  }
+
+  automation_window->flags &= (~AGS_AUTOMATION_WINDOW_CONNECTED);
+
+  if(automation_window->automation_editor != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(automation_window->automation_editor));
+  }
 }
 
 void
@@ -252,25 +269,17 @@ ags_automation_window_finalize(GObject *gobject)
 
   automation_window = (AgsAutomationWindow *) gobject;
 
+  if(automation_window->soundcard != NULL){
+    g_object_unref(G_OBJECT(automation_window->soundcard));
+  }
+  
   G_OBJECT_CLASS(ags_automation_window_parent_class)->finalize(gobject);
-}
-
-void
-ags_automation_window_show(GtkWidget *widget)
-{
-  AgsAutomationWindow *automation_window;
-
-  GTK_WIDGET_CLASS(ags_automation_window_parent_class)->show(widget);
-
-  automation_window = (AgsAutomationWindow *) widget;
 }
 
 gboolean
 ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 {
   gtk_widget_hide(widget);
-
-  //  GTK_WIDGET_CLASS(ags_automation_window_parent_class)->delete_event(widget, event);
 
   return(TRUE);
 }

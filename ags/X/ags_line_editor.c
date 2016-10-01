@@ -211,7 +211,13 @@ ags_line_editor_connect(AgsConnectable *connectable)
 
   line_editor = AGS_LINE_EDITOR(connectable);
 
-  g_signal_connect((GObject *) line_editor, "show\0",
+  if((AGS_LINE_EDITOR_CONNECTED & (line_editor->flags)) != 0){
+    return;
+  }
+
+  line_editor->flags |= AGS_LINE_EDITOR_CONNECTED;
+  
+  g_signal_connect(G_OBJECT(line_editor), "show\0",
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
 
   ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
@@ -221,7 +227,24 @@ ags_line_editor_connect(AgsConnectable *connectable)
 void
 ags_line_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsLineEditor *line_editor;
+
+  line_editor = AGS_LINE_EDITOR(connectable);
+
+  if((AGS_LINE_EDITOR_CONNECTED & (line_editor->flags)) == 0){
+    return;
+  }
+
+  line_editor->flags &= (~AGS_LINE_EDITOR_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(line_editor),
+		      "show\0",
+		      G_CALLBACK(ags_line_editor_show_callback),
+		      (gpointer) line_editor,
+		      NULL);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->link_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->member_editor));
 }
 
 void

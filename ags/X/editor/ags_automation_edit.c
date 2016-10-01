@@ -842,20 +842,88 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
 /**
  * ags_automation_edit_draw_position:
  * @automation_edit: the #AgsAutomationEdit
+ * @cr: the #cairo_t surface
  *
  * Draws the cursor.
  *
  * Since: 0.4.3
  */
 void
-ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
+ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit,
+				  cairo_t *cr)
 {
-  gdouble width, height;
+  AgsAutomationArea *automation_area;
+  
+  GtkStyle *automation_edit_style;
 
-  width = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+  GList *list;
+  
+  guint selected_x, selected_y;
+  guint x_offset[2], y_offset[2];
+  guint x, y, width, height;
+  gint size_width, size_height;
 
-  //TODO:JK: implement me
+  static const gdouble white_gc = 65535.0;
+
+  list = ags_automation_area_find_point(automation_edit->automation_area,
+					automation_edit->edit_x, automation_edit->edit_y);
+
+  if(list != NULL){
+    automation_area = AGS_AUTOMATION_AREA(list->data);
+  }else{
+    return;
+  }
+  
+  width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
+  height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+
+  automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
+
+  selected_x = automation_edit->edit_x;
+  selected_y = automation_edit->edit_y;
+
+  size_width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
+  size_height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+
+  x_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(automation_edit->hscrollbar));
+  x_offset[1] = x_offset[0] + (guint) size_width;
+
+  y_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(automation_edit->vscrollbar));
+  y_offset[1] = y_offset[0] + (guint) size_height;
+
+  /* calculate horizontally values */
+  if(selected_x > x_offset[0] &&
+     selected_x < x_offset[1]){
+    x = 0;
+    width = x_offset[1] - x_offset[0];
+  }else{
+    return;
+  }
+
+  /* calculate vertically values */
+  if(selected_y > y_offset[0] &&
+     selected_y < y_offset[1]){
+    y = automation_area->y - y_offset[0];
+
+    if(selected_y + automation_area->height < y_offset[1]){
+      height = y + automation_area->height;
+    }else{
+      height = y + (y_offset[1] - automation_area->y);
+    }
+  }else{
+    return;
+  }
+  
+  /* draw */
+  cairo_set_source_rgba(cr,
+			automation_edit_style->base[0].red / white_gc,
+			automation_edit_style->base[0].green / white_gc,
+			automation_edit_style->base[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
+  cairo_fill(cr);
 }
 
 /**
@@ -868,15 +936,34 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
  * Since: 0.4.3
  */
 void
-ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit,
+ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
 				gdouble position)
 {
-  gdouble width, height;
+  GtkStyle *automation_edit_style;
+  
+  double x, y;
+  double width, height;
 
-  width = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
-  height = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+  static const gdouble white_gc = 65535.0;
 
-  //TODO:JK: implement me
+  automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
+  
+  y = 0.0;
+  x = (position) - (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
+
+  height = (double) GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+  width = 3.0;
+
+  /* draw */
+  cairo_set_source_rgba(cr,
+			automation_edit_style->dark[0].red / white_gc,
+			automation_edit_style->dark[0].green / white_gc,
+			automation_edit_style->dark[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
+  cairo_fill(cr);
 }
 
 void

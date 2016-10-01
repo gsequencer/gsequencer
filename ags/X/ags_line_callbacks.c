@@ -91,7 +91,9 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 {
   AgsPad *pad;
   AgsLine *current;
+
   GtkContainer *container;
+
   GList *list, *list_start;
 
   pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line),
@@ -159,14 +161,20 @@ ags_line_add_effect_callback(AgsChannel *channel,
   GList *line_editor, *line_editor_start;
   GList *control_type_name;
   
+  /* lock gdk threads */
   gdk_threads_enter();
 
+  /* get machine and machine editor */
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
   machine_editor = (AgsMachineEditor *) machine->properties;
 
+  /* get control type */
   control_type_name = NULL;  
 
+  pad_editor_start = NULL;
+  line_editor_start = NULL;
+  
   if(machine_editor != NULL){
     pad_editor_start = 
       pad_editor = gtk_container_get_children((GtkContainer *) machine_editor->input_editor->child);
@@ -178,8 +186,6 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
       line_editor = g_list_nth(line_editor,
 			       channel->audio_channel);
-  
-      g_list_free(pad_editor);
     }else{
       line_editor = NULL;
     }
@@ -195,6 +201,10 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	GList *port_control, *port_control_start;
 
 	gchar *controls;
+
+	/* get plugin browser */
+	description_start = NULL;
+	port_control_start = NULL;
 	
 	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 	  description_start = 
@@ -209,12 +219,12 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	  g_message("ags_line_callbacks.c unsupported plugin browser\0");
 	}
 
+	/* get port description */
 	if(description != NULL){
 	  description = g_list_last(description);
 	  
 	  port_control_start =
 	    port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
-	  g_list_free(description_start);
 	  
 	  if(port_control != NULL){
 	    while(port_control != NULL){
@@ -256,20 +266,30 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	      port_control = port_control->next;
 	    }
 	  }
+
+	  /* free lists */
+	g_list_free(description_start);
+	g_list_free(port_control_start);
 	}
       }
       
-      line_member_editor->plugin_browser;
+      //      line_member_editor->plugin_browser;
     }
   }else{
     control_type_name = NULL;
   }
-  
+
+  /* add effect */
   ags_line_add_effect(line,
 		      control_type_name,
 		      filename,
 		      effect);
 
+  /* free lists */
+  g_list_free(pad_editor_start);
+  g_list_free(line_editor_start);
+
+  /* unlock gdk threads */
   gdk_threads_leave();
 }
 
@@ -342,7 +362,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
-  
+
+  /* lock gdk threads */
   gdk_threads_enter();
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
@@ -363,10 +384,6 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   pthread_mutex_unlock(application_mutex);
 
-  /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
-
   list_start = 
     list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);
 
@@ -375,11 +392,6 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
        AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
       GtkAdjustment *adjustment;
 
-      GMainContext *main_context;
-
-      GMutex mutex;
-      GCond cond;
-      
       child = GTK_BIN(list->data)->child;
 
       /* get port */
@@ -405,8 +417,6 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
       g_value_unset(&value);
 
       /* apply */
-      main_context = g_main_context_default();
-
       g_object_get(child,
 		   "adjustment\0", &adjustment,
 		   NULL);
@@ -422,6 +432,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   g_list_free(list_start);
 
+  /* unlock gdk threads */
   gdk_threads_leave();
 }
 
@@ -432,7 +443,7 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
   AgsChannel *channel;
   AgsPlayback *playback;
   AgsChannel *next_pad;
-  GList *current_recall;
+
   gboolean all_done;
 
   gdk_threads_enter();
@@ -443,7 +454,6 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
   all_done = TRUE;
 
   while(channel != next_pad){
-    current_recall = channel->play;
     playback = AGS_PLAYBACK(channel->playback);
     
     if(playback->recall_id[0] != NULL){

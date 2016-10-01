@@ -256,9 +256,13 @@ ags_play_channel_run_master_set_property(GObject *gobject,
 
       stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
 
-      if(g_list_find(play_channel_run_master->streamer, stream_channel_run) != NULL)
+      if(g_list_find(play_channel_run_master->streamer,
+		     stream_channel_run) != NULL){
 	return;
+      }
 
+      streamer = NULL;
+      
       if(stream_channel_run != NULL &&
 	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(stream_channel_run)->flags)) != 0){
 	is_template = TRUE;
@@ -284,7 +288,10 @@ ags_play_channel_run_master_set_property(GObject *gobject,
 	}
       }
 
-      play_channel_run_master->streamer = g_list_prepend(play_channel_run_master->streamer, streamer);
+      if(streamer != NULL){
+	play_channel_run_master->streamer = g_list_prepend(play_channel_run_master->streamer,
+							   streamer);
+      }
     }
     break;
   default:
@@ -304,6 +311,12 @@ ags_play_channel_run_master_get_property(GObject *gobject,
   play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(gobject);
 
   switch(prop_id){
+  case PROP_STREAM_CHANNEL_RUN:
+    {
+      g_value_set_pointer(value,
+			  g_list_copy(play_channel_run_master->streamer));
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -324,6 +337,7 @@ ags_play_channel_run_master_connect(AgsConnectable *connectable)
 {
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run_master;
+
   GObject *gobject;
 
   if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
@@ -351,6 +365,7 @@ ags_play_channel_run_master_disconnect(AgsConnectable *connectable)
 {
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run_master;
+
   GObject *gobject;
 
   ags_play_channel_run_master_parent_connectable_interface->disconnect(connectable);
@@ -371,8 +386,11 @@ void
 ags_play_channel_run_master_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsPlayChannelRunMaster *play_channel_run_master;
+
   GObject *gobject;
+
   AgsPlayChannelRunMasterStreamer *streamer;
+
   GList *list;
 
   if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
@@ -404,8 +422,11 @@ void
 ags_play_channel_run_master_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsPlayChannelRunMaster *play_channel_run_master;
+
   GObject *gobject;
+
   AgsPlayChannelRunMasterStreamer *streamer;
+
   GList *list;
 
   ags_play_channel_run_master_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
@@ -463,14 +484,14 @@ void
 ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
 {
   AgsRecall *template;
-  AgsPlayChannelRunMaster *play_channel_run_master;
+  AgsRecallID *recall_id;
+
   AgsRecallDependency *recall_dependency;
   AgsStreamChannelRun *stream_channel_run;
-  GList *list;
-  AgsRecallID *recall_id;
-  guint i, i_stop;
 
-  play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(recall);
+  GList *list;
+  
+  guint i, i_stop;
 
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run)->data);
 
@@ -503,9 +524,8 @@ ags_play_channel_run_master_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
 				      guint *n_params, GParameter *parameter)
 {
-  AgsPlayChannelRunMaster *play_channel_run_master, *copy;
+  AgsPlayChannelRunMaster *copy;
   
-  play_channel_run_master = (AgsPlayChannelRunMaster *) recall;
   copy = (AgsPlayChannelRunMaster *) AGS_RECALL_CLASS(ags_play_channel_run_master_parent_class)->duplicate(recall,
 													   recall_id,
 													   n_params, parameter);

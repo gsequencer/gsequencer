@@ -180,6 +180,12 @@ ags_link_editor_connect(AgsConnectable *connectable)
 
   link_editor = AGS_LINK_EDITOR(connectable);
 
+  if((AGS_LINK_EDITOR_CONNECTED & (link_editor->flags)) != 0){
+    return;
+  }
+
+  link_editor->flags |= AGS_LINK_EDITOR_CONNECTED;
+  
   /* GtkComboBox */
   g_signal_connect(G_OBJECT(link_editor->combo), "changed\0",
 		   G_CALLBACK(ags_link_editor_combo_callback), link_editor);
@@ -188,16 +194,27 @@ ags_link_editor_connect(AgsConnectable *connectable)
 void
 ags_link_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsLinkEditor *link_editor;
+
+  link_editor = AGS_LINK_EDITOR(connectable);
+
+  if((AGS_LINK_EDITOR_CONNECTED & (link_editor->flags)) == 0){
+    return;
+  }
+
+  link_editor->flags &= (~AGS_LINK_EDITOR_CONNECTED);
+
+  /* GtkComboBox */
+  g_object_disconnect(G_OBJECT(link_editor->combo),
+		      "changed\0",
+		      G_CALLBACK(ags_link_editor_combo_callback),
+		      link_editor,
+		      NULL);
 }
 
 void
 ags_link_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsLinkEditor *link_editor;
-
-  link_editor = AGS_LINK_EDITOR(applicable);
-
   /* empty */
 }
 

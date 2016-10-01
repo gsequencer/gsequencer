@@ -1,3 +1,10 @@
+ags (0.7.74)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted AgsThread frequency
+	* TODO:JK: fixed most clang scan-build errors
+	* TODO:JK: implemented AgsConnectable:disconnect()
+
 ags (0.7.73)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

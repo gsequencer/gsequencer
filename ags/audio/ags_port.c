@@ -612,10 +612,14 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
 	guint i;
 
 	for(i = 0; i < port->port_value_length; i++){
-	  port->port_value.ags_port_float_ptr[i] = ((gfloat *) data)[i];
+	  ((gfloat *) data)[i] = port->port_value.ags_port_float_ptr[i];
 	}
       }else if(port->port_value_type == G_TYPE_DOUBLE){
-	memcpy(data, port->port_value.ags_port_double_ptr, overall_size);
+	guint i;
+
+	for(i = 0; i < port->port_value_length; i++){
+	  ((gdouble *) data)[i] = port->port_value.ags_port_double_ptr[i];
+	}
       }
     }
    

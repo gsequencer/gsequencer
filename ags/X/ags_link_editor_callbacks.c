@@ -44,7 +44,9 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 {
   AgsMachine *machine;
   AgsLineEditor *line_editor;
+
   AgsChannel *channel;
+
   GtkTreeModel *model;
 
   if(old_parent != NULL)
@@ -101,8 +103,10 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 				   &iter)){
     AgsMachine *machine, *link_machine;
     AgsLineEditor *line_editor;
-    GtkTreeModel *model;
+
     AgsChannel *channel;
+
+    GtkTreeModel *model;
 
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 							  AGS_TYPE_LINE_EDITOR));
@@ -240,13 +244,9 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
     
     GtkTreeModel *model;
     GtkTreeIter iter;
-
-    AgsChannel *channel;
     
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 							  AGS_TYPE_LINE_EDITOR));
-
-    channel = line_editor->channel;
 
     /* set filename in combo box */
     model = gtk_combo_box_get_model(link_editor->combo);

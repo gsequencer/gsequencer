@@ -27,9 +27,6 @@
     <xi:include href="xml/ags_htimebar.xml"/>
     <xi:include href="xml/ags_indicator.xml"/>
     <xi:include href="xml/ags_led.xml"/>
-    <xi:include href="xml/ags_menu.xml"/>
-    <xi:include href="xml/ags_menu_item.xml"/>
-    <xi:include href="xml/ags_option_menu.xml"/>
     <xi:include href="xml/ags_ruler.xml"/>
     <xi:include href="xml/ags_table.xml"/>
     <xi:include href="xml/ags_timebar.xml"/>

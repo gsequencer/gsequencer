@@ -166,10 +166,6 @@ ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 void
 ags_copy_recycling_finalize(GObject *gobject)
 {
-  AgsCopyRecycling *copy_recycling;
-
-  copy_recycling = AGS_COPY_RECYCLING(gobject);
-
   /* empty */
 
   /* call parent */
@@ -179,8 +175,6 @@ ags_copy_recycling_finalize(GObject *gobject)
 void
 ags_copy_recycling_connect(AgsConnectable *connectable)
 {
-  AgsCopyRecycling *copy_recycling;
-
   ags_copy_recycling_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -189,8 +183,6 @@ ags_copy_recycling_connect(AgsConnectable *connectable)
 void
 ags_copy_recycling_disconnect(AgsConnectable *connectable)
 {
-  AgsCopyRecycling *copy_recycling;
-
   ags_copy_recycling_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -199,18 +191,14 @@ ags_copy_recycling_disconnect(AgsConnectable *connectable)
 void
 ags_copy_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  AgsCopyRecycling *copy_recycling;
-  GObject *gobject;
-
   ags_copy_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
+
+  /* empty */
 }
 
 void
 ags_copy_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  AgsCopyRecycling *copy_recycling;
-  GObject *gobject;
-
   ags_copy_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
@@ -245,9 +233,8 @@ ags_copy_recycling_duplicate(AgsRecall *recall,
 			     AgsRecallID *recall_id,
 			     guint *n_params, GParameter *parameter)
 {
-  AgsCopyRecycling *copy_recycling, *copy;
+  AgsCopyRecycling *copy;
 
-  copy_recycling = (AgsCopyRecycling *) recall;
   copy = (AgsCopyRecycling *) AGS_RECALL_CLASS(ags_copy_recycling_parent_class)->duplicate(recall,
 											   recall_id,
 											   n_params, parameter);

@@ -60,7 +60,15 @@ void ags_automation_area_disconnect(AgsConnectable *connectable);
 
 enum{
   PROP_0,
-  PROP_AUTOMATION,
+  PROP_Y,
+  PROP_HEIGHT,
+  PROP_DRAWING_AREA,
+  PROP_AUDIO,
+  PROP_CHANNEL_TYPE,
+  PROP_FILENAME,
+  PROP_EFFECT,
+  PROP_CONTROL_SPECIFIER,
+  PROP_CONTROL_NAME,
 };
 
 static gpointer ags_automation_area_parent_class = NULL;
@@ -124,21 +132,6 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
   gobject->get_property = ags_automation_area_get_property;
 
   /* properties */
-  /**
-   * AgsAutomationArea:automation:
-   *
-   * The assigned #AgsAutomation
-   * 
-   * Since: 0.4.0
-   */
-  param_spec = g_param_spec_object("automation\0",
-				   "automation of automation area\0",
-				   "The automation of automation area\0",
-				   AGS_TYPE_AUTOMATION,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUTOMATION,
-				  param_spec);
 }
 
 void
@@ -202,6 +195,17 @@ ags_automation_area_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_automation_area_find_specifier:
+ * @automation_area: the #GList-struct containing #AgsAutomationArea
+ * @specifier: the string specifier to match
+ *
+ * Finds matching @specifier within @automation_area #GList-struct containing #AgsAutomationArea.
+ *
+ * Returns: the matching #GList-struct
+ *
+ * Since: 0.7.2
+ */
 GList*
 ags_automation_area_find_specifier(GList *automation_area,
 				   gchar *specifier)
@@ -209,6 +213,34 @@ ags_automation_area_find_specifier(GList *automation_area,
   while(automation_area != NULL){
     if(!g_ascii_strcasecmp(AGS_AUTOMATION_AREA(automation_area->data)->control_name,
 			   specifier)){
+      break;
+    }
+    
+    automation_area = automation_area->next;
+  }
+
+  return(automation_area);
+}
+
+/**
+ * ags_automation_area_find_position:
+ * @automation_area: the #GList-struct containing #AgsAutomationArea
+ * @x: x position
+ * @y: y position
+ *
+ * Finds the given position on the drawing area.
+ *
+ * Returns: the matching #GList-struct
+ *
+ * Since: 0.7.64
+ */
+GList*
+ags_automation_area_find_position(GList *automation_area,
+				  guint x, guint y)
+{
+  while(automation_area != NULL){
+    if(AGS_AUTOMATION_AREA(automation_area->data)->y <= y &&
+       AGS_AUTOMATION_AREA(automation_area->data)->y + AGS_AUTOMATION_AREA(automation_area->data)->height > y){
       break;
     }
     

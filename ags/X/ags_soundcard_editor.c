@@ -145,6 +145,8 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   GtkTable *table;
   GtkLabel *label;
 
+  soundcard_editor->flags = 0;
+  
   soundcard_editor->soundcard = NULL;
   soundcard_editor->soundcard_thread = NULL;
   
@@ -350,6 +352,12 @@ ags_soundcard_editor_connect(AgsConnectable *connectable)
 
   soundcard_editor = AGS_SOUNDCARD_EDITOR(connectable);
 
+  if((AGS_SOUNDCARD_EDITOR_CONNECTED & (soundcard_editor->flags)) != 0){
+    return;
+  }
+
+  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_CONNECTED;
+  
   /* backend and card */
   g_signal_connect(G_OBJECT(soundcard_editor->backend), "changed\0",
 		   G_CALLBACK(ags_soundcard_editor_backend_changed_callback), soundcard_editor);
@@ -381,7 +389,66 @@ ags_soundcard_editor_connect(AgsConnectable *connectable)
 void
 ags_soundcard_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsSoundcardEditor *soundcard_editor;
+
+  soundcard_editor = AGS_SOUNDCARD_EDITOR(connectable);
+
+  if((AGS_SOUNDCARD_EDITOR_CONNECTED & (soundcard_editor->flags)) == 0){
+    return;
+  }
+
+  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_CONNECTED);
+
+  /* backend and card */
+  g_object_disconnect(G_OBJECT(soundcard_editor->backend),
+		      "changed\0",
+		      G_CALLBACK(ags_soundcard_editor_backend_changed_callback),
+		      soundcard_editor,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(soundcard_editor->card),
+		      "changed\0",
+		      G_CALLBACK(ags_soundcard_editor_card_changed_callback),
+		      soundcard_editor,
+		      NULL);
+
+  /* add / remove jack */
+  g_object_disconnect(G_OBJECT(soundcard_editor->add_jack),
+		      "clicked\0",
+		      G_CALLBACK(ags_soundcard_editor_add_jack_callback),
+		      soundcard_editor,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(soundcard_editor->remove_jack),
+		      "clicked\0",
+		      G_CALLBACK(ags_soundcard_editor_remove_jack_callback),
+		      soundcard_editor,
+		      NULL);
+
+  /* presets */
+  g_object_disconnect(G_OBJECT(soundcard_editor->audio_channels),
+		      "changed\0",
+		      G_CALLBACK(ags_soundcard_editor_audio_channels_changed_callback),
+		      soundcard_editor,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(soundcard_editor->samplerate),
+		      "changed\0",
+		      G_CALLBACK(ags_soundcard_editor_samplerate_changed_callback),
+		      soundcard_editor,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(soundcard_editor->buffer_size),
+		      "changed\0",
+		      G_CALLBACK(ags_soundcard_editor_buffer_size_changed_callback),
+		      soundcard_editor,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(soundcard_editor->format),
+		      "changed\0",
+		      G_CALLBACK(ags_soundcard_editor_format_changed_callback),
+		      soundcard_editor,
+		      NULL);
 }
 
 static void
@@ -422,7 +489,6 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   guint buffer_size;
   guint format;
   gboolean use_jack, use_alsa, use_oss;
-  gboolean add_jack, add_alsa, add_oss;
   
   GValue value =  {0,};
 

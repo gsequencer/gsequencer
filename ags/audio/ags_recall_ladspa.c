@@ -256,7 +256,6 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      GObject *soundcard;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -280,6 +279,10 @@ ags_recall_ladspa_set_property(GObject *gobject,
 
       if(effect == recall_ladspa->effect){
 	return;
+      }
+
+      if(recall_ladspa->effect != NULL){
+	g_free(recall_ladspa->effect);
       }
 
       recall_ladspa->effect = g_strdup(effect);
@@ -384,10 +387,8 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 
     for(i = 0; i < port_count; i++){
       if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	gchar *plugin_name;
 	gchar *specifier;
 	
-	plugin_name = g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id);
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 	
 	list = port;
@@ -403,16 +404,20 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	  list = list->next;
 	}
 
-	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	if(current != NULL){
+	  current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
 	
-	current->port_descriptor = port_descriptor->data;
-	ags_recall_ladspa_load_conversion(recall_ladspa,
-					  (GObject *) current,
-					  port_descriptor->data);
+	  current->port_descriptor = port_descriptor->data;
+	  ags_recall_ladspa_load_conversion(recall_ladspa,
+					    (GObject *) current,
+					    port_descriptor->data);
 	
-	current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-	
-	g_message("connecting port: %lu/%lu\0", i, port_count);      
+	  current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+
+#ifdef AGS_DEBUG
+	  g_message("connecting port: %lu/%lu\0", i, port_count);
+#endif
+	}
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_ladspa->input_port == NULL){
@@ -452,6 +457,17 @@ ags_recall_ladspa_finalize(GObject *gobject)
   AgsRecallLadspa *recall_ladspa;
   
   recall_ladspa = AGS_RECALL_LADSPA(gobject);
+
+  g_free(recall_ladspa->filename);
+  g_free(recall_ladspa->effect);
+
+  if(recall_ladspa->input_port != NULL){
+    free(recall_ladspa->input_port);
+  }
+
+  if(recall_ladspa->output_port != NULL){
+    free(recall_ladspa->output_port);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
@@ -665,7 +681,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
     AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
   }
 
-  return(AGS_RECALL(recall_ladspa)->port);
+  return(g_list_copy(AGS_RECALL(recall_ladspa)->port));
 }
 
 /**

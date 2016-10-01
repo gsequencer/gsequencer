@@ -84,6 +84,8 @@ ags_audio_preferences_connect_jack_callback(GtkWidget *widget, AgsAudioPreferenc
   application_context = (AgsApplicationContext *) window->application_context;
   application_mutex = window->application_mutex;
 
+  pthread_mutex_lock(application_mutex);
+
   list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
@@ -91,6 +93,8 @@ ags_audio_preferences_connect_jack_callback(GtkWidget *widget, AgsAudioPreferenc
 
     ags_jack_server_connect_client(jack_server);
   }
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 void
@@ -132,8 +136,8 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();
   soundcard_editor->soundcard = soundcard;
-  soundcard_editor->soundcard_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
-							    AGS_TYPE_SOUNDCARD_THREAD);
+  soundcard_editor->soundcard_thread = (GObject *) ags_thread_find_type((AgsThread *) application_context->main_loop,
+									AGS_TYPE_SOUNDCARD_THREAD);
 
   
   list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
