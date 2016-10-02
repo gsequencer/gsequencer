@@ -96,7 +96,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->description));
 
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename),
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							gtk_combo_box_text_get_active_text(filename),
 							gtk_combo_box_text_get_active_text(effect));
 
   if(ladspa_plugin != NULL){

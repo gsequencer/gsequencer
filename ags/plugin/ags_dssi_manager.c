@@ -118,6 +118,7 @@ void
 ags_dssi_manager_finalize(GObject *gobject)
 {
   AgsDssiManager *dssi_manager;
+
   GList *dssi_plugin;
 
   dssi_manager = AGS_DSSI_MANAGER(gobject);
@@ -130,6 +131,7 @@ ags_dssi_manager_finalize(GObject *gobject)
 
 /**
  * ags_dssi_manager_get_filenames:
+ * @dssi_manager: the #AgsDssiManager
  * 
  * Retrieve all filenames
  *
@@ -138,15 +140,15 @@ ags_dssi_manager_finalize(GObject *gobject)
  * Since: 0.7.0
  */
 gchar**
-ags_dssi_manager_get_filenames()
+ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
 {
-  AgsDssiManager *dssi_manager;
   GList *dssi_plugin;
+
   gchar **filenames;
+
   guint i;
-
-  dssi_manager = ags_dssi_manager_get_instance();
-
+  gboolean contains_filename;
+  
   dssi_plugin = dssi_manager->dssi_plugin;
   filenames = NULL;
   
@@ -159,12 +161,14 @@ ags_dssi_manager_get_filenames()
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
-      if(!g_strv_contains(filenames,
-			  AGS_BASE_PLUGIN(dssi_plugin->data)->filename)){
+      contains_filename = g_strv_contains(filenames,
+					  AGS_BASE_PLUGIN(dssi_plugin->data)->filename);
 #else
-      if(!ags_strv_contains(filenames,
-			    AGS_BASE_PLUGIN(dssi_plugin->data)->filename)){
+      contains_filename = ags_strv_contains(filenames,
+					    AGS_BASE_PLUGIN(dssi_plugin->data)->filename);
 #endif
+      
+      if(!contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(dssi_plugin->data)->filename;
@@ -182,6 +186,7 @@ ags_dssi_manager_get_filenames()
 
 /**
  * ags_dssi_manager_find_dssi_plugin:
+ * @dssi_manager: the #AgsDssiManager
  * @filename: the filename of the plugin
  * @effect: the effect's name
  *
@@ -192,14 +197,12 @@ ags_dssi_manager_get_filenames()
  * Since: 0.7.0
  */
 AgsDssiPlugin*
-ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
+ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
+				  gchar *filename, gchar *effect)
 {
-  AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
   
   GList *list;
- 
-  dssi_manager = ags_dssi_manager_get_instance();
 
   list = dssi_manager->dssi_plugin;
 
@@ -221,6 +224,7 @@ ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
 
 /**
  * ags_dssi_manager_load_file:
+ * @dssi_manager: the #AgsDssiManager
  * @dssi_path: the dssi path
  * @filename: the filename of the plugin
  *
@@ -229,10 +233,10 @@ ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
  * Since: 0.7.0
  */
 void
-ags_dssi_manager_load_file(gchar *dssi_path,
+ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
+			   gchar *dssi_path,
 			   gchar *filename)
 {
-  AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
 
   gchar *path;
@@ -244,8 +248,6 @@ ags_dssi_manager_load_file(gchar *dssi_path,
   unsigned long i;
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  dssi_manager = ags_dssi_manager_get_instance();
 
   pthread_mutex_lock(&(mutex));
 
@@ -293,15 +295,15 @@ ags_dssi_manager_load_file(gchar *dssi_path,
 
 /**
  * ags_dssi_manager_load_default_directory:
+ * @dssi_manager: the #AgsDssiManager
  * 
  * Loads all available plugins.
  *
  * Since: 0.7.0
  */
 void
-ags_dssi_manager_load_default_directory()
+ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 {
-  AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
 
   GDir *dir;
@@ -311,8 +313,6 @@ ags_dssi_manager_load_default_directory()
 
   GError *error;
 
-  dssi_manager = ags_dssi_manager_get_instance();
-  
   dssi_path = ags_dssi_default_path;
   
   while(*dssi_path != NULL){
@@ -339,7 +339,8 @@ ags_dssi_manager_load_default_directory()
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
 			  ".so\0")){
-	ags_dssi_manager_load_file(*dssi_path,
+	ags_dssi_manager_load_file(dssi_manager,
+				   *dssi_path,
 				   filename);
       }
     }
@@ -369,7 +370,7 @@ ags_dssi_manager_get_instance()
 
     pthread_mutex_unlock(&(mutex));
 
-    ags_dssi_manager_load_default_directory();
+    ags_dssi_manager_load_default_directory(ags_dssi_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

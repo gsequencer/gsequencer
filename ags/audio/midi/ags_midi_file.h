@@ -126,7 +126,7 @@ gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file);
 
 void ags_midi_file_close(AgsMidiFile *midi_file);
 
-gchar* ags_midi_file_read(AgsMidiFile *midi_file);
+unsigned char* ags_midi_file_read(AgsMidiFile *midi_file);
 void ags_midi_file_write(AgsMidiFile *midi_file,
 			 unsigned char *data, guint buffer_length);
 void ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence);
@@ -136,8 +136,8 @@ gint16 ags_midi_file_read_gint16(AgsMidiFile *midi_file);
 gint32 ags_midi_file_read_gint24(AgsMidiFile *midi_file);
 gint32 ags_midi_file_read_gint32(AgsMidiFile *midi_file);
 long ags_midi_file_read_varlength(AgsMidiFile *midi_file);
-gchar* ags_midi_file_read_text(AgsMidiFile *midi_file,
-			       gint length);
+unsigned char* ags_midi_file_read_text(AgsMidiFile *midi_file,
+				       gint length);
 
 void ags_midi_file_write_gint16(AgsMidiFile *midi_file, gint16 val);
 void ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val);

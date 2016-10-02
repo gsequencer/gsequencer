@@ -57,17 +57,21 @@ struct _AgsLv2uiManagerClass
 
 GType ags_lv2ui_manager_get_type(void);
 
-gchar** ags_lv2ui_manager_get_filenames();
-AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename);
+gchar** ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager);
+AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
+						    gchar *filename);
 
-void ags_lv2ui_manager_load_file(AgsTurtle *turtle,
+void ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
+				 AgsTurtle *turtle,
 				 gchar *filename);
-void ags_lv2ui_manager_load_default_directory();
+void ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager);
 
-uint32_t ags_lv2ui_manager_uri_index(gchar *filename,
+uint32_t ags_lv2ui_manager_uri_index(AgsLv2uiManager *lv2ui_manager,
+				     gchar *filename,
 				     gchar *uri);
 
-gchar* ags_lv2ui_manager_find_uri(gchar *filename,
+gchar* ags_lv2ui_manager_find_uri(AgsLv2uiManager *lv2ui_manager,
+				  gchar *filename,
 				  gchar *effect);
 
 /*  */

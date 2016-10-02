@@ -176,7 +176,7 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
   list_store = gtk_list_store_new(1,
 				  G_TYPE_STRING);
   filenames =
-    filenames_start = ags_ladspa_manager_get_filenames();
+    filenames_start = ags_ladspa_manager_get_filenames(ags_ladspa_manager_get_instance());
   
   while(*filenames != NULL){
     // Add a new row to the model

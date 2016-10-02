@@ -131,6 +131,7 @@ ags_ladspa_manager_finalize(GObject *gobject)
 
 /**
  * ags_ladspa_manager_get_filenames:
+ * @ladspa_manager: the #AgsLadspaManager
  * 
  * Retrieve all filenames
  *
@@ -139,15 +140,15 @@ ags_ladspa_manager_finalize(GObject *gobject)
  * Since: 0.4
  */
 gchar**
-ags_ladspa_manager_get_filenames()
+ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
 {
-  AgsLadspaManager *ladspa_manager;
   GList *ladspa_plugin;
+
   gchar **filenames;
+
   guint i;
-
-  ladspa_manager = ags_ladspa_manager_get_instance();
-
+  gboolean contains_filename;
+  
   ladspa_plugin = ladspa_manager->ladspa_plugin;
   filenames = NULL;
   
@@ -160,12 +161,14 @@ ags_ladspa_manager_get_filenames()
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
-      if(!g_strv_contains(filenames,
-			  AGS_BASE_PLUGIN(ladspa_plugin->data)->filename)){
+      contains_filename = g_strv_contains(filenames,
+					  AGS_BASE_PLUGIN(ladspa_plugin->data)->filename);
 #else
-      if(!ags_strv_contains(filenames,
-			    AGS_BASE_PLUGIN(ladspa_plugin->data)->filename)){
+      contains_filename = ags_strv_contains(filenames,
+					    AGS_BASE_PLUGIN(ladspa_plugin->data)->filename);
 #endif
+      
+      if(contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
@@ -183,6 +186,7 @@ ags_ladspa_manager_get_filenames()
 
 /**
  * ags_ladspa_manager_find_ladspa_plugin:
+ * @ladspa_manager: the #AgsLadspaManager
  * @filename: the filename of the plugin
  * @effect: the effect's name
  *
@@ -193,13 +197,12 @@ ags_ladspa_manager_get_filenames()
  * Since: 0.4
  */
 AgsLadspaPlugin*
-ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect)
+ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
+				      gchar *filename, gchar *effect)
 {
-  AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
-  GList *list;
 
-  ladspa_manager = ags_ladspa_manager_get_instance();
+  GList *list;
 
   list = ladspa_manager->ladspa_plugin;
 
@@ -221,6 +224,7 @@ ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect)
 
 /**
  * ags_ladspa_manager_load_file:
+ * @ladspa_manager: the #AgsLadspaManager
  * @ladspa_path: the LADSPA path
  * @filename: the filename of the plugin
  *
@@ -229,10 +233,10 @@ ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect)
  * Since: 0.4
  */
 void
-ags_ladspa_manager_load_file(gchar *ladspa_path,
+ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
+			     gchar *ladspa_path,
 			     gchar *filename)
 {
-  AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
   
   gchar *path;
@@ -244,8 +248,6 @@ ags_ladspa_manager_load_file(gchar *ladspa_path,
   unsigned long i;
   
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  ladspa_manager = ags_ladspa_manager_get_instance();
 
   pthread_mutex_lock(&(mutex));
 
@@ -292,15 +294,15 @@ ags_ladspa_manager_load_file(gchar *ladspa_path,
 
 /**
  * ags_ladspa_manager_load_default_directory:
+ * @ladspa_manager: the #AgsLadspaManager
  * 
  * Loads all available plugins.
  *
  * Since: 0.4
  */
 void
-ags_ladspa_manager_load_default_directory()
+ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 {
-  AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
 
   GDir *dir;
@@ -309,8 +311,6 @@ ags_ladspa_manager_load_default_directory()
   gchar *filename;
 
   GError *error;
-
-  ladspa_manager = ags_ladspa_manager_get_instance();
 
   ladspa_path = ags_ladspa_default_path;
 
@@ -338,7 +338,8 @@ ags_ladspa_manager_load_default_directory()
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
 			  ".so\0")){
-	ags_ladspa_manager_load_file(*ladspa_path,
+	ags_ladspa_manager_load_file(ladspa_manager,
+				     *ladspa_path,
 				     filename);
       }
     }
@@ -368,7 +369,7 @@ ags_ladspa_manager_get_instance()
 
     pthread_mutex_unlock(&(mutex));
 
-    ags_ladspa_manager_load_default_directory();
+    ags_ladspa_manager_load_default_directory(ags_ladspa_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

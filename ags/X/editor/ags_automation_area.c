@@ -132,6 +132,153 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
   gobject->get_property = ags_automation_area_get_property;
 
   /* properties */
+  /**
+   * AgsAutomationArea:y:
+   *
+   * The y offset.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec =  g_param_spec_uint("y\0",
+				  "y offset\0",
+				  "The y offset\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y,
+				  param_spec);
+
+  /**
+   * AgsAutomationArea:height:
+   *
+   * The nth height.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec =  g_param_spec_uint("height\0",
+				  "height of the area\0",
+				  "The height of the area\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_HEIGHT,
+				  param_spec);
+
+  /**
+   * AgsAutomationArea:drawing-area:
+   *
+   * The #GtkDrawingArea to perform drawing on.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_object("drawing-area\0",
+				   "assigned drawing area\0",
+				   "The drawing area it is assigned with\0",
+				   GTK_TYPE_DRAWING_AREA,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DRAWING_AREA,
+				  param_spec);
+
+  /**
+   * AgsAutomationArea:audio:
+   *
+   * The #AgsAudio to visualize.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio it is assigned with\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsAutomationArea:channel-type:
+   *
+   * The target channel.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_gtype("channel-type\0",
+				  "assigned channel type\0",
+				  "The channel type it is assigned with\0",
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
+
+  /**
+   * AgsChannel:filename:
+   *
+   * The assigned #AgsFilename representing this channel.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "filename assigned with\0",
+				   "The filename it is assigned with\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsChannel:effect:
+   *
+   * The assigned #AgsEffect representing this channel.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_string("effect\0",
+				   "effect assigned with\0",
+				   "The effect name it is assigned with\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EFFECT,
+				  param_spec);
+
+  /**
+   * AgsChannel:control-specifier:
+   *
+   * The assigned #AgsControl-Specifier representing this channel.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_string("control-specifier\0",
+				   "assigned control specifier\0",
+				   "The control specifier it is assigned with\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROL_SPECIFIER,
+				  param_spec);
+
+  /**
+   * AgsChannel:control-name:
+   *
+   * The assigned #AgsControl-Name representing this channel.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_string("control-name\0",
+				   "displayed control name\0",
+				   "The control name to display\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROL_NAME,
+				  param_spec);
 }
 
 void
@@ -146,6 +293,11 @@ ags_automation_area_init(AgsAutomationArea *automation_area)
 
   automation_area->audio = NULL;
   automation_area->channel_type = G_TYPE_NONE;
+
+  automation_area->filename = NULL;
+  automation_area->effect = NULL;
+  automation_area->control_specifier = NULL;
+  
   automation_area->control_name = NULL;
 }
 
@@ -160,6 +312,115 @@ ags_automation_area_set_property(GObject *gobject,
   automation_area = AGS_AUTOMATION_AREA(gobject);
 
   switch(prop_id){
+  case PROP_Y:
+    {
+      automation_area->y = g_value_get_uint(value);
+    }
+    break;
+  case PROP_HEIGHT:
+    {
+      automation_area->height = g_value_get_uint(value);
+    }
+    break;
+  case PROP_DRAWING_AREA:
+    {
+      GtkDrawingArea *drawing_area;
+
+      drawing_area = (GtkDrawingArea *) g_value_get_object(value);
+
+      if(automation_area->drawing_area == drawing_area){
+	return;
+      }
+
+      if(automation_area->drawing_area != NULL){
+	g_object_unref(automation_area->drawing_area);
+      }
+
+      if(drawing_area != NULL){
+	g_object_ref(drawing_area);
+      }
+
+      automation_area->drawing_area = drawing_area;
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(automation_area->audio == audio){
+	return;
+      }
+
+      if(automation_area->audio != NULL){
+	g_object_unref(automation_area->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      automation_area->audio = audio;
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      automation_area->channel_type = g_value_get_gtype(value);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      if(automation_area->filename == filename){
+	return;
+      }
+
+      automation_area->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      gchar *effect;
+
+      effect = g_value_get_string(value);
+
+      if(automation_area->effect == effect){
+	return;
+      }
+
+      automation_area->effect = g_strdup(effect);
+    }
+    break;
+  case PROP_CONTROL_SPECIFIER:
+    {
+      gchar *control_specifier;
+
+      control_specifier = g_value_get_string(value);
+
+      if(automation_area->control_specifier == control_specifier){
+	return;
+      }
+
+      automation_area->control_specifier = g_strdup(control_specifier);
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      gchar *control_name;
+
+      control_name = g_value_get_string(value);
+
+      if(automation_area->control_name == control_name){
+	return;
+      }
+
+      automation_area->control_name = g_strdup(control_name);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -177,6 +438,51 @@ ags_automation_area_get_property(GObject *gobject,
   automation_area = AGS_AUTOMATION_AREA(gobject);
 
   switch(prop_id){
+  case PROP_Y:
+    {
+      g_value_set_uint(value, automation_area->y);
+    }
+    break;
+  case PROP_HEIGHT:
+    {
+      g_value_set_uint(value, automation_area->height);
+    }
+    break;
+  case PROP_DRAWING_AREA:
+    {
+      g_value_set_object(value, automation_area->drawing_area);
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, automation_area->audio);
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      g_value_set_gtype(value, automation_area->channel_type);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, automation_area->filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      g_value_set_string(value, automation_area->effect);
+    }
+    break;
+  case PROP_CONTROL_SPECIFIER:
+    {
+      g_value_set_string(value, automation_area->control_specifier);
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      g_value_set_string(value, automation_area->control_name);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -934,12 +1240,11 @@ ags_automation_area_new(GtkDrawingArea *drawing_area,
   AgsAutomationArea *automation_area;
 
   automation_area = (AgsAutomationArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA,
+						       "drawing-area\0", drawing_area,
+						       "audio\0", audio,
+						       "channel-type\0", channel_type,
+						       "control-name\0", control_name,
 						       NULL);
-  
-  automation_area->drawing_area = drawing_area;
-  automation_area->audio = audio;
-  automation_area->channel_type = channel_type;
-  automation_area->control_name = control_name;
   
   return(automation_area);
 }

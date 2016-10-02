@@ -139,8 +139,13 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
   GtkComboBoxText *combo_box;
   GtkLabel *label;
 
+  AgsDssiManager *dssi_manager;
+  
   GList *list;
+
   gchar **filenames, **filenames_start;
+
+  dssi_manager = ags_dssi_manager_get_instance();
   
   /* plugin */
   dssi_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -163,9 +168,10 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   dssi_browser->path = NULL;
 
-  ags_dssi_manager_load_default_directory();
+  ags_dssi_manager_load_default_directory(dssi_manager);
+  
   filenames =
-    filenames_start = ags_dssi_manager_get_filenames();
+    filenames_start = ags_dssi_manager_get_filenames(dssi_manager);
 
   while(*filenames != NULL){
     gtk_combo_box_text_append_text(combo_box,

@@ -190,7 +190,9 @@ ags_lv2_manager_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_LOCALE:
-    g_value_set_string(value, lv2_manager->locale);
+    {
+      g_value_set_string(value, lv2_manager->locale);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -214,6 +216,7 @@ ags_lv2_manager_finalize(GObject *gobject)
 
 /**
  * ags_lv2_manager_get_filenames:
+ * @lv2_manager: the #AgsLv2Manager
  * 
  * Retrieve all filenames
  *
@@ -222,15 +225,15 @@ ags_lv2_manager_finalize(GObject *gobject)
  * Since: 0.4.3
  */
 gchar**
-ags_lv2_manager_get_filenames()
+ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
 {
-  AgsLv2Manager *lv2_manager;
   GList *lv2_plugin;
+  
   gchar **filenames;
+  
   guint i;
-
-  lv2_manager = ags_lv2_manager_get_instance();
-
+  gboolean contains_filename;
+  
   lv2_plugin = lv2_manager->lv2_plugin;
   filenames = NULL;
   
@@ -243,17 +246,19 @@ ags_lv2_manager_get_filenames()
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
-      if(!g_strv_contains(filenames,
-			  AGS_BASE_PLUGIN(lv2_plugin->data)->filename)){
+      contains_filename = g_strv_contains(filenames,
+					  AGS_BASE_PLUGIN(lv2_plugin->data)->filename);
 #else
-      if(!ags_strv_contains(filenames,
-			    AGS_BASE_PLUGIN(lv2_plugin->data)->filename)){
+      contains_filename = ags_strv_contains(filenames,
+					    AGS_BASE_PLUGIN(lv2_plugin->data)->filename);
 #endif
+      
+      if(!contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
 	filenames[i + 1] = NULL;
-
+	
 	i++;
       }
     }
@@ -266,6 +271,7 @@ ags_lv2_manager_get_filenames()
 
 /**
  * ags_lv2_manager_find_lv2_plugin:
+ * @lv2_manager: the #AgsLv2Manager
  * @filename: the filename of the plugin
  * @effect: the effect's name
  *
@@ -276,9 +282,9 @@ ags_lv2_manager_get_filenames()
  * Since: 0.4.3
  */
 AgsLv2Plugin*
-ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
+ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
+				gchar *filename, gchar *effect)
 {
-  AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
   
   GList *list;
@@ -288,7 +294,6 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
     return(NULL);
   }
   
-  lv2_manager = ags_lv2_manager_get_instance();
   list = lv2_manager->lv2_plugin;
   
   while(list != NULL){
@@ -309,6 +314,7 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
 
 /**
  * ags_lv2_manager_load_file:
+ * @lv2_manager: the #AgsLv2Manager
  * @turtle: the loaded turtle
  * @lv2_path: the lv2 path
  * @filename: the filename of the plugin
@@ -318,11 +324,11 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
  * Since: 0.4.3
  */
 void
-ags_lv2_manager_load_file(AgsTurtle *turtle,
+ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
+			  AgsTurtle *turtle,
 			  gchar *lv2_path,
 			  gchar *filename)
 {
-  AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
   xmlNode *node;
@@ -353,8 +359,6 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
      filename == NULL){
     return;
   }
-
-  lv2_manager = ags_lv2_manager_get_instance();
   
   /* load plugin */
   pthread_mutex_lock(&(mutex));
@@ -522,7 +526,8 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 	   !g_ascii_strcasecmp(plugin_descriptor->URI,
 			       uri)){
 	  /* check if already added */
-	  lv2_plugin = ags_lv2_manager_find_lv2_plugin(path,
+	  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+						       path,
 						       effect);
 
 	  if(lv2_plugin != NULL){
@@ -562,16 +567,15 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 
 /**
  * ags_lv2_manager_load_default_directory:
+ * @lv2_manager: the #AgsLv2Manager
  * 
  * Loads all available plugins.
  *
  * Since: 0.4.3
  */
 void
-ags_lv2_manager_load_default_directory()
+ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 {
-  AgsLv2Manager *lv2_manager;
-
   GDir *dir;
 
   gchar **lv2_path;
@@ -579,8 +583,6 @@ ags_lv2_manager_load_default_directory()
   gchar *str;
 
   GError *error;
-  
-  lv2_manager = ags_lv2_manager_get_instance();
 
   lv2_path = ags_lv2_default_path;
 
@@ -724,7 +726,8 @@ ags_lv2_manager_load_default_directory()
 	  }
 	
 	  /* load specified plugin */
-	  ags_lv2_manager_load_file(turtle,
+	  ags_lv2_manager_load_file(lv2_manager,
+				    turtle,
 				    *lv2_path,
 				    filename);
 
@@ -771,7 +774,7 @@ ags_lv2_manager_get_instance()
 
     pthread_mutex_unlock(&(mutex));
 
-    ags_lv2_manager_load_default_directory();
+    ags_lv2_manager_load_default_directory(ags_lv2_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

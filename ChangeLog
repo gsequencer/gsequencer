@@ -2,6 +2,9 @@ ags (0.7.74)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* reverted AgsThread frequency
+	* added additional parameter to ags_ladspa_manager.c to pass instance
+	* added additional parameter to ags_dssi_manager.c to pass instance
+	* added additional parameter to ags_lv2_manager.c to pass instance
 	* TODO:JK: fixed most clang scan-build errors
 	* TODO:JK: implemented AgsConnectable:disconnect()
 

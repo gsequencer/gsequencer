@@ -78,13 +78,34 @@ void
 ags_midi_file_writer_class_init(AgsMidiFileWriterClass *midi_file_writer)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_midi_file_writer_parent_class = g_type_class_peek_parent(midi_file_writer);
 
   /* GObjectClass */
   gobject = (GObjectClass *) midi_file_writer;
   
+  gobject->set_property = ags_midi_file_writer_set_property;
+  gobject->get_property = ags_midi_file_writer_get_property;
+
   gobject->finalize = ags_midi_file_writer_finalize;
+
+  /* properties */
+  /**
+   * AgsMidiFileWriter:midi-file:
+   *
+   * The assigned #AgsMidiFile to read from.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_object("midi-file\0",
+				   "assigned midi file\0",
+				   "The midi file to read\0",
+				   AGS_TYPE_MIDI_FILE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI_FILE,
+				  param_spec);
 }
 
 void
@@ -104,6 +125,27 @@ ags_midi_file_writer_set_property(GObject *gobject,
   midi_file_writer = AGS_MIDI_FILE_WRITER(gobject);
   
   switch(prop_id){
+  case PROP_MIDI_FILE:
+    {
+      AgsMidiFile *midi_file;
+
+      midi_file = (AgsMidiFile *) g_value_get_object(value);
+
+      if(midi_file_writer->midi_file == midi_file){
+	return;
+      }
+
+      if(midi_file_writer->midi_file != NULL){
+	g_object_unref(midi_file_writer->midi_file);
+      }
+
+      if(midi_file != NULL){
+	g_object_ref(midi_file);
+      }
+
+      midi_file_writer->midi_file = midi_file;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -121,6 +163,12 @@ ags_midi_file_writer_get_property(GObject *gobject,
   midi_file_writer = AGS_MIDI_FILE_WRITER(gobject);
   
   switch(prop_id){
+  case PROP_MIDI_FILE:
+    {
+      g_value_set_object(value,
+			 midi_file_writer->midi_file);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -130,6 +178,14 @@ ags_midi_file_writer_get_property(GObject *gobject,
 void
 ags_midi_file_writer_finalize(GObject *gobject)
 {
+  AgsMidiFileWriter *midi_file_writer;
+
+  midi_file_writer = (AgsMidiFileWriter *) gobject;
+
+  if(midi_file_writer->midi_file != NULL){
+    g_object_unref(midi_file_writer->midi_file);
+  }
+
   G_OBJECT_CLASS(ags_midi_file_writer_parent_class)->finalize(gobject);
 }
 

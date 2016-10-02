@@ -378,7 +378,8 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
 
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename, recall_ladspa->effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							recall_ladspa->filename, recall_ladspa->effect);
 
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
 
@@ -572,7 +573,8 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   LADSPA_Descriptor *plugin_descriptor;
 
   /*  */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename, recall_ladspa->effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							recall_ladspa->filename, recall_ladspa->effect);
   
   plugin_so = AGS_BASE_PLUGIN(ladspa_plugin)->plugin_so;
 
@@ -609,7 +611,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   unsigned long port_count;
   unsigned long i;
 
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename, recall_ladspa->effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							recall_ladspa->filename, recall_ladspa->effect);
 
   port = NULL;
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;

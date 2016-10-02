@@ -381,7 +381,8 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
   
   recall_dssi = AGS_RECALL_DSSI(plugin);
 
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  recall_dssi->filename, recall_dssi->effect);
 
   port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
 
@@ -563,7 +564,8 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   DSSI_Descriptor *plugin_descriptor;
 
   /*  */
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  recall_dssi->filename, recall_dssi->effect);
   
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
@@ -600,7 +602,8 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   unsigned long port_count;
   unsigned long i;
 
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  recall_dssi->filename, recall_dssi->effect);
 
   port = NULL;
   port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
