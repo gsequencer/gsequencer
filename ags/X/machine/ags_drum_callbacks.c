@@ -317,7 +317,6 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 	g_value_unset(&value);
       }
     }else if(! gtk_toggle_button_get_active(drum->selected0)){
-      toggle_button = drum->selected0;
       drum->selected0 = NULL;
       gtk_toggle_button_set_active((GtkToggleButton *) widget, TRUE);
       drum->selected0 = (GtkToggleButton*) widget;
@@ -396,7 +395,6 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 	g_value_unset(&value);
       }
     }else if(!gtk_toggle_button_get_active(drum->selected1)){
-      toggle_button = drum->selected1;
       drum->selected1 = NULL;
       gtk_toggle_button_set_active((GtkToggleButton *) widget, TRUE);
       drum->selected1 = (GtkToggleButton*) widget;

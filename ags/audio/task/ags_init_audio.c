@@ -156,24 +156,16 @@ ags_init_audio_launch(AgsTask *task)
 {
   AgsInitAudio *init_audio;
 
-  GObject *soundcard;
   AgsAudio *audio;
   AgsRecallID *recall_id;
 
-  AgsApplicationContext *application_context;
-  
   GList *playback;
   GList *list, *list_start;
 
   init_audio = AGS_INIT_AUDIO(task);
 
   audio = init_audio->audio;
-  soundcard = audio->soundcard;
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-
-  g_message("init\0");
-  
   /* init audio */
   if(init_audio->do_playback){
     

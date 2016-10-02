@@ -229,19 +229,8 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 {
   AgsStreamChannel *stream_channel;
   AgsStreamChannelRun *stream_channel_run;
-  AgsStreamAudioSignal *stream_audio_signal;
-
-  AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
   
   if(recall->parent != NULL &&
      recall->parent->parent != NULL){
@@ -262,7 +251,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 			 &value);
 
       if(g_value_get_boolean(&value)){
-	signed short *buffer;
+	void *buffer;
 	guint buffer_size;
 	guint i;
 	gboolean add_stream;
@@ -272,10 +261,45 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 	buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->source->buffer_size;
 	add_stream = FALSE;
 	
-	for(i = buffer_size - 1; i > buffer_size / 2; i--){
-	  if(buffer[i] != 0){
-	    add_stream = TRUE;
+	for(i = buffer_size - 1; i > buffer_size / 2 && !add_stream; i--){
+	  switch(AGS_RECALL_AUDIO_SIGNAL(recall)->source->format){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    {
+	      if(((signed char *) buffer)[i] != 0){
+		add_stream = TRUE;
+	      }
+	    }
 	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    {
+	      if(((signed short *) buffer)[i] != 0){
+		add_stream = TRUE;
+	      }
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    {
+	      if(((signed long *) buffer)[i] != 0){
+		add_stream = TRUE;
+	      }
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    {
+	      if(((signed long *) buffer)[i] != 0){
+		add_stream = TRUE;
+	      }
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    {
+	      if(((signed long long *) buffer)[i] != 0){
+		add_stream = TRUE;
+	      }
+	    }
+	    break;
+	  default:
+	    g_critical("unsupported soundcard format\0");
 	  }
 	}
 	

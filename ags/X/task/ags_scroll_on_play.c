@@ -160,11 +160,9 @@ ags_scroll_on_play_finalize(GObject *gobject)
 void
 ags_scroll_on_play_launch(AgsTask *task)
 {
-  AgsWindow *window;
   AgsMachine *machine;
   AgsEditor *editor;
   
-  AgsCountBeatsAudio *count_beats_audio;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   
   AgsScrollOnPlay *scroll_on_play;
@@ -173,19 +171,14 @@ ags_scroll_on_play_launch(AgsTask *task)
   
   GList *editor_child, *recall;
 
-  gdouble tact_factor;
   gdouble position, value;
-  guint control_width, width;
+  guint control_width;
 
   scroll_on_play = AGS_SCROLL_ON_PLAY(task);
 
   editor = AGS_EDITOR(scroll_on_play->editor);
 
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(editor));
-
-
   editor_child = editor->editor_child;
-  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
   while(editor_child != NULL){    
     machine = AGS_EDITOR_CHILD(editor_child->data)->machine;
@@ -214,14 +207,12 @@ ags_scroll_on_play_launch(AgsTask *task)
     }
 
     count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
     
     if(AGS_IS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
       AgsNoteEdit *note_edit;
 
       note_edit = AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
 
-      width = GTK_WIDGET(note_edit->drawing_area)->allocation.width;
       control_width = note_edit->control_unit.control_width;
       
       position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
@@ -303,7 +294,6 @@ ags_scroll_on_play_launch(AgsTask *task)
 
       position = (count_beats_audio_run->notation_counter) * (pattern_edit->control_unit.control_width);
 
-      width = GTK_WIDGET(pattern_edit->drawing_area)->allocation.width;
       control_width = pattern_edit->control_unit.control_width;
 
       /* scroll */

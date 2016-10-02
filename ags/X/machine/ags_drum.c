@@ -384,14 +384,7 @@ ags_drum_finalize(GObject *gobject)
 void
 ags_drum_connect(AgsConnectable *connectable)
 {
-  AgsWindow *window;
   AgsDrum *drum;
-
-  AgsRecallHandler *recall_handler;
-
-  AgsDelayAudioRun *play_delay_audio_run;
-
-  GList *list, *list_start;
 
   int i;
 
@@ -399,11 +392,12 @@ ags_drum_connect(AgsConnectable *connectable)
     return;
   }
 
+  drum = AGS_DRUM(connectable);
+
+  /* call parent */
   ags_drum_parent_connectable_interface->connect(connectable);
 
-  drum = AGS_DRUM(connectable);
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
-
+  /* GtkObject */
   g_signal_connect((GObject *) drum, "destroy\0",
 		   G_CALLBACK(ags_drum_destroy_callback), (gpointer) drum);
   
@@ -437,17 +431,58 @@ ags_drum_connect(AgsConnectable *connectable)
 void
 ags_drum_disconnect(AgsConnectable *connectable)
 {
-  AgsWindow *window;
   AgsDrum *drum;
 
-  ags_drum_parent_connectable_interface->disconnect(connectable);
+  int i;
+
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
 
   drum = AGS_DRUM(connectable);
 
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum,
-					      AGS_TYPE_WINDOW));
+  /* GtkObject */
+  g_object_disconnect((GObject *) drum, "destroy\0",
+		      G_CALLBACK(ags_drum_destroy_callback),
+		      (gpointer) drum,
+		      NULL);
+  
+  /* AgsDrum */
+  g_object_disconnect((GObject *) drum->open, "clicked\0",
+		      G_CALLBACK(ags_drum_open_callback), (gpointer) drum,
+		      NULL);
 
-  //TODO:JK: implement me
+  g_object_disconnect((GObject *) drum->loop_button, "clicked\0",
+		      G_CALLBACK(ags_drum_loop_button_callback), (gpointer) drum,
+		      NULL);
+
+  g_object_disconnect((GObject *) drum->length_spin, "value-changed\0",
+		      G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum,
+		      NULL);
+
+  for(i = 0; i < 12; i++){
+    g_object_disconnect(G_OBJECT(drum->index1[i]), "clicked\0",
+			G_CALLBACK(ags_drum_index1_callback), (gpointer) drum,
+			NULL);
+  }
+
+  for(i = 0; i < 4; i++){
+    g_object_disconnect(G_OBJECT(drum->index0[i]), "clicked\0",
+			G_CALLBACK(ags_drum_index0_callback), (gpointer) drum,
+			NULL);
+  }
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(drum->pattern_box));
+
+  /* AgsAudio */
+  g_object_disconnect(G_OBJECT(AGS_MACHINE(drum)->audio),
+		      "done\0",
+		      G_CALLBACK(ags_drum_done_callback),
+		      drum,
+		      NULL);
+
+  /* call parent */
+  ags_drum_parent_connectable_interface->disconnect(connectable);
 }
 
 void
@@ -505,12 +540,15 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-  }    
+  }else{
+    play_delay_audio_run = NULL;
+  }
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -523,7 +561,8 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
@@ -535,6 +574,8 @@ ags_drum_map_recall(AgsMachine *machine)
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
 		      (guint) window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
 		      TRUE);
+  }else{
+    play_count_beats_audio_run = NULL;
   }
 
   /* ags-copy-pattern */
@@ -548,7 +589,8 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
 
   if(list != NULL){
     recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
@@ -560,7 +602,7 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
 
   }
-
+  
   /* ags-play-notation */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -572,7 +614,8 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
 
   if(list != NULL){
     recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
@@ -700,6 +743,8 @@ ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
     g_list_free(line_start);
     pad = pad->next;
   }
+
+  g_list_free(pad_start);
 }
 
 void

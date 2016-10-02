@@ -546,7 +546,6 @@ void
 ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old)
 {
-  AgsMachine *machine;
   AgsLine *line;
 
   AgsChannel *channel;
@@ -562,8 +561,6 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   g_message("ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 #endif
   
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
-
   /* get mutex manager */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);  
@@ -759,7 +756,6 @@ ags_pad_play(AgsPad *pad)
   AgsWindow *window;
   AgsMachine *machine;
 
-  GObject *soundcard;
   AgsChannel *channel;
 
   AgsStartSoundcard *start_soundcard;
@@ -769,7 +765,6 @@ ags_pad_play(AgsPad *pad)
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
-  AgsSoundcardThread *soundcard_thread;
 
   AgsApplicationContext *application_context;
   
@@ -778,7 +773,6 @@ ags_pad_play(AgsPad *pad)
   gboolean play_all;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
@@ -797,26 +791,9 @@ ags_pad_play(AgsPad *pad)
 
   pthread_mutex_unlock(application_mutex);
 
-  /* get task and soundcard thread */
+  /* get task */
   task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
-							   AGS_TYPE_SOUNDCARD_THREAD);
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get soundcard */
-  pthread_mutex_lock(audio_mutex);
-  
-  soundcard = machine->audio->soundcard;
-
-  pthread_mutex_unlock(audio_mutex);
 
   /*  */
   tasks = NULL;
