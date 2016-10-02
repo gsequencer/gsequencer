@@ -233,9 +233,7 @@ ags_buffer_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
-  AgsBufferChannelRun *buffer_channel_run, *copy;
-
-  buffer_channel_run = (AgsBufferChannelRun *) recall;
+  AgsBufferChannelRun *copy;
 
   copy = (AgsBufferChannelRun *) AGS_RECALL_CLASS(ags_buffer_channel_run_parent_class)->duplicate(recall,
 												  recall_id,

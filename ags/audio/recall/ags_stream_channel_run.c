@@ -226,9 +226,8 @@ ags_stream_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
-  AgsStreamChannelRun *stream_channel_run, *copy;
+  AgsStreamChannelRun *copy;
 
-  stream_channel_run = (AgsStreamChannelRun *) recall;  
   copy = (AgsStreamChannelRun *) AGS_RECALL_CLASS(ags_stream_channel_run_parent_class)->duplicate(recall,
 												  recall_id,
 												  n_params, parameter);

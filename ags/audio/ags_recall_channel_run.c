@@ -415,74 +415,46 @@ ags_recall_channel_run_set_property(GObject *gobject,
     {
       AgsChannel *destination;
       AgsChannel *old_destination;
-      AgsRecycling *new_start_region, *new_end_region;
-      AgsRecycling *old_start_region, *old_end_region;
 
       destination = (AgsChannel *) g_value_get_object(value);
 
-      if(recall_channel_run->destination == destination)
+      if(recall_channel_run->destination == destination){
 	return;
+      }
 
       old_destination = recall_channel_run->destination;
 
-      if(old_destination != NULL){
-	old_start_region = old_destination->first_recycling;
-	old_end_region = old_destination->last_recycling;
-      }else{
-	old_start_region = NULL;
-	old_end_region = NULL;
-      }
-
       if(destination != NULL){    
 	g_object_ref(G_OBJECT(destination));
-
-	new_start_region = destination->first_recycling;
-	new_end_region = destination->last_recycling;
-      }else{
-	new_start_region = NULL;
-	new_end_region = NULL;
       }
 
       recall_channel_run->destination = destination;
 
       /* child destination */
-      if(destination == recall_channel_run->source)
+      if(destination == recall_channel_run->source){
 	g_warning("destination == recall_channel_run->source\0");
-
-      if(old_destination != NULL)
+      }
+      
+      if(old_destination != NULL){
 	g_object_unref(G_OBJECT(old_destination));
+      }
     }
     break;
   case PROP_SOURCE:
     {
       AgsChannel *source;
       AgsChannel *old_source;
-      AgsRecycling *new_start_region, *new_end_region;
-      AgsRecycling *old_start_region, *old_end_region;
 
       source = (AgsChannel *) g_value_get_object(value);
 
-      if(recall_channel_run->source == source)
+      if(recall_channel_run->source == source){
 	return;
+      }
 
       old_source = recall_channel_run->source;
 
-      if(old_source != NULL){
-	old_start_region = old_source->first_recycling;
-	old_end_region = old_source->last_recycling;
-      }else{
-	old_start_region = NULL;
-	old_end_region = NULL;
-      }
-
       if(source != NULL){
 	g_object_ref(G_OBJECT(source));
-
-	new_start_region = source->first_recycling;
-	new_end_region = source->last_recycling;
-      }else{
-	new_start_region = NULL;
-	new_end_region = NULL;
       }
 
       recall_channel_run->source = source;
@@ -549,18 +521,22 @@ ags_recall_channel_run_finalize(GObject *gobject)
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
-  if(recall_channel_run->recall_audio_run != NULL)
+  if(recall_channel_run->recall_audio_run != NULL){
     g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
+  }
   
-  if(recall_channel_run->recall_channel != NULL)
+  if(recall_channel_run->recall_channel != NULL){
     g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
-
-  if(recall_channel_run->destination != NULL)
+  }
+  
+  if(recall_channel_run->destination != NULL){
     g_object_unref(recall_channel_run->destination);
-
-  if(recall_channel_run->source != NULL)
+  }
+  
+  if(recall_channel_run->source != NULL){
     g_object_unref(recall_channel_run->source);
-
+  }
+  
   G_OBJECT_CLASS(ags_recall_channel_run_parent_class)->finalize(gobject);
 }
 
@@ -568,6 +544,7 @@ void
 ags_recall_channel_run_connect(AgsConnectable *connectable)
 {
   AgsRecallChannelRun *recall_channel_run;
+
   GObject *gobject;
 
   if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
@@ -584,18 +561,16 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
     gobject = G_OBJECT(recall_channel_run->destination);
     
     /* recycling changed */
-    recall_channel_run->destination_recycling_changed_handler =
-      g_signal_connect(gobject, "recycling_changed\0",
-		       G_CALLBACK(ags_recall_channel_run_destination_recycling_changed_callback), recall_channel_run);
+    g_signal_connect(gobject, "recycling_changed\0",
+		     G_CALLBACK(ags_recall_channel_run_destination_recycling_changed_callback), recall_channel_run);
   }
 
   /* source */
   if(recall_channel_run->source != NULL){
     gobject = G_OBJECT(recall_channel_run->source);
     
-    recall_channel_run->source_recycling_changed_handler =
-      g_signal_connect(gobject, "recycling_changed\0",
-		       G_CALLBACK(ags_recall_channel_run_source_recycling_changed_callback), recall_channel_run);
+    g_signal_connect(gobject, "recycling-changed\0",
+		     G_CALLBACK(ags_recall_channel_run_source_recycling_changed_callback), recall_channel_run);
   }
 }
 
@@ -603,7 +578,12 @@ void
 ags_recall_channel_run_disconnect(AgsConnectable *connectable)
 {
   AgsRecallChannelRun *recall_channel_run;
+
   GObject *gobject;
+
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) == 0){
+    return;
+  }
 
   /* AgsRecallChannelRun */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
@@ -611,15 +591,23 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
   /* destination */
   if(recall_channel_run->destination != NULL){
     gobject = G_OBJECT(recall_channel_run->destination);
-  
-    g_signal_handler_disconnect(gobject, recall_channel_run->destination_recycling_changed_handler);
+
+    g_object_disconnect(gobject,
+			"recycling-changed\0",
+			G_CALLBACK(ags_recall_channel_run_destination_recycling_changed_callback),
+			recall_channel_run,
+			NULL);
   }
 
   /* source */
   if(recall_channel_run->source != NULL){
     gobject = G_OBJECT(recall_channel_run->source);
 
-    g_signal_handler_disconnect(gobject, recall_channel_run->source_recycling_changed_handler);
+    g_object_disconnect(gobject,
+			"recycling-changed\0",
+			G_CALLBACK(ags_recall_channel_run_source_recycling_changed_callback),
+			recall_channel_run,
+			NULL);
   }
 
   /* call parent */

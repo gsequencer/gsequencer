@@ -400,7 +400,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   lv2_bridge->has_midi = FALSE;
 
   AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_container_add(gtk_bin_get_child((GtkBin *) lv2_bridge),
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) lv2_bridge),
 		    (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
@@ -438,16 +438,16 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 			  13)){
     g_message("lv2 ui disabled\02");
   }else{
-    item = gtk_image_menu_item_new_with_label("Lv2\0");
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Lv2\0");
     gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(lv2_bridge)->popup,
 			  (GtkWidget *) item);
     gtk_widget_show((GtkWidget *) item);
   
-    lv2_bridge->lv2_menu = gtk_menu_new();
+    lv2_bridge->lv2_menu = (GtkMenu *) gtk_menu_new();
     gtk_menu_item_set_submenu((GtkMenuItem *) item,
 			      (GtkWidget *) lv2_bridge->lv2_menu);
 
-    item = gtk_image_menu_item_new_with_label("show GUI\0");
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("show GUI\0");
     gtk_menu_shell_append((GtkMenuShell *) lv2_bridge->lv2_menu,
 			  (GtkWidget *) item);
 
@@ -1022,7 +1022,7 @@ ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 	//	audio_signal->loop_end = audio_signal->buffer_size;
 	ags_audio_signal_stream_resize(audio_signal,
 				       1);
-	ags_recycling_add_audio_signal((GObject *) channel->first_recycling,
+	ags_recycling_add_audio_signal(channel->first_recycling,
 				       audio_signal);
 	
 	channel = channel->next;
@@ -1196,11 +1196,14 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
 
-    list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+    list = ags_recall_find_type(audio->play,
+				AGS_TYPE_DELAY_AUDIO_RUN);
 
     if(list != NULL){
       play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
       //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+    }else{
+      play_delay_audio_run = NULL;
     }
   
     /* ags-count-beats */
@@ -1215,7 +1218,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
   
-    list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+    list = ags_recall_find_type(audio->play,
+				AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
     if(list != NULL){
       play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
@@ -1227,6 +1231,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
       ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
 			window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
 			TRUE);
+    }else{
+      play_count_beats_audio_run = NULL;
     }
 
     /* ags-route-lv2 */
@@ -1240,7 +1246,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
 
-    list = ags_recall_find_type(audio->recall, AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
+    list = ags_recall_find_type(audio->recall,
+				AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
 
     if(list != NULL){
       recall_route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(list->data);
@@ -1254,6 +1261,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
       g_object_set(G_OBJECT(recall_route_lv2_audio_run),
 		   "count-beats-audio-run\0", play_count_beats_audio_run,
 		   NULL);
+    }else{
+      recall_route_lv2_audio_run = NULL;
     }
 
     /* ags-play-notation */
@@ -1267,7 +1276,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
 
-    list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+    list = ags_recall_find_type(audio->recall,
+				AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
 
     if(list != NULL){
       recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
@@ -1381,7 +1391,7 @@ void
 ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_start, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source, *input, *current;
+  AgsChannel *input, *current;
 
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
@@ -1393,9 +1403,6 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
   if(lv2_bridge->mapped_output_pad > output_pad_start){
     return;
   }
-
-  source = ags_channel_nth(audio->output,
-			   audio_channel_start + output_pad_start * audio->audio_channels);
 
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
     /* remap for input */

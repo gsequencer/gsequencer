@@ -115,6 +115,11 @@ ags_timestamp_thread_connect(AgsConnectable *connectable)
 
   thread = AGS_THREAD(connectable);
 
+  if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(thread->flags)))) != 0){
+    return;
+  }
+
+  /* call parent */
   ags_timestamp_thread_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -123,6 +128,15 @@ ags_timestamp_thread_connect(AgsConnectable *connectable)
 void
 ags_timestamp_thread_disconnect(AgsConnectable *connectable)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(connectable);
+
+  if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
+
+  /* call parent */
   ags_timestamp_thread_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -135,6 +149,14 @@ ags_timestamp_thread_finalize(GObject *gobject)
 
   timestamp_thread = AGS_TIMESTAMP_THREAD(gobject);
 
+  if(timestamp_thread->current_timestamp != NULL){
+    g_object_unref(timestamp_thread->current_timestamp);
+  }
+
+  if(timestamp_thread->current_latency != NULL){
+    g_object_unref(timestamp_thread->current_latency);
+  }
+  
   /*  */
   G_OBJECT_CLASS(ags_timestamp_thread_parent_class)->finalize(gobject);
 }

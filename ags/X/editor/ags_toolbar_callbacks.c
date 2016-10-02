@@ -185,10 +185,9 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 {
   AgsEditor *editor;
   GtkWidget *widget;
+
   GtkAdjustment *adjustment;
-  double zoom, zoom_old;
-  double tact_factor, zoom_factor;
-  double tact;
+
   gdouble old_upper, new_upper;
   gdouble position;
   guint history;
@@ -196,14 +195,6 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
 
   history = gtk_combo_box_get_active(combo_box);
-
-  zoom = exp2((double) history - 2.0);
-  zoom_old = exp2((double) toolbar->zoom_history - 2.0);
-
-  zoom_factor = 0.25;
-
-  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
   toolbar->zoom_history = history;
 

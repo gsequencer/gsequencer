@@ -20,6 +20,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libinstpatch/libinstpatch.h>
+
 #include "gsequencer_main.h"
 
 #include <ags/object/ags_application_context.h>
@@ -149,11 +151,7 @@ ags_signal_cleanup()
 void
 ags_setup(int argc, char **argv)
 {
-  AgsLadspaManager *ladspa_manager;
-  AgsDssiManager *dssi_manager;
-  AgsLv2Manager *lv2_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
-  AgsLv2uiManager *lv2ui_manager;
   
   struct passwd *pw;
 
@@ -236,15 +234,14 @@ ags_setup(int argc, char **argv)
   ags_application_context->argv = argv;
 
     /* load managers */
-  ladspa_manager = ags_ladspa_manager_get_instance();
+  ags_ladspa_manager_get_instance();
 
-  dssi_manager = ags_dssi_manager_get_instance();
+  ags_dssi_manager_get_instance();
 
-  lv2_manager = ags_lv2_manager_get_instance();
-
+  ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();
     
-  lv2ui_manager = ags_lv2ui_manager_get_instance();  
+  ags_lv2ui_manager_get_instance();  
 
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
   

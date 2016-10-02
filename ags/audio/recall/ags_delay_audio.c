@@ -595,12 +595,8 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 					  gpointer user_data)
 {
   AgsDelayAudio *delay_audio;
-
-  AgsConfig *config;
   
   GList *port;
-  guint buffer_size;
-  guint samplerate;
 
   GObject *soundcard;
   gdouble bpm;
@@ -611,48 +607,6 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 
   soundcard = AGS_RECALL(delay_audio)->soundcard;
   port = NULL;
-
-  config = ags_config_get_instance();
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
-  }
-  
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
-  }
-  
-  if(str != NULL){  
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
 
   /*  */
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
@@ -842,8 +796,6 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_b
   GObject *soundcard;
 
   gdouble delay;
-  gdouble sequencer_delay, notation_delay;
-  gdouble sequencer_duration, notation_duration;
 
   GValue value = {0,};
 
@@ -852,47 +804,18 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_b
   soundcard = AGS_RECALL(delay_audio)->soundcard;
 
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  
-  /* retrieve sequencer_delay */
   g_value_init(&value, G_TYPE_DOUBLE);
-
-  ags_port_safe_read(delay_audio->sequencer_delay, &value);
-  sequencer_delay = g_value_get_double(&value);
-
-  /* retrieve notation_delay */
-  g_value_reset(&value);
-
-  ags_port_safe_read(delay_audio->notation_delay, &value);
-  notation_delay = g_value_get_double(&value);
-
-  /* retrieve sequencer_duration */
-  g_value_reset(&value);
-
-  ags_port_safe_read(delay_audio->sequencer_duration, &value);
-  sequencer_duration = g_value_get_double(&value);
-
-  /* retrieve notation_duration */
-  g_value_reset(&value);
-
-  ags_port_safe_read(delay_audio->notation_duration, &value);
-  notation_duration = g_value_get_double(&value);
-
+  
   /* -- start adjust -- */
   /* notation-delay */
-  g_value_reset(&value);
-
   g_value_set_double(&value, delay);
   ags_port_safe_write(delay_audio->notation_delay, &value);
-
-  //  g_message("notation delay = %f\0", notation_delay * (old_bpm / new_bpm));
   
   /* sequencer-delay */
   g_value_reset(&value);
 
   g_value_set_double(&value, delay);
   ags_port_safe_write(delay_audio->sequencer_delay, &value);
-
-  //  g_message("sequencer delay = %f\0", sequencer_delay * (old_bpm / new_bpm));
 
   /**/
   g_value_reset(&value);
@@ -925,8 +848,6 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old
 
   GObject *soundcard;
 
-  gdouble sequencer_delay, notation_delay;
-  gdouble sequencer_duration, notation_duration;
   gdouble delay;
   
   GValue value = {0,};
@@ -936,30 +857,7 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old
   soundcard = AGS_RECALL(delay_audio)->soundcard;
 
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  
-  /* retrieve sequencer_delay */
   g_value_init(&value, G_TYPE_DOUBLE);
-
-  ags_port_safe_read(delay_audio->sequencer_delay, &value);
-  sequencer_delay = g_value_get_double(&value);
-
-  /* retrieve notation_delay */
-  g_value_reset(&value);
-
-  ags_port_safe_read(delay_audio->notation_delay, &value);
-  notation_delay = g_value_get_double(&value);
-
-  /* retrieve sequencer_duration */
-  g_value_reset(&value);
-
-  ags_port_safe_read(delay_audio->sequencer_duration, &value);
-  sequencer_duration = g_value_get_double(&value);
-
-  /* retrieve notation_duration */
-  g_value_reset(&value);
-
-  ags_port_safe_read(delay_audio->notation_duration, &value);
-  notation_duration = g_value_get_double(&value);
 
   /* -- start adjust -- */
   /* notation-delay */
@@ -1012,10 +910,11 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
   gdouble delay;
   GValue value = {0,};
 
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+  delay_audio = AGS_DELAY_AUDIO(tactable);
+
   soundcard = AGS_RECALL(delay_audio)->soundcard;
 
-  delay_audio = AGS_DELAY_AUDIO(tactable);
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
 
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_double(&value, duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
@@ -1036,11 +935,10 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
   GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
+
   soundcard = AGS_RECALL(delay_audio)->soundcard;
   
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-
-  //  g_message("%f\0", duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
   
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_double(&value, duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);

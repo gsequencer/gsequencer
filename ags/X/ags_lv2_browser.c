@@ -270,22 +270,13 @@ ags_lv2_browser_disconnect(AgsConnectable *connectable)
 void
 ags_lv2_browser_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsLv2Browser *lv2_browser;
-
-  lv2_browser = AGS_LV2_BROWSER(applicable);
-
   /* empty */
 }
 
 void
 ags_lv2_browser_apply(AgsApplicable *applicable)
 {
-  AgsLv2Browser *lv2_browser;
-  GtkComboBoxText *filename, *uri;
-
-  lv2_browser = AGS_LV2_BROWSER(applicable);
-
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
@@ -320,11 +311,13 @@ gchar*
 ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 {
   GtkComboBoxText *filename;
-  GList *list;
+  GList *list, *list_start;
 
-  list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
   filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  g_list_free(list);
+
+  g_list_free(list_start);
 
   return(gtk_combo_box_text_get_active_text(filename));
 }
@@ -342,7 +335,7 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 gchar*
 ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 {
-  GtkComboBoxText *filename, *effect;
+  GtkComboBoxText *effect;
   AgsLv2Plugin *lv2_plugin;
   GList *list, *list_start;
   gchar *effect_name;
@@ -351,11 +344,12 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
   effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   effect_name = gtk_combo_box_text_get_active_text(effect);
   
+  g_list_free(list_start);
+
   return(effect_name);
 }
 

@@ -228,20 +228,17 @@ ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
-  AgsDrumOutputLine *drum_output_line;
-
-  GObject *soundcard;
   AgsAudio *audio;
-  
+
   AgsMutexManager *mutex_manager;
+  
+  GObject *soundcard;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
-
-  drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
   audio = (AgsAudio *) channel->audio;
 
@@ -299,10 +296,6 @@ ags_drum_output_line_map_recall(AgsLine *line,
   AgsAudio *audio;
 
   AgsChannel *output, *input;
-  AgsDelayAudio *recall_delay_audio;
-  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-
-  GList *list;
 
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
@@ -330,23 +323,6 @@ ags_drum_output_line_map_recall(AgsLine *line,
     input = input->next_pad;
   }
   
-  /* get some recalls */
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    recall_delay_audio = AGS_DELAY_AUDIO(list->data);
-  }else{
-    recall_delay_audio = NULL;
-  }
-
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  }else{
-    recall_count_beats_audio_run = NULL;
-  }
-
   /* ags-stream */
   ags_recall_factory_create(audio,
 			    NULL, NULL,

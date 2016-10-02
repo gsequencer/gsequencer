@@ -125,6 +125,8 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 {
   GtkHBox *hbox;
 
+  line_member_editor->flags = 0;
+  
   line_member_editor->line_member = (GtkVBox *) gtk_vbox_new(FALSE, 2);
   gtk_box_pack_start((GtkBox *) line_member_editor,
 		     (GtkWidget *) line_member_editor->line_member,
@@ -159,6 +161,12 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(connectable);
 
+  if((AGS_LINE_MEMBER_EDITOR_CONNECTED & (line_member_editor->flags)) != 0){
+    return;
+  }
+
+  line_member_editor->flags |= AGS_LINE_MEMBER_EDITOR_CONNECTED;
+  
   g_signal_connect(G_OBJECT(line_member_editor->add), "clicked\0",
 		   G_CALLBACK(ags_line_member_editor_add_callback), line_member_editor);
 
@@ -174,45 +182,64 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 void
 ags_line_member_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsLineMemberEditor *line_member_editor;
+
+  line_member_editor = AGS_LINE_MEMBER_EDITOR(connectable);
+
+  if((AGS_LINE_MEMBER_EDITOR_CONNECTED & (line_member_editor->flags)) == 0){
+    return;
+  }
+
+  line_member_editor->flags &= (~AGS_LINE_MEMBER_EDITOR_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(line_member_editor->add),
+		      "clicked\0",
+		      G_CALLBACK(ags_line_member_editor_add_callback),
+		      line_member_editor,
+		      NULL);
+  
+  g_object_disconnect(G_OBJECT(line_member_editor->remove),
+		      "clicked\0",
+		      G_CALLBACK(ags_line_member_editor_remove_callback),
+		      line_member_editor,
+		      NULL);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
+
+  g_object_disconnect(G_OBJECT(line_member_editor->plugin_browser),
+		      "response\0",
+		      G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback),
+		      line_member_editor,
+		      NULL);
 }
 
 void
 ags_line_member_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsLineMemberEditor *line_member_editor;
-
-  line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
-
   /* empty */
 }
 
 void
 ags_line_member_editor_apply(AgsApplicable *applicable)
 {
-  AgsLineMemberEditor *line_member_editor;
-
-  line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
-
   /* empty */
 }
 
 void
 ags_line_member_editor_reset(AgsApplicable *applicable)
 {
-  AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
   AgsLineMemberEditor *line_member_editor;
   GtkHBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
+
   GList *recall;
+
   gchar *filename, *effect;
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
-								AGS_TYPE_MACHINE_EDITOR);
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
@@ -254,6 +281,19 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 		       FALSE, FALSE,
 		       0);
 
+    filename = NULL;
+    effect = NULL;
+    
+    if(AGS_IS_RECALL_LADSPA(recall->data)){
+      filename = AGS_RECALL_LADSPA(recall->data)->filename;
+      effect = AGS_RECALL_LADSPA(recall->data)->effect;
+    }else if(AGS_IS_RECALL_LV2(recall->data)){
+      filename = AGS_RECALL_LV2(recall->data)->filename;
+      effect = AGS_RECALL_LV2(recall->data)->effect;
+    }else{
+      g_critical("unsupported recall\0");
+    }
+    
     label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
 						       filename,
 						       effect));

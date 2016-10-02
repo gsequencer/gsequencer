@@ -216,11 +216,7 @@ ags_peak_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connecta
 void
 ags_peak_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsPeakAudioSignal *peak_audio_signal;
-
   AGS_RECALL_CLASS(ags_peak_audio_signal_parent_class)->run_inter(recall);
-
-  peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(recall);
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsPeakChannel *peak_channel;

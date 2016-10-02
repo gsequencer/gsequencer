@@ -169,11 +169,6 @@ ags_polling_thread_finalize(GObject *gobject)
 void
 ags_polling_thread_start(AgsThread *thread)
 {
-  AgsPollingThread *polling_thread;
-
-  /*  */
-  polling_thread = AGS_POLLING_THREAD(thread);
-
   /*  */
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_polling_thread_parent_class)->start(thread);
@@ -244,7 +239,8 @@ ags_polling_thread_run(AgsThread *thread)
       position = ags_polling_thread_fd_position(polling_thread,
 						AGS_POLL_FD(list->data)->fd);
 
-      if(AGS_POLL_FD(list->data)->poll_fd != NULL){
+      if(position != -1 &&
+	 AGS_POLL_FD(list->data)->poll_fd != NULL){
 	AGS_POLL_FD(list->data)->poll_fd->events = polling_thread->fds[position].events;
       }
 
@@ -267,39 +263,41 @@ ags_polling_thread_run(AgsThread *thread)
 	position = ags_polling_thread_fd_position(polling_thread,
 						  AGS_POLL_FD(list->data)->fd);
 
-	if((POLLIN & (polling_thread->fds[position].revents)) != 0){
-	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_INPUT;
-	}
+	if(position != -1){
+	  if((POLLIN & (polling_thread->fds[position].revents)) != 0){
+	    AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_INPUT;
+	  }
 
-	if((POLLPRI & (polling_thread->fds[position].revents)) != 0){
-	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_PRIORITY_INPUT;
-	}
+	  if((POLLPRI & (polling_thread->fds[position].revents)) != 0){
+	    AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_PRIORITY_INPUT;
+	  }
 
-	if((POLLOUT & (polling_thread->fds[position].revents)) != 0){
-	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_OUTPUT;
-	}
+	  if((POLLOUT & (polling_thread->fds[position].revents)) != 0){
+	    AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_OUTPUT;
+	  }
 
-	if((POLLHUP & (polling_thread->fds[position].revents)) != 0){
-	  AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_HANG_UP;
-	}
+	  if((POLLHUP & (polling_thread->fds[position].revents)) != 0){
+	    AGS_POLL_FD(list->data)->flags |= AGS_POLL_FD_HANG_UP;
+	  }
 
-	/* do legacy */
-	if(AGS_POLL_FD(list->data)->poll_fd != NULL){
-	  AGS_POLL_FD(list->data)->poll_fd->revents = polling_thread->fds[position].revents;
-	}
+	  /* do legacy */
+	  if(AGS_POLL_FD(list->data)->poll_fd != NULL){
+	    AGS_POLL_FD(list->data)->poll_fd->revents = polling_thread->fds[position].revents;
+	  }
 
-	ags_poll_fd_dispatch(list->data);
+	  ags_poll_fd_dispatch(list->data);
       
-	AGS_POLL_FD(list->data)->flags &= (~(AGS_POLL_FD_INPUT |
-					     AGS_POLL_FD_OUTPUT |
-					     AGS_POLL_FD_HANG_UP));
-	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
+	  AGS_POLL_FD(list->data)->flags &= (~(AGS_POLL_FD_INPUT |
+					       AGS_POLL_FD_OUTPUT |
+					       AGS_POLL_FD_HANG_UP));
+	  AGS_POLL_FD(list->data)->poll_fd->revents = 0;
 
-	AGS_POLL_FD(list->data)->delay_counter = 0.0;
-      }else{
-	AGS_POLL_FD(list->data)->delay_counter += 1.0;
+	  AGS_POLL_FD(list->data)->delay_counter = 0.0;
+	}else{
+	  AGS_POLL_FD(list->data)->delay_counter += 1.0;
+	}
       }
-	
+      
       list = list->next;
     }  
   }
@@ -337,11 +335,19 @@ ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
 {
   gint i;
 
+  if(polling_thread == NULL){
+    return(-1);
+  }
+  
+  pthread_mutex_lock(polling_thread->fd_mutex);
+  
   for(i = 0; i < g_list_length(polling_thread->poll_fd); i++){
     if(fd == polling_thread->fds[i].fd){
       return(i);
     }
   }
+
+  pthread_mutex_unlock(polling_thread->fd_mutex);
 
   return(-1);
 }
@@ -359,7 +365,6 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
   }
 
   pthread_mutex_lock(polling_thread->fd_mutex);
-
 
   nth = g_list_position(polling_thread->poll_fd,
 			(gpointer) gobject);

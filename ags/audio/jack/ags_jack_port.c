@@ -285,6 +285,12 @@ ags_jack_port_finalize(GObject *gobject)
 
   jack_port = AGS_JACK_PORT(gobject);
 
+  if(jack_port->jack_client != NULL){
+    g_object_unref(jack_port->jack_client);
+  }
+  
+  g_free(jack_port->name);
+  
   G_OBJECT_CLASS(ags_jack_port_parent_class)->finalize(gobject);
 }
 
@@ -332,8 +338,6 @@ ags_jack_port_register(AgsJackPort *jack_port,
 		       gboolean is_audio, gboolean is_midi,
 		       gboolean is_output)
 {
-  AgsJackServer *jack_server;
-
   GList *list;
 
   gchar *name, *uuid;
@@ -354,12 +358,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
   }
 
   /* get jack server and application context */
-  if(jack_port->jack_client != NULL &&
-     AGS_JACK_CLIENT(jack_port->jack_client)->jack_server != NULL){
-    jack_server = (AgsJackServer *) AGS_JACK_CLIENT(jack_port->jack_client)->jack_server;
-  }else{
-    jack_server = NULL;
-
+  if(jack_port->jack_client == NULL ||
+     AGS_JACK_CLIENT(jack_port->jack_client)->jack_server == NULL){
     return;
   }
 

@@ -25,6 +25,7 @@
 #include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_automation_edit.h>
+#include <ags/X/editor/ags_automation_area.h>
 
 #include <gdk/gdkkeysyms.h>
 #include <atk/atk.h>
@@ -734,13 +735,13 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
   gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 
   /* reset scale */
-  if(automation_editor->current_audio_automation_edit == automation_edit){
+  if(automation_editor->current_audio_automation_edit == (GtkWidget *) automation_edit){
     automation_editor->current_audio_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
     gtk_widget_queue_draw((GtkWidget *) automation_editor->current_audio_scale);
-  }else if(automation_editor->current_output_automation_edit == automation_edit){
+  }else if(automation_editor->current_output_automation_edit == (GtkWidget *) automation_edit){
     automation_editor->current_output_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
     gtk_widget_queue_draw((GtkWidget *) automation_editor->current_output_scale);
-  }else if(automation_editor->current_input_automation_edit == automation_edit){
+  }else if(automation_editor->current_input_automation_edit == (GtkWidget *) automation_edit){
     automation_editor->current_input_scale->y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
     gtk_widget_queue_draw((GtkWidget *) automation_editor->current_input_scale);
   }
@@ -760,13 +761,11 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
 {
   AgsAutomationEditor *automation_editor;
 
-  double tact_factor, zoom_factor;
+  double tact_factor;
   double tact;
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
-
-  zoom_factor = 0.25;
 
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
@@ -865,17 +864,14 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit,
 
   static const gdouble white_gc = 65535.0;
 
-  list = ags_automation_area_find_point(automation_edit->automation_area,
-					automation_edit->edit_x, automation_edit->edit_y);
+  list = ags_automation_area_find_position(automation_edit->automation_area,
+					   automation_edit->edit_x, automation_edit->edit_y);
 
   if(list != NULL){
     automation_area = AGS_AUTOMATION_AREA(list->data);
   }else{
     return;
   }
-  
-  width = GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
-  height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
 
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
 
@@ -974,16 +970,12 @@ ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
   
   GList *automation_area;
   
-  double tact_factor, zoom_factor;
   double tact;
   gdouble x_offset, y_offset;
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
-  zoom_factor = 1.0 / 4.0;
-
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
   x_offset = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;

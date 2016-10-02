@@ -25,6 +25,7 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
 
 #define AGS_TYPE_RECALL_AUDIO_RUN                (ags_recall_audio_run_get_type())
@@ -41,6 +42,8 @@ struct _AgsRecallAudioRun
 {
   AgsRecall recall;
 
+  AgsAudio *audio;
+  
   AgsRecallAudio *recall_audio;
 };
 
