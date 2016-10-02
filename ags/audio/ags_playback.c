@@ -107,6 +107,7 @@ ags_playback_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_playback_init(AgsPlayback *playback)
 {
+  /* default flags */
   g_atomic_int_set(&(playback->flags),
 		   AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
 

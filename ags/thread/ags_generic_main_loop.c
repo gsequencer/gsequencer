@@ -232,10 +232,6 @@ ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop)
 void
 ags_generic_main_loop_finalize(GObject *gobject)
 {
-  AgsGenericMainLoop *generic_main_loop;
-
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_generic_main_loop_parent_class)->finalize(gobject);
 }
@@ -243,10 +239,6 @@ ags_generic_main_loop_finalize(GObject *gobject)
 void
 ags_generic_main_loop_start(AgsThread *thread)
 {
-  AgsGenericMainLoop *generic_main_loop;
-
-  generic_main_loop = AGS_GENERIC_MAIN_LOOP(thread);
-
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_generic_main_loop_parent_class)->start(thread);

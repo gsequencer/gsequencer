@@ -333,7 +333,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   if(source->samplerate != samplerate){
     buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
 						   ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
-						   source->length,
+						   buffer_size,
 						   samplerate);
       
     resample = TRUE;

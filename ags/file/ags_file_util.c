@@ -554,9 +554,9 @@ ags_file_util_write_value(AgsFile *file,
 	ags_file_add_lookup(file, (GObject *) file_lookup);
 	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
 			       G_CALLBACK(ags_file_util_write_value_resolve), value);
-      }
 
-      type_str = AGS_FILE_POINTER_PROP;
+	type_str = AGS_FILE_POINTER_PROP;
+      }
     }
     break;
   case G_TYPE_OBJECT:

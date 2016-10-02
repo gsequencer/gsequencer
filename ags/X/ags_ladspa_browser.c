@@ -272,22 +272,13 @@ ags_ladspa_browser_disconnect(AgsConnectable *connectable)
 void
 ags_ladspa_browser_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsLadspaBrowser *ladspa_browser;
-
-  ladspa_browser = AGS_LADSPA_BROWSER(applicable);
-
   /* empty */
 }
 
 void
 ags_ladspa_browser_apply(AgsApplicable *applicable)
 {
-  AgsLadspaBrowser *ladspa_browser;
-  GtkComboBoxText *filename, *effect;
-
-  ladspa_browser = AGS_LADSPA_BROWSER(applicable);
-
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
@@ -344,7 +335,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 {
-  GtkComboBoxText *filename, *effect;
+  GtkComboBoxText *effect;
   AgsLadspaPlugin *ladspa_plugin;
   GList *list, *list_start;
   gchar *effect_name;
@@ -358,7 +349,6 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
   effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   g_list_free(list_start);

@@ -279,6 +279,11 @@ ags_dssi_plugin_finalize(GObject *gobject)
   AgsDssiPlugin *dssi_plugin;
 
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
+
+  g_free(dssi_plugin->program);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_dssi_plugin_parent_class)->finalize(gobject);
 }
 
 gpointer
@@ -338,15 +343,11 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
 void
 ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  AgsConfig *config;
-  
   AgsPortDescriptor *port;
 
   GList *port_list;
 
   gchar *str;
-  
-  guint samplerate;
   
   DSSI_Descriptor_Function dssi_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
@@ -356,28 +357,6 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   unsigned long effect_index;
   unsigned long port_count;
   unsigned long i;
-
-  config = ags_config_get_instance();
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
-  }
-  
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
   
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);

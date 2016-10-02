@@ -49,11 +49,8 @@ struct _AgsRecallChannelRun
   AgsRecallAudioRun *recall_audio_run;
 
   AgsChannel *destination;
-  gulong destination_recycling_changed_handler;
-  gulong changed_output_handler;
 
   AgsChannel *source;
-  gulong source_recycling_changed_handler;
 
   guint run_order;
 };

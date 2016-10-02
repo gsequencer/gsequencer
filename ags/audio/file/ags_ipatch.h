@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <libinstpatch/libinstpatch.h>
 
 #include <ags/object/ags_soundcard.h>

@@ -50,7 +50,6 @@ struct _AgsPlayNotationAudioRun
   guint flags;
 
   AgsDelayAudioRun *delay_audio_run;
-  gulong notation_alloc_input_handler;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
 

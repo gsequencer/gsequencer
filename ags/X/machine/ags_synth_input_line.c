@@ -207,11 +207,7 @@ ags_synth_input_line_disconnect(AgsConnectable *connectable)
 void
 ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
-  AgsSynthInputLine *synth_input_line;
-
   AGS_LINE_CLASS(ags_synth_input_line_parent_class)->set_channel(line, channel);
-
-  synth_input_line = AGS_SYNTH_INPUT_LINE(line);
 
   /* empty */
 }
@@ -220,26 +216,13 @@ void
 ags_synth_input_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
-  AgsSynth *synth;
-  AgsSynthInputLine *synth_input_line;
-  AgsAudio *audio;
-  AgsChannel *source;
-  guint i;
-
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
-
-  synth_input_line = AGS_SYNTH_INPUT_LINE(line);
-
-  audio = AGS_AUDIO(line->channel->audio);
-
-  synth = AGS_SYNTH(audio->machine);
-
-  source = line->channel;
-
+  
   /* empty */
+  
   /* call parent */
   AGS_LINE_CLASS(ags_synth_input_line_parent_class)->map_recall(line,
 								output_pad_start);

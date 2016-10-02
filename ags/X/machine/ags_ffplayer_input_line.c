@@ -40,6 +40,7 @@ void ags_ffplayer_input_line_get_property(GObject *gobject,
 					  GParamSpec *param_spec);
 void ags_ffplayer_input_line_connect(AgsConnectable *connectable);
 void ags_ffplayer_input_line_disconnect(AgsConnectable *connectable);
+void ags_ffplayer_input_line_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_ffplayer_input_line
@@ -55,11 +56,6 @@ void ags_ffplayer_input_line_disconnect(AgsConnectable *connectable);
 enum{
   RESIZE_LINES,
   LAST_SIGNAL,
-};
-
-enum{
-  PROP_0,
-  PROP_CHANNEL,
 };
 
 static gpointer ags_ffplayer_input_line_parent_class = NULL;
@@ -117,12 +113,13 @@ void
 ags_ffplayer_input_line_class_init(AgsFFPlayerInputLineClass *ffplayer_input_line)
 {
   GObjectClass *gobject;
-  GParamSpec *param_spec;
-
+  
   ags_ffplayer_input_line_parent_class = g_type_class_peek_parent(ffplayer_input_line);
 
   /* GObjectClass */
   gobject = G_OBJECT_CLASS(ffplayer_input_line);
+
+  gobject->finalize = ags_ffplayer_input_line_finalize;
 }
 
 void
@@ -152,7 +149,7 @@ ags_ffplayer_input_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_input_line_init(AgsFFPlayerInputLine *ffplayer_input_line)
 {
-  g_signal_connect_after(ffplayer_input_line, "notify::channel",
+  g_signal_connect_after(ffplayer_input_line, "notify::channel\0",
 			 G_CALLBACK(ags_ffplayer_input_line_notify_channel_callback), NULL);
 }
 
@@ -169,7 +166,23 @@ ags_ffplayer_input_line_connect(AgsConnectable *connectable)
 void
 ags_ffplayer_input_line_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  if((AGS_EFFECT_LINE_CONNECTED & (AGS_EFFECT_LINE(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_ffplayer_input_line_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_ffplayer_input_line_finalize(GObject *gobject)
+{
+  g_object_disconnect(gobject,
+		      "notify::channel\0",
+		      G_CALLBACK(ags_ffplayer_input_line_notify_channel_callback),
+		      NULL,
+		      NULL);
+
+  G_OBJECT_CLASS(ags_ffplayer_input_line_parent_class)->finalize(gobject);
 }
 
 /**

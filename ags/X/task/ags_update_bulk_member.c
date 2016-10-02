@@ -224,7 +224,7 @@ ags_update_bulk_member_launch(AgsTask *task)
 	/* play */
 	play = current->play;
 	
-	while((play = ags_recall_template_find_all_type(recall,
+	while((play = ags_recall_template_find_all_type(play,
 							AGS_TYPE_RECALL_LADSPA,
 							AGS_TYPE_RECALL_DSSI,
 							AGS_TYPE_RECALL_LV2,
@@ -384,8 +384,6 @@ ags_update_bulk_member_launch(AgsTask *task)
 	//TODO:JK: verify list order
 	play = current->play;
 
-	k = 0;
-	
 	while(play != NULL){
 	  gboolean remove_port;
 
@@ -436,8 +434,6 @@ ags_update_bulk_member_launch(AgsTask *task)
 
 	/* recall */
 	recall = current->recall;
-	
-	k = 0;
 	
 	while(recall != NULL){
 	  gboolean remove_port;

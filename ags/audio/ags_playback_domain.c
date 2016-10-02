@@ -104,6 +104,7 @@ ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
+  /* default flags */
   g_atomic_int_set(&(playback_domain->flags),
 		   AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
 

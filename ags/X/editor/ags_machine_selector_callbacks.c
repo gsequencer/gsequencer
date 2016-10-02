@@ -53,8 +53,6 @@ ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSe
 void
 ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  AgsMachineRadioButton *machine_radio_button;
-  
   GList *list, *list_start;
 
   guint nth;
@@ -69,7 +67,6 @@ ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachin
   while(list != NULL){
 
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
-      machine_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
       ags_machine_selector_changed(machine_selector,
 				   NULL);
 

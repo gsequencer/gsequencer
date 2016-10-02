@@ -36,10 +36,16 @@
 typedef struct _AgsLineMemberEditor AgsLineMemberEditor;
 typedef struct _AgsLineMemberEditorClass AgsLineMemberEditorClass;
 
+typedef enum{
+  AGS_LINE_MEMBER_EDITOR_CONNECTED    = 1,
+}AgsLineMemberEditorFlags;
+
 struct _AgsLineMemberEditor
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   GtkVBox *line_member;
 
   GtkButton *add;

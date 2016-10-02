@@ -5,8 +5,11 @@ ags (0.7.74)
 	* added additional parameter to ags_ladspa_manager.c to pass instance
 	* added additional parameter to ags_dssi_manager.c to pass instance
 	* added additional parameter to ags_lv2_manager.c to pass instance
+	* added additional parameter to ags_lv2ui_manager.c to pass instance
 	* TODO:JK: fixed most clang scan-build errors
-	* TODO:JK: implemented AgsConnectable:disconnect()
+	* TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
+	* TODO:JK: implemented AgsPlaybackDomain properties
+	* TODO:JK: implemented AgsPlayback properties
 
 ags (0.7.73)
 
