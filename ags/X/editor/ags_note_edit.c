@@ -187,8 +187,6 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 
   note_edit->key_mask = 0;
   
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-  
   note_edit->flags = 0;
 
   note_edit->ruler = ags_ruler_new();
@@ -721,24 +719,15 @@ ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height)
 void
 ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 {
-  AgsWindow *window;
   AgsEditor *editor;
-  double tact_factor, zoom_factor;
-  double tact;
+
   gdouble value;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) editor,
-						 AGS_TYPE_WINDOW);
-
-  zoom_factor = 0.25;
-
-  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
-
-  if(editor->selected_machine != NULL && editor->current_edit_widget == note_edit){
+  if(editor->selected_machine != NULL &&
+     editor->current_edit_widget == (GtkWidget *) note_edit){
     cairo_t *cr;
     gdouble value;
 
@@ -1318,7 +1307,6 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 					 (GObject *) editor->selected_machine->audio);
   
   pthread_mutex_unlock(application_mutex);
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* draw */
   pthread_mutex_lock(audio_mutex);

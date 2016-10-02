@@ -41,7 +41,6 @@ struct _AgsLoopChannel
   AgsRecallChannel recall_channel;
   
   AgsDelayAudio *delay_audio;
-  gulong sequencer_duration_changed_handler;
 };
 
 struct _AgsLoopChannelClass

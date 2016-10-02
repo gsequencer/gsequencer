@@ -161,10 +161,8 @@ ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run)
 void
 ags_volume_channel_run_finalize(GObject *gobject)
 {
-  AgsVolumeChannelRun *volume_channel_run;
-
-  volume_channel_run = AGS_VOLUME_CHANNEL_RUN(gobject);
-
+  /* empty */
+  
   /* call parent */
   G_OBJECT_CLASS(ags_volume_channel_run_parent_class)->finalize(gobject);
 }
@@ -172,28 +170,52 @@ ags_volume_channel_run_finalize(GObject *gobject)
 void
 ags_volume_channel_run_connect(AgsConnectable *connectable)
 {
-  AgsVolumeChannelRun *volume_channel_run;
-
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+  
+  /* call parent */
   ags_volume_channel_run_parent_connectable_interface->connect(connectable);
 
-  volume_channel_run = AGS_VOLUME_CHANNEL_RUN(connectable);
+  /* empty */
 }
 
 void
 ags_volume_channel_run_disconnect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) == 0){
+    return;
+  }
+
+  /* empty */
+  
+  /* call parent */
   ags_volume_channel_run_parent_connectable_interface->disconnect(connectable);
 }
 
 void
 ags_volume_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
+  /* call parent */
   ags_volume_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
+
+  /* empty */
 }
 
 void
 ags_volume_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) == 0){
+    return;
+  }
+
+  /* empty */
+  
+  /* call parent */
   ags_volume_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
 
@@ -202,13 +224,8 @@ ags_volume_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
-  AgsVolumeChannelRun *volume_channel_run, *copy;
-
-  volume_channel_run = (AgsVolumeChannelRun *) recall;
+  AgsVolumeChannelRun *copy;
   
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 NULL);
   copy = (AgsVolumeChannelRun *) AGS_RECALL_CLASS(ags_volume_channel_run_parent_class)->duplicate(recall,
 												  recall_id,
 												  n_params, parameter);

@@ -756,7 +756,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   AgsEffectPad *effect_pad;
   GtkTable *table;
   AgsAudio *audio;
-  AgsChannel *start, *current;
+  AgsChannel *current;
   guint i;
   
   audio = effect_bridge->audio;
@@ -767,14 +767,12 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 
   if(new_size > old_size){
     if(channel_type == AGS_TYPE_OUTPUT){
-      start =
-	current = ags_channel_nth(audio->output,
-				  old_size * audio->audio_channels);
+      current = ags_channel_nth(audio->output,
+				old_size * audio->audio_channels);
 
     }else{
-      start =
-	current = ags_channel_nth(audio->input,
-				  old_size * audio->audio_channels);
+      current = ags_channel_nth(audio->input,
+				old_size * audio->audio_channels);
     }
     
     for(i = 0; i < new_size - old_size; i++){

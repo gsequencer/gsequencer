@@ -122,8 +122,6 @@ void
 ags_copy_channel_run_class_init(AgsCopyChannelRunClass *copy_channel_run)
 {
   GObjectClass *gobject;
-  AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_copy_channel_run_parent_class = g_type_class_peek_parent(copy_channel_run);
 
@@ -131,9 +129,6 @@ ags_copy_channel_run_class_init(AgsCopyChannelRunClass *copy_channel_run)
   gobject = (GObjectClass *) copy_channel_run;
 
   gobject->finalize = ags_copy_channel_run_finalize;
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) copy_channel_run;
 }
 
 void

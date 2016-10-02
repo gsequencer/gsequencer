@@ -56,8 +56,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     guint bank, program;
     unsigned long i;
 
-    gboolean initial_run;
-
     /* get program */
     gtk_tree_model_get(gtk_combo_box_get_model(combo_box), &iter,
 		       0, &name,
@@ -76,8 +74,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     /* update ports */
     channel = AGS_MACHINE(dssi_bridge)->audio->input;
     port_descriptor = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
-
-    initial_run = TRUE;
     
     while(channel != NULL){
       recall = channel->recall;

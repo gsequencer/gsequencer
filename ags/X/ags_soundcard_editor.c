@@ -561,6 +561,8 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   g_free(str);
 
   /* format */
+  format = 0;
+  
   switch(gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->format))){
   case 0:
     format = AGS_SOUNDCARD_SIGNED_8_BIT;
@@ -638,8 +640,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   AgsWindow *window;
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
-  
-  AgsConfig *config;
 
   GObject *soundcard;
 
@@ -652,10 +652,8 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   guint samplerate, samplerate_min, samplerate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
   guint format;
-  gboolean use_jack, use_alsa, use_oss;
+  gboolean use_alsa;
   gboolean found_card;
-  
-  GValue value =  {0,};
   
   GError *error;
   
@@ -663,11 +661,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   soundcard = soundcard_editor->soundcard;
   
   /* refresh */
-  config = ags_config_get_instance();
-
-  use_jack = TRUE;
   use_alsa = FALSE;
-  use_oss = FALSE;
 
   backend = NULL;
   
@@ -685,7 +679,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     if(!g_ascii_strncasecmp(backend,
 			    "jack\0",
 			    5)){
-      use_jack = TRUE;
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       0);
       
@@ -694,7 +687,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 				  "alsa\0",
 				  5)){
       use_alsa = TRUE;
-      use_jack = FALSE;
 
 #ifdef AGS_WITH_ALSA
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
@@ -705,9 +697,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss\0",
 				  4)){
-      use_oss = TRUE;
-      use_jack = FALSE;
-
 #ifdef AGS_WITH_ALSA
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       2);
@@ -817,16 +806,16 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   }
 
   /*  */
-  if(str != NULL &&
+  if(device != NULL &&
      soundcard != NULL){
     error = NULL;
     ags_soundcard_pcm_info(AGS_SOUNDCARD(soundcard),
-			   str,
+			   device,
 			   &channels_min, &channels_max,
 			   &samplerate_min, &samplerate_max,
 			   &buffer_size_min, &buffer_size_max,
 			   &error);
-    g_free(str);
+    g_free(device);
   }else{
     channels_min = 0.0;
     channels_max = 24.0;
@@ -943,10 +932,7 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
   AgsWindow *window;
   AgsPreferences *preferences;
 
-  AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
-
-  AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
@@ -955,14 +941,12 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
   GList *card_id;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = window->application_mutex;
   
   /* create soundcard */
@@ -970,9 +954,7 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
 
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager != NULL){
-    jack_server = distributed_manager->data;
-  }else{
+  if(distributed_manager == NULL){
     g_warning("distributed manager not found\0");
 
     pthread_mutex_unlock(application_mutex);
@@ -1000,14 +982,6 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
     return;
   }
   
-  /*  */  
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) jack_devout);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /*  */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
@@ -1143,7 +1117,6 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
   AgsWindow *window;
   AgsPreferences *preferences;
 
-  AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
 
   AgsApplicationContext *application_context;
@@ -1166,9 +1139,7 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
 
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager != NULL){
-    jack_server = distributed_manager->data;
-  }else{
+  if(distributed_manager == NULL){
     g_warning("distributed manager not found\0");
 
     pthread_mutex_unlock(application_mutex);

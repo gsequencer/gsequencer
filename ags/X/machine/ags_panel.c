@@ -187,7 +187,7 @@ ags_panel_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_panel_init(AgsPanel *panel)
 {
-  g_signal_connect_after((GObject *) panel, "parent_set\0",
+  g_signal_connect_after((GObject *) panel, "parent-set\0",
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
   ags_machine_popup_add_connection_options((AgsMachine *) panel,
@@ -201,10 +201,10 @@ ags_panel_init(AgsPanel *panel)
   AGS_MACHINE(panel)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(panel)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
+  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-audio-channels\0",
 		   G_CALLBACK(ags_panel_set_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(panel->machine.audio), "set_pads\0",
+  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-pads\0",
 		   G_CALLBACK(ags_panel_set_pads), NULL);
 
   /* */
@@ -224,37 +224,45 @@ ags_panel_init(AgsPanel *panel)
 static void
 ags_panel_finalize(GObject *gobject)
 {
+  AgsPanel *panel;
+
+  panel = (AgsPanel *) gobject;
+  
+  g_object_disconnect(G_OBJECT(AGS_MACHINE(panel)->audio),
+		      "set-audio-channels\0",
+		      G_CALLBACK(ags_panel_set_audio_channels),
+		      NULL,
+		      "set-pads\0",
+		      G_CALLBACK(ags_panel_set_pads),
+		      NULL,
+		      NULL);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
 }
 
 void
 ags_panel_connect(AgsConnectable *connectable)
 {
-  AgsPanel *panel;
-
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
   }
 
   ags_panel_parent_connectable_interface->connect(connectable);
 
-  /* AgsPanel */
-  panel = AGS_PANEL(connectable);
-
-  /* AgsAudio */
+  /* empty */
 }
 
 void
 ags_panel_disconnect(AgsConnectable *connectable)
 {
-  AgsPanel *panel;
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
 
   ags_panel_parent_connectable_interface->disconnect(connectable);
 
-  /* AgsPanel */
-  panel = AGS_PANEL(connectable);
-
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
@@ -469,7 +477,9 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 						j)) != NULL){
 	  GObject *data_object;
 
-	  g_object_get(G_OBJECT(list->data),
+	  audio_connection = (AgsAudioConnection *) list->data;
+	  
+	  g_object_get(audio_connection,
 		       "data-object\0", &data_object,
 		       NULL);
 	    
@@ -540,7 +550,9 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 						  j)) != NULL){
 	    GObject *data_object;
 
-	    g_object_get(G_OBJECT(list->data),
+	    audio_connection = (AgsAudioConnection *) list->data;
+	    
+	    g_object_get(G_OBJECT(audio_connection),
 			 "data-object\0", &data_object,
 			 NULL);
 	    

@@ -531,17 +531,13 @@ ags_port_get_property(GObject *gobject,
 void
 ags_port_connect(AgsConnectable *connectable)
 {
-  AgsPort *port;
-
-  port = AGS_PORT(connectable);
+  /* empty */
 }
 
 void
 ags_port_disconnect(AgsConnectable *connectable)
 {
-  AgsPort *port;
-
-  port = AGS_PORT(connectable);
+  /* empty */
 }
 
 void
@@ -586,6 +582,8 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
       
       g_value_set_double(value, new_value);
     }else{
+      data = NULL;
+      
       if(port->port_value_type == G_TYPE_POINTER){
 	data = port->port_value.ags_port_pointer;
       }else if(port->port_value_type == G_TYPE_OBJECT){
@@ -595,6 +593,8 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
       g_value_set_pointer(value, data);
     }
   }else{
+    data = NULL;
+    
     if(port->port_value_type == G_TYPE_POINTER){
       data = port->port_value.ags_port_pointer;
     }else if(port->port_value_type == G_TYPE_OBJECT){

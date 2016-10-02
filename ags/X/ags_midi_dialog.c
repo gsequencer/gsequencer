@@ -623,6 +623,13 @@ ags_midi_dialog_connect(AgsConnectable *connectable)
 
   midi_dialog = AGS_MIDI_DIALOG(connectable);
 
+  if((AGS_MIDI_DIALOG_CONNECTED & (midi_dialog->flags)) != 0){
+    return;
+  }
+
+  midi_dialog->flags |= AGS_MIDI_DIALOG_CONNECTED;
+  
+  /* backend */
   g_signal_connect((GObject *) midi_dialog->backend, "changed\0",
 		   G_CALLBACK(ags_midi_dialog_backend_changed_callback), (gpointer) midi_dialog);
 
@@ -665,17 +672,82 @@ ags_midi_dialog_disconnect(AgsConnectable *connectable)
 
   midi_dialog = AGS_MIDI_DIALOG(connectable);
 
-  //TODO:JK: implement me
+  if((AGS_MIDI_DIALOG_CONNECTED & (midi_dialog->flags)) == 0){
+    return;
+  }
+
+  midi_dialog->flags &= (~AGS_MIDI_DIALOG_CONNECTED);
+
+  /* backend */
+  g_object_disconnect((GObject *) midi_dialog->backend,
+		      "changed\0",
+		      G_CALLBACK(ags_midi_dialog_backend_changed_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  /* server */
+  g_object_disconnect((GObject *) midi_dialog->add_server,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_add_server_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  g_object_disconnect((GObject *) midi_dialog->remove_server,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_remove_server_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  /* client */
+  g_object_disconnect((GObject *) midi_dialog->add_client,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_add_client_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  g_object_disconnect((GObject *) midi_dialog->remove_client,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_remove_client_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  /* port */
+  g_object_disconnect((GObject *) midi_dialog->add_port,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_add_port_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  g_object_disconnect((GObject *) midi_dialog->remove_port,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_remove_port_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  /* applicable */
+  g_object_disconnect((GObject *) midi_dialog->apply,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_apply_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  g_object_disconnect((GObject *) midi_dialog->ok,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_ok_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
+
+  g_object_disconnect((GObject *) midi_dialog->cancel,
+		      "clicked\0",
+		      G_CALLBACK(ags_midi_dialog_cancel_callback),
+		      (gpointer) midi_dialog,
+		      NULL);
 }
 
 void
 ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsMidiDialog *midi_dialog;
-
-  midi_dialog = AGS_MIDI_DIALOG(applicable);
-
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
@@ -725,6 +797,8 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
      midi_device != NULL){
     pthread_mutex_lock(application_mutex);
 
+    sequencer_type = G_TYPE_NONE;
+    
     if(!g_ascii_strncasecmp("alsa\0",
 			    backend,
 			    4)){
@@ -773,24 +847,19 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   AgsAudio *audio;
   GObject *sequencer;
 
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
 
   GList *list;
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  gchar *backend;
   gchar *midi_device;
   gchar *str;
   guint audio_start, audio_end;
   guint midi_start, midi_end;
   guint i;
   gboolean found_device;
-  
-  pthread_mutex_t *application_mutex;
-  
+    
   midi_dialog = AGS_MIDI_DIALOG(applicable);
 
   machine = midi_dialog->machine;
@@ -800,9 +869,6 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
 
   /* application context and mutex manager */
   application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* audio and sequencer */
   audio = machine->audio;
@@ -822,17 +888,14 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   if(AGS_IS_MIDIIN(sequencer)){
     gtk_combo_box_set_active(GTK_COMBO_BOX(midi_dialog->backend),
 			     0);
-    
-    backend = "alsa\0";
+
     midi_device = ags_sequencer_get_device(AGS_SEQUENCER(sequencer));
   }else if(AGS_IS_JACK_MIDIIN(sequencer)){
     gtk_combo_box_set_active(GTK_COMBO_BOX(midi_dialog->backend),
 			     1);
     
-    backend = "jack\0";
     midi_device = ags_sequencer_get_device(AGS_SEQUENCER(sequencer));
   }else{
-    backend = NULL;
     midi_device = NULL;
   }
 
@@ -904,8 +967,6 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 
   AgsMutexManager *mutex_manager;
 
-  AgsApplicationContext *application_context;
-
   GType sequencer_type;
   
   GtkTreeIter iter;
@@ -919,8 +980,6 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 						 AGS_TYPE_WINDOW);
 
   /* application context and mutex manager */
-  application_context = (AgsApplicationContext *) window->application_context;
-
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 

@@ -407,6 +407,8 @@ ags_effect_line_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_CHANNEL:
     {
+      g_value_set_object(value,
+			 effect_line->channel);
     }
     break;
   default:
@@ -417,6 +419,37 @@ ags_effect_line_get_property(GObject *gobject,
 
 void
 ags_effect_line_connect(AgsConnectable *connectable)
+{
+  AgsEffectLine *effect_line;
+  GList *list, *list_start;
+
+  effect_line = AGS_EFFECT_LINE(connectable);
+
+  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) == 0){
+    return;
+  }
+
+  effect_line->flags &= (~AGS_EFFECT_LINE_CONNECTED);
+
+  /* connect line members */
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+  
+  while(list != NULL){
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    }
+
+    list = list->next;
+  }
+
+  if(list_start != NULL){
+    g_list_free(list_start);
+  }
+}
+
+void
+ags_effect_line_disconnect(AgsConnectable *connectable)
 {
   AgsEffectLine *effect_line;
   GList *list, *list_start;
@@ -453,20 +486,6 @@ ags_effect_line_connect(AgsConnectable *connectable)
   if(list_start != NULL){
     g_list_free(list_start);
   }
-}
-
-void
-ags_effect_line_disconnect(AgsConnectable *connectable)
-{
-  AgsEffectLine *effect_line;
-
-  effect_line = AGS_EFFECT_LINE(connectable);
-
-  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) == 0){
-    return;
-  }
-
-  //TODO:JK: implement me
 }
 
 gchar*
@@ -531,7 +550,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
   AgsMutexManager *mutex_manager;
   
-  GList *list, *list_start;
+  GList *list;
   GList *recall, *recall_start;
   GList *port, *recall_port;
   GList *port_descriptor;
@@ -552,8 +571,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   x = 0;
   y = 0;
   
-  list_start = 
-    list = effect_line->table->children;
+  list = effect_line->table->children;
 
   while(list != NULL){
     if(y <= ((GtkTableChild *) list->data)->top_attach){
@@ -747,19 +765,20 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 		       y, y + 1,
 		       GTK_FILL, GTK_FILL,
 		       0, 0);
+
+      ags_connectable_connect(AGS_CONNECTABLE(line_member));
+      gtk_widget_show_all((GtkWidget *) line_member);
       
       port = port->next;
       x++;
     }
-
-    ags_connectable_connect(AGS_CONNECTABLE(line_member));
-    gtk_widget_show_all((GtkWidget *) line_member);
     
     port_descriptor = port_descriptor->next;
     k++;
   }
   
-  return(port);
+  return(g_list_concat(g_list_copy(port),
+		       g_list_copy(recall_port)));
 }
 
 GList*
@@ -776,7 +795,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
   AgsMutexManager *mutex_manager;
 
-  GList *list, *list_start;
+  GList *list;
   GList *recall, *recall_start;
   GList *port, *recall_port;
   GList *port_descriptor;
@@ -797,8 +816,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   x = 0;
   y = 0;
 
-  list_start = 
-    list = effect_line->table->children;
+  list = effect_line->table->children;
 
   while(list != NULL){
     if(y <= ((GtkTableChild *) list->data)->top_attach){
@@ -980,7 +998,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
     k++;
   }
   
-  return(port);
+  return(g_list_concat(g_list_copy(port),
+		       g_list_copy(recall_port)));
 }
 
 GList*
@@ -990,7 +1009,6 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 				gchar *effect)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   AgsLadspaPlugin *ladspa_plugin;
   AgsLv2Plugin *lv2_plugin;
@@ -998,9 +1016,6 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   GList *port;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_line);
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
-						   AGS_TYPE_MACHINE);
-  
 
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),

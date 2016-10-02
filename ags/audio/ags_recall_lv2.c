@@ -477,7 +477,6 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 
     for(i = 0; i < port_count; i++){
       if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	gchar *plugin_name;
 	gchar *specifier;
 	
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
@@ -487,8 +486,6 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	  
 	  continue;
 	}
-	
-	plugin_name = g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri);
 	
 	list = port;
 	current = NULL;
@@ -503,18 +500,20 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	  list = list->next;
 	}
 
-	current->port_descriptor = port_descriptor->data;
-	ags_recall_lv2_load_conversion(recall_lv2,
-				       (GObject *) current,
-				       port_descriptor->data);
+	if(current != NULL){
+	  current->port_descriptor = port_descriptor->data;
+	  ags_recall_lv2_load_conversion(recall_lv2,
+					 (GObject *) current,
+					 port_descriptor->data);
 	
-	current->port_value.ags_port_float = (float) ags_conversion_convert(current->conversion,
-									    g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
-									    FALSE);
-	    
+	  current->port_value.ags_port_float = (float) ags_conversion_convert(current->conversion,
+									      g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+									      FALSE);
+	
 #ifdef AGS_DEBUG
-	g_message("connecting port: %d/%d\0", i, port_count);      
+	  g_message("connecting port: %d/%d\0", i, port_count);      
 #endif
+	}
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->input_port == NULL){
@@ -555,6 +554,14 @@ ags_recall_lv2_finalize(GObject *gobject)
   
   recall_lv2 = AGS_RECALL_LV2(gobject);
 
+  if(recall_lv2->turtle != NULL){
+    g_object_unref(recall_lv2->turtle);
+  }
+
+  g_free(recall_lv2->filename);
+  g_free(recall_lv2->effect);
+  g_free(recall_lv2->uri);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_recall_lv2_parent_class)->finalize(gobject);
 }
