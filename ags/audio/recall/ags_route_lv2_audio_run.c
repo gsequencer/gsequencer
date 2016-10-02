@@ -677,7 +677,6 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
-  AgsConfig *config;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
@@ -693,8 +692,6 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   char *buffer;
   long seq_length;
   long velocity, pressure;
-  guint samplerate;
-  guint buffer_size;
   guint audio_channel;
   gdouble notation_delay;
   guint start_frame, end_frame;
@@ -711,54 +708,6 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* read config */
-  config = ags_config_get_instance();
-
-  pthread_mutex_lock(application_mutex);
-
-  
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
-  }
-  
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
-  }
-  
-  if(str != NULL){  
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
-
-  pthread_mutex_unlock(application_mutex);
 
   /* get notation delay */
   g_value_init(&value, G_TYPE_DOUBLE);

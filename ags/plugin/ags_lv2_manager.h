@@ -58,14 +58,16 @@ struct _AgsLv2ManagerClass
 
 GType ags_lv2_manager_get_type(void);
 
-gchar** ags_lv2_manager_get_filenames();
-AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(gchar *filename,
+gchar** ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager);
+AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
+					      gchar *filename,
 					      gchar *effect);
 
-void ags_lv2_manager_load_file(AgsTurtle *turtle,
+void ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
+			       AgsTurtle *turtle,
 			       gchar *lv2_path,
 			       gchar *filename);
-void ags_lv2_manager_load_default_directory();
+void ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager);
 
 /*  */
 AgsLv2Manager* ags_lv2_manager_get_instance();

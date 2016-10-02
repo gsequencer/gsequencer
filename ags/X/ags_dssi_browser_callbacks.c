@@ -107,7 +107,8 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->description));
 
   //  ags_dssi_manager_load_file(gtk_combo_box_text_get_active_text(filename));
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(gtk_combo_box_text_get_active_text(filename),
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  gtk_combo_box_text_get_active_text(filename),
 						  gtk_combo_box_text_get_active_text(effect));
   
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;

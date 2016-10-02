@@ -1233,7 +1233,8 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   g_message("ags_dssi_bridge.c - load %s %s\0",dssi_bridge->filename, dssi_bridge->effect);
  
   /* load plugin */
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename,
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  dssi_bridge->filename,
 						  dssi_bridge->effect);
 
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
@@ -1276,7 +1277,8 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
 	    gchar *specifier;
 	    
-	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename, dssi_bridge->effect);
+	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+							    dssi_bridge->filename, dssi_bridge->effect);
 
 	    list = AGS_BASE_PLUGIN(dssi_plugin)->port;
  	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];

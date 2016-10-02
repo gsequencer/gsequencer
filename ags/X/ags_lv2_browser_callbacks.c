@@ -91,7 +91,8 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->description));
 
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(gtk_combo_box_text_get_active_text(filename),
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       gtk_combo_box_text_get_active_text(filename),
 					       gtk_combo_box_text_get_active_text(effect));
 
   if(lv2_plugin != NULL){

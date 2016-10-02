@@ -615,7 +615,8 @@ ags_lv2_bridge_set_property(GObject *gobject,
 	  NULL,
 	};
 
-	lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(gui_filename);
+	lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(ags_lv2ui_manager_get_instance(),
+							   gui_filename);
 
 	if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so == NULL){
 	  AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->filename,
@@ -627,7 +628,8 @@ ags_lv2_bridge_set_property(GObject *gobject,
 							"lv2ui_descriptor\0");
 	  
 	  if(dlerror() == NULL && lv2ui_descriptor){
-	    ui_index = ags_lv2ui_manager_uri_index(gui_filename,
+	    ui_index = ags_lv2ui_manager_uri_index(ags_lv2ui_manager_get_instance(),
+						   gui_filename,
 						   lv2_bridge->gui_uri);
 
 	    if(ui_index != -1){
@@ -1452,7 +1454,8 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
   gchar *gui_uri;
   
   /* check if works with Gtk+ */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename,
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       lv2_bridge->filename,
 					       lv2_bridge->effect);
 
   if(lv2_plugin == NULL){
@@ -1494,7 +1497,8 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
   g_message("plugin path - %s\0", plugin_path);
 #endif
   
-  gui_uri = ags_lv2ui_manager_find_uri(filename,
+  gui_uri = ags_lv2ui_manager_find_uri(ags_lv2ui_manager_get_instance(),
+				       filename,
 				       lv2_bridge->effect);
 
   /* apply ui */
@@ -1524,7 +1528,8 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
   }
   
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename,
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       lv2_bridge->filename,
 					       lv2_bridge->effect);
 
   if(lv2_plugin == NULL){

@@ -547,7 +547,8 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(recall_lv2_run)->parent->parent)->recall_channel);
 
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       recall_lv2->filename, recall_lv2->effect);
 
   if(recall_lv2->input_lines < recall_lv2->output_lines){
     j_stop = recall_lv2->output_lines;

@@ -467,7 +467,8 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 
   recall_lv2 = AGS_RECALL_LV2(plugin);
 
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       recall_lv2->filename, recall_lv2->effect);
 
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
@@ -665,7 +666,8 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   LV2_Descriptor *plugin_descriptor;
 
   /*  */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       recall_lv2->filename, recall_lv2->effect);
   plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   if(plugin_so != NULL){
@@ -702,7 +704,8 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   uint32_t port_count;
   uint32_t i;
 
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       recall_lv2->filename, recall_lv2->effect);
 #ifdef AGS_DEBUG
   g_message("ports from ttl: %s\0", lv2_plugin->turtle->filename);
 #endif

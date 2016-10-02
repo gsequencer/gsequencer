@@ -232,7 +232,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The #AgsAudio to visualize.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_object("audio\0",
 				   "assigned audio\0",
@@ -248,7 +248,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The target channel.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_gtype("channel-type\0",
 				  "assigned channel type\0",
@@ -832,7 +832,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_unlock(audio_mutex);
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							filename, effect);
 
   task = NULL;
   retport = NULL;
@@ -1259,7 +1260,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_unlock(audio_mutex);
 
   /* load plugin */
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  filename, effect);
 
   task = NULL;
   retport = NULL;
@@ -1704,7 +1706,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_unlock(audio_mutex);
   
   /* load plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       filename, effect);
 
   task = NULL;
   retport = NULL;
@@ -2019,7 +2022,8 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   GList *port;
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_lv2_manager_get_instance(),
+							filename, effect);
   port = NULL;
   
   if(ladspa_plugin != NULL){
@@ -2030,7 +2034,8 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   }
 
   if(ladspa_plugin == NULL){
-    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						    filename, effect);
 
     if(dssi_plugin != NULL){
       port = ags_effect_bulk_add_dssi_effect(effect_bulk,
@@ -2045,7 +2050,8 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
     GList *ui_node;
     gchar *str;
     
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 filename, effect);
 
     if(lv2_plugin != NULL){
       port = ags_effect_bulk_add_lv2_effect(effect_bulk,

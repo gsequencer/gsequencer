@@ -111,6 +111,7 @@ ags_lv2ui_manager_finalize(GObject *gobject)
 
 /**
  * ags_lv2ui_manager_get_filenames:
+ * @lv2ui_manager: the #AgsLv2uiManager
  * 
  * Retrieve all filenames
  *
@@ -119,15 +120,15 @@ ags_lv2ui_manager_finalize(GObject *gobject)
  * Since: 0.4.3
  */
 gchar**
-ags_lv2ui_manager_get_filenames()
+ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
 {
-  AgsLv2uiManager *lv2ui_manager;
   GList *lv2ui_plugin;
+
   gchar **filenames;
+
   guint length;
   guint i;
 
-  lv2ui_manager = ags_lv2ui_manager_get_instance();
   length = g_list_length(lv2ui_manager->lv2ui_plugin);
 
   lv2ui_plugin = lv2ui_manager->lv2ui_plugin;
@@ -145,6 +146,7 @@ ags_lv2ui_manager_get_filenames()
 
 /**
  * ags_lv2ui_manager_find_lv2ui_plugin:
+ * @lv2ui_manager: the #AgsLv2uiManager
  * @filename: the filename of the plugin
  *
  * Lookup filename in loaded plugins.
@@ -154,13 +156,12 @@ ags_lv2ui_manager_get_filenames()
  * Since: 0.4.3
  */
 AgsLv2uiPlugin*
-ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename)
+ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
+				    gchar *filename)
 {
-  AgsLv2uiManager *lv2ui_manager;
   AgsLv2uiPlugin *lv2ui_plugin;
-  GList *list;
 
-  lv2ui_manager = ags_lv2ui_manager_get_instance();
+  GList *list;
 
   list = lv2ui_manager->lv2ui_plugin;
 
@@ -179,6 +180,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename)
 
 /**
  * ags_lv2ui_manager_load_file:
+ * @lv2ui_manager: the #AgsLv2uiManager
  * @turtle: the #AgsTurtle
  * @filename: the filename of the plugin
  *
@@ -187,10 +189,10 @@ ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename)
  * Since: 0.4.3
  */
 void
-ags_lv2ui_manager_load_file(AgsTurtle *turtle,
+ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
+			    AgsTurtle *turtle,
 			    gchar *filename)
 {
-  AgsLv2uiManager *lv2ui_manager;
   AgsLv2uiPlugin *lv2ui_plugin;
 
   gchar *turtle_path;
@@ -202,13 +204,12 @@ ags_lv2ui_manager_load_file(AgsTurtle *turtle,
   if(filename == NULL){
     return;
   }
-
-  lv2ui_manager = ags_lv2ui_manager_get_instance();
   
   /* load plugin */
   pthread_mutex_lock(&(mutex));
 
-  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(filename);
+  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(lv2ui_manager,
+						     filename);
   g_message("loading: %s\0", filename);
 
   if(lv2ui_plugin == NULL){
@@ -224,15 +225,15 @@ ags_lv2ui_manager_load_file(AgsTurtle *turtle,
 
 /**
  * ags_lv2ui_manager_load_default_directory:
+ * @lv2ui_manager: the #AgsLv2uiManager
  * 
  * Loads all available plugins.
  *
  * Since: 0.4.3
  */
 void
-ags_lv2ui_manager_load_default_directory()
+ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 {
-  AgsLv2uiManager *lv2ui_manager;
   AgsLv2uiPlugin *lv2ui_plugin;
 
   GDir *dir;
@@ -241,8 +242,6 @@ ags_lv2ui_manager_load_default_directory()
   gchar *str;
 
   GError *error;
-
-  lv2ui_manager = ags_lv2ui_manager_get_instance();
 
   error = NULL;
   dir = g_dir_open(ags_lv2ui_default_path,
@@ -357,7 +356,8 @@ ags_lv2ui_manager_load_default_directory()
 				   str);
 	free(str);
 	
-	ags_lv2ui_manager_load_file(turtle,
+	ags_lv2ui_manager_load_file(lv2ui_manager,
+				    turtle,
 				    filename);
 
 	ttl_list = ttl_list->next;
@@ -370,6 +370,7 @@ ags_lv2ui_manager_load_default_directory()
   
 /**
  * ags_lv2ui_manager_uri_index:
+ * @lv2ui_manager: the #AgsLv2uiManager
  * @filename: the plugin.so filename
  * @uri: the uri's name within plugin
  *
@@ -380,7 +381,8 @@ ags_lv2ui_manager_load_default_directory()
  * Since: 0.4.3
  */
 uint32_t
-ags_lv2ui_manager_uri_index(gchar *filename,
+ags_lv2ui_manager_uri_index(AgsLv2uiManager *lv2ui_manager,
+			    gchar *filename,
 			    gchar *uri)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
@@ -398,7 +400,8 @@ ags_lv2ui_manager_uri_index(gchar *filename,
   }
   
   /* load plugin */
-  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(filename);
+  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(lv2ui_manager,
+						     filename);
 
   if(lv2ui_plugin == NULL){
     return(0);
@@ -438,6 +441,7 @@ ags_lv2ui_manager_uri_index(gchar *filename,
 
 /**
  * ags_lv2ui_manager_find_uri:
+ * @lv2ui_manager: the #AgsLv2uiManager
  * @filename: the plugin.so filename
  * @effect: the uri's effect
  *
@@ -448,7 +452,8 @@ ags_lv2ui_manager_uri_index(gchar *filename,
  * Since: 0.4.3
  */
 gchar*
-ags_lv2ui_manager_find_uri(gchar *filename,
+ags_lv2ui_manager_find_uri(AgsLv2uiManager *lv2ui_manager,
+			   gchar *filename,
 			   gchar *effect)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
@@ -460,7 +465,8 @@ ags_lv2ui_manager_find_uri(gchar *filename,
   gchar *str;
   
   /* load plugin */
-  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(filename);
+  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(lv2ui_manager,
+						     filename);
 
   if(lv2ui_plugin == NULL){
     return(NULL);
@@ -594,7 +600,7 @@ ags_lv2ui_manager_get_instance()
 
     pthread_mutex_unlock(&(mutex));
 
-    ags_lv2ui_manager_load_default_directory();
+    ags_lv2ui_manager_load_default_directory(ags_lv2ui_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

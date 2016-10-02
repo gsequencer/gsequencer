@@ -2834,6 +2834,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLadspa *recall_ladspa;
 
+  AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
   
   AgsMutexManager *mutex_manager;
@@ -2866,7 +2867,9 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   pthread_mutex_unlock(channel_mutex);
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ladspa_manager,
+							filename, effect);
 
   effect_index = AGS_BASE_PLUGIN(ladspa_plugin)->effect_index;
 
@@ -3072,6 +3075,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallDssi *recall_dssi;
 
+  AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
   
   AgsMutexManager *mutex_manager;
@@ -3104,7 +3108,9 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
   pthread_mutex_unlock(channel_mutex);
 
   /* load plugin */
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
+  dssi_manager = ags_dssi_manager_get_instance();
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_manager,
+						  filename, effect);
 
   effect_index = AGS_BASE_PLUGIN(dssi_plugin)->effect_index;
 
@@ -3310,7 +3316,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLv2 *recall_lv2;
-  
+
+  AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
   AgsMutexManager *mutex_manager;
@@ -3347,7 +3354,9 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   pthread_mutex_unlock(channel_mutex);
 
   /* find plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+  lv2_manager = ags_lv2_manager_get_instance();
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+					       filename, effect);
 
   effect_index = AGS_BASE_PLUGIN(lv2_plugin)->effect_index;
   uri = lv2_plugin->uri;
@@ -3559,7 +3568,8 @@ ags_channel_real_add_effect(AgsChannel *channel,
   GList *port;
   
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							filename, effect);
   port = NULL;
   
   if(ladspa_plugin != NULL){
@@ -3569,7 +3579,8 @@ ags_channel_real_add_effect(AgsChannel *channel,
   }
 
   if(ladspa_plugin == NULL){
-    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						    filename, effect);
     
     if(dssi_plugin != NULL){
       port = ags_channel_add_dssi_effect(channel,
@@ -3580,7 +3591,8 @@ ags_channel_real_add_effect(AgsChannel *channel,
   
   if(ladspa_plugin == NULL &&
      dssi_plugin == NULL){
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 filename, effect);
     
     if(lv2_plugin != NULL){
       port = ags_channel_add_lv2_effect(channel,

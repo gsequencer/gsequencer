@@ -723,7 +723,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
   pthread_mutex_t *channel_mutex;
   
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							filename, effect);
   
   /* retrieve position within table  */
   x = 0;
@@ -959,7 +960,8 @@ ags_line_add_lv2_effect(AgsLine *line,
   pthread_mutex_t *channel_mutex;
 
   /* load plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       filename, effect);
 
   /* retrieve position within table  */
   x = 0;
@@ -1164,7 +1166,8 @@ ags_line_real_add_effect(AgsLine *line,
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
   
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							filename, effect);
   port = NULL;
   
   if(ladspa_plugin != NULL){
@@ -1173,7 +1176,8 @@ ags_line_real_add_effect(AgsLine *line,
 				      filename,
 				      effect);
   }else{
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 filename, effect);
     
     if(lv2_plugin != NULL){
       port = ags_line_add_lv2_effect(line,

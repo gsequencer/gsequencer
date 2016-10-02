@@ -1768,7 +1768,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     effect = xmlGetProp(node,
 			"effect\0");
     
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 filename, effect);
   
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){

@@ -49,12 +49,14 @@ struct _AgsLadspaManagerClass
 
 GType ags_ladspa_manager_get_type(void);
 
-gchar** ags_ladspa_manager_get_filenames();
-AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect);
+gchar** ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager);
+AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
+						       gchar *filename, gchar *effect);
 
-void ags_ladspa_manager_load_file(gchar *ladspa_path,
+void ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
+				  gchar *ladspa_path,
 				  gchar *filename);
-void ags_ladspa_manager_load_default_directory();
+void ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager);
 
 /*  */
 AgsLadspaManager* ags_ladspa_manager_get_instance();

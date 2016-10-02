@@ -84,13 +84,34 @@ void
 ags_midi_file_class_init(AgsMidiFileClass *midi_file)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_midi_file_parent_class = g_type_class_peek_parent(midi_file);
 
   /* GObjectClass */
   gobject = (GObjectClass *) midi_file;
+
+  gobject->set_property = ags_midi_file_set_property;
+  gobject->get_property = ags_midi_file_get_property;
   
   gobject->finalize = ags_midi_file_finalize;
+
+  /* properties */
+  /**
+   * AgsMidiFile:filename:
+   *
+   * The assigned filename to perform input/output on.
+   * 
+   * Since: 0.7.74
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "assigned filename\0",
+				   "The filename to read or write\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
 }
 
 void
@@ -177,6 +198,12 @@ ags_midi_file_get_property(GObject *gobject,
 void
 ags_midi_file_finalize(GObject *gobject)
 {
+  AgsMidiFile *midi_file;
+
+  midi_file = (AgsMidiFile *) gobject;
+  
+  g_free(midi_file->filename);
+  
   G_OBJECT_CLASS(ags_midi_file_parent_class)->finalize(gobject);
 }
 
@@ -285,7 +312,7 @@ ags_midi_file_close(AgsMidiFile *midi_file)
  * 
  * Since: 0.7.1
  */
-gchar*
+unsigned char*
 ags_midi_file_read(AgsMidiFile *midi_file)
 {
   struct stat sb;
@@ -301,9 +328,9 @@ ags_midi_file_read(AgsMidiFile *midi_file)
   stat(midi_file->filename, &sb);
 
   midi_file->buffer_length = sb.st_size + 1;
-  midi_file->buffer = (gchar *) malloc(midi_file->buffer_length * sizeof(gchar));
+  midi_file->buffer = (unsigned char *) malloc(midi_file->buffer_length * sizeof(unsigned char));
   midi_file->buffer[sb.st_size] = EOF;
-  n_read = fread(midi_file->buffer, sizeof(gchar), sb.st_size, midi_file->file);
+  n_read = fread(midi_file->buffer, sizeof(unsigned char), sb.st_size, midi_file->file);
 
   if(n_read != sb.st_size){
     g_critical("fread() number of bytes read doesn't match buffer size\0");
@@ -531,14 +558,15 @@ ags_midi_file_read_varlength(AgsMidiFile *midi_file)
  * 
  * Since: 0.7.1
  */
-gchar*
+unsigned char*
 ags_midi_file_read_text(AgsMidiFile *midi_file,
 			gint length)
 {
-  gchar text[AGS_MIDI_FILE_MAX_TEXT_LENGTH + 1];
+  unsigned char *text;
   gchar c;
   guint i;
 
+  text = (unsigned char *) malloc((AGS_MIDI_FILE_MAX_TEXT_LENGTH + 1) * sizeof(unsigned char));
   memset(text, 0, AGS_MIDI_FILE_MAX_TEXT_LENGTH * sizeof(unsigned char));
   i = 0;
   
@@ -558,7 +586,7 @@ ags_midi_file_read_text(AgsMidiFile *midi_file,
 
   text[i] = '\0';
     
-  return(g_strdup(text));
+  return(text);
 }
 
 /**

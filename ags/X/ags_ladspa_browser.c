@@ -165,7 +165,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   ladspa_browser->path = NULL;
 
   filenames =
-    filenames_start = ags_ladspa_manager_get_filenames();
+    filenames_start = ags_ladspa_manager_get_filenames(ags_ladspa_manager_get_instance());
 
   if(filenames_start != NULL){
     while(*filenames != NULL){
