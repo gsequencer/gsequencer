@@ -85,8 +85,6 @@ void ags_matrix_init(AgsMatrix *matrix);
 void ags_matrix_finalize(GObject *gobject);
 void ags_matrix_connect(AgsConnectable *connectable);
 void ags_matrix_disconnect(AgsConnectable *connectable);
-void ags_matrix_show(GtkWidget *widget);
-void ags_matrix_show_all(GtkWidget *widget);
 void ags_matrix_map_recall(AgsMachine *machine);
 gchar* ags_matrix_get_name(AgsPlugin *plugin);
 void ags_matrix_set_name(AgsPlugin *plugin, gchar *name);
@@ -180,12 +178,6 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
   gobject = (GObjectClass *) matrix;
 
   gobject->finalize = ags_matrix_finalize;
-
-  /* GtkWidget */
-  widget = (GtkWidgetClass *) matrix;
-
-  widget->show = ags_matrix_show;
-  widget->show_all = ags_matrix_show_all;
 
   /* AgsMachine */
   machine = (AgsMachineClass *) matrix;
@@ -361,23 +353,22 @@ void
 ags_matrix_connect(AgsConnectable *connectable)
 {
   AgsMatrix *matrix;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsRecallHandler *recall_handler;
-  GList *list;
+
   int i;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
   }
 
+  /* call parent */
   ags_matrix_parent_connectable_interface->connect(connectable);
 
   /* AgsMatrix */
   matrix = AGS_MATRIX(connectable);
 
   for(i  = 0; i < 9; i++){
-    g_signal_connect (G_OBJECT (matrix->index[i]), "clicked\0",
-		      G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
+    g_signal_connect(G_OBJECT (matrix->index[i]), "clicked\0",
+		     G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
   }
 
   ags_connectable_connect(AGS_CONNECTABLE(matrix->cell_pattern));
@@ -387,7 +378,6 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) matrix->loop_button, "clicked\0",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
-
 
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "tact\0",
 			 G_CALLBACK(ags_matrix_tact_callback), matrix);
@@ -401,24 +391,51 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 {
   AgsMatrix *matrix;
 
-  ags_matrix_parent_connectable_interface->disconnect(connectable);
+  int i;
+
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
 
   /* AgsMatrix */
   matrix = AGS_MATRIX(connectable);
 
-  //TODO:JK: implement me
-}
+  for(i  = 0; i < 9; i++){
+    g_object_disconnect(G_OBJECT (matrix->index[i]),
+			"clicked\0",
+			G_CALLBACK (ags_matrix_index_callback),
+			(gpointer) matrix,
+			NULL);
+  }
 
-void
-ags_matrix_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_matrix_parent_class)->show(widget);
-}
+  ags_connectable_disconnect(AGS_CONNECTABLE(matrix->cell_pattern));
+  
+  g_object_disconnect((GObject *) matrix->length_spin,
+		      "value-changed\0",
+		      G_CALLBACK(ags_matrix_length_spin_callback),
+		      (gpointer) matrix,
+		      NULL);
 
-void
-ags_matrix_show_all(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_matrix_parent_class)->show_all(widget);
+  g_object_disconnect((GObject *) matrix->loop_button,
+		      "clicked\0",
+		      G_CALLBACK(ags_matrix_loop_button_callback),
+		      (gpointer) matrix,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(AGS_MACHINE(matrix)->audio),
+		      "tact\0",
+		      G_CALLBACK(ags_matrix_tact_callback),
+		      matrix,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(AGS_MACHINE(matrix)->audio),
+		      "done\0",
+		      G_CALLBACK(ags_matrix_done_callback),
+		      matrix,
+		      NULL);
+
+  /* call parent */
+  ags_matrix_parent_connectable_interface->disconnect(connectable);
 }
 
 void
@@ -445,8 +462,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
   guint i, j;
   gboolean grow;
-
-  GValue value = {0,};
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
@@ -498,6 +513,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
     AgsPattern *pattern;
+
     GList *list, *notation;
 
     pthread_mutex_lock(audio_mutex);
@@ -543,8 +559,10 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   }else{
     if(grow){
       AgsChannel *current, *output;
+
       GList *recall;
       GList *list;
+
       guint stop;
 
       pthread_mutex_lock(audio_mutex);
@@ -553,7 +571,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
       pthread_mutex_unlock(audio_mutex);
 
-      source = ags_channel_nth(audio->output, pads_old);
+      source = ags_channel_nth(source,
+			       pads_old);
 
       if(source != NULL){
 	GObject *soundcard;
@@ -648,11 +667,14 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+  }else{
+    play_delay_audio_run = NULL;
   }
   
   /* ags-count-beats */
@@ -666,7 +688,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
@@ -683,6 +706,8 @@ ags_matrix_map_recall(AgsMachine *machine)
     g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
 			&value);
+  }else{
+    play_count_beats_audio_run = NULL;
   }
 
   /* ags-copy-pattern */
@@ -696,7 +721,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
 
   if(list != NULL){
     recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
@@ -714,17 +740,21 @@ ags_matrix_map_recall(AgsMachine *machine)
       
   for(i = 0; i < audio->input_pads; i++){
     for(j = 0; j < audio->audio_channels; j++){
-      list = ags_recall_template_find_type(channel->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
-      copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
+      list = ags_recall_template_find_type(channel->recall,
+					   AGS_TYPE_COPY_PATTERN_CHANNEL);
 
-      list = channel->pattern;
-      pattern = AGS_PATTERN(list->data);
+      if(list != NULL){
+	copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
 
-      copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
+	list = channel->pattern;
+	pattern = AGS_PATTERN(list->data);
+
+	copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
 	  
-      ags_portlet_set_port(AGS_PORTLET(pattern),
-			   (GObject *) copy_pattern_channel->pattern);
-	  
+	ags_portlet_set_port(AGS_PORTLET(pattern),
+			     (GObject *) copy_pattern_channel->pattern);
+      }
+      
       channel = channel->next;
     }
   }
@@ -844,21 +874,13 @@ void
 ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source, *input, *current;
-
-  AgsDelayAudio *recall_delay_audio;
-  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-
-  GList *list;
+  AgsChannel *input, *current;
 
   audio = AGS_MACHINE(matrix)->audio;
 
   if(matrix->mapped_output_pad > output_pad_start){
     return;
   }
-
-  source = ags_channel_nth(audio->output,
-			   output_pad_start * audio->audio_channels);
 
   /* remap for input */
   input = audio->input;

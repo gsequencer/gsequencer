@@ -520,7 +520,6 @@ ags_line_get_property(GObject *gobject,
 void
 ags_line_connect(AgsConnectable *connectable)
 {
-  AgsMachine *machine;
   AgsLine *line;
   GList *list, *list_start;
 
@@ -546,10 +545,6 @@ ags_line_connect(AgsConnectable *connectable)
     ags_line_find_port(line);
   }
 
-  /* AgsMachine */
-  machine = AGS_MACHINE(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(line),
-						AGS_TYPE_MACHINE));
-
   /* connect group button */
   g_signal_connect_after((GObject *) line->group, "clicked\0",
 			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
@@ -574,7 +569,44 @@ ags_line_connect(AgsConnectable *connectable)
 void
 ags_line_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsLine *line;
+  GList *list, *list_start;
+
+  line = AGS_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (line->flags)) == 0){
+    return;
+  }
+
+  /* unset connected flag */
+  line->flags &= (~AGS_LINE_CONNECTED);
+
+#ifdef AGS_DEBUG
+  g_message("line disconnect\0");
+#endif
+
+  /* disconnect group button */
+  g_object_disconnect((GObject *) line->group,
+		      "clicked\0",
+		      G_CALLBACK(ags_line_group_clicked_callback),
+		      (gpointer) line,
+		      NULL);
+
+  /* disconnect line members */
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
+  
+  while(list != NULL){
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    }
+
+    list = list->next;
+  }
+
+  if(list_start != NULL){
+    g_list_free(list_start);
+  }
 }
 
 gchar*
@@ -640,20 +672,26 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   
   line->channel = channel;
 
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
+  if(channel != NULL){
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
 
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
   
-  pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
-  /* set label */
-  pthread_mutex_lock(channel_mutex);
+    /* set label */
+    pthread_mutex_lock(channel_mutex);
   
-  gtk_label_set_label(line->label, g_strdup_printf("channel %d\0", channel->audio_channel));
+    gtk_label_set_label(line->label,
+			g_strdup_printf("channel %d\0", channel->audio_channel));
 
-  pthread_mutex_unlock(channel_mutex);
+    pthread_mutex_unlock(channel_mutex);
+  }else{
+    gtk_label_set_label(line->label,
+			g_strdup_printf("channel (null)\0"));
+  }
 }
 
 /**

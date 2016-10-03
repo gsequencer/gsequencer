@@ -43,7 +43,7 @@ typedef enum{
   AGS_MACHINE_SELECTION_CONNECTED    = 1,
   AGS_MACHINE_SELECTION_NOTATION     = 1 <<  1,
   AGS_MACHINE_SELECTION_AUTOMATION   = 1 <<  2,
-};
+}AgsMachineSelectionFlags;
 
 struct _AgsMachineSelection
 {

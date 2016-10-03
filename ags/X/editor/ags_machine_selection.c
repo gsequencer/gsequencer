@@ -36,6 +36,7 @@ void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *c
 void ags_machine_selection_init(AgsMachineSelection *machine_selection);
 void ags_machine_selection_connect(AgsConnectable *connectable);
 void ags_machine_selection_disconnect(AgsConnectable *connectable);
+void ags_machine_selection_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_machine_selection
@@ -103,6 +104,8 @@ ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection)
 
   /* GObjectClass */
   gobject = (GObjectClass *) machine_selection;
+
+  gobject->finalize = ags_machine_selection_finalize;
 }
 
 void
@@ -134,18 +137,21 @@ ags_machine_selection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_machine_selection_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_machine_selection_parent_class)->finalize(gobject);
+}
+
+void
 ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 {
   AgsMachine *machine;
-  AgsMachineSelector *machine_selector;
   AgsMachineRadioButton *machine_radio_button;
   GtkVBox *vbox;
   GtkRadioButton *group;
   GList *list, *list_start, *index, *index_start;
   gint response;
 
-  machine_selector = machine_selection->window->editor->machine_selector;
-    
   machine_selection->machine =
     list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
   machine = NULL;

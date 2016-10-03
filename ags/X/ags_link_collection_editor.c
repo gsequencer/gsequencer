@@ -180,6 +180,8 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 
   GtkTreeIter iter;
 
+  link_collection_editor->flags = 0;
+  
   g_signal_connect_after(GTK_WIDGET(link_collection_editor), "parent_set\0",
 			 G_CALLBACK(ags_link_collection_editor_parent_set_callback), link_collection_editor);
 
@@ -364,9 +366,15 @@ ags_link_collection_editor_connect(AgsConnectable *connectable)
 {
   AgsLinkCollectionEditor *link_collection_editor;
 
-  /* AgsLinkCollectionEditor */
   link_collection_editor = AGS_LINK_COLLECTION_EDITOR(connectable);
 
+  if((AGS_LINK_COLLECTION_EDITOR_CONNECTED & (link_collection_editor->flags)) != 0){
+    return;
+  }
+
+  link_collection_editor->flags |= AGS_LINK_COLLECTION_EDITOR_CONNECTED;
+  
+  /* AgsLinkCollectionEditor */
   g_signal_connect_after(G_OBJECT(link_collection_editor->link), "changed\0",
 			 G_CALLBACK(ags_link_collection_editor_link_callback), link_collection_editor);
 
@@ -380,16 +388,39 @@ ags_link_collection_editor_connect(AgsConnectable *connectable)
 void
 ags_link_collection_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsLinkCollectionEditor *link_collection_editor;
+
+  link_collection_editor = AGS_LINK_COLLECTION_EDITOR(connectable);
+
+  if((AGS_LINK_COLLECTION_EDITOR_CONNECTED & (link_collection_editor->flags)) == 0){
+    return;
+  }
+
+  link_collection_editor->flags &= (~AGS_LINK_COLLECTION_EDITOR_CONNECTED);
+  
+  /* AgsLinkCollectionEditor */
+  g_object_disconnect(G_OBJECT(link_collection_editor->link),
+		      "changed\0",
+			 G_CALLBACK(ags_link_collection_editor_link_callback),
+		      link_collection_editor,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(link_collection_editor->first_line),
+		      "value-changed\0",
+		      G_CALLBACK(ags_link_collection_editor_first_line_callback),
+		      link_collection_editor,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(link_collection_editor->first_link),
+		      "value-changed\0",
+		      G_CALLBACK(ags_link_collection_editor_first_link_callback),
+		      link_collection_editor,
+		      NULL);
 }
 
 void
 ags_link_collection_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsLinkCollectionEditor *link_collection_editor;
-
-  link_collection_editor = AGS_LINK_COLLECTION_EDITOR(applicable);
-
   /* empty */
 }
 
@@ -602,10 +633,6 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 void
 ags_link_collection_editor_reset(AgsApplicable *applicable)
 {
-  AgsLinkCollectionEditor *link_collection_editor;
-
-  link_collection_editor = AGS_LINK_COLLECTION_EDITOR(applicable);
-
   /* empty */
 }
 

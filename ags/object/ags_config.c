@@ -24,6 +24,8 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_application_context.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <gio/gio.h>
 
 #include <sys/types.h>
@@ -514,7 +516,7 @@ ags_config_load_from_data(AgsConfig *config,
     gchar **keys;
     gchar *value;
     
-    guint n_groups, n_keys;
+    gsize n_groups, n_keys;
     guint i, j;
 
     GError *error;
@@ -664,11 +666,18 @@ ags_config_save(AgsConfig *config)
 void
 ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 {
-  AgsApplicationContext *application_context;
+  AgsMutexManager *mutex_manager;
+  
+  pthread_mutex_t *application_mutex;
 
-  application_context = (AgsApplicationContext *) config->application_context;
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+  pthread_mutex_lock(application_mutex);
+  
   g_key_file_set_value(config->key_file, group, key, value);
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 /**
@@ -755,7 +764,7 @@ ags_config_clear(AgsConfig *config)
 {
   gchar **group;
 
-  guint n_group;
+  gsize n_group;
   guint i;
   
   group = g_key_file_get_groups(config->key_file,

@@ -762,10 +762,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
-  AgsAudio *audio;
-  AgsChannel *output;
   AgsRecallChannelRun *recall_channel_run, *copy;
-  AgsRecallID *output_recall_id;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
@@ -796,49 +793,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
       ags_recall_channel_run_remap_child_source(copy,
 						NULL, NULL,
 						copy->source->first_recycling, copy->source->last_recycling);
-    }
-  }
-
-  if(copy->source != NULL){
-    audio = AGS_AUDIO(copy->source->audio);
-  }else{
-    audio = NULL;
-  }
-  
-  if(AGS_IS_OUTPUT(copy->source)){
-    output = copy->source;
-    output_recall_id = ags_recall_id_find_recycling_context(output->recall_id,
-							    recall_id->recycling_context);
-  }else{
-    if(audio != NULL){
-      AgsRecallID *default_recall_id, *audio_recall_id;
-
-      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	output = ags_channel_nth(audio->output,
-				 copy->source->audio_channel);
-      }else{
-	output = ags_channel_nth(audio->output,
-				 copy->source->line);
-      }
-
-
-      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-	default_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
-								 recall_id->recycling_context);
-
-	audio_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
-							       default_recall_id->recycling_context);
-
-	output_recall_id = ags_recall_id_find_recycling_context(output->recall_id,
-								audio_recall_id->recycling_context->parent);
-      }else{
-	audio_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
-							       recall_id->recycling_context);
-
-
-	output_recall_id = ags_recall_id_find_recycling_context(output->recall_id,
-								audio_recall_id->recycling_context);
-      }
     }
   }
 
@@ -937,11 +891,9 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 
   /* remove old */
   if(old_start_changed_region != NULL){
-    GObject *soundcard;
     AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
 
-    soundcard = AGS_AUDIO(recall_channel_run->source->audio)->soundcard;
     source_recycling = old_start_changed_region;
 
     while(source_recycling != old_end_changed_region->next){
@@ -1005,11 +957,9 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 
   /* remove old */
   if(old_start_changed_region != NULL){
-    GObject *soundcard;
     AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
 
-    soundcard = AGS_AUDIO(recall_channel_run->source->audio)->soundcard;
     destination_recycling = old_start_changed_region;
     
     while(destination_recycling != old_end_changed_region->next){

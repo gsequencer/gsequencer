@@ -212,19 +212,18 @@ ags_volume_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connec
 void
 ags_volume_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsVolumeAudioSignal *volume_audio_signal;
-
   AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->run_inter(recall);
-
-  volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(recall);
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsVolumeChannel *volume_channel;
-    signed short *buffer;
+
+    void *buffer;
+
     gdouble volume;
     guint buffer_size;
     guint limit;
     guint i;
+
     GValue value = {0,};
 
     volume_channel = AGS_VOLUME_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
@@ -237,30 +236,36 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 
     volume = g_value_get_double(&value);
 
-    /* unrolled loop */
-    limit = buffer_size - 8;
-    
-    for(i = 0; i < limit; i += 8){
-      buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
-      
-      buffer[i + 1] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 1]));
-      
-      buffer[i + 2] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 2]));
-      
-      buffer[i + 3] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 3]));
-
-      buffer[i + 4] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 4]));
-
-      buffer[i + 5] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 5]));
-
-      buffer[i + 6] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 6]));
-
-      buffer[i + 7] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 7]));
-
-    }
-
-    for(; i < buffer_size; i++){
-      buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
+    for(i = 0; i < buffer_size; i++){
+      switch(AGS_RECALL_AUDIO_SIGNAL(recall)->source->format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  ((signed char *) buffer)[i] = (signed char) ((0xff) & (signed short) ((gdouble) volume * (gdouble) ((signed char *) buffer)[i]));
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  ((signed short *) buffer)[i] = (signed short) ((0xffff) & (signed long) ((gdouble) volume * (gdouble) ((signed short *) buffer)[i]));
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  ((signed long *) buffer)[i] = (signed long) ((0xffffff) & (signed long) ((gdouble) volume * (gdouble) ((signed long *) buffer)[i]));
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  ((signed long *) buffer)[i] = (signed long) ((0xffffffff) & (signed long long) ((gdouble) volume * (gdouble) ((signed long *) buffer)[i]));
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  ((signed long long *) buffer)[i] = (signed long long) ((0xffffffffffffffff) & (signed long long) ((gdouble)volume * (gdouble)((signed long long *) buffer)[i]));
+	}
+	break;
+      default:
+	g_critical("unsupported soundcard format\0");
+      }
     }
 
     g_value_unset(&value);

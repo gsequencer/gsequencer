@@ -1085,10 +1085,8 @@ gboolean
 ags_recall_pack(AgsPackable *packable, GObject *container)
 {
   AgsRecall *recall;
-  AgsRecallContainer *recall_container;
 
   recall = AGS_RECALL(packable);
-  recall_container = AGS_RECALL_CONTAINER(container);
 
   if(recall == NULL ||
      recall->container == container ||
@@ -1106,15 +1104,13 @@ gboolean
 ags_recall_unpack(AgsPackable *packable)
 {
   AgsRecall *recall;
-  AgsRecallContainer *recall_container;
 
   recall = AGS_RECALL(packable);
 
   if(recall == NULL ||
-     recall->container == NULL)
+     recall->container == NULL){
     return(TRUE);
-
-  recall_container = AGS_RECALL_CONTAINER(recall->container);
+  }
 
   /* unset link */
   recall->container = NULL;

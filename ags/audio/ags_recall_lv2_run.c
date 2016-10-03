@@ -262,7 +262,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   gchar *path;
   double samplerate;
   uint32_t buffer_size;
-  uint32_t i, i_stop;
+  uint32_t i;
 
   LV2_URI_Map_Feature *uri_map_feature;
   
@@ -360,12 +360,6 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* set up buffer */ 
   samplerate = audio_signal->samplerate;
   buffer_size = audio_signal->buffer_size;
-
-  if(recall_lv2->input_lines < recall_lv2->output_lines){
-    i_stop = recall_lv2->output_lines;
-  }else{
-    i_stop = recall_lv2->input_lines;
-  }
   
   recall_lv2_run->input = (float *) malloc(recall_lv2->input_lines *
 					   buffer_size *
@@ -449,7 +443,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   AgsRouteLv2AudioRun *route_lv2_audio_run;
 
   uint32_t buffer_size;
-  uint32_t i, i_stop;
+  uint32_t i;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre(recall);
@@ -462,12 +456,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
-
-  if(recall_lv2->input_lines < recall_lv2->output_lines){
-    i_stop = recall_lv2->output_lines;
-  }else{
-    i_stop = recall_lv2->input_lines;
-  }
+  buffer_size = audio_signal->buffer_size;
 
   if(audio_signal->stream_current == NULL ||
      AGS_NOTE(recall_lv2_run->note)->x[1] <= count_beats_audio_run->notation_counter ||
@@ -542,23 +531,15 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
   gchar *specifier;
   
-  uint32_t port_count;
-  uint32_t i, j, j_stop;
+  uint32_t i, j;
 
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(recall_lv2_run)->parent->parent)->recall_channel);
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       recall_lv2->filename, recall_lv2->effect);
 
-  if(recall_lv2->input_lines < recall_lv2->output_lines){
-    j_stop = recall_lv2->output_lines;
-  }else{
-    j_stop = recall_lv2->input_lines;
-  }
-
   if(AGS_BASE_PLUGIN(lv2_plugin)->port != NULL){
     port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
-    port_count = g_list_length(port_descriptor);
 
     for(i = 0; port_descriptor != NULL; i++){
       if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){

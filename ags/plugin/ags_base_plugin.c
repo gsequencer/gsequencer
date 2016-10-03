@@ -425,6 +425,16 @@ ags_base_plugin_finalize(GObject *gobject)
   AgsBasePlugin *base_plugin;
 
   base_plugin = AGS_BASE_PLUGIN(gobject);
+
+  g_free(base_plugin->filename);
+  g_free(base_plugin->effect);
+
+  if(base_plugin->ui_plugin != NULL){
+    g_object_unref(base_plugin->ui_plugin);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_base_plugin_parent_class)->finalize(gobject);
 }
 
 /**

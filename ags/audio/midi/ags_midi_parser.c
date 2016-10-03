@@ -1051,7 +1051,6 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   guint format;
   guint count;
   guint division;
-  guint times;
   guint beat, clicks;
   guint n;
   gchar c;
@@ -1080,13 +1079,15 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   division = (guint) ags_midi_parser_read_gint16(midi_parser);
 
   xmlNewProp(node,
+	     "offset\0",
+	     g_strdup_printf("%d\0", offset));
+
+  xmlNewProp(node,
 	     "format\0",
 	     g_strdup_printf("%d\0", format));
 
   if(division & 0x8000){
     /* SMTPE */
-    times = 0; /* Can't do beats */
-
     xmlNewProp(node,
 	       "division\0",
 	       g_strdup_printf("%d %d\0", -((-(division>>8))&0xff), division&0xff));
@@ -1790,6 +1791,12 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
       guint quarter_frame;
       
       quarter_frame = 0xff & (ags_midi_parser_midi_getc(midi_parser));
+
+      node = xmlNewNode(NULL,
+			"midi-system-common\0");
+      xmlNewProp(node,
+		 "quarter-frame\0",
+		 g_strdup_printf("%d\0", quarter_frame));
     }
     break;
   case 0xf2:
@@ -1797,7 +1804,13 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
       guint song_position;
       
       song_position = 0x7f & (ags_midi_parser_midi_getc(midi_parser)) << 7;
-      song_position = 0x7f & (ags_midi_parser_midi_getc(midi_parser));
+      song_position |= 0x7f & (ags_midi_parser_midi_getc(midi_parser));
+
+      node = xmlNewNode(NULL,
+			"midi-system-common\0");
+      xmlNewProp(node,
+		 "song-position\0",
+		 g_strdup_printf("%d\0", song_position));
     }
     break;
   case 0xf3:
@@ -1805,6 +1818,12 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
       guint song_select;
       
       song_select = 0x7f & (ags_midi_parser_midi_getc(midi_parser));
+
+      node = xmlNewNode(NULL,
+			"midi-system-common\0");
+      xmlNewProp(node,
+		 "song-select\0",
+		 g_strdup_printf("%d\0", song_select));
     }
     break;
   case 0xf4:
@@ -2236,12 +2255,25 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
   xmlNode *node;
   guint len, id, data;
 
-  node = NULL;
+  node = xmlNewNode(NULL,
+		    "midi-meta-event\0");
 
   len = ags_midi_parser_midi_getc(midi_parser);
   id = ags_midi_parser_midi_getc(midi_parser);
   data = ags_midi_parser_midi_getc(midi_parser);
-  
+
+  xmlNewProp(node,
+	     "length\0",
+	     g_strdup_printf("%d\0", len));
+
+  xmlNewProp(node,
+	     "id\0",
+	     g_strdup_printf("%d\0", id));
+
+  xmlNewProp(node,
+	     "data\0",
+	     g_strdup_printf("%d\0", data));
+
   return(node);
 }
 

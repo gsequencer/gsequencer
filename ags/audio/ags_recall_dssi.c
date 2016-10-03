@@ -391,10 +391,8 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 
     for(i = 0; i < port_count; i++){
       if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	gchar *plugin_name;
 	gchar *specifier;
 	
-	plugin_name = g_strdup_printf("dssi-%u\0", dssi_plugin->unique_id);
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 	
 	list = port;
@@ -410,17 +408,19 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	  list = list->next;
 	}
 
-	current->port_descriptor = port_descriptor->data;
-	ags_recall_dssi_load_conversion(recall_dssi,
-					(GObject *) current,
-					port_descriptor->data);
+	if(current != NULL){
+	  current->port_descriptor = port_descriptor->data;
+	  ags_recall_dssi_load_conversion(recall_dssi,
+					  (GObject *) current,
+					  port_descriptor->data);
 
-	current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-	//	ags_conversion_convert(current->conversion,
-	//		       g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
-	//		       FALSE);
+	  current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+	  //	ags_conversion_convert(current->conversion,
+	  //		       g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+	  //		       FALSE);
 	    
-	g_message("connecting port: %lu/%lu\0", i, port_count);      
+	  g_message("connecting port: %lu/%lu\0", i, port_count);
+	}
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_dssi->input_port == NULL){
@@ -461,6 +461,17 @@ ags_recall_dssi_finalize(GObject *gobject)
   
   recall_dssi = AGS_RECALL_DSSI(gobject);
 
+  g_free(recall_dssi->filename);
+  g_free(recall_dssi->effect);
+
+  if(recall_dssi->input_port != NULL){
+    free(recall_dssi->input_port);
+  }
+
+  if(recall_dssi->output_port != NULL){
+    free(recall_dssi->output_port);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_recall_dssi_parent_class)->finalize(gobject);
 }

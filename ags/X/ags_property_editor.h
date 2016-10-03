@@ -34,7 +34,8 @@ typedef struct _AgsPropertyEditor AgsPropertyEditor;
 typedef struct _AgsPropertyEditorClass AgsPropertyEditorClass;
 
 typedef enum{
-  AGS_PROPERTY_EDITOR_ENABLED   =  1,
+  AGS_PROPERTY_EDITOR_CONNECTED  = 1,
+  AGS_PROPERTY_EDITOR_ENABLED    = 1 << 1,
 }AgsPropertyEditorFlags;
 
 struct _AgsPropertyEditor

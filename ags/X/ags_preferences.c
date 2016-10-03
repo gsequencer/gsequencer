@@ -117,7 +117,7 @@ ags_preferences_class_init(AgsPreferencesClass *preferences)
   /* GtkObjectClass */
   gobject = (GObjectClass *) preferences;
 
-  //  gobject->finalize = ags_preferences_finalize;
+  gobject->finalize = ags_preferences_finalize;
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) preferences;
@@ -259,7 +259,6 @@ ags_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
 
-  AgsApplicationContext *application_context;
   AgsConfig *config;
 
   gchar *filename;
@@ -271,7 +270,6 @@ ags_preferences_apply(AgsApplicable *applicable)
   GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
-  application_context = AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context);
   
   config = ags_config_get_instance();
 
@@ -305,7 +303,7 @@ ags_preferences_reset(AgsApplicable *applicable)
 static void
 ags_preferences_finalize(GObject *gobject)
 {
-  //TODO:JK: implement me
+  G_OBJECT_CLASS(ags_preferences_parent_class)->finalize(gobject);
 }
 
 void

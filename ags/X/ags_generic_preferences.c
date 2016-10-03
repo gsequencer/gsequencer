@@ -37,7 +37,6 @@ void ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean upda
 void ags_generic_preferences_apply(AgsApplicable *applicable);
 void ags_generic_preferences_reset(AgsApplicable *applicable);
 static void ags_generic_preferences_finalize(GObject *gobject);
-void ags_generic_preferences_show(GtkWidget *widget);
 
 GtkListStore* ags_generic_preferences_create_segmentation();
 
@@ -103,7 +102,6 @@ void
 ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_preferences)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_generic_preferences_parent_class = g_type_class_peek_parent(generic_preferences);
 
@@ -111,11 +109,6 @@ ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_preferenc
   gobject = (GObjectClass *) generic_preferences;
 
   gobject->finalize = ags_generic_preferences_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) generic_preferences;
-
-  widget->show = ags_generic_preferences_show;
 }
 
 void
@@ -174,12 +167,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 void
 ags_generic_preferences_connect(AgsConnectable *connectable)
 {
-  AgsGenericPreferences *generic_preferences;
-
-  generic_preferences = AGS_GENERIC_PREFERENCES(connectable);
-  
-  //  g_signal_connect_after(G_OBJECT(generic_preferences->autosave_thread), "clicked\0",
-  //			 G_CALLBACK(ags_generic_preferences_autosave_thread_clicked_callback), generic_preferences);
+  /* empty */
 }
 
 void
@@ -191,20 +179,17 @@ ags_generic_preferences_disconnect(AgsConnectable *connectable)
 void
 ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean update)
 {
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
 ags_generic_preferences_apply(AgsApplicable *applicable)
 {
-  AgsPreferences *preferences;
   AgsGenericPreferences *generic_preferences; 
   AgsConfig *config;
  
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
-							   AGS_TYPE_PREFERENCES);
   config = ags_config_get_instance();
   
   if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
@@ -228,7 +213,6 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 void
 ags_generic_preferences_reset(AgsApplicable *applicable)
 {
-  AgsPreferences *preferences;
   AgsGenericPreferences *generic_preferences; 
 
   AgsConfig *config;
@@ -236,9 +220,6 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
   gchar *str;
   
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
-							   AGS_TYPE_PREFERENCES);
 
   config = ags_config_get_instance();
 
@@ -263,17 +244,6 @@ static void
 ags_generic_preferences_finalize(GObject *gobject)
 {
   //TODO:JK: implement me
-}
-
-void
-ags_generic_preferences_show(GtkWidget *widget)
-{
-  AgsGenericPreferences *generic_preferences;
-  pthread_t thread;
-
-  generic_preferences = AGS_GENERIC_PREFERENCES(widget);
-  
-  GTK_WIDGET_CLASS(ags_generic_preferences_parent_class)->show(widget);
 }
 
 GtkListStore*

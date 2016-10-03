@@ -189,8 +189,6 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 
   pattern_edit->key_mask = 0;
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-
   pattern_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->ruler,
 		   0, 1, 0, 1,
@@ -807,7 +805,6 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 void
 ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 {
-  AgsWindow *window;
   AgsEditor *editor;
   double tact_factor, zoom_factor;
   double tact;
@@ -816,9 +813,6 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) editor,
-						 AGS_TYPE_WINDOW);
-  
   zoom_factor = 0.25;
 
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
@@ -915,7 +909,8 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
   }
 
   /* refresh display */
-  if(editor->selected_machine != NULL && editor->current_edit_widget == pattern_edit){
+  if(editor->selected_machine != NULL &&
+     editor->current_edit_widget == (GtkWidget *) pattern_edit){
     cairo_t *cr;
 
     if(GTK_WIDGET_VISIBLE(editor)){

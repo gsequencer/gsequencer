@@ -265,6 +265,12 @@ ags_lv2_plugin_finalize(GObject *gobject)
   AgsLv2Plugin *lv2_plugin;
 
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
+
+  g_free(lv2_plugin->uri);
+  
+  if(lv2_plugin->turtle != NULL){
+    g_object_unref(lv2_plugin->turtle);
+  }
 }
 
 gpointer
@@ -705,35 +711,35 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	if(list_start != NULL){
 	  g_list_free(list_start);
 	}
+
+	xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':scalePoint') + 1) = ':scalePoint']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0",
+				-1);
+	list_start = 
+	  list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							 xpath,
+							 port_node);
+      
+	for(i = 0; list != NULL; i++){
+	  gchar *str;
+	
+	  current = (xmlNode *) list->data;
+	  str = xmlNodeGetContent(current);
+	
+	  port->scale_value[i] = g_ascii_strtod(str,
+						NULL);
+	
+	  list = list->next;
+	}
+
+	if(list_start != NULL){
+	  g_list_free(list_start);
+	}
       }else{
 	port->scale_steps = 0;
 
 	port->scale_points = NULL;
 	port->scale_value = NULL;
       }      
-      
-      xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':scalePoint') + 1) = ':scalePoint']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0",
-			      -1);
-      list_start = 
-	list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
-						       xpath,
-						       port_node);
-      
-      for(i = 0; list != NULL; i++){
-	gchar *str;
-	
-	current = (xmlNode *) list->data;
-	str = xmlNodeGetContent(current);
-	
-	port->scale_value[i] = g_ascii_strtod(str,
-					      NULL);
-	
-	list = list->next;
-      }
-
-      if(list_start != NULL){
-	g_list_free(list_start);
-      }
 
       /* minimum */
       xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':minimum') + 1) = ':minimum']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0",

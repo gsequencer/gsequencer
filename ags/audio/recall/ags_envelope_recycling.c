@@ -110,7 +110,6 @@ ags_envelope_recycling_class_init(AgsEnvelopeRecyclingClass *envelope_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  AgsRecallRecyclingClass *recall_recycling;
 
   ags_envelope_recycling_parent_class = g_type_class_peek_parent(envelope_recycling);
 
@@ -127,9 +126,6 @@ ags_envelope_recycling_class_init(AgsEnvelopeRecyclingClass *envelope_recycling)
   recall->remove = ags_envelope_recycling_remove;
 
   recall->duplicate = ags_envelope_recycling_duplicate;
-
-  /* AgsRecallRecycling */
-  recall_recycling = (AgsRecallRecyclingClass *) envelope_recycling;
 }
 
 void
@@ -165,10 +161,6 @@ ags_envelope_recycling_init(AgsEnvelopeRecycling *envelope_recycling)
 void
 ags_envelope_recycling_finalize(GObject *gobject)
 {
-  AgsEnvelopeRecycling *envelope_recycling;
-
-  envelope_recycling = AGS_ENVELOPE_RECYCLING(gobject);
-
   /* empty */
 
   /* call parent */
@@ -244,9 +236,8 @@ ags_envelope_recycling_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
-  AgsEnvelopeRecycling *envelope_recycling, *envelope;
+  AgsEnvelopeRecycling *envelope;
 
-  envelope_recycling = (AgsEnvelopeRecycling *) recall;
   envelope = (AgsEnvelopeRecycling *) AGS_RECALL_CLASS(ags_envelope_recycling_parent_class)->duplicate(recall,
 												       recall_id,
 												       n_params, parameter);

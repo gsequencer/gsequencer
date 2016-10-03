@@ -27,7 +27,6 @@ void ags_property_editor_connectable_interface_init(AgsConnectableInterface *con
 void ags_property_editor_init(AgsPropertyEditor *property_editor);
 void ags_property_editor_connect(AgsConnectable *connectable);
 void ags_property_editor_disconnect(AgsConnectable *connectable);
-void ags_property_editor_destroy(GtkObject *object);
 void ags_property_editor_show(GtkWidget *widget);
 
 /**
@@ -107,11 +106,16 @@ void
 ags_property_editor_connect(AgsConnectable *connectable)
 {
   AgsPropertyEditor *property_editor;
-  GList *pad_list;
-
+  
   /* AgsPropertyEditor */
   property_editor = AGS_PROPERTY_EDITOR(connectable);
 
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (property_editor->flags)) != 0){
+    return;
+  }
+
+  property_editor->flags |= AGS_PROPERTY_EDITOR_CONNECTED;
+  
   g_signal_connect_after(G_OBJECT(property_editor->enabled), "toggled\0",
 			 G_CALLBACK(ags_property_editor_enable_callback), property_editor);
 }
@@ -119,15 +123,22 @@ ags_property_editor_connect(AgsConnectable *connectable)
 void
 ags_property_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
-}
-
-void
-ags_property_editor_destroy(GtkObject *object)
-{
   AgsPropertyEditor *property_editor;
+  
+  /* AgsPropertyEditor */
+  property_editor = AGS_PROPERTY_EDITOR(connectable);
 
-  property_editor = (AgsPropertyEditor *) object;
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (property_editor->flags)) == 0){
+    return;
+  }
+
+  property_editor->flags &= (~AGS_PROPERTY_EDITOR_CONNECTED);
+  
+  g_object_disconnect(G_OBJECT(property_editor->enabled),
+		      "toggled\0",
+		      G_CALLBACK(ags_property_editor_enable_callback),
+		      property_editor,
+		      NULL);
 }
 
 void

@@ -160,7 +160,6 @@ void
 ags_synth_class_init(AgsSynthClass *synth)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_synth_parent_class = g_type_class_peek_parent(synth);
@@ -169,9 +168,6 @@ ags_synth_class_init(AgsSynthClass *synth)
   gobject = (GObjectClass *) synth;
 
   gobject->finalize = ags_synth_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) synth;
 
   /* AgsMachineClass */
   machine = (AgsMachineClass *) synth;
@@ -371,10 +367,32 @@ ags_synth_disconnect(AgsConnectable *connectable)
 {
   AgsSynth *synth;
 
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
+
   ags_synth_parent_connectable_interface->disconnect(connectable);
 
   /* AgsSynth */
   synth = AGS_SYNTH(connectable);
+
+  g_object_disconnect((GObject *) synth->lower,
+		      "value-changed\0",
+		      G_CALLBACK(ags_synth_lower_callback),
+		      synth,
+		      NULL);
+
+  g_object_disconnect((GObject *) synth->auto_update,
+		      "toggled\0",
+		      G_CALLBACK(ags_synth_auto_update_callback),
+		      synth,
+		      NULL);
+  
+  g_object_disconnect((GObject *) synth->update,
+		      "clicked\0",
+		      G_CALLBACK(ags_synth_update_callback),
+		      (gpointer) synth,
+		      NULL);
 }
 
 void
@@ -388,21 +406,6 @@ ags_synth_map_recall(AgsMachine *machine)
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
-
-  audio = machine->audio;
-  synth = AGS_SYNTH(machine);
-
-  /* ags-delay * /
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-stream\0",
-			    0, audio->audio_channels,
-			    0, audio->output_pads,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-  */
   
   AGS_MACHINE_CLASS(ags_synth_parent_class)->map_recall(machine);
 }
@@ -580,7 +583,6 @@ ags_synth_update(AgsSynth *synth)
   AgsWindow *window;
   AgsOscillator *oscillator;
   
-  GObject *soundcard;
   AgsAudio *audio;
   AgsChannel *channel;
   
@@ -645,8 +647,6 @@ ags_synth_update(AgsSynth *synth)
 
   /* get soundcard */
   pthread_mutex_lock(audio_mutex);
-
-  soundcard = audio->soundcard;
 
   channel = audio->input;
   
