@@ -202,19 +202,26 @@ ags_panel_input_line_connect(AgsConnectable *connectable)
 
   panel_input_line = AGS_PANEL_INPUT_LINE(connectable);
 
-
   if((AGS_LINE_CONNECTED & (AGS_LINE(panel_input_line)->flags)) != 0){
     return;
   }
   
   ags_panel_input_line_parent_connectable_interface->connect(connectable);
 
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
 ags_panel_input_line_disconnect(AgsConnectable *connectable)
 {
+  AgsPanelInputLine *panel_input_line;
+
+  panel_input_line = AGS_PANEL_INPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(panel_input_line)->flags)) == 0){
+    return;
+  }
+
   ags_panel_input_line_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -223,9 +230,9 @@ ags_panel_input_line_disconnect(AgsConnectable *connectable)
 void
 ags_panel_input_line_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_panel_input_line_parent_class)->finalize(gobject);
-  
   /* empty */
+
+  G_OBJECT_CLASS(ags_panel_input_line_parent_class)->finalize(gobject);
 }
 
 gchar*
@@ -332,12 +339,10 @@ void
 ags_panel_input_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
-  AgsPanel *panel;
-  AgsPanelInputLine *panel_input_line;
-
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current;
+
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run;
 
@@ -348,11 +353,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
     return;
   }
   
-  panel_input_line = AGS_PANEL_INPUT_LINE(line);
-
   audio = AGS_AUDIO(line->channel->audio);
-
-  panel = AGS_PANEL(audio->machine);
 
   source = line->channel;
 

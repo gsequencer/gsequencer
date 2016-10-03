@@ -110,7 +110,6 @@ ags_mute_recycling_class_init(AgsMuteRecyclingClass *mute_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  AgsRecallRecyclingClass *recall_recycling;
 
   ags_mute_recycling_parent_class = g_type_class_peek_parent(mute_recycling);
 
@@ -127,9 +126,6 @@ ags_mute_recycling_class_init(AgsMuteRecyclingClass *mute_recycling)
   recall->remove = ags_mute_recycling_remove;
 
   recall->duplicate = ags_mute_recycling_duplicate;
-
-  /* AgsRecallRecycling */
-  recall_recycling = (AgsRecallRecyclingClass *) mute_recycling;
 }
 
 void
@@ -165,10 +161,6 @@ ags_mute_recycling_init(AgsMuteRecycling *mute_recycling)
 void
 ags_mute_recycling_finalize(GObject *gobject)
 {
-  AgsMuteRecycling *mute_recycling;
-
-  mute_recycling = AGS_MUTE_RECYCLING(gobject);
-
   /* empty */
 
   /* call parent */
@@ -178,8 +170,6 @@ ags_mute_recycling_finalize(GObject *gobject)
 void
 ags_mute_recycling_connect(AgsConnectable *connectable)
 {
-  AgsMuteRecycling *mute_recycling;
-
   ags_mute_recycling_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -188,8 +178,6 @@ ags_mute_recycling_connect(AgsConnectable *connectable)
 void
 ags_mute_recycling_disconnect(AgsConnectable *connectable)
 {
-  AgsMuteRecycling *mute_recycling;
-
   ags_mute_recycling_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -198,18 +186,14 @@ ags_mute_recycling_disconnect(AgsConnectable *connectable)
 void
 ags_mute_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  AgsMuteRecycling *mute_recycling;
-  GObject *gobject;
-
   ags_mute_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
+
+  /* empty */
 }
 
 void
 ags_mute_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  AgsMuteRecycling *mute_recycling;
-  GObject *gobject;
-
   ags_mute_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
@@ -244,9 +228,8 @@ ags_mute_recycling_duplicate(AgsRecall *recall,
 			     AgsRecallID *recall_id,
 			     guint *n_params, GParameter *parameter)
 {
-  AgsMuteRecycling *mute_recycling, *mute;
+  AgsMuteRecycling *mute;
 
-  mute_recycling = (AgsMuteRecycling *) recall;
   mute = (AgsMuteRecycling *) AGS_RECALL_CLASS(ags_mute_recycling_parent_class)->duplicate(recall,
 											   recall_id,
 											   n_params, parameter);

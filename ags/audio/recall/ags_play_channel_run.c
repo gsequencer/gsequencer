@@ -336,8 +336,7 @@ ags_play_channel_run_finalize(GObject *gobject)
 void
 ags_play_channel_run_connect(AgsConnectable *connectable)
 {
-  AgsPlayChannelRun *play_channel_run;
-
+  /* call parent */
   ags_play_channel_run_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -346,6 +345,7 @@ ags_play_channel_run_connect(AgsConnectable *connectable)
 void
 ags_play_channel_run_disconnect(AgsConnectable *connectable)
 {
+  /* call parent */
   ags_play_channel_run_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -356,6 +356,8 @@ ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   /* call parent */
   ags_play_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
+
+  /* empty */
 }
 
 void
@@ -363,6 +365,8 @@ ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
 {
   /* call parent */
   ags_play_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
+
+  /* empty */
 }
 
 void
@@ -451,14 +455,14 @@ void
 ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
 {
   AgsRecall *template;
-  AgsPlayChannelRun *play_channel_run;
-  AgsRecallDependency *recall_dependency;
-  AgsStreamChannelRun *stream_channel_run;
-  GList *list;
   AgsRecallID *recall_id;
-  guint i, i_stop;
+  AgsRecallDependency *recall_dependency;
+  
+  AgsStreamChannelRun *stream_channel_run;
 
-  play_channel_run = AGS_PLAY_CHANNEL_RUN(recall);
+  GList *list;
+
+  guint i, i_stop;
 
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run)->data);
 
@@ -491,9 +495,8 @@ ags_play_channel_run_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
 			       guint *n_params, GParameter *parameter)
 {
-  AgsPlayChannelRun *play_channel_run, *copy;
+  AgsPlayChannelRun *copy;
   
-  play_channel_run = (AgsPlayChannelRun *) recall;
   copy = (AgsPlayChannelRun *) AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->duplicate(recall,
 											      recall_id,
 											      n_params, parameter);

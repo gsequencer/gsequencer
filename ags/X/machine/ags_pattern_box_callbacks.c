@@ -420,7 +420,6 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       AgsLine *selected_line;
 
       AgsTogglePatternBit *toggle_pattern_bit;
-      AgsChannel *channel;
 
       GList *line, *line_start;
       GList *tasks;
@@ -436,8 +435,6 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       
       index0 = machine->bank_0;
       index1 = machine->bank_1;
-
-      channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - i - 1);
 
       line_start = 
 	line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));

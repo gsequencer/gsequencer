@@ -209,9 +209,7 @@ ags_ladspa_plugin_get_property(GObject *gobject,
 void
 ags_ladspa_plugin_finalize(GObject *gobject)
 {
-  AgsLadspaPlugin *ladspa_plugin;
-
-  ladspa_plugin = AGS_LADSPA_PLUGIN(gobject);
+  G_OBJECT_CLASS(ags_ladspa_plugin_parent_class)->finalize(gobject);
 }
 
 gpointer
@@ -268,14 +266,8 @@ ags_ladspa_plugin_run(AgsBasePlugin *base_plugin,
 void
 ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  AgsConfig *config;
-  
   AgsPortDescriptor *port;
   GList *port_list;
-
-  gchar *str;
-  
-  guint samplerate;
   
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
@@ -285,28 +277,6 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   unsigned long effect_index;
   unsigned long port_count;
   unsigned long i;
-
-  config = ags_config_get_instance();
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
-  }
-  
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
   
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);

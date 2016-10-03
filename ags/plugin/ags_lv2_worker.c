@@ -120,23 +120,23 @@ ags_lv2_worker_init(AgsLv2Worker *lv2_worker)
 void
 ags_lv2_worker_connect(AgsConnectable *connectable)
 {
+  /* empty */
+
   ags_lv2_worker_parent_connectable_interface->connect(connectable);
 }
 
 void
 ags_lv2_worker_disconnect(AgsConnectable *connectable)
 {
-  ags_lv2_worker_parent_connectable_interface->disconnect(connectable);
-
   /* empty */
+
+  ags_lv2_worker_parent_connectable_interface->disconnect(connectable);
 }
 
 void
 ags_lv2_worker_finalize(GObject *gobject)
 {
-  AgsLv2Worker *lv2_worker;
-
-  lv2_worker = AGS_LV2_WORKER(gobject);
+  G_OBJECT_CLASS(ags_lv2_worker_parent_class)->finalize(gobject);
 }
 
 void

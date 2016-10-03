@@ -512,24 +512,19 @@ ags_loop_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 void
 ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
 {
-  AgsAudio *audio;
-  AgsChannel *channel;
   AgsRecall *template;
-  AgsLoopChannelRun *loop_channel_run;
+  AgsRecallID *recall_id;
+
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
-  GList *list;
-  AgsRecallID *recall_id;
-  guint i, i_stop;
 
-  loop_channel_run = AGS_LOOP_CHANNEL_RUN(recall);
+  GList *list;
+
+  guint i, i_stop;
 
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run)->data);
 
   list = template->dependencies;
-
-  channel = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source;
-  audio = AGS_AUDIO(channel->audio);
 
   recall_id = recall->recall_id;
 
@@ -558,9 +553,8 @@ ags_loop_channel_run_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
 			       guint *n_params, GParameter *parameter)
 {
-  AgsLoopChannelRun *loop_channel_run, *copy;
+  AgsLoopChannelRun *copy;
 
-  loop_channel_run = AGS_LOOP_CHANNEL_RUN(recall);
   copy = (AgsLoopChannelRun *) AGS_RECALL_CLASS(ags_loop_channel_run_parent_class)->duplicate(recall,
 											      recall_id,
 											      n_params, parameter);

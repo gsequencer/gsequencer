@@ -34,10 +34,16 @@
 typedef struct _AgsLinkCollectionEditor AgsLinkCollectionEditor;
 typedef struct _AgsLinkCollectionEditorClass AgsLinkCollectionEditorClass;
 
+typedef enum{
+  AGS_LINK_COLLECTION_EDITOR_CONNECTED   = 1,
+}AgsLinkCollectionEditorFlags;
+
 struct _AgsLinkCollectionEditor
 {
   GtkTable table;
 
+  guint flags;
+  
   GType channel_type;
 
   GtkComboBox *link;

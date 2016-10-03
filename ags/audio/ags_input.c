@@ -105,7 +105,6 @@ void
 ags_input_class_init(AgsInputClass *input)
 {
   GObjectClass *gobject;
-  AgsChannelClass *channel;
   GParamSpec *param_spec;
 
   ags_input_parent_class = g_type_class_peek_parent(input);
@@ -133,9 +132,6 @@ ags_input_class_init(AgsInputClass *input)
   g_object_class_install_property(gobject,
 				  PROP_FILE_LINK,
 				  param_spec);
-
-  /*  */
-  channel = (AgsChannelClass *) input;
 }
 
 void

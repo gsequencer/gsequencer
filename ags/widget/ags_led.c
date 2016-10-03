@@ -108,7 +108,6 @@ ags_led_init(AgsLed *led)
 void
 ags_led_realize(GtkWidget *widget)
 {
-  AgsLed *led;
   GdkWindowAttr attributes;
   gint attributes_mask;
 
@@ -116,7 +115,6 @@ ags_led_realize(GtkWidget *widget)
   g_return_if_fail (AGS_IS_LED (widget));
 
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-  led = AGS_LED (widget);
 
   /*  */
   //TODO:JK: apply borders of container widgets

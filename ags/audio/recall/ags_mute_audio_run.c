@@ -113,8 +113,6 @@ void
 ags_mute_audio_run_class_init(AgsMuteAudioRunClass *mute_audio_run)
 {
   GObjectClass *gobject;
-  AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_mute_audio_run_parent_class = g_type_class_peek_parent(mute_audio_run);
 
@@ -122,10 +120,6 @@ ags_mute_audio_run_class_init(AgsMuteAudioRunClass *mute_audio_run)
   gobject = (GObjectClass *) mute_audio_run;
 
   gobject->finalize = ags_mute_audio_run_finalize;
-
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) mute_audio_run;
 }
 
 void
@@ -165,10 +159,6 @@ ags_mute_audio_run_init(AgsMuteAudioRun *mute_audio_run)
 void
 ags_mute_audio_run_finalize(GObject *gobject)
 {
-  AgsMuteAudioRun *mute_audio_run;
-
-  mute_audio_run = AGS_MUTE_AUDIO_RUN(gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_mute_audio_run_parent_class)->finalize(gobject);
 }

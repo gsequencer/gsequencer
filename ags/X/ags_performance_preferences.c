@@ -156,9 +156,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 void
 ags_performance_preferences_connect(AgsConnectable *connectable)
 {
-  AgsPerformancePreferences *performance_preferences;
-
-  performance_preferences = AGS_PERFORMANCE_PREFERENCES(connectable);
+  /* empty */
 }
 
 void
@@ -176,15 +174,14 @@ ags_performance_preferences_set_update(AgsApplicable *applicable, gboolean updat
 void
 ags_performance_preferences_apply(AgsApplicable *applicable)
 {
-  AgsPreferences *preferences;
   AgsPerformancePreferences *performance_preferences; 
+
   AgsConfig *config;
+
   gchar *str;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
-							   AGS_TYPE_PREFERENCES);
   config = ags_config_get_instance();
 
   /* auto-sense */
@@ -201,18 +198,15 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 void
 ags_performance_preferences_reset(AgsApplicable *applicable)
 {
-  AgsWindow *window;
-  AgsPreferences *preferences;
   AgsPerformancePreferences *performance_preferences;
+
   AgsConfig *config;
+
   gchar *str;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
   /*  */
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
-							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
   config = ags_config_get_instance();
 
   str = ags_config_get_value(config,
@@ -228,16 +222,12 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
 static void
 ags_performance_preferences_finalize(GObject *gobject)
 {
+  G_OBJECT_CLASS(ags_performance_preferences_parent_class)->finalize(gobject);
 }
 
 void
 ags_performance_preferences_show(GtkWidget *widget)
-{
-  AgsPerformancePreferences *performance_preferences;
-  pthread_t thread;
-
-  performance_preferences = AGS_PERFORMANCE_PREFERENCES(widget);
-  
+{  
   GTK_WIDGET_CLASS(ags_performance_preferences_parent_class)->show(widget);
 }
 

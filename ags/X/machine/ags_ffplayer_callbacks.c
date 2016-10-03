@@ -98,14 +98,9 @@ void
 ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 					   AgsMachine *machine)
 {
-  AgsWindow *window;
   AgsFFPlayer *ffplayer;
-  GtkFileChooserDialog *file_chooser;
-  GObject *soundcard;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(machine)));
   ffplayer = AGS_FFPLAYER(machine);
-  file_chooser = GTK_FILE_CHOOSER_DIALOG(widget);
 
   if(response == GTK_RESPONSE_ACCEPT){
     gchar *filename;
@@ -159,7 +154,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 {
   AgsWindow *window;
   
-  GObject *soundcard;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsRecycling *recycling;
@@ -185,7 +179,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   GList *list;
   guint count;
   int i;
-  gboolean has_more;
   
   GError *error;
 
@@ -266,13 +259,11 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   pthread_mutex_lock(audio_mutex);
 
-  soundcard = audio->soundcard;
   channel = audio->input;
 
   pthread_mutex_unlock(audio_mutex);
 
   task = NULL;
-  has_more = TRUE;
 
   while(channel != NULL && *sample != NULL){
     for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS; i++){      

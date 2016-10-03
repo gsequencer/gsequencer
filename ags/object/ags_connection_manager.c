@@ -90,6 +90,13 @@ ags_connection_manager_finalize(GObject *gobject)
   AgsConnectionManager *connection_manager;
 
   connection_manager = AGS_CONNECTION_MANAGER(gobject);
+
+  if(connection_manager->connection != NULL){
+    g_list_free_full(connection_manager->connection,
+		     g_object_unref);
+  }
+
+  G_OBJECT_CLASS(ags_connection_manager_parent_class)->finalize(gobject);
 }
 
 GList*
