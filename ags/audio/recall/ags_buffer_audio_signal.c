@@ -312,7 +312,6 @@ ags_buffer_audio_signal_run_pre(AgsRecall *recall)
 void
 ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 {
-  GObject *soundcard;
   AgsRecycling *recycling;
   AgsAudioSignal *source, *destination;
   AgsBufferChannel *buffer_channel;
@@ -322,8 +321,9 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   GList *stream_source, *stream_destination;
 
   gboolean muted;
-  guint soundcard_buffer_size;
+  guint buffer_size;
   guint copy_mode;
+  guint attack;
   
   GValue value = {0,};
 
@@ -335,13 +335,6 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
   buffer_channel = AGS_BUFFER_CHANNEL(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(buffer_recycling)->parent)->recall_channel);
 
-  soundcard = AGS_RECALL(buffer_audio_signal)->soundcard;
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			    NULL,
-			    NULL,
-			    &soundcard_buffer_size,
-			    NULL);
-  
   source = AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->source;
   stream_source = source->stream_current;
 
@@ -368,7 +361,8 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   }
 
   stream_destination = destination->stream_current;
-
+  buffer_size = source->buffer_size;
+  
   if(stream_destination != NULL){
     void *buffer_source;
 
@@ -384,13 +378,12 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
     /* check if resample */
     buffer_source = stream_source->data;
-
+    attack = (destination->samplerate / source->samplerate) * source->attack;
+    
     if(source->samplerate != destination->samplerate){
-      g_message("resample\0");
-      
       buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
 						     ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
-						     source->length,
+						     buffer_size,
 						     destination->samplerate);
       
       resample = TRUE;
@@ -399,11 +392,11 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
     /* copy */
     if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
       AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, attack,
 						  buffer_source, 1, 0,
-						  soundcard_buffer_size - source->attack, copy_mode);
+						  destination->buffer_size - attack, copy_mode);
     }else{
-      if(source->attack != 0 && stream_source->prev != NULL){
+      if(attack != 0 && stream_source->prev != NULL){
 	void *buffer_source_prev;
 	
 	buffer_source_prev = stream_source->prev->data;
@@ -411,23 +404,23 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 	if(resample){
 	  buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
 							      ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
-							      source->length,
+							      buffer_size,
 							      destination->samplerate);
 
 	}
 	
 	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
-						    buffer_source_prev, 1, soundcard_buffer_size - source->attack,
-						    source->attack, copy_mode);
+						    buffer_source_prev, 1, destination->buffer_size - attack,
+						    attack, copy_mode);
 
 	if(resample){
 	  free(buffer_source_prev);
 	}
       }
 
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, attack,
 						  buffer_source, 1, 0,
-						  soundcard_buffer_size - source->attack, copy_mode);
+						  destination->buffer_size - attack, copy_mode);
     }
 
     if(resample){

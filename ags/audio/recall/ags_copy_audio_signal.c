@@ -215,11 +215,6 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
-  GObject *soundcard;
-
   GList *stream_source, *stream_destination;
 
   gchar *str;
@@ -229,43 +224,13 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   
   GValue value = {0,};
 
-  pthread_mutex_t *application_mutex;
-
   AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter(recall);
 
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
-  soundcard = AGS_RECALL(copy_audio_signal)->soundcard;
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  /* buffer size */  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
-  }
-
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-
-  pthread_mutex_unlock(application_mutex);
-
+  
   if(stream_source == NULL){
     ags_recall_done(recall);
     return;
@@ -300,6 +265,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   }
 
   stream_destination = destination->stream_current;
+  buffer_size = source->buffer_size;
 
   if(stream_destination != NULL){
     void *buffer_source;

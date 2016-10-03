@@ -803,9 +803,14 @@ ags_xorg_application_context_finalize(GObject *gobject)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
-  G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->finalize(gobject);
-
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
+
+  if(xorg_application_context->window != NULL){
+    g_object_unref(xorg_application_context->window);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->finalize(gobject);
 }
 
 void
@@ -976,6 +981,8 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     uid = getuid();
     pw = getpwuid(uid);
 
+    autosave_filename = NULL;
+    
     if(g_strcmp0(ags_config_get_value(config,
 				      AGS_CONFIG_GENERIC,
 				      "simple-file\0"),

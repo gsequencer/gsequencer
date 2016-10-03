@@ -195,10 +195,16 @@ ags_init_channel_launch(AgsTask *task)
 	arrange_recall_id = FALSE;
 	duplicate_templates = FALSE;
 	resolve_dependencies = FALSE;
+
+	if(list == NULL){
+	  break;
+	}
       }
       
       while(channel != next_pad){
 	if(stage == 0){
+	  recall_id = NULL;
+	  
 	  if(init_channel->do_playback){
 	    nth_domain = 0;
 	    
@@ -250,8 +256,10 @@ ags_init_channel_launch(AgsTask *task)
 					 AGS_PLAYBACK(channel->playback)->channel_thread[2]);
 	  }
 
-	  list_start = g_list_append(list_start,
-				     recall_id);
+	  if(recall_id != NULL){
+	    list_start = g_list_append(list_start,
+				       recall_id);
+	  }
 	}else{
 	  if(init_channel->do_playback){
 	    nth_domain = 0;
@@ -293,8 +301,6 @@ ags_init_channel_launch(AgsTask *task)
   }else{
     AgsRecallID *recall_id;
 
-    channel = init_channel->channel;
-
     for(stage = 0; stage < 3; stage++){
 
       channel = init_channel->channel;
@@ -308,9 +314,15 @@ ags_init_channel_launch(AgsTask *task)
 	arrange_recall_id = FALSE;
 	duplicate_templates = FALSE;
 	resolve_dependencies = FALSE;
+
+	if(list == NULL){
+	  break;
+	}
       }
       
       if(stage == 0){
+	recall_id = NULL;
+	
 	if(init_channel->do_playback){
 	    nth_domain = 0;
 	    
@@ -362,8 +374,10 @@ ags_init_channel_launch(AgsTask *task)
 				       AGS_PLAYBACK(channel->playback)->channel_thread[2]);
 	}
 
-	list_start = g_list_append(list_start,
-				   recall_id);
+	if(recall_id != NULL){
+	  list_start = g_list_append(list_start,
+				     recall_id);
+	}
       }else{
 	if(init_channel->do_playback){
 	  ags_channel_recursive_play_init(channel, stage,

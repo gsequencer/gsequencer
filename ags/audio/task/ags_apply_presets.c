@@ -190,7 +190,11 @@ ags_apply_presets_launch(AgsTask *task)
     ags_apply_presets_audio_signal(apply_presets,
 				   (AgsAudioSignal *) apply_presets->scope);
   }else{
-    g_warning("ags_apply_presets_launch() - unsupported scope %s\0", G_OBJECT_TYPE_NAME(apply_presets->scope));
+    if(apply_presets->scope != NULL){
+      g_warning("ags_apply_presets_launch() - unsupported scope %s\0", G_OBJECT_TYPE_NAME(apply_presets->scope));
+    }else{
+      g_warning("ags_apply_presets_launch() - unsupported scope (null)0");
+    }
   }
 }
 

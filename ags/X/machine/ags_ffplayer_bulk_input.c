@@ -93,12 +93,7 @@ ags_ffplayer_bulk_input_get_type(void)
 void
 ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input)
 {
-  GObjectClass *gobject;
-
   ags_ffplayer_bulk_input_parent_class = g_type_class_peek_parent(ffplayer_bulk_input);
-
-  /* GObjectClass */
-  gobject = (GObjectClass *) ffplayer_bulk_input;
 }
 
 void
@@ -146,6 +141,12 @@ ags_ffplayer_bulk_input_connect(AgsConnectable *connectable)
 void
 ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_ffplayer_bulk_input_parent_connectable_interface->connect(connectable);
+
   //TODO:JK: implement me
 }
 

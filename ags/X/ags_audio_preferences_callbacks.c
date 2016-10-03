@@ -243,7 +243,7 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   GList *list;
   JSList *jslist;
 
-  gchar *driver_name;
+  //  gchar *driver_name;
   
   pthread_mutex_t *application_mutex;
 
@@ -275,7 +275,7 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   /* find driver */
   driver = NULL;
   
-  driver_name = gtk_combo_box_text_get_active_text(audio_preferences->jack_driver);
+  //  driver_name = gtk_combo_box_text_get_active_text(audio_preferences->jack_driver);
 
   jslist = NULL;
   //  jslist = jackctl_server_get_drivers_list(jack_server->jackctl);

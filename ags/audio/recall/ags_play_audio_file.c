@@ -135,6 +135,8 @@ ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file)
 				  param_spec);
 
   /* AgsRecallClass */
+  recall = (AgsRecallClass *) play_audio_file;
+  
   recall->run_inter = ags_play_audio_file_run_inter;
   recall->remove = ags_play_audio_file_remove;
   recall->cancel = ags_play_audio_file_cancel;

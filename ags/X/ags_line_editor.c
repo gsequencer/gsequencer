@@ -300,10 +300,7 @@ void
 ags_line_editor_set_channel(AgsLineEditor *line_editor,
 			    AgsChannel *channel)
 {
-  AgsLinkEditor *link_editor;
-
   if(line_editor->link_editor != NULL){
-    link_editor = line_editor->link_editor;
     line_editor->link_editor = NULL;
     gtk_widget_destroy(GTK_WIDGET(line_editor->link_editor));
     gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));

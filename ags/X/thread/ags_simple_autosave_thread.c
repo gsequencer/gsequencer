@@ -311,7 +311,9 @@ ags_simple_autosave_thread_run(AgsThread *thread)
 						 "filename\0", simple_autosave_thread->filename,
 						 NULL);
 
-    simple_file_write = ags_simple_file_write_new((AgsSimpleFile *) simple_file_write);
+    simple_file_write = ags_simple_file_write_new((AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+										 "filename\0", simple_autosave_thread->filename,
+										 NULL));
     ags_task_thread_append_task(task_thread,
 				(AgsTask *) simple_file_write);
 
