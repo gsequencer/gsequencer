@@ -366,7 +366,7 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
 
     gtk_widget_show_all((GtkWidget *) connection_editor);
   }else{
-    connection_editor = machine->connection_editor;
+    connection_editor = (AgsConnectionEditor *) machine->connection_editor;
   }
 
   gtk_widget_show_all((GtkWidget *) connection_editor);
@@ -398,7 +398,7 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
 
     gtk_widget_show_all((GtkWidget *) midi_dialog);
   }else{
-    midi_dialog = (GtkDialog *) machine->midi_dialog;
+    midi_dialog = (AgsMidiDialog *) machine->midi_dialog;
   }
 
   gtk_widget_show_all((GtkWidget *) midi_dialog);
@@ -750,11 +750,9 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
   GtkMessageDialog *dialog;
   
   AgsSoundcardThread *soundcard_thread;
-  AgsTask *task;
 
   gdk_threads_enter();
 
-  task = (AgsTask *) task_completion->task;
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
   soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,

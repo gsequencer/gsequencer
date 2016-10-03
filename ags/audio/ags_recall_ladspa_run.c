@@ -348,7 +348,6 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_PortRangeHintDescriptor hint_descriptor;
 
   recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(recall_ladspa_run)->parent->parent)->recall_channel);
 
@@ -374,7 +373,6 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	gchar *plugin_name;
 	gchar *specifier;
 
-	hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
 	specifier = plugin_descriptor->PortNames[i];
 
 	current = NULL;

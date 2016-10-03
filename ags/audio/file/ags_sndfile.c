@@ -258,7 +258,7 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
 		    guint format)
 {
   AgsSndfile *sndfile;
-  sf_count_t multi_frames;
+  //  sf_count_t multi_frames;
   
   sndfile = AGS_SNDFILE(playable);
 
@@ -289,7 +289,7 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
   }
 
-  multi_frames = frames * sndfile->info->channels;
+  //  multi_frames = frames * sndfile->info->channels;
   //  sf_command(sndfile->file, SFC_FILE_TRUNCATE, &(multi_frames), sizeof(multi_frames));
   //  sf_command (sndfile, SFC_SET_SCALE_INT_FLOAT_WRITE, NULL, SF_TRUE);
   //  sf_seek(sndfile->file, 0, SEEK_SET);

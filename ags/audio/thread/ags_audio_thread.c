@@ -400,7 +400,6 @@ ags_audio_thread_run(AgsThread *thread)
   AgsPlayback *playback;
   
   AgsMutexManager *mutex_manager;
-  AgsThread *parent;
   
   AgsAudioThread *audio_thread;
 
@@ -423,9 +422,6 @@ ags_audio_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
-
-  parent = g_atomic_pointer_get(&(thread->parent));
-  //  g_message("ac %d\0", parent->cycle_iteration);
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
@@ -608,14 +604,8 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   AgsAudio *audio;
   AgsPlaybackDomain *playback_domain;
 
-  gboolean do_playback, do_sequencer, do_notation;
-
   audio = (AgsAudio *) audio_thread->audio;
   playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
-
-  /* super threaded audio level */
-  do_sequencer = FALSE;
-  do_notation = FALSE;
 
   /* sequencer */
   if((AgsThread *) audio_thread == playback_domain->audio_thread[1]){
@@ -624,8 +614,6 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 
     thread = playback->channel_thread[1];
     channel_thread = (AgsChannelThread *) thread;
-    
-    do_sequencer = TRUE;
 
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
       /* wakeup wait */
@@ -650,8 +638,6 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
     thread = playback->channel_thread[2];
     channel_thread = (AgsChannelThread *) thread;
 
-    do_notation = TRUE;
-
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
       /* wakeup wait */
       pthread_mutex_lock(channel_thread->wakeup_mutex);
@@ -674,20 +660,14 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   AgsAudio *audio;
   AgsPlaybackDomain *playback_domain;
 
-  gboolean do_sequencer, do_notation;
-
   audio = (AgsAudio *) audio_thread->audio;
   playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
-  
-  do_sequencer = FALSE;
-  do_notation = FALSE;
 
   /* sequencer */
   if((AgsThread *) audio_thread == playback_domain->audio_thread[1]){
     AgsChannelThread *channel_thread;
 
     channel_thread = (AgsChannelThread *) playback->channel_thread[1];
-    do_sequencer = TRUE;
 
     pthread_mutex_lock(channel_thread->done_mutex);
   
@@ -717,7 +697,6 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
     AgsChannelThread *channel_thread;
     
     channel_thread = (AgsChannelThread *) playback->channel_thread[2];
-    do_notation = TRUE;
 
     pthread_mutex_lock(channel_thread->done_mutex);
 

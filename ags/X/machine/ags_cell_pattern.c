@@ -358,10 +358,44 @@ ags_cell_pattern_disconnect(AgsConnectable *connectable)
 {
   AgsCellPattern *cell_pattern;
 
+  if((AGS_CELL_PATTERN_CONNECTED & (AGS_CELL_PATTERN(connectable)->flags)) == 0){
+    return;
+  }
+
   /* AgsCellPattern */
   cell_pattern = AGS_CELL_PATTERN(connectable);
 
-  //TODO:JK: implement me
+  cell_pattern->flags &= (~AGS_CELL_PATTERN_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(cell_pattern),
+		      "focus_in_event\0",
+		      G_CALLBACK(ags_cell_pattern_focus_in_callback),
+		      (gpointer) cell_pattern,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(cell_pattern->drawing_area),
+		      "key_press_event\0",
+		      G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event),
+		      (gpointer) cell_pattern,
+		      "key_release_event\0",
+		      G_CALLBACK(ags_cell_pattern_drawing_area_key_release_event),
+		      (gpointer) cell_pattern,
+		      "configure_event\0",
+		      G_CALLBACK(ags_cell_pattern_drawing_area_configure_callback),
+		      (gpointer) cell_pattern,
+		      "expose_event\0",
+		      G_CALLBACK(ags_cell_pattern_drawing_area_expose_callback),
+		      (gpointer) cell_pattern,
+		      "button_press_event\0",
+		      G_CALLBACK(ags_cell_pattern_drawing_area_button_press_callback),
+		      (gpointer) cell_pattern,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(GTK_RANGE(cell_pattern->vscrollbar)->adjustment),
+		      "value_changed\0",
+		      G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback),
+		      (gpointer) cell_pattern,
+		      NULL);
 }
 
 AtkObject*
@@ -847,7 +881,6 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 {
   if(g_hash_table_lookup(ags_cell_pattern_led_queue_draw,
 			 cell_pattern) != NULL){
-    AgsWindow *window;
     AgsMachine *machine;
 
     AgsAudio *audio;
@@ -863,8 +896,6 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     guint active_led_new;
     guint i;
     
-    GValue value = {0,};
-
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
@@ -890,10 +921,6 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 					   (GObject *) machine->audio);
   
     pthread_mutex_unlock(application_mutex);
-
-    /* get window and application_context  */
-    window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) machine,
-						AGS_TYPE_WINDOW));
 
     /* get some recalls */
     pthread_mutex_lock(audio_mutex);

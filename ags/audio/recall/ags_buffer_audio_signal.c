@@ -228,15 +228,12 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   AgsBufferAudioSignal *buffer_audio_signal;
 
   AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
   
   GList *stream;
+
   gdouble delay;
   guint attack;
-  guint buffer_size;
   guint length;
-  gchar *str;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
@@ -248,33 +245,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  config = ags_config_get_instance();
   
-  pthread_mutex_lock(application_mutex);
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
-  }
-
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-
-  pthread_mutex_unlock(application_mutex);
-
   /* recycling */
   recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;

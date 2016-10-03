@@ -271,7 +271,6 @@ ags_drum_input_line_destroy(GtkObject *object)
 void
 ags_drum_input_line_connect(AgsConnectable *connectable)
 {
-  AgsDrum *drum;
   AgsDrumInputLine *drum_input_line;
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
@@ -281,15 +280,21 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   }
   
   ags_drum_input_line_parent_connectable_interface->connect(connectable);
-  
-  /* AgsDrum */
-  drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(drum_input_line)->pad,
-					  AGS_TYPE_DRUM));
+
+  /* empty */
 }
 
 void
 ags_drum_input_line_disconnect(AgsConnectable *connectable)
 {
+  AgsDrumInputLine *drum_input_line;
+
+  drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_input_line)->flags)) != 0){
+    return;
+  }
+  
   ags_drum_input_line_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -322,11 +327,7 @@ ags_drum_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
-  AgsDrumInputLine *drum_input_line;
   AgsChannel *old_channel;
-  guint old_flags;
-  
-  drum_input_line = AGS_DRUM_INPUT_LINE(line);
 
 #ifdef AGS_DEBUG
   g_message("ags_drum_input_line_set_channel - channel: %u\0",
@@ -334,10 +335,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 #endif
 
   if(line->channel != NULL){
-    old_flags = line->flags;
     old_channel = line->channel;
   }else{
-    old_flags = 0;
     old_channel = NULL;
   }
 

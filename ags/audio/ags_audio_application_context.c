@@ -330,7 +330,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 
   for(i = 0; ; i++){
     guint pcm_channels, buffer_size, samplerate, format;
-    gboolean use_jack, use_alsa, use_oss;
     
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
@@ -348,10 +347,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     str = ags_config_get_value(config,
 			       soundcard_group,
 			       "backend\0");
-
-    use_jack = FALSE;
-    use_alsa = FALSE;
-    use_oss = FALSE;
     
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
@@ -359,24 +354,18 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 			      5)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							       TRUE);
-	
-	use_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa\0",
 				    5)){
 	soundcard = (GObject *) ags_devout_new((GObject *) audio_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
-		
-	use_alsa = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "oss\0",
 				    4)){
 	soundcard = (GObject *) ags_devout_new((GObject *) audio_application_context);
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
-
-	use_oss = TRUE;
       }else{
 	g_warning("unknown soundcard backend\0");
 
@@ -562,6 +551,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   if(str != NULL){
     if(!g_strcmp0(str,
 		  "true\0")){
+      g_free(str);
+
       str = ags_config_get_value(AGS_APPLICATION_CONTEXT(audio_application_context)->config,
 				 AGS_CONFIG_GENERIC,
 				 "simple-file\0");
@@ -569,17 +560,19 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       if(str != NULL){
 	if(g_strcmp0(str,
 		     "false\0")){
-	  audio_application_context->autosave_thread = (GObject *) ags_autosave_thread_new((GObject *) audio_application_context);
+	  g_free(str);
+
+	  audio_application_context->autosave_thread = (AgsThread *) ags_autosave_thread_new((GObject *) audio_application_context);
 	  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 					audio_application_context->autosave_thread,
 					TRUE, TRUE);
+	}else{
+	  g_free(str);
 	}
-
-	free(str);
       }
+    }else{
+      g_free(str);
     }
-
-    free(str);
   }
   
   /* AgsThreadPool */
@@ -750,68 +743,47 @@ ags_audio_application_context_finalize(GObject *gobject)
 {
   AgsAudioApplicationContext *audio_application_context;
 
-  G_OBJECT_CLASS(ags_audio_application_context_parent_class)->finalize(gobject);
-
   audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(gobject);
+
+  if(audio_application_context->thread_pool != NULL){
+    g_object_unref(audio_application_context->thread_pool);
+  }
+
+  if(audio_application_context->soundcard_thread != NULL){
+    g_object_unref(audio_application_context->soundcard_thread);
+  }
+
+  if(audio_application_context->export_thread != NULL){
+    g_object_unref(audio_application_context->export_thread);
+  }
+
+  if(audio_application_context->server != NULL){
+    g_object_unref(audio_application_context->server);
+  }
+
+  if(audio_application_context->soundcard != NULL){
+    g_list_free_full(audio_application_context->soundcard,
+		     g_object_unref);
+  }
+
+  if(audio_application_context->sequencer != NULL){
+    g_list_free_full(audio_application_context->sequencer,
+		     g_object_unref);
+  }
+  
+  if(audio_application_context->distributed_manager != NULL){
+    g_list_free_full(audio_application_context->distributed_manager,
+		     g_object_unref);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_application_context_parent_class)->finalize(gobject);
 }
 
 void
 ags_audio_application_context_load_config(AgsApplicationContext *application_context)
 {
-  AgsConfig *config;
-  AgsSoundcard *soundcard;
-  GList *list;
-  
-  gchar *alsa_handle;
-  guint samplerate;
-  guint buffer_size;
-  guint pcm_channels, dsp_channels;
-
-  config = application_context->config;
-  
-  list = AGS_AUDIO_APPLICATION_CONTEXT(application_context)->soundcard;
-
-  while(soundcard != NULL){
-    soundcard = AGS_SOUNDCARD(list->data);
-    
-    alsa_handle = ags_config_get_value(config,
-				 AGS_CONFIG_SOUNDCARD,
-				 "alsa-handle\0");
-
-    dsp_channels = strtoul(ags_config_get_value(config,
-					  AGS_CONFIG_SOUNDCARD,
-					  "dsp-channels\0"),
-			   NULL,
-			   10);
-    
-    pcm_channels = strtoul(ags_config_get_value(config,
-					  AGS_CONFIG_SOUNDCARD,
-					  "pcm-channels\0"),
-			   NULL,
-			   10);
-
-    samplerate = strtoul(ags_config_get_value(config,
-					AGS_CONFIG_SOUNDCARD,
-					"samplerate\0"),
-			 NULL,
-			 10);
-
-    buffer_size = strtoul(ags_config_get_value(config,
-					 AGS_CONFIG_SOUNDCARD,
-					 "buffer-size\0"),
-			  NULL,
-			  10);
-    
-    g_object_set(G_OBJECT(soundcard),
-		 "device\0", alsa_handle,
-		 "dsp-channels\0", dsp_channels,
-		 "pcm-channels\0", pcm_channels,
-		 "frequency\0", samplerate,
-		 "buffer-size\0", buffer_size,
-		 NULL);
-
-    list = list->next;
-  }
+  /* empty */
 }
 
 void

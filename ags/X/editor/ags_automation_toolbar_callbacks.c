@@ -141,16 +141,12 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   
   GtkAdjustment *adjustment;
   
-  double zoom, zoom_old;
   guint history;
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
   history = gtk_combo_box_get_active(combo_box);
-
-  zoom = exp2((double) history - 2.0);
-  zoom_old = exp2((double) automation_toolbar->zoom_history - 2.0);
 
   automation_toolbar->zoom_history = history;
 

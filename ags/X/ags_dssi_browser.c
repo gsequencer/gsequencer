@@ -276,22 +276,13 @@ ags_dssi_browser_disconnect(AgsConnectable *connectable)
 void
 ags_dssi_browser_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsDssiBrowser *dssi_browser;
-
-  dssi_browser = AGS_DSSI_BROWSER(applicable);
-
   /* empty */
 }
 
 void
 ags_dssi_browser_apply(AgsApplicable *applicable)
 {
-  AgsDssiBrowser *dssi_browser;
-  GtkComboBoxText *filename, *effect;
-
-  dssi_browser = AGS_DSSI_BROWSER(applicable);
-
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
@@ -299,6 +290,7 @@ ags_dssi_browser_reset(AgsApplicable *applicable)
 {
   AgsDssiBrowser *dssi_browser;
   GtkComboBoxText *filename;
+
   GList *list;
 
   dssi_browser = AGS_DSSI_BROWSER(applicable);
@@ -326,6 +318,7 @@ gchar*
 ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
 {
   GtkComboBoxText *filename;
+
   GList *list;
 
   list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
@@ -349,6 +342,7 @@ gchar*
 ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
 {
   GtkComboBoxText *effect;
+
   GList *list;
 
   list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));

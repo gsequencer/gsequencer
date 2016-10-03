@@ -195,10 +195,6 @@ ags_play_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable
 void
 ags_play_recycling_finalize(GObject *gobject)
 {
-  AgsPlayRecycling *play_recycling;
-
-  play_recycling = AGS_PLAY_RECYCLING(gobject);
-
   /* empty */
 
   /* call parent */

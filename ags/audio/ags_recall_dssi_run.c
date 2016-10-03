@@ -49,7 +49,6 @@ void ags_recall_dssi_run_finalize(GObject *gobject);
 
 void ags_recall_dssi_run_run_init_pre(AgsRecall *recall);
 void ags_recall_dssi_run_run_pre(AgsRecall *recall);
-void ags_recall_dssi_run_run_post(AgsRecall *recall);
 
 void ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run);
 
@@ -130,7 +129,6 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
 
   recall->run_init_pre = ags_recall_dssi_run_run_init_pre;
   recall->run_pre = ags_recall_dssi_run_run_pre;
-  recall->run_post = ags_recall_dssi_run_run_post;
 }
 
 
@@ -245,9 +243,14 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   }
   
   recall_dssi_run->audio_channels = i_stop;
-  recall_dssi_run->ladspa_handle = (LADSPA_Handle *) malloc(i_stop *
-							    sizeof(LADSPA_Handle));
 
+  if(i_stop > 0){
+    recall_dssi_run->ladspa_handle = (LADSPA_Handle *) malloc(i_stop *
+							      sizeof(LADSPA_Handle));
+  }else{
+    recall_dssi_run->ladspa_handle = NULL;
+  }
+  
   for(i = 0; i < i_stop; i++){
     /* instantiate dssi */
     recall_dssi_run->ladspa_handle[i] = recall_dssi->plugin_descriptor->LADSPA_Plugin->instantiate(recall_dssi->plugin_descriptor->LADSPA_Plugin,
@@ -445,14 +448,6 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 					  (guint) audio_signal->buffer_size);
 }
 
-void
-ags_recall_dssi_run_run_post(AgsRecall *recall)
-{
-  AgsRecallDssiRun *recall_dssi_run;
-
-  recall_dssi_run = AGS_RECALL_DSSI_RUN(recall);
-}
-
 /**
  * ags_recall_dssi_run_load_ports:
  * @recall_dssi_run: an #AgsRecallDssiRun
@@ -480,7 +475,6 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 
   DSSI_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_PortRangeHintDescriptor hint_descriptor;
 
   recall_dssi = AGS_RECALL_DSSI(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(recall_dssi_run)->parent->parent)->recall_channel);
   port = AGS_RECALL(recall_dssi)->port;
@@ -503,7 +497,6 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 	 LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	LADSPA_Data *port_pointer;
 	
-	hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
 	specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 
 	list = port;
