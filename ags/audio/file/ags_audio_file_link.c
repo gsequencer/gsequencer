@@ -479,24 +479,32 @@ void
 ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 				AgsAudioFileLink *audio_file_link)
 {
-  GObject *soundcard;
   AgsAudio *audio;
   AgsChannel *input;
+
   AgsAudioFile *audio_file;
 
   AgsFileIdRef *id_ref;
 
+  GObject *soundcard;
+
   GList *audio_signal;
+
   xmlNode *node, *child;
+
   xmlChar *type;
   xmlChar *filename;
   xmlChar *encoding, *demuxer;
-  
+
+  guint audio_channels;
   guint audio_channel;
   
   node = file_launch->node;
 
+  soundcard = NULL;
+  
   audio_channel = audio_file_link->audio_channel;
+  filename = NULL;
   
   /* retrieve input */
   input = NULL;
@@ -505,13 +513,17 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 
   if(id_ref != NULL){
     input = (AgsChannel *) id_ref->ref;
+    soundcard = input->soundcard;
   }
 
-  /* get soundcard */
-  soundcard = input->soundcard;
-
   /* get audio */
-  audio = AGS_AUDIO(input->audio);
+  if(input != NULL &&
+     input->audio != NULL){
+    audio = AGS_AUDIO(input->audio);
+    audio_channels = audio->audio_channels;
+  }else{
+    audio_channels = 1;
+  }
   
   /* read file link using URL or embedded */
   type = xmlGetProp(node->parent,
@@ -526,7 +538,7 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
     filename = AGS_FILE_LINK(audio_file_link)->filename;
     audio_file = ags_audio_file_new((gchar *) filename,
 				    soundcard,
-				    0, audio->audio_channels);
+				    0, audio_channels);
 
     /* open file and read audio signal */
     ags_audio_file_open(audio_file);
@@ -544,7 +556,8 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
     AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 
     /* unlink if needed */
-    if(input->link != NULL){
+    if(input != NULL &&
+       input->link != NULL){
       GError *error;
 
       error = NULL;
@@ -563,6 +576,11 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 					   "filename\0", filename,
 					   NULL),
 		 NULL);
+
+    if(input == NULL ||
+       audio_signal == NULL){
+      return;
+    }
 
     /* add audio signal */
     ags_recycling_add_audio_signal(input->first_recycling,
@@ -589,41 +607,43 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 
       for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
 	if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	  child = xpath_object->nodesetval->nodeTab[i];
 	  break;
 	}
       }
-
-      child = xpath_object->nodesetval->nodeTab[i];
     }
 
-    /**/
-    encoding = xmlGetProp(child, "encoding\0");
-    demuxer = xmlGetProp(child, "demuxer\0");
+    if(child != NULL){    
+      /**/
+      encoding = xmlGetProp(child, "encoding\0");
+      demuxer = xmlGetProp(child, "demuxer\0");
 
-    if(!xmlStrncmp(encoding,
-		   "base64\0",
-		   7)){
-      if(!xmlStrncmp(demuxer,
-		     "raw\0",
-		     4)){
-	gchar *data;
+      if(!xmlStrncmp(encoding,
+		     "base64\0",
+		     7)){
+	if(!xmlStrncmp(demuxer,
+		       "raw\0",
+		       4)){
+	  gchar *data;
 
-	audio_file = ags_audio_file_new(NULL,
-					soundcard,
-					0, audio->audio_channels);
-	data = child->content;
+	  audio_file = ags_audio_file_new(NULL,
+					  soundcard,
+					  0, audio_channels);
+	  data = child->content;
 
-	ags_audio_file_open_from_data(audio_file, data);
-	ags_audio_file_read_audio_signal(audio_file);
+	  ags_audio_file_open_from_data(audio_file, data);
+	  ags_audio_file_read_audio_signal(audio_file);
 
-	audio_signal = audio_file->audio_signal;
+	  audio_signal = audio_file->audio_signal;
 
-	if(audio_signal == NULL){
-	  return;
-	}
+	  if(input == NULL ||
+	     audio_signal == NULL){
+	    return;
+	  }
     
-	ags_recycling_add_audio_signal(input->first_recycling,
-				       AGS_AUDIO_SIGNAL(audio_signal->data));
+	  ags_recycling_add_audio_signal(input->first_recycling,
+					 AGS_AUDIO_SIGNAL(audio_signal->data));
+	}
       }
     }
   }

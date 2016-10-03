@@ -34,8 +34,6 @@ void ags_property_collection_editor_disconnect(AgsConnectable *connectable);
 void ags_property_collection_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_property_collection_editor_apply(AgsApplicable *applicable);
 void ags_property_collection_editor_reset(AgsApplicable *applicable);
-void ags_property_collection_editor_destroy(GtkObject *object);
-void ags_property_collection_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_property_collection_editor
@@ -167,7 +165,7 @@ ags_property_collection_editor_disconnect(AgsConnectable *connectable)
 {
   AgsPropertyCollectionEditor *property_collection_editor;
 
-  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(connectable)->flags)) != 0){
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(connectable)->flags)) == 0){
     return;
   }
   
@@ -187,11 +185,6 @@ ags_property_collection_editor_disconnect(AgsConnectable *connectable)
 void
 ags_property_collection_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsPropertyCollectionEditor *property_collection_editor;
-  GList *list;
-
-  property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
-
   /* empty */
 }
 
@@ -222,22 +215,6 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
 
 void
 ags_property_collection_editor_reset(AgsApplicable *applicable)
-{
-  AgsPropertyCollectionEditor *property_collection_editor;
-
-  property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
-
-  /* empty */
-}
-
-void
-ags_property_collection_editor_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
-void
-ags_property_collection_editor_show(GtkWidget *widget)
 {
   /* empty */
 }

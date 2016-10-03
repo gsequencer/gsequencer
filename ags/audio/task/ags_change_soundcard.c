@@ -214,6 +214,8 @@ ags_change_soundcard_launch(AgsTask *task)
 							      soundcard_type)) != NULL){
     GObject *data_object;
 
+    audio_connection = AGS_AUDIO_CONNECTION(list->data);
+    
     g_object_get(G_OBJECT(list->data),
 		 "data-object\0", &data_object,
 		 NULL);

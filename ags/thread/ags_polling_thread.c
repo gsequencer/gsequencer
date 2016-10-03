@@ -335,7 +335,8 @@ ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
 {
   gint i;
 
-  if(polling_thread == NULL){
+  if(polling_thread == NULL ||
+     polling_thread->fds == NULL){
     return(-1);
   }
   

@@ -78,11 +78,13 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
   if(matrix->selected != NULL){
     if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
       AgsAudio *audio;
+
       AgsCopyPatternAudio *recall_copy_pattern_audio, *play_copy_pattern_audio;
 
       GList *list;
+
       guint64 index1;
-      GValue play_value = {0,};
+
       GValue recall_value = {0,};
 
       audio = AGS_MACHINE(matrix)->audio;
