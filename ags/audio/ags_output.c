@@ -85,14 +85,13 @@ void
 ags_output_class_init(AgsOutputClass *output)
 {
   GObjectClass *gobject;
-  AgsChannelClass *channel;
 
   ags_output_parent_class = g_type_class_peek_parent(output);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) output;
+  
   gobject->finalize = ags_output_finalize;
-
-  channel = (AgsChannelClass *) output;
 }
 
 void
@@ -109,6 +108,7 @@ ags_output_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_output_init(AgsOutput *output)
 {
+  /* empty */
 }
 
 void
@@ -143,18 +143,22 @@ ags_output_disconnect(AgsConnectable *connectable)
 GList*
 ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
 {
-  GObject *soundcard;
   AgsAudioSignal *audio_signal;
+  
+  GObject *soundcard;
+  
   GList *list_destination;
 
   if(output != NULL){
+    soundcard = AGS_CHANNEL(output)->soundcard;
+    
     list_destination = g_list_alloc();
+    
     goto ags_copy_pattern_map_destination0;
-  }else
+  }else{
     return(NULL);
+  }
 
-  soundcard = AGS_CHANNEL(output)->soundcard;
-  
   while(output != NULL){
     list_destination->next = g_list_alloc();
     list_destination->next->prev = list_destination;

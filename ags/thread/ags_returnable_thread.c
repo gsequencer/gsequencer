@@ -211,7 +211,6 @@ void
 ags_returnable_thread_run(AgsThread *thread)
 {
   AgsReturnableThread *returnable_thread;
-  AgsThreadPool *thread_pool;
   AgsTaskThread *task_thread;
   GList *tmplist;
 
@@ -220,7 +219,6 @@ ags_returnable_thread_run(AgsThread *thread)
   
   /* retrieve some variables */
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
-  thread_pool = (AgsThreadPool *) returnable_thread->thread_pool;
   
   unref_thread = FALSE;
   

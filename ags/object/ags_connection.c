@@ -182,6 +182,10 @@ ags_connection_finalize(GObject *gobject)
   AgsConnection *connection;
 
   connection = AGS_CONNECTION(gobject);
+
+  if(connection->data_object != NULL){
+    g_object_unref(connection->data_object);
+  }
 }
 
 /**

@@ -37,16 +37,9 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   GtkDialog *dialog;
   GtkWidget *cancel_button;
 
-  AgsMutexManager *mutex_manager;
-  
   gint response;
-
-  pthread_mutex_t *application_mutex;
   
   window = AGS_WINDOW(widget);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* ask the user if he wants save to a file */
   dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),

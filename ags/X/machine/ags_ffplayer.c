@@ -412,6 +412,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+  }else{
+    play_delay_audio_run = NULL;
   }
   
   /* ags-count-beats */
@@ -444,6 +446,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
     g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
 			&value);
+  }else{
+    play_count_beats_audio_run = NULL;
   }
 
   /* ags-play-notation */
@@ -494,6 +498,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
+
   GList *list;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
@@ -552,10 +557,61 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 void
 ags_ffplayer_disconnect(AgsConnectable *connectable)
 {
-  ags_ffplayer_parent_connectable_interface->disconnect(connectable);
+  AgsFFPlayer *ffplayer;
 
-  //TODO:JK
-  /* implement me */
+  GList *list;
+
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
+
+  ffplayer = AGS_FFPLAYER(connectable);
+
+  g_object_disconnect((GObject *) ffplayer,
+		      "destroy\0",
+		      G_CALLBACK(ags_ffplayer_destroy_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+  
+  /* AgsFFPlayer */
+  g_object_disconnect((GObject *) ffplayer->open,
+		      "clicked\0",
+		      G_CALLBACK(ags_ffplayer_open_clicked_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->preset,
+		      "changed\0",
+		      G_CALLBACK(ags_ffplayer_preset_changed_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->instrument,
+		      "changed\0",
+		      G_CALLBACK(ags_ffplayer_instrument_changed_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+
+  g_object_disconnect((GObject *) ffplayer->drawing_area,
+		      "expose_event\0",
+		      G_CALLBACK(ags_ffplayer_drawing_area_expose_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->drawing_area,
+		      "button_press_event\0",
+		      G_CALLBACK(ags_ffplayer_drawing_area_button_press_callback),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  g_object_disconnect((GObject *) ffplayer->hadjustment,
+		      "value_changed\0",
+		      G_CALLBACK(ags_ffplayer_hscrollbar_value_changed),
+		      (gpointer) ffplayer,
+		      NULL);
+
+  ags_ffplayer_parent_connectable_interface->disconnect(connectable);
 }
 
 void
@@ -867,9 +923,54 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				guint audio_channels, guint audio_channels_old,
 				gpointer data)
 {
-  AgsFFPlayer *ffplayer;
+  if(audio_channels > audio_channels_old){
+    /* AgsInput */
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      audio_channels_old, audio_channels,
+			      0, audio->input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
 
-  ffplayer = AGS_FFPLAYER(audio->machine);
+    /* ags-play */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play\0",
+			      audio_channels_old, audio_channels, 
+			      0, audio->input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      audio_channels_old, audio_channels, 
+			      0, audio->input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    /* AgsOutput */
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      audio_channels_old, audio_channels,
+			      0, audio->output_pads,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
 }
 
 void

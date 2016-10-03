@@ -188,8 +188,6 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 {
   AgsThread *thread;
 
-  pthread_mutexattr_t mutexattr;
-
   thread = AGS_THREAD(task_thread);
 
   //  g_atomic_int_or(&(thread->flags),
@@ -204,22 +202,37 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_int_set(&(task_thread->wait_ref),
 		   0);
 
-  pthread_mutexattr_init(&(mutexattr));
-  pthread_mutexattr_settype(&(mutexattr), PTHREAD_MUTEX_RECURSIVE);
+  /* run mutex and cond */
+  task_thread->run_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(task_thread->run_mutexattr);
+  pthread_mutexattr_settype(task_thread->run_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(task_thread->run_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
 
   task_thread->run_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(task_thread->run_mutex, &mutexattr);
+  pthread_mutex_init(task_thread->run_mutex, task_thread->run_mutexattr);
 
   task_thread->run_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(task_thread->run_cond, NULL);
   
-  /*  */
+  /* read mutex */
+  task_thread->read_mutexattr = NULL;
+  
   task_thread->read_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(task_thread->read_mutex, NULL);
+
+  /* launch mutex */
+  task_thread->launch_mutexattr = NULL;
 
   task_thread->launch_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(task_thread->launch_mutex, NULL);
 
+  /* queue and exec */
   g_atomic_int_set(&(task_thread->queued),
 		   0);
   g_atomic_int_set(&(task_thread->pending),
@@ -229,6 +242,7 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_pointer_set(&(task_thread->queue),
 		       NULL);
 
+  /* thread pool */
   task_thread->thread_pool = ags_thread_pool_new((AgsThread *) task_thread);
   task_thread->thread_pool->parent = (AgsThread *) task_thread;
 }
@@ -236,6 +250,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 void
 ags_task_thread_connect(AgsConnectable *connectable)
 {
+  /* empty */
+
   ags_task_thread_parent_connectable_interface->connect(connectable);
 }
 
@@ -254,9 +270,28 @@ ags_task_thread_finalize(GObject *gobject)
 
   task_thread = AGS_TASK_THREAD(gobject);
 
+  /* run mutex and cond */
+  pthread_mutexattr_destroy(task_thread->run_mutexattr);
+  free(task_thread->run_mutexattr);
+
+  pthread_mutex_destroy(task_thread->run_mutex);
+  free(task_thread->run_mutex);
+
+  pthread_cond_destroy(task_thread->run_cond);
+  free(task_thread->run_cond);
+
+  /* read mutex */
+  pthread_mutex_destroy(task_thread->read_mutex);
+  free(task_thread->read_mutex);
+  
+  /* launch mutex */
+  pthread_mutex_destroy(task_thread->launch_mutex);
+  free(task_thread->launch_mutex);
+
   /* free AgsTask lists */
   g_list_free_full(g_atomic_pointer_get(&(task_thread->exec)),
 		   g_object_unref);
+  
   g_list_free_full(g_atomic_pointer_get(&(task_thread->queue)),
 		   g_object_unref);
 
@@ -316,10 +351,6 @@ ags_task_thread_get_wait_ref(AgsAsyncQueue *async_queue)
 void
 ags_task_thread_start(AgsThread *thread)
 {
-  AgsTaskThread *task_thread;
-
-  task_thread = AGS_TASK_THREAD(thread);
-
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }

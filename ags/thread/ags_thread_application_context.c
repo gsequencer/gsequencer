@@ -336,8 +336,6 @@ ags_thread_application_context_connect(AgsConnectable *connectable)
 
   ags_thread_application_context_parent_connectable_interface->connect(connectable);
 
-  g_message("connecting threads\0");
-  
   ags_connectable_connect(AGS_CONNECTABLE(thread_application_context->autosave_thread));
 
   ags_connectable_connect(AGS_CONNECTABLE(AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop));
@@ -354,6 +352,11 @@ ags_thread_application_context_disconnect(AgsConnectable *connectable)
   if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(thread_application_context)->flags)) == 0){
     return;
   }
+  
+  ags_connectable_disconnect(AGS_CONNECTABLE(thread_application_context->autosave_thread));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop));
+  ags_connectable_disconnect(AGS_CONNECTABLE(thread_application_context->thread_pool));
 
   ags_thread_application_context_parent_connectable_interface->disconnect(connectable);
 }
@@ -381,9 +384,18 @@ ags_thread_application_context_finalize(GObject *gobject)
 {
   AgsThreadApplicationContext *thread_application_context;
 
-  G_OBJECT_CLASS(ags_thread_application_context_parent_class)->finalize(gobject);
-
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(gobject);
+
+  if(thread_application_context->autosave_thread != NULL){
+    g_object_unref(thread_application_context->autosave_thread);
+  }
+
+  if(thread_application_context->thread_pool != NULL){
+    g_object_unref(thread_application_context->thread_pool);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_thread_application_context_parent_class)->finalize(gobject);
 }
 
 void

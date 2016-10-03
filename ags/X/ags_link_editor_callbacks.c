@@ -239,14 +239,10 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
   file_chooser = link_editor->file_chooser;
 
   if(response == GTK_RESPONSE_ACCEPT){
-    AgsLineEditor *line_editor;
     GtkSpinButton *spin_button;
     
     GtkTreeModel *model;
     GtkTreeIter iter;
-    
-    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
-							  AGS_TYPE_LINE_EDITOR));
 
     /* set filename in combo box */
     model = gtk_combo_box_get_model(link_editor->combo);

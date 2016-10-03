@@ -361,10 +361,8 @@ ags_recall_audio_load_automation(AgsRecall *recall,
   
   audio = AGS_RECALL_AUDIO(recall)->audio;
 
-  automation = audio->automation;
-  
   while(automation_port != NULL){
-    if(ags_automation_find_port(automation,
+    if(ags_automation_find_port(audio->automation,
 				automation_port->data) == NULL){
       current = ags_automation_new((GObject *) audio,
 				   0,
@@ -396,11 +394,10 @@ ags_recall_audio_unload_automation(AgsRecall *recall)
   
   audio = AGS_RECALL_AUDIO(recall)->audio;
 
-  automation = audio->automation;
   automation_port = recall->automation_port;
   
   while(automation_port != NULL){
-    if((automation = ags_automation_find_port(automation,
+    if((automation = ags_automation_find_port(audio->automation,
 					      (GObject *) automation_port->data)) != NULL){
       current = automation->data;
       ags_audio_remove_automation(audio,
@@ -499,9 +496,8 @@ ags_recall_audio_duplicate(AgsRecall *recall,
 			   AgsRecallID *recall_id,
 			   guint *n_params, GParameter *parameter)
 {
-  AgsRecallAudio *recall_audio, *copy;
+  AgsRecallAudio *copy;
 
-  recall_audio = AGS_RECALL_AUDIO(recall);
   copy = AGS_RECALL_AUDIO(AGS_RECALL_CLASS(ags_recall_audio_parent_class)->duplicate(recall,
 										     recall_id,
 										     n_params, parameter));

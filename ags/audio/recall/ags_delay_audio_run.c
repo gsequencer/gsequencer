@@ -382,6 +382,10 @@ ags_delay_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 void
 ags_delay_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) == 0){
+    return;
+  }
+
   ags_delay_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
 
@@ -419,18 +423,13 @@ ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 void
 ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 {
-  GObject *soundcard;
-  AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
 
   /* call parent class */
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_init_pre(recall);
 
   /* AgsDelayAudioRun */
-  delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
-
-  soundcard = AGS_RECALL_AUDIO(delay_audio)->audio->soundcard;
 
   /* run order */
   delay_audio_run->hide_ref_counter = 0;
@@ -441,7 +440,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 {
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
+
   gdouble notation_delay, sequencer_delay;
+
   GValue value = { 0, };
 
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
@@ -489,14 +490,10 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     delay_audio_run->sequencer_counter += 1;
   }
 
-  if(delay_audio_run->notation_counter == 0){
-    GObject *soundcard;
-    
+  if(delay_audio_run->notation_counter == 0){    
     guint run_order;
     gdouble delay;
     guint attack;
-
-    soundcard = AGS_RECALL_AUDIO(delay_audio)->audio->soundcard;
 
     run_order = 0; //NOTE:JK: old hide_ref style
 
@@ -547,12 +544,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }
 
   if(delay_audio_run->sequencer_counter == 0){
-    GObject *soundcard;
     guint run_order;
     gdouble delay;
     guint attack;
-
-    soundcard = AGS_RECALL_AUDIO(delay_audio)->audio->soundcard;
 
     /* delay and attack */
     //TODO:JK: unclear

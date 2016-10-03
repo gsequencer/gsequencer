@@ -205,6 +205,14 @@ ags_mixer_input_line_connect(AgsConnectable *connectable)
 void
 ags_mixer_input_line_disconnect(AgsConnectable *connectable)
 {
+  AgsMixerInputLine *mixer_input_line;
+
+  mixer_input_line = AGS_MIXER_INPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(mixer_input_line)->flags)) == 0){
+    return;
+  }
+
   ags_mixer_input_line_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -213,11 +221,7 @@ ags_mixer_input_line_disconnect(AgsConnectable *connectable)
 void
 ags_mixer_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
-  AgsMixerInputLine *mixer_input_line;
-
   AGS_LINE_CLASS(ags_mixer_input_line_parent_class)->set_channel(line, channel);
-
-  mixer_input_line = AGS_MIXER_INPUT_LINE(line);
 
   /* empty */
 }
@@ -226,8 +230,6 @@ void
 ags_mixer_input_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
-  AgsMixer *mixer;
-  AgsMixerInputLine *mixer_input_line;
   AgsAudio *audio;
   AgsChannel *source;
   AgsRecallHandler *recall_handler;
@@ -242,11 +244,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
     return;
   }
 
-  mixer_input_line = AGS_MIXER_INPUT_LINE(line);
-
   audio = AGS_AUDIO(line->channel->audio);
-
-  mixer = AGS_MIXER(audio->machine);
 
   source = line->channel;
 

@@ -52,7 +52,6 @@ void ags_mixer_init(AgsMixer *mixer);
 void ags_mixer_finalize(GObject *gobject);
 void ags_mixer_connect(AgsConnectable *connectable);
 void ags_mixer_disconnect(AgsConnectable *connectable);
-void ags_mixer_show(GtkWidget *widget);
 void ags_mixer_map_recall(AgsMachine *machine);
 gchar* ags_mixer_get_name(AgsPlugin *plugin);
 void ags_mixer_set_name(AgsPlugin *plugin, gchar *name);
@@ -134,7 +133,6 @@ void
 ags_mixer_class_init(AgsMixerClass *mixer)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_mixer_parent_class = g_type_class_peek_parent(mixer);
@@ -143,10 +141,6 @@ ags_mixer_class_init(AgsMixerClass *mixer)
   gobject = (GObjectClass *) mixer;
 
   gobject->finalize = ags_mixer_finalize;
-
-  /* GtkWidget */
-  widget = (GtkWidgetClass *) mixer;
-  //  widget->show = ags_mixer_show;
 
   /* AgsMachine */
   machine = (AgsMachineClass *) mixer;
@@ -214,37 +208,21 @@ ags_mixer_finalize(GObject *gobject)
 void
 ags_mixer_connect(AgsConnectable *connectable)
 {
-  AgsMixer *mixer;
-
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
   }
 
   ags_mixer_parent_connectable_interface->connect(connectable);
-
-  /* AgsMixer */
-  mixer = AGS_MIXER(connectable);
-
-  //  g_signal_connect((GObject *) mixer, "destroy\0",
-  //		   G_CALLBACK(ags_mixer_destroy_callback), (gpointer) mixer);
 }
 
 void
 ags_mixer_disconnect(AgsConnectable *connectable)
 {
-  AgsMixer *mixer;
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
 
   ags_mixer_parent_connectable_interface->disconnect(connectable);
-
-  /* AgsMixer */
-  mixer = AGS_MIXER(connectable);
-
-  //TODO:JK: implement me
-}
-
-void
-ags_mixer_show(GtkWidget *widget)
-{
 }
 
 void

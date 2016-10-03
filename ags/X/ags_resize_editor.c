@@ -46,8 +46,6 @@ void ags_resize_editor_disconnect(AgsConnectable *connectable);
 void ags_resize_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_resize_editor_apply(AgsApplicable *applicable);
 void ags_resize_editor_reset(AgsApplicable *applicable);
-void ags_resize_editor_destroy(GtkObject *object);
-void ags_resize_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_resize_editor
@@ -60,6 +58,7 @@ void ags_resize_editor_show(GtkWidget *widget);
  * should be packed by a #AgsMachineEditor.
  */
 
+static gpointer ags_resize_editor_parent_class = NULL;
 AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
 
 GType
@@ -112,6 +111,7 @@ ags_resize_editor_get_type(void)
 void
 ags_resize_editor_class_init(AgsResizeEditorClass *resize_editor)
 {
+  ags_resize_editor_parent_class = g_type_class_peek_parent(resize_editor);
 }
 
 void
@@ -231,26 +231,19 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 void
 ags_resize_editor_connect(AgsConnectable *connectable)
 {
-  AgsResizeEditor *resize_editor;
-
   ags_resize_editor_parent_connectable_interface->connect(connectable);
-
-  /* AgsResizeEditor */
-  resize_editor = AGS_RESIZE_EDITOR(connectable);
 }
 
 void
 ags_resize_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  ags_resize_editor_parent_connectable_interface->disconnect(connectable);
 }
 
 void
 ags_resize_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsResizeEditor *resize_editor;
-
-  resize_editor = AGS_RESIZE_EDITOR(applicable);
+  /* empty */
 }
 
 void
@@ -365,20 +358,6 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 			    audio->output_pads);
 
   pthread_mutex_unlock(audio_mutex);
-}
-
-void
-ags_resize_editor_destroy(GtkObject *object)
-{
-  AgsResizeEditor *resize_editor;
-
-  resize_editor = (AgsResizeEditor *) object;
-}
-
-void
-ags_resize_editor_show(GtkWidget *widget)
-{
-  AgsResizeEditor *resize_editor = (AgsResizeEditor *) widget;
 }
 
 /**

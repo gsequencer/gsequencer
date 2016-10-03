@@ -168,10 +168,6 @@ ags_recall_recycling_dummy_finalize(GObject *gobject)
 void
 ags_recall_recycling_dummy_connect(AgsConnectable *connectable)
 {
-  AgsRecallRecyclingDummy *recall_recycling_dummy;
-
-  recall_recycling_dummy = AGS_RECALL_RECYCLING_DUMMY(connectable);
-
   ags_recall_recycling_dummy_parent_connectable_interface->connect(connectable);
 
   /* empty */

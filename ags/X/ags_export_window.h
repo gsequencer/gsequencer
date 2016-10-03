@@ -35,7 +35,8 @@ typedef struct _AgsExportWindow AgsExportWindow;
 typedef struct _AgsExportWindowClass AgsExportWindowClass;
 
 typedef enum{
-  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1,
+  AGS_EXPORT_WINDOW_CONNECTED     = 1,
+  AGS_EXPORT_WINDOW_LIVE_EXPORT   = 1 <<  1,
 }AgsExportWindowFlags;
 
 struct _AgsExportWindow
