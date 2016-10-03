@@ -25,8 +25,6 @@ void ags_property_listing_editor_connectable_interface_init(AgsConnectableInterf
 void ags_property_listing_editor_init(AgsPropertyListingEditor *property_listing_editor);
 void ags_property_listing_editor_connect(AgsConnectable *connectable);
 void ags_property_listing_editor_disconnect(AgsConnectable *connectable);
-void ags_property_listing_editor_destroy(GtkObject *object);
-void ags_property_listing_editor_show(GtkWidget *widget);
 
 static AgsConnectableInterface* ags_property_listing_editor_parent_connectable_interface;
 
@@ -70,6 +68,7 @@ ags_property_listing_editor_get_type(void)
 void
 ags_property_listing_editor_class_init(AgsPropertyListingEditorClass *property_listing_editor)
 {
+  /* empty */
 }
 
 void
@@ -86,38 +85,23 @@ ags_property_listing_editor_connectable_interface_init(AgsConnectableInterface *
 void
 ags_property_listing_editor_init(AgsPropertyListingEditor *property_listing_editor)
 {
+  /* empty */
 }
 
 void
 ags_property_listing_editor_connect(AgsConnectable *connectable)
 {
-  AgsPropertyListingEditor *property_listing_editor;
-  GList *pad_list;
-
   ags_property_listing_editor_parent_connectable_interface->connect(connectable);
 
-  /* AgsPropertyListingEditor */
-  property_listing_editor = AGS_PROPERTY_LISTING_EDITOR(connectable);
+  /* empty */
 }
 
 void
 ags_property_listing_editor_disconnect(AgsConnectable *connectable)
 {
   /* empty */
-}
 
-void
-ags_property_listing_editor_destroy(GtkObject *object)
-{
-  AgsPropertyListingEditor *property_listing_editor;
-
-  property_listing_editor = (AgsPropertyListingEditor *) object;
-}
-
-void
-ags_property_listing_editor_show(GtkWidget *widget)
-{
-  AgsPropertyListingEditor *property_listing_editor = (AgsPropertyListingEditor *) widget;
+  ags_property_listing_editor_parent_connectable_interface->disconnect(connectable);
 }
 
 AgsPropertyListingEditor*

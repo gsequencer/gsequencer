@@ -787,7 +787,6 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 							 AgsAudioSignal *audio_signal,
 							 AgsRecallRecycling *recall_recycling)
 {
-  GObject *soundcard;
   AgsChannel *channel;
   AgsRecall *recall;
   AgsCancelRecall *cancel_recall;
@@ -864,8 +863,6 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	    AGS_CHANNEL(recall_recycling->source->channel)->line);
 #endif
 
-  soundcard = AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->soundcard;
-
   list_start = 
     list = ags_recall_get_children(recall);
 
@@ -906,7 +903,6 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 							   AgsRecallRecycling *recall_recycling)
 {
   AgsChannel *channel;
-  AgsRecyclingContext *output_recycling_context;
   AgsRecall *recall;
 
   AgsMutexManager *mutex_manager;
@@ -940,8 +936,6 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
   pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
-
-  output_recycling_context = recall->recall_id->recycling_context->parent;
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0 ||
      audio_signal->recall_id == NULL ||
@@ -1001,7 +995,6 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 							      AgsAudioSignal *audio_signal,
 							      AgsRecallRecycling *recall_recycling)
 {
-  GObject *soundcard;
   AgsChannel *channel;
   AgsRecall *recall;
   AgsCancelRecall *cancel_recall;
@@ -1070,8 +1063,6 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 	    G_OBJECT_TYPE_NAME(recall_recycling),
 	    AGS_CHANNEL(recall_recycling->source->channel)->line);
 #endif
-
-  soundcard = AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->soundcard;
 
   list_start = 
     list = ags_recall_get_children(AGS_RECALL(recall_recycling));

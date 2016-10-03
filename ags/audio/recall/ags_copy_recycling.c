@@ -110,7 +110,6 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  AgsRecallRecyclingClass *recall_recycling;
 
   ags_copy_recycling_parent_class = g_type_class_peek_parent(copy_recycling);
 
@@ -127,9 +126,6 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
   recall->remove = ags_copy_recycling_remove;
 
   recall->duplicate = ags_copy_recycling_duplicate;
-
-  /* AgsRecallRecycling */
-  recall_recycling = (AgsRecallRecyclingClass *) copy_recycling;
 }
 
 void

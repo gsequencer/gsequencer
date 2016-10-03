@@ -376,8 +376,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   pthread_mutex_unlock(application_mutex);
 
   /* find task thread */
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   if(response == GTK_RESPONSE_ACCEPT){
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
@@ -386,9 +386,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     spin_button = (GtkSpinButton *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON);
 
     /* open audio file and read audio signal */
-    if(!g_strcmp0(name0, name1)){
-      audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
-    }else{
+    if(g_strcmp0(name0, name1)){
       if(name1 != NULL){
 	audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
 	g_object_unref(G_OBJECT(audio_file));

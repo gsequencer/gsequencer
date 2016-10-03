@@ -407,7 +407,8 @@ ags_recall_channel_load_automation(AgsRecall *recall,
 				   GList *automation_port)
 {
   AgsChannel *channel;
-
+  AgsAudio *audio;
+  
   AgsAutomation *current;
 
   GList *automation;
@@ -415,8 +416,7 @@ ags_recall_channel_load_automation(AgsRecall *recall,
   GType channel_type;
 
   channel = AGS_RECALL_CHANNEL(recall)->source;
-
-  automation = AGS_AUDIO(channel->audio)->automation;
+  audio = AGS_AUDIO(channel->audio);
   
   if(AGS_IS_OUTPUT(channel)){
     channel_type = AGS_TYPE_OUTPUT;
@@ -425,7 +425,7 @@ ags_recall_channel_load_automation(AgsRecall *recall,
   }
   
   while(automation_port != NULL){
-    if((automation = ags_automation_find_port(automation,
+    if((automation = ags_automation_find_port(audio->automation,
 					      automation_port->data)) == NULL){
       current = ags_automation_new(channel->audio,
 				   channel->line,
@@ -469,7 +469,6 @@ ags_recall_channel_unload_automation(AgsRecall *recall)
   channel = AGS_RECALL_CHANNEL(recall)->source;
   audio = AGS_AUDIO(channel->audio);
   
-  automation = audio->automation;
   automation_port = recall->automation_port;
     
   while(automation_port != NULL){

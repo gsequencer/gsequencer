@@ -164,10 +164,6 @@ ags_playback_finalize(GObject *gobject)
 void
 ags_playback_connect(AgsConnectable *connectable)
 {
-  AgsPlayback *playback;
-
-  playback = AGS_PLAYBACK(connectable);
-
   //TODO:JK: implement me
 }
 

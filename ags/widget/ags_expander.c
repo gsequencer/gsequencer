@@ -108,7 +108,7 @@ void
 ags_expander_class_init(AgsExpanderClass *expander)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
+  //  GtkWidgetClass *widget;
   GtkExpanderClass *parent;
   GParamSpec *param_spec;
 
@@ -153,7 +153,7 @@ ags_expander_class_init(AgsExpanderClass *expander)
 				  param_spec);
 
   /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) expander;
+  //  widget = (GtkWidgetClass *) expander;
 
   //  widget->realize = ags_expander_realize;
   //  widget->expose_event = ags_expander_expose;

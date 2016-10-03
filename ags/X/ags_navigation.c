@@ -452,7 +452,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   AgsApplicationContext *application_context;
   
   gchar *timestr;
-  double tact_factor, zoom_factor;
+  double tact_factor;
   double tact;
   gdouble delay;
   guint steps;
@@ -500,10 +500,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 			      AGS_TASK(seek_soundcard));
 
   /* update GUI */
-  zoom_factor = 0.25;
-
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
   if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
     gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
@@ -676,61 +673,13 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
 {
   AgsConfig *config;
   
-  gchar *str;
-  guint samplerate;
-  guint buffer_size;
-  gdouble delay;
-  gdouble delay_min, delay_sec, delay_msec;
   gchar *timestr;
+
+  gdouble delay_min, delay_sec, delay_msec;
   gdouble tact_redux;
   guint min, sec, msec;
 
-  config = ags_config_get_instance();
-  
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
-  
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
-  }
-
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
-  
-  /* buffer-size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
-  }
-
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-
   /* calculate delays */
-  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
-  
   delay_sec = ((bpm / delay_factor) / 60.0);
   delay_min = delay_sec * 60.0;
   delay_msec = delay_sec / 1000.0;

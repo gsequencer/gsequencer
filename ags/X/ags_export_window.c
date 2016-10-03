@@ -445,10 +445,14 @@ ags_export_window_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, export_window->soundcard);
+    {
+      g_value_set_object(value, export_window->soundcard);
+    }
     break;
   case PROP_APPLICATION_CONTEXT:
-    g_value_set_object(value, export_window->application_context);
+    {
+      g_value_set_object(value, export_window->application_context);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -463,6 +467,12 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   export_window = AGS_EXPORT_WINDOW(connectable);
 
+  if((AGS_EXPORT_WINDOW_CONNECTED & (export_window->flags)) != 0){
+    return;
+  }
+
+  export_window->flags |= AGS_EXPORT_WINDOW_CONNECTED;
+  
   g_signal_connect_after(G_OBJECT(export_window->file_chooser_button), "clicked\0",
 			 G_CALLBACK(ags_export_window_file_chooser_button_callback), export_window);
 
@@ -476,8 +486,33 @@ ags_export_window_connect(AgsConnectable *connectable)
 void
 ags_export_window_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK:
-  /* implement me */
+  AgsExportWindow *export_window;
+
+  export_window = AGS_EXPORT_WINDOW(connectable);
+
+  if((AGS_EXPORT_WINDOW_CONNECTED & (export_window->flags)) == 0){
+    return;
+  }
+
+  export_window->flags &= (~AGS_EXPORT_WINDOW_CONNECTED);
+  
+  g_object_disconnect(G_OBJECT(export_window->file_chooser_button),
+		      "clicked\0",
+		      G_CALLBACK(ags_export_window_file_chooser_button_callback),
+		      export_window,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(export_window->tact),
+		      "value-changed\0",
+		      G_CALLBACK(ags_export_window_tact_callback),
+		      export_window,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(export_window->export),
+		      "clicked\0",
+		      G_CALLBACK(ags_export_window_export_callback),
+		      export_window,
+		      NULL);
 }
 
 void
@@ -487,17 +522,21 @@ ags_export_window_finalize(GObject *gobject)
 
   export_window = (AgsExportWindow *) gobject;
 
+  if(export_window->soundcard != NULL){
+    g_object_unref(export_window->soundcard);
+  }
+
+  if(export_window->application_context != NULL){
+    g_object_unref(export_window->application_context);
+  }
+  
   G_OBJECT_CLASS(ags_export_window_parent_class)->finalize(gobject);
 }
 
 void
 ags_export_window_show(GtkWidget *widget)
 {
-  AgsExportWindow *export_window;
-
   GTK_WIDGET_CLASS(ags_export_window_parent_class)->show(widget);
-
-  export_window = (AgsExportWindow *) widget;
 }
 
 gboolean

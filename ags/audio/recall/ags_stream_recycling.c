@@ -40,13 +40,6 @@ AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
-void ags_stream_recycling_source_add_audio_signal_callback(AgsRecycling *source,
-							   AgsAudioSignal *audio_signal,
-							   AgsStreamRecycling *stream_recycling);
-void ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
-							      AgsAudioSignal *audio_signal,
-							      AgsStreamRecycling *stream_recycling);
-
 /**
  * SECTION:ags_stream_recycling
  * @short_description: streams recycling
@@ -172,16 +165,9 @@ ags_stream_recycling_finalize(GObject *gobject)
 void
 ags_stream_recycling_connect(AgsConnectable *connectable)
 {
-  AgsStreamRecycling *stream_recycling;
-
-  stream_recycling = AGS_STREAM_RECYCLING(connectable);
-
   ags_stream_recycling_parent_connectable_interface->connect(connectable);
 
-  //  g_signal_connect(AGS_RECALL_RECYCLING(stream_recycling)->source, "add_audio_signal\0",
-  //		   G_CALLBACK(ags_stream_recycling_source_add_audio_signal_callback), stream_recycling);
-  //  g_signal_connect(AGS_RECALL_RECYCLING(stream_recycling)->source, "remove_audio_signal\0",
-  //		   G_CALLBACK(ags_stream_recycling_source_remove_audio_signal_callback), stream_recycling);
+  /* empty */
 }
 
 void
@@ -219,30 +205,6 @@ ags_stream_recycling_duplicate(AgsRecall *recall,
 
 
   return((AgsRecall *) copy);
-}
-
-void
-ags_stream_recycling_source_add_audio_signal_callback(AgsRecycling *source,
-						      AgsAudioSignal *audio_signal,
-						      AgsStreamRecycling *stream_recycling)
-{
-  //  g_object_ref(audio_signal);
-}
-
-void
-ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
-							 AgsAudioSignal *audio_signal,
-							 AgsStreamRecycling *stream_recycling)
-{
-  AgsRemoveAudioSignal *remove_audio_signal;
-  //  AgsTaskThread *task_thread;
-  //  AgsUnrefAudioSignal *unref_audio_signal;
-
-  //  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_RECALL(gobject)->soundcard)->application_context)->main_loop)->task_thread;
-
-  //  unref_audio_signal = ags_unref_audio_signal_new(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
-  //  ags_task_thread_append_task(task_thread,
-  //			      unref_audio_signal);
 }
 
 /**

@@ -59,6 +59,7 @@ struct _AgsThreadPool
 
   volatile guint queued;
 
+  pthread_mutexattr_t *creation_mutexattr;
   pthread_mutex_t *creation_mutex;
   pthread_cond_t *creation_cond;
 
@@ -66,6 +67,7 @@ struct _AgsThreadPool
   volatile gboolean idle;
 
   pthread_mutex_t *idle_mutex;
+  pthread_mutexattr_t *idle_mutexattr;
   pthread_cond_t *idle_cond;
 
   AgsThread *parent;

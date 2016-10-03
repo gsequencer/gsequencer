@@ -149,10 +149,6 @@ ags_single_thread_finalize(GObject *gobject)
 void
 ags_single_thread_start(AgsThread *thread)
 {
-  AgsSingleThread *single_thread;
-
-  single_thread = AGS_SINGLE_THREAD(thread);
-
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_RUNNING |
 		   AGS_THREAD_INITIAL_RUN));

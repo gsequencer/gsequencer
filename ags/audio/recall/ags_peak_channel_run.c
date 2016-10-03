@@ -160,10 +160,6 @@ ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run)
 void
 ags_peak_channel_run_finalize(GObject *gobject)
 {
-  AgsPeakChannelRun *peak_channel_run;
-
-  peak_channel_run = AGS_PEAK_CHANNEL_RUN(gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_peak_channel_run_parent_class)->finalize(gobject);
 }
@@ -171,28 +167,28 @@ ags_peak_channel_run_finalize(GObject *gobject)
 void
 ags_peak_channel_run_connect(AgsConnectable *connectable)
 {
-  AgsPeakChannelRun *peak_channel_run;
-
+  /* call parent */
   ags_peak_channel_run_parent_connectable_interface->connect(connectable);
-
-  peak_channel_run = AGS_PEAK_CHANNEL_RUN(connectable);
 }
 
 void
 ags_peak_channel_run_disconnect(AgsConnectable *connectable)
 {
+  /* call parent */
   ags_peak_channel_run_parent_connectable_interface->disconnect(connectable);
 }
 
 void
 ags_peak_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  /* call parent */
   ags_peak_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
 void
 ags_peak_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  /* call parent */
   ags_peak_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
 
@@ -201,13 +197,8 @@ ags_peak_channel_run_duplicate(AgsRecall *recall,
 			     AgsRecallID *recall_id,
 			     guint *n_params, GParameter *parameter)
 {
-  AgsPeakChannelRun *peak_channel_run, *copy;
+  AgsPeakChannelRun *copy;
 
-  peak_channel_run = (AgsPeakChannelRun *) recall;
-  
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 NULL);
   copy = (AgsPeakChannelRun *) AGS_RECALL_CLASS(ags_peak_channel_run_parent_class)->duplicate(recall,
 											      recall_id,
 											      n_params, parameter);

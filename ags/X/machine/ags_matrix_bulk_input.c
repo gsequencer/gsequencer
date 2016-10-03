@@ -29,6 +29,7 @@ void ags_matrix_bulk_input_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input);
 void ags_matrix_bulk_input_connect(AgsConnectable *connectable);
 void ags_matrix_bulk_input_disconnect(AgsConnectable *connectable);
+void ags_matrix_bulk_input_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_matrix_bulk_input
@@ -99,6 +100,8 @@ ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input)
 
   /* GObjectClass */
   gobject = G_OBJECT_CLASS(matrix_bulk_input);
+
+  gobject->finalize = ags_matrix_bulk_input_finalize;
 }
 
 void
@@ -155,6 +158,11 @@ ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+void
+ags_matrix_bulk_input_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_matrix_bulk_input_parent_class)->finalize(gobject);
+}
 
 /**
  * ags_matrix_bulk_input_new:

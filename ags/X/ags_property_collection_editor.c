@@ -122,6 +122,8 @@ void
 ags_property_collection_editor_init(AgsPropertyCollectionEditor *property_collection_editor)
 {
   GtkAlignment *alignment;
+
+  property_collection_editor->flags = 0;
   
   property_collection_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 16);
   gtk_box_pack_start(GTK_BOX(property_collection_editor),
@@ -145,8 +147,12 @@ void
 ags_property_collection_editor_connect(AgsConnectable *connectable)
 {
   AgsPropertyCollectionEditor *property_collection_editor;
-  GList *pad_list;
 
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(connectable)->flags)) != 0){
+    return;
+  }
+  
+  /* call parent */
   ags_property_collection_editor_parent_connectable_interface->connect(connectable);
 
   /* AgsPropertyCollectionEditor */
@@ -159,7 +165,23 @@ ags_property_collection_editor_connect(AgsConnectable *connectable)
 void
 ags_property_collection_editor_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPropertyCollectionEditor *property_collection_editor;
+
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(connectable)->flags)) != 0){
+    return;
+  }
+  
+  /* AgsPropertyCollectionEditor */
+  property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(connectable);
+
+  g_object_disconnect(G_OBJECT(property_collection_editor->add_collection),
+		      "clicked\0",
+		      G_CALLBACK(ags_property_collection_editor_add_collection_callback),
+		      property_collection_editor,
+		      NULL);
+
+  /* call parent */
+  ags_property_collection_editor_parent_connectable_interface->connect(connectable);
 }
 
 void

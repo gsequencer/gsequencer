@@ -144,7 +144,6 @@ void
 ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 {
   GObjectClass *gobject;
-  AgsRecallClass *recall;
   GParamSpec *param_spec;
 
   ags_peak_channel_parent_class = g_type_class_peek_parent(peak_channel);
@@ -156,9 +155,6 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
   gobject->get_property = ags_peak_channel_get_property;
 
   gobject->finalize = ags_peak_channel_finalize;
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) peak_channel;
 
   /* properties */
   param_spec = g_param_spec_object("peak\0",
@@ -315,7 +311,6 @@ void
 ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 			       gboolean is_play)
 {
-  AgsRecall *recall;
   AgsChannel *source;
   AgsRecycling *recycling;
 
@@ -339,8 +334,6 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   if(peak_channel == NULL){
     return;
   }
-
-  recall = (AgsRecall *) peak_channel;
 
   config = ags_config_get_instance();
   

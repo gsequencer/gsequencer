@@ -1,11 +1,13 @@
 ags (0.7.74)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_buffer_util_put_varlength() to encode multi-byte properly
 	* reverted AgsThread frequency
 	* added additional parameter to ags_ladspa_manager.c to pass instance
 	* added additional parameter to ags_dssi_manager.c to pass instance
 	* added additional parameter to ags_lv2_manager.c to pass instance
 	* added additional parameter to ags_lv2ui_manager.c to pass instance
+	* improved AgsFFPlayer to resize audio channels
 	* TODO:JK: fixed most clang scan-build errors
 	* TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
 	* TODO:JK: implemented AgsPlaybackDomain properties

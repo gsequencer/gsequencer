@@ -458,11 +458,11 @@ ags_synth_generator_read(AgsFile *file,
 			 xmlNode *node,
 			 AgsPlugin *plugin)
 {
-  AgsSynthGenerator *gobject;
+  //  AgsSynthGenerator *gobject;
 
-  xmlChar *str;
+  //  xmlChar *str;
 
-  gobject = AGS_SYNTH_GENERATOR(plugin);
+  //  gobject = AGS_SYNTH_GENERATOR(plugin);
   
   //TODO:JK: implement me
 }

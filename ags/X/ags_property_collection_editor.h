@@ -43,6 +43,8 @@ struct _AgsPropertyCollectionEditor
 {
   AgsPropertyEditor property_editor;
 
+  guint flags;
+  
   GType child_type;
   guint child_parameter_count;
   GParameter *child_parameter;

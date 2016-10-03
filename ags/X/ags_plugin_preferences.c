@@ -33,7 +33,6 @@ void ags_plugin_preferences_init(AgsPluginPreferences *plugin_preferences);
 void ags_plugin_preferences_connect(AgsConnectable *connectable);
 void ags_plugin_preferences_disconnect(AgsConnectable *connectable);
 static void ags_plugin_preferences_finalize(GObject *gobject);
-void ags_plugin_preferences_show(GtkWidget *widget);
 
 void ags_plugin_preferences_reset(AgsPluginPreferences *plugin_preferences);
 void* ags_plugin_preferences_refresh(void *ptr);
@@ -90,7 +89,6 @@ void
 ags_plugin_preferences_class_init(AgsPluginPreferencesClass *plugin_preferences)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
 
   ags_plugin_preferences_parent_class = g_type_class_peek_parent(plugin_preferences);
 
@@ -98,11 +96,6 @@ ags_plugin_preferences_class_init(AgsPluginPreferencesClass *plugin_preferences)
   gobject = (GObjectClass *) plugin_preferences;
 
   gobject->finalize = ags_plugin_preferences_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) plugin_preferences;
-
-  widget->show = ags_plugin_preferences_show;
 }
 
 void
@@ -123,9 +116,7 @@ ags_plugin_preferences_init(AgsPluginPreferences *plugin_preferences)
 void
 ags_plugin_preferences_connect(AgsConnectable *connectable)
 {
-  AgsPluginPreferences *plugin_preferences;
-
-  plugin_preferences = AGS_PLUGIN_PREFERENCES(connectable);
+  /* empty */
 }
 
 void
@@ -137,17 +128,7 @@ ags_plugin_preferences_disconnect(AgsConnectable *connectable)
 static void
 ags_plugin_preferences_finalize(GObject *gobject)
 {
-}
-
-void
-ags_plugin_preferences_show(GtkWidget *widget)
-{
-  AgsPluginPreferences *plugin_preferences;
-  pthread_t thread;
-
-  plugin_preferences = AGS_PLUGIN_PREFERENCES(widget);
-  
-  GTK_WIDGET_CLASS(ags_plugin_preferences_parent_class)->show(widget);
+  G_OBJECT_CLASS(ags_plugin_preferences_parent_class)->finalize(gobject);
 }
 
 AgsLadspaPluginPreferences*

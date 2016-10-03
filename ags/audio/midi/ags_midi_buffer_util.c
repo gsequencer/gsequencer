@@ -84,19 +84,23 @@ void
 ags_midi_buffer_util_put_varlength(unsigned char *buffer,
 				   glong varlength)
 {
+  guint varlength_size;
   guint i, j;
   glong mask;
 
-  i = ags_midi_buffer_util_get_varlength_size(varlength);
-  mask = 0xff;
-  
+  varlength_size = ags_midi_buffer_util_get_varlength_size(varlength);
+
   /* write to internal buffer */
   mask = 0x7f;
-  j = 8 * i;
-  i = 8 * i - 1;
+  j = 8 * varlength_size;
+  i = 8 * varlength_size - 1;
 
   for(; i > 0; ){
     buffer[j] = ((mask << (i - 7)) & varlength) >> (i * 7);
+
+    if(j < varlength_size){
+      buffer[j] |= 0x80;
+    }
     
     i -= 7;
     j -= 8;

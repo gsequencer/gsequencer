@@ -101,12 +101,7 @@ ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector)
 {
-  GObjectClass *gobject;
-
   ags_machine_selector_parent_class = g_type_class_peek_parent(machine_selector);
-
-  /* GObjectClass */
-  gobject = (GObjectClass *) machine_selector;
 
   /* AgsMachineSelectorClass */
   machine_selector->changed = NULL;

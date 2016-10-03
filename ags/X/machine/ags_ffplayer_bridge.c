@@ -98,13 +98,7 @@ ags_ffplayer_bridge_get_type(void)
 void
 ags_ffplayer_bridge_class_init(AgsFFPlayerBridgeClass *ffplayer_bridge)
 {
-  GObjectClass *gobject;
-  GParamSpec *param_spec;
-
   ags_ffplayer_bridge_parent_class = g_type_class_peek_parent(ffplayer_bridge);
-
-  /* GObjectClass */
-  gobject = G_OBJECT_CLASS(ffplayer_bridge);
 }
 
 void
@@ -145,7 +139,7 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  expander = gtk_expander_new("show/hide\0");
+  expander = (GtkExpander *) gtk_expander_new("show/hide\0");
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) expander);
 

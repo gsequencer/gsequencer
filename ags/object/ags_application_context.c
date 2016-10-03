@@ -253,7 +253,6 @@ ags_application_context_init(AgsApplicationContext *application_context)
 {
   GFile *file;
   struct passwd *pw;
-  pthread_mutexattr_t mutexattr;
 
   application_context->flags = 0;
 
@@ -267,11 +266,20 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->domain = NULL;
   application_context->config = NULL;
 
-  pthread_mutexattr_init(&(mutexattr));
-  pthread_mutexattr_settype(&(mutexattr), PTHREAD_MUTEX_RECURSIVE);
+  application_context->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
+  pthread_mutexattr_init(application_context->mutexattr);
+  pthread_mutexattr_settype(application_context->mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(application_context->mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  
   application_context->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(application_context->mutex, &(mutexattr));
+  pthread_mutex_init(application_context->mutex, application_context->mutexattr);
 
   application_context->main_loop = NULL;
   application_context->task_thread = NULL;
@@ -428,11 +436,32 @@ ags_application_context_finalize(GObject *gobject)
 {
   AgsApplicationContext *application_context;
 
-  G_OBJECT_CLASS(ags_application_context_parent_class)->finalize(gobject);
-
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
-  //TODO:JK: implement me
+  /* application mutex */
+  pthread_mutexattr_destroy(application_context->mutexattr);
+  free(application_context->mutexattr);
+
+  pthread_mutex_destroy(application_context->mutex);
+  free(application_context->mutex);
+
+  /* config */
+  if(application_context->config != NULL){
+    g_object_unref(application_context->config);
+  }
+  
+  /* main loop */
+  if(application_context->main_loop != NULL){
+    g_object_unref(application_context->main_loop);
+  }
+  
+  /* file */
+  if(application_context->file != NULL){
+    g_object_unref(application_context->file);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_application_context_parent_class)->finalize(gobject);
 }
 
 void

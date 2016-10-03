@@ -79,6 +79,7 @@ struct _AgsApplicationContext
   
   AgsConfig *config;
 
+  pthread_mutexattr_t *mutexattr;
   pthread_mutex_t *mutex;
   
   GObject *main_loop;

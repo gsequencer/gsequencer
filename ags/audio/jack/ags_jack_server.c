@@ -342,6 +342,12 @@ ags_jack_server_finalize(GObject *gobject)
 
   jack_server = AGS_JACK_SERVER(gobject);
 
+  if(jack_server->application_context != NULL){
+    jack_server->application_context = NULL;
+  }
+
+  g_free(jack_server->url);
+  
   G_OBJECT_CLASS(ags_jack_server_parent_class)->finalize(gobject);
 }
 

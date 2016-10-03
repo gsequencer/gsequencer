@@ -171,7 +171,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 						       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->cut,
-			    (GtkWidget *) "cut automation\0",
+			    "cut automation\0",
 			    NULL);
 
   automation_toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
@@ -436,7 +436,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
-
+    
     if(specifier != NULL){
       specifier[length] = NULL;
     }
@@ -563,17 +563,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     GList *automation_area;
 
     GList *list;
-
-    gboolean found_audio, found_output, found_input;
     
     audio = machine->audio;
     list = audio->automation;
     
-    /* add port */
-    found_audio = FALSE;
-    found_output = FALSE;
-    found_input = FALSE;
-
     /* set bypass */
     while((list = ags_automation_find_specifier(list,
 						control_name)) != NULL){
@@ -583,7 +576,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* remove audio port */
-    automation_edit = automation_editor->current_audio_automation_edit;
+    automation_edit = (AgsAutomationEdit *) automation_editor->current_audio_automation_edit;
     scale = automation_editor->current_audio_scale;
 
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
@@ -603,7 +596,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* remove output port */
-    automation_edit = automation_editor->current_output_automation_edit;
+    automation_edit = (AgsAutomationEdit *) automation_editor->current_output_automation_edit;
     scale = automation_editor->current_output_scale;
     
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
@@ -623,7 +616,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
 
     /* remove input port */
-    automation_edit = automation_editor->current_input_automation_edit;
+    automation_edit = (AgsAutomationEdit *) automation_editor->current_input_automation_edit;
     scale = automation_editor->current_input_scale;
     
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
