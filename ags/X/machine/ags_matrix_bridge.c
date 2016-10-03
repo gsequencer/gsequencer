@@ -34,6 +34,7 @@ void ags_matrix_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge);
 void ags_matrix_bridge_connect(AgsConnectable *connectable);
 void ags_matrix_bridge_disconnect(AgsConnectable *connectable);
+void ags_matrix_bridge_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_matrix_bridge
@@ -104,6 +105,8 @@ ags_matrix_bridge_class_init(AgsMatrixBridgeClass *matrix_bridge)
 
   /* GObjectClass */
   gobject = G_OBJECT_CLASS(matrix_bridge);
+
+  gobject->finalize = ags_matrix_bridge_finalize;
 }
 
 void
@@ -182,6 +185,12 @@ ags_matrix_bridge_disconnect(AgsConnectable *connectable)
   ags_matrix_bridge_parent_connectable_interface->connect(connectable);
 
   //TODO:JK: implement me
+}
+
+void
+ags_matrix_bridge_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_matrix_bridge_parent_class)->finalize(gobject);
 }
 
 /**

@@ -55,12 +55,6 @@ struct _AgsCountBeatsAudioRun
   guint notation_hide_ref_counter;
   guint sequencer_hide_ref_counter;
 
-  gulong sequencer_alloc_output_handler;
-  gulong sequencer_count_handler;
-
-  gulong notation_alloc_output_handler;
-  gulong notation_count_handler;
-
   AgsDelayAudioRun *delay_audio_run;
 };
 

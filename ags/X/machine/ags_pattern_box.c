@@ -383,10 +383,63 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 {
   AgsPatternBox *pattern_box;
 
+  GList *list, *list_start;
+
+  if((AGS_PATTERN_BOX_CONNECTED & (AGS_PATTERN_BOX(connectable)->flags)) == 0){
+    return;
+  }
+
   /* AgsPatternBox */
   pattern_box = AGS_PATTERN_BOX(connectable);
 
-  //TODO:JK: implement me
+  pattern_box->flags &= (~AGS_PATTERN_BOX_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(pattern_box),
+		      "focus_in_event\0",
+		      G_CALLBACK(ags_pattern_box_focus_in_callback),
+		      (gpointer) pattern_box,
+		      "focus_out_event\0",
+		      G_CALLBACK(ags_pattern_box_focus_out_callback),
+		      (gpointer) pattern_box,
+		      "key_press_event\0",
+		      G_CALLBACK(ags_pattern_box_key_press_event),
+		      (gpointer) pattern_box,
+		      "key_release_event\0",
+		      G_CALLBACK(ags_pattern_box_key_release_event),
+		      (gpointer) pattern_box,
+		      NULL);
+
+  /* connect pattern */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+
+  while(list != NULL){
+    g_object_disconnect(G_OBJECT(list->data),
+			"clicked\0",
+			G_CALLBACK(ags_pattern_box_pad_callback),
+			(gpointer) pattern_box,
+			NULL);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* connect pattern offset range */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
+
+  while(list != NULL){
+    g_object_disconnect(G_OBJECT(list->data),
+			"clicked\0",
+			G_CALLBACK(ags_pattern_box_offset_callback),
+			(gpointer) pattern_box,
+			NULL);
+		   
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 AtkObject*
@@ -707,7 +760,6 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 {
   if(g_hash_table_lookup(ags_pattern_box_led_queue_draw,
 			 pattern_box) != NULL){
-    AgsWindow *window;
     AgsMachine *machine;
 
     AgsAudio *audio;
@@ -719,11 +771,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     AgsMutexManager *mutex_manager;
 
     GList *list, *active;
-    guint offset;
     guint active_led_new;
     guint i;
-    
-    GValue value = {0,};
 
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
@@ -750,10 +799,6 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 					   (GObject *) machine->audio);
   
     pthread_mutex_unlock(application_mutex);
-
-    /* get window and application_context  */
-    window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) machine,
-						AGS_TYPE_WINDOW));
 
     /* get some recalls */
     pthread_mutex_lock(audio_mutex);
@@ -804,11 +849,9 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     
     /* offset */
     list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
-    offset = 0;
     
     for(i = 0; list != NULL; i++){
       if(gtk_toggle_button_get_active(list->data)){
-	offset = i;
 	break;
       }
 

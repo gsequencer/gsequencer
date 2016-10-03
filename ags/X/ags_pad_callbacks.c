@@ -295,9 +295,7 @@ ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
   GtkMessageDialog *dialog;
   
   AgsSoundcardThread *soundcard_thread;
-  AgsTask *task;
 
-  task = (AgsTask *) task_completion->task;
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						 AGS_TYPE_WINDOW);
   soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
@@ -327,38 +325,26 @@ ags_pad_start_complete_response(GtkWidget *dialog,
 void
 ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 { 
-  AgsWindow *window;
   AgsSoundcard *soundcard;
   AgsChannel *channel, *next_pad;
   AgsRecycling *recycling, *end_recycling;
 
   AgsAddAudioSignal *add_audio_signal;
 
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
   AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
   
-  GList *recall, *tmp;
+  GList *recall;
   GList *list, *list_start;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) input_pad,
-						 AGS_TYPE_WINDOW);
-  application_context = (AgsApplicationContext *) window->application_context; 
  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get audio loop and audio mutex */
   pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
   
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) input_pad->channel->audio);
@@ -371,10 +357,6 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   soundcard = AGS_SOUNDCARD(AGS_AUDIO(input_pad->channel->audio)->soundcard);
   
   pthread_mutex_unlock(audio_mutex);
-
-  /* find task thread */
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
 
   /* get pad children */
   list_start = 
@@ -419,7 +401,6 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 							     G_OBJECT(channel),
 							     G_OBJECT(AGS_PLAYBACK(channel->playback)->recall_id[0]->recycling_context));
     
-    tmp = recall;
     recall = ags_recall_find_type(recall,
 				  AGS_TYPE_PLAY_CHANNEL_RUN);
       

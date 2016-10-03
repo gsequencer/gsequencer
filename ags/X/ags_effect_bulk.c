@@ -2022,7 +2022,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   GList *port;
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_lv2_manager_get_instance(),
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
   port = NULL;
   
@@ -2220,26 +2220,28 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   }
   
   /* remove recalls */
-  for(i = 0; i < pads; i++){
-    for(j = 0; j < audio_channels; j++){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
+  if(current != NULL){
+    for(i = 0; i < pads; i++){
+      for(j = 0; j < audio_channels; j++){
+	/* get channel mutex */
+	pthread_mutex_lock(application_mutex);
 
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) current);
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) current);
   
-      pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(application_mutex);
 
-      /* remove effect */
-      ags_channel_remove_effect(current,
-				nth_effect);
+	/* remove effect */
+	ags_channel_remove_effect(current,
+				  nth_effect);
 
-      /* iterate */
-      pthread_mutex_lock(channel_mutex);
+	/* iterate */
+	pthread_mutex_lock(channel_mutex);
       
-      current = current->next;
+	current = current->next;
 
-      pthread_mutex_unlock(channel_mutex);	  
+	pthread_mutex_unlock(channel_mutex);	  
+      }
     }
   }
 }
@@ -2356,16 +2358,17 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
       current = ags_channel_nth(current,
 				old_size);
 
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) current);
-  
-      pthread_mutex_unlock(application_mutex);
-
       /*  */      
       for(j = old_size; j < new_size; j++){
+	/* get channel mutex */
+	pthread_mutex_lock(application_mutex);
+
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) current);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* add effect */
 	effect_bulk_plugin = effect_bulk->plugin;
 
 	while(effect_bulk_plugin != NULL){
@@ -2504,17 +2507,18 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
     current = ags_channel_pad_nth(current,
 				  old_size);
 
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) current);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /*  */
     for(i = old_size; i < new_size; i++){
       for(j = 0; j < audio_channels; j++){    
+	/* get channel mutex */
+	pthread_mutex_lock(application_mutex);
+
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) current);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* add effect */
 	effect_bulk_plugin = effect_bulk->plugin;
 
 	while(effect_bulk_plugin != NULL){

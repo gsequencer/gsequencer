@@ -903,14 +903,12 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 						   guint frame_count,
 						   gdouble delay, guint attack)
 {
-  GObject *soundcard;
   AgsAudioSignal *template;
 
   AgsMutexManager *mutex_manager;
 
   GList *stream, *template_stream, *template_loop;
 
-  guint first_frame;
   guint loop_length;
   guint loop_frame_count;
   guint n_frames;
@@ -951,8 +949,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   audio_signal->soundcard = template->soundcard;
 
-  soundcard = audio_signal->soundcard;
-
   audio_signal->recycling = (GObject *) recycling;
 
   audio_signal->samplerate = template->samplerate;
@@ -975,8 +971,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 			    template->loop_end);
 
   /* resize */
-  first_frame = (guint) floor((delay * audio_signal->buffer_size) + attack) % audio_signal->buffer_size;
-
   if(template->loop_end > template->loop_start){
     loop_length = template->loop_end - template->loop_start;
     loop_frame_count = ((frame_count - template->loop_start) / loop_length) * template->buffer_size + (template->loop_end - template->loop_start);

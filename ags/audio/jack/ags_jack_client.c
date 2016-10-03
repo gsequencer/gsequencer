@@ -280,7 +280,11 @@ ags_jack_client_finalize(GObject *gobject)
   AgsJackClient *jack_client;
 
   jack_client = AGS_JACK_CLIENT(gobject);
-
+  
+  if(jack_client->jack_server != NULL){
+    g_object_unref(jack_client->jack_server);
+  }
+  
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
 
@@ -635,7 +639,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
   /*  */  
   pthread_mutex_lock(application_mutex);
-  
+
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) ptr);
   
@@ -648,6 +652,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
   if(jack_client->jack_server != NULL){
     application_context = (AgsApplicationContext *) AGS_JACK_SERVER(jack_client->jack_server)->application_context;
+  }else{
+    application_context = NULL;
   }
 
   device = jack_client->device;
@@ -656,15 +662,22 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
   /*  */  
   pthread_mutex_lock(application_mutex);
-    
-  audio_loop = (AgsAudioLoop *) application_context->main_loop;
-  task_thread = (AgsTaskThread *) application_context->task_thread;
+
+  if(application_context != NULL){
+    audio_loop = (AgsAudioLoop *) application_context->main_loop;
+    task_thread = (AgsTaskThread *) application_context->task_thread;
+  }else{
+    audio_loop = NULL;
+    task_thread = NULL;
+  }
   
   pthread_mutex_unlock(application_mutex);
 
   /* interrupt GUI */
-  pthread_mutex_lock(task_thread->launch_mutex);
-
+  if(task_thread != NULL){
+    pthread_mutex_lock(task_thread->launch_mutex);
+  }
+  
   if(audio_loop != NULL){
     pthread_mutex_lock(audio_loop->timing_mutex);
   
@@ -678,8 +691,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 			    0, &time_spent);
   }
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
-
+  if(task_thread != NULL){
+    pthread_mutex_unlock(task_thread->launch_mutex);
+  }
+  
   if(device == NULL){
     return(0);
   }
@@ -695,6 +710,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     pthread_mutex_unlock(application_mutex);
 
     pthread_mutex_lock(device_mutex);
+
+    jack_devout = NULL;
     
     if(AGS_IS_JACK_DEVOUT(device->data)){
       jack_devout = (AgsJackDevout *) device->data;
@@ -821,6 +838,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
       /*  */
       if(!no_event){
+	/* signal finish */
+	pthread_mutex_lock(device_mutex);
+
+	callback_finish_mutex = jack_devout->callback_finish_mutex;
+
+	pthread_mutex_unlock(device_mutex);
+	
 	pthread_mutex_lock(callback_finish_mutex);
 
 	g_atomic_int_or(&(jack_devout->sync_flags),
@@ -840,13 +864,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     /* reset - switch buffer flags */
     ags_jack_devout_switch_buffer_flag(jack_devout);
     
-    pthread_mutex_unlock(device_mutex);
-
-    /* signal finish */
-    pthread_mutex_lock(device_mutex);
-
-    callback_finish_mutex = jack_devout->callback_finish_mutex;
-
     pthread_mutex_unlock(device_mutex);
 
     /* iterate */

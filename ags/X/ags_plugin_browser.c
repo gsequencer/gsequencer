@@ -137,6 +137,8 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   
   GList *list;
 
+  plugin_browser->flags = 0;
+
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) plugin_browser->dialog.vbox,
 		     GTK_WIDGET(vbox),
@@ -213,10 +215,15 @@ void
 ags_plugin_browser_connect(AgsConnectable *connectable)
 {
   AgsPluginBrowser *plugin_browser;
-  GList *list, *list_start;
 
   plugin_browser = AGS_PLUGIN_BROWSER(connectable);
 
+  if((AGS_PLUGIN_BROWSER_CONNECTED & (plugin_browser->flags)) != 0){
+    return;
+  }
+
+  plugin_browser->flags |= AGS_PLUGIN_BROWSER_CONNECTED;
+  
   g_signal_connect(plugin_browser->plugin_type, "changed\0",
 		   G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback), plugin_browser);
   
@@ -234,39 +241,54 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 void
 ags_plugin_browser_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPluginBrowser *plugin_browser;
+
+  plugin_browser = AGS_PLUGIN_BROWSER(connectable);
+
+  if((AGS_PLUGIN_BROWSER_CONNECTED & (plugin_browser->flags)) == 0){
+    return;
+  }
+
+  plugin_browser->flags &= (~AGS_PLUGIN_BROWSER_CONNECTED);
+  
+  g_object_disconnect(plugin_browser->plugin_type,
+		      "changed\0",
+		      G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback),
+		      plugin_browser,
+		      NULL);
+  
+  ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
+  ags_connectable_disconnect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
+
+  /* AgsPluginBrowser buttons */
+  g_object_disconnect((GObject *) plugin_browser->ok,
+		      "clicked\0",
+		      G_CALLBACK(ags_plugin_browser_ok_callback),
+		      (gpointer) plugin_browser,
+		      NULL);
+
+  g_object_disconnect((GObject *) plugin_browser->cancel,
+		      "clicked\0",
+		      G_CALLBACK(ags_plugin_browser_cancel_callback),
+		      (gpointer) plugin_browser,
+		      NULL);
 }
 
 void
 ags_plugin_browser_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsPluginBrowser *plugin_browser;
-
-  plugin_browser = AGS_PLUGIN_BROWSER(applicable);
-
   /* empty */
 }
 
 void
 ags_plugin_browser_apply(AgsApplicable *applicable)
 {
-  AgsPluginBrowser *plugin_browser;
-  GtkComboBoxText *filename, *effect;
-
-  plugin_browser = AGS_PLUGIN_BROWSER(applicable);
-
   //TODO:JK: implement me
 }
 
 void
 ags_plugin_browser_reset(AgsApplicable *applicable)
 {
-  AgsPluginBrowser *plugin_browser;
-  GtkComboBoxText *filename;
-  GList *list;
-
-  plugin_browser = AGS_PLUGIN_BROWSER(applicable);
-
   //TODO:JK: implement me
 }
 

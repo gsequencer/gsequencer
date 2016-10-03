@@ -325,6 +325,8 @@ ags_notebook_size_request(AgsNotebook *notebook,
 
     list = list->next;
   }
+
+  g_list_free(list_start);
   
   if(GTK_WIDGET(notebook)->parent == NULL){
     return;
@@ -339,12 +341,8 @@ void
 ags_notebook_connect(AgsConnectable *connectable)
 {
   AgsNotebook *notebook;
-  AgsEditor *editor;
 
   notebook = AGS_NOTEBOOK(connectable);
-
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook,
-						 AGS_TYPE_EDITOR);
 
   notebook->scroll_prev_handler = g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked\0",
 						   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);

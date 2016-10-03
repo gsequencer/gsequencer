@@ -251,6 +251,12 @@ ags_lv2ui_plugin_finalize(GObject *gobject)
   AgsLv2uiPlugin *lv2ui_plugin;
 
   lv2ui_plugin = AGS_LV2UI_PLUGIN(gobject);
+
+  g_free(lv2ui_plugin->uri);
+
+  if(lv2ui_plugin->turtle != NULL){
+    g_object_unref(lv2ui_plugin->turtle);
+  }
 }
 
 void

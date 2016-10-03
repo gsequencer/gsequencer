@@ -24,12 +24,8 @@ ags_notebook_scroll_prev_callback(GtkWidget *button,
 				  AgsNotebook *notebook)
 {
   GtkAdjustment *adjustment;
-  
-  gint length;
-  
+    
   adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
-
-  length = g_list_length(notebook->tabs);
 
   if(adjustment->value - adjustment->step_increment > 0){
     gtk_adjustment_set_value(adjustment,
@@ -47,12 +43,8 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
 				  AgsNotebook *notebook)
 {
   GtkAdjustment *adjustment;
-
-  gint length;
   
   adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
-
-  length = g_list_length(notebook->tabs);
   
   if(adjustment->value + adjustment->step_increment < adjustment->upper - adjustment->page_size){
     gtk_adjustment_set_value(adjustment,

@@ -374,9 +374,6 @@ ags_soundcard_thread_start(AgsThread *thread)
 void
 ags_soundcard_thread_run(AgsThread *thread)
 {
-  AgsThread *parent;
-  
-  AgsAudioLoop *audio_loop;
   AgsSoundcardThread *soundcard_thread;
 
   AgsSoundcard *soundcard;
@@ -388,7 +385,6 @@ ags_soundcard_thread_run(AgsThread *thread)
   GError *error;
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
-  audio_loop = (AgsAudioLoop *) ags_thread_get_toplevel(thread);
   
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -406,8 +402,6 @@ ags_soundcard_thread_run(AgsThread *thread)
   }
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
-
-  parent = g_atomic_pointer_get(&(thread->parent));
   
   if(ags_soundcard_is_playing(soundcard)){
     error = NULL;

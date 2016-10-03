@@ -327,6 +327,8 @@ ags_effect_pad_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_CHANNEL:
     {
+      g_value_set_object(value,
+			 effect_pad->channel);
     }
     break;
   default:
@@ -339,6 +341,7 @@ void
 ags_effect_pad_connect(AgsConnectable *connectable)
 {
   AgsEffectPad *effect_pad;
+
   GList *effect_line_list, *effect_line_list_start;
 
   /* AgsEffect_Pad */
@@ -374,7 +377,30 @@ ags_effect_pad_connect(AgsConnectable *connectable)
 void
 ags_effect_pad_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsEffectPad *effect_pad;
+
+  GList *effect_line_list, *effect_line_list_start;
+
+  /* AgsEffect_Pad */
+  effect_pad = AGS_EFFECT_PAD(connectable);
+
+  if((AGS_EFFECT_PAD_CONNECTED & (effect_pad->flags)) == 0){
+    return;
+  }
+  
+  effect_pad->flags &= (~AGS_EFFECT_PAD_CONNECTED);
+
+  /* AgsEffectLine */
+  effect_line_list_start =  
+    effect_line_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+  while(effect_line_list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(effect_line_list->data));
+
+    effect_line_list = effect_line_list->next;
+  }
+
+  g_list_free(effect_line_list_start);
 }
 
 gchar*
@@ -429,14 +455,13 @@ void
 ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_type,
 				 guint audio_channels, guint audio_channels_old)
 {
-  AgsEffectBridge *effect_bridge;
   AgsEffectLine *effect_line;
+
   AgsChannel *channel;
+
   GList *list, *list_next;
-  guint i, j;
-  
-  effect_bridge = (AgsEffectBridge *) gtk_widget_get_ancestor((GtkWidget *) effect_pad,
-							      AGS_TYPE_EFFECT_BRIDGE);
+
+  guint i, j;  
   
   if(audio_channels > audio_channels_old){
     channel = ags_channel_nth(effect_pad->channel,

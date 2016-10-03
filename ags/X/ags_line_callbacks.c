@@ -342,18 +342,13 @@ void
 ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 				AgsLine *line)
 {
-  AgsWindow *window;
-  AgsMachine *machine;
   GtkWidget *child;
 
   AgsPort *port;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
-  AgsApplicationContext *application_context;
-  
   GList *list, *list_start;
 
   gdouble peak;
@@ -365,25 +360,10 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   /* lock gdk threads */
   gdk_threads_enter();
-  
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
-						   AGS_TYPE_MACHINE);
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-  
-  application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
   list_start = 
     list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);
 

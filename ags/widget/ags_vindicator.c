@@ -142,7 +142,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   width = 16;
   height = 100;
 
-  segment_width = 16;
+  segment_width = width;
   segment_height = 7;
 
   padding = 3;

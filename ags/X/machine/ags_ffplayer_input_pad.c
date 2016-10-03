@@ -30,16 +30,9 @@ void ags_ffplayer_input_pad_class_init(AgsFFPlayerInputPadClass *ffplayer_input_
 void ags_ffplayer_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_input_pad_init(AgsFFPlayerInputPad *ffplayer_input_pad);
-void ags_ffplayer_input_pad_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_ffplayer_input_pad_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
 void ags_ffplayer_input_pad_connect(AgsConnectable *connectable);
 void ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable);
+void ags_ffplayer_input_pad_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_ffplayer_input_pad
@@ -110,6 +103,8 @@ ags_ffplayer_input_pad_class_init(AgsFFPlayerInputPadClass *ffplayer_input_pad)
 
   /* GObjectClass */
   gobject = (GObjectClass *) ffplayer_input_pad;
+
+  gobject->finalize = ags_ffplayer_input_pad_finalize;
 }
 
 void
@@ -157,7 +152,19 @@ ags_ffplayer_input_pad_connect(AgsConnectable *connectable)
 void
 ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable)
 {
+  if((AGS_EFFECT_PAD_CONNECTED & (AGS_EFFECT_PAD(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_ffplayer_input_pad_parent_connectable_interface->disconnect(connectable);
+
   //TODO:JK: implement me
+}
+
+void
+ags_ffplayer_input_pad_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_ffplayer_input_pad_parent_class)->finalize(gobject);
 }
 
 /**

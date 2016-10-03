@@ -688,10 +688,6 @@ ags_ipatch_level_select(AgsPlayable *playable,
 
 	ipatch->iter = list;
       }else{
-	gboolean found_first;
-
-	found_first = FALSE;
-
 	if(nth_level == 2){
 	  GList *tmp;
 
@@ -931,16 +927,13 @@ ags_ipatch_get_format(AgsPlayable *playable)
   guint format;
   
   ipatch = AGS_IPATCH(playable);
+  sample = NULL;
 
   if(ipatch->nth_level == 3){
     if(ipatch->iter != NULL){
       sample = IPATCH_SAMPLE(ipatch->iter->data);
-    }else{
-      sample = NULL;
     }
   }else{
-    sample = NULL;
-
     if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
       //TODO:JK: implement me
     }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
@@ -955,9 +948,13 @@ ags_ipatch_get_format(AgsPlayable *playable)
     }
   }
 
-  g_object_get(sample,
-	       "sample-format\0", format,
-	       NULL);
+  format = 0;
+  
+  if(sample != NULL){
+    g_object_get(sample,
+		 "sample-format\0", &format,
+		 NULL);
+  }
 
   switch(format){
   case IPATCH_SAMPLE_8BIT:
@@ -1048,10 +1045,6 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 void
 ags_ipatch_close(AgsPlayable *playable)
 {
-  AgsIpatch *ipatch;
-
-  ipatch = AGS_IPATCH(playable);
-
   /* empty */
 }
 

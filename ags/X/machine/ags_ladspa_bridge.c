@@ -56,6 +56,7 @@ void ags_ladspa_bridge_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_ladspa_bridge_connect(AgsConnectable *connectable);
 void ags_ladspa_bridge_disconnect(AgsConnectable *connectable);
+void ags_ladspa_bridge_finalize(GObject *gobject);
 gchar* ags_ladspa_bridge_get_version(AgsPlugin *plugin);
 void ags_ladspa_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_ladspa_bridge_get_build_id(AgsPlugin *plugin);
@@ -148,6 +149,8 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
   gobject->set_property = ags_ladspa_bridge_set_property;
   gobject->get_property = ags_ladspa_bridge_get_property;
 
+  gobject->finalize = ags_ladspa_bridge_finalize;
+  
   /* properties */
   /**
    * AgsRecallLadspa:filename:
@@ -389,21 +392,35 @@ ags_ladspa_bridge_get_property(GObject *gobject,
 void
 ags_ladspa_bridge_connect(AgsConnectable *connectable)
 {
-  AgsLadspaBridge *ladspa_bridge;
-
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
   }
 
   ags_ladspa_bridge_parent_connectable_interface->connect(connectable);
-
-  ladspa_bridge = AGS_LADSPA_BRIDGE(connectable);
 }
 
 void
 ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) == 0){
+    return;
+  }
+
+  ags_ladspa_bridge_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_ladspa_bridge_finalize(GObject *gobject)
+{
+  AgsLadspaBridge *ladspa_bridge;
+
+  ladspa_bridge = (AgsLadspaBridge *) gobject;
+  
+  g_free(ladspa_bridge->filename);
+  g_free(ladspa_bridge->effect);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_ladspa_bridge_parent_class)->finalize(gobject);
 }
 
 gchar*

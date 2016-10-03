@@ -24,14 +24,6 @@
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);
 void ags_play_notation_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio);
-void ags_play_notation_audio_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_play_notation_audio_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
 void ags_play_notation_audio_finalize(GObject *gobject);
 void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
 
@@ -44,10 +36,6 @@ void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
  *
  * The #AgsPlayNotationAudio class provides ports to the effect processor.
  */
-
-enum{
-  PROP_0,
-};
 
 static gpointer ags_play_notation_audio_parent_class = NULL;
 static AgsPluginInterface *ags_play_notation_parent_plugin_interface;
@@ -106,9 +94,6 @@ ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audi
   /* GObjectClass */
   gobject = (GObjectClass *) play_notation_audio;
 
-  gobject->set_property = ags_play_notation_audio_set_property;
-  gobject->get_property = ags_play_notation_audio_get_property;
-
   gobject->finalize = ags_play_notation_audio_finalize;
 }
 
@@ -137,46 +122,8 @@ ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
 }
 
 void
-ags_play_notation_audio_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec)
-{
-  AgsPlayNotationAudio *play_notation_audio;
-
-  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }  
-}
-
-void
-ags_play_notation_audio_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec)
-{
-  AgsPlayNotationAudio *play_notation_audio;
-
-  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
 ags_play_notation_audio_finalize(GObject *gobject)
 {
-  AgsPlayNotationAudio *play_notation_audio;
-
-  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_play_notation_audio_parent_class)->finalize(gobject);
 }

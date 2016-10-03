@@ -356,12 +356,14 @@ ags_copy_pattern_audio_run_finalize(GObject *gobject)
 
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(gobject);
 
-  if(copy_pattern_audio_run->delay_audio_run != NULL)
+  if(copy_pattern_audio_run->delay_audio_run != NULL){
     g_object_unref(copy_pattern_audio_run->delay_audio_run);
-
-  if(copy_pattern_audio_run->count_beats_audio_run != NULL)
+  }
+  
+  if(copy_pattern_audio_run->count_beats_audio_run != NULL){
     g_object_unref(copy_pattern_audio_run->count_beats_audio_run);
-
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_pattern_audio_run_parent_class)->finalize(gobject);
 }
@@ -537,15 +539,15 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 {
   AgsRecall *template;
   AgsRecallContainer *recall_container;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsRecallID *recall_id;
+  
   AgsRecallDependency *recall_dependency;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
+
   GList *list;
-  AgsRecallID *recall_id;
-  guint i, i_stop;
   
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
+  guint i, i_stop;
   
   recall_container = AGS_RECALL_CONTAINER(recall->container);
   

@@ -528,8 +528,6 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 {
   AgsAudioSignal *audio_signal;
 
-  AgsApplicationContext *application_context;
-
   AgsMutexManager *mutex_manager;
   
   GList *stream, *list, *list_beginning;
@@ -636,8 +634,6 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
       format = AGS_SOUNDCARD_DEFAULT_FORMAT;
     }
   }else{
-    application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
