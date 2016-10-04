@@ -808,8 +808,6 @@ ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
 					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	audio_signal->loop_start = 0;
-	audio_signal->loop_end = audio_signal->buffer_size;
 	ags_audio_signal_stream_resize(audio_signal,
 				       1);
 	ags_recycling_add_audio_signal(channel->first_recycling,
@@ -893,8 +891,6 @@ ags_dssi_bridge_set_pads(AgsAudio *audio, GType type,
 					    (GObject *) channel->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	audio_signal->loop_start = 0;
-	audio_signal->loop_end = audio_signal->buffer_size;
 	ags_audio_signal_stream_resize(audio_signal,
 				       1);
 	ags_recycling_add_audio_signal(channel->first_recycling,

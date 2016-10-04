@@ -930,21 +930,25 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(midi_dialog->midi_device));
     i = 0;
 
-    do{
-      gtk_tree_model_get(model,
-			 &iter,
-			 0, &str,
-			 -1);
+    if(model != NULL &&
+       gtk_tree_model_get_iter_first(model,
+				     &iter)){
+      do{
+	gtk_tree_model_get(model,
+			   &iter,
+			   0, &str,
+			   -1);
       
-      if(!g_ascii_strcasecmp(midi_device,
-			     str)){
-	found_device = TRUE;
-	break;
-      }
+	if(!g_ascii_strcasecmp(midi_device,
+			       str)){
+	  found_device = TRUE;
+	  break;
+	}
       
-      i++;
-    }while(gtk_tree_model_iter_next(model,
-				    &iter));
+	i++;
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
   }
 
   if(found_device){

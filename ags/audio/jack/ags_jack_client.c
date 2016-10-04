@@ -749,6 +749,23 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	no_event = TRUE;
       }
 
+      /* clear buffer */
+      port = jack_devout->jack_port;
+      
+      for(i = 0; port != NULL; i++){
+	jack_port = port->data;
+	
+	out = jack_port_get_buffer(jack_port->port,
+				   jack_devout->buffer_size);
+
+	if(out != NULL){
+	  ags_audio_buffer_util_clear_float(out, 1,
+					    jack_devout->buffer_size);
+	}
+
+	port = port->next;
+      }
+      
       /* get buffer */
       if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
 	j = 0;
@@ -806,7 +823,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	
 	continue;
       }
-      
+
+      /* fill buffer */
       port = jack_devout->jack_port;
       
       for(i = 0; port != NULL; i++){
@@ -814,11 +832,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	
 	out = jack_port_get_buffer(jack_port->port,
 				   jack_devout->buffer_size);
-
-	if(out != NULL){
-	  ags_audio_buffer_util_clear_float(out, 1,
-					    jack_devout->buffer_size);
-	}
 	
 	if(!no_event && out != NULL){
 	  ags_audio_buffer_util_copy_buffer_to_buffer(out, 1, 0,
