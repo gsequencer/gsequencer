@@ -747,10 +747,9 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	
 	  while(tmp != NULL){
 	    list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
-
-	    if(!g_ascii_strncasecmp(IPATCH_SF2_SAMPLE(list->data)->name,
-				    sublevel_name,
-				    20)){
+	    
+	    if(!g_ascii_strcasecmp(IPATCH_SF2_SAMPLE(list->data)->name,
+				   sublevel_name)){
 	      ipatch_sf2_reader->sample = (IpatchContainer *) IPATCH_SF2_SAMPLE(list->data);
 	    }
 
@@ -980,11 +979,14 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 		GError **error)
 {
   AgsIpatch *ipatch;
+
   IpatchSample *sample;
+  
   double *buffer, *source;
   guint channels, frames;
   guint loop_start, loop_end;
   guint i;
+
   GError *this_error;
 
   ipatch = AGS_IPATCH(playable);
@@ -1002,10 +1004,14 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   buffer = (double *) malloc(channels * frames * sizeof(double));
   
   if(ipatch->nth_level == 3){
-    if(ipatch->iter != NULL){
-      sample = IPATCH_SAMPLE(ipatch->iter->data);
+    if(AGS_IPATCH_SF2_READER(ipatch->reader)->sample != NULL){
+      sample = AGS_IPATCH_SF2_READER(ipatch->reader)->sample;
     }else{
-      sample = NULL;
+      if(ipatch->iter != NULL){
+	sample = IPATCH_SAMPLE(ipatch->iter->data);
+      }else{
+	sample = NULL;
+      }
     }
   }else{
     sample = NULL;
