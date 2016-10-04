@@ -672,15 +672,30 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 		     0, 0,
 		     288, 80);
 
-  channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) - 1);
-
+  if(machine->audio->input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) - 1 > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+    channel = ags_channel_nth(machine->audio->input,
+			      machine->audio->input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) - 1);
+  }else if(machine->audio->input_lines > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+    channel = ags_channel_nth(machine->audio->input,
+			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY - 1);
+  }else{
+    channel = ags_channel_nth(machine->audio->input,
+			      machine->audio->input_lines - 1);
+  }
+  
+  if(channel == NULL){
+    pthread_mutex_unlock(audio_mutex);
+    
+    return;
+  }
+  
   if(machine->audio->input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
     gutter = AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY;
   }else{
     gutter = machine->audio->input_pads;
   }
 
-  for (i = 0; i < gutter; i++){
+  for (i = 0; channel != NULL && i < gutter; i++){
     for (j = 0; j < 32; j++){
       gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
 			 GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
@@ -688,7 +703,7 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 			 j * 12, i * 10,
 			 12, 10);
 
-      ags_cell_pattern_redraw_gutter_point (cell_pattern, channel, j, i);
+      ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
     }
 
     channel = channel->prev;
@@ -741,7 +756,7 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
     return;
   }
 
-  for (i = 0; i < gutter; i++){
+  for (i = 0; channel != NULL && i < gutter; i++){
     for (j = 0; j < 32; j++)
       ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
 
@@ -775,8 +790,10 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
 {
   AgsMachine *machine;
 
-  if(channel->pattern == NULL)
+  if(channel == NULL ||
+     channel->pattern == NULL){
     return;
+  }
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);

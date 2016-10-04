@@ -1,3 +1,10 @@
+ags (0.7.77)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsCellPattern to shrink vertical scrollbar in AgsMatrix
+	* fixed AgsMidiDialog reset
+	* improved clear JACK buffer during no playback
+
 ags (0.7.76)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
