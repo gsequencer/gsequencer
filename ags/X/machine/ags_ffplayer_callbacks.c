@@ -44,9 +44,11 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
-#include <ags/config.h>
+#include <libinstpatch/libinstpatch.h>
 
 #include <math.h>
+
+#include <ags/config.h>
 
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 						AgsMachine *machine);
@@ -153,11 +155,13 @@ void
 ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
-  
+
   AgsAudio *audio;
-  AgsChannel *channel;
+  AgsChannel *start_channel, *channel;
   AgsRecycling *recycling;
 
+  AgsIpatchSF2Reader *reader;
+  
   //  AgsLinkChannel *link_channel;
   AgsOpenSf2Sample *open_sf2_sample;
   AgsAddAudioSignal *add_audio_signal;
@@ -174,10 +178,11 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   gchar *preset_name;
   gchar *instrument_name;
   gchar **preset;
-  gchar **sample;
+  gchar **sample, **sample_iter;
   GList *task;
   GList *list;
   guint count;
+  guint n_pads, n_audio_channels;
   int i;
   
   GError *error;
@@ -251,37 +256,89 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 #endif
 
   /* read all samples */
-  ags_audio_set_audio_channels(audio,
-			       AGS_IPATCH_DEFAULT_CHANNELS);
+  reader = AGS_IPATCH(ffplayer->ipatch)->reader;
 
+  n_pads = 0;
+  n_audio_channels = 2;
+  
+  for(sample_iter = sample; *sample_iter != NULL; sample_iter++){
+    IpatchSF2Sample *sf2_sample;
+    
+    guint sample_channel;
+
+    sf2_sample = (IpatchSF2Sample *) ipatch_sf2_find_sample(reader->sf2,
+							    *sample_iter,
+							    NULL);
+    g_object_get(sf2_sample,
+		 "channel\0", &sample_channel,
+		 NULL);
+
+    if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
+       sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_LEFT){
+      n_pads++;
+    }
+  }
+
+  ags_audio_set_audio_channels(audio,
+			       n_audio_channels);
   ags_audio_set_pads(audio, AGS_TYPE_INPUT,
-		     count);
+		     n_pads);
 
   pthread_mutex_lock(audio_mutex);
 
-  channel = audio->input;
+  start_channel = audio->input;
 
   pthread_mutex_unlock(audio_mutex);
 
   task = NULL;
+  sample_iter = sample;
 
-  while(channel != NULL && *sample != NULL){
-    for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS; i++){      
-      /* create tasks */
-      open_sf2_sample = ags_open_sf2_sample_new(channel,
-						g_strdup(filename),
-						g_strdup(preset_name),
-						g_strdup(instrument_name),
-						g_strdup(*sample));
-      task = g_list_prepend(task,
-			    open_sf2_sample);
-      
-      /* iterate */
-      channel = channel->next;
+  i = 0;
+  
+  while(*sample_iter != NULL){
+    IpatchSF2Sample *sf2_sample;
+    
+    guint sample_channel;
+
+    sf2_sample = (IpatchSF2Sample *) ipatch_sf2_find_sample(reader->sf2,
+							    *sample_iter,
+							    NULL);
+    g_object_get(sf2_sample,
+		 "channel\0", &sample_channel,
+		 NULL);
+
+    if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
+       sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_LEFT){
+      channel = ags_channel_nth(start_channel,
+				i * audio->audio_channels);
+    }else{
+      channel = ags_channel_nth(start_channel,
+				i * audio->audio_channels + 1);
     }
     
-    sample++;
-  }
+    if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
+       sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_RIGHT){
+      i++;
+    }
+
+    if(channel == NULL){
+      g_critical("channel == NULL - Soundfont 2 sample channel %d\0", sample_channel);
+      
+      continue;
+    }
+    
+    /* create tasks */
+    open_sf2_sample = ags_open_sf2_sample_new(channel,
+					      g_strdup(filename),
+					      g_strdup(preset_name),
+					      g_strdup(instrument_name),
+					      g_strdup(*sample_iter));
+    task = g_list_prepend(task,
+			  open_sf2_sample);
+    
+    /* iterate */
+    sample_iter++;
+  }    
       
   /* append tasks */
   task = g_list_reverse(task);

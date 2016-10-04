@@ -1,3 +1,9 @@
+ags (0.7.76)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed sample selection of AgsIpatch
+	* improved open multi-channel samples in ags_ffplayer_callbacks.c
+
 ags (0.7.75)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
