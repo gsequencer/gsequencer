@@ -173,8 +173,8 @@ ags_apply_synth_launch(AgsTask *task)
   GList *stream;
 
   gint wave;
-  guint attack, frame_count, stop, phase, frequency;
-  double volume;
+  guint attack, frame_count, stop;
+  double phase, frequency, volume;
   guint current_attack, current_frame_count, current_stop, current_phase[2], current_frequency;
   guint stream_start, last_frame_count;
   guint i, j;
@@ -250,17 +250,21 @@ ags_apply_synth_launch(AgsTask *task)
   /* settings which needs to be initialized for factorizing */
   attack = apply_synth->attack;
   frame_count = apply_synth->frame_count;
-  stop = (guint) ceil((double)(attack + frame_count) / (double) buffer_size);
   phase = apply_synth->phase;
 
   //TODO:JK: 
   //  attack = attack % (guint) buffer_size;
   
-  current_phase[0] = (phase + (buffer_size - attack) + i * buffer_size) % frequency;
+  current_phase[0] = (guint) floor(phase + (buffer_size - attack) + i * buffer_size) % (guint) floor(frequency);
 
   factor = 1.0;
 
   for(i = 0; channel != NULL && i < apply_synth->count; i++){
+    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+    buffer_size = audio_signal->buffer_size;
+    stop = (guint) ceil((double)(attack + frame_count) / (double) buffer_size);
+    
     if(AGS_IS_INPUT(channel)){
       if(AGS_INPUT(channel)->synth_generator == NULL){
 	AGS_INPUT(channel)->synth_generator = (GObject *) ags_synth_generator_new();
@@ -280,9 +284,10 @@ ags_apply_synth_launch(AgsTask *task)
 
     /* settings which needs to be factorized */
     factor = ags_apply_synth_calculate_factor(frequency, current_frequency, wave);
-
+    attack = 0;
+    
     current_attack = (guint) (factor * attack) % (guint) buffer_size;
-    current_frame_count = frame_count * factor;
+    current_frame_count = frame_count;
     current_stop = (guint) ceil((double)(current_attack + current_frame_count) / (double)buffer_size);
     current_phase[0] = ((guint)(factor * phase) + (buffer_size - current_attack) + i * buffer_size) % current_frequency;
 
@@ -290,59 +295,60 @@ ags_apply_synth_launch(AgsTask *task)
     last_frame_count = (current_frame_count - buffer_size - current_attack) % buffer_size;
 
     /* create AgsAudioSignal */
-    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+    //    g_message("%d\0", current_stop);
     
-    if(audio_signal->length < current_stop)
-      ags_audio_signal_stream_resize(audio_signal, stop);
-
+    if(audio_signal->length < current_stop){
+      ags_audio_signal_stream_resize(audio_signal, current_stop);
+    }
+    
     audio_signal->loop_start = (guint) ((double) apply_synth->loop_start) * factor;
     audio_signal->loop_end = (guint) ((double) apply_synth->loop_end) * factor;
-    
 
     /* fill in the stream */
     stream = g_list_nth(audio_signal->stream_beginning, stream_start);
     
-    if(stream->next != NULL){
+    if(stream != NULL){
+      if(stream->next != NULL){
 #ifdef AGS_DEBUG
-      g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
+	g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
 #endif
-      ags_apply_synth_launch_write(stream,
-				   current_frequency, current_phase[0], volume,
-				   audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
-				   attack, audio_signal->buffer_size - attack);
-    }else{
-      ags_apply_synth_launch_write(stream,
-				   current_frequency, current_phase[0], volume,
-				   audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
-				   attack, audio_signal->buffer_size - attack);
+	ags_apply_synth_launch_write(stream,
+				     current_frequency, current_phase[0], volume,
+				     audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+				     attack, audio_signal->buffer_size - attack);
+      }else{
+	ags_apply_synth_launch_write(stream,
+				     current_frequency, current_phase[0], volume,
+				     audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+				     attack, audio_signal->buffer_size - attack);
       
-      channel = channel->next;
-      continue;
-    }
+	channel = channel->next;
+	continue;
+      }
     
-    stream = stream->next;
+      stream = stream->next;
     
     
-    for(j = 1; stream->next != NULL; j++){
-      current_phase[1] = (j * buffer_size + current_phase[0]) % (samplerate / current_frequency);
+      for(j = 1; stream->next != NULL; j++){
+	current_phase[1] = (j * buffer_size + current_phase[0]) % (samplerate / current_frequency);
 #ifdef AGS_DEBUG
-      g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
+	g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
 #endif
       
+	ags_apply_synth_launch_write(stream,
+				     current_frequency, current_phase[0], volume,
+				     audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+				     0, audio_signal->buffer_size);
+      
+	stream = stream->next;
+      }
+    
+      current_phase[1] = (current_phase[0] + (buffer_size - attack) + j * buffer_size) % current_frequency;
       ags_apply_synth_launch_write(stream,
 				   current_frequency, current_phase[0], volume,
 				   audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
 				   0, audio_signal->buffer_size);
-      
-      stream = stream->next;
-    }
-    
-    current_phase[1] = (current_phase[0] + (buffer_size - attack) + j * buffer_size) % current_frequency;
-    ags_apply_synth_launch_write(stream,
-				 current_frequency, current_phase[0], volume,
-				 audio_signal->samplerate, ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
-				 0, audio_signal->buffer_size);
-    
+    }    
     
     channel = channel->next;
   }

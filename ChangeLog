@@ -1,3 +1,9 @@
+ags (0.7.75)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed synth generator
+	* fixed ags_recall_find_all_type()
+
 ags (0.7.74)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
