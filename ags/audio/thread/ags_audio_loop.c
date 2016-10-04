@@ -620,8 +620,8 @@ ags_audio_loop_start(AgsThread *thread)
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
 
-    pthread_create(audio_loop->timing_thread, NULL,
-    		   ags_audio_loop_timing_thread, audio_loop);
+    //    pthread_create(audio_loop->timing_thread, NULL,
+    //		   ags_audio_loop_timing_thread, audio_loop);
   }
 }
 

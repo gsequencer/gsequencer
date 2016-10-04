@@ -137,9 +137,21 @@ ags_polling_thread_init(AgsPollingThread *polling_thread)
   
   polling_thread->flags = 0;
 
+  /* fd mutex */
+  polling_thread->fd_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+    
+  pthread_mutexattr_init(polling_thread->fd_mutexattr);
+  pthread_mutexattr_settype(polling_thread->fd_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(polling_thread->fd_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
   polling_thread->fd_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(polling_thread->fd_mutex,
-		     NULL);
+		     polling_thread->fd_mutexattr);
   
   polling_thread->fds = NULL;
 
@@ -344,6 +356,8 @@ ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
   
   for(i = 0; i < g_list_length(polling_thread->poll_fd); i++){
     if(fd == polling_thread->fds[i].fd){
+      pthread_mutex_unlock(polling_thread->fd_mutex);
+      
       return(i);
     }
   }

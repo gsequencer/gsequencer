@@ -759,9 +759,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
 	j = 3;
       }else{
-	j = 0;
+	/* iterate */
+	device = device->next;
+
+	pthread_mutex_unlock(device_mutex);
 	
-	g_critical("jack devout buffer flag not set\0");
+	continue;
       }
 
       /* get copy mode */
@@ -796,10 +799,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	}
 	break;
       default:
-	pthread_mutex_unlock(device_mutex);
+	/* iterate */
+	device = device->next;
 
-	g_warning("ags_jack_devout_process_callback(): unsupported word size\0");
-	return(0);
+	pthread_mutex_unlock(device_mutex);
+	
+	continue;
       }
       
       port = jack_devout->jack_port;

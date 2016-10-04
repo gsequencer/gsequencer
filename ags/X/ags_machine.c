@@ -757,14 +757,18 @@ ags_machine_finalize(GObject *gobject)
   pthread_mutex_unlock(application_mutex);
 
   /* remove from soundcard */
-  pthread_mutex_lock(soundcard_mutex);
+  if(soundcard_mutex != NULL){
+    pthread_mutex_lock(soundcard_mutex);
+  }
   
   list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
   ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
 			  g_list_remove(list,
 					machine->audio));
 
-  pthread_mutex_unlock(soundcard_mutex);
+  if(soundcard_mutex != NULL){
+    pthread_mutex_unlock(soundcard_mutex);
+  }
   
   //TODO:JK: better clean-up of audio
   

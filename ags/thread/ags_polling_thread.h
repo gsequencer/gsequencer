@@ -57,6 +57,7 @@ struct _AgsPollingThread
 
   guint flags;
 
+  pthread_mutexattr_t *fd_mutexattr;
   pthread_mutex_t *fd_mutex;
   
   struct pollfd *fds;
