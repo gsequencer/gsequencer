@@ -2494,9 +2494,10 @@ ags_recall_template_find_type(GList *recall_i, GType type)
   AgsRecall *recall;
 
   while(recall_i != NULL){
-    recall = AGS_RECALL(recall_i->data);
+    recall = (AgsRecall *) recall_i->data;
 
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
+    if(AGS_IS_RECALL(recall) &&
+       (AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
        G_OBJECT_TYPE(recall) == type)
       break;
 
@@ -2534,7 +2535,7 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
   while((current = va_arg(ap, GType)) != G_TYPE_NONE){
     //FIXME:JK: rather gulong_to_pointer
     list = g_list_prepend(list,
-			  GUINT_TO_POINTER(current));
+			  current);
   }
   
   va_end(ap);
@@ -2542,24 +2543,26 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
   start = list;
   
   while(recall_i != NULL){
-    recall = AGS_RECALL(recall_i->data);
+    recall = (AgsRecall *) recall_i->data;
 
-    list = start;
+    if(AGS_IS_RECALL(recall)){
+      list = start;
     
-    while(list != NULL){
-      //FIXME:JK: rather gpointer_to_ulong
-      current = GPOINTER_TO_UINT(list->data);
+      while(list != NULL){
+	//FIXME:JK: rather gpointer_to_ulong
+	current = list->data;
       
-      if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
-	 G_TYPE_CHECK_INSTANCE_TYPE((recall), current)){
-	g_list_free(start);
+	if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
+	   g_type_is_a(G_OBJECT_TYPE(recall), current)){
+	  g_list_free(start);
 	
-	return(recall_i);
+	  return(recall_i);
+	}
+
+	list = list->next;
       }
-
-      list = list->next;
     }
-
+    
     recall_i = recall_i->next;
   }
 
