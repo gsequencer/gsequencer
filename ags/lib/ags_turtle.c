@@ -438,6 +438,8 @@ ags_turtle_read_blank_node_label(gchar *offset,
 	found_str = TRUE;
 	
 	last_is_point = TRUE;
+      }else{
+	return(NULL);
       }
     }else{
       tmp_str = g_strdup_printf("%s%s\0",
@@ -496,8 +498,10 @@ ags_turtle_read_langtag(gchar *offset,
   }
 
   if(regexec(&langtag_regex, offset, max_matches, match_arr, 0) == 0){
-    str = g_strndup(offset,
-		    match_arr[0].rm_eo - match_arr[0].rm_so);
+    if(match_arr[0].rm_eo > match_arr[0].rm_so){
+      str = g_strndup(offset,
+		      match_arr[0].rm_eo - match_arr[0].rm_so);
+    }
   }
   
   return(str);

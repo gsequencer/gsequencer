@@ -1,0 +1,5 @@
+* TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
+* TODO:JK: implemented AgsPlaybackDomain properties
+* TODO:JK: implemented AgsPlayback properties
+* TODO:JK: implemented AgsScaleArea properties
+* TODO:JK: implemented AgsApplicationContext properties

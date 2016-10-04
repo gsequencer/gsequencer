@@ -436,7 +436,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
      !g_ascii_strncasecmp(str,
 			  "experimental\0",
 			  13)){
-    g_message("lv2 ui disabled\02");
+    g_message("lv2 ui disabled\0");
   }else{
     item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Lv2\0");
     gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(lv2_bridge)->popup,
@@ -775,9 +775,10 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature\0");
   
-  if(!g_ascii_strncasecmp(str,
-			  "experimental\0",
-			  13)){
+  if(str != NULL &&
+     g_ascii_strncasecmp(str,
+			 "experimental\0",
+			 13)){
     list = gtk_container_get_children((GtkContainer *) lv2_bridge->lv2_menu);
 
     g_signal_connect(G_OBJECT(list->data), "activate\0",

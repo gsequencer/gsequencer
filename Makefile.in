@@ -1073,7 +1073,7 @@ TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(srcdir)/libags_audio.pc.in $(srcdir)/libags_gui.pc.in \
 	$(top_srcdir)/ags/config.h.in AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README compile config.guess config.rpath \
+	INSTALL NEWS README TODO compile config.guess config.rpath \
 	config.sub depcomp install-sh ltmain.sh missing test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
