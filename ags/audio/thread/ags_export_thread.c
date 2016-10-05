@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <math.h>
 
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
@@ -357,9 +359,18 @@ ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
   AgsSoundcard *soundcard;
-  signed short *soundcard_buffer;
-  guint buffer_size;
 
+  AgsMutexManager *mutex_manager;
+
+  void *soundcard_buffer;
+
+  guint pcm_channels;
+  guint buffer_size;
+  guint format;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
   export_thread = AGS_EXPORT_THREAD(thread);
 
   if(export_thread->counter == export_thread->tic){
@@ -368,17 +379,35 @@ ags_export_thread_run(AgsThread *thread)
     export_thread->counter += 1;
   }
 
+  /*  */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) export_thread->soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(mutex);
+
   soundcard = AGS_SOUNDCARD(export_thread->soundcard);
 
   soundcard_buffer = ags_soundcard_get_buffer(soundcard);
   ags_soundcard_get_presets(soundcard,
-			    NULL,
+			    &pcm_channels,
 			    NULL,
 			    &buffer_size,
-			    NULL);
+			    &format);
 
   ags_audio_file_write(export_thread->audio_file,
-		       soundcard_buffer, (guint) buffer_size);
+		       soundcard_buffer,
+		       (guint) buffer_size,
+		       format);
+  
+  pthread_mutex_unlock(mutex);
 }
 
 void

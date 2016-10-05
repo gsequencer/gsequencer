@@ -685,18 +685,31 @@ ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
  */
 void
 ags_audio_file_write(AgsAudioFile *audio_file,
-		     signed short *buffer, guint buffer_size)
+		     void *buffer, guint buffer_size, guint format)
 {
   double *playable_buffer;
 
-  playable_buffer = (double *) malloc(audio_file->channels * buffer_size * sizeof(double));
-  ags_audio_buffer_util_clear_double(playable_buffer, audio_file->channels,
-				     buffer_size);
+  guint copy_mode;
+  guint i;
+
+  if(audio_file == NULL ||
+     buffer == NULL){
+    return;
+  }
   
-  ags_audio_buffer_util_copy_s16_to_double(playable_buffer, audio_file->channels,
-					   buffer, audio_file->channels,
-					   buffer_size);
-					   
+  playable_buffer = (double *) malloc(audio_file->channels * buffer_size * sizeof(double));
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+						  ags_audio_buffer_util_format_from_soundcard(format));
+  
+  for(i = 0; i < audio_file->channels; i++){
+    ags_audio_buffer_util_clear_double(&(playable_buffer[i]), audio_file->channels,
+				       buffer_size);
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(playable_buffer, audio_file->channels, i,
+						buffer, audio_file->channels, i,
+						buffer_size, copy_mode);
+  }					   
+  
   ags_playable_write(AGS_PLAYABLE(audio_file->playable),
 		     playable_buffer, buffer_size);
   

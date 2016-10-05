@@ -620,8 +620,8 @@ ags_audio_loop_start(AgsThread *thread)
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
 
-    //    pthread_create(audio_loop->timing_thread, NULL,
-    //		   ags_audio_loop_timing_thread, audio_loop);
+    pthread_create(audio_loop->timing_thread, NULL,
+		   ags_audio_loop_timing_thread, audio_loop);
   }
 }
 
@@ -684,9 +684,9 @@ ags_audio_loop_run(AgsThread *thread)
   g_atomic_int_set(&(audio_loop->time_spent),
 		   0);
 
-  //  g_atomic_int_or(&(audio_loop->timing_flags),
-  //		  AGS_AUDIO_LOOP_TIMING_WAKEUP);
-  //  pthread_cond_signal(audio_loop->timing_cond);
+  g_atomic_int_or(&(audio_loop->timing_flags),
+		  AGS_AUDIO_LOOP_TIMING_WAKEUP);
+  pthread_cond_signal(audio_loop->timing_cond);
 
   pthread_mutex_unlock(audio_loop->timing_mutex);
 

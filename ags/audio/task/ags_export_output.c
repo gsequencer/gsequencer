@@ -199,7 +199,7 @@ ags_export_output_launch(AgsTask *task)
 			    ".ogg\0")){
     major_format = SF_FORMAT_OGG;
 
-    audio_file->format = major_format | SF_FORMAT_FLOAT;
+    audio_file->format = major_format | SF_FORMAT_VORBIS;
   }else{
     major_format = SF_FORMAT_WAV;
 

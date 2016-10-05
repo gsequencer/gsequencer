@@ -173,13 +173,26 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
 		  (AGS_THREAD_START_SYNCED_FREQ));  
   
   config = ags_config_get_instance();
-  
+
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
 			      "samplerate\0");
+
+  if(str0 == NULL){
+    str0 = ags_config_get_value(config,
+				AGS_CONFIG_SOUNDCARD_0,
+				"samplerate\0");
+  }
+  
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
 			      "buffer-size\0");
+
+  if(str1 == NULL){
+    str1 = ags_config_get_value(config,
+				AGS_CONFIG_SOUNDCARD_0,
+				"buffer-size\0");
+  }
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_SOUNDCARD_THREAD_DEFAULT_JIFFIE;
