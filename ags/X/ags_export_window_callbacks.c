@@ -71,9 +71,10 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
   gtk_label_set_text(export_window->duration,
-		     ags_navigation_absolute_tact_to_time_string(gtk_spin_button_get_value(export_window->tact) * 16.0,
-								 window->navigation->bpm->adjustment->value,
-								 ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard))));
+		     ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
+						     window->navigation->bpm->adjustment->value,
+						     ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard)),
+						     ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard))));
 }
 
 void
@@ -204,7 +205,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       /* create task */
       delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
 
-      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay * 16.0;
+      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * 16.0 * delay;
 
       export_output = ags_export_output_new(export_thread,
 					    window->soundcard,
