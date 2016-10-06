@@ -125,6 +125,8 @@ void ags_audio_buffer_util_clear_float(float *buffer, guint channels,
 				       guint count);
 void ags_audio_buffer_util_clear_double(double *buffer, guint channels,
 					guint count);
+void ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
+					guint count, guint format);
 
 /* morph */
 signed char* ags_audio_buffer_util_morph_s8(signed char *buffer, guint channels,

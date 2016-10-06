@@ -60,6 +60,7 @@ void ags_recall_lv2_run_finalize(GObject *gobject);
 
 void ags_recall_lv2_run_run_init_pre(AgsRecall *recall);
 void ags_recall_lv2_run_run_pre(AgsRecall *recall);
+void ags_recall_lv2_run_run_inter(AgsRecall *recall);
 
 void ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run);
 
@@ -140,6 +141,7 @@ ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run)
 
   recall->run_init_pre = ags_recall_lv2_run_run_init_pre;
   recall->run_pre = ags_recall_lv2_run_run_pre;
+  recall->run_inter = ags_recall_lv2_run_run_inter;
 }
 
 
@@ -221,10 +223,12 @@ ags_recall_lv2_run_finalize(GObject *gobject)
   if(recall_lv2_run->input != NULL){
     free(recall_lv2_run->input);
   }
-  
-  AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi,
-											  recall_lv2_run->note);
 
+  if(recall_lv2_run->route_lv2_audio_run != NULL){
+    AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi,
+											    recall_lv2_run->note);
+  }
+  
   if(recall_lv2_run->atom_port != NULL){
     free(recall_lv2_run->atom_port);
   }
@@ -241,12 +245,18 @@ ags_recall_lv2_run_finalize(GObject *gobject)
     free(recall_lv2_run->event_count);
   }
 
-  g_atomic_int_and(&(AGS_RETURNABLE_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
-		   (~AGS_RETURNABLE_THREAD_IN_USE));
-  g_atomic_int_and(&(AGS_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
-		   (~AGS_THREAD_RUNNING));
-  g_object_unref(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread);
-  g_object_unref(recall_lv2_run->worker_handle);
+  if(recall_lv2_run->worker_handle != NULL){
+    if(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread != NULL){  
+      g_atomic_int_and(&(AGS_RETURNABLE_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
+		       (~AGS_RETURNABLE_THREAD_IN_USE));
+      g_atomic_int_and(&(AGS_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
+		       (~AGS_THREAD_RUNNING));
+
+      g_object_unref(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread);
+    }
+    
+    g_object_unref(recall_lv2_run->worker_handle);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_recall_lv2_run_parent_class)->finalize(gobject);
@@ -435,13 +445,14 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 void
 ags_recall_lv2_run_run_pre(AgsRecall *recall)
 {
+  AgsAudioSignal *audio_signal;
   AgsRecallLv2 *recall_lv2;
   AgsRecallLv2Run *recall_lv2_run;
-  AgsAudioSignal *audio_signal;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
   AgsRouteLv2AudioRun *route_lv2_audio_run;
 
+  guint copy_mode_in, copy_mode_out;
   uint32_t buffer_size;
   uint32_t i;
 
@@ -450,17 +461,114 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
-
-  route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run);
-  count_beats_audio_run = route_lv2_audio_run->count_beats_audio_run;
-
+  
+  if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) == 0 &&
+     (AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) == 0){
+    return;
+  }
+  
+  if(recall_lv2_run->route_lv2_audio_run != NULL){
+    route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run);
+    count_beats_audio_run = route_lv2_audio_run->count_beats_audio_run;
+  }else{
+    route_lv2_audio_run = NULL;
+    count_beats_audio_run = NULL;
+  }
+  
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
   buffer_size = audio_signal->buffer_size;
 
   if(audio_signal->stream_current == NULL ||
-     AGS_NOTE(recall_lv2_run->note)->x[1] <= count_beats_audio_run->notation_counter ||
-     AGS_NOTE(recall_lv2_run->note)->x[0] > count_beats_audio_run->notation_counter){
+     (count_beats_audio_run == NULL ||
+      (AGS_NOTE(recall_lv2_run->note)->x[1] <= count_beats_audio_run->notation_counter ||
+       AGS_NOTE(recall_lv2_run->note)->x[0] > count_beats_audio_run->notation_counter))){
+    //    g_message("done\0");
+    /* deactivate */
+    if(recall_lv2->plugin_descriptor->deactivate != NULL){
+      recall_lv2->plugin_descriptor->deactivate(recall_lv2_run->lv2_handle[0]);
+    }
+
+    /* cleanup */
+    if(recall_lv2->plugin_descriptor->cleanup != NULL){
+      recall_lv2->plugin_descriptor->cleanup(recall_lv2_run->lv2_handle[0]);
+    }
+
+    ags_recall_done(recall);
+    return;
+  }
+
+  /* get copy mode and clear buffer */
+  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
+
+  buffer_size = audio_signal->buffer_size;
+
+
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  if(recall_lv2_run->output != NULL){
+    ags_audio_buffer_util_clear_float(recall_lv2_run->output, recall_lv2->output_lines,
+				      buffer_size);
+  }
+
+  if(recall_lv2_run->input != NULL){
+    ags_audio_buffer_util_clear_float(recall_lv2_run->input, recall_lv2->input_lines,
+				      buffer_size);
+  }
+
+  /* copy data  */
+  if(recall_lv2_run->input != NULL){
+    ags_audio_buffer_util_copy_buffer_to_buffer(recall_lv2_run->input, (guint) recall_lv2->input_lines, 0,
+						audio_signal->stream_current->data, 1, 0,
+						(guint) audio_signal->buffer_size, copy_mode_in);
+  }
+  
+  /* process data */
+  recall_lv2->plugin_descriptor->run(recall_lv2_run->lv2_handle[0],
+				     buffer_size);
+
+  /* copy data */
+  if(recall_lv2_run->output != NULL){
+    ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
+						recall_lv2_run->output, (guint) recall_lv2->output_lines, 0,
+						(guint) audio_signal->buffer_size, copy_mode_out);
+  }
+}
+
+void
+ags_recall_lv2_run_run_inter(AgsRecall *recall)
+{
+  AgsAudioSignal *audio_signal;
+  AgsRecallLv2 *recall_lv2;
+  AgsRecallLv2Run *recall_lv2_run;
+
+  guint copy_mode_in, copy_mode_out;
+  uint32_t buffer_size;
+  uint32_t i;
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_inter(recall);
+
+  recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+  recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
+  
+  if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0 ||
+     (AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
+    return;
+  }
+  
+  /* set up buffer */
+  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
+  buffer_size = audio_signal->buffer_size;
+
+  if(audio_signal->stream_current == NULL){
     //    g_message("done\0");
     /* deactivate */
     if(recall_lv2->plugin_descriptor->deactivate != NULL){
@@ -476,18 +584,26 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
     return;
   }
   
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
   if(recall_lv2_run->output != NULL){
-    memset(recall_lv2_run->output, 0, recall_lv2->output_lines * buffer_size * sizeof(float));
+    ags_audio_buffer_util_clear_float(recall_lv2_run->output, recall_lv2->output_lines,
+				      buffer_size);
   }
 
   if(recall_lv2_run->input != NULL){
-    memset(recall_lv2_run->input, 0, recall_lv2->input_lines * buffer_size * sizeof(float));
+    ags_audio_buffer_util_clear_float(recall_lv2_run->input, recall_lv2->input_lines,
+				      buffer_size);
   }
 
   if(recall_lv2_run->input != NULL){
-    ags_audio_buffer_util_copy_s16_to_float(recall_lv2_run->input, (guint) recall_lv2->input_lines,
-					    audio_signal->stream_current->data, 1,
-					    (guint) audio_signal->buffer_size);
+    ags_audio_buffer_util_copy_buffer_to_buffer(recall_lv2_run->input, (guint) recall_lv2->input_lines, 0,
+						audio_signal->stream_current->data, 1, 0,
+						(guint) audio_signal->buffer_size, copy_mode_in);
   }
   
   /* process data */
@@ -500,13 +616,12 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
   /* copy data */
   if(recall_lv2_run->output != NULL){
-    memset((signed short *) audio_signal->stream_current->data,
-	   0,
-	   buffer_size * sizeof(signed short));
+    ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
     
-    ags_audio_buffer_util_copy_float_to_s16(audio_signal->stream_current->data, 1,
-					    recall_lv2_run->output, (guint) recall_lv2->output_lines,
-					    (guint) audio_signal->buffer_size);
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
+						recall_lv2_run->output, (guint) recall_lv2->output_lines, 0,
+						(guint) audio_signal->buffer_size, copy_mode_out);
   }
 }
 
