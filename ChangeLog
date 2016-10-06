@@ -1,3 +1,8 @@
+ags (0.7.79)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential NULL pointer access in ags_recycling_create_audio_signal_with_frame_count()
+
 ags (0.7.78)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
