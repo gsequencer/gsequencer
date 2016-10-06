@@ -1170,6 +1170,11 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   
   g_message("XML simple file resolved\0");
 
+    /* connect */
+  ags_connectable_connect(AGS_CONNECTABLE(AGS_XORG_APPLICATION_CONTEXT(application_context)->window));
+  
+  gtk_widget_show_all((GtkWidget *) AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
+  
   ags_connectable_connect(AGS_CONNECTABLE(application_context));
 
   g_message("XML simple file connected\0");
@@ -1444,11 +1449,6 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
     gtk_window_set_title((GtkWindow *) gobject, g_strconcat("GSequencer - \0", gobject->name, NULL));
   }
   
-  /* connect */
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
-  
-  gtk_widget_show_all((GtkWidget *) gobject);
-
   /* children */  
   child = node->children;
   list = NULL;
@@ -2307,6 +2307,10 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     gchar *value;
 
     /* program */
+    //NOTE:JK: work-around
+    gtk_combo_box_set_active((GtkComboBox *) dssi_bridge->program,
+			     0);
+
     model = gtk_combo_box_get_model((GtkComboBox *) dssi_bridge->program);
 
     str = xmlGetProp(node,
@@ -2437,28 +2441,39 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 
     str = xmlGetProp(node,
 		     "value\0");
-    
-    if(str != NULL){
-      val = g_ascii_strtod(str,
-			   NULL);
-		      
-    }
 
     child_widget = gtk_bin_get_child((GtkBin *) bulk_member);
 
-    if(GTK_IS_RANGE(child_widget)){
-      gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
-			       val);
+    if(GTK_IS_RANGE(child_widget)){    
+      if(str != NULL){
+	val = g_ascii_strtod(str,
+			     NULL);
+		      
+	gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
+				 val);
+      }      
     }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-      gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
-			       val);
+      if(str != NULL){
+	val = g_ascii_strtod(str,
+			     NULL);
+		      
+	gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
+				 val);
+      }
     }else if(AGS_IS_DIAL(child_widget)){
-      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-			       val);
-      ags_dial_draw((AgsDial *) child_widget);
+      if(str != NULL){
+	val = g_ascii_strtod(str,
+			     NULL);
+		      
+	gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
+				 val);
+	ags_dial_draw((AgsDial *) child_widget);
+      }
     }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-				   ((val != 0.0) ? TRUE: FALSE));
+      if(str != NULL){
+	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+				     ((!g_ascii_strncasecmp(str, "true\0", 5)) ? TRUE: FALSE));
+      }
     }else{
       g_warning("ags_simple_file_read_bulk_member_launch() - unknown bulk member type\0");
     }			  
@@ -2915,7 +2930,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 				 val);
       }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 	 gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-				     ((g_strcmp0(str, "false\0")) ? TRUE: FALSE));
+				      ((!g_ascii_strncasecmp(str, "true\0", 5)) ? TRUE: FALSE));
       }else{
 	g_warning("ags_simple_file_read_line() - unknown line member type\0");
       }
