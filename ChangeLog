@@ -1,3 +1,8 @@
+ags (0.7.80)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed restore of AgsBulkMember toggle button
+
 ags (0.7.79)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
