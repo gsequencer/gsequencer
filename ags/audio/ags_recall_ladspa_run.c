@@ -273,9 +273,11 @@ ags_recall_ladspa_run_run_pre(AgsRecall *recall)
 void
 ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 {
+  AgsAudioSignal *audio_signal;
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
-  AgsAudioSignal *audio_signal;
+
+  guint copy_mode_in, copy_mode_out;
   unsigned long buffer_size;
   unsigned long i;
 
@@ -285,12 +287,8 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
 
-  /* set up buffer */
-  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_ladspa_run)->source;
+  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
   buffer_size = audio_signal->buffer_size;
-
-  memset(recall_ladspa_run->output, 0, recall_ladspa->output_lines * buffer_size * sizeof(LADSPA_Data));
-  memset(recall_ladspa_run->input, 0, recall_ladspa->input_lines * buffer_size * sizeof(LADSPA_Data));
 
   if(audio_signal->stream_current == NULL){
     for(i = 0; i < recall_ladspa->input_lines; i++){
@@ -307,24 +305,43 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
     return;
   }
   
-  ags_audio_buffer_util_copy_s16_to_float(recall_ladspa_run->input, (guint) recall_ladspa->input_lines,
-					  audio_signal->stream_current->data, 1,
-					  (guint) audio_signal->buffer_size);
+  /* get copy mode and clear buffer */
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
 
-  /* process data */
-  for(i = 0; i < recall_ladspa->input_lines; i++){
-    recall_ladspa->plugin_descriptor->run(recall_ladspa_run->ladspa_handle[i],
-					  buffer_size);
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  if(recall_ladspa_run->output != NULL){
+    ags_audio_buffer_util_clear_float(recall_ladspa_run->output, recall_ladspa->output_lines,
+				      buffer_size);
   }
 
-  /* copy data */
-  memset((signed short *) audio_signal->stream_current->data,
-	 0,
-	 buffer_size * sizeof(signed short));
+  if(recall_ladspa_run->input != NULL){
+    ags_audio_buffer_util_clear_float(recall_ladspa_run->input, recall_ladspa->input_lines,
+				      buffer_size);
+  }
 
-  ags_audio_buffer_util_copy_float_to_s16(audio_signal->stream_current->data, 1,
-					  recall_ladspa_run->input, (guint) recall_ladspa->input_lines,
-					  (guint) audio_signal->buffer_size);
+  /* copy data  */
+  if(recall_ladspa_run->input != NULL){
+    ags_audio_buffer_util_copy_buffer_to_buffer(recall_ladspa_run->input, (guint) recall_ladspa->input_lines, 0,
+						audio_signal->stream_current->data, 1, 0,
+						(guint) audio_signal->buffer_size, copy_mode_in);
+  }
+  
+  /* process data */
+  recall_ladspa->plugin_descriptor->run(recall_ladspa_run->ladspa_handle[0],
+					buffer_size);
+
+  /* copy data */
+  if(recall_ladspa_run->output != NULL){
+    ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
+						recall_ladspa_run->output, (guint) recall_ladspa->output_lines, 0,
+						(guint) audio_signal->buffer_size, copy_mode_out);
+  }
 }
 
 /**

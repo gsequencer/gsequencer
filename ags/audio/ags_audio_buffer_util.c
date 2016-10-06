@@ -356,6 +356,51 @@ ags_audio_buffer_util_clear_double(double *buffer, guint channels,
   }
 }
 
+/**
+ * ags_audio_buffer_util_clear_buffer:
+ * @buffer: the audio data
+ * @channels: the number of channels
+ * @count: number of frames
+ * @format: the format
+ *
+ * Clears the audio data.
+ * 
+ * Since: 0.7.81
+ */
+void
+ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
+				   guint count, guint format)
+{
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+    {
+      memset((signed char *) buffer, 0, channels * count * sizeof(signed char));
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+    {
+      memset((signed short *) buffer, 0, channels * count * sizeof(signed short));
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+    {
+      memset((signed long *) buffer, 0, channels * count * sizeof(signed long));
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+    {
+      memset((signed long *) buffer, 0, channels * count * sizeof(signed long));
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+    {
+      memset((signed long long *) buffer, 0, channels * count * sizeof(signed long long));
+    }
+  default:
+    g_critical("unsupported audio buffer format\0");
+  }
+}
+
 signed char*
 ags_audio_buffer_util_morph_s8(signed char *buffer, guint channels,
 			       guint buffer_length,

@@ -362,6 +362,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
   
+  guint copy_mode_in, copy_mode_out;
   unsigned long buffer_size;
   unsigned long i, i_stop;
   
@@ -374,8 +375,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run);
   count_beats_audio_run = route_dssi_audio_run->count_beats_audio_run;
 
-  /* set up buffer */
-  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->source;
+  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
   buffer_size = audio_signal->buffer_size;
 
   if(recall_dssi->input_lines < recall_dssi->output_lines){
@@ -403,49 +403,60 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     return;
   }
 
+  /* get copy mode and clear buffer */
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  if(recall_dssi_run->output != NULL){
+    ags_audio_buffer_util_clear_float(recall_dssi_run->output, recall_dssi->output_lines,
+				      buffer_size);
+  }
+
   if(recall_dssi_run->input != NULL){
-    ags_audio_buffer_util_copy_s16_to_float(recall_dssi_run->input, (guint) recall_dssi->input_lines,
-					    audio_signal->stream_current->data, 1,
-					    (guint) audio_signal->buffer_size);
+    ags_audio_buffer_util_clear_float(recall_dssi_run->input, recall_dssi->input_lines,
+				      buffer_size);
+  }
+
+  /* copy data  */
+  if(recall_dssi_run->input != NULL){
+    ags_audio_buffer_util_copy_buffer_to_buffer(recall_dssi_run->input, (guint) recall_dssi->input_lines, 0,
+						audio_signal->stream_current->data, 1, 0,
+						(guint) audio_signal->buffer_size, copy_mode_in);
   }
   
   /* process data */
-  for(i = 0; i < i_stop; i++){
-    if(recall_dssi->plugin_descriptor->run_synth != NULL){
-      if(recall_dssi_run->event_buffer != NULL){
-	event_buffer = recall_dssi_run->event_buffer;
-	event_count = recall_dssi_run->event_count;
+  if(recall_dssi->plugin_descriptor->run_synth != NULL){
+    if(recall_dssi_run->event_buffer != NULL){
+      event_buffer = recall_dssi_run->event_buffer;
+      event_count = recall_dssi_run->event_count;
       
-	while(*event_buffer != NULL){
-	  //	  if(event_buffer[0]->type == SND_SEQ_EVENT_NOTEON){
-	  //	    event_buffer[0]->time.tick += buffer_size;
-	  //	  g_message("run\0");
-	  recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[i],
-						    recall_dssi->output_lines * buffer_size,
-						    event_buffer[0],
-						    event_count[0]);
-	  //	    event_buffer[0]->type = SND_SEQ_EVENT_KEYPRESS;
-	  //	  }
+      while(*event_buffer != NULL){
+	recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[0],
+						  recall_dssi->output_lines * buffer_size,
+						  event_buffer[0],
+						  event_count[0]);
 	  
-	  //	  recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[i],
-	  //					    buffer_size,
-	  //					    *(event_buffer),
-	  //					    *(event_count));
-	  
-	  event_buffer++;
-	  event_count++;
-	}
+	event_buffer++;
+	event_count++;
       }
-    }else if(recall_dssi->plugin_descriptor->LADSPA_Plugin->run != NULL){
-      recall_dssi->plugin_descriptor->LADSPA_Plugin->run(recall_dssi_run->ladspa_handle[i],
-							 buffer_size);
     }
+  }else if(recall_dssi->plugin_descriptor->LADSPA_Plugin->run != NULL){
+    recall_dssi->plugin_descriptor->LADSPA_Plugin->run(recall_dssi_run->ladspa_handle[0],
+						       buffer_size);
   }
 
   /* copy data */
-  ags_audio_buffer_util_copy_float_to_s16(audio_signal->stream_current->data, 1,
-					  recall_dssi_run->output, (guint) recall_dssi->output_lines,
-					  (guint) audio_signal->buffer_size);
+  if(recall_dssi_run->output != NULL){
+    ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
+						recall_dssi_run->output, (guint) recall_dssi->output_lines, 0,
+						(guint) audio_signal->buffer_size, copy_mode_out);
+  }
 }
 
 /**

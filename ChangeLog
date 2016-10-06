@@ -1,3 +1,13 @@
+ags (0.7.81)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed not negated if condition in ags_ladspa_manager_get_filenames()
+	* fixed non-synth lv2 plugins accessing NULL pointer ags-count-beats recall
+	* fixed potential NULL pointer access in ags_recall_lv2_run_finalize()
+	* fixed AgsRecallLv2Run to have :run-inter() for non-synths
+	* fixed AgsRecallLadpsaRun, AgsRecallDssiRun and AgsRecallLv2Run to use correct copy mode
+	* implemented ags_audio_buffer_util_clear_buffer()
+
 ags (0.7.80)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -168,7 +168,7 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
 					    AGS_BASE_PLUGIN(ladspa_plugin->data)->filename);
 #endif
       
-      if(contains_filename){
+      if(!contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
