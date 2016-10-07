@@ -23,7 +23,7 @@ void ags_connectable_base_init(AgsConnectableInterface *interface);
 
 /**
  * SECTION:ags_connectable
- * @short_description: unique access to ojbects
+ * @short_description: unique access to objects
  * @title: AgsConnectable
  * @section_id: AgsConnectable
  * @include: ags/object/ags_connectable.h
@@ -114,6 +114,7 @@ ags_connectable_update(AgsConnectable *connectable)
   g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
   g_return_val_if_fail(connectable_interface->update, NULL);
+
   return(connectable_interface->update(connectable));
 }
 
