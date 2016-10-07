@@ -2,6 +2,7 @@ ags (1.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsPasswordStore and AgsAuthentication interfaces
+	* reduced thread default iterations per second from 1000 to 250
 	* TODO:JK: implemented AgsAbstractBasePluginManager
 	* TODO:JK: implemented AgsPluginFactory
 	* TODO:JK: implemented missing interface functions of AgsConnectable, ...
@@ -11,6 +12,7 @@ ags (1.0.0)
 	* TODO:JK: extended AgsServiceProvider interface to provide authentication managers
 	* TODO:JK: added AgsPortDescriptor to built-in recalls
 	* TODO:JK: added properties to AgsTask sub-types
+	* improved AgsDial
 
 ags (0.7.81)
 

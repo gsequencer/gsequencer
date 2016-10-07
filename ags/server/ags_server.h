@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __AGS_SERVER_H__
 #define __AGS_SERVER_H__
 
@@ -52,8 +53,9 @@ typedef struct _AgsServer AgsServer;
 typedef struct _AgsServerClass AgsServerClass;
 
 typedef enum{
-  AGS_SERVER_STARTED        = 1,
-  AGS_SERVER_RUNNING        = 1 << 1,
+  AGS_SERVER_CONNECTED      = 1,
+  AGS_SERVER_STARTED        = 1 << 1,
+  AGS_SERVER_RUNNING        = 1 << 2,
 }AgsServerFlags;
 
 struct _AgsServer

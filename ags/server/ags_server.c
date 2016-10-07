@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <ags/server/ags_server.h>
 
 #include <ags/object/ags_connectable.h>
@@ -520,6 +521,16 @@ ags_server_object_set_property(xmlrpc_env *env,
 }
 #endif /* AGS_WITH_XMLRPC_C */
 
+/**
+ * ags_server_new:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Instantiate #AgsServer.
+ * 
+ * Returns: a new #AgsServer
+ * 
+ * Since: 0.7.0
+ */
 AgsServer*
 ags_server_new(GObject *application_context)
 {
