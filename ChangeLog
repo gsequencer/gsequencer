@@ -1,7 +1,7 @@
 ags (1.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented AgsPasswordStore interface
+	* implemented AgsPasswordStore and AgsAuthentication interfaces
 	* TODO:JK: implemented AgsAbstractBasePluginManager
 	* TODO:JK: implemented AgsPluginFactory
 	* TODO:JK: implemented missing interface functions of AgsConnectable, ...
