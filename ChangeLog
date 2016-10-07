@@ -1,3 +1,17 @@
+ags (1.0.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsPasswordStore interface
+	* TODO:JK: implemented AgsAbstractBasePluginManager
+	* TODO:JK: implemented AgsPluginFactory
+	* TODO:JK: implemented missing interface functions of AgsConnectable, ...
+	* TODO:JK: implemented MIDI and sequencer API
+	* TODO:JK: refactored AgsLadspaManager, AgsDssiManager, AgsLv2Manager and AgsLv2uiManager to inherit of AgsAbstractBasePluginManager
+	* TODO:JK: extended AgsSoundProvider interface to provide plugin managers
+	* TODO:JK: extended AgsServiceProvider interface to provide authentication managers
+	* TODO:JK: added AgsPortDescriptor to built-in recalls
+	* TODO:JK: added properties to AgsTask sub-types
+
 ags (0.7.81)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
