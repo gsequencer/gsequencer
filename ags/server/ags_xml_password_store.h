@@ -39,6 +39,10 @@ struct _AgsXmlPasswordStore
 {
   GObject object;
 
+  gchar *filename;
+  gchar *encoding;
+  gchar *dtd;
+
   xmlDoc *doc;
   xmlNode *root_node;
 };
@@ -53,4 +57,3 @@ GType ags_xml_password_store_get_type();
 AgsXmlPasswordStore* ags_xml_password_store_new();
 
 #endif /*__AGS_XML_PASSWORD_STORE_H__*/
-

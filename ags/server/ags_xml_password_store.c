@@ -22,6 +22,7 @@
 #include <ags/server/ags_password_store.h>
 
 void ags_xml_password_store_class_init(AgsXmlPasswordStoreClass *xml_password_store);
+void ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *password_store);
 void ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store);
 void ags_xml_password_store_finalize(GObject *gobject);
 gchar* ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
@@ -52,6 +53,16 @@ char* ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 gchar* ags_xml_password_store_decrypt_password(AgsPasswordStore *password_store,
 					       char *data,
 					       GError **error);
+
+/**
+ * SECTION:ags_xml_password_store
+ * @short_description: password store by XML file
+ * @title: AgsXmlPasswordStore
+ * @section_id:
+ * @include: ags/server/ags_xml_password_store.h
+ *
+ * The #AgsXmlPasswordStore is an object to keep passwords.
+ */
 
 static gpointer ags_xml_password_store_parent_class = NULL;
 
@@ -117,6 +128,17 @@ ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *
 
   password_store->encrypt_password = ags_xml_password_store_encrypt_password;
   password_store->decrypt_password = ags_xml_password_store_decrypt_password;
+}
+
+void
+ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store)
+{
+  xml_password_store->filename = NULL;
+  xml_password_store->encoding = NULL;
+  xml_password_store->dtd = NULL;
+
+  xml_password_store->doc = NULL;
+  xml_password_store->root_node = NULL;
 }
 
 void

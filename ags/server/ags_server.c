@@ -51,6 +51,16 @@ void ags_server_finalize(GObject *gobject);
 
 void ags_server_real_start(AgsServer *server);
 
+/**
+ * SECTION:ags_server
+ * @short_description: remote control server
+ * @title: AgsServer
+ * @section_id:
+ * @include: ags/server/ags_server.h
+ *
+ * The #AgsServer is a XML-RPC server calling remote tasks.
+ */
+
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
