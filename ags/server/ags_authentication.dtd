@@ -1,0 +1,35 @@
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
+<!-- root node -->
+<!ELEMENT ags-server-authentication (ags-srv-auth-list?)>
+<!ATTLIST ags-server-authentication
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  >
+
+<!-- auth node -->
+<!ELEMENT ags-srv-auth-list (ags-srv-auth*)>
+
+<!ELEMENT ags-srv-auth (ags-srv-user-uuid, ags-srv-auth-group-list, ags-srv-auth-session-list)>
+
+<!-- auth fields node -->
+<!ELEMENT ags-srv-user-uuid (#CDATA)>
+
+<!-- group node -->
+<!ELEMENT ags-srv-auth-group-list (ags-srv-auth-group*)>
+
+<!ELEMENT ags-srv-auth-group (#CDATA)>
+<!ATTLIST ags-srv-auth-group
+	  permission       CDATA      #REQUIRED
+	  >
+
+<!-- session node -->
+<!ELEMENT ags-srv-auth-session-list (ags-srv-auth-session*)>
+
+<!ELEMENT ags-srv-auth-session (#CDATA)>
+<!ATTLIST ags-srv-auth-session
+	  last-active      CDATA      #REQUIRED
+	  >
