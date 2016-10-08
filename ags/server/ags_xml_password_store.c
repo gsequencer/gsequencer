@@ -21,6 +21,14 @@
 
 #include <ags/server/ags_password_store.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 void ags_xml_password_store_class_init(AgsXmlPasswordStoreClass *xml_password_store);
 void ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *password_store);
 void ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store);
@@ -207,6 +215,66 @@ ags_xml_password_store_decrypt_password(AgsPasswordStore *password_store,
 					GError **error)
 {
   //TODO:JK: implement me
+}
+
+xmlNode*
+ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
+				  gchar *login)
+{
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *user_node;
+  
+  xmlChar *xpath;
+
+  guint i;
+  
+  if(!AGS_IS_XML_PASSWORD_STORE(xml_password_store) ||
+     login == NULL){
+    return(NULL);
+  }    
+
+  /* retrieve user node */
+  xpath = g_strdup_printf("(//ags-srv-user)/ags-srv-user-login[content()='%s']",
+			  login);
+
+  /* Create xpath evaluation context */
+  xpath_context = xmlXPathNewContext(xml_password_store->doc);
+
+  if(xpath_context == NULL) {
+    g_warning("Error: unable to create new XPath context\0");
+
+    return(NULL);
+  }
+
+  /* Evaluate xpath expression */
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object == NULL) {
+    g_warning("Error: unable to evaluate xpath expression\0");
+    xmlXPathFreeContext(xpath_context); 
+
+    return(NULL);
+  }
+
+  /* find node */
+  node = xpath_object->nodesetval->nodeTab;
+  user_node = NULL;
+  
+  for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+    if(node[i]->type == XML_ELEMENT_NODE){
+      user_node = node[i];
+      
+      break;
+    }
+  }
+
+  /* free xpath and return */
+  g_free(xpath);
+
+  return(user_node);
 }
 
 AgsXmlPasswordStore*

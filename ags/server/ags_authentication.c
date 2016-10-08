@@ -83,7 +83,7 @@ ags_authentication_login(AgsAuthentication *authentication,
   g_return_val_if_fail(authentication_interface->login, NULL);
 
   return(authentication_interface->login(authentication,
-					 user,
+					 login,
 					 password,
 					 error));
 }

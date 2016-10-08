@@ -21,6 +21,14 @@
 
 #include <ags/server/ags_authentication.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 void ags_xml_authentication_class_init(AgsXmlAuthenticationClass *xml_authentication);
 void ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface *authentication);
 void ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication);
@@ -151,7 +159,31 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
 			     gchar *login, gchar *password,
 			     GError **error)
 {
-  //TODO:JK: implement me
+  AgsXmlAuthentication *xml_authentication;
+
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *auth_node;
+  xmlNode *user_node;
+  
+  gchar *security_token;
+  xmlChar *xpath;
+
+  guint i;
+  
+  if(login == NULL ||
+     password == NULL){
+
+    return(NULL);
+  }    
+  
+  xml_authentication = AGS_XML_AUTHENTICATION(authentication);
+
+  security_token = NULL;
+
+
+  return(security_token);
 }
 
 gboolean
@@ -192,6 +224,66 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
 					 GError **error)
 {
   //TODO:JK: implement me
+}
+
+xmlNode*
+ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
+				      gchar *user_uuid)
+{
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  xmlNode *auth_node;
+  
+  xmlChar *xpath;
+
+  guint i;
+  
+  if(!AGS_IS_XML_AUTHENTICATION(xml_authentication) ||
+     user_uuid == NULL){
+    return(NULL);
+  }    
+
+  /* retrieve auth node */
+  xpath = g_strdup_printf("(//ags-srv-auth)/ags-srv-user-uuid[content()='%s']",
+			  user_uuid);
+
+  /* Create xpath evaluation context */
+  xpath_context = xmlXPathNewContext(xml_authentication->doc);
+
+  if(xpath_context == NULL) {
+    g_warning("Error: unable to create new XPath context\0");
+
+    return(NULL);
+  }
+
+  /* Evaluate xpath expression */
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  if(xpath_object == NULL) {
+    g_warning("Error: unable to evaluate xpath expression\0");
+    xmlXPathFreeContext(xpath_context); 
+
+    return(NULL);
+  }
+
+  /* find node */
+  node = xpath_object->nodesetval->nodeTab;
+  auth_node = NULL;
+  
+  for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+    if(node[i]->type == XML_ELEMENT_NODE){
+      auth_node = node[i];
+      
+      break;
+    }
+  }
+
+  /* free xpath and return */
+  g_free(xpath);
+
+  return(auth_node);
 }
 
 AgsXmlAuthentication*

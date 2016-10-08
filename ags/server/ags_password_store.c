@@ -120,7 +120,7 @@ ags_password_store_set_login_name(AgsPasswordStore *password_store,
   g_return_if_fail(password_store_interface->set_login_name);
   password_store_interface->set_login_name(password_store,
 					   user,
-					   security_tocken,
+					   security_token,
 					   security_context,
 					   login_name,
 					   error);
@@ -188,7 +188,7 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
   g_return_if_fail(password_store_interface->set_password);
   password_store_interface->set_password(password_store,
 					 user,
-					 security_tocken,
+					 security_token,
 					 security_context,
 					 password,
 					 error);

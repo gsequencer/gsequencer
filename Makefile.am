@@ -482,21 +482,33 @@ deprecated_libags_server_h_sources =
 
 libags_server_h_sources = \
 	$(deprecated_libags_server_h_sources) \
+	ags/server/ags_authentication.h \
+	ags/server/ags_authentication_manager.h \
+	ags/server/ags_password_store.h \
+	ags/server/ags_password_store_manager.h \
 	ags/server/ags_registry.h \
 	ags/server/ags_remote_task.h \
 	ags/server/ags_server.h \
 	ags/server/ags_server_application_context.h \
-	ags/server/ags_service_provider.h
+	ags/server/ags_service_provider.h \
+	ags/server/ags_xml_authentication.h \
+	ags/server/ags_xml_password_store.h
 
 deprecated_libags_server_c_sources =
 
 libags_server_c_sources = \
 	$(deprecated_libags_server_c_sources) \
+	ags/server/ags_authentication.c \
+	ags/server/ags_authentication_manager.c \
+	ags/server/ags_password_store.c \
+	ags/server/ags_password_store_manager.c \
 	ags/server/ags_registry.c \
 	ags/server/ags_remote_task.c \
 	ags/server/ags_server.c \
 	ags/server/ags_server_application_context.c \
-	ags/server/ags_service_provider.c
+	ags/server/ags_service_provider.c \
+	ags/server/ags_xml_authentication.c \
+	ags/server/ags_xml_password_store.c
 
 # libags-server - file
 deprecated_libags_server_file_h_sources =
