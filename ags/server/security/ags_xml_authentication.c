@@ -17,9 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/server/ags_xml_authentication.h>
+#include <ags/server/security/ags_xml_authentication.h>
 
-#include <ags/server/ags_authentication.h>
+#include <ags/server/security/ags_authentication.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -45,10 +45,10 @@ gchar* ags_xml_authentication_generate_token(AgsAuthentication *authentication,
 gchar** ags_xml_authentication_get_groups(AgsAuthentication *authentication,
 					  gchar *login, gchar *security_token,
 					  GError **error);
-gboolean ags_xml_authentication_get_permission(AgsAuthentication *authentication,
-					       gchar *login, gchar *security_token,
-					       gchar *group_name,
-					       GError **error);
+gchar* ags_xml_authentication_get_permission(AgsAuthentication *authentication,
+					     gchar *login, gchar *security_token,
+					     gchar *group_name,
+					     GError **error);
 gboolean ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
 						  gchar *login, gchar *security_token,
 						  GError **error);
@@ -58,7 +58,7 @@ gboolean ags_xml_authentication_is_session_active(AgsAuthentication *authenticat
  * @short_description: authentication by XML file
  * @title: AgsXmlAuthentication
  * @section_id:
- * @include: ags/server/ags_xml_authentication.h
+ * @include: ags/server/security/ags_xml_authentication.h
  *
  * The #AgsXmlAuthentication is an object to authenticate to Advanced Gtk+ Sequencer's
  * server.
@@ -209,7 +209,7 @@ ags_xml_authentication_get_groups(AgsAuthentication *authentication,
   //TODO:JK: implement me
 }
 
-gboolean
+gchar*
 ags_xml_authentication_get_permission(AgsAuthentication *authentication,
 				      gchar *login, gchar *security_token,
 				      gchar *group_name,
@@ -286,6 +286,15 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
   return(auth_node);
 }
 
+/**
+ * ags_xml_authentication_new:
+ *
+ * Create #AgsXmlAuthentication.
+ *
+ * Returns: the new #AgsXmlAuthentication instance
+ *
+ * Since: 1.0.0
+ */
 AgsXmlAuthentication*
 ags_xml_authentication_new()
 {

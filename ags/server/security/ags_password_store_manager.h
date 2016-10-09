@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/server/ags_password_store.h>
+#include <ags/server/security/ags_password_store.h>
 
 #define AGS_TYPE_PASSWORD_STORE_MANAGER                (ags_password_store_manager_get_type())
 #define AGS_PASSWORD_STORE_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PASSWORD_STORE_MANAGER, AgsPasswordStoreManager))
@@ -55,6 +55,11 @@ void ags_password_store_manager_add_password_store(AgsPasswordStoreManager *pass
 						   GObject *password_store);
 void ags_password_store_manager_remove_password_store(AgsPasswordStoreManager *password_store_manager,
 						      GObject *password_store);
+
+/*  */
+gboolean ags_password_store_manager_check_password(AgsPasswordStoreManager *password_store_manager,
+						   gchar *login,
+						   gchar *password);
 
 /*  */
 AgsPasswordStoreManager* ags_password_store_manager_get_instance();

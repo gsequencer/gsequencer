@@ -149,6 +149,7 @@ ags_server_class_init(AgsServerClass *server)
   /* AgsServer */
   server->start = ags_server_real_start;
 
+  /* signals */
   server_signals[START] =
     g_signal_new("start\0",
 		 G_TYPE_FROM_CLASS(server),

@@ -17,9 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/server/ags_xml_password_store.h>
+#include <ags/server/security/ags_xml_password_store.h>
 
-#include <ags/server/ags_password_store.h>
+#include <ags/server/security/ags_password_store.h>
+
+#define __USE_GNU
+#include <crypt.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -57,17 +60,15 @@ void ags_xml_password_store_set_password(AgsPasswordStore *password_store,
 					 GError **error);
 char* ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 					      gchar *password,
+					      gchar *salt,
 					      GError **error);
-gchar* ags_xml_password_store_decrypt_password(AgsPasswordStore *password_store,
-					       char *data,
-					       GError **error);
 
 /**
  * SECTION:ags_xml_password_store
  * @short_description: password store by XML file
  * @title: AgsXmlPasswordStore
  * @section_id:
- * @include: ags/server/ags_xml_password_store.h
+ * @include: ags/server/security/ags_xml_password_store.h
  *
  * The #AgsXmlPasswordStore is an object to keep passwords.
  */
@@ -135,7 +136,6 @@ ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *
   password_store->set_password = ags_xml_password_store_set_password;
 
   password_store->encrypt_password = ags_xml_password_store_encrypt_password;
-  password_store->decrypt_password = ags_xml_password_store_decrypt_password;
 }
 
 void
@@ -201,20 +201,23 @@ ags_xml_password_store_set_password(AgsPasswordStore *password_store,
   //TODO:JK: implement me
 }
 
-char*
+gchar*
 ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 					gchar *password,
+					gchar *salt,
 					GError **error)
 {
-  //TODO:JK: implement me
-}
+  struct crypt_data *data;
 
-gchar*
-ags_xml_password_store_decrypt_password(AgsPasswordStore *password_store,
-					char *data,
-					GError **error)
-{
-  //TODO:JK: implement me
+  gchar *password_hash;
+  
+  data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
+  data->initialized = 0;
+
+  password_hash = crypt_r(password, salt,
+			  data);
+
+  return(password_hash);
 }
 
 xmlNode*
@@ -277,6 +280,15 @@ ags_xml_password_store_find_login(AgsXmlPasswordStore *xml_password_store,
   return(user_node);
 }
 
+/**
+ * ags_xml_password_store_new:
+ *
+ * Create #AgsXmlPasswordStore.
+ *
+ * Returns: the new #AgsXmlPasswordStore instance
+ *
+ * Since: 1.0.0
+ */
 AgsXmlPasswordStore*
 ags_xml_password_store_new()
 {

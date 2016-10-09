@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/server/ags_authentication.h>
+#include <ags/server/security/ags_authentication.h>
 
 #define AGS_TYPE_AUTHENTICATION_MANAGER                (ags_authentication_manager_get_type())
 #define AGS_AUTHENTICATION_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTHENTICATION_MANAGER, AgsAuthenticationManager))
@@ -55,6 +55,17 @@ void ags_authentication_manager_add_authentication(AgsAuthenticationManager *aut
 						   GObject *authentication);
 void ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authentication_manager,
 						      GObject *authentication);
+
+/*  */
+gboolean ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,
+					  gchar *login,
+					  gchar *password,
+					  gchar **user_uuid,
+					  gchar **security_token);
+
+gboolean ags_authentication_manager_check_authentication(AgsAuthenticationManager *authentication_manager,
+							 gchar *user_uuid,
+							 gchar *security_token);
 
 /*  */
 AgsAuthenticationManager* ags_authentication_manager_get_instance();

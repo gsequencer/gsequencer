@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/server/ags_password_store.h>
+#include <ags/server/security/ags_password_store.h>
 
 void ags_password_store_base_init(AgsPasswordStoreInterface *interface);
 
@@ -26,7 +26,7 @@ void ags_password_store_base_init(AgsPasswordStoreInterface *interface);
  * @short_description: base password authentication
  * @title: AgsPasswordStore
  * @section_id: AgsPasswordStore
- * @include: ags/server/ags_password_store.h
+ * @include: ags/server/security/ags_password_store.h
  *
  * The #AgsPasswordStore interface gives you a unique access to all objects
  * and is responsible to set up signal handlers.
@@ -198,6 +198,7 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
  * ags_password_store_encrypt_password:
  * @password_store: the #AgsPasswordStore
  * @password: the password
+ * @salt: your salt
  * @error: the #GError-struct
  *
  * Encrypt password.
@@ -206,9 +207,10 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
  *
  * Since: 1.0.0
  */
-char*
+gchar*
 ags_password_store_encrypt_password(AgsPasswordStore *password_store,
 				    gchar *password,
+				    gchar *salt,
 				    GError **error)
 {
   AgsPasswordStoreInterface *password_store_interface;
@@ -219,33 +221,6 @@ ags_password_store_encrypt_password(AgsPasswordStore *password_store,
 
   return(password_store_interface->encrypt_password(password_store,
 						    password,
-						    error));
-}
-
-/**
- * ags_password_store_decrypt_password:
- * @password_store: the #AgsPasswordStore
- * @password: the password
- * @error: the #GError-struct
- *
- * Decrypt password.
- *
- * Returns: the plain text password
- *
- * Since: 1.0.0
- */
-gchar*
-ags_password_store_decrypt_password(AgsPasswordStore *password_store,
-				    char *data,
-				    GError **error)
-{
-  AgsPasswordStoreInterface *password_store_interface;
-
-  g_return_val_if_fail(AGS_IS_PASSWORD_STORE(password_store), NULL);
-  password_store_interface = AGS_PASSWORD_STORE_GET_INTERFACE(password_store);
-  g_return_val_if_fail(password_store_interface->decrypt_password, NULL);
-
-  return(password_store_interface->decrypt_password(password_store,
-						    data,
+						    salt,
 						    error));
 }

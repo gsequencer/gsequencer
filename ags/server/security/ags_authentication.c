@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/server/ags_authentication.h>
+#include <ags/server/security/ags_authentication.h>
 
 void ags_authentication_base_init(AgsAuthenticationInterface *interface);
 
@@ -26,7 +26,7 @@ void ags_authentication_base_init(AgsAuthenticationInterface *interface);
  * @short_description: base password authentication
  * @title: AgsAuthentication
  * @section_id: AgsAuthentication
- * @include: ags/server/ags_authentication.h
+ * @include: ags/server/security/ags_authentication.h
  *
  * The #AgsAuthentication interface gives you a unique access to all objects
  * and is responsible to set up signal handlers.
@@ -61,8 +61,8 @@ ags_authentication_base_init(AgsAuthenticationInterface *interface)
 /**
  * ags_authentication_login:
  * @authentication: the #AgsAuthentication
- * @login:
- * @password:
+ * @login: the login
+ * @password: the password
  * @error: the #GError-struct
  * 
  * Login. 
@@ -108,9 +108,9 @@ ags_authentication_logout(AgsAuthentication *authentication,
 {
   AgsAuthenticationInterface *authentication_interface;
 
-  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
+  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), FALSE);
   authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
-  g_return_val_if_fail(authentication_interface->logout, NULL);
+  g_return_val_if_fail(authentication_interface->logout, FALSE);
 
   return(authentication_interface->logout(authentication,
 					  login,
@@ -183,11 +183,11 @@ ags_authentication_get_groups(AgsAuthentication *authentication,
  * 
  * Get permission of group.
  *
- * Returns: %TRUE if eligible, otherwise %FALSE
+ * Returns: one or more of 'r', 'w' and 'x'.
  * 
  * Since: 1.0.0
  */
-gboolean
+gchar*
 ags_authentication_get_permission(AgsAuthentication *authentication,
 				  gchar *login, gchar *security_token,
 				  gchar *group_name,
@@ -226,9 +226,9 @@ ags_authentication_is_session_active(AgsAuthentication *authentication,
 {
   AgsAuthenticationInterface *authentication_interface;
 
-  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
+  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), FALSE);
   authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
-  g_return_val_if_fail(authentication_interface->is_session_active, NULL);
+  g_return_val_if_fail(authentication_interface->is_session_active, FALSE);
 
   return(authentication_interface->is_session_active(authentication,
 						     login,

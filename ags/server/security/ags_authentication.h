@@ -52,10 +52,10 @@ struct _AgsAuthenticationInterface
 			gchar *login, gchar *security_token,
 			GError **error);
 
-  gboolean (*get_permission)(AgsAuthentication *authentication,
-			     gchar *login, gchar *security_token,
-			     gchar *group_name,
-			     GError **error);
+  gchar* (*get_permission)(AgsAuthentication *authentication,
+			   gchar *login, gchar *security_token,
+			   gchar *group_name,
+			   GError **error);
 
   gboolean (*is_session_active)(AgsAuthentication *authentication,
 				gchar *login, gchar *security_token,
@@ -79,10 +79,10 @@ gchar** ags_authentication_get_groups(AgsAuthentication *authentication,
 				      gchar *login, gchar *security_token,
 				      GError **error);
 
-gboolean ags_authentication_get_permission(AgsAuthentication *authentication,
-					   gchar *login, gchar *security_token,
-					   gchar *group_name,
-					   GError **error);
+gchar* ags_authentication_get_permission(AgsAuthentication *authentication,
+					 gchar *login, gchar *security_token,
+					 gchar *group_name,
+					 GError **error);
 
 gboolean ags_authentication_is_session_active(AgsAuthentication *authentication,
 					      gchar *login, gchar *security_token,

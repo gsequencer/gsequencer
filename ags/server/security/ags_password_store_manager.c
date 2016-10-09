@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/server/ags_password_store_manager.h>
+#include <ags/server/security/ags_password_store_manager.h>
 
 void ags_password_store_manager_class_init(AgsPasswordStoreManagerClass *password_store_manager);
 void ags_password_store_manager_init (AgsPasswordStoreManager *password_store_manager);
@@ -28,7 +28,7 @@ void ags_password_store_manager_finalize(GObject *gobject);
  * @short_description: Singleton pattern to organize password stores
  * @title: AgsPasswordStoreManager
  * @section_id:
- * @include: ags/server/ags_password_store_manager.h
+ * @include: ags/server/security/ags_password_store_manager.h
  *
  * The #AgsPasswordStoreManager manages your password stores.
  */
@@ -131,6 +131,16 @@ ags_password_store_manager_remove_password_store(AgsPasswordStoreManager *passwo
 
   password_store_manager->password_store = g_list_remove(password_store_manager->password_store,
 							 password_store);
+}
+
+gboolean
+ags_password_store_manager_check_password(AgsPasswordStoreManager *password_store_manager,
+					  gchar *login,
+					  gchar *password)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
 }
 
 /**

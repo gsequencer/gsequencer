@@ -69,11 +69,9 @@ struct _AgsPasswordStoreInterface
 		       gchar *password,
 		       GError **error);
   
-  char* (*encrypt_password)(AgsPasswordStore *password_store,
-			    gchar *password,
-			    GError **error);
-  gchar* (*decrypt_password)(AgsPasswordStore *password_store,
-			     char *data,
+  gchar* (*encrypt_password)(AgsPasswordStore *password_store,
+			     gchar *password,
+			     gchar *salt,
 			     GError **error);
 };
 
@@ -103,11 +101,9 @@ void ags_password_store_set_password(AgsPasswordStore *password_store,
 				     gchar *password,
 				     GError **error);
 
-char* ags_password_store_encrypt_password(AgsPasswordStore *password_store,
-					  gchar *password,
-					  GError **error);
-gchar* ags_password_store_decrypt_password(AgsPasswordStore *password_store,
-					   char *data,
+gchar* ags_password_store_encrypt_password(AgsPasswordStore *password_store,
+					   gchar *password,
+					   gchar *salt,
 					   GError **error);
 
 #endif /*__AGS_PASSWORD_STORE_H__*/

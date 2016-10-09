@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/server/ags_authentication_manager.h>
+#include <ags/server/security/ags_authentication_manager.h>
 
 void ags_authentication_manager_class_init(AgsAuthenticationManagerClass *authentication_manager);
 void ags_authentication_manager_init (AgsAuthenticationManager *authentication_manager);
@@ -28,7 +28,7 @@ void ags_authentication_manager_finalize(GObject *gobject);
  * @short_description: Singleton pattern to organize authentication
  * @title: AgsAuthenticationManager
  * @section_id:
- * @include: ags/server/ags_authentication_manager.h
+ * @include: ags/server/security/ags_authentication_manager.h
  *
  * The #AgsAuthenticationManager manages your authentication.
  */
@@ -131,6 +131,28 @@ ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authe
 
   authentication_manager->authentication = g_list_remove(authentication_manager->authentication,
 							 authentication);
+}
+
+gboolean
+ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,
+				 gchar *login,
+				 gchar *password,
+				 gchar **user_uuid,
+				 gchar **security_token)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
+}
+
+gboolean
+ags_authentication_manager_check_authentication(AgsAuthenticationManager *authentication_manager,
+						gchar *user_uuid,
+						gchar *security_token)
+{
+  //TODO:JK: implement me
+  
+  return(FALSE);
 }
 
 /**
