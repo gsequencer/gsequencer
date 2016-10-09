@@ -664,7 +664,9 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   if(target_samplerate != samplerate){
     resampled_frames = (target_samplerate / samplerate) * frames;
     resample = TRUE;
-  }    
+  }else{
+    resampled_frames = frames;
+  }
   
   length = (guint) ceil((double)(resampled_frames) / (double)(buffer_size));
 

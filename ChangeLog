@@ -1,3 +1,8 @@
+ags (0.7.82)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_playable_read_audio_signal() without resampling frame count
+
 ags (0.7.81)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
