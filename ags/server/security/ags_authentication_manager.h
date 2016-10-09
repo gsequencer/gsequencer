@@ -63,9 +63,9 @@ gboolean ags_authentication_manager_login(AgsAuthenticationManager *authenticati
 					  gchar **user_uuid,
 					  gchar **security_token);
 
-gboolean ags_authentication_manager_check_authentication(AgsAuthenticationManager *authentication_manager,
-							 gchar *user_uuid,
-							 gchar *security_token);
+gboolean ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
+						      gchar *login,
+						      gchar *security_token);
 
 /*  */
 AgsAuthenticationManager* ags_authentication_manager_get_instance();

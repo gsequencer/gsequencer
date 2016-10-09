@@ -28,8 +28,7 @@ void ags_authentication_base_init(AgsAuthenticationInterface *interface);
  * @section_id: AgsAuthentication
  * @include: ags/server/security/ags_authentication.h
  *
- * The #AgsAuthentication interface gives you a unique access to all objects
- * and is responsible to set up signal handlers.
+ * The #AgsAuthentication interface gives you base authentication functions.
  */
 
 GType
@@ -63,17 +62,20 @@ ags_authentication_base_init(AgsAuthenticationInterface *interface)
  * @authentication: the #AgsAuthentication
  * @login: the login
  * @password: the password
+ * @user_uuid: return location of the user's uuid
+ * @security_token: return location of the security token
  * @error: the #GError-struct
  * 
- * Login. 
+ * Login.
  *
- * Returns: the security token
+ * Returns: %TRUE on success, otherwise %FALSE
  *
  * Since: 1.0.0
  */
-gchar*
+gboolean
 ags_authentication_login(AgsAuthentication *authentication,
 			 gchar *login, gchar *password,
+			 gchar **user_uuid, gchar **security_token,
 			 GError **error)
 {
   AgsAuthenticationInterface *authentication_interface;
@@ -85,6 +87,7 @@ ags_authentication_login(AgsAuthentication *authentication,
   return(authentication_interface->login(authentication,
 					 login,
 					 password,
+					 user_uuid, security_token,
 					 error));
 }
 

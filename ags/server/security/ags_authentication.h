@@ -37,9 +37,10 @@ struct _AgsAuthenticationInterface
 {
   GTypeInterface interface;
 
-  gchar* (*login)(AgsAuthentication *authentication,
-		  gchar *login, gchar *password,
-		  GError **error);
+  gboolean (*login)(AgsAuthentication *authentication,
+		    gchar *login, gchar *password,
+		    gchar **user_uuid, gchar **security_token,
+		    GError **error);
 
   gboolean (*logout)(AgsAuthentication *authentication,
 		     gchar *login, gchar *security_token,
@@ -64,9 +65,10 @@ struct _AgsAuthenticationInterface
 
 GType ags_authentication_get_type();
 
-gchar* ags_authentication_login(AgsAuthentication *authentication,
-				gchar *login, gchar *password,
-				GError **error);
+gboolean ags_authentication_login(AgsAuthentication *authentication,
+				  gchar *login, gchar *password,
+				  gchar **user_uuid, gchar **security_token,
+				  GError **error);
 
 gboolean ags_authentication_logout(AgsAuthentication *authentication,
 				   gchar *login, gchar *security_token,

@@ -37,25 +37,25 @@ void ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterf
 void ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store);
 void ags_xml_password_store_finalize(GObject *gobject);
 gchar* ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
-					     gchar *user,
+					     GObject *security_context,
+					     gchar *user_uuid,
 					     gchar *security_token,
-					     guint security_context,
 					     GError **error);
 void ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
-					   gchar *user,
+					   GObject *security_context,
+					   gchar *user_uuid,
 					   gchar *security_token,
-					   guint security_context,
 					   gchar *login_name,
 					   GError **error);
 gchar* ags_xml_password_store_get_password(AgsPasswordStore *password_store,
+					   GObject *security_context,
 					   gchar *user,
 					   gchar *security_token,
-					   guint security_context,
 					   GError **error);
 void ags_xml_password_store_set_password(AgsPasswordStore *password_store,
+					 GObject *security_context,
 					 gchar *user,
 					 gchar *security_token,
-					 guint security_context,
 					 gchar *password,
 					 GError **error);
 char* ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
@@ -159,21 +159,11 @@ ags_xml_password_store_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_xml_password_store_parent_class)->finalize(gobject);
 }
 
-gchar*
-ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
-				      gchar *user,
-				      gchar *security_token,
-				      guint security_context,
-				      GError **error)
-{
-  //TODO:JK: implement me
-}
-
 void
 ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
-				      gchar *user,
+				      GObject *security_context,
+				      gchar *user_uuid,
 				      gchar *security_token,
-				      guint security_context,
 				      gchar *login_name,
 				      GError **error)
 {
@@ -181,21 +171,31 @@ ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
 }
 
 gchar*
-ags_xml_password_store_get_password(AgsPasswordStore *password_store,
-				    gchar *user,
-				    gchar *security_token,
-				    guint security_context,
-				    GError **error)
+ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
+				      GObject *security_context,
+				      gchar *user_uuid,
+				      gchar *security_token,
+				      GError **error)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_xml_password_store_set_password(AgsPasswordStore *password_store,
+				    GObject *security_context,
 				    gchar *user,
 				    gchar *security_token,
-				    guint security_context,
 				    gchar *password,
+				    GError **error)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_xml_password_store_get_password(AgsPasswordStore *password_store,
+				    GObject *security_context,
+				    gchar *user,
+				    gchar *security_token,
 				    GError **error)
 {
   //TODO:JK: implement me

@@ -140,17 +140,71 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 				 gchar **user_uuid,
 				 gchar **security_token)
 {
-  //TODO:JK: implement me
+  GList *authentication;
+
+  gchar *current_token, *current_uuid;
+  
+  authentication = authentication_manager->authentication;
+
+  current_uuid = NULL;
+  current_token = NULL;
+  
+  while(authentication != NULL){
+    GError *error;
+
+    error = NULL;
+    
+    if(ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
+				login, password,
+				&current_uuid, &current_token,
+				&error)){
+      if(user_uuid != NULL){
+	*user_uuid = current_uuid;
+      }
+
+      if(security_token != NULL){
+	*security_token = current_token;
+      }
+      
+      return(TRUE);
+    }
+
+    if(error != NULL){
+      g_warning("%s\0", error->message);
+    }
+    
+    authentication = authentication->next;
+  }
   
   return(FALSE);
 }
 
 gboolean
-ags_authentication_manager_check_authentication(AgsAuthenticationManager *authentication_manager,
-						gchar *user_uuid,
-						gchar *security_token)
+ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
+					     gchar *login,
+					     gchar *security_token)
 {
-  //TODO:JK: implement me
+  GList *authentication;
+  
+  authentication = authentication_manager->authentication;
+  
+  while(authentication != NULL){
+    GError *error;
+
+    error = NULL;
+    
+    if(ags_authentication_is_session_active(AGS_AUTHENTICATION(authentication->data),
+					    login, security_token,
+					    &error)){
+      return(TRUE);
+    }
+
+    if(error != NULL){
+      g_warning("%s\0", error->message);
+    }
+    
+    authentication = authentication->next;
+  }
   
   return(FALSE);
 }

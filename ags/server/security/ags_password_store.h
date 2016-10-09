@@ -45,29 +45,29 @@ struct _AgsPasswordStoreInterface
 {
   GTypeInterface interface;
 
-  gchar* (*get_login_name)(AgsPasswordStore *password_store,
-			   gchar *user,
-			   gchar *security_token,
-			   guint security_context,
-			   GError **error);
   void (*set_login_name)(AgsPasswordStore *password_store,
-			 gchar *user,
+			 GObject *security_context,
+			 gchar *user_uuid,
 			 gchar *security_token,
-			 guint security_context,
 			 gchar *login_name,
 			 GError **error);
+  gchar* (*get_login_name)(AgsPasswordStore *password_store,
+			   GObject *security_context,
+			   gchar *user_uuid,
+			   gchar *security_token,
+			   GError **error);
 
-  gchar* (*get_password)(AgsPasswordStore *password_store,
-			 gchar *user,
-			 gchar *security_token,
-			 guint security_context,
-			 GError **error);
   void (*set_password)(AgsPasswordStore *password_store,
-		       gchar *user,
+		       GObject *security_context,
+		       gchar *login,
 		       gchar *security_token,
-		       guint security_context,
 		       gchar *password,
 		       GError **error);
+  gchar* (*get_password)(AgsPasswordStore *password_store,
+			 GObject *security_context,
+			 gchar *login,
+			 gchar *security_token,
+			 GError **error);
   
   gchar* (*encrypt_password)(AgsPasswordStore *password_store,
 			     gchar *password,
@@ -77,29 +77,29 @@ struct _AgsPasswordStoreInterface
 
 GType ags_password_store_get_type();
 
-gchar* ags_password_store_get_login_name(AgsPasswordStore *password_store,
-					 gchar *user,
-					 gchar *security_token,
-					 guint security_context,
-					 GError **error);
 void ags_password_store_set_login_name(AgsPasswordStore *password_store,
+				       GObject *security_context,
 				       gchar *user,
 				       gchar *security_token,
-				       guint security_context,
 				       gchar *login_name,
 				       GError **error);
+gchar* ags_password_store_get_login_name(AgsPasswordStore *password_store,
+					 GObject *security_context,
+					 gchar *user,
+					 gchar *security_token,
+					 GError **error);
 
-gchar* ags_password_store_get_password(AgsPasswordStore *password_store,
-				       gchar *user,
-				       gchar *security_token,
-				       guint security_context,
-				       GError **error);
 void ags_password_store_set_password(AgsPasswordStore *password_store,
-				     gchar *user,
+				     GObject *security_context,
+				     gchar *login,
 				     gchar *security_token,
-				     guint security_context,
 				     gchar *password,
 				     GError **error);
+gchar* ags_password_store_get_password(AgsPasswordStore *password_store,
+				       GObject *security_context,
+				       gchar *login,
+				       gchar *security_token,
+				       GError **error);
 
 gchar* ags_password_store_encrypt_password(AgsPasswordStore *password_store,
 					   gchar *password,

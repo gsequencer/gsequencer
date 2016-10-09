@@ -34,9 +34,10 @@ void ags_xml_authentication_authentication_interface_init(AgsAuthenticationInter
 void ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication);
 void ags_xml_authentication_finalize(GObject *gobject);
 
-gchar* ags_xml_authentication_login(AgsAuthentication *authentication,
-				    gchar *login, gchar *password,
-				    GError **error);
+gboolean ags_xml_authentication_login(AgsAuthentication *authentication,
+				      gchar *login, gchar *password,
+				      gchar **user_uuid, gchar **security_token,
+				      GError **error);
 gboolean ags_xml_authentication_logout(AgsAuthentication *authentication,
 				       gchar *login, gchar *security_token,
 				       GError **error); 
@@ -154,9 +155,10 @@ ags_xml_authentication_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_xml_authentication_parent_class)->finalize(gobject);
 }
 
-gchar*
+gboolean
 ags_xml_authentication_login(AgsAuthentication *authentication,
 			     gchar *login, gchar *password,
+			     gchar **user_uuid, gchar **security_token,
 			     GError **error)
 {
   AgsXmlAuthentication *xml_authentication;
@@ -166,8 +168,9 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
   xmlNode **node;
   xmlNode *auth_node;
   xmlNode *user_node;
-  
-  gchar *security_token;
+
+  gchar *current_uuid;
+  gchar *current_token;
   xmlChar *xpath;
 
   guint i;
@@ -180,10 +183,11 @@ ags_xml_authentication_login(AgsAuthentication *authentication,
   
   xml_authentication = AGS_XML_AUTHENTICATION(authentication);
 
-  security_token = NULL;
+  current_uuid = NULL;
+  current_token = NULL;
 
 
-  return(security_token);
+  return(FALSE);
 }
 
 gboolean
