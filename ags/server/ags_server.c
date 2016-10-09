@@ -183,9 +183,6 @@ ags_server_init(AgsServer *server)
 
   server->application_context = NULL;
   server->application_mutex = NULL;
-
-  server->registry = ags_registry_new();
-  server->remote_task = ags_remote_task_new();
 }
 
 void
@@ -258,7 +255,7 @@ void
 ags_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsServer *server;
-  AgsRegistry *registry;
+  //  AgsRegistry *registry;
 
 #ifdef AGS_WITH_XMLRPC_C
   struct xmlrpc_method_info3 *method_info;
@@ -266,7 +263,7 @@ ags_server_add_to_registry(AgsConnectable *connectable)
 
   server = AGS_SERVER(connectable);
   
-  registry = AGS_REGISTRY(server->registry);
+  //  registry = AGS_REGISTRY(server->registry);
 
 
 #ifdef AGS_WITH_XMLRPC_C
@@ -290,8 +287,8 @@ ags_server_add_to_registry(AgsConnectable *connectable)
 #endif /* AGS_WITH_XMLRPC_C */
 
   /* children */
-  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->registry));
-  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->remote_task));
+  //  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->registry));
+  //  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->remote_task));
 }
 
 void
@@ -325,10 +322,10 @@ ags_server_finalize(GObject *gobject)
 void
 ags_server_real_start(AgsServer *server)
 {
-  AgsRegistry *registry;
+  //  AgsRegistry *registry;
   const char *error;
 
-  registry = AGS_REGISTRY(server->registry);
+  //  registry = AGS_REGISTRY(server->registry);
 #ifdef AGS_WITH_XMLRPC_C
   registry->registry = xmlrpc_registry_new(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))));
 #endif /* AGS_WITH_XMLRPC_C */

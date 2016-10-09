@@ -37,9 +37,6 @@
 #include <xmlrpc-c/server_abyss.h>
 #endif
 
-#include <ags/server/ags_registry.h>
-#include <ags/server/ags_remote_task.h>
-
 #include <pthread.h>
 
 #define AGS_TYPE_SERVER                (ags_server_get_type())
@@ -75,9 +72,6 @@ struct _AgsServer
   
   GObject *application_context;
   pthread_mutex_t  *application_mutex;
-  
-  AgsRegistry *registry;
-  AgsRemoteTask *remote_task;
 };
 
 struct _AgsServerClass

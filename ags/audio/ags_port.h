@@ -41,8 +41,10 @@ typedef struct _AgsPort AgsPort;
 typedef struct _AgsPortClass AgsPortClass;
 
 typedef enum{
-  AGS_PORT_CONVERT_ALWAYS   =  1,
-  AGS_PORT_USE_LADSPA_FLOAT =  1 <<  1,
+  AGS_PORT_ADDED_TO_REGISTRY  = 1,
+  AGS_PORT_CONNECTED          = 1 <<  1,
+  AGS_PORT_CONVERT_ALWAYS     = 1 <<  2,
+  AGS_PORT_USE_LADSPA_FLOAT   = 1 <<  3,
 }AgsPortFlags;
 
 struct _AgsPort

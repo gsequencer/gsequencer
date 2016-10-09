@@ -29,7 +29,6 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/server/ags_server.h>
 #include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
@@ -1170,7 +1169,7 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 {
   AgsChannel *channel;
 
-  AgsServer *server;
+  AgsRegistry *registry;
   AgsRegistryEntry *entry;
 
   AgsApplicationContext *application_context;
@@ -1181,12 +1180,12 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(channel->soundcard));
 
-  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
-  entry = ags_registry_entry_alloc(server->registry);
+  entry = ags_registry_entry_alloc(registry);
   g_value_set_object(&(entry->entry),
 		     (gpointer) channel);
-  ags_registry_add(server->registry,
+  ags_registry_add(registry,
 		   entry);
 
   /* add play */

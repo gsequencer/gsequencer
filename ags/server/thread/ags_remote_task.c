@@ -17,12 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/server/ags_remote_task.h>
+#include <ags/server/thread/ags_remote_task.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/server/ags_server.h>
-#include <ags/server/ags_registry.h>
 
 #include <ags/thread/ags_task.h>
 
@@ -107,15 +104,15 @@ ags_remote_task_init(AgsRemoteTask *remote_task)
 void
 ags_remote_task_add_to_registry(AgsConnectable *connectable)
 {
-  AgsServer *server;
-  AgsRegistry *registry;
+  //  AgsServer *server;
+  //  AgsRegistry *registry;
   AgsRemoteTask *remote_task;
   struct xmlrpc_method_info3 *method_info;
 
   remote_task = AGS_REMOTE_TASK(connectable);
 
-  server = AGS_SERVER(remote_task->server);
-  registry = AGS_REGISTRY(server->registry);
+  //  server = AGS_SERVER(remote_task->server);
+  //  registry = AGS_REGISTRY(server->registry);
 
 #ifdef AGS_WITH_XMLRPC_C
   /* bulk */
@@ -163,7 +160,7 @@ ags_remote_task_launch(xmlrpc_env *env,
 		       xmlrpc_value *param_array,
 		       void *server_info)
 {
-  AgsServer *server;
+  //  AgsServer *server;
   AgsTask *task;
   AgsRegistryEntry *registry_entry;
   gchar *registry_id;
@@ -173,15 +170,15 @@ ags_remote_task_launch(xmlrpc_env *env,
     return(NULL);
   }
 
-  server = ags_server_lookup(server_info);
+  //  server = ags_server_lookup(server_info);
 
   /* read registry id */
   xmlrpc_array_read_item(env, param_array, 1, &item);
   xmlrpc_read_string(env, item, &registry_id);
   xmlrpc_DECREF(item);
 
-  registry_entry = ags_registry_entry_find(server->registry,
-					   registry_id);
+  //  registry_entry = ags_registry_entry_find(server->registry,
+  //					   registry_id);
   task = (AgsTask *) g_value_get_object(&(registry_entry->entry));
 
   /* launch */
@@ -201,7 +198,7 @@ ags_remote_task_launch_timed(xmlrpc_env *env,
 			     xmlrpc_value *param_array,
 			     void *server_info)
 {
-  AgsServer *server;
+  //  AgsServer *server;
   AgsTask *task;
   AgsRegistryEntry *registry_entry;
   gchar *registry_id;
@@ -211,15 +208,15 @@ ags_remote_task_launch_timed(xmlrpc_env *env,
     return(NULL);
   }
 
-  server = ags_server_lookup(server_info);
+  //  server = ags_server_lookup(server_info);
 
   /* read registry id */
   xmlrpc_array_read_item(env, param_array, 1, &item);
   xmlrpc_read_string(env, item, &registry_id);
   xmlrpc_DECREF(item);
 
-  registry_entry = ags_registry_entry_find(server->registry,
-					   registry_id);
+  //  registry_entry = ags_registry_entry_find(server->registry,
+  //					   registry_id);
   task = (AgsTask *) g_value_get_object(&(registry_entry->entry));
 
   /* launch timed */

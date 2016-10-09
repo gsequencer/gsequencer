@@ -40,8 +40,9 @@ typedef struct _AgsChannel AgsChannel;
 typedef struct _AgsChannelClass AgsChannelClass;
 
 typedef enum{
-  AGS_CHANNEL_CONNECTED      = 1,
-  AGS_CHANNEL_RUNNING        = 1 <<  1,
+  AGS_CHANNEL_ADDED_TO_REGISTRY  = 1,
+  AGS_CHANNEL_CONNECTED          = 1 <<  1,
+  AGS_CHANNEL_RUNNING            = 1 <<  2,
 }AgsChannelFlags;
 
 typedef enum{

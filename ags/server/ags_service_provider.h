@@ -20,9 +20,8 @@
 #ifndef __AGS_SERVICE_PROVIDER_H__
 #define __AGS_SERVICE_PROVIDER_H__
 
+#include <glib.h>
 #include <glib-object.h>
-
-#include <ags/server/ags_server.h>
 
 #define AGS_TYPE_SERVICE_PROVIDER                    (ags_service_provider_get_type())
 #define AGS_SERVICE_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVICE_PROVIDER, AgsServiceProvider))
@@ -37,12 +36,24 @@ typedef struct _AgsServiceProviderInterface AgsServiceProviderInterface;
 struct _AgsServiceProviderInterface
 {
   GTypeInterface interface;
-
-  AgsServer* (*get_server)(AgsServiceProvider *service_provider);
+  
+  void (*set_registry)(AgsServiceProvider *service_provider,
+		       GObject *registry);
+  GObject* (*get_registry)(AgsServiceProvider *service_provider);
+  
+  void (*set_server)(AgsServiceProvider *service_provider,
+		     GList *server);
+  GList* (*get_server)(AgsServiceProvider *service_provider);
 };
 
 GType ags_service_provider_get_type();
 
-AgsServer* ags_service_provider_get_server(AgsServiceProvider *service_provider);
+void ags_service_provider_set_registry(AgsServiceProvider *service_provider,
+				       GObject *registry);
+GObject* ags_service_provider_get_registry(AgsServiceProvider *service_provider);
+
+void ags_service_provider_set_server(AgsServiceProvider *service_provider,
+				     GList *server);
+GList* ags_service_provider_get_server(AgsServiceProvider *service_provider);
 
 #endif /*__AGS_SERVICE_PROVIDER_H__*/

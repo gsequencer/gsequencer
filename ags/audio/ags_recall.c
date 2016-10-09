@@ -30,7 +30,6 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/server/ags_server.h>
 #include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
@@ -985,7 +984,7 @@ void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
-  AgsServer *server;
+  AgsRegistry *registry;
   AgsRecall *recall;
   AgsRegistryEntry *entry;
   GList *list;
@@ -994,13 +993,13 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(recall->soundcard));
 
-  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
-  if(server != NULL){
-    entry = ags_registry_entry_alloc(server->registry);
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
     g_value_set_object(&(entry->entry),
 		       (gpointer) recall);
-    ags_registry_add(server->registry,
+    ags_registry_add(registry,
 		     entry);
   }
 }
