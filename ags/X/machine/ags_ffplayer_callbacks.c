@@ -323,6 +323,9 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
     if(channel == NULL){
       g_critical("channel == NULL - Soundfont 2 sample channel %d\0", sample_channel);
+
+      /* iterate */
+      sample_iter++;
       
       continue;
     }
