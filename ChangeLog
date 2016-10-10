@@ -2,6 +2,7 @@ ags (0.7.83)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed potential infinite-loop
+	* fixed race-condition as resizing audio channels and pads within gui thread
 
 ags (0.7.82)
 
