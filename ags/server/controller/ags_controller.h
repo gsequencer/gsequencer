@@ -38,6 +38,8 @@ struct _AgsController
   GObject gobject;
 
   GObject *server;
+
+  gchar *context_path;
 };
 
 struct _AgsControllerClass

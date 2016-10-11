@@ -80,6 +80,8 @@ void
 ags_controller_init(AgsController *controller)
 {
   controller->server = NULL;
+
+  controller->context_path = NULL;
 }
 
 void

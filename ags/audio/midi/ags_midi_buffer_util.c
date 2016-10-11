@@ -147,6 +147,156 @@ ags_midi_buffer_util_get_varlength(unsigned char *buffer,
 }
 
 /**
+ * ags_midi_buffer_util_put_int16:
+ * @buffer: the character buffer
+ * @val: the integer
+ * 
+ * Put signed 16 bit integer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_midi_buffer_util_put_int16(unsigned char *buffer,
+			       glong val)
+{
+  buffer[0] = val & (0xff << 8);
+  buffer[1] = val & 0xff;
+}
+
+/**
+ * ags_midi_buffer_util_get_int16:
+ * @buffer: the character buffer
+ * @val: return location of the integer
+ *
+ * Get signed 32 bit integer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_midi_buffer_util_get_int16(unsigned char *buffer,
+			       glong *val)
+{
+  val = (buffer[0] & 0xff);
+  val = (val << 8) + (buffer[1] & 0xff);
+}
+
+/**
+ * ags_midi_buffer_util_put_int32:
+ * @buffer: the character buffer
+ * @val: the integer
+ * 
+ * Put signed 32 bit integer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_midi_buffer_util_put_int32(unsigned char *buffer,
+			       glong val)
+{
+  buffer[0] = val & (0xff << 24);
+  buffer[1] = val & (0xff << 16);
+  buffer[2] = val & (0xff << 8);
+  buffer[3] = val & 0xff;
+}
+
+/**
+ * ags_midi_buffer_util_get_int32:
+ * @buffer: the character buffer
+ * @val: return location of the integer
+ *
+ * Get signed 32 bit integer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_midi_buffer_util_get_int32(unsigned char *buffer,
+			       glong *val)
+{
+  val = (buffer[0] & 0xff);
+  val = (val << 8) + (buffer[1] & 0xff);
+  val = (val << 8) + (buffer[2] & 0xff);
+  val = (val << 8) + (buffer[3] & 0xff);
+}
+
+/**
+ * ags_midi_buffer_util_put_header:
+ * @buffer: the character buffer
+ * @offset: start delta-time
+ * @format: either 0, 1 or 2.
+ * @track_count: the number of tracks
+ * @division: timing division
+ *
+ * Puts the midi header.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_midi_buffer_util_put_header(unsigned char *buffer,
+				glong offset, glong format,
+				glong track_count, glong division)
+{
+  static gchar header[] = "MThd";
+
+  /* put MThd */
+  memcpy(buffer, header, 4 * sizeof(unsigned char));
+
+  /* offset */
+  ags_midi_buffer_util_put_int32(buffer + 4,
+				 offset);
+
+  /* format */
+  ags_midi_buffer_util_put_int16(buffer + 8,
+				 format);
+
+  /* track count */
+  ags_midi_buffer_util_put_int16(buffer + 10,
+				 track_count);
+
+  /* division */
+  ags_midi_buffer_util_put_int16(buffer + 12,
+				 division);
+  
+}
+
+/**
+ * ags_midi_buffer_util_get_header:
+ * @buffer: the character buffer
+ * @offset: start delta-time
+ * @format: either 0, 1 or 2.
+ * @track_count: the number of tracks
+ * @division: timing division
+ * 
+ * Gets the midi header
+ * 
+ * Returns: the number of bytes read.
+ *
+ * Since: 1.0.0
+ */
+guint
+ags_midi_buffer_util_get_header(unsigned char *buffer,
+				glong *offset, glong *format,
+				glong *track_count, glong *division)
+{
+  static gchar header[] = "MThd";
+
+  /* offset */
+  ags_midi_buffer_util_get_int32(buffer + 4,
+				 offset);
+
+  /* format */
+  ags_midi_buffer_util_get_int16(buffer + 8,
+				 format);
+
+  /* track count */
+  ags_midi_buffer_util_get_int16(buffer + 10,
+				 track_count);
+
+  /* division */
+  ags_midi_buffer_util_get_int16(buffer + 12,
+				 division);
+}
+
+/**
  * ags_midi_buffer_util_put_key_on:
  * @buffer: the character buffer
  * @delta_time: timing information

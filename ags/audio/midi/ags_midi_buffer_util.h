@@ -25,12 +25,35 @@
 
 #include <alsa/seq_event.h>
 
+/* varlength */
 guint ags_midi_buffer_util_get_varlength_size(glong varlength);
 void ags_midi_buffer_util_put_varlength(unsigned char *buffer,
 					glong varlength);
 guint ags_midi_buffer_util_get_varlength(unsigned char *buffer,
 					 glong *varlength);
 
+/* short - 2 bytes */
+void ags_midi_buffer_util_put_int16(unsigned char *buffer,
+				    glong val);
+void ags_midi_buffer_util_get_int16(unsigned char *buffer,
+				    glong *val);
+
+/* long - 4 bytes */
+void ags_midi_buffer_util_put_int32(unsigned char *buffer,
+				    glong val);
+void ags_midi_buffer_util_get_int32(unsigned char *buffer,
+				    glong *val);
+
+/* midi header */
+void ags_midi_buffer_util_put_header(unsigned char *buffer,
+				     glong offset, glong format,
+				     glong track_count, glong division);
+
+guint ags_midi_buffer_util_get_header(unsigned char *buffer,
+				      glong *offset, glong *format,
+				      glong *track_count, glong *division);
+
+/* key on */
 void ags_midi_buffer_util_put_key_on(unsigned char *buffer,
 				     glong delta_time,
 				     glong channel,
@@ -43,6 +66,7 @@ guint ags_midi_buffer_util_get_key_on(unsigned char *buffer,
 				      glong *key,
 				      glong *velocity);
 
+/* key off */
 void ags_midi_buffer_util_put_key_off(unsigned char *buffer,
 				      glong delta_time,
 				      glong channel,
@@ -55,6 +79,7 @@ guint ags_midi_buffer_util_get_key_off(unsigned char *buffer,
 				       glong *key,
 				       glong *velocity);
 
+/* key pressure */
 void ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
 					   glong delta_time,
 					   glong channel,
@@ -67,6 +92,8 @@ guint ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
 					    glong *key,
 					    glong *pressure);
 
+
+/* decode */
 guint ags_midi_buffer_util_decode(unsigned char *buffer,
 				  snd_seq_event_t *event);
 
