@@ -208,6 +208,7 @@ ags_business_group_get_user_uuid(AgsBusinessGroup *business_group,
 /**
  * ags_business_group_set_context_path_with_read_permission:
  * @business_group: the #AgsBusinessGroup
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @business_group_name: the business group name
@@ -220,6 +221,7 @@ ags_business_group_get_user_uuid(AgsBusinessGroup *business_group,
  */
 void
 ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *business_group,
+							 GObject *security_context,
 							 gchar *login,
 							 gchar *security_token,
 							 gchar *business_group_name,
@@ -232,6 +234,7 @@ ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *busin
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
   g_return_if_fail(business_group_interface->set_context_path_with_read_permission);
   business_group_interface->set_context_path_with_read_permission(business_group,
+								  security_context,
 								  login,
 								  security_token,
 								  business_group_name,
@@ -242,6 +245,7 @@ ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *busin
 /**
  * ags_business_group_get_context_path_with_read_permission:
  * @business_group: the #AgsBusinessGroup
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @business_group_name: the business group name
@@ -255,6 +259,7 @@ ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *busin
  */
 gchar**
 ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *business_group,
+							 GObject *security_context,
 							 gchar *login,
 							 gchar *security_token,
 							 gchar *business_group_name,
@@ -267,6 +272,7 @@ ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *busin
   g_return_val_if_fail(business_group_interface->get_context_path_with_read_permission, NULL);
 
   return(business_group_interface->get_context_path_with_read_permission(business_group,
+									 security_context,
 									 login,
 									 security_token,
 									 business_group_name,
@@ -276,6 +282,7 @@ ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *busin
 /**
  * ags_business_group_set_context_path_with_write_permission:
  * @business_group: the #AgsBusinessGroup
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @business_group_name: the business group name
@@ -288,6 +295,7 @@ ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *busin
  */
 void
 ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *business_group,
+							  GObject *security_context,
 							  gchar *login,
 							  gchar *security_token,
 							  gchar *business_group_name,
@@ -300,6 +308,7 @@ ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *busi
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
   g_return_if_fail(business_group_interface->set_context_path_with_write_permission);
   business_group_interface->set_context_path_with_write_permission(business_group,
+								   security_context,
 								   login,
 								   security_token,
 								   business_group_name,
@@ -310,6 +319,7 @@ ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *busi
 /**
  * ags_business_group_get_context_path_with_write_permission:
  * @business_group: the #AgsBusinessGroup
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @business_group_name: the business group name
@@ -323,6 +333,7 @@ ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *busi
  */
 gchar**
 ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *business_group,
+							  GObject *security_context,
 							  gchar *login,
 							  gchar *security_token,
 							  gchar *business_group_name,
@@ -335,6 +346,7 @@ ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *busi
   g_return_val_if_fail(business_group_interface->get_context_path_with_write_permission, NULL);
 
   return(business_group_interface->get_context_path_with_write_permission(business_group,
+									  security_context,
 									  login,
 									  security_token,
 									  business_group_name,
@@ -344,6 +356,7 @@ ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *busi
 /**
  * ags_business_group_set_context_path_with_execute_permission:
  * @business_group: the #AgsBusinessGroup
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @business_group_name: the business group name
@@ -356,6 +369,7 @@ ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *busi
  */
 void
 ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *business_group,
+							    GObject *security_context,
 							    gchar *login,
 							    gchar *security_token,
 							    gchar *business_group_name,
@@ -368,6 +382,7 @@ ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *bu
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
   g_return_if_fail(business_group_interface->set_context_path_with_execute_permission);
   business_group_interface->set_context_path_with_execute_permission(business_group,
+								     security_context,
 								     login,
 								     security_token,
 								     business_group_name,
@@ -378,6 +393,7 @@ ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *bu
 /**
  * ags_business_group_get_context_path_with_execute_permission:
  * @business_group: the #AgsBusinessGroup
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @business_group_name: the business group name
@@ -391,6 +407,7 @@ ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *bu
  */
 gchar**
 ags_business_group_get_context_path_with_execute_permission(AgsBusinessGroup *business_group,
+							    GObject *security_context,
 							    gchar *login,
 							    gchar *security_token,
 							    gchar *business_group_name,
@@ -403,6 +420,7 @@ ags_business_group_get_context_path_with_execute_permission(AgsBusinessGroup *bu
   g_return_val_if_fail(business_group_interface->get_context_path_with_execute_permission, NULL);
 
   return(business_group_interface->get_context_path_with_execute_permission(business_group,
+									    security_context,
 									    login,
 									    security_token,
 									    business_group_name,

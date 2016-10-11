@@ -30,7 +30,7 @@
 #define AGS_IS_BUSINESS_GROUP_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_BUSINESS_GROUP))
 #define AGS_BUSINESS_GROUP_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_BUSINESS_GROUP, AgsBusinessGroupInterface))
 
-typedef struct _AgsBusinessGroup AgsBusinessGroup;
+  typedef struct _AgsBusinessGroup AgsBusinessGroup;
 typedef struct _AgsBusinessGroupInterface AgsBusinessGroupInterface;
 
 struct _AgsBusinessGroupInterface
@@ -66,36 +66,42 @@ struct _AgsBusinessGroupInterface
 			   GError **error);
   
   void (*set_context_path_with_read_permission)(AgsBusinessGroup *business_group,
+						GObject *security_context,
 						gchar *login,
 						gchar *security_token,
 						gchar *business_group_name,
 						gchar **context_path,
 						GError **error);
   gchar** (*get_context_path_with_read_permission)(AgsBusinessGroup *business_group,
+						   GObject *security_context,
 						   gchar *login,
 						   gchar *security_token,
 						   gchar *business_group_name,
 						   GError **error);
   
   void (*set_context_path_with_write_permission)(AgsBusinessGroup *business_group,
+						 GObject *security_context,
 						 gchar *login,
 						 gchar *security_token,
 						 gchar *business_group_name,
 						 gchar **context_path,
 						 GError **error);
   gchar** (*get_context_path_with_write_permission)(AgsBusinessGroup *business_group,
+						    GObject *security_context,
 						    gchar *login,
 						    gchar *security_token,
 						    gchar *business_group_name,
 						    GError **error);
   
   void (*set_context_path_with_execute_permission)(AgsBusinessGroup *business_group,
+						   GObject *security_context,
 						   gchar *login,
 						   gchar *security_token,
 						   gchar *business_group_name,
 						   gchar **context_path,
 						   GError **error);
   gchar** (*get_context_path_with_execute_permission)(AgsBusinessGroup *business_group,
+						      GObject *security_context,
 						      gchar *login,
 						      gchar *security_token,
 						      gchar *business_group_name,
@@ -133,36 +139,42 @@ gchar** ags_business_group_get_user_uuid(AgsBusinessGroup *business_group,
 					 GError **error);
   
 void ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *business_group,
+							      GObject *security_context,
 							      gchar *login,
 							      gchar *security_token,
 							      gchar *business_group_name,
 							      gchar **context_path,
 							      GError **error);
 gchar** ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *business_group,
+								 GObject *security_context,
 								 gchar *login,
 								 gchar *security_token,
 								 gchar *business_group_name,
 								 GError **error);
 
 void ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *business_group,
+							       GObject *security_context,
 							       gchar *login,
 							       gchar *security_token,
 							       gchar *business_group_name,
 							       gchar **context_path,
 							       GError **error);
 gchar** ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *business_group,
+								  GObject *security_context,
 								  gchar *login,
 								  gchar *security_token,
 								  gchar *business_group_name,
 								  GError **error);
   
 void ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *business_group,
+								 GObject *security_context,
 								 gchar *login,
 								 gchar *security_token,
 								 gchar *business_group_name,
 								 gchar **context_path,
 								 GError **error);
 gchar** ags_business_group_get_context_path_with_execute_permission(AgsBusinessGroup *business_group,
+								    GObject *security_context,
 								    gchar *login,
 								    gchar *security_token,
 								    gchar *business_group_name,

@@ -94,6 +94,7 @@ ags_authentication_login(AgsAuthentication *authentication,
 /**
  * ags_authentication_logout:
  * @authentication: the #AgsAuthentication
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @error: the #GError-struct
@@ -106,7 +107,9 @@ ags_authentication_login(AgsAuthentication *authentication,
  */
 gboolean
 ags_authentication_logout(AgsAuthentication *authentication,
-			  gchar *login, gchar *security_token,
+			  GObject *security_context,
+			  gchar *login,
+			  gchar *security_token,
 			  GError **error)
 {
   AgsAuthenticationInterface *authentication_interface;
@@ -116,6 +119,7 @@ ags_authentication_logout(AgsAuthentication *authentication,
   g_return_val_if_fail(authentication_interface->logout, FALSE);
 
   return(authentication_interface->logout(authentication,
+					  security_context,
 					  login,
 					  security_token,
 					  error));
@@ -149,6 +153,7 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
 /**
  *
  * @authentication: the #AgsAuthentication
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @error: the #GError-struct
@@ -161,7 +166,9 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
  */
 gchar**
 ags_authentication_get_groups(AgsAuthentication *authentication,
-			      gchar *login, gchar *security_token,
+			      GObject *security_context,
+			      gchar *login,
+			      gchar *security_token,
 			      GError **error)
 {
   AgsAuthenticationInterface *authentication_interface;
@@ -171,6 +178,7 @@ ags_authentication_get_groups(AgsAuthentication *authentication,
   g_return_val_if_fail(authentication_interface->get_groups, NULL);
 
   return(authentication_interface->get_groups(authentication,
+					      security_context,
 					      login,
 					      security_token,
 					      error));
@@ -179,6 +187,7 @@ ags_authentication_get_groups(AgsAuthentication *authentication,
 /**
  * ags_authentication_get_permission:
  * @authentication: the #AgsAuthentication
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @group_name: the group name to query
@@ -192,7 +201,9 @@ ags_authentication_get_groups(AgsAuthentication *authentication,
  */
 gchar*
 ags_authentication_get_permission(AgsAuthentication *authentication,
-				  gchar *login, gchar *security_token,
+				  GObject *security_context,
+				  gchar *login,
+				  gchar *security_token,
 				  gchar *group_name,
 				  GError **error)
 {
@@ -203,6 +214,7 @@ ags_authentication_get_permission(AgsAuthentication *authentication,
   g_return_val_if_fail(authentication_interface->get_permission, NULL);
 
   return(authentication_interface->get_permission(authentication,
+						  security_context,
 						  login,
 						  security_token,
 						  group_name,
@@ -212,6 +224,7 @@ ags_authentication_get_permission(AgsAuthentication *authentication,
 /**
  * ags_authentication_is_session_active:
  * @authentication: the #AgsAuthentication
+ * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @error: the #GError-struct
@@ -224,7 +237,9 @@ ags_authentication_get_permission(AgsAuthentication *authentication,
  */
 gboolean
 ags_authentication_is_session_active(AgsAuthentication *authentication,
-				     gchar *login, gchar *security_token,
+				     GObject *security_context,
+				     gchar *login,
+				     gchar *security_token,
 				     GError **error)
 {
   AgsAuthenticationInterface *authentication_interface;
@@ -234,6 +249,7 @@ ags_authentication_is_session_active(AgsAuthentication *authentication,
   g_return_val_if_fail(authentication_interface->is_session_active, FALSE);
 
   return(authentication_interface->is_session_active(authentication,
+						     security_context,
 						     login,
 						     security_token,
 						     error));

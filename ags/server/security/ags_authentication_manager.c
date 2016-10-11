@@ -181,6 +181,7 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 
 gboolean
 ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
+					     GObject *security_context,
 					     gchar *login,
 					     gchar *security_token)
 {
@@ -194,7 +195,9 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
     error = NULL;
     
     if(ags_authentication_is_session_active(AGS_AUTHENTICATION(authentication->data),
-					    login, security_token,
+					    security_context,
+					    login,
+					    security_token,
 					    &error)){
       return(TRUE);
     }

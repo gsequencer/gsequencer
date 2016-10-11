@@ -1,0 +1,19 @@
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
+<!-- root node -->
+<!ELEMENT ags-server-certificate (ags-srv-certs-list?)>
+<!ATTLIST ags-server-certificate
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  >
+
+<!-- certs node -->
+<!ELEMENT ags-srv-certs-list (ags-srv-certs*)>
+
+<!ELEMENT ags-srv-certs (#CDATA)>
+<!ATTLIST ags-srv-certs
+	  cert-type        CDATA      #REQUIRED
+	  >

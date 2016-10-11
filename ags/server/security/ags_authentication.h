@@ -43,23 +43,31 @@ struct _AgsAuthenticationInterface
 		    GError **error);
 
   gboolean (*logout)(AgsAuthentication *authentication,
-		     gchar *login, gchar *security_token,
+		     GObject *security_context,
+		     gchar *login,
+		     gchar *security_token,
 		     GError **error);
   
   gchar* (*generate_token)(AgsAuthentication *authentication,
 			   GError **error);
-
+  
   gchar** (*get_groups)(AgsAuthentication *authentication,
-			gchar *login, gchar *security_token,
+			GObject *security_context,
+			gchar *login,
+			gchar *security_token,
 			GError **error);
 
   gchar* (*get_permission)(AgsAuthentication *authentication,
-			   gchar *login, gchar *security_token,
+			   GObject *security_context,
+			   gchar *login,
+			   gchar *security_token,
 			   gchar *group_name,
 			   GError **error);
 
   gboolean (*is_session_active)(AgsAuthentication *authentication,
-				gchar *login, gchar *security_token,
+				GObject *security_context,
+				gchar *login,
+				gchar *security_token,
 				GError **error);
 };
 
@@ -71,23 +79,31 @@ gboolean ags_authentication_login(AgsAuthentication *authentication,
 				  GError **error);
 
 gboolean ags_authentication_logout(AgsAuthentication *authentication,
-				   gchar *login, gchar *security_token,
+				   GObject *security_context,
+				   gchar *login,
+				   gchar *security_token,
 				   GError **error);
   
 gchar* ags_authentication_generate_token(AgsAuthentication *authentication,
 					 GError **error);
 
 gchar** ags_authentication_get_groups(AgsAuthentication *authentication,
-				      gchar *login, gchar *security_token,
+				      GObject *security_context,
+				      gchar *login,
+				      gchar *security_token,
 				      GError **error);
 
 gchar* ags_authentication_get_permission(AgsAuthentication *authentication,
-					 gchar *login, gchar *security_token,
+					 GObject *security_context,
+					 gchar *login,
+					 gchar *security_token,
 					 gchar *group_name,
 					 GError **error);
 
 gboolean ags_authentication_is_session_active(AgsAuthentication *authentication,
-					      gchar *login, gchar *security_token,
+					      GObject *security_context,
+					      gchar *login,
+					      gchar *security_token,
 					      GError **error);
 
 #endif /*__AGS_AUTHENTICATION_H__*/

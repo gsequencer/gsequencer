@@ -64,6 +64,7 @@ gboolean ags_authentication_manager_login(AgsAuthenticationManager *authenticati
 					  gchar **security_token);
 
 gboolean ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentication_manager,
+						      GObject *security_context,
 						      gchar *login,
 						      gchar *security_token);
 
