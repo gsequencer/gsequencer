@@ -984,8 +984,10 @@ ags_midi_buffer_util_get_change_pressure(unsigned char *buffer,
  * ags_midi_buffer_util_put_sysex:
  * @buffer: the character buffer
  * @delta_time: timing information
+ * @data: the data
+ * @length: the data's length
  * 
- * 
+ * Put sysex.
  * 
  * Since: 1.0.0
  */
@@ -1001,8 +1003,10 @@ ags_midi_buffer_util_put_sysex(unsigned char *buffer,
  * ags_midi_buffer_util_get_sysex:
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
+ * @data: the return location of data
+ * @length: the return location of length
  * 
- * 
+ * Get sysex.
  * 
  * Returns: the number of bytes read.
  * 
@@ -1020,8 +1024,10 @@ ags_midi_buffer_util_get_sysex(unsigned char *buffer,
  * ags_midi_buffer_util_put_quarter_frame:
  * @buffer: the character buffer
  * @delta_time: timing information
+ * @message_type: the message type
+ * @values: the values
  * 
- * 
+ * Put quarter frame.
  * 
  * Since: 1.0.0
  */
@@ -1038,8 +1044,10 @@ ags_midi_buffer_util_put_quarter_frame(unsigned char *buffer,
  * ags_midi_buffer_util_get_quarter_frame:
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
+ * @message_type: the return location of the message type
+ * @values: the return location of the values
  * 
- * 
+ * Get quarter frame.
  * 
  * Returns: the number of bytes read.
  * 
@@ -1057,8 +1065,9 @@ ags_midi_buffer_util_get_quarter_frame(unsigned char *buffer,
  * ags_midi_buffer_util_put_song_position:
  * @buffer: the character buffer
  * @delta_time: timing information
+ * @song_position: the song position
  * 
- * 
+ * Put song position.
  * 
  * Since: 1.0.0
  */
@@ -1074,8 +1083,9 @@ ags_midi_buffer_util_put_song_position(unsigned char *buffer,
  * ags_midi_buffer_util_get_song_position:
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
+ * @song_position: the return location of the song position
  * 
- * 
+ * Get song position.
  * 
  * Returns: the number of bytes read.
  * 
@@ -1093,8 +1103,9 @@ ags_midi_buffer_util_get_song_position(unsigned char *buffer,
  * ags_midi_buffer_util_put_song_select:
  * @buffer: the character buffer
  * @delta_time: timing information
+ * @song_select: the song select
  * 
- * 
+ * Put song select.
  * 
  * Since: 1.0.0
  */
@@ -1110,8 +1121,9 @@ ags_midi_buffer_util_put_song_select(unsigned char *buffer,
  * ags_midi_buffer_util_get_song_select:
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
+ * @song_select: the return location of the song select
  * 
- * 
+ * Get song select.
  * 
  * Returns: the number of bytes read.
  * 
@@ -1130,7 +1142,7 @@ ags_midi_buffer_util_get_song_select(unsigned char *buffer,
  * @buffer: the character buffer
  * @delta_time: timing information
  * 
- * 
+ * Put tune request
  * 
  * Since: 1.0.0
  */
@@ -1146,7 +1158,7 @@ ags_midi_buffer_util_put_tune_request(unsigned char *buffer,
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
  * 
- * 
+ * Get tune request.
  * 
  * Returns: the number of bytes read.
  * 
@@ -1163,8 +1175,9 @@ ags_midi_buffer_util_get_tune_request(unsigned char *buffer,
  * ags_midi_buffer_util_put_sequence_number:
  * @buffer: the character buffer
  * @delta_time: timing information
+ * @sequence: the sequence
  * 
- * 
+ * Put sequence number.
  * 
  * Since: 1.0.0
  */
@@ -1180,8 +1193,9 @@ ags_midi_buffer_util_put_sequence_number(unsigned char *buffer,
  * ags_midi_buffer_util_get_sequence_number:
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
+ * @sequence: the return location of the sequence
  * 
- * 
+ * Get sequence number.
  * 
  * Returns: the number of bytes read.
  * 
@@ -1199,8 +1213,13 @@ ags_midi_buffer_util_get_sequence_number(unsigned char *buffer,
  * ags_midi_buffer_util_put_smtpe:
  * @buffer: the character buffer
  * @delta_time: timing information
+ * @hr: hour
+ * @mn: minute
+ * @se: second
+ * @fr: frame
+ * @ff: 
  * 
- * 
+ * Put smtpe timestamp.
  * 
  * Since: 1.0.0
  */
