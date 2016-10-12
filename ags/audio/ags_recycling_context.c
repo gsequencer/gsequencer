@@ -739,7 +739,7 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
  * Since: 0.4
  */
 AgsRecyclingContext*
-ags_recycling_context_new(gint length)
+ags_recycling_context_new(guint64 length)
 {
   AgsRecyclingContext *recycling_context;
   gint i;
