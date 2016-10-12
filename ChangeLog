@@ -1,3 +1,10 @@
+ags (0.7.85)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsThread detach thread if not running while finalize
+	* fixed AgsReturnableThread is not detached by default
+	* fixed detach thread as calling AgsThread::stop()
+
 ags (0.7.84)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

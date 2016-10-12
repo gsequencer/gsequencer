@@ -599,6 +599,8 @@ ags_thread_finalize(GObject *gobject)
   AgsThread *thread, *parent;
   AgsMutexManager *mutex_manager;
 
+  gboolean running;
+  
   pthread_t *thread_ptr;
   pthread_attr_t *thread_attr;
   pthread_mutex_t *application_mutex;
@@ -611,6 +613,8 @@ ags_thread_finalize(GObject *gobject)
   thread_attr = thread->thread_attr;
   thread_ptr = thread->thread;
 
+  running = ((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0) ? TRUE: FALSE;
+  
 #ifdef AGS_DEBUG
   g_message("fin %s\0", G_OBJECT_TYPE_NAME(gobject));
 #endif
@@ -692,9 +696,11 @@ ags_thread_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
-  
-  pthread_detach(*thread_ptr);
 
+  if(running){
+    pthread_detach(*thread_ptr);
+  }
+  
   pthread_mutex_unlock(application_mutex);
 
   pthread_attr_destroy(thread_attr);
@@ -702,8 +708,11 @@ ags_thread_finalize(GObject *gobject)
 
   //  free(*thread_ptr);
   free(thread_ptr);
-  free(stackaddr);
 
+  if(stackaddr != NULL){
+    free(stackaddr);
+  }
+  
   pthread_exit(NULL);
 }
 
@@ -3239,6 +3248,8 @@ ags_thread_real_stop(AgsThread *thread)
 {
   g_atomic_int_and(&(thread->flags),
 		   (~AGS_THREAD_RUNNING));
+
+  pthread_detach(*(thread->thread));
 }
 
 /**
