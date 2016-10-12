@@ -85,6 +85,6 @@ AgsRecyclingContext* ags_recycling_context_reset_recycling(AgsRecyclingContext *
 							   AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
 							   AgsRecycling *new_first_recycling, AgsRecycling *new_last_recycling);
 
-AgsRecyclingContext* ags_recycling_context_new(gint length);
+AgsRecyclingContext* ags_recycling_context_new(guint64 length);
 
 #endif /*__AGS_RECYCLING_CONTEXT_H__*/

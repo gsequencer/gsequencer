@@ -176,6 +176,9 @@ ags_registry_entry_alloc(AgsRegistry *registry)
   registry_entry = (AgsRegistryEntry *) malloc(sizeof(AgsRegistryEntry));
 
   registry_entry->id = ags_id_generator_create_uuid();
+  memset(&(registry_entry->entry), 0, sizeof(GValue));
+  g_value_init(&(registry_entry->entry),
+	       G_TYPE_OBJECT);
 
   return(registry_entry);
 }

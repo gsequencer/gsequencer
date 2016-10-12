@@ -1,3 +1,9 @@
+ags (0.7.84)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong type of ags_recycling_context_new()'s function argument
+	* fixed integer overflow in ags_channel.c while allocating AgsRecyclingContext
+
 ags (0.7.83)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
