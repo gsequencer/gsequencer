@@ -1390,8 +1390,15 @@ ags_jack_devout_list_cards(AgsSoundcard *soundcard,
   while(list != NULL){
     if(AGS_IS_JACK_DEVOUT(list->data)){
       if(card_id != NULL){
-	*card_id = g_list_prepend(*card_id,
-				  g_strdup(AGS_JACK_DEVOUT(list->data)->card_uri));
+	if(AGS_JACK_DEVOUT(list->data)->card_uri != NULL){
+	  *card_id = g_list_prepend(*card_id,
+				    g_strdup(AGS_JACK_DEVOUT(list->data)->card_uri));
+	}else{
+	  *card_id = g_list_prepend(*card_id,
+				    g_strdup("(null)\0"));
+
+	  g_warning("ags_jack_devout_list_cards() - card id (null)\0");
+	}
       }
 
       if(card_name != NULL){
@@ -1764,8 +1771,8 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
     return;
   }
 
-  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
-		  AGS_THREAD_TIMING);
+  //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
+  //		  AGS_THREAD_TIMING);
 
   pthread_mutex_lock(mutex);
 
