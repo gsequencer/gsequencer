@@ -1,3 +1,19 @@
+ags (0.7.87)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSoundcardEditor not allowed free of string
+	* fixed ags_soundcard_editor_add_soundcard() ignore AgsJackDevout
+	* fixed ags_soundcard_editor_remove_soundcard() ignore AgsJackDevout
+
+ags (0.7.86)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsNotifySoundcard to fast lock AgsSoundcard
+	* implemented cyclic tasks in ags_task_thread_run()
+	* implemented ags_task_thread_append_cyclic_task()
+	* implemented ags_task_thread_remove_cyclic_task()
+	* refactored ags_thread-posix.c to set AgsThread->tic_delay to be reset synced
+
 ags (0.7.85)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1607,76 +1607,80 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  if(card_id == NULL){
+    return;
+  }
+  
   devout = AGS_DEVOUT(soundcard);
   
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 #ifdef AGS_WITH_ALSA
-  snd_pcm_t *handle;
-  snd_pcm_hw_params_t *params;
+    snd_pcm_t *handle;
+    snd_pcm_hw_params_t *params;
+    
+    gchar *str;
+    
+    unsigned int val;
+    int dir;
+    snd_pcm_uframes_t frames;
 
-  gchar *str;
+    int rc;
+    int err;
 
-  unsigned int val;
-  int dir;
-  snd_pcm_uframes_t frames;
+    /* Open PCM device for playback. */
+    handle = NULL;
 
-  int rc;
-  int err;
+    rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
-  /* Open PCM device for playback. */
-  handle = NULL;
+    if(rc < 0) {
+      str = snd_strerror(rc);
+      g_message("unable to open pcm device: %s\n\0", str);
 
-  rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
-
-  if(rc < 0) {
-    str = snd_strerror(rc);
-    g_message("unable to open pcm device: %s\n\0", str);
-
-    if(error != NULL){
-      g_set_error(error,
-		  AGS_DEVOUT_ERROR,
-		  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		  "unable to open pcm device: %s\n\0",
-		  str);
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_DEVOUT_ERROR,
+		    AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		    "unable to open pcm device: %s\n\0",
+		    str);
+      }
+    
+      //    free(str);
+    
+      return;
     }
-    
-    //    free(str);
-    
-    return;
-  }
 
-  /* Allocate a hardware parameters object. */
-  snd_pcm_hw_params_alloca(&params);
+    /* Allocate a hardware parameters object. */
+    snd_pcm_hw_params_alloca(&params);
 
-  /* Fill it in with default values. */
-  snd_pcm_hw_params_any(handle, params);
+    /* Fill it in with default values. */
+    snd_pcm_hw_params_any(handle, params);
 
-  /* channels */
-  snd_pcm_hw_params_get_channels_min(params, &val);
-  *channels_min = val;
+    /* channels */
+    snd_pcm_hw_params_get_channels_min(params, &val);
+    *channels_min = val;
 
-  snd_pcm_hw_params_get_channels_max(params, &val);
-  *channels_max = val;
+    snd_pcm_hw_params_get_channels_max(params, &val);
+    *channels_max = val;
 
-  /* samplerate */
-  dir = 0;
-  snd_pcm_hw_params_get_rate_min(params, &val, &dir);
-  *rate_min = val;
+    /* samplerate */
+    dir = 0;
+    snd_pcm_hw_params_get_rate_min(params, &val, &dir);
+    *rate_min = val;
 
-  dir = 0;
-  snd_pcm_hw_params_get_rate_max(params, &val, &dir);
-  *rate_max = val;
+    dir = 0;
+    snd_pcm_hw_params_get_rate_max(params, &val, &dir);
+    *rate_max = val;
 
-  /* buffer size */
-  dir = 0;
-  snd_pcm_hw_params_get_buffer_size_min(params, &frames);
-  *buffer_size_min = frames;
+    /* buffer size */
+    dir = 0;
+    snd_pcm_hw_params_get_buffer_size_min(params, &frames);
+    *buffer_size_min = frames;
 
-  dir = 0;
-  snd_pcm_hw_params_get_buffer_size_max(params, &frames);
-  *buffer_size_max = frames;
+    dir = 0;
+    snd_pcm_hw_params_get_buffer_size_max(params, &frames);
+    *buffer_size_max = frames;
 
-  snd_pcm_close(handle);
+    snd_pcm_close(handle);
 #endif
   }else{
 #ifdef AGS_WITH_OSS

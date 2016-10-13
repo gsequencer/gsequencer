@@ -543,6 +543,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 		 "device\0", str,
 		 NULL);
     g_free(str);
+    g_object_ref(jack_devout);
     default_client->device = g_list_prepend(default_client->device,
 					    jack_devout);
 
