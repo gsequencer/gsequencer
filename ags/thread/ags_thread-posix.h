@@ -72,6 +72,7 @@ typedef enum{
   AGS_THREAD_IMMEDIATE_SYNC          = 1 << 13,
   AGS_THREAD_RECOVER_INTERRUPTED     = 1 << 14,
   AGS_THREAD_RESUME_INTERRUPTED      = 1 << 15,
+  AGS_THREAD_TIMING                  = 1 << 16,
 }AgsThreadFlags;
 
 typedef enum{
@@ -108,6 +109,8 @@ typedef enum{
   AGS_THREAD_SYNCED_FREQ             = 1 << 24,
   AGS_THREAD_INTERRUPTED             = 1 << 25,
   AGS_THREAD_MONITORING              = 1 << 26,
+  AGS_THREAD_WAIT_ASYNC_QUEUE        = 1 << 27,
+  AGS_THREAD_DONE_ASYNC_QUEUE        = 1 << 28,
 }AgsThreadSyncFlags;
 
 struct _AgsThread

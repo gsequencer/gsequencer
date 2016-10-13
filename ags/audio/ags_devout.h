@@ -143,6 +143,7 @@ struct _AgsDevout
   pthread_mutex_t *application_mutex;
 
   GList *poll_fd;
+  GObject *notify_soundcard;
   
   GList *audio;
 };

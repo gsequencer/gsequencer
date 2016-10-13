@@ -242,6 +242,25 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_pointer_set(&(task_thread->queue),
 		       NULL);
 
+  /* cyclic task */
+  task_thread->cyclic_task_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(task_thread->cyclic_task_mutexattr);
+  pthread_mutexattr_settype(task_thread->cyclic_task_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(task_thread->cyclic_task_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  task_thread->cyclic_task_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task_thread->cyclic_task_mutex, task_thread->cyclic_task_mutexattr);
+
+
+  g_atomic_pointer_set(&(task_thread->cyclic_task),
+		       NULL);
+    
   /* thread pool */
   task_thread->thread_pool = ags_thread_pool_new((AgsThread *) task_thread);
   task_thread->thread_pool->parent = (AgsThread *) task_thread;
@@ -293,6 +312,16 @@ ags_task_thread_finalize(GObject *gobject)
 		   g_object_unref);
   
   g_list_free_full(g_atomic_pointer_get(&(task_thread->queue)),
+		   g_object_unref);
+
+  /* cyclic task */
+  pthread_mutexattr_destroy(task_thread->cyclic_task_mutexattr);
+  free(task_thread->cyclic_task_mutexattr);
+
+  pthread_mutex_destroy(task_thread->cyclic_task_mutex);
+  free(task_thread->cyclic_task_mutex);
+  
+  g_list_free_full(g_atomic_pointer_get(&(task_thread->cyclic_task)),
 		   g_object_unref);
 
   /*  */
@@ -419,7 +448,7 @@ ags_task_thread_run(AgsThread *thread)
       task = AGS_TASK(list->data);
 
 #ifdef AGS_DEBUG
-      g_message("ags_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+      g_message("ags_task_thread - launching task: %s\0", G_OBJECT_TYPE_NAME(task));
 #endif
 
       ags_task_launch(task);
@@ -438,6 +467,31 @@ ags_task_thread_run(AgsThread *thread)
 		       NULL);
 
   pthread_mutex_unlock(task_thread->read_mutex);
+
+  /* cyclic task */
+  pthread_mutex_lock(task_thread->cyclic_task_mutex);
+
+  list = g_atomic_pointer_get(&(task_thread->cyclic_task));
+
+  if(list != NULL){
+    AgsTask *task;
+    
+    int i;
+
+    while(list != NULL){
+      task = AGS_TASK(list->data);
+
+#ifdef AGS_DEBUG
+      g_message("ags_task_thread - launching cyclic task: %s\0", G_OBJECT_TYPE_NAME(task));
+#endif
+
+      ags_task_launch(task);
+      
+      list = list->next;
+    }
+  }
+  
+  pthread_mutex_unlock(task_thread->cyclic_task_mutex);
 
   /* async queue */
   pthread_mutex_lock(task_thread->run_mutex);
@@ -597,6 +651,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   g_message("append tasks\0");
 #endif
 
+  /* pull */
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
   g_atomic_pointer_set(&(append->task_thread),
@@ -606,9 +661,9 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 
   thread = ags_thread_pool_pull(task_thread->thread_pool);
   g_object_ref(thread);
-  
-  pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 
+  /* set safe data and run */
+  pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread)->safe_data),
 		       append);
@@ -619,6 +674,50 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 		  AGS_RETURNABLE_THREAD_IN_USE);
   
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
+}
+
+/**
+ * ags_task_thread_append_cyclic_task:
+ * @task_thread: the #AgsTaskThread
+ * @task: the #AgsTask
+ *
+ * Add cyclic task.
+ * 
+ * Since: 0.7.86
+ */
+void
+ags_task_thread_append_cyclic_task(AgsTaskThread *task_thread,
+				   AgsTask *task)
+{
+  pthread_mutex_lock(task_thread->cyclic_task_mutex);
+
+  g_atomic_pointer_set(&(task_thread->cyclic_task),
+		       g_list_append(g_atomic_pointer_get(&(task_thread->cyclic_task)),
+				     task));
+
+  pthread_mutex_unlock(task_thread->cyclic_task_mutex);
+}
+
+/**
+ * ags_task_thread_remove_cyclic_task:
+ * @task_thread: the #AgsTaskThread
+ * @task: the #AgsTask
+ *
+ * Remove cyclic task.
+ * 
+ * Since: 0.7.86
+ */
+void
+ags_task_thread_remove_cyclic_task(AgsTaskThread *task_thread,
+				   AgsTask *task)
+{
+  pthread_mutex_lock(task_thread->cyclic_task_mutex);
+
+  g_atomic_pointer_set(&(task_thread->cyclic_task),
+		       g_list_remove(g_atomic_pointer_get(&(task_thread->cyclic_task)),
+				     task));
+
+  pthread_mutex_unlock(task_thread->cyclic_task_mutex);  
 }
 
 /**

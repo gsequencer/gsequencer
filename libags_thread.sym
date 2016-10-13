@@ -58,6 +58,8 @@ ags_task_completion_new
 ags_task_thread_get_type
 ags_task_thread_append_task
 ags_task_thread_append_tasks
+ags_task_thread_append_cyclic_task
+ags_task_thread_remove_cyclic_task
 ags_task_thread_clear_cache
 ags_task_thread_new
 ags_timestamp_get_type

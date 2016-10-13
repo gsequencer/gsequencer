@@ -699,6 +699,9 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     return(0);
   }
 
+  g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
+		   (~(AGS_THREAD_TIMING)));
+
   /* retrieve word size */
   while(device != NULL){
     /*  */  
@@ -875,7 +878,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	pthread_mutex_unlock(callback_finish_mutex);
       }
     }
-
+    
     /* tic */
     ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
 	  
