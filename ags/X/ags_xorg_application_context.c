@@ -93,6 +93,8 @@
 #include <ags/audio/recall/ags_route_lv2_audio.h>
 #include <ags/audio/recall/ags_route_lv2_audio_run.h>
 
+#include <ags/audio/task/ags_notify_soundcard.h>
+
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_xml.h>
 
@@ -590,11 +592,27 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   list = xorg_application_context->soundcard;
     
   while(list != NULL){
+    AgsNotifySoundcard *notify_soundcard;
+    
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  (AgsThread *) soundcard_thread,
 				  TRUE, TRUE);
 
+    /* notify soundcard */
+    notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+    AGS_TASK(notify_soundcard)->task_thread = AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread;
+    
+    if(AGS_IS_DEVOUT(list->data)){
+      AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }else if(AGS_IS_JACK_DEVOUT(list->data)){
+      AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }
+
+    ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
+				       notify_soundcard);
+
+    /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){
       xorg_application_context->soundcard_thread = soundcard_thread;
     }

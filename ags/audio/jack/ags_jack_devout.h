@@ -126,6 +126,8 @@ struct _AgsJackDevout
   GObject *application_context;
   pthread_mutex_t *application_mutex;
 
+  GObject *notify_soundcard;
+  
   GObject *channel;
   GList *audio;
 };

@@ -26,11 +26,15 @@
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_devout.h>
+
+#include <ags/audio/task/ags_notify_soundcard.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -999,6 +1003,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   AgsWindow *window;
   AgsPreferences *preferences;
 
+  AgsNotifySoundcard *notify_soundcard;
+  
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
 
@@ -1054,6 +1060,19 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   ags_thread_add_child_extended(main_loop,
 				soundcard_thread,
 				TRUE, TRUE);
+
+  /* notify soundcard */
+  notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+  AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+  
+  if(AGS_IS_DEVOUT(soundcard)){
+    AGS_DEVOUT(soundcard)->notify_soundcard = notify_soundcard;
+  }else if(AGS_IS_JACK_DEVOUT(soundcard)){
+    AGS_JACK_DEVOUT(soundcard)->notify_soundcard = notify_soundcard;
+  }
+  
+  ags_task_thread_append_cyclic_task(application_context->task_thread,
+				     notify_soundcard);
 
   if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == NULL){
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),

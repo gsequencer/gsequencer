@@ -72,6 +72,11 @@ struct _AgsTaskThread
   volatile GList *exec;
   volatile GList *queue;
 
+  pthread_mutexattr_t *cyclic_task_mutexattr;
+  pthread_mutex_t *cyclic_task_mutex;
+
+  volatile GList *cyclic_task;
+  
   AgsThreadPool *thread_pool;
 };
 
@@ -90,8 +95,15 @@ struct _AgsTaskThreadAppend
 
 GType ags_task_thread_get_type();
 
-void ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task);
-void ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list);
+void ags_task_thread_append_task(AgsTaskThread *task_thread,
+				 AgsTask *task);
+void ags_task_thread_append_tasks(AgsTaskThread *task_thread,
+				  GList *list);
+
+void ags_task_thread_append_cyclic_task(AgsTaskThread *task_thread,
+					AgsTask *task);
+void ags_task_thread_remove_cyclic_task(AgsTaskThread *task_thread,
+					AgsTask *task);
 
 void ags_task_thread_clear_cache(AgsTaskThread *task_thread);
 

@@ -449,6 +449,8 @@ ags_set_buffer_size_get_type
 ags_set_buffer_size_new
 ags_start_soundcard_get_type
 ags_start_soundcard_new
+ags_notify_soundcard_get_type
+ags_notify_soundcard_new
 ags_set_audio_channels_get_type
 ags_set_audio_channels_new
 ags_apply_synth_get_type

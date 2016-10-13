@@ -906,6 +906,17 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
       
       child = g_atomic_pointer_get(&(child->next));
     }
+    
+    /* increment delay counter and set run per cycle */
+    if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+      thread->tic_delay = 0;
+    }else{
+      if(thread->tic_delay < thread->delay){
+	thread->tic_delay++;
+      }else{
+	thread->tic_delay = 0;
+      }
+    }
   }
 
   void ags_thread_set_sync_all_reset_after(AgsThread *thread){
@@ -2349,17 +2360,27 @@ ags_thread_real_clock(AgsThread *thread)
 	pthread_mutex_lock(run_mutex);
 	//	g_message("blocked\0");
 	
-	if(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue))){
+	if(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue)) &&
+	   (AGS_THREAD_DONE_ASYNC_QUEUE & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
 	  ags_async_queue_increment_wait_ref(AGS_ASYNC_QUEUE(async_queue));
 	  //	  g_message("wait\0");
-	
+	  
+	  g_atomic_int_or(&(thread->sync_flags),
+			  AGS_THREAD_WAIT_ASYNC_QUEUE);
+	  
 	  while(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue)) &&
-		ags_async_queue_get_wait_ref(AGS_ASYNC_QUEUE(async_queue)) != 0){
+		ags_async_queue_get_wait_ref(AGS_ASYNC_QUEUE(async_queue)) != 0 &&
+		(AGS_THREAD_WAIT_ASYNC_QUEUE & (g_atomic_int_get(&(thread->sync_flags)))) != 0 &&
+		(AGS_THREAD_DONE_ASYNC_QUEUE & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
 	    pthread_cond_wait(run_cond,
 			      run_mutex);
 	  }
 	}
-      
+
+	g_atomic_int_and(&(thread->sync_flags),
+			 (~(AGS_THREAD_WAIT_ASYNC_QUEUE |
+			    AGS_THREAD_DONE_ASYNC_QUEUE)));
+
 	pthread_mutex_unlock(run_mutex);
       }
     }else{
@@ -2466,7 +2487,8 @@ ags_thread_real_clock(AgsThread *thread)
 
     static const gdouble nsec_per_jiffie = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
     
-    if(thread->tic_delay == thread->delay){
+    if(thread->tic_delay == thread->delay &&
+       (AGS_THREAD_TIMING & (g_atomic_int_get(&(thread->flags)))) != 0){
       struct timespec timed_sleep = {
 	0,
 	0,
@@ -2510,26 +2532,19 @@ ags_thread_real_clock(AgsThread *thread)
   /* run in hierarchy */
   //  pthread_mutex_lock(thread->mutex);
   ags_thread_clock_sync(thread);
-    
-  //  pthread_mutex_unlock(thread->mutex);
 
   ags_thread_clock_wait_async();
-
-  /* increment delay counter and set run per cycle */
-  if(thread->freq >= AGS_THREAD_MAX_PRECISION){
-    thread->tic_delay = 0;
-
-    steps = 1.0 / thread->delay;
-  }else{
-    if(thread->tic_delay < thread->delay){
-      thread->tic_delay++;
-      
-      steps = 0;
+    
+  //  pthread_mutex_unlock(thread->mutex);
+    /* increment delay counter and set run per cycle */
+  if(thread->tic_delay == 0){
+    if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+      steps = 1.0 / thread->delay;
     }else{
-      thread->tic_delay = 0;
-	
       steps = 1;
     }
+  }else{
+    steps = 0;
   }
 
   /* nth cycle */
