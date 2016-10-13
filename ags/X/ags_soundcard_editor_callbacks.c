@@ -194,17 +194,19 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     return;
   }
 
-  set_output_device = ags_set_output_device_new(soundcard,
-						card);
-  ags_task_thread_append_task(task_thread,
-			      (AgsTask *) set_output_device);
-  
-  gtk_spin_button_set_range(soundcard_editor->audio_channels,
-			    channels_min, channels_max);
-  gtk_spin_button_set_range(soundcard_editor->samplerate,
-			    rate_min, rate_max);
-  gtk_spin_button_set_range(soundcard_editor->buffer_size,
-			    buffer_size_min, buffer_size_max);
+  if(card != NULL){
+    set_output_device = ags_set_output_device_new(soundcard,
+						  card);
+    ags_task_thread_append_task(task_thread,
+				(AgsTask *) set_output_device);
+    
+    gtk_spin_button_set_range(soundcard_editor->audio_channels,
+			      channels_min, channels_max);
+    gtk_spin_button_set_range(soundcard_editor->samplerate,
+			      rate_min, rate_max);
+    gtk_spin_button_set_range(soundcard_editor->buffer_size,
+			      buffer_size_min, buffer_size_max);
+  }
 }
 
 void

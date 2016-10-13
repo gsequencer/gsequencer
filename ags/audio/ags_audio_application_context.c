@@ -84,6 +84,8 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
+#include <ags/audio/task/ags_notify_soundcard.h>
+
 #include <ags/audio/file/ags_audio_file_xml.h>
 
 #include <ags/audio/thread/ags_record_thread.h>
@@ -523,11 +525,27 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   list = audio_application_context->soundcard;
     
   while(list != NULL){      
+    AgsNotifySoundcard *notify_soundcard;
+
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  soundcard_thread,
 				  TRUE, TRUE);
 
+    /* notify soundcard */
+    notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+    AGS_TASK(notify_soundcard)->task_thread = AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread;
+    
+    if(AGS_IS_DEVOUT(list->data)){
+      AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }else if(AGS_IS_JACK_DEVOUT(list->data)){
+      AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }
+
+    ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread,
+				       notify_soundcard);
+
+    /* default soundcard thread */
     if(audio_application_context->soundcard_thread == NULL){
       audio_application_context->soundcard_thread = soundcard_thread;
     }

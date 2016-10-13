@@ -26,11 +26,15 @@
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_devout.h>
+
+#include <ags/audio/task/ags_notify_soundcard.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -815,7 +819,6 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			   &samplerate_min, &samplerate_max,
 			   &buffer_size_min, &buffer_size_max,
 			   &error);
-    g_free(device);
   }else{
     channels_min = 0.0;
     channels_max = 24.0;
@@ -843,7 +846,11 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
 
+  AgsNotifySoundcard *notify_soundcard;
+  
   AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsThread *soundcard_thread;
 
   AgsApplicationContext *application_context;
 
@@ -891,18 +898,42 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) jack_devout);
   
-  pthread_mutex_unlock(application_mutex);
-
-  /*  */
-  if(device != NULL){
-    //NOTE:JK: don't
-    //    ags_soundcard_set_device(AGS_SOUNDCARD(jack_devout),
-    //			     device);
-  }
 
   /* add new */
-  ags_soundcard_editor_add_soundcard(soundcard_editor,
-  				     (GObject *) jack_devout);
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  soundcard_editor->soundcard = jack_devout;
+
+  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
+				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
+						 jack_devout));
+
+  pthread_mutex_unlock(application_mutex);  
+    
+  g_object_ref(jack_devout);
+
+  soundcard_thread = (AgsThread *) ags_soundcard_thread_new(jack_devout);
+  soundcard_editor->soundcard_thread = (GObject *) soundcard_thread;
+  
+  ags_thread_add_child_extended(main_loop,
+				soundcard_thread,
+				TRUE, TRUE);
+
+  /* notify soundcard */
+  notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+  AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+  
+  jack_devout->notify_soundcard = notify_soundcard;
+  
+  ags_task_thread_append_cyclic_task(application_context->task_thread,
+				     notify_soundcard);
+
+  if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
+						    (GObject *) soundcard_thread);
+  }
+
+  pthread_mutex_unlock(application_mutex);
 
   /*  */
   pthread_mutex_lock(mutex);
@@ -919,7 +950,6 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   while(card_uri != NULL){
     gtk_combo_box_text_append_text(soundcard_editor->card,
     				   card_uri->data);
-
     
     card_uri = card_uri->next;
   }
@@ -935,6 +965,7 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
   AgsJackDevout *jack_devout;
 
   AgsApplicationContext *application_context;
+  AgsThread *main_loop;
 
   GList *distributed_manager;
   GList *soundcard;
@@ -952,6 +983,7 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
   /* create soundcard */
   pthread_mutex_lock(application_mutex);
 
+  main_loop = application_context->main_loop;
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(distributed_manager == NULL){
@@ -987,9 +1019,33 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			   -1);
 
+  if(distributed_manager != NULL){
+    ags_distributed_manager_unregister_soundcard(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
+						 soundcard);
+  }
+
   /* remove */
-  ags_soundcard_editor_remove_soundcard(soundcard_editor,
-					(GObject *) jack_devout);
+  if(jack_devout == soundcard_editor->soundcard){
+    soundcard_editor->soundcard = NULL;
+  }
+  
+  if(jack_devout != NULL){
+    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
+				     g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
+						   jack_devout));
+    g_object_unref(jack_devout);
+  }
+  
+  if(soundcard_editor->soundcard_thread != NULL){
+    ags_thread_stop((AgsThread *) soundcard_editor->soundcard_thread);
+
+    ags_thread_remove_child(main_loop,
+			    (AgsThread *) soundcard_editor->soundcard_thread);
+    
+    //    g_object_unref(soundcard_editor->soundcard_thread);
+    
+    soundcard_editor->soundcard_thread = NULL;
+  }
 }
 
 void
@@ -999,6 +1055,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   AgsWindow *window;
   AgsPreferences *preferences;
 
+  AgsNotifySoundcard *notify_soundcard;
+  
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
 
@@ -1006,7 +1064,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   pthread_mutex_t *application_mutex;
 
-  if(soundcard == NULL){
+  if(soundcard == NULL ||
+     AGS_IS_JACK_DEVOUT(soundcard)){
     return;
   }
   
@@ -1016,13 +1075,10 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   application_context = (AgsApplicationContext *) window->application_context;
   application_mutex = window->application_mutex;
 
-  if(AGS_IS_JACK_DEVOUT(soundcard)){
-    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			     "ags-jack-devout-0\0");
-  }else if(AGS_IS_DEVOUT(soundcard)){
+  if(AGS_IS_DEVOUT(soundcard)){
     if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
       ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			       "hw:0.0\0");
+			       "hw:0,0\0");
     }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard)->flags)) != 0){
       ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
 			       "/dev/dsp0\0");
@@ -1037,6 +1093,13 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   pthread_mutex_lock(application_mutex);
 
   main_loop = (AgsThread *) application_context->main_loop;
+
+  if(g_list_find(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
+		 soundcard) != NULL){
+    pthread_mutex_unlock(application_mutex);  
+  
+    return;
+  }
   
   soundcard_editor->soundcard = soundcard;
 
@@ -1054,6 +1117,17 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   ags_thread_add_child_extended(main_loop,
 				soundcard_thread,
 				TRUE, TRUE);
+
+  /* notify soundcard */
+  notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+  AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+  
+  if(AGS_IS_DEVOUT(soundcard)){
+    AGS_DEVOUT(soundcard)->notify_soundcard = notify_soundcard;
+  }
+  
+  ags_task_thread_append_cyclic_task(application_context->task_thread,
+				     notify_soundcard);
 
   if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == NULL){
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
@@ -1075,6 +1149,10 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   pthread_mutex_t *application_mutex;
 
+  if(AGS_IS_JACK_DEVOUT(soundcard)){
+    return;
+  }
+  
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
@@ -1089,7 +1167,7 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
   if(soundcard == soundcard_editor->soundcard){
     soundcard_editor->soundcard = NULL;
   }
-
+  
   if(soundcard != NULL){
     ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				     g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),

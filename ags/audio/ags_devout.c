@@ -33,6 +33,7 @@
 #include <ags/thread/ags_poll_fd.h>
 
 #include <ags/audio/task/ags_switch_buffer_flag.h>
+#include <ags/audio/task/ags_notify_soundcard.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -801,6 +802,7 @@ ags_devout_init(AgsDevout *devout)
   devout->application_mutex = NULL;
 
   devout->poll_fd = NULL;
+  devout->notify_soundcard = NULL;
   
   /* all AgsAudio */
   devout->audio = NULL;
@@ -1140,6 +1142,13 @@ ags_devout_finalize(GObject *gobject)
   /* free AgsAttack */
   free(devout->attack);
 
+  if(devout->notify_soundcard != NULL){
+    ags_task_thread_remove_cyclic_task(ags_application_context_get_instance()->task_thread,
+				       devout->notify_soundcard);
+
+    g_object_unref(devout->notify_soundcard);
+  }
+  
   if(devout->audio != NULL){
     g_list_free_full(devout->audio,
 		     g_object_unref);
@@ -1598,76 +1607,80 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  if(card_id == NULL){
+    return;
+  }
+  
   devout = AGS_DEVOUT(soundcard);
   
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 #ifdef AGS_WITH_ALSA
-  snd_pcm_t *handle;
-  snd_pcm_hw_params_t *params;
+    snd_pcm_t *handle;
+    snd_pcm_hw_params_t *params;
+    
+    gchar *str;
+    
+    unsigned int val;
+    int dir;
+    snd_pcm_uframes_t frames;
 
-  gchar *str;
+    int rc;
+    int err;
 
-  unsigned int val;
-  int dir;
-  snd_pcm_uframes_t frames;
+    /* Open PCM device for playback. */
+    handle = NULL;
 
-  int rc;
-  int err;
+    rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
-  /* Open PCM device for playback. */
-  handle = NULL;
+    if(rc < 0) {
+      str = snd_strerror(rc);
+      g_message("unable to open pcm device: %s\n\0", str);
 
-  rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
-
-  if(rc < 0) {
-    str = snd_strerror(rc);
-    g_message("unable to open pcm device: %s\n\0", str);
-
-    if(error != NULL){
-      g_set_error(error,
-		  AGS_DEVOUT_ERROR,
-		  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		  "unable to open pcm device: %s\n\0",
-		  str);
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_DEVOUT_ERROR,
+		    AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		    "unable to open pcm device: %s\n\0",
+		    str);
+      }
+    
+      //    free(str);
+    
+      return;
     }
-    
-    //    free(str);
-    
-    return;
-  }
 
-  /* Allocate a hardware parameters object. */
-  snd_pcm_hw_params_alloca(&params);
+    /* Allocate a hardware parameters object. */
+    snd_pcm_hw_params_alloca(&params);
 
-  /* Fill it in with default values. */
-  snd_pcm_hw_params_any(handle, params);
+    /* Fill it in with default values. */
+    snd_pcm_hw_params_any(handle, params);
 
-  /* channels */
-  snd_pcm_hw_params_get_channels_min(params, &val);
-  *channels_min = val;
+    /* channels */
+    snd_pcm_hw_params_get_channels_min(params, &val);
+    *channels_min = val;
 
-  snd_pcm_hw_params_get_channels_max(params, &val);
-  *channels_max = val;
+    snd_pcm_hw_params_get_channels_max(params, &val);
+    *channels_max = val;
 
-  /* samplerate */
-  dir = 0;
-  snd_pcm_hw_params_get_rate_min(params, &val, &dir);
-  *rate_min = val;
+    /* samplerate */
+    dir = 0;
+    snd_pcm_hw_params_get_rate_min(params, &val, &dir);
+    *rate_min = val;
 
-  dir = 0;
-  snd_pcm_hw_params_get_rate_max(params, &val, &dir);
-  *rate_max = val;
+    dir = 0;
+    snd_pcm_hw_params_get_rate_max(params, &val, &dir);
+    *rate_max = val;
 
-  /* buffer size */
-  dir = 0;
-  snd_pcm_hw_params_get_buffer_size_min(params, &frames);
-  *buffer_size_min = frames;
+    /* buffer size */
+    dir = 0;
+    snd_pcm_hw_params_get_buffer_size_min(params, &frames);
+    *buffer_size_min = frames;
 
-  dir = 0;
-  snd_pcm_hw_params_get_buffer_size_max(params, &frames);
-  *buffer_size_max = frames;
+    dir = 0;
+    snd_pcm_hw_params_get_buffer_size_max(params, &frames);
+    *buffer_size_max = frames;
 
-  snd_pcm_close(handle);
+    snd_pcm_close(handle);
 #endif
   }else{
 #ifdef AGS_WITH_OSS
@@ -2310,7 +2323,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   
   devout = AGS_DEVOUT(soundcard);
 
-  /*  */
+  /* retrieve mutex */
   application_context = ags_soundcard_get_application_context(soundcard);
   
   pthread_mutex_lock(application_context->mutex);
@@ -2322,9 +2335,22 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(application_context->mutex);
 
-  /* retrieve word size */
+  /* lock */
   pthread_mutex_lock(mutex);
+
+  /* notify cyclic task */
+  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+
+  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
+    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  }
+  
+  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+
+  /* retrieve word size */
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2495,6 +2521,18 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_BUFFER3 |
 		      AGS_DEVOUT_PLAY |
 		      AGS_DEVOUT_INITIALIZED));
+
+  /* notify cyclic task */
+  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+
+  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
+  
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
+    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  }
+  
+  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
 
   devout->note_offset = 0;
 }
@@ -3074,9 +3112,22 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(application_context->mutex);
 
-  /* retrieve word size */
+  /* lock */
   pthread_mutex_lock(mutex);
+
+  /* notify cyclic task */
+  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+
+  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
+    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  }
+  
+  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+
+  /* retrieve word size */
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -3373,6 +3424,19 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_BUFFER3 |
 		      AGS_DEVOUT_PLAY |
 		      AGS_DEVOUT_INITIALIZED));
+
+  /* notify cyclic task */
+  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+
+  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
+  
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
+    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  }
+  
+  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+
 
   devout->note_offset = 0;
 }

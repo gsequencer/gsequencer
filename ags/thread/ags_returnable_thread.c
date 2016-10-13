@@ -155,9 +155,6 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 
   thread = AGS_THREAD(returnable_thread);
 
-  pthread_attr_setdetachstate(thread->thread_attr,
-			      PTHREAD_CREATE_DETACHED);
-
   g_atomic_int_or(&(thread->flags),
   		  AGS_THREAD_UNREF_ON_EXIT);
 
@@ -230,10 +227,8 @@ ags_returnable_thread_run(AgsThread *thread)
     if((AGS_RETURNABLE_THREAD_RUN_ONCE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
       g_atomic_int_and(&(returnable_thread->flags),
 		       (~AGS_RETURNABLE_THREAD_IN_USE));
+      ags_thread_stop(thread);
       
-      g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
-		       (~AGS_THREAD_RUNNING));
-
       unref_thread = TRUE;
     }
 

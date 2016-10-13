@@ -31,6 +31,7 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/audio/task/ags_resize_audio.h>
 #include <ags/audio/task/ags_open_sf2_sample.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
@@ -163,6 +164,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsIpatchSF2Reader *reader;
   
   //  AgsLinkChannel *link_channel;
+  AgsResizeAudio *resize_audio;
   AgsOpenSf2Sample *open_sf2_sample;
   AgsAddAudioSignal *add_audio_signal;
 
@@ -257,6 +259,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   /* read all samples */
   reader = AGS_IPATCH(ffplayer->ipatch)->reader;
+  task = NULL;
 
   n_pads = 0;
   n_audio_channels = 2;
@@ -279,18 +282,20 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     }
   }
 
-  ags_audio_set_audio_channels(audio,
-			       n_audio_channels);
-  ags_audio_set_pads(audio, AGS_TYPE_INPUT,
-		     n_pads);
+  resize_audio = ags_resize_audio_new(audio,
+				      audio->output_pads,
+				      n_pads,
+				      n_audio_channels);
+  task = g_list_prepend(task,
+			resize_audio);
 
+  /* open sf2 sample task */
   pthread_mutex_lock(audio_mutex);
 
   start_channel = audio->input;
 
   pthread_mutex_unlock(audio_mutex);
 
-  task = NULL;
   sample_iter = sample;
 
   i = 0;

@@ -35,7 +35,8 @@ typedef struct _AgsTask AgsTask;
 typedef struct _AgsTaskClass AgsTaskClass;
 
 typedef enum{
-  AGS_TASK_LOCKED = 1,
+  AGS_TASK_LOCKED   = 1,
+  AGS_TASK_CYCLIC   = 1 <<  1,
 }AgsTaskFlags;
 
 struct _AgsTask
@@ -49,6 +50,8 @@ struct _AgsTask
   guint delay;
 
   pthread_cond_t wait_sync_task_cond;
+
+  GObject *task_thread;
 };
 
 struct _AgsTaskClass
