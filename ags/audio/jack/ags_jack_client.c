@@ -59,6 +59,7 @@ void ags_jack_client_finalize(GObject *gobject);
 
 void ags_jack_client_shutdown(void *arg);
 int ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr);
+int ags_jack_client_xrun_callback(void *ptr);
 
 /**
  * SECTION:ags_jack_client
@@ -382,6 +383,10 @@ ags_jack_client_open(AgsJackClient *jack_client,
     jack_set_process_callback(jack_client->client,
 			      ags_jack_client_process_callback,
 			      jack_client);
+    jack_set_xrun_callback(jack_client->client,
+			   ags_jack_client_xrun_callback,
+			   jack_client);
+
   }
 }
 
@@ -650,6 +655,11 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
   jack_client = AGS_JACK_CLIENT(ptr);
 
+  if(jack_get_xrun_delayed_usecs(jack_client->client) == 0){
+    jack_set_freewheel(jack_client->client,
+		       0);
+  }
+  
   if(jack_client->jack_server != NULL){
     application_context = (AgsApplicationContext *) AGS_JACK_SERVER(jack_client->jack_server)->application_context;
   }else{
@@ -894,6 +904,23 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
     pthread_mutex_unlock(mutex);
   }
+  
+  return(0);
+}
+
+int
+ags_jack_client_xrun_callback(void *ptr)
+{
+  AgsJackClient *jack_client;
+
+  if(ptr == NULL){
+    return(0);
+  }
+
+  jack_client = (AgsJackClient *) ptr;
+
+  jack_set_freewheel(jack_client->client,
+		     1);
   
   return(0);
 }
