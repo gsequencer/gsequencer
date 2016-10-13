@@ -655,7 +655,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
   jack_client = AGS_JACK_CLIENT(ptr);
 
-  if(jack_get_xrun_delayed_usecs(jack_client->client) == 0){
+  if(jack_get_xrun_delayed_usecs(jack_client->client) == 0.0){
     jack_set_freewheel(jack_client->client,
 		       0);
   }
