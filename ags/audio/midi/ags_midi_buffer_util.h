@@ -25,6 +25,24 @@
 
 #include <alsa/seq_event.h>
 
+typedef enum{
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB   = 0x0,
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB   = 0x10,
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_LSB        = 0x20,
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_MSB        = 0x30,
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_LSB        = 0x40,
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_MSB        = 0x50,
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_LSB          = 0x60,
+  AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_MSB          = 0x70,
+}AgsMidiBufferUtilMtcQuarterFrameMessageType;
+
+typedef enum{
+  AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_24_FPS             = 0x0,
+  AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_25_FPS             = 0x40,
+  AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS             = 0x80,
+  AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS_DROP_FRAME  = 0xc0,
+}AgsMidiBufferUtilSmtpeFrameRate;
+
 /* varlength */
 guint ags_midi_buffer_util_get_varlength_size(glong varlength);
 void ags_midi_buffer_util_put_varlength(unsigned char *buffer,
@@ -36,6 +54,12 @@ guint ags_midi_buffer_util_get_varlength(unsigned char *buffer,
 void ags_midi_buffer_util_put_int16(unsigned char *buffer,
 				    glong val);
 void ags_midi_buffer_util_get_int16(unsigned char *buffer,
+				    glong *val);
+
+/* integer - 3 bytes */
+void ags_midi_buffer_util_put_int24(unsigned char *buffer,
+				    glong val);
+void ags_midi_buffer_util_get_int24(unsigned char *buffer,
 				    glong *val);
 
 /* integer - 4 bytes */
@@ -195,10 +219,10 @@ guint ags_midi_buffer_util_get_sequence_number(unsigned char *buffer,
 /* smtpe */
 void ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
 				    glong delta_time,
-				    glong hr, glong mn, glong se, glong fr, glong ff);
+				    glong rr, glong hr, glong mn, glong se, glong fr, glong ff);
 guint ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
 				     glong *delta_time,
-				     glong *hr, glong *mn, glong *se, glong *fr, glong *ff);
+				     glong *rr, glong *hr, glong *mn, glong *se, glong *fr, glong *ff);
 
 /* tempo */
 void ags_midi_buffer_util_put_tempo(unsigned char *buffer,
@@ -206,15 +230,21 @@ void ags_midi_buffer_util_put_tempo(unsigned char *buffer,
 				    glong tempo);
 guint ags_midi_buffer_util_get_tempo(unsigned char *buffer,
 				     glong *delta_time,
-				     glong tempo);
+				     glong *tempo);
 
 /* time signature */
 void ags_midi_buffer_util_put_time_signature(unsigned char *buffer,
 					     glong delta_time,
-					     glong nn, glong dd, glong cc, glong bb);
+					     glong device,
+					     gboolean immediate_change,
+					     glong count,
+					     glong *nn, glong *dd, glong *cc, glong *bb);
 guint ags_midi_buffer_util_get_time_signature(unsigned char *buffer,
 					      glong *delta_time,
-					      glong *nn, glong *dd, glong *cc, glong *bb);
+					      glong *device,
+					      gboolean *immediate_change,
+					      glong *count,
+					      glong **nn, glong **dd, glong **cc, glong **bb);
 
 /* key signature */
 void ags_midi_buffer_util_put_key_signature(unsigned char *buffer,
