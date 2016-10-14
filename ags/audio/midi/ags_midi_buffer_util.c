@@ -1767,13 +1767,10 @@ ags_midi_buffer_util_get_tempo(unsigned char *buffer,
  * ags_midi_buffer_util_put_time_signature:
  * @buffer: the character buffer
  * @delta_time: timing information
- * @device: the device
- * @immediate_change: %TRUE if immediate change, otherwise %FALSE
- * @count: the number of additional data
- * @nn: @count + 1 numbers of numerator
- * @dd: @count + 1 numbers of denominator
- * @cc: @count + 1 numbers of clocks
- * @bb: @count + 1 numbers of beats
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
  * 
  * Put time signature
  * 
@@ -1782,10 +1779,7 @@ ags_midi_buffer_util_get_tempo(unsigned char *buffer,
 void
 ags_midi_buffer_util_put_time_signature(unsigned char *buffer,
 					glong delta_time,
-					glong device,
-					gboolean immediate_change,
-					glong count,
-					glong *nn, glong *dd, glong *cc, glong *bb)
+					glong nn, glong dd, glong cc, glong bb)
 {
   guint delta_time_size;
 
@@ -1798,20 +1792,36 @@ ags_midi_buffer_util_put_time_signature(unsigned char *buffer,
   ags_midi_buffer_util_put_varlength(buffer,
 				     delta_time);
 
-  //TODO:JK: implement me
+  /* status byte */
+  buffer[delta_time_size] = 0xff;
+
+  /* type */
+  buffer[delta_time_size + 1] = 0x58;
+
+  /* length */
+  buffer[delta_time_size + 2] = 4;
+
+  /* nn */
+  buffer[delta_time_size + 3] = nn;
+  
+  /* dd */
+  buffer[delta_time_size + 4] = dd;
+
+  /* cc */
+  buffer[delta_time_size + 5] = cc;
+
+  /* bb */
+  buffer[delta_time_size + 6] = bb;
 }
 
 /**
  * ags_midi_buffer_util_get_time_signature:
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
- * @device: the return location of the device
- * @immediate_change: the return location of immediate change
- * @count: the return location of the number of additional data
- * @nn: the return location of numerator array
- * @dd: the return location of denominator array
- * @cc: the return location of clocks array
- * @bb: the return location of beats array
+ * @nn: the return location of numerator
+ * @dd: the return location of denominator
+ * @cc: the return location of clocks
+ * @bb: the return location of beats
  * 
  * Get time signature.
  * 
@@ -1822,10 +1832,7 @@ ags_midi_buffer_util_put_time_signature(unsigned char *buffer,
 guint
 ags_midi_buffer_util_get_time_signature(unsigned char *buffer,
 					glong *delta_time,
-					glong *device,
-					gboolean *immediate_change,
-					glong *count,
-					glong **nn, glong **dd, glong **cc, glong **bb)
+					glong *nn, glong *dd, glong *cc, glong *bb)
 {
   glong val;
   guint delta_time_size;
@@ -1842,7 +1849,27 @@ ags_midi_buffer_util_get_time_signature(unsigned char *buffer,
     *delta_time = val;
   }
 
-  //TODO:JK: implement me
+  /* nn */
+  if(nn != NULL){
+    *nn = buffer[delta_time_size + 3];
+  }
+  
+  /* dd */
+  if(dd != NULL){
+    *dd = buffer[delta_time_size + 4];
+  }
+
+  /* cc */
+  if(cc != NULL){
+    *cc = buffer[delta_time_size + 5];
+  }
+
+  /* bb */
+  if(bb != NULL){
+    *bb = buffer[delta_time_size + 6];
+  }
+  
+  return(delta_time_size + 7);
 }
 
 /**
@@ -1871,8 +1898,21 @@ ags_midi_buffer_util_put_key_signature(unsigned char *buffer,
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   ags_midi_buffer_util_put_varlength(buffer,
 				     delta_time);
+  
+  /* status byte */
+  buffer[delta_time_size] = 0xff;
 
-  //TODO:JK: implement me
+  /* type */
+  buffer[delta_time_size + 1] = 0x59;
+
+  /* length */
+  buffer[delta_time_size + 2] = 2;
+
+  /* sf */
+  buffer[delta_time_size + 3] = sf;
+  
+  /* mi */
+  buffer[delta_time_size + 4] = mi;
 }
 
 /**
@@ -1908,7 +1948,15 @@ ags_midi_buffer_util_get_key_signature(unsigned char *buffer,
     *delta_time = val;
   }
 
-  //TODO:JK: implement me
+  /* sf */
+  if(sf != NULL){
+    *sf = buffer[delta_time_size + 3];
+  }
+
+  /* mi */
+  if(mi != NULL){
+    *mi = buffer[delta_time_size + 4];
+  }
 }
 
 /**
@@ -1939,7 +1987,30 @@ ags_midi_buffer_util_put_sequencer_meta_event(unsigned char *buffer,
   ags_midi_buffer_util_put_varlength(buffer,
 				     delta_time);
 
-  //TODO:JK: implement me
+  /* status byte */
+  buffer[delta_time_size] = 0xff;
+
+  /* type */
+  buffer[delta_time_size + 1] = 0x7f;
+
+  /* length */
+  buffer[delta_time_size + 2] = 0xff & len;
+
+  /* id */
+  buffer[delta_time_size + 3] = 0xff & id;
+  
+  /* data */
+  switch(len){
+  case 3:
+    {
+      buffer[delta_time_size + 6] = (0xff << 16) & data;
+    }
+  case 2:
+    {
+      buffer[delta_time_size + 4] = 0xff & data;
+      buffer[delta_time_size + 5] = (0xff << 8) & data;
+    }
+  }
 }
 
 /**
@@ -1976,7 +2047,31 @@ ags_midi_buffer_util_get_sequencer_meta_event(unsigned char *buffer,
     *delta_time = val;
   }
 
-  //TODO:JK: implement me
+  if(*len != NULL){
+    *len = buffer[delta_time_size + 2];
+  }
+
+  if(id != NULL){
+    *id = buffer[delta_time_size + 3];
+  }
+
+  if(data != NULL){
+    *data = 0;
+    
+    switch(buffer[delta_time_size + 2]){
+    case 3:
+      {
+	*data |= (buffer[delta_time_size + 6] << 16);
+      }
+    case 2:
+      {
+	*data |= buffer[delta_time_size + 4];
+	*data |= (buffer[delta_time_size + 5] << 8);
+      }
+    }
+  }
+
+  return(delta_time_size + buffer[delta_time_size + 2] + 3);
 }
 
 /**
@@ -2006,7 +2101,18 @@ ags_midi_buffer_util_put_text_event(unsigned char *buffer,
   ags_midi_buffer_util_put_varlength(buffer,
 				     delta_time);
 
-  //TODO:JK: implement me
+
+  /* status byte */
+  buffer[delta_time_size] = 0xff;
+
+  /* type */
+  buffer[delta_time_size + 1] = 0x01;
+
+  /* length */
+  buffer[delta_time_size + 2] = 0xff & length;
+
+  /* text */
+  memcpy(buffer + 3, text, length * sizeof(unsigned char));
 }
 
 /**
@@ -2042,7 +2148,16 @@ ags_midi_buffer_util_get_text_event(unsigned char *buffer,
     *delta_time = val;
   }
 
-  //TODO:JK: implement me
+  /* length */
+  if(length != NULL){
+    *length = buffer[delta_time_size + 2];
+  }
+  
+  /* text */
+  if(text != NULL){
+    *text = (unsigned char *) malloc(buffer[delta_time_size + 2] * sizeof(unsigned char));
+    memcpy(*text, buffer + delta_time_size + 3, buffer[delta_time_size + 2] * sizeof(unsigned char));
+  }
 }
 
 /**
@@ -2069,7 +2184,14 @@ ags_midi_buffer_util_put_end_of_track(unsigned char *buffer,
   ags_midi_buffer_util_put_varlength(buffer,
 				     delta_time);
 
-  //TODO:JK: implement me
+  /* status byte */
+  buffer[delta_time_size] = 0xff;
+
+  /* type */
+  buffer[delta_time_size + 1] = 0x2f;
+
+  /* length */
+  buffer[delta_time_size + 2] = 0;
 }
 
 /**
@@ -2102,7 +2224,7 @@ ags_midi_buffer_util_get_end_of_track(unsigned char *buffer,
     *delta_time = val;
   }
 
-  //TODO:JK: implement me
+  return(delta_time_size + 3);
 }
 
 /**

@@ -235,16 +235,10 @@ guint ags_midi_buffer_util_get_tempo(unsigned char *buffer,
 /* time signature */
 void ags_midi_buffer_util_put_time_signature(unsigned char *buffer,
 					     glong delta_time,
-					     glong device,
-					     gboolean immediate_change,
-					     glong count,
-					     glong *nn, glong *dd, glong *cc, glong *bb);
+					     glong nn, glong dd, glong cc, glong bb);
 guint ags_midi_buffer_util_get_time_signature(unsigned char *buffer,
 					      glong *delta_time,
-					      glong *device,
-					      gboolean *immediate_change,
-					      glong *count,
-					      glong **nn, glong **dd, glong **cc, glong **bb);
+					      glong *nn, glong *dd, glong *cc, glong *bb);
 
 /* key signature */
 void ags_midi_buffer_util_put_key_signature(unsigned char *buffer,
