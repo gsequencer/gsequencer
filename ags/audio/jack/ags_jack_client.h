@@ -55,6 +55,8 @@ struct _AgsJackClient
   
   GList *device;
   GList *port;
+
+  volatile guint queued;
 };
 
 struct _AgsJackClientClass
