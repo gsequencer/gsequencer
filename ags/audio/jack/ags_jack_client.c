@@ -201,6 +201,9 @@ ags_jack_client_init(AgsJackClient *jack_client)
   /* device */
   jack_client->device = NULL;
   jack_client->port = NULL;
+
+  g_atomic_int_set(&(jack_client->queued),
+		   0);
 }
 
 void
@@ -386,7 +389,6 @@ ags_jack_client_open(AgsJackClient *jack_client,
     jack_set_xrun_callback(jack_client->client,
 			   ags_jack_client_xrun_callback,
 			   jack_client);
-
   }
 }
 
@@ -655,10 +657,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
   jack_client = AGS_JACK_CLIENT(ptr);
 
-  if(jack_get_xrun_delayed_usecs(jack_client->client) == 0.0){
-    jack_set_freewheel(jack_client->client,
-		       0);
-  }
+  //  if(jack_get_xrun_delayed_usecs(jack_client->client) == 0.0){
+  //    jack_set_freewheel(jack_client->client,
+  //		       0);
+  //  }
   
   if(jack_client->jack_server != NULL){
     application_context = (AgsApplicationContext *) AGS_JACK_SERVER(jack_client->jack_server)->application_context;
@@ -669,7 +671,15 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   device = jack_client->device;
   
   pthread_mutex_unlock(mutex);
-  
+
+  if(g_atomic_int_get(&(jack_client->queued)) > 0){
+    g_warning("drop JACK callback\0");
+    
+    return(0);
+  }else{
+    g_atomic_int_inc(&(jack_client->queued));
+  }
+
   /*  */  
   pthread_mutex_lock(application_mutex);
 
@@ -706,6 +716,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   }
   
   if(device == NULL){
+    g_atomic_int_dec_and_test(&(jack_client->queued));
+    
     return(0);
   }
 
@@ -904,7 +916,9 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
     pthread_mutex_unlock(mutex);
   }
-  
+
+  g_atomic_int_dec_and_test(&(jack_client->queued));
+
   return(0);
 }
 
@@ -919,8 +933,8 @@ ags_jack_client_xrun_callback(void *ptr)
 
   jack_client = (AgsJackClient *) ptr;
 
-  jack_set_freewheel(jack_client->client,
-		     1);
+  //  jack_set_freewheel(jack_client->client,
+  //		     1);
   
   return(0);
 }

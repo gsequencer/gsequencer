@@ -385,7 +385,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device\0", "ags-jack-devout-0\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels\0", "2\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate\0", "48000\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size\0", "512\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size\0", "1024\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format\0", "16\0");
   
   ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
