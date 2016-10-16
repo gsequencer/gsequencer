@@ -401,77 +401,901 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
   }
 }
 
-signed char*
-ags_audio_buffer_util_morph_s8(signed char *buffer, guint channels,
-			       guint buffer_length,
-			       guint morph_lookbehind,
-			       AgsComplex *morph)
-{
-  //TODO:JK: implement me
-}
-
-signed short*
-ags_audio_buffer_util_morph_s16(signed short *buffer, guint channels,
-				guint buffer_length,
-				guint morph_lookbehind,
-				AgsComplex *morph)
-{
-  //TODO:JK: implement me
-}
-
-signed long*
-ags_audio_buffer_util_morph_s24(signed long *buffer, guint channels,
-				guint buffer_length,
-				guint morph_lookbehind,
-				AgsComplex *morph)
-{
-  //TODO:JK: implement me
-}
-
-signed long*
-ags_audio_buffer_util_morph_s32(signed long *buffer, guint channels,
-				guint buffer_length,
-				guint morph_lookbehind,
-				AgsComplex *morph)
-{
-  //TODO:JK: implement me
-}
-
-signed long long*
-ags_audio_buffer_util_morph_s64(signed long long *buffer, guint channels,
-				guint buffer_length,
-				guint morph_lookbehind,
-				AgsComplex *morph)
-{
-  //TODO:JK: implement me
-}
-
-float*
-ags_audio_buffer_util_morph_float(float *buffer, guint channels,
+/**
+ * ags_audio_buffer_util_envelope_s8:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
 				  guint buffer_length,
-				  guint morph_lookbehind,
-				  AgsComplex *morph)
+				  gdouble current_volume,
+				  gdouble ratio)
 {
-  //TODO:JK: implement me
+  gdouble start_volume;
+  guint limit;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = 0xff & ((signed short) ((*buffer) * current_volume));
+      buffer[1 * channels] = 0xff & ((signed short) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = 0xff & ((signed short) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = 0xff & ((signed short) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = 0xff & ((signed short) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = 0xff & ((signed short) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = 0xff & ((signed short) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = 0xff & ((signed short) (buffer[7 * channels] * current_volume));
+      
+      buffer += (8 * channels);
+      
+      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = 0xff & ((signed short) ((*buffer) * current_volume));
+
+    buffer += channels;
+
+    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+  }
+
+  return(current_volume);
 }
 
-double*
-ags_audio_buffer_util_morph_double(double *buffer, guint channels,
+/**
+ * ags_audio_buffer_util_envelope_s16:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
 				   guint buffer_length,
-				   guint morph_lookbehind,
-				   AgsComplex *morph)
+				   gdouble current_volume,
+				   gdouble ratio)
 {
-  //TODO:JK: implement me
+  gdouble start_volume;
+  guint limit;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+
+      buffer += (8 * channels);
+
+      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+
+    buffer += channels;
+
+    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+  }
+
+  return(current_volume);
 }
 
-void*
-ags_audio_buffer_util_morph(void *buffer, guint channels,
-			    guint format,
-			    guint buffer_length,
-			    guint morph_lookbehind,
-			    AgsComplex *morph)
+/**
+ * ags_audio_buffer_util_envelope_s24:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_s24(signed long *buffer, guint channels,
+				   guint buffer_length,
+				   gdouble current_volume,
+				   gdouble ratio)
 {
-  //TODO:JK: implement me
+  gdouble start_volume;
+  guint limit;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+
+      buffer += (8 * channels);
+
+      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+
+    buffer += channels;
+
+    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+  }
+
+  return(current_volume);
+}
+
+/**
+ * ags_audio_buffer_util_envelope_s32:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_s32(signed long *buffer, guint channels,
+				   guint buffer_length,
+				   gdouble current_volume,
+				   gdouble ratio)
+{
+  gdouble start_volume;
+  guint limit;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+
+      buffer += (8 * channels);
+
+      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+
+    buffer += channels;
+
+    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+  }
+
+  return(current_volume);
+}
+
+/**
+ * ags_audio_buffer_util_envelope_s64:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_s64(signed long long *buffer, guint channels,
+				   guint buffer_length,
+				   gdouble current_volume,
+				   gdouble ratio)
+{
+  gdouble start_volume;
+  guint limit;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+
+      buffer += (8 * channels);
+
+      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+
+    buffer += channels;
+
+    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+  }
+
+  return(current_volume);
+}
+
+/**
+ * ags_audio_buffer_util_envelope_float:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
+				     guint buffer_length,
+				     gdouble current_volume,
+				     gdouble ratio)
+{
+  gdouble start_volume;
+  guint limit;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+
+      buffer += (8 * channels);
+
+      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+
+    buffer += channels;
+
+    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+  }
+
+  return(current_volume);
+}
+
+/**
+ * ags_audio_buffer_util_envelope_double:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
+				      guint buffer_length,
+				      gdouble current_volume,
+				      gdouble ratio)
+{
+  gdouble start_volume;
+  guint limit;
+  guint i;
+
+  start_volume = current_volume;
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+
+      buffer += (8 * channels);
+
+      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+
+    buffer += channels;
+
+    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+  }
+
+  return(current_volume);
+}
+
+/**
+ * ags_audio_buffer_util_envelope:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @format: the format to use
+ * @buffer_length: the buffer's length
+ * @current_volume: current volume
+ * @ratio: the amount to increment
+ * 
+ * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
+ * 0.0 increases volume.
+ * 
+ * Returns: the last volume used
+ * 
+ * Since: 1.0.0
+ */
+gdouble
+ags_audio_buffer_util_envelope(void *buffer, guint channels,
+			       guint format,
+			       guint buffer_length,
+			       gdouble current_volume,
+			       gdouble ratio)
+{
+  gdouble retval;
+
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+    {
+      retval = ags_audio_buffer_util_envelope_s8((signed char *) buffer, channels,
+						 buffer_length,
+						 current_volume,
+						 ratio);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+    {
+      retval = ags_audio_buffer_util_envelope_s16((signed short *) buffer, channels,
+						  buffer_length,
+						  current_volume,
+						  ratio);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+    {
+      retval = ags_audio_buffer_util_envelope_s24((signed long *) buffer, channels,
+						  buffer_length,
+						  current_volume,
+						  ratio);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+    {
+      retval = ags_audio_buffer_util_envelope_s32((signed long *) buffer, channels,
+						  buffer_length,
+						  current_volume,
+						  ratio);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+    {
+      retval = ags_audio_buffer_util_envelope_s64((signed long long *) buffer, channels,
+						  buffer_length,
+						  current_volume,
+						  ratio);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+    {
+      retval = ags_audio_buffer_util_envelope_float((float *) buffer, channels,
+						    buffer_length,
+						    current_volume,
+						    ratio);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+    {
+      retval = ags_audio_buffer_util_envelope_double((double *) buffer, channels,
+						     buffer_length,
+						     current_volume,
+						     ratio);
+    }
+    break;
+  default:
+    g_warning("ags_audio_buffer_util_envelope() - unknown format\0");
+  }
+
+  return(retval);
+}
+
+/**
+ * ags_audio_buffer_util_volume_s8:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume_s8(signed char *buffer, guint channels,
+				guint buffer_length,
+				gdouble volume)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = 0xff & ((signed short) ((*buffer) * volume));
+      buffer[1 * channels] = 0xff & ((signed short) (buffer[1 * channels] * volume));
+      buffer[2 * channels] = 0xff & ((signed short) (buffer[2 * channels] * volume));
+      buffer[3 * channels] = 0xff & ((signed short) (buffer[3 * channels] * volume));
+      buffer[4 * channels] = 0xff & ((signed short) (buffer[4 * channels] * volume));
+      buffer[5 * channels] = 0xff & ((signed short) (buffer[5 * channels] * volume));
+      buffer[6 * channels] = 0xff & ((signed short) (buffer[6 * channels] * volume));
+      buffer[7 * channels] = 0xff & ((signed short) (buffer[7 * channels] * volume));
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = 0xff & ((signed short) ((*buffer) * volume));
+
+    buffer += channels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_volume_s16:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume_s16(signed short *buffer, guint channels,
+				 guint buffer_length,
+				 gdouble volume)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * volume));
+      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * volume));
+      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * volume));
+      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * volume));
+      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * volume));
+      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * volume));
+      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * volume));
+      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * volume));
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * volume));
+
+    buffer += channels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_volume_s24:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume_s24(signed long *buffer, guint channels,
+				 guint buffer_length,
+				 gdouble volume)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = 0xffffff & ((signed long) ((*buffer) * volume));
+      buffer[1 * channels] = 0xffffff & ((signed long) (buffer[1 * channels] * volume));
+      buffer[2 * channels] = 0xffffff & ((signed long) (buffer[2 * channels] * volume));
+      buffer[3 * channels] = 0xffffff & ((signed long) (buffer[3 * channels] * volume));
+      buffer[4 * channels] = 0xffffff & ((signed long) (buffer[4 * channels] * volume));
+      buffer[5 * channels] = 0xffffff & ((signed long) (buffer[5 * channels] * volume));
+      buffer[6 * channels] = 0xffffff & ((signed long) (buffer[6 * channels] * volume));
+      buffer[7 * channels] = 0xffffff & ((signed long) (buffer[7 * channels] * volume));
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = 0xffffff & ((signed long) ((*buffer) * volume));
+
+    buffer += channels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_volume_s32:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume_s32(signed long *buffer, guint channels,
+				 guint buffer_length,
+				 gdouble volume)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = 0xffffffff & ((signed long long) ((*buffer) * volume));
+      buffer[1 * channels] = 0xffffffff & ((signed long long) (buffer[1 * channels] * volume));
+      buffer[2 * channels] = 0xffffffff & ((signed long long) (buffer[2 * channels] * volume));
+      buffer[3 * channels] = 0xffffffff & ((signed long long) (buffer[3 * channels] * volume));
+      buffer[4 * channels] = 0xffffffff & ((signed long long) (buffer[4 * channels] * volume));
+      buffer[5 * channels] = 0xffffffff & ((signed long long) (buffer[5 * channels] * volume));
+      buffer[6 * channels] = 0xffffffff & ((signed long long) (buffer[6 * channels] * volume));
+      buffer[7 * channels] = 0xffffffff & ((signed long long) (buffer[7 * channels] * volume));
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = 0xffffffff & ((signed long long) ((*buffer) * volume));
+
+    buffer += channels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_volume_s64:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume_s64(signed long long *buffer, guint channels,
+				 guint buffer_length,
+				 gdouble volume)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = 0xffffffffffffffff & ((signed long long) ((*buffer) * volume));
+      buffer[1 * channels] = 0xffffffffffffffff & ((signed long long) (buffer[1 * channels] * volume));
+      buffer[2 * channels] = 0xffffffffffffffff & ((signed long long) (buffer[2 * channels] * volume));
+      buffer[3 * channels] = 0xffffffffffffffff & ((signed long long) (buffer[3 * channels] * volume));
+      buffer[4 * channels] = 0xffffffffffffffff & ((signed long long) (buffer[4 * channels] * volume));
+      buffer[5 * channels] = 0xffffffffffffffff & ((signed long long) (buffer[5 * channels] * volume));
+      buffer[6 * channels] = 0xffffffffffffffff & ((signed long long) (buffer[6 * channels] * volume));
+      buffer[7 * channels] = 0xffffffffffffffff & ((signed long long) (buffer[7 * channels] * volume));
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = 0xffffffffffffffff & ((signed long long) ((*buffer) * volume));
+
+    buffer += channels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_volume_float:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume_float(float *buffer, guint channels,
+				   guint buffer_length,
+				   gdouble volume)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = ((double) ((*buffer) * volume));
+      buffer[1 * channels] = ((double) (buffer[1 * channels] * volume));
+      buffer[2 * channels] = ((double) (buffer[2 * channels] * volume));
+      buffer[3 * channels] = ((double) (buffer[3 * channels] * volume));
+      buffer[4 * channels] = ((double) (buffer[4 * channels] * volume));
+      buffer[5 * channels] = ((double) (buffer[5 * channels] * volume));
+      buffer[6 * channels] = ((double) (buffer[6 * channels] * volume));
+      buffer[7 * channels] = ((double) (buffer[7 * channels] * volume));
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = ((double) ((*buffer) * volume));
+
+    buffer += channels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_volume_double:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume_double(double *buffer, guint channels,
+				    guint buffer_length,
+				    gdouble volume)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 8){
+    limit = buffer_length - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = ((double) ((*buffer) * volume));
+      buffer[1 * channels] = ((double) (buffer[1 * channels] * volume));
+      buffer[2 * channels] = ((double) (buffer[2 * channels] * volume));
+      buffer[3 * channels] = ((double) (buffer[3 * channels] * volume));
+      buffer[4 * channels] = ((double) (buffer[4 * channels] * volume));
+      buffer[5 * channels] = ((double) (buffer[5 * channels] * volume));
+      buffer[6 * channels] = ((double) (buffer[6 * channels] * volume));
+      buffer[7 * channels] = ((double) (buffer[7 * channels] * volume));
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < buffer_length; i++){
+    *buffer = ((double) ((*buffer) * volume));
+
+    buffer += channels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_volume:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @format: the format to use
+ * @buffer_length: the buffer's length
+ * @volume: volume
+ * 
+ * Adjust volume of buffer.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_buffer_util_volume(void *buffer, guint channels,
+			     guint format,
+			     guint buffer_length,
+			     gdouble volume)
+{
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+    {
+      ags_audio_buffer_util_volume_s8((signed char *) buffer, channels,
+				      buffer_length,
+				      volume);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+    {
+      ags_audio_buffer_util_volume_s16((signed short *) buffer, channels,
+				       buffer_length,
+				       volume);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+    {
+      ags_audio_buffer_util_volume_s24((signed long *) buffer, channels,
+				       buffer_length,
+				       volume);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+    {
+      ags_audio_buffer_util_volume_s32((signed long *) buffer, channels,
+				       buffer_length,
+				       volume);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+    {
+      ags_audio_buffer_util_volume_s64((signed long long *) buffer, channels,
+				       buffer_length,
+				       volume);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+    {
+      ags_audio_buffer_util_volume_float((float *) buffer, channels,
+					 buffer_length,
+					 volume);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+    {
+      ags_audio_buffer_util_volume_double((double *) buffer, channels,
+					  buffer_length,
+					  volume);
+    }
+    break;
+  default:
+    g_warning("ags_audio_buffer_util_volume() - unknown format\0");
+  }
 }
 
 /**
