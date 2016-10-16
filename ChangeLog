@@ -14,6 +14,20 @@ ags (1.0.0)
 	* TODO:JK: added properties to AgsTask sub-types
 	* improved AgsDial
 
+ags (0.7.89)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash after opening file with unavailable audio file link
+	* improved mutices in ags_editor_tic_callback()
+
+ags (0.7.88)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing usage of attack affects BPM
+	* fixed code performance issue in ags-play-notation recall
+	* removed free-wheel within jack client because not supported
+	* modified default buffer size to 1024
+
 ags (0.7.87)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

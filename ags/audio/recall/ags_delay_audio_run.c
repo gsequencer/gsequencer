@@ -499,9 +499,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     /* delay and attack */
     //TODO:JK: unclear
-    attack = 0; // soundcard->attack[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     soundcard->tic_counter + 1)];
+    attack = ags_soundcard_get_attack(AGS_SOUNDCARD(recall->soundcard));
       
     delay = 0.0; // soundcard->delay[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
       //		   0:
@@ -534,7 +532,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* notation speed */
     ags_delay_audio_run_notation_alloc_output(delay_audio_run,
 					      run_order,
-					      delay, attack);
+					      delay, 0);
     ags_delay_audio_run_notation_alloc_input(delay_audio_run,
 					     run_order,
 					     delay, attack);
@@ -550,9 +548,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     /* delay and attack */
     //TODO:JK: unclear
-    attack = 0; // soundcard->attack[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     soundcard->tic_counter + 1)];
+    attack = ags_soundcard_get_attack(AGS_SOUNDCARD(recall->soundcard));
     delay = 0.0; // soundcard->delay[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
       //		   0:
       //		   soundcard->tic_counter + 1)];
@@ -566,7 +562,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     /* sequencer speed */
     ags_delay_audio_run_sequencer_alloc_output(delay_audio_run,
 					       run_order,
-					       delay, attack);
+					       delay, 0);
 
     ags_delay_audio_run_sequencer_alloc_input(delay_audio_run,
 					      run_order,
