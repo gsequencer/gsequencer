@@ -1,3 +1,9 @@
+ags (0.7.89)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash after opening file with unavailable audio file link
+	* improved mutices in ags_editor_tic_callback()
+
 ags (0.7.88)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

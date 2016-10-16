@@ -74,6 +74,9 @@ ags_editor_tic_callback(GObject *soundcard,
   AgsApplicationContext *application_context;
 
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  gdk_threads_enter();
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
 
@@ -86,7 +89,9 @@ ags_editor_tic_callback(GObject *soundcard,
   pthread_mutex_lock(application_mutex);
 
   audio_loop = (AgsAudioLoop *) application_context->main_loop;
-
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     window->soundcard);
+  
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
@@ -96,10 +101,17 @@ ags_editor_tic_callback(GObject *soundcard,
   if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(window->navigation->scroll))){
     AgsScrollOnPlay *scroll_on_play;
 
+    guint note_offset;  
     gdouble step;
+
+    pthread_mutex_lock(soundcard_mutex);
+
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
     
-    if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) > editor->current_tact){
-      editor->current_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+    pthread_mutex_unlock(soundcard_mutex);
+
+    if(note_offset > editor->current_tact){
+      editor->current_tact = note_offset;
       
       scroll_on_play = ags_scroll_on_play_new((GtkWidget *) editor,
 					      64.0);
@@ -107,6 +119,8 @@ ags_editor_tic_callback(GObject *soundcard,
 				  AGS_TASK(scroll_on_play));
     }
   }
+
+  gdk_threads_leave();
 }
 
 void

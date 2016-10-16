@@ -3336,10 +3336,12 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 		 "file-link", file_link,
 		 NULL);
 
-    AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-
-    ags_recycling_add_audio_signal(channel->first_recycling,
-				   audio_signal_list->data);
+    if(audio_signal_list != NULL){
+      AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      
+      ags_recycling_add_audio_signal(channel->first_recycling,
+				     audio_signal_list->data);
+    }
   }else{
     str = xmlGetProp(file_launch->node,
 		     "link\0");
@@ -3495,10 +3497,12 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 		 "file-link", file_link,
 		 NULL);
 
-    AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-
-    ags_recycling_add_audio_signal(channel->first_recycling,
-				   audio_signal_list->data);
+    if(audio_signal_list != NULL){
+      AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      
+      ags_recycling_add_audio_signal(channel->first_recycling,
+				     audio_signal_list->data);
+    }
   }else{
     str = xmlGetProp(file_launch->node,
 		     "link\0");
