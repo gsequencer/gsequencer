@@ -312,7 +312,7 @@ ags_ipatch_set_property(GObject *gobject,
 					&error);
 
 	if(error != NULL){
-	  g_error("%s\0", error->message);
+	  g_warning("%s\0", error->message);
 	}
       }
     }
@@ -403,7 +403,11 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 					     &error);
 
   if(error != NULL){
-    g_error("%s\0", error->message);
+    g_warning("%s\0", error->message);
+  }
+
+  if(ipatch->handle == NULL){
+    return;
   }
 
   if(IPATCH_IS_DLS_FILE(ipatch->handle->file)){
@@ -1042,7 +1046,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 			       &this_error);
       
   if(this_error != NULL){
-    g_error("%s\0", this_error->message);
+    g_warning("%s\0", this_error->message);
   }
 
   return(buffer);
