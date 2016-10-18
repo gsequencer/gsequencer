@@ -60,6 +60,7 @@ struct _AgsMidiBuilder
   AgsMidiBuilderHeader *midi_header;
   
   GList *midi_track;
+  AgsMidiBuilderTrack *current_midi_track;
 };
 
 struct _AgsMidiBuilderClass
@@ -172,6 +173,8 @@ struct _AgsMidiBuilderTrack
 {
   gchar *track_name;
   
+  glong delta_time;
+
   unsigned char *data;
   guint length;
 };
@@ -184,6 +187,11 @@ void ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header);
 AgsMidiBuilderTrack* ags_midi_builder_track_alloc();
 void ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track);
 
+GList* ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
+							      guint delta_time,
+							      gchar *track_name);
+
+/* low-level IO */
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
 				gint c);
 void ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,

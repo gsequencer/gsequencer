@@ -779,6 +779,7 @@ ags_midi_builder_init(AgsMidiBuilder *midi_builder)
   midi_builder->midi_header = NULL;
   
   midi_builder->midi_track = NULL;
+  midi_builder->current_midi_track = NULL;
 }
 
 void
@@ -893,7 +894,9 @@ ags_midi_builder_track_alloc()
   midi_builder_track = (AgsMidiBuilderTrack *) malloc(sizeof(AgsMidiBuilderTrack));
   
   midi_builder_track->track_name = NULL;
-
+  
+  midi_builder_track->delta_time = 0;
+  
   midi_builder_track->data = NULL;
   midi_builder_track->length = 0;
   
@@ -924,6 +927,36 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
   }
   
   free(midi_builder_track);
+}
+
+/**
+ * ags_midi_builder_track_find_track_name_with_delta_time:
+ * @midi_builder_track: the #AgsMidiBuilderTrack
+ * @delta_time: the delta time
+ * @track_name: the track's string representation
+ * 
+ * Finds matching #AgsMidiBuilderTrack-struct within @midi_builder_track #GList-struct.
+ * 
+ * Returns: the matching #GList-struct
+ * 
+ * Since: 1.0.0
+ */
+GList*
+ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
+						       guint delta_time,
+						       gchar *track_name)
+{
+  while(midi_builder_track != NULL){
+    if(AGS_MIDI_BUILDER_TRACK(midi_builder_track->data)->delta_time == delta_time &&
+       !g_ascii_strcasecmp(AGS_MIDI_BUILDER_TRACK(midi_builder_track->data)->track_name,
+			   track_name)){
+      break;
+    }
+    
+    midi_builder_track = midi_builder_track->next;
+  }
+
+  return(midi_builder_track);
 }
 
 void
@@ -998,10 +1031,22 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
 				    guint times, guint bpm,
 				    guint clicks)
 {
+  AgsMidiBuilderHeader *midi_builder_header;
+  
   if(midi_builder->midi_header == NULL){
-    
+    midi_header = 
+      midi_builder->midi_header = ags_midi_builder_header_alloc();    
   }else{
+    midi_header = midi_builder->midi_header;
   }
+
+  midi_header->offset = offset;
+  midi_header->format = format;
+  midi_header->count = track_count;
+  midi_header->division = division;
+  midi_header->times = times;
+  midi_header->beat = bpm;
+  midi_header->clicks = clicks;
 }
 
 /**
@@ -1042,7 +1087,13 @@ void
 ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
 				   gchar *track_name)
 {
-  //TODO:JK: implement me
+  AgsMidiBuilderTrack *midi_builder_track;
+
+  midi_builder_track = ags_midi_builder_track_alloc();
+  midi_builder_track->track_name = track_name;
+
+  midi_builder->midi_track = g_list_append(midi_builder->midi_track,
+					   track_name);
 }
 
 /**
