@@ -68,8 +68,6 @@ xmlNode* ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint me
 xmlNode* ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type);
 
-#define AGS_MIDI_EVENT "event\0"
-
 /**
  * SECTION:ags_midi_parser
  * @short_description: the menu bar.
