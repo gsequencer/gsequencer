@@ -262,7 +262,10 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::midi-putc signal is emited during putting char to file.
    *
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.90
    */
   midi_builder_signals[MIDI_PUTC] =
     g_signal_new("midi-putc\0",
@@ -842,7 +845,7 @@ ags_midi_builder_finalize(GObject *gobject)
  * 
  * Returns: the newly allocated #AgsMidiBuilderHeader-struct
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 AgsMidiBuilderHeader*
 ags_midi_builder_header_alloc()
@@ -868,7 +871,7 @@ ags_midi_builder_header_alloc()
  * 
  * Free MIDI builder header.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
@@ -887,7 +890,7 @@ ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
  * 
  * Returns: the newly allocated #AgsMidiBuilderTrack-struct
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 AgsMidiBuilderTrack*
 ags_midi_builder_track_alloc()
@@ -913,7 +916,7 @@ ags_midi_builder_track_alloc()
  * 
  * Free MIDI builder track.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
@@ -943,7 +946,7 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
  * 
  * Returns: the matching #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 GList*
 ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
@@ -970,7 +973,7 @@ ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track
  * 
  * Insert MIDI message.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
@@ -1038,7 +1041,7 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
  * 
  * Returns: the buffer position before @delta_time
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 unsigned char*
 ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,

@@ -14,6 +14,13 @@ ags (1.0.0)
 	* TODO:JK: added properties to AgsTask sub-types
 	* improved AgsDial
 
+ags (0.7.90)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed handle NULL pointer client don't pass it to JACK
+	* back-ported ags_midi_buffer_util.[ch] from 1.0
+	* back-ported ags_midi_builder.[ch] from 1.0
+
 ags (0.7.89)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

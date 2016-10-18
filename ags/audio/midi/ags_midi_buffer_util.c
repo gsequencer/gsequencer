@@ -161,7 +161,7 @@ ags_midi_buffer_util_get_varlength(unsigned char *buffer,
  * 
  * Put signed 16 bit integer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_int16(unsigned char *buffer,
@@ -182,7 +182,7 @@ ags_midi_buffer_util_put_int16(unsigned char *buffer,
  *
  * Get signed 32 bit integer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_get_int16(unsigned char *buffer,
@@ -209,7 +209,7 @@ ags_midi_buffer_util_get_int16(unsigned char *buffer,
  * 
  * Put signed 24 bit integer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_int24(unsigned char *buffer,
@@ -231,7 +231,7 @@ ags_midi_buffer_util_put_int24(unsigned char *buffer,
  *
  * Get signed 24 bit integer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_get_int24(unsigned char *buffer,
@@ -259,7 +259,7 @@ ags_midi_buffer_util_get_int24(unsigned char *buffer,
  * 
  * Put signed 32 bit integer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_int32(unsigned char *buffer,
@@ -282,7 +282,7 @@ ags_midi_buffer_util_put_int32(unsigned char *buffer,
  *
  * Get signed 32 bit integer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_get_int32(unsigned char *buffer,
@@ -314,7 +314,7 @@ ags_midi_buffer_util_get_int32(unsigned char *buffer,
  *
  * Puts the midi header.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_header(unsigned char *buffer,
@@ -359,7 +359,7 @@ ags_midi_buffer_util_put_header(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_header(unsigned char *buffer,
@@ -399,7 +399,7 @@ ags_midi_buffer_util_get_header(unsigned char *buffer,
  * 
  * Put track.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_track(unsigned char *buffer,
@@ -427,7 +427,7 @@ ags_midi_buffer_util_put_track(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_track(unsigned char *buffer,
@@ -694,7 +694,7 @@ ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
  *
  * Returns: the number of bytes read.
  *
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
@@ -746,7 +746,7 @@ ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
  * 
  * Put change parameter.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_change_parameter(unsigned char *buffer,
@@ -789,7 +789,7 @@ ags_midi_buffer_util_put_change_parameter(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_change_parameter(unsigned char *buffer,
@@ -841,7 +841,7 @@ ags_midi_buffer_util_get_change_parameter(unsigned char *buffer,
  * 
  * Put pitch bend.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_pitch_bend(unsigned char *buffer,
@@ -884,7 +884,7 @@ ags_midi_buffer_util_put_pitch_bend(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_pitch_bend(unsigned char *buffer,
@@ -935,7 +935,7 @@ ags_midi_buffer_util_get_pitch_bend(unsigned char *buffer,
  * 
  * Put change program.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_change_program(unsigned char *buffer,
@@ -975,7 +975,7 @@ ags_midi_buffer_util_put_change_program(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_change_program(unsigned char *buffer,
@@ -1020,7 +1020,7 @@ ags_midi_buffer_util_get_change_program(unsigned char *buffer,
  *
  * Put change pressure.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_change_pressure(unsigned char *buffer,
@@ -1058,7 +1058,7 @@ ags_midi_buffer_util_put_change_pressure(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  *
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_change_pressure(unsigned char *buffer,
@@ -1103,7 +1103,7 @@ ags_midi_buffer_util_get_change_pressure(unsigned char *buffer,
  * 
  * Put sysex.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_sysex(unsigned char *buffer,
@@ -1142,7 +1142,7 @@ ags_midi_buffer_util_put_sysex(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_sysex(unsigned char *buffer,
@@ -1197,7 +1197,7 @@ ags_midi_buffer_util_get_sysex(unsigned char *buffer,
  * 
  * Put quarter frame.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_quarter_frame(unsigned char *buffer,
@@ -1237,7 +1237,7 @@ ags_midi_buffer_util_put_quarter_frame(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_quarter_frame(unsigned char *buffer,
@@ -1278,7 +1278,7 @@ ags_midi_buffer_util_get_quarter_frame(unsigned char *buffer,
  * 
  * Put song position.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_song_position(unsigned char *buffer,
@@ -1314,7 +1314,7 @@ ags_midi_buffer_util_put_song_position(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_song_position(unsigned char *buffer,
@@ -1353,7 +1353,7 @@ ags_midi_buffer_util_get_song_position(unsigned char *buffer,
  * 
  * Put song select.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_song_select(unsigned char *buffer,
@@ -1388,7 +1388,7 @@ ags_midi_buffer_util_put_song_select(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_song_select(unsigned char *buffer,
@@ -1424,7 +1424,7 @@ ags_midi_buffer_util_get_song_select(unsigned char *buffer,
  * 
  * Put tune request
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_tune_request(unsigned char *buffer,
@@ -1454,7 +1454,7 @@ ags_midi_buffer_util_put_tune_request(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_tune_request(unsigned char *buffer,
@@ -1486,7 +1486,7 @@ ags_midi_buffer_util_get_tune_request(unsigned char *buffer,
  * 
  * Put sequence number.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_sequence_number(unsigned char *buffer,
@@ -1528,7 +1528,7 @@ ags_midi_buffer_util_put_sequence_number(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_sequence_number(unsigned char *buffer,
@@ -1572,7 +1572,7 @@ ags_midi_buffer_util_get_sequence_number(unsigned char *buffer,
  * 
  * Put smtpe timestamp.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
@@ -1633,7 +1633,7 @@ ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
@@ -1696,7 +1696,7 @@ ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
  * 
  * Put tempo.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_tempo(unsigned char *buffer,
@@ -1738,7 +1738,7 @@ ags_midi_buffer_util_put_tempo(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_tempo(unsigned char *buffer,
@@ -1776,7 +1776,7 @@ ags_midi_buffer_util_get_tempo(unsigned char *buffer,
  * 
  * Put time signature
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_time_signature(unsigned char *buffer,
@@ -1829,7 +1829,7 @@ ags_midi_buffer_util_put_time_signature(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_time_signature(unsigned char *buffer,
@@ -1883,7 +1883,7 @@ ags_midi_buffer_util_get_time_signature(unsigned char *buffer,
  * 
  * Put key signature.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_key_signature(unsigned char *buffer,
@@ -1928,7 +1928,7 @@ ags_midi_buffer_util_put_key_signature(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_key_signature(unsigned char *buffer,
@@ -1973,7 +1973,7 @@ ags_midi_buffer_util_get_key_signature(unsigned char *buffer,
  * 
  * Put sequencer meta event.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_sequencer_meta_event(unsigned char *buffer,
@@ -2029,7 +2029,7 @@ ags_midi_buffer_util_put_sequencer_meta_event(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_sequencer_meta_event(unsigned char *buffer,
@@ -2087,7 +2087,7 @@ ags_midi_buffer_util_get_sequencer_meta_event(unsigned char *buffer,
  * 
  * Put text event.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_text_event(unsigned char *buffer,
@@ -2130,7 +2130,7 @@ ags_midi_buffer_util_put_text_event(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_text_event(unsigned char *buffer,
@@ -2176,7 +2176,7 @@ ags_midi_buffer_util_get_text_event(unsigned char *buffer,
  * 
  * Put end of track.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 void
 ags_midi_buffer_util_put_end_of_track(unsigned char *buffer,
@@ -2212,7 +2212,7 @@ ags_midi_buffer_util_put_end_of_track(unsigned char *buffer,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 guint
 ags_midi_buffer_util_get_end_of_track(unsigned char *buffer,
@@ -2246,7 +2246,7 @@ ags_midi_buffer_util_get_end_of_track(unsigned char *buffer,
  * 
  * Returns: the buffer at offset at @message_count ahead
  * 
- * Since: 1.0.0
+ * Since: 0.7.90
  */
 unsigned char*
 ags_midi_buffer_util_seek_message(unsigned char *buffer,

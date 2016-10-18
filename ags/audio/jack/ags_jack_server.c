@@ -547,7 +547,8 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     default_client->device = g_list_prepend(default_client->device,
 					    jack_devout);
 
-    if(initial_set){
+    if(initial_set &&
+       default_client->client != NULL){
       rc = jack_set_buffer_size(default_client->client,
 				jack_devout->buffer_size);
 
@@ -773,12 +774,14 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 	       NULL);
   default_client->device = g_list_prepend(default_client->device,
 					  jack_devout);
-  
-  rc = jack_set_buffer_size(default_client->client,
-			    jack_devout->buffer_size);
 
-  if(rc != 0){
-    g_message("%s\0", strerror(rc));
+  if(default_client->client != NULL){
+    rc = jack_set_buffer_size(default_client->client,
+			      jack_devout->buffer_size);
+    
+    if(rc != 0){
+      g_message("%s\0", strerror(rc));
+    }
   }
   
   /* register ports */
