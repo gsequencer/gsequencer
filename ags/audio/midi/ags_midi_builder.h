@@ -36,6 +36,9 @@
 #define AGS_IS_MIDI_BUILDER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_BUILDER))
 #define AGS_MIDI_BUILDER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_BUILDER, AgsMidiBuilderClass))
 
+#define AGS_MIDI_BUILDER_HEADER(ptr) ((AgsMidiBuilderHeader *)(ptr))
+#define AGS_MIDI_BUILDER_TRACK(ptr) ((AgsMidiBuilderTrack *)(ptr))
+
 typedef struct _AgsMidiBuilder AgsMidiBuilder;
 typedef struct _AgsMidiBuilderClass AgsMidiBuilderClass;
 typedef struct _AgsMidiBuilderHeader AgsMidiBuilderHeader;
@@ -174,6 +177,12 @@ struct _AgsMidiBuilderTrack
 };
 
 GType ags_midi_builder_get_type(void);
+
+AgsMidiBuilderHeader* ags_midi_builder_header_alloc();
+void ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header);
+
+AgsMidiBuilderTrack* ags_midi_builder_track_alloc();
+void ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track);
 
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
 				gint c);

@@ -772,6 +772,8 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 void
 ags_midi_builder_init(AgsMidiBuilder *midi_builder)
 {
+  midi_builder->flags = 0;
+
   midi_builder->file = NULL;
   
   midi_builder->midi_header = NULL;
@@ -827,6 +829,101 @@ void
 ags_midi_builder_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_midi_builder_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_midi_builder_header_alloc:
+ * 
+ * Allocate MIDI builder header.
+ * 
+ * Returns: the newly allocated #AgsMidiBuilderHeader-struct
+ * 
+ * Since: 1.0.0
+ */
+AgsMidiBuilderHeader*
+ags_midi_builder_header_alloc()
+{
+  AgsMidiBuilderHeader *midi_builder_header;
+
+  midi_builder_header = (AgsMidiBuilderHeader *) malloc(sizeof(AgsMidiBuilderHeader));
+
+  midi_builder_header->offset = 0;
+  midi_builder_header->format = 1;
+  midi_builder_header->count = 0;
+  midi_builder_header->division = 0;
+  midi_builder_header->times = 0;
+  midi_builder_header->beat = 0;
+  midi_builder_header->clicks = 0;
+  
+  return(midi_builder_header);
+}
+
+/**
+ * ags_midi_builder_header_free:
+ * @midi_builder_track: the #AgsMidiBuilderTrack-struct
+ * 
+ * Free MIDI builder header.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
+{
+  if(midi_builder_header == NULL){
+    return;
+  }
+
+  free(midi_builder_header);
+}
+
+/**
+ * ags_midi_builder_track_alloc:
+ * 
+ * Allocate MIDI builder header.
+ * 
+ * Returns: the newly allocated #AgsMidiBuilderHeader-struct
+ * 
+ * Since: 1.0.0
+ */
+AgsMidiBuilderTrack*
+ags_midi_builder_track_alloc()
+{
+  AgsMidiBuilderTrack *midi_builder_track;
+
+  midi_builder_track = (AgsMidiBuilderTrack *) malloc(sizeof(AgsMidiBuilderTrack));
+  
+  midi_builder_track->track_name = NULL;
+
+  midi_builder_track->data = NULL;
+  midi_builder_track->length = 0;
+  
+  return(midi_builder_track);
+}
+
+/**
+ * ags_midi_builder_header_free:
+ * @midi_builder_track: the #AgsMidiBuilderTrack-struct
+ * 
+ * Free MIDI builder header.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
+{
+  if(midi_builder_track == NULL){
+    return;
+  }
+
+  if(midi_builder_track->track_name != NULL){
+    free(midi_builder_track->track_name);
+  }
+
+  if(midi_builder_track->data != NULL){
+    free(midi_builder_track->data);
+  }
+  
+  free(midi_builder_track);
 }
 
 void
@@ -901,7 +998,10 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
 				    guint times, guint bpm,
 				    guint clicks)
 {
-  //TODO:JK: implement me
+  if(midi_builder->midi_header == NULL){
+    
+  }else{
+  }
 }
 
 /**
