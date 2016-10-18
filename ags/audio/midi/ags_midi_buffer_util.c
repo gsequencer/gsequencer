@@ -2134,6 +2134,7 @@ ags_midi_buffer_util_get_text_event(unsigned char *buffer,
 				    gchar **text, glong *length)
 {
   glong val;
+  guint text_size;
   guint delta_time_size;
   
   if(buffer == NULL){
@@ -2149,14 +2150,16 @@ ags_midi_buffer_util_get_text_event(unsigned char *buffer,
   }
 
   /* length */
+  text_size = 0x7f & buffer[delta_time_size + 2];
+  
   if(length != NULL){
-    *length = buffer[delta_time_size + 2];
+    *length = text_size;
   }
   
   /* text */
   if(text != NULL){
-    *text = (unsigned char *) malloc(buffer[delta_time_size + 2] * sizeof(unsigned char));
-    memcpy(*text, buffer + delta_time_size + 3, buffer[delta_time_size + 2] * sizeof(unsigned char));
+    *text = (unsigned char *) malloc(text_size * sizeof(unsigned char));
+    memcpy(*text, buffer + delta_time_size + 3, text_size * sizeof(unsigned char));
   }
 }
 
@@ -2225,6 +2228,249 @@ ags_midi_buffer_util_get_end_of_track(unsigned char *buffer,
   }
 
   return(delta_time_size + 3);
+}
+
+/**
+ * ags_midi_buffer_util_seek_message:
+ * @buffer: the buffer to seek
+ * @message_count: seek count messages
+ * @delta_time: the return location of current delta time
+ * 
+ * Seek MIDI messages from @buffer
+ * 
+ * Returns: the buffer at offset at @message_count ahead
+ * 
+ * Since: 1.0.0
+ */
+unsigned char*
+ags_midi_buffer_util_seek_message(unsigned char *buffer,
+				  guint message_count,
+				  glong *delta_time)
+{
+  static gchar header[] = "MThd";
+  static gchar track[] = "MTrk";
+
+  glong current_delta_time;
+  guint delta_time_size;
+  unsigned char status;
+  unsigned char meta_type;
+  guint n;
+  guint i;
+  
+  /* check for header */
+  if(!g_ascii_strncasecmp(buffer,
+			  header,
+			  4)){
+    buffer += 14;
+  }
+
+  /* seek message count */
+  current_delta_time = 0;
+  
+  for(i = 0; i < delta_time; i++){
+    /* check for track */
+    if(!g_ascii_strncasecmp(buffer,
+			    track,
+			    4)){
+      buffer += 8;
+    }
+
+    /* read delta time */
+    delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
+							 &delta_time_size);
+    
+    /* read status byte */
+    status = buffer[delta_time_size];
+    
+    if((0xf0 & (0xf0 & status)) != 0xf0){
+      switch(status){
+      case 0xf0:
+	{
+	}
+	break;
+      case 0xf1:
+      case 0xf2:
+      case 0xf3:
+      case 0xf4:
+      case 0xf5:
+      case 0xf6:
+	{
+	  /* start of system exclusive */
+	  n = ags_midi_buffer_util_get_sysex(buffer,
+					     NULL,
+					     NULL, NULL);
+
+	  buffer += n;
+	}
+	break;
+      case 0xf7:
+	{
+	  /* sysex continuation or arbitrary stuff */
+	  buffer += (delta_time_size + 1);
+	}
+	break;
+      case 0xff:
+	{
+	  switch(meta_type){
+	  case 0x00:
+	    {
+	      int c;
+
+	      c = buffer[delta_time_size + 1];
+
+	      if(c == 0x02){
+		n = ags_midi_buffer_util_get_sequence_number(buffer,
+							     NULL,
+							     NULL);
+
+		buffer += n;
+	      }else{
+		buffer += (delta_time_size + 1);
+	      }
+	    }
+	    break;
+	  case 0x01:      /* Text event */
+	  case 0x02:      /* Copyright notice */
+	  case 0x03:      /* Sequence/Track name */
+	  case 0x04:      /* Instrument name */
+	  case 0x05:      /* Lyric */
+	  case 0x06:      /* Marker */
+	  case 0x07:      /* Cue point */
+	  case 0x08:
+	  case 0x09:
+	  case 0x0a:
+	  case 0x0b:
+	  case 0x0c:
+	  case 0x0d:
+	  case 0x0e:
+	  case 0x0f:
+	    {
+	      /* These are all text events */
+	      n = ags_midi_buffer_util_get_text_event(buffer,
+						      NULL,
+						      NULL, NULL);
+
+	      buffer += n;
+	    }
+	    break;
+	  case 0x2f:
+	    {
+	      int c;
+
+	      c = buffer[delta_time_size];
+
+	      if(c == 0x0){
+		/* End of Track */
+		n = ags_midi_buffer_util_get_end_of_track(buffer,
+							  NULL);
+
+		buffer += n;
+	      }else{
+		buffer += (delta_time_size + 1);
+	      }
+	    }
+	    break;
+	  case 0x51:
+	    {
+	      int c;
+
+	      c = buffer[delta_time_size];
+
+	      if(c == 0x03){
+		/* Set tempo */
+		n = ags_midi_buffer_util_get_tempo(buffer,
+						   NULL,
+						   NULL);
+		
+		buffer += n;
+	      }else{
+		buffer += (delta_time_size + 1);
+	      }
+	    }
+	    break;
+	  case 0x54:
+	    {
+	      int c;
+
+	      c = buffer[delta_time_size];
+
+	      if(c == 0x05){
+		n = ags_midi_buffer_util_get_smtpe(buffer,
+						   NULL,
+						   NULL, NULL, NULL, NULL, NULL, NULL);
+
+		buffer += n;
+	      }else{
+		buffer += (delta_time_size + 1);
+	      }
+	    }
+	    break;
+	  case 0x58:
+	    {
+	      int c;
+
+	      c = buffer[delta_time_size];
+      
+	      if(c == 0x04){
+		n = ags_midi_buffer_util_get_time_signature(buffer,
+							    NULL,
+							    NULL, NULL, NULL, NULL);
+		
+		buffer += n;
+	      }else{
+		buffer += (delta_time_size + 1);
+	      }
+	    }
+	    break;
+	  case 0x59:
+	    {
+	      int c;
+
+	      c = buffer[delta_time_size];
+
+	      if(c == 0x02){
+		n = ags_midi_buffer_util_get_key_signature(buffer,
+							   NULL,
+							   NULL, NULL);
+
+		buffer += n;
+	      }else{
+		buffer += (delta_time_size + 1);
+	      }
+	    }
+	    break;
+	  case 0x7f:
+	    {
+	      n = ags_midi_buffer_util_get_sequencer_meta_event(NULL,
+								NULL,
+								NULL, NULL, NULL);
+	      
+	      buffer += n;
+	    }
+	    break;
+	  default:
+	    {
+	      buffer += (delta_time_size + 1);
+	    }
+
+	  }
+	  break;
+	default:
+	  buffer++;
+	  
+	  g_warning("bad byte\0");
+	  
+	  break;
+	}
+      }
+    }
+  }
+
+  if(delta_time != NULL){
+    *delta_time = current_delta_time;
+  }
+  
+  return(buffer);
 }
 
 /**

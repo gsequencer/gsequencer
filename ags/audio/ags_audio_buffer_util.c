@@ -409,8 +409,7 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 
@@ -468,8 +467,7 @@ ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 
@@ -527,8 +525,7 @@ ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 
@@ -586,8 +583,7 @@ ags_audio_buffer_util_envelope_s24(signed long *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 
@@ -645,8 +641,7 @@ ags_audio_buffer_util_envelope_s32(signed long *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 
@@ -704,8 +699,7 @@ ags_audio_buffer_util_envelope_s64(signed long long *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 
@@ -763,8 +757,7 @@ ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 
@@ -823,8 +816,7 @@ ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
  * @current_volume: current volume
  * @ratio: the amount to increment
  * 
- * Envelope buffer with @ratio, whereas smaller 0.0 decreases volume and bigger
- * 0.0 increases volume.
+ * Envelope buffer at @ratio.
  * 
  * Returns: the last volume used
  * 

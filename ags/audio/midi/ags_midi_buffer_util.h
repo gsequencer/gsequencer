@@ -271,6 +271,11 @@ void ags_midi_buffer_util_put_end_of_track(unsigned char *buffer,
 guint ags_midi_buffer_util_get_end_of_track(unsigned char *buffer,
 					    glong *delta_time);
 
+/* seek */
+unsigned char* ags_midi_buffer_util_seek_message(unsigned char *buffer,
+						 guint message_count,
+						 glong *delta_time);
+
 /* ALSA sequencer */
 /* decode */
 guint ags_midi_buffer_util_decode(unsigned char *buffer,
