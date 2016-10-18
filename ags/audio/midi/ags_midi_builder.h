@@ -192,6 +192,9 @@ GList* ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builde
 							      gchar *track_name);
 
 /* low-level IO */
+unsigned char* ags_midi_builder_get_delta_time_offset(AgsMidiBuilder *midi_builder,
+						      guint delta_time);
+
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
 				gint c);
 void ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,

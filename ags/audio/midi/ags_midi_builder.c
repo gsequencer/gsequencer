@@ -861,7 +861,7 @@ ags_midi_builder_header_alloc()
 
 /**
  * ags_midi_builder_header_free:
- * @midi_builder_track: the #AgsMidiBuilderTrack-struct
+ * @midi_builder_track: the #AgsMidiBuilderHeader-struct
  * 
  * Free MIDI builder header.
  * 
@@ -880,9 +880,9 @@ ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
 /**
  * ags_midi_builder_track_alloc:
  * 
- * Allocate MIDI builder header.
+ * Allocate MIDI builder track.
  * 
- * Returns: the newly allocated #AgsMidiBuilderHeader-struct
+ * Returns: the newly allocated #AgsMidiBuilderTrack-struct
  * 
  * Since: 1.0.0
  */
@@ -904,10 +904,10 @@ ags_midi_builder_track_alloc()
 }
 
 /**
- * ags_midi_builder_header_free:
+ * ags_midi_builder_track_free:
  * @midi_builder_track: the #AgsMidiBuilderTrack-struct
  * 
- * Free MIDI builder header.
+ * Free MIDI builder track.
  * 
  * Since: 1.0.0
  */
@@ -958,6 +958,58 @@ ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track
 
   return(midi_builder_track);
 }
+
+/**
+ * ags_midi_builder_get_delta_time_offset:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: the delta-time
+ * 
+ * Get offset by delta time.
+ * 
+ * Returns: the buffer position before @delta_time
+ * 
+ * Since: 1.0.0
+ */
+unsigned char*
+ags_midi_builder_get_delta_time_offset(AgsMidiBuilder *midi_builder,
+				       guint delta_time)
+{
+  unsigned char *buffer, *prev, *current;
+
+  guint current_delta_time;
+  
+  if(midi_builder == NULL ||
+     midi_builder->current_midi_track == NULL ||
+     midi_builder->current_midi_track->data == NULL){
+    return(NULL);
+  }
+
+  buffer =
+    current = midi_builder->current_midi_track->data;
+
+  prev = NULL;
+  
+  while(current < buffer + midi_builder->current_midi_track->length){
+    current = ags_midi_buffer_util_seek_message(current,
+						1,
+						&current_delta_time);
+
+    if(current_delta_time > delta_time){
+      if(prev != NULL){
+	current = prev;
+      }else{
+	current = buffer;
+      }
+      
+      break;
+    }
+
+    prev = current;
+  }
+  
+  return(current);
+}
+
 
 void
 ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
@@ -1034,19 +1086,19 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
   AgsMidiBuilderHeader *midi_builder_header;
   
   if(midi_builder->midi_header == NULL){
-    midi_header = 
+    midi_builder_header = 
       midi_builder->midi_header = ags_midi_builder_header_alloc();    
   }else{
-    midi_header = midi_builder->midi_header;
+    midi_builder_header = midi_builder->midi_header;
   }
 
-  midi_header->offset = offset;
-  midi_header->format = format;
-  midi_header->count = track_count;
-  midi_header->division = division;
-  midi_header->times = times;
-  midi_header->beat = bpm;
-  midi_header->clicks = clicks;
+  midi_builder_header->offset = offset;
+  midi_builder_header->format = format;
+  midi_builder_header->count = track_count;
+  midi_builder_header->division = division;
+  midi_builder_header->times = times;
+  midi_builder_header->beat = bpm;
+  midi_builder_header->clicks = clicks;
 }
 
 /**
