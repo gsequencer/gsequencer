@@ -190,11 +190,12 @@ void ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track);
 GList* ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
 							      guint delta_time,
 							      gchar *track_name);
+void ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
+						unsigned char *buffer, guint length);
+unsigned char* ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
+							    guint delta_time);
 
 /* low-level IO */
-unsigned char* ags_midi_builder_get_delta_time_offset(AgsMidiBuilder *midi_builder,
-						      guint delta_time);
-
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
 				gint c);
 void ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
