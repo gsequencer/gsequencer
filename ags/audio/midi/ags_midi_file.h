@@ -82,9 +82,9 @@ struct _AgsMidiFile
   GObject gobject;
 
   guint flags;
-  
-  FILE *file;
+
   gchar *filename;
+  FILE *file;
   
   unsigned char *buffer;
   guint buffer_length;

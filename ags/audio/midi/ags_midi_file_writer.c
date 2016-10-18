@@ -212,7 +212,7 @@ ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
  * @midi_file_writer: the #AgsMidiFileWriter
  * @track_name: the track name
  * @status: the status
- * @...: parameters
+ * @ap: parameters
  * 
  * Writes a channel message.
  * 
@@ -221,7 +221,7 @@ ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
 void
 ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
 					   gchar *track_name,
-					   guint status, ...)
+					   guint status, va_list ap)
 {
   //TODO:JK: implement me
 }
@@ -231,7 +231,7 @@ ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
  * @midi_file_writer: the #AgsMidiFileWriter
  * @track_name: the track name
  * @status: the status
- * @...: parameters
+ * @ap: parameters
  * 
  * Writes a status message.
  * 
@@ -240,7 +240,7 @@ ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
 void
 ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
 					  gchar *track_name,
-					  guint status, ...)
+					  guint status, va_list ap)
 {
   //TODO:JK: implement me
 }
