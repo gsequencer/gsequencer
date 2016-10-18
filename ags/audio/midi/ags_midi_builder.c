@@ -142,6 +142,7 @@ enum{
 };
 
 enum{
+  MIDI_PUTC,
   ON_ERROR,
   APPEND_HEADER,
   APPEND_TRACK,
@@ -254,6 +255,25 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   midi_builder->append_text_event = ags_midi_builder_real_append_text_event;
 
   /* signals */
+  /**
+   * AgsMidiBuilder::midi-putc:
+   * @midi_builder: the builder
+   * @error: the #GError
+   *
+   * The ::midi-putc signal is emited during putting char to file.
+   *
+   * Since: 1.0.0
+   */
+  midi_builder_signals[MIDI_PUTC] =
+    g_signal_new("midi-putc\0",
+		 G_TYPE_FROM_CLASS(midi_builder),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, midi_putc),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
+
   /**
    * AgsMidiBuilder::on-error:
    * @midi_builder: the builder
@@ -810,17 +830,36 @@ ags_midi_builder_finalize(GObject *gobject)
 }
 
 void
-ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
-			   int c)
+ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
+				gint c)
 {
-  //TODO:JK: implement me
+  if(midi_builder->file == NULL){
+    return;
+  }
+  
+  fputc(c,
+	midi_builder->file);
 }
 
+/**
+ * ags_midi_builder_midi_putc:
+ * @midi_builder: the #AgsMidiBuilder
+ *
+ * Put char in MIDI file.
+ *
+ * Since: 0.7.3
+ */
 void
-ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
-				int c)
+ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
+			   gint c)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
+  
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[MIDI_PUTC], 0,
+		c);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void

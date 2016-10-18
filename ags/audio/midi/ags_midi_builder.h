@@ -41,10 +41,17 @@ typedef struct _AgsMidiBuilderClass AgsMidiBuilderClass;
 typedef struct _AgsMidiBuilderHeader AgsMidiBuilderHeader;
 typedef struct _AgsMidiBuilderTrack AgsMidiBuilderTrack;
 
+typedef enum{
+  AGS_MIDI_BUILDER_EOF            = 1,
+  AGS_MIDI_PARSER_EOT             = 1 << 1,
+}AgsMidiBuilderFlags;
+
 struct _AgsMidiBuilder
 {
   GObject gobject;
 
+  guint flags;
+  
   FILE *file;
   
   AgsMidiBuilderHeader *midi_header;
@@ -57,7 +64,7 @@ struct _AgsMidiBuilderClass
   GObjectClass gobject;
 
   void (*midi_putc)(AgsMidiBuilder *midi_builder,
-		    int c);
+		    gint c);
   void (*on_error)(AgsMidiBuilder *midi_builder,
 		   GError **error);
 
@@ -169,7 +176,7 @@ struct _AgsMidiBuilderTrack
 GType ags_midi_builder_get_type(void);
 
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
-				int c);
+				gint c);
 void ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
 			       GError **error);
 

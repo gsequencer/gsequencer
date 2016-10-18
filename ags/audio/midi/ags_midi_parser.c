@@ -966,6 +966,10 @@ ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser)
 {
   int c;
 
+  if(midi_parser->file == NULL){
+    return(-1);
+  }
+
   c = fgetc(midi_parser->file);
   
   if(c == EOF){
@@ -2618,7 +2622,7 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
 		    "midi-message\0");
 
   //TODO:JK: verify me
-  text_length = 0x7f & ags_midi_parser_getc(midi_parser);
+  text_length = 0x7f & ags_midi_parser_midi_getc(midi_parser);
   text = ags_midi_parser_read_text(midi_parser,
 				   text_length);
   

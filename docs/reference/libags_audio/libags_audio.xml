@@ -170,6 +170,12 @@
       <xi:include href="xml/ags_envelope_recycling.xml"/>
       <xi:include href="xml/ags_loop_channel.xml"/>
       <xi:include href="xml/ags_loop_channel_run.xml"/>
+      <xi:include href="xml/ags_mute_audio.xml"/>
+      <xi:include href="xml/ags_mute_audio_run.xml"/>
+      <xi:include href="xml/ags_mute_audio_signal.xml"/>
+      <xi:include href="xml/ags_mute_channel.xml"/>
+      <xi:include href="xml/ags_mute_channel_run.xml"/>
+      <xi:include href="xml/ags_mute_recycling.xml"/>
       <xi:include href="xml/ags_peak_audio_signal.xml"/>
       <xi:include href="xml/ags_peak_channel.xml"/>
       <xi:include href="xml/ags_peak_channel_run.xml"/>
@@ -228,12 +234,6 @@
       <xi:include href="xml/ags_free_selection.xml"/>
       <xi:include href="xml/ags_init_audio.xml"/>
       <xi:include href="xml/ags_init_channel.xml"/>
-      <xi:include href="xml/ags_mute_audio.xml"/>
-      <xi:include href="xml/ags_mute_audio_run.xml"/>
-      <xi:include href="xml/ags_mute_audio_signal.xml"/>
-      <xi:include href="xml/ags_mute_channel.xml"/>
-      <xi:include href="xml/ags_mute_channel_run.xml"/>
-      <xi:include href="xml/ags_mute_recycling.xml"/>
       <xi:include href="xml/ags_open_file.xml"/>
       <xi:include href="xml/ags_open_single_file.xml"/>
       <xi:include href="xml/ags_open_sf2_sample.xml"/>
