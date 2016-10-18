@@ -18,6 +18,9 @@
 <!ELEMENT midi-tracks (midi-track)>
 
 <!ELEMENT midi-track (midi-message)>
+<!ATTLIST midi-track
+	  offset            NMTOKEN      #IMPLIED
+	  >
 
 <!ELEMENT midi-message EMPTY>
 <!ATTLIST midi-message
@@ -46,6 +49,7 @@
 
 <!ELEMENT midi-system-common EMPTY>
 <!ATTLIST midi-system-common
+	  delta-time         NMTOKEN      #REQUIRED
 	  quarter-frame      NMTOKEN      #IMPLIED
 	  song-position      NMTOKEN      #IMPLIED
 	  song-select        NMTOKEN      #IMPLIED
