@@ -1603,7 +1603,18 @@ ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
 				   unsigned char *sysex_data, guint length)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + length) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_sysex(buffer,
+				 delta_time,
+				 sysex_data, length);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + length);
 }
 
 /**
@@ -1638,7 +1649,19 @@ ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
 					   guint message_type,
 					   guint values)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_quarter_frame(buffer,
+					 delta_time,
+					 message_type,
+					 values);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 2);
 }
 
 /**
@@ -1673,7 +1696,18 @@ ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
 					   guint delta_time,
 					   guint song_position)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_song_position(buffer,
+					 delta_time,
+					 song_position);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 3);
 }
 
 /**
@@ -1706,7 +1740,18 @@ ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
 					 guint delta_time,
 					 guint song_select)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_song_select(buffer,
+				       delta_time,
+				       song_select);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 2);
 }
 
 /**
@@ -1738,7 +1783,17 @@ void
 ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
 					  guint delta_time)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 1) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_tune_request(buffer,
+					delta_time);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 1);
 }
 
 /**
@@ -1768,7 +1823,18 @@ ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
 					     guint delta_time,
 					     guint sequence)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 5) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_sequence_number(buffer,
+					   delta_time,
+					   sequence);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 5);
 }
 
 /**
@@ -1801,7 +1867,18 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
 				   guint hr, guint mn, guint se, guint fr, guint ff)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 8) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_smtpe(buffer,
+				 delta_time,
+				 hr, mn, se, fr, ff);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 8);
 }
 
 /**

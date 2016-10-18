@@ -1413,6 +1413,8 @@ ags_midi_buffer_util_get_song_select(unsigned char *buffer,
   if(song_select != NULL){
     *song_select = 0x7f & buffer[delta_time_size + 1];
   }
+
+  return(delta_time_size + 2);
 }
 
 /**
