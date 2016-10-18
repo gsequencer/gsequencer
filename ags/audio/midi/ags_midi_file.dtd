@@ -1,0 +1,63 @@
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
+<!-- root node -->
+<!ELEMENT midi (midi-header, midi-tracks)>
+
+<!ELEMENT midi-header
+<!ATTLIST midi-header
+	  offset             NMTOKEN      #REQUIRED
+	  format             NMTOKEN      #REQUIRED
+	  division           NMTOKEN      #REQUIRED
+	  beat               NMTOKEN      #REQUIRED
+	  track-count        NMTOKEN      #REQUIRED
+	  >
+
+<!ELEMENT midi-tracks (midi-track)>
+
+<!ELEMENT midi-track (midi-message)>
+<!ATTLIST midi-track
+	  offset            NMTOKEN      #IMPLIED
+	  >
+
+<!ELEMENT midi-message EMPTY>
+<!ATTLIST midi-message
+	  delta-time         NMTOKEN      #REQUIRED
+	  event              CDATA        #REQUIRED
+	  key                NMTOKEN      #IMPLIED
+	  note               NMTOKEN      #IMPLIED
+	  velocity           NMTOKEN      #IMPLIED
+	  pressure           NMTOKEN      #IMPLIED
+	  channel            NMTOKEN      #IMPLIED
+	  control            NMTOKEN      #IMPLIED
+	  value              NMTOKEN      #IMPLIED
+	  mode               CDATA        #IMPLIED
+	  omni-off-channels  NMTOKEN      #IMPLIED
+	  pitch-bend         NMTOKEN      #IMPLIED
+	  transmitter        NMTOKEN      #IMPLIED
+	  program            NMTOKEN      #IMPLIED
+	  sequence           NMTOKEN      #IMPLIED
+	  timestamp          CDATA        #IMPLIED
+	  time-signature     CDATA        #IMPLIED
+	  key-signature      CDATA        #IMPLIED
+	  copyright          CDATA        #IMPLIED
+	  sequence-name      CDATA        #IMPLIED
+	  instrument-name    CDATA        #IMPLIED
+	  >
+
+<!ELEMENT midi-system-common EMPTY>
+<!ATTLIST midi-system-common
+	  delta-time         NMTOKEN      #REQUIRED
+	  quarter-frame      NMTOKEN      #IMPLIED
+	  song-position      NMTOKEN      #IMPLIED
+	  song-select        NMTOKEN      #IMPLIED
+	  >
+	  
+<!ELEMENT meta-event EMPTY>
+<!ATTLIST meta-event
+	  length             NMTOKEN      #IMPLIED
+	  id                 NMTOKEN      #IMPLIED
+	  data               NMTOKEN      #IMPLIED
+	  >

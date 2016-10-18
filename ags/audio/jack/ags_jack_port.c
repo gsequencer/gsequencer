@@ -412,7 +412,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
 void
 ags_jack_port_unregister(AgsJackPort *jack_port)
 {
-  if(!AGS_IS_JACK_PORT(jack_port)){
+  if(!AGS_IS_JACK_PORT(jack_port) ||
+     AGS_JACK_CLIENT(jack_port->jack_client)->client == NULL){
     return;
   }
 

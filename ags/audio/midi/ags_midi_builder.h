@@ -36,20 +36,34 @@
 #define AGS_IS_MIDI_BUILDER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_BUILDER))
 #define AGS_MIDI_BUILDER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_BUILDER, AgsMidiBuilderClass))
 
+#define AGS_MIDI_BUILDER_HEADER(ptr) ((AgsMidiBuilderHeader *)(ptr))
+#define AGS_MIDI_BUILDER_TRACK(ptr) ((AgsMidiBuilderTrack *)(ptr))
+
 typedef struct _AgsMidiBuilder AgsMidiBuilder;
 typedef struct _AgsMidiBuilderClass AgsMidiBuilderClass;
 typedef struct _AgsMidiBuilderHeader AgsMidiBuilderHeader;
 typedef struct _AgsMidiBuilderTrack AgsMidiBuilderTrack;
 
+typedef enum{
+  AGS_MIDI_BUILDER_EOF            = 1,
+  AGS_MIDI_PARSER_EOT             = 1 << 1,
+}AgsMidiBuilderFlags;
+
 struct _AgsMidiBuilder
 {
   GObject gobject;
 
+  guint flags;
+
+  unsigned char *data;
+  guint length;
+  
   FILE *file;
   
   AgsMidiBuilderHeader *midi_header;
   
   GList *midi_track;
+  AgsMidiBuilderTrack *current_midi_track;
 };
 
 struct _AgsMidiBuilderClass
@@ -57,7 +71,7 @@ struct _AgsMidiBuilderClass
   GObjectClass gobject;
 
   void (*midi_putc)(AgsMidiBuilder *midi_builder,
-		    int c);
+		    gint c);
   void (*on_error)(AgsMidiBuilder *midi_builder,
 		   GError **error);
 
@@ -156,20 +170,41 @@ struct _AgsMidiBuilderHeader
   guint times;
   guint beat;
   guint clicks;
+
+  unsigned char *data;
+  guint length;
 };
 
 struct _AgsMidiBuilderTrack
 {
+  guint offset;
   gchar *track_name;
   
+  glong delta_time;
+
   unsigned char *data;
   guint length;
 };
 
 GType ags_midi_builder_get_type(void);
 
+AgsMidiBuilderHeader* ags_midi_builder_header_alloc();
+void ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header);
+
+AgsMidiBuilderTrack* ags_midi_builder_track_alloc();
+void ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track);
+
+GList* ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
+							      guint delta_time,
+							      gchar *track_name);
+void ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
+						unsigned char *buffer, guint length);
+unsigned char* ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
+							    guint delta_time);
+
+/* low-level IO */
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
-				int c);
+				gint c);
 void ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
 			       GError **error);
 
