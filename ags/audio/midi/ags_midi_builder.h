@@ -171,6 +171,7 @@ struct _AgsMidiBuilderHeader
 
 struct _AgsMidiBuilderTrack
 {
+  guint offset;
   gchar *track_name;
   
   glong delta_time;

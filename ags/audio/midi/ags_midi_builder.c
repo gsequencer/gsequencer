@@ -893,6 +893,7 @@ ags_midi_builder_track_alloc()
 
   midi_builder_track = (AgsMidiBuilderTrack *) malloc(sizeof(AgsMidiBuilderTrack));
   
+  midi_builder_track->offset = 0;
   midi_builder_track->track_name = NULL;
   
   midi_builder_track->delta_time = 0;
@@ -1018,8 +1019,8 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
 }
 
 /**
- * ags_midi_builder_get_delta_time_offset:
- * @midi_builder: the #AgsMidiBuilderTrack-struct
+ * ags_midi_builder_track_get_delta_time_offset:
+ * @midi_builder_track: the #AgsMidiBuilderTrack-struct
  * @delta_time: the delta-time
  * 
  * Get offset by delta time.
@@ -1029,8 +1030,8 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
  * Since: 1.0.0
  */
 unsigned char*
-ags_midi_builder_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
-				       guint delta_time)
+ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
+					     guint delta_time)
 {
   unsigned char *buffer, *prev, *current;
 
@@ -1201,8 +1202,9 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
   midi_builder_track = ags_midi_builder_track_alloc();
   midi_builder_track->track_name = track_name;
 
+  midi_builder->current_midi_track = midi_builder_track;
   midi_builder->midi_track = g_list_append(midi_builder->midi_track,
-					   track_name);
+					   midi_builder_track);
 }
 
 /**
@@ -1235,8 +1237,19 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
 				    guint velocity)
 {
   unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  //TODO:JK: implement me
+  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_key_on(buffer,
+				  delta_time,
+				  audio_channel,
+				  note,
+				  velocity);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 3);
 }
 
 /**
@@ -1277,7 +1290,20 @@ ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
 				     guint note,
 				     guint velocity)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_key_off(buffer,
+				   delta_time,
+				   audio_channel,
+				   note,
+				   velocity);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 3);
 }
 
 /**
@@ -1318,7 +1344,20 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
 					  guint note,
 					  guint pressure)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_key_pressure(buffer,
+					delta_time,
+					audio_channel,
+					note,
+					pressure);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 3);
 }
 
 
@@ -1360,7 +1399,20 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
 					      guint control,
 					      guint value)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_change_parameter(buffer,
+					    delta_time,
+					    channel,
+					    control,
+					    value);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 3);
 }
 
 /**
@@ -1401,7 +1453,20 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					       guint pitch,
 					       guint transmitter)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_pitch_bend(buffer,
+				      delta_time,
+				      channel,
+				      pitch,
+				      transmitter);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 3);
 }
 
 /**
@@ -1441,7 +1506,19 @@ ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
 					    guint channel,
 					    guint program)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_change_program(buffer,
+					  delta_time,
+					  channel,
+					  program);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 2);
 }
 
 /**
@@ -1478,7 +1555,19 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
 					     guint channel,
 					     guint pressure)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 2) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_change_pressure(buffer,
+					  delta_time,
+					  channel,
+					  pressure);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 2);
 }
 
 /**
