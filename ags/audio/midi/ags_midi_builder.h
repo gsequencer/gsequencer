@@ -54,6 +54,9 @@ struct _AgsMidiBuilder
   GObject gobject;
 
   guint flags;
+
+  unsigned char *data;
+  guint length;
   
   FILE *file;
   
@@ -167,6 +170,9 @@ struct _AgsMidiBuilderHeader
   guint times;
   guint beat;
   guint clicks;
+
+  unsigned char *data;
+  guint length;
 };
 
 struct _AgsMidiBuilderTrack

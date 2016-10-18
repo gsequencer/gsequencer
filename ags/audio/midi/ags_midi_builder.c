@@ -774,6 +774,9 @@ ags_midi_builder_init(AgsMidiBuilder *midi_builder)
 {
   midi_builder->flags = 0;
 
+  midi_builder->data = NULL;
+  midi_builder->length = 0;
+  
   midi_builder->file = NULL;
   
   midi_builder->midi_header = NULL;
@@ -1150,6 +1153,11 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
     midi_builder_header = midi_builder->midi_header;
   }
 
+  if(midi_builder_header->data == NULL){
+    midi_builder_header->data = (unsigned char *) malloc(14 * sizeof(unsigned char));
+    midi_builder_header->length = 14;
+  }
+  
   midi_builder_header->offset = offset;
   midi_builder_header->format = format;
   midi_builder_header->count = track_count;
@@ -1157,6 +1165,10 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
   midi_builder_header->times = times;
   midi_builder_header->beat = bpm;
   midi_builder_header->clicks = clicks;
+
+  ags_midi_buffer_util_put_header(midi_builder_header->data,
+				  offset, format,
+				  track_count, division);
 }
 
 /**
@@ -1199,9 +1211,27 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
 {
   AgsMidiBuilderTrack *midi_builder_track;
 
+  guint delta_time_size;
+  guint length;
+
+  /* allocate struct */
   midi_builder_track = ags_midi_builder_track_alloc();
   midi_builder_track->track_name = track_name;
 
+  /* fill buffer */
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(0);
+  length = strlen(track_name);
+  
+  midi_builder_track->data = (unsigned char *) malloc((8 + delta_time_size + length + 3) * sizeof(unsigned char));
+  midi_builder_track->length = 8 + delta_time_size + length + 3;
+
+  ags_midi_buffer_util_put_track(midi_builder_track->data,
+				 0);
+  ags_midi_buffer_util_put_text_event(midi_builder_track->data + 8,
+				      0,
+				      track_name, length);
+  
+  /* append track */
   midi_builder->current_midi_track = midi_builder_track;
   midi_builder->midi_track = g_list_append(midi_builder->midi_track,
 					   midi_builder_track);
@@ -1915,7 +1945,18 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
 				   guint tempo)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_tempo(buffer,
+				 delta_time,
+				 tempo);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 3);
 }
 
 
@@ -1949,7 +1990,18 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
 					    guint delta_time,
 					    guint nn, guint dd, guint cc, guint bb)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 7) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_time_signature(buffer,
+					  delta_time,
+					  nn, dd, cc, bb);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 7);
 }
 
 /**
@@ -1985,7 +2037,18 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
 					   guint delta_time,
 					   guint sf, guint mi)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + 5) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_key_signature(buffer,
+					 delta_time,
+					 sf, mi);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + 5);
 }
 
 /**
@@ -2019,7 +2082,18 @@ ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
 						  guint delta_time,
 						  guint len, guint id, guint data)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + len + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_meta_event(buffer,
+				      delta_time,
+				      len, id, data);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + len + 3);
 }
 
 /**
@@ -2054,7 +2128,18 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
 					guint delta_time,
 					gchar *text, guint length)
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  
+  buffer = (unsigned char *) malloc((delta_time_size + length + 3) * sizeof(unsigned char));
+  ags_midi_buffer_util_put_text_event(buffer,
+				      delta_time,
+				      text, length);
+  ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
+					     buffer, delta_time_size + length + 3);
 }
 
 /**
@@ -2126,7 +2211,59 @@ ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
 void
 ags_midi_builder_build(AgsMidiBuilder *midi_builder)
 {
-  //TODO:JK: implement me
+  GList *midi_track;
+
+  unsigned char *offset;
+  
+  guint length;
+  
+  if(midi_builder == NULL){
+    return;
+  }
+
+  /* compute length */
+  length = 0;
+  
+  if(midi_builder->midi_header != NULL){
+    length += midi_builder->midi_header->length;
+  }
+
+  midi_track = midi_builder->midi_track;
+
+  while(midi_track != NULL){
+    length += AGS_MIDI_BUILDER_TRACK(midi_track->data)->length;
+    
+    midi_track = midi_track->next;
+  }
+
+  /* allocate buffer */
+  if(midi_builder->data != NULL){
+    free(midi_builder->data);
+  }
+  
+  if(length > 0){
+    midi_builder->data = (unsigned char *) malloc(length * sizeof(unsigned char));
+  }else{
+    midi_builder->data = NULL;
+  }
+
+  /* fill */
+  offset = midi_builder->data;
+  
+  if(midi_builder->midi_header != NULL &
+     midi_builder->midi_header->data != NULL){
+    memcpy(offset, midi_builder->midi_header->data, midi_builder->midi_header->length * sizeof(unsigned char));
+  }
+  
+  midi_track = midi_builder->midi_track;
+
+  while(midi_track != NULL){
+    if(AGS_MIDI_BUILDER_TRACK(midi_track->data)->data != NULL){
+      memcpy(offset, AGS_MIDI_BUILDER_TRACK(midi_track->data)->data, AGS_MIDI_BUILDER_TRACK(midi_track->data)->length * sizeof(unsigned char));
+    }
+  
+    midi_track = midi_track->next;
+  }
 }
 
 /**

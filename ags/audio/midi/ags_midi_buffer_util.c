@@ -1959,6 +1959,8 @@ ags_midi_buffer_util_get_key_signature(unsigned char *buffer,
   if(mi != NULL){
     *mi = buffer[delta_time_size + 4];
   }
+
+  return(delta_time_size + 5);
 }
 
 /**
@@ -2163,6 +2165,8 @@ ags_midi_buffer_util_get_text_event(unsigned char *buffer,
     *text = (unsigned char *) malloc(text_size * sizeof(unsigned char));
     memcpy(*text, buffer + delta_time_size + 3, text_size * sizeof(unsigned char));
   }
+
+  return(delta_time_size + length + 3);
 }
 
 /**

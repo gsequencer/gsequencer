@@ -22,9 +22,9 @@
 <!ELEMENT midi-message EMPTY>
 <!ATTLIST midi-message
 	  delta-time         NMTOKEN      #REQUIRED
-	  event              NMTOKEN      #REQUIRED
-	  key                CDATA        #IMPLIED
-	  note               CDATA        #IMPLIED
+	  event              CDATA        #REQUIRED
+	  key                NMTOKEN      #IMPLIED
+	  note               NMTOKEN      #IMPLIED
 	  velocity           NMTOKEN      #IMPLIED
 	  pressure           NMTOKEN      #IMPLIED
 	  channel            NMTOKEN      #IMPLIED
