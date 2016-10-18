@@ -308,7 +308,8 @@ ags_jack_client_find_uuid(GList *jack_client,
 			  gchar *client_uuid)
 {
   while(jack_client != NULL){
-    if(!g_ascii_strcasecmp(jack_get_uuid_for_client_name(AGS_JACK_CLIENT(jack_client->data)->client,
+    if(AGS_JACK_CLIENT(jack_client->data)->client != NULL &&
+       !g_ascii_strcasecmp(jack_get_uuid_for_client_name(AGS_JACK_CLIENT(jack_client->data)->client,
 							 jack_get_client_name(AGS_JACK_CLIENT(jack_client->data)->client)),
 			   client_uuid)){
       return(jack_client);
@@ -334,7 +335,8 @@ ags_jack_client_find(GList *jack_client,
 		     gchar *client_name)
 { 
   while(jack_client != NULL){
-    if(!g_ascii_strcasecmp(jack_get_client_name(AGS_JACK_CLIENT(jack_client->data)->client),
+    if(AGS_JACK_CLIENT(jack_client->data)->client != NULL &&
+       !g_ascii_strcasecmp(jack_get_client_name(AGS_JACK_CLIENT(jack_client->data)->client),
 			   client_name)){
       return(jack_client);
     }
@@ -427,7 +429,8 @@ ags_jack_client_activate(AgsJackClient *jack_client)
   //TODO:JK: make thread-safe
   pthread_mutex_lock(mutex);
   
-  if((AGS_JACK_CLIENT_ACTIVATED & (jack_client->flags)) != 0){
+  if((AGS_JACK_CLIENT_ACTIVATED & (jack_client->flags)) != 0 ||
+     jack_client->client == NULL){
     pthread_mutex_unlock(mutex);
     
     return;
@@ -468,6 +471,10 @@ ags_jack_client_activate(AgsJackClient *jack_client)
 void
 ags_jack_client_deactivate(AgsJackClient *jack_client)
 {
+  if(jack_client->client == NULL){
+    return;
+  }
+  
   jack_deactivate(jack_client->client);
 
   jack_client->flags &= (~AGS_JACK_CLIENT_ACTIVATED);
@@ -656,11 +663,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   pthread_mutex_lock(mutex);
   
   jack_client = AGS_JACK_CLIENT(ptr);
-
-  //  if(jack_get_xrun_delayed_usecs(jack_client->client) == 0.0){
-  //    jack_set_freewheel(jack_client->client,
-  //		       0);
-  //  }
   
   if(jack_client->jack_server != NULL){
     application_context = (AgsApplicationContext *) AGS_JACK_SERVER(jack_client->jack_server)->application_context;
@@ -932,9 +934,6 @@ ags_jack_client_xrun_callback(void *ptr)
   }
 
   jack_client = (AgsJackClient *) ptr;
-
-  //  jack_set_freewheel(jack_client->client,
-  //		     1);
   
   return(0);
 }
