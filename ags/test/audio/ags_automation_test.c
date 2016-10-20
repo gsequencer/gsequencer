@@ -38,7 +38,7 @@ int ags_automation_test_clean_suite();
 void ags_automation_test_find_port();
 void ags_automation_test_find_near_timestamp();
 void ags_automation_test_add_acceleration();
-void ags_automation_test_remove_accleration_at_position();
+void ags_automation_test_remove_acceleration_at_position();
 void ags_automation_test_is_acceleration_selected();
 void ags_automation_test_find_point();
 void ags_automation_test_find_region();
@@ -62,6 +62,22 @@ void ags_automation_test_get_value();
 #define AGS_AUTOMATION_TEST_FIND_PORT_N_AUTOMATION (8)
 
 #define AGS_AUTOMATION_TEST_FIND_NEAR_TIMESTAMP_N_AUTOMATION (8)
+
+#define AGS_AUTOMATION_TEST_ADD_ACCELERATION_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_ADD_ACCELERATION_HEIGHT (128)
+#define AGS_AUTOMATION_TEST_ADD_ACCELERATION_STEPS (127)
+#define AGS_AUTOMATION_TEST_ADD_ACCELERATION_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_ADD_ACCELERATION_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_ADD_ACCELERATION_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_ADD_ACCELERATION_COUNT (1024)
+
+#define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_HEIGHT (128)
+#define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_STEPS (127)
+#define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT (1024)
 
 AgsAudio *audio;
 
@@ -163,25 +179,136 @@ ags_automation_test_find_near_timestamp()
   timestamp = ags_timestamp_new();
   
   /* assert find */
-  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_NEAR_TIMESTAMP_N_AUTOMATION; i++){
-    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(automation[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_AUTOMATION_DEFAULT_DURATION);
+  for(i = 0; i + 1 < AGS_AUTOMATION_TEST_FIND_NEAR_TIMESTAMP_N_AUTOMATION; i++){
+    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(automation[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_AUTOMATION_DEFAULT_DURATION + 1);
     current = ags_automation_find_near_timestamp(list, 0,
 						 timestamp);
 
-    CU_ASSERT(current != NULL && current->data == automation[i]);
+    CU_ASSERT(current != NULL && current->data == automation[i + 1]);
   }  
 }
 
 void
 ags_automation_test_add_acceleration()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list;
+
+  gdouble range;
+  guint x, y;
+  guint i;
+  gboolean success;
+
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_ADD_ACCELERATION_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_ADD_ACCELERATION_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_ADD_ACCELERATION_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_ADD_ACCELERATION_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_ADD_ACCELERATION_UPPER - AGS_AUTOMATION_TEST_ADD_ACCELERATION_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_ADD_ACCELERATION_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_ADD_ACCELERATION_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_ADD_ACCELERATION_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_ADD_ACCELERATION_LOWER + ((y / AGS_AUTOMATION_TEST_ADD_ACCELERATION_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* assert position */
+  list = automation->acceleration;
+  success = TRUE;
+  
+  for(i = 0; i < AGS_AUTOMATION_TEST_ADD_ACCELERATION_COUNT; i++){
+    if(list->prev != NULL){
+      if(AGS_ACCELERATION(list->prev->data)->x > AGS_ACCELERATION(list->data)->x){
+	success = FALSE;
+	
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
-ags_automation_test_remove_accleration_at_position()
+ags_automation_test_remove_acceleration_at_position()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list, *current;
+
+  gdouble range;
+  guint x, y;
+  guint nth;
+  guint i;
+  gboolean success;
+
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_UPPER - AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_LOWER + ((y / AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT; i++){
+    nth = rand() % (AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT - i);
+    current = g_list_nth(automation->acceleration,
+			 nth);
+    
+    ags_automation_remove_acceleration_at_position(automation,
+						   AGS_ACCELERATION(current->data)->x,
+						   AGS_ACCELERATION(current->data)->y);
+  }
+
+  /* assert position */
+  list = automation->acceleration;
+  success = TRUE;
+  
+  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT - AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT; i++){
+    if(list->prev != NULL){
+      if(AGS_ACCELERATION(list->prev->data)->x > AGS_ACCELERATION(list->data)->x){
+	success = FALSE;
+
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -307,7 +434,9 @@ main(int argc, char **argv)
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsAutomation find port\0", ags_automation_test_find_port) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation find near timestamp\0", ags_automation_test_find_near_timestamp) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAutomation find near timestamp\0", ags_automation_test_find_near_timestamp) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation add acceleration\0", ags_automation_test_add_acceleration) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation remove acceleration at position\0", ags_automation_test_remove_acceleration_at_position) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
