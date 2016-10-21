@@ -97,6 +97,26 @@ void ags_automation_test_get_value();
 #define AGS_AUTOMATION_TEST_FIND_POINT_COUNT (1024)
 #define AGS_AUTOMATION_TEST_FIND_POINT_N_ATTEMPTS (128)
 
+#define AGS_AUTOMATION_TEST_FIND_REGION_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_FIND_REGION_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_FIND_REGION_STEPS (127)
+#define AGS_AUTOMATION_TEST_FIND_REGION_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_FIND_REGION_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_FIND_REGION_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_FIND_REGION_COUNT (1024)
+#define AGS_AUTOMATION_TEST_FIND_REGION_N_ATTEMPTS (128)
+#define AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_WIDTH (128)
+#define AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_HEIGHT (24)
+  
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_COUNT (1024)
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT (64)
+
+#define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_COUNT (1024)
+
 AgsAudio *audio;
 
 /* The suite initialization function.
@@ -463,19 +483,190 @@ ags_automation_test_find_point()
 void
 ags_automation_test_find_region()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list, *current, *region;
+
+  gdouble range;
+  guint nth;
+  guint x, y;
+  guint i;
+  gboolean success;
+
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_FIND_POINT_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_FIND_POINT_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_FIND_POINT_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* assert find region */
+  success = TRUE;
+
+  for(i = 0;
+      i < AGS_AUTOMATION_TEST_FIND_REGION_N_ATTEMPTS &&
+	success;
+      i++){
+    nth = rand() % AGS_AUTOMATION_TEST_FIND_REGION_COUNT;
+    current = g_list_nth(automation->acceleration,
+			 nth);
+    
+    region = ags_automation_find_region(automation,
+				      AGS_ACCELERATION(current->data)->x,
+				      AGS_ACCELERATION(current->data)->y,
+				      AGS_ACCELERATION(current->data)->x + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_WIDTH,
+				      AGS_ACCELERATION(current->data)->y + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_HEIGHT,
+				      FALSE);
+    while(region != NULL){
+      if(!(AGS_ACCELERATION(region->data)->x >= AGS_ACCELERATION(current->data)->x &&
+	   AGS_ACCELERATION(current->data)->x < AGS_ACCELERATION(current->data)->x + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_WIDTH &&
+	   AGS_ACCELERATION(region->data)->y >= AGS_ACCELERATION(current->data)->y &&
+	   AGS_ACCELERATION(current->data)->y < AGS_ACCELERATION(current->data)->y + AGS_AUTOMATION_TEST_FIND_REGION_SELECTION_HEIGHT)){
+	success = FALSE;
+	
+	break;
+      }
+      
+      region = region->next;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_automation_test_free_selection()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list, *current;
+  
+  gdouble range;
+  guint x, y;
+  guint nth;
+  guint i;
+
+  /* create automation */
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_FIND_POINT_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_FIND_POINT_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_FIND_POINT_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* select accelerations */
+  for(i = 0; i < AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT; i++){
+    nth = rand() % (AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT - i);
+    current = g_list_nth(automation->acceleration,
+			 nth);
+
+    ags_automation_add_acceleration(automation,
+				    current->data,
+				    TRUE);
+  }
+
+  /* assert free slection */
+  CU_ASSERT(automation->selection != NULL);
+
+  ags_automation_free_selection(automation);
+  
+  CU_ASSERT(automation->selection == NULL);
 }
 
 void
 ags_automation_test_add_all_to_selection()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list, *current, *current_selection;
+  
+  gdouble range;
+  guint x, y;
+  guint nth;
+  guint i;
+  gboolean success;
+
+  /* create automation */
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_FIND_POINT_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_FIND_POINT_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_FIND_POINT_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* assert all present */
+  current = automation->acceleration;
+  current_selection = automation->selection;
+
+  success = TRUE;
+  
+  while(current != NULL &&
+	current_selection != NULL){
+    if(current->data != current_selection->data){
+      success = FALSE;
+      
+      break;
+    }
+    
+    current = current->next;
+    current_selection = current_selection->next;
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -575,7 +766,10 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAutomation add acceleration\0", ags_automation_test_add_acceleration) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation remove acceleration at position\0", ags_automation_test_remove_acceleration_at_position) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation is acceleration selected\0", ags_automation_test_is_acceleration_selected) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation find point\0", ags_automation_test_find_point) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAutomation find point\0", ags_automation_test_find_point) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation find region\0", ags_automation_test_find_region) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation free selection\0", ags_automation_test_free_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation add all to selection\0", ags_automation_test_add_all_to_selection) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

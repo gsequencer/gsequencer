@@ -769,6 +769,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsNotation remove note at position\0", ags_notation_test_remove_note_at_position) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation is note selected\0", ags_notation_test_is_note_selected) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation find point\0", ags_notation_test_find_point) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation find region\0", ags_notation_test_find_region) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation free selection\0", ags_notation_test_free_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation add all to selection\0", ags_notation_test_add_all_to_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation add point to selection\0", ags_notation_test_add_point_to_selection) == NULL) ||
