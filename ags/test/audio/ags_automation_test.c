@@ -79,6 +79,24 @@ void ags_automation_test_get_value();
 #define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_DEFAULT_VALUE (1.0)
 #define AGS_AUTOMATION_TEST_REMOVE_ACCELERATION_AT_POSITION_COUNT (1024)
 
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_STEPS (127)
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_COUNT (1024)
+#define AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_SELECTION_COUNT (128)
+
+#define AGS_AUTOMATION_TEST_FIND_POINT_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT (128)
+#define AGS_AUTOMATION_TEST_FIND_POINT_STEPS (127)
+#define AGS_AUTOMATION_TEST_FIND_POINT_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_FIND_POINT_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_FIND_POINT_COUNT (1024)
+#define AGS_AUTOMATION_TEST_FIND_POINT_N_ATTEMPTS (128)
+
 AgsAudio *audio;
 
 /* The suite initialization function.
@@ -314,13 +332,132 @@ ags_automation_test_remove_acceleration_at_position()
 void
 ags_automation_test_is_acceleration_selected()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list, *current;
+  
+  gdouble range;
+  guint x, y;
+  guint nth;
+  guint i;
+  gboolean success;
+
+  /* create automation */
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_UPPER - AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_LOWER + ((y / AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* select acceleration */
+  for(i = 0; i < AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_SELECTION_COUNT; i++){
+    nth = rand() % (AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_COUNT - i);
+    current = g_list_nth(automation->acceleration,
+			 nth);
+
+    ags_automation_add_acceleration(automation,
+				    current->data,
+				    TRUE);
+  }
+
+  /* assert position */
+  list = automation->selection;
+  success = TRUE;
+  
+  for(i = 0; i < AGS_AUTOMATION_TEST_IS_ACCELERATION_SELECTED_SELECTION_COUNT; i++){
+    if(list->prev != NULL){
+      if(AGS_ACCELERATION(list->prev->data)->x > AGS_ACCELERATION(list->data)->x){
+	success = FALSE;
+
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_automation_test_find_point()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list, *current;
+
+  gdouble range;
+  guint nth;
+  guint x, y;
+  guint i;
+  gboolean success;
+
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_FIND_POINT_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_FIND_POINT_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_FIND_POINT_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* assert find point */
+  success = TRUE;
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_N_ATTEMPTS; i++){
+    nth = rand() % AGS_AUTOMATION_TEST_FIND_POINT_COUNT;
+    current = g_list_nth(automation->acceleration,
+			 nth);
+    
+    acceleration = ags_automation_find_point(automation,
+					     AGS_ACCELERATION(current->data)->x,
+					     AGS_ACCELERATION(current->data)->y,
+					     FALSE);
+
+    if(acceleration->x != AGS_ACCELERATION(current->data)->x ||
+       acceleration->y != AGS_ACCELERATION(current->data)->y){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -436,7 +573,9 @@ main(int argc, char **argv)
   if((CU_add_test(pSuite, "test of AgsAutomation find port\0", ags_automation_test_find_port) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation find near timestamp\0", ags_automation_test_find_near_timestamp) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation add acceleration\0", ags_automation_test_add_acceleration) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation remove acceleration at position\0", ags_automation_test_remove_acceleration_at_position) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAutomation remove acceleration at position\0", ags_automation_test_remove_acceleration_at_position) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation is acceleration selected\0", ags_automation_test_is_acceleration_selected) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation find point\0", ags_automation_test_find_point) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
