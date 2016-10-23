@@ -13,6 +13,7 @@ ags (1.0.0)
 	* TODO:JK: added AgsPortDescriptor to built-in recalls
 	* TODO:JK: added properties to AgsTask sub-types
 	* improved AgsDial
+	* fixed ags_automation_find_point() to allow accessing first and last entry
 
 ags (0.7.90)
 

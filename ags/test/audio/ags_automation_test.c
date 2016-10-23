@@ -110,12 +110,39 @@ void ags_automation_test_get_value();
   
 #define AGS_AUTOMATION_TEST_FREE_SELECTION_WIDTH (4096)
 #define AGS_AUTOMATION_TEST_FREE_SELECTION_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_STEPS (127)
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_FREE_SELECTION_DEFAULT_VALUE (1.0)
 #define AGS_AUTOMATION_TEST_FREE_SELECTION_COUNT (1024)
 #define AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT (64)
 
 #define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_WIDTH (4096)
 #define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_STEPS (127)
+#define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_DEFAULT_VALUE (1.0)
 #define AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_COUNT (1024)
+
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_STEPS (127)
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_COUNT (1024)
+#define AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_N_ATTEMPTS (128)
+
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_WIDTH (4096)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT (88)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_STEPS (127)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT (1024)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_SELECTION_COUNT (128)
+#define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_N_ATTEMPTS (64)
 
 AgsAudio *audio;
 
@@ -498,20 +525,20 @@ ags_automation_test_find_region()
 				  0,
 				  AGS_TYPE_INPUT,
 				  AGS_AUTOMATION_TEST_CONTROL_NAME);
-  automation->steps = AGS_AUTOMATION_TEST_FIND_POINT_STEPS;
-  automation->lower = AGS_AUTOMATION_TEST_FIND_POINT_LOWER;
-  automation->upper = AGS_AUTOMATION_TEST_FIND_POINT_UPPER;
-  automation->default_value = AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE;
+  automation->steps = AGS_AUTOMATION_TEST_FIND_REGION_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_FIND_REGION_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_FIND_REGION_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_FIND_REGION_DEFAULT_VALUE;
   
-  range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
+  range = (AGS_AUTOMATION_TEST_FIND_REGION_UPPER - AGS_AUTOMATION_TEST_FIND_REGION_LOWER);
 
-  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
-    x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
-    y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_REGION_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_FIND_REGION_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_FIND_REGION_HEIGHT;
 
     acceleration = ags_acceleration_new();
     acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+    acceleration->y = AGS_AUTOMATION_TEST_FIND_REGION_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_REGION_HEIGHT) * range);
 
     ags_automation_add_acceleration(automation,
 				    acceleration,
@@ -570,27 +597,27 @@ ags_automation_test_free_selection()
 				  0,
 				  AGS_TYPE_INPUT,
 				  AGS_AUTOMATION_TEST_CONTROL_NAME);
-  automation->steps = AGS_AUTOMATION_TEST_FIND_POINT_STEPS;
-  automation->lower = AGS_AUTOMATION_TEST_FIND_POINT_LOWER;
-  automation->upper = AGS_AUTOMATION_TEST_FIND_POINT_UPPER;
-  automation->default_value = AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE;
+  automation->steps = AGS_AUTOMATION_TEST_FREE_SELECTION_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_FREE_SELECTION_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_FREE_SELECTION_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_FREE_SELECTION_DEFAULT_VALUE;
   
-  range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
+  range = (AGS_AUTOMATION_TEST_FREE_SELECTION_UPPER - AGS_AUTOMATION_TEST_FREE_SELECTION_LOWER);
 
-  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
-    x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
-    y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
+  for(i = 0; i < AGS_AUTOMATION_TEST_FREE_SELECTION_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_FREE_SELECTION_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_FREE_SELECTION_HEIGHT;
 
     acceleration = ags_acceleration_new();
     acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+    acceleration->y = AGS_AUTOMATION_TEST_FREE_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_FREE_SELECTION_HEIGHT) * range);
 
     ags_automation_add_acceleration(automation,
 				    acceleration,
 				    FALSE);
   }
 
-  /* select accelerations */
+  /* select acceleration */
   for(i = 0; i < AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT; i++){
     nth = rand() % (AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT - i);
     current = g_list_nth(automation->acceleration,
@@ -628,20 +655,20 @@ ags_automation_test_add_all_to_selection()
 				  0,
 				  AGS_TYPE_INPUT,
 				  AGS_AUTOMATION_TEST_CONTROL_NAME);
-  automation->steps = AGS_AUTOMATION_TEST_FIND_POINT_STEPS;
-  automation->lower = AGS_AUTOMATION_TEST_FIND_POINT_LOWER;
-  automation->upper = AGS_AUTOMATION_TEST_FIND_POINT_UPPER;
-  automation->default_value = AGS_AUTOMATION_TEST_FIND_POINT_DEFAULT_VALUE;
+  automation->steps = AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_DEFAULT_VALUE;
   
-  range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
+  range = (AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_UPPER - AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_LOWER);
 
-  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
-    x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
-    y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
+  for(i = 0; i < AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT;
 
     acceleration = ags_acceleration_new();
     acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+    acceleration->y = AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT) * range);
 
     ags_automation_add_acceleration(automation,
 				    acceleration,
@@ -672,13 +699,178 @@ ags_automation_test_add_all_to_selection()
 void
 ags_automation_test_add_point_to_selection()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration;
+
+  GList *list, *current;
+  
+  gdouble range;
+  guint x, y;
+  guint nth;
+  guint i;
+  gboolean success;
+
+  /* create automation */
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_UPPER - AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* assert add point to selection */
+  success = TRUE;
+  
+  for(i = 0; i < AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_N_ATTEMPTS; i++){
+    nth = rand() % AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_COUNT;
+    current = g_list_nth(automation->acceleration,
+			 nth);
+
+    if(current->prev != NULL &&
+       current->next != NULL){
+      ags_automation_add_point_to_selection(automation,
+					    AGS_ACCELERATION(current->data)->x, AGS_ACCELERATION(current->data)->y,
+					    FALSE);
+      
+      if(ags_automation_find_point(automation,
+				   AGS_ACCELERATION(current->data)->x, AGS_ACCELERATION(current->data)->y,
+				   TRUE) == NULL){
+	success = FALSE;
+	
+	break;
+      }
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_automation_test_remove_point_from_selection()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+  AgsAcceleration *acceleration, *match;
+
+  GList *list, *current, *iter, *next;
+  
+  gdouble range;
+  guint x, y;
+  guint nth;
+  guint n_matches;
+  guint i;
+  
+  gboolean success;
+
+  /* create automation */
+  automation = ags_automation_new(audio,
+				  0,
+				  AGS_TYPE_INPUT,
+				  AGS_AUTOMATION_TEST_CONTROL_NAME);
+  automation->steps = AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_STEPS;
+  automation->lower = AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_LOWER;
+  automation->upper = AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_UPPER;
+  automation->default_value = AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_DEFAULT_VALUE;
+  
+  range = (AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_UPPER - AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_LOWER);
+
+  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT; i++){
+    x = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_WIDTH;
+    y = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT;
+
+    acceleration = ags_acceleration_new();
+    acceleration->x = x;
+    acceleration->y = AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT) * range);
+
+    ags_automation_add_acceleration(automation,
+				    acceleration,
+				    FALSE);
+  }
+
+  /* add point to selection */
+  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_SELECTION_COUNT; i++){
+    nth = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT;
+    current = g_list_nth(automation->acceleration,
+			 nth);
+
+    ags_automation_add_point_to_selection(automation,
+					  AGS_ACCELERATION(current->data)->x, AGS_ACCELERATION(current->data)->y,
+					  FALSE);
+  }
+
+  /* assert remove point from selection */
+  success = TRUE;
+  
+  for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_N_ATTEMPTS; i++){
+    nth = rand() % (AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_N_ATTEMPTS);
+    current = g_list_nth(automation->selection,
+			 nth);
+
+    if(current == NULL){
+      continue;
+    }
+    
+    iter = current->next;
+    n_matches = 0;
+
+    while(iter != NULL &&
+	  AGS_ACCELERATION(iter->data)->x == AGS_ACCELERATION(current->data)->x &&
+	  AGS_ACCELERATION(iter->data)->y == AGS_ACCELERATION(current->data)->y){
+      n_matches++;
+
+      iter = iter->next;
+    }
+
+    acceleration = AGS_ACCELERATION(current->data);
+    ags_automation_remove_point_from_selection(automation,
+					       acceleration->x, acceleration->y);
+
+    
+    if((match = ags_automation_find_point(automation,
+					  acceleration->x, acceleration->y,
+					  TRUE)) != NULL){
+      if(n_matches == 0){
+	success = FALSE;
+	
+	break;
+      }else{
+	next = g_list_find(automation->selection,
+			   match);
+	
+	while(next != NULL &&
+	      AGS_ACCELERATION(next->data)->x == acceleration->x &&
+	      AGS_ACCELERATION(next->data)->y == acceleration->y){
+	  n_matches--;
+	  
+	  next = next->next;
+	}
+	
+	if(n_matches != 0){
+	  success = FALSE;
+	  
+	  break;
+	}
+      }
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -769,7 +961,9 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAutomation find point\0", ags_automation_test_find_point) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation find region\0", ags_automation_test_find_region) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation free selection\0", ags_automation_test_free_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation add all to selection\0", ags_automation_test_add_all_to_selection) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAutomation add all to selection\0", ags_automation_test_add_all_to_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation add point to selection\0", ags_automation_test_add_point_to_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation remove point from selection\0", ags_automation_test_remove_point_from_selection) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
