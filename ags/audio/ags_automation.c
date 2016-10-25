@@ -1776,7 +1776,7 @@ ags_automation_get_specifier_unique(GList *automation)
   return(specifier);
 }
 
-  /**
+/**
  * ags_automation_find_specifier:
  * @automation: a #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find

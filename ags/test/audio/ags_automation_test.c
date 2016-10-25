@@ -144,6 +144,12 @@ void ags_automation_test_get_value();
 #define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_SELECTION_COUNT (128)
 #define AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_N_ATTEMPTS (64)
 
+#define AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_STEPS (127)
+#define AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_COUNT (28)
+
 AgsAudio *audio;
 
 /* The suite initialization function.
@@ -912,7 +918,88 @@ ags_automation_test_get_current()
 void
 ags_automation_test_get_specifier_unique()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+
+  GList *start;
+
+  gchar **specifier_unique;
+  gchar **iter;
+  gboolean *found_index;
+  
+  guint specifier_count;
+  guint nth;
+  guint i;
+  gboolean success;
+  
+  static const gchar *specifier[] = {
+    "delay\0",
+    "feedback\0",
+    "resonance\0",
+    "osc1\0",
+    "osc2\0",
+    NULL,
+  };
+
+  /* count specifiers */
+  iter = specifier;
+  
+  for(specifier_count = 0; *iter != NULL; specifier_count++, iter++);
+  
+  /* create automation */
+  start = NULL;
+  
+  found_index = (gboolean *) malloc(specifier_count * sizeof(gboolean));
+  memset(found_index, 0, specifier_count * sizeof(gboolean));
+  
+  for(i = 0; i < AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_COUNT; i++){
+    nth = rand() % specifier_count;
+    found_index[nth] = TRUE;
+    
+    automation = ags_automation_new(audio,
+				    0,
+				    AGS_TYPE_INPUT,
+				    specifier[nth]);
+    automation->steps = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_STEPS;
+    automation->lower = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_LOWER;
+    automation->upper = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_UPPER;
+    automation->default_value = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_DEFAULT_VALUE;
+
+    start = g_list_prepend(start,
+			   automation);
+  }
+
+  /* verify each specifier available */
+  for(i = 0; i < specifier_count; i++){
+    if(!found_index[i]){
+      automation = ags_automation_new(audio,
+				      0,
+				      AGS_TYPE_INPUT,
+				      specifier[i]);
+      automation->steps = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_STEPS;
+      automation->lower = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_LOWER;
+      automation->upper = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_UPPER;
+      automation->default_value = AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_DEFAULT_VALUE;
+
+      start = g_list_prepend(start,
+			     automation);
+    }
+  }
+
+  /* assert */
+  success = TRUE;
+
+  specifier_unique = ags_automation_get_specifier_unique(start);
+
+  for(i = 0; i < specifier_count; i++){
+    if(!g_strv_contains(specifier,
+			specifier_unique[i])){
+      success = FALSE;
+      
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE && specifier_unique[specifier_count] == NULL);
 }
 
 void
@@ -963,7 +1050,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAutomation free selection\0", ags_automation_test_free_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation add all to selection\0", ags_automation_test_add_all_to_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation add point to selection\0", ags_automation_test_add_point_to_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation remove point from selection\0", ags_automation_test_remove_point_from_selection) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAutomation remove point from selection\0", ags_automation_test_remove_point_from_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation get specifier unique\0", ags_automation_test_get_specifier_unique) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
