@@ -71,6 +71,19 @@ void ags_recall_test_remove_handler();
 void ags_recall_test_lock_port();
 void ags_recall_test_unlock_port();
 
+void ags_recall_test_callback(AgsRecall *recall,
+			      gpointer data);
+void ags_recall_test_child_added_callback(AgsRecall *recall, AgsRecall *child,
+					  gpointer data);
+
+#define AGS_RECALL_RUN_INIT_PRE_N_CHILDREN (4)
+#define AGS_RECALL_RUN_INIT_INTER_N_CHILDREN (4)
+#define AGS_RECALL_RUN_INIT_POST_N_CHILDREN (4)
+
+#define AGS_RECALL_RUN_PRE_N_CHILDREN (4)
+#define AGS_RECALL_RUN_INTER_N_CHILDREN (4)
+#define AGS_RECALL_RUN_POST_N_CHILDREN (4)
+
 AgsApplicationContext *application_context;
 AgsDevout *devout;
 
@@ -95,33 +108,146 @@ ags_recall_test_clean_suite()
 }
 
 void
+ags_recall_test_callback(AgsRecall *recall,
+			 gpointer data)
+{
+  *((guint *) data) += 1;
+}
+
+void
 ags_recall_test_resolve_dependencies()
 {
-  CU_ASSERT(TRUE);
+  AgsRecall *recall;
+
+  guint data;
+
+  /* create recall */
+  recall = ags_recall_new();
+  g_signal_connect(G_OBJECT(recall), "resolve-dependencies\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_resolve_dependencies(recall);
+  
+  CU_ASSERT(data == 1);
+}
+
+void
+ags_recall_test_child_added_callback(AgsRecall *recall, AgsRecall *child,
+				     gpointer data)
+{
+  *((guint *) data) += 1;
 }
 
 void
 ags_recall_test_child_added()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+
+  guint data;
+
+  /* create recall */
+  recall = ags_recall_new();
+  g_signal_connect(G_OBJECT(recall), "child-added\0",
+		   G_CALLBACK(ags_recall_test_child_added_callback), &data);
+
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_child_added(recall,
+			 NULL);
+  
+  CU_ASSERT(data == 1);
 }
 
 void
 ags_recall_test_run_init_pre()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+  AgsRecall **child;
+
+  guint data;
+  guint i;
+
+  recall = ags_recall_new();
+  g_signal_connect(G_OBJECT(recall), "run-init-pre\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+  
+  child = (AgsRecall **) malloc(AGS_RECALL_RUN_INIT_PRE_N_CHILDREN * sizeof(AgsRecall *));
+  
+  for(i = 0; i < AGS_RECALL_RUN_INIT_PRE_N_CHILDREN; i++){
+    child[i] = ags_recall_new();
+    ags_recall_add_child(recall,
+			 child[i]);
+    g_signal_connect(G_OBJECT(child[i]), "run-init-pre\0",
+		     G_CALLBACK(ags_recall_test_callback), &data);
+  }
+  
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_run_init_pre(recall);
+  
+  CU_ASSERT(data == (AGS_RECALL_RUN_INIT_PRE_N_CHILDREN + 1));
 }
 
 void
 ags_recall_test_run_init_inter()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+  AgsRecall **child;
+
+  guint data;
+  guint i;
+
+  recall = ags_recall_new();
+  g_signal_connect(G_OBJECT(recall), "run-init-inter\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+  
+  child = (AgsRecall **) malloc(AGS_RECALL_RUN_INIT_INTER_N_CHILDREN * sizeof(AgsRecall *));
+  
+  for(i = 0; i < AGS_RECALL_RUN_INIT_INTER_N_CHILDREN; i++){
+    child[i] = ags_recall_new();
+    ags_recall_add_child(recall,
+			 child[i]);
+    g_signal_connect(G_OBJECT(child[i]), "run-init-inter\0",
+		     G_CALLBACK(ags_recall_test_callback), &data);
+  }
+  
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_run_init_inter(recall);
+  
+  CU_ASSERT(data == (AGS_RECALL_RUN_INIT_INTER_N_CHILDREN + 1));
 }
 
 void
 ags_recall_test_run_init_post()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+  AgsRecall **child;
+
+  guint data;
+  guint i;
+
+  recall = ags_recall_new();
+  g_signal_connect(G_OBJECT(recall), "run-init-post\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+  
+  child = (AgsRecall **) malloc(AGS_RECALL_RUN_INIT_POST_N_CHILDREN * sizeof(AgsRecall *));
+  
+  for(i = 0; i < AGS_RECALL_RUN_INIT_POST_N_CHILDREN; i++){
+    child[i] = ags_recall_new();
+    ags_recall_add_child(recall,
+			 child[i]);
+    g_signal_connect(G_OBJECT(child[i]), "run-init-post\0",
+		     G_CALLBACK(ags_recall_test_callback), &data);
+  }
+  
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_run_init_post(recall);
+  
+  CU_ASSERT(data == (AGS_RECALL_RUN_INIT_POST_N_CHILDREN + 1));
 }
 
 void

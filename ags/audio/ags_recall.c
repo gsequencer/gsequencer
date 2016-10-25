@@ -1466,6 +1466,15 @@ ags_recall_resolve_dependencies(AgsRecall *recall)
   g_object_unref(G_OBJECT(recall));
 }
 
+/**
+ * ags_recall_child_added:
+ * @recall: an #AgsRecall
+ * @child: another #AgsRecall
+ *
+ * A signal indicating that the a child has been added.
+ * 
+ * Since: 0.4
+ */
 void
 ags_recall_child_added(AgsRecall *parent, AgsRecall *child)
 {
