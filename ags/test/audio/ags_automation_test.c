@@ -150,6 +150,12 @@ void ags_automation_test_get_value();
 #define AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_DEFAULT_VALUE (1.0)
 #define AGS_AUTOMATION_TEST_GET_SPECIFIER_UNIQUE_COUNT (28)
 
+#define AGS_AUTOMATION_TEST_FIND_SPECIFIER_STEPS (127)
+#define AGS_AUTOMATION_TEST_FIND_SPECIFIER_LOWER (0.0)
+#define AGS_AUTOMATION_TEST_FIND_SPECIFIER_UPPER (127.0)
+#define AGS_AUTOMATION_TEST_FIND_SPECIFIER_DEFAULT_VALUE (1.0)
+#define AGS_AUTOMATION_TEST_FIND_SPECIFIER_COUNT (28)
+
 AgsAudio *audio;
 
 /* The suite initialization function.
@@ -1005,7 +1011,97 @@ ags_automation_test_get_specifier_unique()
 void
 ags_automation_test_find_specifier()
 {
-  //TODO:JK: implement me
+  AgsAutomation *automation;
+
+  GList *start;
+  GList *current;
+  
+  gchar **specifier_unique;
+  gchar **iter;
+  guint *n_index;
+  
+  guint specifier_count;
+  guint nth;
+  guint i;
+  guint n_match;
+  gboolean success;
+
+  static const gchar *unavailable_specifier = "unavailable\0";
+  static const gchar *specifier[] = {
+    "delay\0",
+    "feedback\0",
+    "resonance\0",
+    "osc1\0",
+    "osc2\0",
+    NULL,
+  };
+
+  /* count specifiers */
+  iter = specifier;
+  
+  for(specifier_count = 0; *iter != NULL; specifier_count++, iter++);
+  
+  /* create automation */
+  start = NULL;
+  
+  n_index = (guint *) malloc(specifier_count * sizeof(guint));
+  memset(n_index, 0, specifier_count * sizeof(guint));
+  
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_SPECIFIER_COUNT; i++){
+    nth = rand() % specifier_count;
+    n_index[nth] += 1;
+    
+    automation = ags_automation_new(audio,
+				    0,
+				    AGS_TYPE_INPUT,
+				    specifier[nth]);
+    automation->steps = AGS_AUTOMATION_TEST_FIND_SPECIFIER_STEPS;
+    automation->lower = AGS_AUTOMATION_TEST_FIND_SPECIFIER_LOWER;
+    automation->upper = AGS_AUTOMATION_TEST_FIND_SPECIFIER_UPPER;
+    automation->default_value = AGS_AUTOMATION_TEST_FIND_SPECIFIER_DEFAULT_VALUE;
+
+    start = g_list_prepend(start,
+			   automation);
+  }
+
+  /* verify each specifier available */
+  for(i = 0; i < specifier_count; i++){
+    if(n_index[i] == 0){
+      n_index[i] = 1;
+      
+      automation = ags_automation_new(audio,
+				      0,
+				      AGS_TYPE_INPUT,
+				      specifier[i]);
+      automation->steps = AGS_AUTOMATION_TEST_FIND_SPECIFIER_STEPS;
+      automation->lower = AGS_AUTOMATION_TEST_FIND_SPECIFIER_LOWER;
+      automation->upper = AGS_AUTOMATION_TEST_FIND_SPECIFIER_UPPER;
+      automation->default_value = AGS_AUTOMATION_TEST_FIND_SPECIFIER_DEFAULT_VALUE;
+
+      start = g_list_prepend(start,
+			     automation);
+    }
+  }
+
+  /* assert unavailable */
+  current = ags_automation_find_specifier(start,
+					  unavailable_specifier);
+  CU_ASSERT(current == NULL);
+
+  /* assert specifier find n-times */
+  for(i = 0; i < specifier_count; i++){
+    current = start;
+    n_match = 0;
+    
+    while((current = ags_automation_find_specifier(current,
+						   specifier[i])) != NULL){
+      n_match++;
+      
+      current = current->next;
+    }
+
+    CU_ASSERT(n_match == n_index[i] && current == NULL);
+  }
 }
 
 void
@@ -1051,7 +1147,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAutomation add all to selection\0", ags_automation_test_add_all_to_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation add point to selection\0", ags_automation_test_add_point_to_selection) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAutomation remove point from selection\0", ags_automation_test_remove_point_from_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation get specifier unique\0", ags_automation_test_get_specifier_unique) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAutomation get specifier unique\0", ags_automation_test_get_specifier_unique) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation find specifier\0", ags_automation_test_find_specifier) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
