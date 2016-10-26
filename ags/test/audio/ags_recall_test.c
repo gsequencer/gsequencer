@@ -253,13 +253,87 @@ ags_recall_test_run_init_post()
 void
 ags_recall_test_stop_persistent()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+
+  guint data;
+
+  /* playback */
+  recall = ags_recall_new();
+  recall->flags |= (AGS_RECALL_PERSISTENT |
+		    AGS_RECALL_PERSISTENT_PLAYBACK);
+  g_signal_connect(G_OBJECT(recall), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+  
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_stop_persistent(recall);
+  
+  CU_ASSERT(((AGS_RECALL_PERSISTENT & (recall->flags)) == 0) &&
+	    ((AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) == 0) &&
+	    data == 1);
+
+  /* sequencer */
+  recall = ags_recall_new();
+  recall->flags |= (AGS_RECALL_PERSISTENT |
+		    AGS_RECALL_PERSISTENT_SEQUENCER);
+  g_signal_connect(G_OBJECT(recall), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+  
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_stop_persistent(recall);
+  
+  CU_ASSERT(((AGS_RECALL_PERSISTENT & (recall->flags)) == 0) &&
+	    ((AGS_RECALL_PERSISTENT_SEQUENCER & (recall->flags)) == 0) &&
+	    data == 1);
+
+  /* notation */
+  recall = ags_recall_new();
+  recall->flags |= (AGS_RECALL_PERSISTENT |
+		    AGS_RECALL_PERSISTENT_NOTATION);
+  g_signal_connect(G_OBJECT(recall), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+  
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_stop_persistent(recall);
+  
+  CU_ASSERT(((AGS_RECALL_PERSISTENT & (recall->flags)) == 0) &&
+	    ((AGS_RECALL_PERSISTENT_NOTATION & (recall->flags)) == 0) &&
+	    data == 1);
 }
 
 void
 ags_recall_test_done()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+
+  guint data;
+
+  /* recall */
+  recall = ags_recall_new();
+  g_signal_connect(G_OBJECT(recall), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+
+  /* assert callback invoked */
+  data = 0;
+  ags_recall_done(recall);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) != 0) &&
+	    data == 1);
+
+  /* recall */
+  recall = ags_recall_new();
+  recall->flags |= AGS_RECALL_PERSISTENT;
+  g_signal_connect(G_OBJECT(recall), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &data);
+
+  /* assert callback not invoked */
+  data = 0;
+  ags_recall_done(recall);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) == 0) &&
+	    data == 0);
 }
 
 void
