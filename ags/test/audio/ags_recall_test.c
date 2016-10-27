@@ -49,7 +49,6 @@ void ags_recall_test_remove();
 void ags_recall_test_is_done();
 void ags_recall_test_duplicate();
 void ags_recall_test_set_recall_id();
-void ags_recall_test_set_soundcard_recursive();
 void ags_recall_test_notify_dependency();
 void ags_recall_test_add_dependency();
 void ags_recall_test_remove_dependency();
@@ -95,6 +94,8 @@ void ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_i
 
 #define AGS_RECALL_TEST_DUPLICATE_TEMPLATE_COUNT (5)
 #define AGS_RECALL_TEST_DUPLICATE_RECALL_ID_COUNT (2)
+
+#define AGS_RECALL_TEST_SET_RECALL_ID_CHILDREN_COUNT (16)
 
 AgsDevout *devout;
 
@@ -623,13 +624,47 @@ ags_recall_test_duplicate()
 void
 ags_recall_test_set_recall_id()
 {
-  //TODO:JK: implement me
-}
+  AgsRecall *recall, *child;
+  AgsRecallID *recall_id;
 
-void
-ags_recall_test_set_soundcard_recursive()
-{
-  //TODO:JK: implement me
+  GList *list;
+  
+  guint i;
+  gboolean success;
+
+  recall = g_object_new(AGS_TYPE_RECALL,
+			NULL);
+  
+  for(i = 0; i < AGS_RECALL_TEST_SET_RECALL_ID_CHILDREN_COUNT; i++){
+    child = g_object_new(AGS_TYPE_RECALL,
+			 NULL);
+    ags_recall_add_child(recall,
+			 child);
+  }
+
+  /* assert recall id set */
+  recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			   NULL);
+  success = TRUE;
+
+  ags_recall_set_recall_id(recall,
+			   recall_id);
+
+  CU_ASSERT(recall->recall_id == recall_id);
+
+  list = recall->children;
+
+  while(list != NULL){
+    if(AGS_RECALL(list->data)->recall_id != recall_id){
+      success = FALSE;
+	
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -802,7 +837,6 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsRecall is done\0", ags_recall_test_is_done) == NULL) ||
      (CU_add_test(pSuite, "test of AgsRecall duplicate\0", ags_recall_test_duplicate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsRecall set recall id\0", ags_recall_test_set_recall_id) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall set soundcard recursive\0", ags_recall_test_set_soundcard_recursive) == NULL) ||
      (CU_add_test(pSuite, "test of AgsRecall notify dependency\0", ags_recall_test_notify_dependency) == NULL) ||
      (CU_add_test(pSuite, "test of AgsRecall add dependency\0", ags_recall_test_add_dependency) == NULL) ||
      (CU_add_test(pSuite, "test of AgsRecall remove dependency\0", ags_recall_test_remove_dependency) == NULL) ||
