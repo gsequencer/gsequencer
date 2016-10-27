@@ -1948,7 +1948,7 @@ ags_recall_remove(AgsRecall *recall)
 
 /**
  * ags_recall_is_done:
- * @recalls: an #AgsRecall
+ * @recalls: a #GList-struct of #AgsRecall
  * @recycling_context: an #AgsRecyclingContext
  *
  * Check if recall is over.
@@ -2002,8 +2002,8 @@ ags_recall_real_duplicate(AgsRecall *recall,
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
 				 "soundcard\0", recall->soundcard,
-				 "recall_id\0", recall_id,
-				 "recall_container\0", recall->container,
+				 "recall-id\0", recall_id,
+				 "recall-container\0", recall->container,
 				 NULL);
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);

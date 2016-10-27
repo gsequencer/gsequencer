@@ -30,6 +30,9 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling_context.h>
 
 int ags_recall_test_init_suite();
 int ags_recall_test_clean_suite();
@@ -75,6 +78,9 @@ void ags_recall_test_callback(AgsRecall *recall,
 			      gpointer data);
 void ags_recall_test_child_added_callback(AgsRecall *recall, AgsRecall *child,
 					  gpointer data);
+void ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_id,
+					guint n_params, GParameter *parameter,
+					gpointer data);
 
 #define AGS_RECALL_RUN_INIT_PRE_N_CHILDREN (4)
 #define AGS_RECALL_RUN_INIT_INTER_N_CHILDREN (4)
@@ -84,7 +90,12 @@ void ags_recall_test_child_added_callback(AgsRecall *recall, AgsRecall *child,
 #define AGS_RECALL_RUN_INTER_N_CHILDREN (4)
 #define AGS_RECALL_RUN_POST_N_CHILDREN (4)
 
-AgsApplicationContext *application_context;
+#define AGS_RECALL_TEST_IS_DONE_RECYCLING_CONTEXT_COUNT (2)
+#define AGS_RECALL_TEST_IS_DONE_RECALL_COUNT (16)
+
+#define AGS_RECALL_TEST_DUPLICATE_TEMPLATE_COUNT (5)
+#define AGS_RECALL_TEST_DUPLICATE_RECALL_ID_COUNT (2)
+
 AgsDevout *devout;
 
 /* The suite initialization function.
@@ -94,6 +105,9 @@ AgsDevout *devout;
 int
 ags_recall_test_init_suite()
 {
+  devout = g_object_new(AGS_TYPE_DEVOUT,
+			NULL);
+
   return(0);
 }
 
@@ -104,6 +118,8 @@ ags_recall_test_init_suite()
 int
 ags_recall_test_clean_suite()
 {
+  g_object_unref(devout);
+  
   return(0);
 }
 
@@ -459,13 +475,149 @@ ags_recall_test_remove()
 void
 ags_recall_test_is_done()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *test_recycling_context, *recycling_context;
+  
+  GList *list;
+
+  guint i, j;
+  gboolean is_done;
+
+  /* recalls not done */
+  test_recycling_context = NULL;
+  list = NULL;
+
+  for(i = 0; i < AGS_RECALL_TEST_IS_DONE_RECYCLING_CONTEXT_COUNT; i++){
+    recycling_context = ags_recycling_context_new(0);
+
+    if(i == 0){
+      test_recycling_context = recycling_context;
+    }
+    
+    for(j = 0; j < AGS_RECALL_TEST_IS_DONE_RECALL_COUNT; j++){
+      recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			       "recycling-context\0", recycling_context,
+			       NULL);
+
+      recall = g_object_new(AGS_TYPE_RECALL,
+			    "recall-id\0", recall_id,
+			    NULL);
+
+      if(i != 0){
+	recall->flags |= AGS_RECALL_DONE;
+      }
+      
+      list = g_list_prepend(list,
+			    recall);
+    }
+  }
+
+  is_done = ags_recall_is_done(list,
+			       test_recycling_context);
+
+  CU_ASSERT(is_done == FALSE);
+  
+  /* recalls done */
+  test_recycling_context = NULL;
+  list = NULL;
+
+  for(i = 0; i < AGS_RECALL_TEST_IS_DONE_RECYCLING_CONTEXT_COUNT; i++){
+    recycling_context = ags_recycling_context_new(0);
+
+    if(i == 0){
+      test_recycling_context = recycling_context;
+    }
+    
+    for(j = 0; j < AGS_RECALL_TEST_IS_DONE_RECALL_COUNT; j++){
+      recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			       "recycling-context\0", recycling_context,
+			       NULL);
+
+      recall = g_object_new(AGS_TYPE_RECALL,
+			    "recall-id\0", recall_id,
+			    NULL);
+
+      if(i == 0){
+	recall->flags |= AGS_RECALL_DONE;
+      }
+      
+      list = g_list_prepend(list,
+			    recall);
+    }
+  }
+
+  is_done = ags_recall_is_done(list,
+			       test_recycling_context);
+
+  CU_ASSERT(is_done == TRUE);
+}
+
+void
+ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_id,
+				   guint n_params, GParameter *parameter,
+				   gpointer data)
+{
+  *((guint *) data) += 1;
 }
 
 void
 ags_recall_test_duplicate()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+  AgsRecallContainer *recall_container;
+  AgsRecyclingContext *recycling_context;
+  AgsRecallID *recall_id;
+  
+  GList *list, *start;
+
+  guint data;
+  guint i;
+
+  /* create recall templates */
+  start = NULL;
+
+  for(i = 0; i < AGS_RECALL_TEST_DUPLICATE_TEMPLATE_COUNT; i++){
+    recall = g_object_new(AGS_TYPE_RECALL,
+			  NULL);
+    recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				    NULL);
+    
+    g_object_set(recall,
+		 "soundcard\0", devout,
+		 "recall-container\0", recall_container,
+		 NULL);
+    recall->flags |= AGS_RECALL_TEMPLATE;
+    
+    g_signal_connect(G_OBJECT(recall), "duplicate\0",
+		     G_CALLBACK(ags_recall_test_duplicate_callback), &data);
+
+    start = g_list_prepend(start,
+			   recall);
+    g_object_ref(recall);
+  }
+
+  /* assert duplicate */
+  data = 0;
+  
+  for(i = 0; i < AGS_RECALL_TEST_DUPLICATE_RECALL_ID_COUNT; i++){
+    recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
+				     NULL);
+    recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			     "recycling-context\0", recycling_context,
+			     NULL);
+    
+    list = start;
+
+    while(list != NULL){
+      ags_recall_duplicate(list->data,
+			   recall_id);
+      
+      list = list->next;
+    }
+  }
+  
+  CU_ASSERT(data == (AGS_RECALL_TEST_DUPLICATE_RECALL_ID_COUNT * AGS_RECALL_TEST_DUPLICATE_TEMPLATE_COUNT));
 }
 
 void
@@ -622,7 +774,7 @@ int
 main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
-
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
