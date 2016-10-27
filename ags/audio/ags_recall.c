@@ -38,6 +38,7 @@
 #include <ags/file/ags_file_id_ref.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/audio/ags_audio.h>
@@ -51,6 +52,7 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
@@ -2349,12 +2351,17 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 	 !g_strcmp0(AGS_RECALL_LADSPA(current)->effect, effect)){
 	list = g_list_prepend(list,
 			      current);
+      }else if(AGS_IS_RECALL_DSSI(current) &&
+	       !g_strcmp0(AGS_RECALL_DSSI(current)->filename, filename) &&
+	       !g_strcmp0(AGS_RECALL_DSSI(current)->effect, effect)){
+	list = g_list_prepend(list,
+			      current);
       }else if(AGS_IS_RECALL_LV2(current) &&
 	       !g_strcmp0(AGS_RECALL_LV2(current)->filename, filename) &&
 	       !g_strcmp0(AGS_RECALL_LV2(current)->effect, effect)){
 	list = g_list_prepend(list,
 			      current);
-      }else  if(!g_strcmp0(current->effect, effect)){
+      }else if(!g_strcmp0(current->effect, effect)){
 	list = g_list_prepend(list,
 			      current);
       }

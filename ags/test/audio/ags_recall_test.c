@@ -30,6 +30,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recycling_context.h>
@@ -96,6 +97,15 @@ void ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_i
 #define AGS_RECALL_TEST_DUPLICATE_RECALL_ID_COUNT (2)
 
 #define AGS_RECALL_TEST_SET_RECALL_ID_CHILDREN_COUNT (16)
+
+#define AGS_RECALL_TEST_REMOVE_CHILD_CHILDREN_COUNT (16)
+
+#define AGS_RECALL_TEST_ADD_CHILD_CHILDREN_COUNT (16)
+
+#define AGS_RECALL_TEST_GET_CHILDREN_CHILDREN_COUNT (16)
+
+#define AGS_RECALL_TEST_GET_BY_EFFECT_RECALL_COUNT (4)
+#define AGS_RECALL_TEST_GET_BY_EFFECT_LADSPA_RECALL_COUNT (16)
 
 AgsDevout *devout;
 
@@ -694,25 +704,193 @@ ags_recall_test_get_dependencies()
 void
 ags_recall_test_remove_child()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall, *child;
+
+  GList *list, *list_next;
+  
+  gboolean success;
+
+  guint i;
+
+  /* create recall */
+  recall = g_object_new(AGS_TYPE_RECALL,
+			NULL);
+  
+  for(i = 0; i < AGS_RECALL_TEST_REMOVE_CHILD_CHILDREN_COUNT; i++){
+    child = g_object_new(AGS_TYPE_RECALL,
+			 NULL);
+    ags_recall_add_child(recall,
+			 child);
+  }
+
+  /* assert removed */
+  list = recall->children;
+
+  success = TRUE;
+
+  while(list != NULL){
+    list_next = list->next;
+
+    child = list->data;
+    ags_recall_remove_child(recall,
+			    child);
+
+    if(g_list_find(recall->children,
+		   child) != NULL){
+      success = FALSE;
+
+      break;
+    }
+    
+    list = list_next;
+  }
+
+  CU_ASSERT(success == TRUE &&
+	    recall->children == NULL);
 }
 
 void
 ags_recall_test_add_child()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall, *child;
+
+  gboolean success;
+
+  guint i;
+
+  /* create recall and assert child to be present */
+  recall = g_object_new(AGS_TYPE_RECALL,
+			NULL);
+
+  success = TRUE;
+  
+  for(i = 0; i < AGS_RECALL_TEST_ADD_CHILD_CHILDREN_COUNT; i++){
+    child = g_object_new(AGS_TYPE_RECALL,
+			 NULL);
+    ags_recall_add_child(recall,
+			 child);
+
+    if(g_list_find(recall->children,
+		   child) == NULL){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE &&
+	    recall->children != NULL);
 }
 
 void
 ags_recall_test_get_children()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall, *child;
+
+  GList *list;
+
+  guint i;
+
+  /* create recall */
+  recall = g_object_new(AGS_TYPE_RECALL,
+			NULL);
+  
+  for(i = 0; i < AGS_RECALL_TEST_GET_CHILDREN_CHILDREN_COUNT; i++){
+    child = g_object_new(AGS_TYPE_RECALL,
+			 NULL);
+    ags_recall_add_child(recall,
+			 child);
+  }
+
+  list = ags_recall_get_children(recall);
+  
+  CU_ASSERT(list != NULL &&
+	    g_list_length(list) == AGS_RECALL_TEST_GET_CHILDREN_CHILDREN_COUNT);
 }
 
 void
 ags_recall_test_get_by_effect()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+  AgsRecallLadspa *recall_ladspa;
+
+  GList *list, *current;
+
+  guint nth;
+  guint i;
+  guint effect_added[4];
+  
+  static const gchar *filename[] = {
+    "echo.so\0",
+    "echo.so\0",
+    "noise.so\0",
+    NULL,
+  };
+  static const gchar *effect[] = {
+    "delay\0",
+    "feedback\0",
+    "noise\0",
+    NULL,
+  };
+
+  list = NULL;
+  memset(effect_added, 0, 4 * sizeof(guint));
+  
+  for(i = 0; i < AGS_RECALL_TEST_GET_BY_EFFECT_RECALL_COUNT; i++){
+    recall = g_object_new(AGS_TYPE_RECALL,
+			  NULL);
+
+    list = g_list_prepend(list,
+			  recall);
+  }
+
+  for(i = 0; i < AGS_RECALL_TEST_GET_BY_EFFECT_LADSPA_RECALL_COUNT; i++){
+    nth = rand() % 3;
+    effect_added[nth] += 1;
+    
+    recall_ladspa = g_object_new(AGS_TYPE_RECALL_LADSPA,
+				 "filename\0", filename[nth],
+				 "effect\0", effect[nth],
+				 NULL);
+
+    list = g_list_prepend(list,
+			  recall_ladspa);
+  }
+
+  list = g_list_reverse(list);
+  
+  /* assert 1st filename and effect */
+  current = ags_recall_get_by_effect(list,
+				     filename[0],
+				     effect[0]);
+  
+  if(effect_added[0] > 0){
+    CU_ASSERT(g_list_length(current) == effect_added[0]);
+  }else{
+    CU_ASSERT(current == NULL);
+  }
+
+  /* assert 2nd filename and effect */
+  current = ags_recall_get_by_effect(list,
+				     filename[1],
+				     effect[1]);
+  
+  if(effect_added[1] > 0){
+    CU_ASSERT(g_list_length(current) == effect_added[1]);
+  }else{
+    CU_ASSERT(current == NULL);
+  }
+
+  /* assert 3rd filename and effect */
+  current = ags_recall_get_by_effect(list,
+				     filename[2],
+				     effect[2]);
+  
+  if(effect_added[2] > 0){
+    CU_ASSERT(g_list_length(current) == effect_added[2]);
+  }else{
+    CU_ASSERT(current == NULL);
+  }
 }
 
 void
