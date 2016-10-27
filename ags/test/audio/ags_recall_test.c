@@ -58,7 +58,7 @@ void ags_recall_test_remove_child();
 void ags_recall_test_add_child();
 void ags_recall_test_get_children();
 void ags_recall_test_get_by_effect();
-void ags_recall_test_find_by_effect();
+void ags_recall_test_find_recall_id_with_effect();
 void ags_recall_test_find_type();
 void ags_recall_test_find_template();
 void ags_recall_test_template_find_type();
@@ -894,7 +894,7 @@ ags_recall_test_get_by_effect()
 }
 
 void
-ags_recall_test_find_by_effect()
+ags_recall_test_find_recall_id_with_effect()
 {
   //TODO:JK: implement me
 }

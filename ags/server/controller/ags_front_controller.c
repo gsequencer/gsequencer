@@ -47,6 +47,7 @@ gpointer ags_front_controller_real_authenticate(AgsFrontController *front_contro
 						gchar *password,
 						gchar *certs);
 gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
+					      GObject *security_context,
 					      gchar *context_path,
 					      gchar *user_uuid,
 					      gchar *security_token,
@@ -135,8 +136,9 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, do_request),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING_STRING_STRING_POINTER,
-		 G_TYPE_POINTER, 5,
+		 g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER,
+		 G_TYPE_POINTER, 6,
+		 G_TYPE_OBJECT,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
@@ -216,6 +218,7 @@ ags_front_controller_authenticate(AgsFrontController *front_controller,
 
 gpointer
 ags_front_controller_real_do_request(AgsFrontController *front_controller,
+				     GObject *security_context,
 				     gchar *context_path,
 				     gchar *user_uuid,
 				     gchar *security_token,
@@ -225,7 +228,8 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
   AgsAuthenticationManager *authentication_manager;
   
   if(context_path == NULL ||
-     user_uuid == NULL ||
+     security_context == NULL ||
+     login == NULL ||
      security_token == NULL){
     return(NULL);
   }
@@ -236,8 +240,9 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 /**
  * ags_front_controller_do_request:
  * @front_controller: the #AgsFrontController
+ * @security_context: the #AgsSecurityContext
  * @context_path: the context path to access
- * @user_uuid: the user's uuid
+ * @login: the login
  * @security_token: the security token
  * @certs: the certs
  * @params: the #GParameter-struct containing parameters
@@ -250,8 +255,9 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  */
 gpointer
 ags_front_controller_do_request(AgsFrontController *front_controller,
+				GObject *security_context,
 				gchar *context_path,
-				gchar *user_uuid,
+				gchar *login,
 				gchar *security_token,
 				gchar *certs,
 				GParameter *params)

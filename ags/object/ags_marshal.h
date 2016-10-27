@@ -374,13 +374,13 @@ extern void g_cclosure_user_marshal_POINTER__STRING_STRING_STRING (GClosure     
                                                                    gpointer      invocation_hint,
                                                                    gpointer      marshal_data);
 
-/* POINTER:STRING,STRING,STRING,STRING,POINTER (ags_marshallers.list:47) */
-extern void g_cclosure_user_marshal_POINTER__STRING_STRING_STRING_STRING_POINTER (GClosure     *closure,
-                                                                                  GValue       *return_value,
-                                                                                  guint         n_param_values,
-                                                                                  const GValue *param_values,
-                                                                                  gpointer      invocation_hint,
-                                                                                  gpointer      marshal_data);
+/* POINTER:OBJECT,STRING,STRING,STRING,STRING,POINTER (ags_marshallers.list:47) */
+extern void g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER (GClosure     *closure,
+                                                                                         GValue       *return_value,
+                                                                                         guint         n_param_values,
+                                                                                         const GValue *param_values,
+                                                                                         gpointer      invocation_hint,
+                                                                                         gpointer      marshal_data);
 
 /* POINTER:POINTER,STRING,STRING (ags_marshallers.list:48) */
 extern void g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING (GClosure     *closure,

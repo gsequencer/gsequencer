@@ -50,8 +50,9 @@ struct _AgsFrontControllerClass
 			   gchar *certs);
 
   gpointer (*do_request)(AgsFrontController *front_controller,
+			 GObject *security_context,
 			 gchar *context_path,
-			 gchar *user_uuid,
+			 gchar *user,
 			 gchar *security_token,
 			 gchar *certs,
 			 GParameter *params);
@@ -65,8 +66,9 @@ gpointer ags_front_controller_authenticate(AgsFrontController *front_controller,
 					   gchar *certs);
 
 gpointer ags_front_controller_do_request(AgsFrontController *front_controller,
+					 GObject *security_context,
 					 gchar *context_path,
-					 gchar *user_uuid,
+					 gchar *user,
 					 gchar *security_token,
 					 gchar *certs,
 					 GParameter *params);

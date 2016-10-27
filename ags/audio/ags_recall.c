@@ -2416,6 +2416,15 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
 	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->filename, filename) &&
 	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->effect, effect)){
 	return(list);
+      }else if(AGS_IS_RECALL_DSSI(recall) &&
+	 ((recall_id != NULL &&
+	   recall->recall_id != NULL &&
+	   recall_id->recycling_context == recall->recall_id->recycling_context) ||
+	  (recall_id == NULL &&
+	   recall->recall_id == NULL)) &&
+	 !g_strcmp0(AGS_RECALL_DSSI(recall)->filename, filename) &&
+	 !g_strcmp0(AGS_RECALL_DSSI(recall)->effect, effect)){
+	return(list);
       }else if(AGS_IS_RECALL_LV2(recall) &&
 	       ((recall_id != NULL &&
 		 recall->recall_id != NULL &&
