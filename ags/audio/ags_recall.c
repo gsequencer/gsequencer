@@ -1908,6 +1908,7 @@ ags_recall_real_remove(AgsRecall *recall)
   if(recall->parent == NULL){
     parent = NULL;
     g_object_unref(recall);
+    
     return;
   }else{
     parent = AGS_RECALL(recall->parent);

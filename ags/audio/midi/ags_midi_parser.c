@@ -2355,12 +2355,17 @@ xmlNode*
 ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
-  int hr, mn, se, fr, ff;
+  int rr, hr, mn, se, fr, ff;
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
 
-  hr = ags_midi_parser_midi_getc(midi_parser);
+  rr = 
+    hr = ags_midi_parser_midi_getc(midi_parser);
+
+  rr = (0x60 & rr) >> 5;
+  hr = (0x1f & hr);
+  
   mn = ags_midi_parser_midi_getc(midi_parser);
   se = ags_midi_parser_midi_getc(midi_parser);
   fr = ags_midi_parser_midi_getc(midi_parser);
@@ -2369,10 +2374,14 @@ ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
 	     "smtpe\0");
+
+  xmlNewProp(node,
+	     "rate\0",
+	     g_strdup_printf("%d\0", rr));
   
   xmlNewProp(node,
 	     "timestamp\0",
-	     g_strdup_printf("%d %d %d %d %d\0", hr, mn, se, fr, ff));
+	     g_strdup_printf("%d %d %d %d\0", hr, mn, se, fr));
   
   return(node);
 }

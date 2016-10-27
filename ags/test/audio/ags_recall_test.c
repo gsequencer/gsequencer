@@ -322,7 +322,7 @@ ags_recall_test_done()
   CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) != 0) &&
 	    data == 1);
 
-  /* recall */
+  /* persistent recall */
   recall = ags_recall_new();
   recall->flags |= AGS_RECALL_PERSISTENT;
   g_signal_connect(G_OBJECT(recall), "done\0",
@@ -339,13 +339,121 @@ ags_recall_test_done()
 void
 ags_recall_test_cancel()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall;
+
+  guint cancel_data, done_data;
+
+  /* recall */
+  recall = ags_recall_new();
+  g_signal_connect(G_OBJECT(recall), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &done_data);
+  g_signal_connect(G_OBJECT(recall), "cancel\0",
+		   G_CALLBACK(ags_recall_test_callback), &cancel_data);
+
+  /* assert callback invoked */
+  done_data = 0;
+  cancel_data = 0;
+  ags_recall_cancel(recall);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) != 0) &&
+	    done_data == 1 &&
+	    cancel_data == 1);
+
+  /* persistent recall */
+  recall = ags_recall_new();
+  recall->flags |= AGS_RECALL_PERSISTENT;
+  g_signal_connect(G_OBJECT(recall), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &done_data);
+  g_signal_connect(G_OBJECT(recall), "cancel\0",
+		   G_CALLBACK(ags_recall_test_callback), &cancel_data);
+
+  /* assert callback invoked */
+  done_data = 0;
+  cancel_data = 0;
+  ags_recall_cancel(recall);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) != 0) &&
+	    done_data == 1 &&
+	    cancel_data == 1);
 }
 
 void
 ags_recall_test_remove()
 {
-  //TODO:JK: implement me
+  AgsRecall *parent, *recall_0, *recall_1;
+
+  guint remove_data, done_data;
+  
+  /* parent */
+  parent = ags_recall_new();
+  g_signal_connect(G_OBJECT(parent), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &done_data);
+
+  /* 1st recall */
+  recall_0 = ags_recall_new();
+  ags_recall_add_child(parent,
+		       recall_0);
+  g_signal_connect(G_OBJECT(recall_0), "remove\0",
+		   G_CALLBACK(ags_recall_test_callback), &remove_data);
+
+  /* 2nd recall */
+  recall_1 = ags_recall_new();
+  ags_recall_add_child(parent,
+		       recall_1);
+  g_signal_connect(G_OBJECT(recall_1), "remove\0",
+		   G_CALLBACK(ags_recall_test_callback), &remove_data);
+
+  /* assert callback invoked */
+  done_data = 0;
+  remove_data = 0;
+
+  ags_recall_remove(recall_0);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) == 0) &&
+	    remove_data == 1 &&
+	    done_data == 0);
+
+  ags_recall_remove(recall_1);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) == 0) &&
+	    remove_data == 2 &&
+	    done_data == 0);
+
+  /* parent propagate done */
+  parent = ags_recall_new();
+  parent->flags |= AGS_RECALL_PROPAGATE_DONE;
+  g_signal_connect(G_OBJECT(parent), "done\0",
+		   G_CALLBACK(ags_recall_test_callback), &done_data);
+
+  /* 1st recall */
+  recall_0 = ags_recall_new();
+  ags_recall_add_child(parent,
+		       recall_0);
+  g_signal_connect(G_OBJECT(recall_0), "remove\0",
+		   G_CALLBACK(ags_recall_test_callback), &remove_data);
+
+  /* 2nd recall */
+  recall_1 = ags_recall_new();
+  ags_recall_add_child(parent,
+		       recall_1);
+  g_signal_connect(G_OBJECT(recall_1), "remove\0",
+		   G_CALLBACK(ags_recall_test_callback), &remove_data);
+
+  /* assert callback invoked */
+  done_data = 0;
+  remove_data = 0;
+
+  ags_recall_remove(recall_0);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) == 0) &&
+	    remove_data == 1 &&
+	    done_data == 0);
+
+  ags_recall_remove(recall_1);
+  
+  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) != 0) &&
+	    remove_data == 2 &&
+	    done_data == 1);
 }
 
 void
