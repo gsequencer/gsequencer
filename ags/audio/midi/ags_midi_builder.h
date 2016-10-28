@@ -143,7 +143,7 @@ struct _AgsMidiBuilderClass
 				 guint sequence);
   void (*append_smtpe)(AgsMidiBuilder *midi_builder,
 		       guint delta_time,
-		       guint hr, guint mn, guint se, guint fr, guint ff);
+		       guint rr, guint hr, guint mn, guint se, guint fr);
   void (*append_tempo)(AgsMidiBuilder *midi_builder,
 		       guint delta_time,
 		       guint tempo);  
@@ -276,7 +276,7 @@ void ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
 					     guint sequence);
 void ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
-				   guint hr, guint mn, guint se, guint fr, guint ff);
+				   guint rr, guint hr, guint mn, guint se, guint fr);
 void ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
 				   guint tempo);  

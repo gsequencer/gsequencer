@@ -272,8 +272,8 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_automation_toolbar_zoom_callback), (gpointer) automation_toolbar);
 
   /* port */
-  g_signal_connect(automation_toolbar->port, "changed\0",
-		   G_CALLBACK(ags_automation_toolbar_port_changed_callback), automation_toolbar);
+  g_signal_connect_after(automation_toolbar->port, "changed\0",
+			 G_CALLBACK(ags_automation_toolbar_port_changed_callback), automation_toolbar);
 }
 
 void
@@ -347,17 +347,25 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 #ifdef HAVE_GLIB_2_44
     gtk_list_store_set(list_store, &iter,
 		       0, ((machine->automation_port != NULL &&
-			    g_strv_contains(machine->automation_port, *specifier)) ? : TRUE, FALSE),
+			    g_strv_contains(machine->automation_port, *specifier)) ? TRUE: FALSE),
 		       1, g_strdup(*specifier),
 		       -1);
 #else
     gtk_list_store_set(list_store, &iter,
 		       0, ((machine->automation_port != NULL &&
-			    ags_strv_contains(machine->automation_port, *specifier)) ? : TRUE, FALSE),
+			    ags_strv_contains(machine->automation_port, *specifier)) ? TRUE: FALSE),
 		       1, g_strdup(*specifier),
 		       -1);
 #endif
   }
+
+  gtk_list_store_append(list_store, &iter);
+  gtk_list_store_set(list_store, &iter,
+		     0, FALSE,
+		     1, g_strdup("\0"),
+		     -1);
+  gtk_combo_box_set_active_iter(automation_toolbar->port,
+				&iter);
 }
 
 /**
@@ -383,6 +391,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
   gchar **specifier, *current;
   guint length;
+  gboolean contains_specifier;
   gboolean is_active;
 
   pthread_mutex_t *application_mutex;
@@ -406,6 +415,36 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   
   pthread_mutex_unlock(application_mutex);
 
+  /* update port combo box */
+  if(gtk_combo_box_get_active_iter(automation_toolbar->port, &iter)){
+    gchar *str;
+
+    GValue value = {0,};
+
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &str,
+		       -1);
+
+    if(!g_ascii_strcasecmp(str,
+			   control_name)){
+      gtk_tree_model_get_value(model,
+			       &iter,
+			       0, &value);
+
+      if(g_value_get_boolean(&value)){
+	g_value_set_boolean(&value, FALSE);
+      }else{
+	g_value_set_boolean(&value, TRUE);
+      }
+  
+      gtk_list_store_set_value(GTK_LIST_STORE(model),
+			       &iter,
+			       0,
+			       &value);
+    }
+  }
+  
   /* create specifier array */
   specifier = NULL;
   length = 0;
@@ -447,17 +486,31 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   }
 
   /* apply */
+  if(!g_ascii_strncasecmp(control_name,
+			  "\0",
+			  1)){
+    return;
+  }
+
   machine->automation_port = specifier;
+  contains_specifier = FALSE;
   
 #ifdef HAVE_GLIB_2_44
   if(specifier != NULL &&
      g_strv_contains(specifier,
 		     control_name)){
+    contains_specifier = TRUE;
+  }
+  
 #else
   if(specifier != NULL &&
      ags_strv_contains(specifier,
 		       control_name)){
+    contains_specifier = TRUE;
+  }
 #endif
+  
+  if(contains_specifier){
     AgsScaleArea *scale_area;
     AgsAutomationArea *automation_area;
 

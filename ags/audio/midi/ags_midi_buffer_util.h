@@ -219,10 +219,10 @@ guint ags_midi_buffer_util_get_sequence_number(unsigned char *buffer,
 /* smtpe */
 void ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
 				    glong delta_time,
-				    glong rr, glong hr, glong mn, glong se, glong fr, glong ff);
+				    glong rr, glong hr, glong mn, glong se, glong fr);
 guint ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
 				     glong *delta_time,
-				     glong *rr, glong *hr, glong *mn, glong *se, glong *fr, glong *ff);
+				     glong *rr, glong *hr, glong *mn, glong *se, glong *fr);
 
 /* tempo */
 void ags_midi_buffer_util_put_tempo(unsigned char *buffer,

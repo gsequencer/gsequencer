@@ -41,6 +41,8 @@
 #define AGS_MIDI_PARSER_MTHD "MThd\0"
 #define AGS_MIDI_PARSER_MTCK "MTrk\0"
 
+#define AGS_MIDI_EVENT "event\0"
+
 typedef struct _AgsMidiParser AgsMidiParser;
 typedef struct _AgsMidiParserClass AgsMidiParserClass;
 

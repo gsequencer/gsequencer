@@ -439,6 +439,7 @@ ags_recall_lv2_connect(AgsConnectable *connectable)
     return;
   }
 
+  g_message("load automation %x\0", recall);
   ags_recall_load_automation(recall,
 			     g_list_copy(recall->port));
 
