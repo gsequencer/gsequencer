@@ -96,18 +96,18 @@ ags_midi_buffer_util_put_varlength(unsigned char *buffer,
 
   /* write to internal buffer */
   mask = 0x7f;
-  j = 8 * varlength_size;
-  i = 8 * varlength_size - 1;
+  j = 0;
+  i = 7 * varlength_size;
 
-  for(; i > 0; ){
-    buffer[j] = ((mask << (i - 7)) & varlength) >> (i * 7);
+  for(; j < varlength_size; ){
+    buffer[j] = ((mask << (i - 7)) & varlength) >> (i - 7);
 
-    if(j < varlength_size){
+    if(j + 1 < varlength_size){
       buffer[j] |= 0x80;
     }
     
     i -= 7;
-    j -= 8;
+    j++;
   }
 }
 

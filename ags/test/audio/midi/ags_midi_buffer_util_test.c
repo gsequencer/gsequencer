@@ -85,6 +85,36 @@ void ags_midi_buffer_util_test_get_end_of_track();
 void ags_midi_buffer_util_test_put_seek_message();
 void ags_midi_buffer_util_test_decode();
 
+static const glong varlength[12][3] = {
+  {0x0, 0, 1},
+  {0x1, 1, 1},
+  {0x7f, 128 - 1, 1},
+  {0x8100, 128, 2},
+  {0x8101, 128 + 1, 2},
+  {0xff7f, 128 * 128 - 1, 2},
+  {0x818000, 128 * 128, 3},
+  {0x818001, 128 * 128 + 1, 3},
+  {0xffff7f, 128 * 128 * 128 - 1, 3},
+  {0x81808000, 128 * 128 * 128, 4},
+  {0x81808001, 128 * 128 * 128 + 1, 4},
+  {0xffffff7f, 128 * 128 * 128 * 128 - 1, 4},
+};
+
+static const unsigned char *varlength_buffer[] = {
+  "\x00",
+  "\x01",
+  "\x7f",
+  "\x81\x00",
+  "\x81\x01",
+  "\xff\x7f",
+  "\x81\x80\x00",
+  "\x81\x80\x01",
+  "\xff\xff\x7f",
+  "\x81\x80\x80\x00",
+  "\x81\x80\x80\x01",
+  "\xff\xff\xff\x7f",
+};
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -108,19 +138,80 @@ ags_midi_buffer_util_test_clean_suite()
 void
 ags_midi_buffer_util_test_get_varlength_size()
 {
-  //TODO:JK: implement me
+  guint i;
+  gboolean success;
+  
+  /*  */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    if(ags_midi_buffer_util_get_varlength_size(varlength[i][1]) != varlength[i][2]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_varlength()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint mask;
+  guint i, j;
+  gboolean success;
+  
+  /*  */
+  buffer = (unsigned char *) malloc(4 * sizeof(unsigned char));
+
+  success = TRUE;
+  
+  for(i = 0; i < 12 && success; i++){
+    ags_midi_buffer_util_put_varlength(buffer,
+				       varlength[i][1]);
+
+    mask = 0xff;
+    
+    for(j = 0; j < varlength[i][2]; j++){
+      if(buffer[j] != ((mask << (8 * (varlength[i][2] - j - 1))) & varlength[i][0]) >> (8 * (varlength[i][2] - j - 1))){
+	success = FALSE;
+	break;
+      }
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_varlength()
 {
-  //TODO:JK: implement me
+  unsigned char **iter;
+
+  guint val, n_read;
+  guint i;
+  gboolean success;
+
+  iter = varlength_buffer;
+  success = TRUE;
+  
+  for(i = 0; i < 12; i++){
+    n_read = ags_midi_buffer_util_get_varlength(*iter,
+						&val);
+
+    if(n_read != varlength[i][2] ||
+       val != varlength[i][1]){
+      success = FALSE;
+      break;
+    }
+
+    iter++;
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
