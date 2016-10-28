@@ -1020,8 +1020,9 @@ ags_automation_find_point(AgsAutomation *automation,
   }
 
   if(acceleration == NULL ||
-     acceleration->prev == NULL ||
-     acceleration->next == NULL ||
+     (!use_selection_list && 
+      (acceleration->prev == NULL ||
+       acceleration->next == NULL)) ||
      AGS_ACCELERATION(acceleration->data)->x != x){
     return(NULL);
   }else{
@@ -1775,7 +1776,7 @@ ags_automation_get_specifier_unique(GList *automation)
   return(specifier);
 }
 
-  /**
+/**
  * ags_automation_find_specifier:
  * @automation: a #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
