@@ -547,17 +547,25 @@ ags_recall_channel_automate(AgsRecall *recall)
 
   while(port != NULL){
     automation = (AgsAutomation *) AGS_PORT(port->data)->automation;
-
+    
     if(automation != NULL &&
        (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){
       GValue value = {0,};
 
+#ifdef AGS_DEBUG
+      g_message("auto do\0");
+#endif
+      
       ret_x = ags_automation_get_value(automation,
 				       floor(x), ceil(x + step),
 				       return_prev_on_failure,
 				       &value);
 
       if(ret_x != G_MAXUINT){
+#ifdef AGS_DEBUG
+	g_message("automate x -> %d\0", ret_x);
+#endif
+	
 	ags_port_safe_write(port->data,
 			    &value);
       }

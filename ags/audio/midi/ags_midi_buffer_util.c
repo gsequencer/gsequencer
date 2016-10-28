@@ -1568,7 +1568,6 @@ ags_midi_buffer_util_get_sequence_number(unsigned char *buffer,
  * @mn: minute
  * @se: second
  * @fr: frame number
- * @ff: fractional frames
  * 
  * Put smtpe timestamp.
  * 
@@ -1577,7 +1576,7 @@ ags_midi_buffer_util_get_sequence_number(unsigned char *buffer,
 void
 ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
 			       glong delta_time,
-			       glong rr, glong hr, glong mn, glong se, glong fr, glong ff)
+			       glong rr, glong hr, glong mn, glong se, glong fr)
 {
   guint delta_time_size;
 
@@ -1614,8 +1613,8 @@ ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
   /* fr */
   buffer[delta_time_size + 6] = fr;
 
-  /* ff */
-  buffer[delta_time_size + 7] = ff;
+  /* end */
+  buffer[delta_time_size + 7] = 0xf7;
 }
 
 /**
@@ -1627,7 +1626,6 @@ ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
  * @mn: the return location of minute
  * @se: the return location of second
  * @fr: the return location of frame number
- * @ff: the return location of fractional frames
  * 
  * Get smtpe timestamp.
  * 
@@ -1638,7 +1636,7 @@ ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
 guint
 ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
 			       glong *delta_time,
-			       glong *rr, glong *hr, glong *mn, glong *se, glong *fr, glong *ff)
+			       glong *rr, glong *hr, glong *mn, glong *se, glong *fr)
 {
   glong val;
   guint delta_time_size;
@@ -1678,11 +1676,6 @@ ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
   /* fr */
   if(fr != NULL){
     *fr = buffer[delta_time_size + 6];
-  }
-  
-  /* ff */
-  if(ff != NULL){
-    *ff = buffer[delta_time_size + 7];
   }
   
   return(delta_time_size + 8);
@@ -2403,7 +2396,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 	      if(c == 0x05){
 		n = ags_midi_buffer_util_get_smtpe(buffer,
 						   NULL,
-						   NULL, NULL, NULL, NULL, NULL, NULL);
+						   NULL, NULL, NULL, NULL, NULL);
 
 		buffer += n;
 	      }else{

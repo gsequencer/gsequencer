@@ -295,6 +295,10 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	    ags_automation_add_acceleration(automation->data,
 					    acceleration,
 					    FALSE);
+
+#ifdef AGS_DEBUG
+	    g_message("add acceleration x -> %d; f(x) = %f\0", x, val);
+#endif
 	  }
 
 	  automation = automation->next;

@@ -1,3 +1,11 @@
+ags (0.7.91)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added unit tests in ags_automation_test.c and ags_recall_test.c
+	* fixed automation toolbar to toggle port correctly and added empty port
+	* fixed ags_midi_buffer_util.c, ags_midi_builder.c and ags_midi_parser.c to conform MIDI specs
+	* NOTE arguments are shifted for MIDI SMTPE related functions
+
 ags (0.7.90)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

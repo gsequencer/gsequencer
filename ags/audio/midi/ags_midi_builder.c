@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <ags/audio/midi/ags_midi_buffer_util.h>
+
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -109,7 +111,7 @@ void ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
 						  guint sequence);
 void ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
 					guint delta_time,
-					guint hr, guint mn, guint se, guint fr, guint ff);
+					guint rr, guint hr, guint mn, guint se, guint fr);
 void ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
 					guint delta_time,
 					guint tempo);  
@@ -262,6 +264,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::midi-putc signal is emited during putting char to file.
    *
+<<<<<<< HEAD
+   * Since: 1.0.0
+=======
    * Since: 0.7.90
    */
   midi_builder_signals[MIDI_PUTC] =
@@ -647,8 +652,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_smtpe),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT,
-		 G_TYPE_NONE, 5,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 6,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
@@ -1911,7 +1917,7 @@ ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
 void
 ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
-				   guint hr, guint mn, guint se, guint fr, guint ff)
+				   guint rr, guint hr, guint mn, guint se, guint fr)
 {
   unsigned char *buffer;
 
@@ -1922,7 +1928,7 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
   buffer = (unsigned char *) malloc((delta_time_size + 8) * sizeof(unsigned char));
   ags_midi_buffer_util_put_smtpe(buffer,
 				 delta_time,
-				 hr, mn, se, fr, ff);
+				 rr, hr, mn, se, fr);
   ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
 					     buffer, delta_time_size + 8);
 }
@@ -1931,6 +1937,7 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
  * ags_midi_builder_append_smtpe:
  * @midi_builder: the #AgsMidiBuilder
  * @delta_time: the delta time
+ * @rr: rate
  * @hr: hours
  * @mn: minutes
  * @se: seconds
@@ -1944,7 +1951,7 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
 void
 ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
 			      guint delta_time,
-			      guint hr, guint mn, guint se, guint fr, guint ff)
+			      guint rr, guint hr, guint mn, guint se, guint fr)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
@@ -1952,7 +1959,7 @@ ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[SMTPE], 0,
 		delta_time,
-		hr, mn, se, fr, ff);
+		rr, hr, mn, se, fr);
   g_object_unref((GObject *) midi_builder);
 }
 
@@ -2686,27 +2693,35 @@ ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
     }else if(!xmlStrncmp(event,
 			 "smtpe\0",
 			 6)){
-      guint hr, mn, se, fr, ff;
+      guint rr, hr, mn, se, fr;
 
       /* timestamp */
+      rr = 0;
       hr = 0;
       mn = 0;
       se = 0;
       fr = 0;
-      ff = 0;
 
+      str = xmlGetProp(node,
+		       "rate\0");
+      
+      if(str != NULL){
+	sscanf(str,
+	       "%d\0", &rr);
+      }
+      
       str = xmlGetProp(node,
 		       "timestamp\0");
       
       if(str != NULL){
 	sscanf(str,
-	       "%d %d %d %d %d\0", &hr, &mn, &se, &fr, &ff);
+	       "%d %d %d %d\0", &hr, &mn, &se, &fr);
       }
 
       /* append */
       ags_midi_builder_append_smtpe(midi_builder,
 				    delta_time,
-				    hr, mn, se, fr, ff);
+				    rr, hr, mn, se, fr);
     }else if(!xmlStrncmp(event,
 			 "tempo-number\0",
 			 13)){

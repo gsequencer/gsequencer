@@ -68,8 +68,6 @@ xmlNode* ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint me
 xmlNode* ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type);
 
-#define AGS_MIDI_EVENT "event\0"
-
 /**
  * SECTION:ags_midi_parser
  * @short_description: the menu bar.
@@ -771,6 +769,16 @@ ags_midi_parser_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_midi_parser_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_midi_parser_read_gint16:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Read gint16.
+ * 
+ * Returns: the read gint16
+ * 
+ * Since: 0.5.0
+ */
 gint16
 ags_midi_parser_read_gint16(AgsMidiParser *midi_parser)
 {
@@ -786,6 +794,16 @@ ags_midi_parser_read_gint16(AgsMidiParser *midi_parser)
   return(value);
 }
 
+/**
+ * ags_midi_parser_read_gint24:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Read gint32.
+ * 
+ * Returns: the read gint32
+ * 
+ * Since: 0.5.0
+ */
 gint32
 ags_midi_parser_read_gint24(AgsMidiParser *midi_parser)
 {
@@ -804,6 +822,16 @@ ags_midi_parser_read_gint24(AgsMidiParser *midi_parser)
   return(value);
 }
 
+/**
+ * ags_midi_parser_read_gint32:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Read gint32.
+ * 
+ * Returns: the read gint32
+ * 
+ * Since: 0.5.0
+ */
 gint32
 ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
 {
@@ -823,6 +851,16 @@ ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
   return(value);
 }
 
+/**
+ * ags_midi_parser_read_varlength:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Read varlength as long.
+ * 
+ * Returns: the read varlength
+ * 
+ * Since: 0.5.0
+ */
 long
 ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
 {
@@ -846,6 +884,17 @@ ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
   return(value);
 }
 
+/**
+ * ags_midi_parser_read_text:
+ * @midi_parser: the #AgsMidiParser
+ * @length: the length
+ * 
+ * Read text.
+ * 
+ * Returns: the text read as string
+ * 
+ * Since: 0.5.0
+ */
 gchar*
 ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 			  gint length)
@@ -874,6 +923,19 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
   return(g_strdup(text));
 }
 
+/**
+ * ags_midi_parser_ticks_to_sec:
+ * @midi_parser: the #AgsMidiParser
+ * @ticks: the ticks count
+ * @division: the division
+ * @tempo: the tempo
+ * 
+ * Convert ticks to seconds.
+ * 
+ * Returns: the seconds read from ticks
+ * 
+ * Since: 0.5.0
+ */
 gdouble
 ags_midi_parser_ticks_to_sec(AgsMidiParser *midi_parser,
 			     guint ticks, gint division, guint tempo)
@@ -898,6 +960,35 @@ ags_midi_parser_ticks_to_sec(AgsMidiParser *midi_parser,
 }
 
 int
+ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser)
+{
+  int c;
+
+  if(midi_parser->file == NULL){
+    return(-1);
+  }
+
+  c = fgetc(midi_parser->file);
+  
+  if(c == EOF){
+    g_warning("reached end of file\0");
+    midi_parser->flags |= AGS_MIDI_PARSER_EOF;
+  }
+
+  return(c);
+}
+
+/**
+ * ags_midi_parser_midi_getc:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Read one byte.
+ * 
+ * Returns: the byte read
+ * 
+ * Since: 0.5.0
+ */
+int
 ags_midi_parser_midi_getc(AgsMidiParser *midi_parser)
 {
   int c;
@@ -913,21 +1004,22 @@ ags_midi_parser_midi_getc(AgsMidiParser *midi_parser)
   return(c);
 }
 
-int
-ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser)
+void
+ags_midi_parser_real_on_error(AgsMidiParser *midi_parser,
+			      GError **error)
 {
-  int c;
-
-  c = fgetc(midi_parser->file);
-  
-  if(c == EOF){
-    g_warning("reached end of file\0");
-    midi_parser->flags |= AGS_MIDI_PARSER_EOF;
-  }
-
-  return(c);
+  //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_parser_on_error:
+ * @midi_parser: the #AgsMidiParser
+ * @error: the return location of #GError-struct
+ * 
+ * Error reporting.
+ * 
+ * Since: 0.5.0
+ */
 void
 ags_midi_parser_on_error(AgsMidiParser *midi_parser,
 			 GError **error)
@@ -939,29 +1031,6 @@ ags_midi_parser_on_error(AgsMidiParser *midi_parser,
 		midi_parser_signals[ON_ERROR], 0,
 		error);
   g_object_unref((GObject *) midi_parser);
-}
-
-void
-ags_midi_parser_real_on_error(AgsMidiParser *midi_parser,
-			      GError **error)
-{
-  //TODO:JK: implement me
-}
-
-xmlDoc*  
-ags_midi_parser_parse_full(AgsMidiParser *midi_parser)
-{
-  xmlDoc *doc;
-  
-  g_return_val_if_fail(AGS_IS_MIDI_PARSER(midi_parser), NULL);
-  
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[PARSE_FULL], 0,
-		&doc);
-  g_object_unref((GObject *) midi_parser);
-
-  return(doc);
 }
 
 xmlDoc*
@@ -1011,6 +1080,32 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   return(doc);
 }
 
+/**
+ * ags_midi_parser_parse_full:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Parse all data of #AgsMidiParser:file.
+ * 
+ * Returns: the xmlDoc representing your MIDI file
+ * 
+ * Since: 0.5.0
+ */
+xmlDoc*  
+ags_midi_parser_parse_full(AgsMidiParser *midi_parser)
+{
+  xmlDoc *doc;
+  
+  g_return_val_if_fail(AGS_IS_MIDI_PARSER(midi_parser), NULL);
+  
+  g_object_ref((GObject *) midi_parser);
+  g_signal_emit(G_OBJECT(midi_parser),
+		midi_parser_signals[PARSE_FULL], 0,
+		&doc);
+  g_object_unref((GObject *) midi_parser);
+
+  return(doc);
+}
+
 xmlNode*
 ags_midi_parser_parse_bytes(AgsMidiParser *midi_parser,
 			    unsigned char *midi_buffer,
@@ -1025,28 +1120,13 @@ ags_midi_parser_parse_bytes(AgsMidiParser *midi_parser,
   return(node);
 }
 
-xmlNode*  
-ags_midi_parser_parse_header(AgsMidiParser *midi_parser)
-{
-  xmlNode *node;
-  
-  g_return_val_if_fail(AGS_IS_MIDI_PARSER(midi_parser), NULL);
-  
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[PARSE_HEADER], 0,
-		&node);
-  g_object_unref((GObject *) midi_parser);
-
-  return(node);
-}
-
 xmlNode*
 ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
 {
   xmlNode *node;
 
   static gchar header[] = "MThd";
+
   guint offset;
   guint format;
   guint count;
@@ -1117,8 +1197,18 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   return(node);
 }
 
+/**
+ * ags_midi_parser_parse_header:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Parse MIDI header
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
-ags_midi_parser_parse_track(AgsMidiParser *midi_parser)
+ags_midi_parser_parse_header(AgsMidiParser *midi_parser)
 {
   xmlNode *node;
   
@@ -1126,7 +1216,7 @@ ags_midi_parser_parse_track(AgsMidiParser *midi_parser)
   
   g_object_ref((GObject *) midi_parser);
   g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[PARSE_TRACK], 0,
+		midi_parser_signals[PARSE_HEADER], 0,
 		&node);
   g_object_unref((GObject *) midi_parser);
 
@@ -1137,7 +1227,9 @@ xmlNode*
 ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 {
   xmlNode *node, *current;
+
   static gchar track[] = "MTrk";
+
   gint offset, start_offset;
   long delta_time;
   guint status;
@@ -1257,6 +1349,42 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
   return(node);
 }
 
+/**
+ * ags_midi_parser_parse_track:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Parse MIDI track.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
+xmlNode*  
+ags_midi_parser_parse_track(AgsMidiParser *midi_parser)
+{
+  xmlNode *node;
+  
+  g_return_val_if_fail(AGS_IS_MIDI_PARSER(midi_parser), NULL);
+  
+  g_object_ref((GObject *) midi_parser);
+  g_signal_emit(G_OBJECT(midi_parser),
+		midi_parser_signals[PARSE_TRACK], 0,
+		&node);
+  g_object_unref((GObject *) midi_parser);
+
+  return(node);
+}
+
+/**
+ * ags_midi_parser_channel_message:
+ * @midi_parser: the #AgsMidiParser
+ * 
+ * Parse channel message.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*
 ags_midi_parser_channel_message(AgsMidiParser *midi_parser, guint status)
 {
@@ -1337,6 +1465,17 @@ ags_midi_parser_real_key_on(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
+/**
+ * ags_midi_parser_key_on:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse key on.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_key_on(AgsMidiParser *midi_parser, guint status)
 {
@@ -1387,6 +1526,17 @@ ags_midi_parser_real_key_off(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
+/**
+ * ags_midi_parser_key_off:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse key off.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_key_off(AgsMidiParser *midi_parser, guint status)
 {
@@ -1436,7 +1586,18 @@ ags_midi_parser_real_key_pressure(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
-xmlNode*  
+/**
+ * ags_midi_parser_key_pressure:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse key pressure.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
+xmlNode*
 ags_midi_parser_key_pressure(AgsMidiParser *midi_parser, guint status)
 {
   xmlNode *node;
@@ -1568,6 +1729,17 @@ ags_midi_parser_real_change_parameter(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
+/**
+ * ags_midi_parser_change_parameter:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse change parameter.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_change_parameter(AgsMidiParser *midi_parser, guint status)
 {
@@ -1617,6 +1789,17 @@ ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
+/**
+ * ags_midi_parser_change_pitch_bend:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse change pitch bend.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
 {
@@ -1661,6 +1844,17 @@ ags_midi_parser_real_change_program(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
+/**
+ * ags_midi_parser_change_program:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse change program.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_change_program(AgsMidiParser *midi_parser, guint status)
 {
@@ -1706,6 +1900,17 @@ ags_midi_parser_real_change_channel_pressure(AgsMidiParser *midi_parser, guint s
   return(node);
 }
 
+/**
+ * ags_midi_parser_change_channel_pressure:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse change channel pressure.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_change_channel_pressure(AgsMidiParser *midi_parser, guint status)
 {
@@ -1729,6 +1934,17 @@ ags_midi_parser_real_not_defined(AgsMidiParser *midi_parser, guint status)
   return(NULL);
 }
 
+/**
+ * ags_midi_parser_not_defined:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse not defined.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_not_defined(AgsMidiParser *midi_parser, guint status)
 {
@@ -1760,6 +1976,17 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
 #endif
 }
 
+/**
+ * ags_midi_parser_sysex:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse sysex.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*
 ags_midi_parser_sysex(AgsMidiParser *midi_parser, guint status)
 {
@@ -1852,6 +2079,17 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
+/**
+ * ags_midi_parser_system_common:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse system common.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*
 ags_midi_parser_system_common(AgsMidiParser *midi_parser, guint status)
 {
@@ -1992,6 +2230,17 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
   return(node);
 }
 
+/**
+ * ags_midi_parser_meta_event:
+ * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
+ * 
+ * Parse meta event.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_meta_event(AgsMidiParser *midi_parser, guint status)
 {
@@ -2031,6 +2280,17 @@ ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type
   return(node);
 }
 
+/**
+ * ags_midi_parser_sequence_number:
+ * @midi_parser: the #AgsMidiParser
+ * @meta_type: the meta type byte
+ * 
+ * Parse sequence number.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_sequence_number(AgsMidiParser *midi_parser, guint meta_type)
 {
@@ -2063,6 +2323,17 @@ ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
   return(node);
 }
 
+/**
+ * ags_midi_parser_end_of_track:
+ * @midi_parser: the #AgsMidiParser
+ * @meta_type: the meta type byte
+ * 
+ * Parse end of track.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
 {
@@ -2084,12 +2355,17 @@ xmlNode*
 ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
-  int hr, mn, se, fr, ff;
+  int rr, hr, mn, se, fr, ff;
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
 
-  hr = ags_midi_parser_midi_getc(midi_parser);
+  rr = 
+    hr = ags_midi_parser_midi_getc(midi_parser);
+
+  rr = (0x60 & rr) >> 5;
+  hr = (0x1f & hr);
+  
   mn = ags_midi_parser_midi_getc(midi_parser);
   se = ags_midi_parser_midi_getc(midi_parser);
   fr = ags_midi_parser_midi_getc(midi_parser);
@@ -2098,14 +2374,29 @@ ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
 	     "smtpe\0");
+
+  xmlNewProp(node,
+	     "rate\0",
+	     g_strdup_printf("%d\0", rr));
   
   xmlNewProp(node,
 	     "timestamp\0",
-	     g_strdup_printf("%d %d %d %d %d\0", hr, mn, se, fr, ff));
+	     g_strdup_printf("%d %d %d %d\0", hr, mn, se, fr));
   
   return(node);
 }
 
+/**
+ * ags_midi_parser_smtpe:
+ * @midi_parser: the #AgsMidiParser
+ * @meta_type: the meta type byte
+ * 
+ * Parse smtpe.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
@@ -2145,6 +2436,17 @@ ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type)
   return(node);
 }
 
+/**
+ * ags_midi_parser_tempo:
+ * @midi_parser: the #AgsMidiParser
+ * @meta_type: the meta type byte
+ * 
+ * Parse tempo.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_tempo(AgsMidiParser *midi_parser, guint meta_type)
 {
@@ -2192,6 +2494,17 @@ ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type)
   return(node);
 }
 
+/**
+ * ags_midi_parser_time_signature:
+ * @midi_parser: the #AgsMidiParser
+ * @meta_type: the meta type byte
+ * 
+ * Parse time signature.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_time_signature(AgsMidiParser *midi_parser, guint meta_type)
 {
@@ -2232,6 +2545,17 @@ ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type)
   return(node);
 }
 
+/**
+ * ags_midi_parser_key_signature:
+ * @midi_parser: the #AgsMidiParser
+ * @meta_type: the meta type byte
+ * 
+ * Parse key signature.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_key_signature(AgsMidiParser *midi_parser, guint meta_type)
 {
@@ -2304,7 +2628,8 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
   node = xmlNewNode(NULL,
 		    "midi-message\0");
 
-  text_length = ags_midi_parser_read_varlength(midi_parser);
+  //TODO:JK: verify me
+  text_length = 0x7f & ags_midi_parser_midi_getc(midi_parser);
   text = ags_midi_parser_read_text(midi_parser,
 				   text_length);
   
@@ -2364,6 +2689,17 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
   return(node);
 }
 
+/**
+ * ags_midi_parser_text_event:
+ * @midi_parser: the #AgsMidiParser
+ * @meta_type: the meta type byte
+ * 
+ * Parse text event.
+ * 
+ * Returns: the xmlNode containing parsed data
+ * 
+ * Since: 0.5.0
+ */
 xmlNode*  
 ags_midi_parser_text_event(AgsMidiParser *midi_parser, guint meta_type)
 {
