@@ -326,7 +326,7 @@ ags_midi_buffer_util_test_put_int24()
     "\xff\xff\xff",
   };
 
-  buffer = (unsigned char *) malloc(2 * sizeof(unsigned char));
+  buffer = (unsigned char *) malloc(3 * sizeof(unsigned char));
 
   success = TRUE;
   
@@ -392,25 +392,175 @@ ags_midi_buffer_util_test_get_int24()
 void
 ags_midi_buffer_util_test_put_int32()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  
+  guint i, j;
+  gboolean success;
+  
+  static const glong val[] = {
+    0,
+    1,
+    255,
+    256,
+    65535,
+    65536,
+    16777215,
+    16777216,
+    4294967295,
+  };
+
+  static const unsigned char *val_buffer[] = {
+    "\x00\x00\x00\x00",
+    "\x00\x00\x00\x01",
+    "\x00\x00\x00\xff",
+    "\x00\x00\x01\x00",
+    "\x00\x00\xff\xff",
+    "\x00\x01\x00\x00",
+    "\x00\xff\xff\xff",
+    "\x01\x00\x00\x00",
+    "\xff\xff\xff\xff",
+  };
+
+  buffer = (unsigned char *) malloc(4 * sizeof(unsigned char));
+
+  success = TRUE;
+  
+  for(i = 0; i < 9 && success; i++){
+    ags_midi_buffer_util_put_int32(buffer,
+				   val[i]);
+    
+    for(j = 0; j < 4; j++){
+      if(buffer[j] != val_buffer[i][j]){
+	success = FALSE;
+
+	break;
+      }
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_int32()
 {
-  //TODO:JK: implement me
+  glong current;
+  guint i;
+  gboolean success;
+    
+  static const glong val[] = {
+    0,
+    1,
+    255,
+    256,
+    65535,
+    65536,
+    16777215,
+    16777216,
+    4294967295,
+  };
+
+  static const unsigned char *val_buffer[] = {
+    "\x00\x00\x00\x00",
+    "\x00\x00\x00\x01",
+    "\x00\x00\x00\xff",
+    "\x00\x00\x01\x00",
+    "\x00\x00\xff\xff",
+    "\x00\x01\x00\x00",
+    "\x00\xff\xff\xff",
+    "\x01\x00\x00\x00",
+    "\xff\xff\xff\xff",
+  };
+
+  success = TRUE;
+
+  for(i = 0; i < 9 && success; i++){
+    ags_midi_buffer_util_get_int32(val_buffer[i],
+				   &current);
+
+    if(current != val[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_header()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *header_format_0 = "MThd\x00\x00\x00\x00\x00\x00\x00\x00\x00\x60";
+  unsigned char *header_format_1 = "MThd\x00\x00\x00\x00\x00\x01\x00\x00\x00\x60";
+
+  guint i;
+  gboolean success;
+  
+  buffer = malloc(14 * sizeof(unsigned char));
+
+  /* format 0 */
+  success = TRUE;
+
+  ags_midi_buffer_util_put_header(buffer,
+				  0, 0,
+				  0, 96);
+
+  for(i = 0; i < 14; i++){
+    if(buffer[i] != header_format_0[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  /* format 1 */
+  success = TRUE;
+
+  ags_midi_buffer_util_put_header(buffer,
+				  0, 1,
+				  0, 96);
+
+  for(i = 0; i < 14; i++){
+    if(buffer[i] != header_format_1[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
 }
 
 void
 ags_midi_buffer_util_test_get_header()
 {
-  //TODO:JK: implement me
+  unsigned char *header_format_0 = "MThd\x00\x00\x00\x00\x00\x00\x00\x00\x00\x60";
+  unsigned char *header_format_1 = "MThd\x00\x00\x00\x00\x00\x01\x00\x00\x00\x60";
+  
+  glong offset, format, track_count, division;
+
+  /* invoke with no return location */
+  ags_midi_buffer_util_get_header(header_format_0,
+				  NULL, NULL,
+				  NULL, NULL);
+  
+  /* format 0 */
+  ags_midi_buffer_util_get_header(header_format_0,
+				  &offset, &format,
+				  &track_count, &division);
+  CU_ASSERT(offset == 0 &&
+	    format == 0 &&
+	    track_count == 0 &&
+	    division == 96);
+  
+  /* format 1 */
+  ags_midi_buffer_util_get_header(header_format_1,
+				  &offset, &format,
+				  &track_count, &division);
+  CU_ASSERT(offset == 0 &&
+	    format == 1 &&
+	    track_count == 0 &&
+	    division == 96);
 }
 
 void
