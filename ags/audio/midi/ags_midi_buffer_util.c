@@ -171,7 +171,7 @@ ags_midi_buffer_util_put_int16(unsigned char *buffer,
     return;
   }
 
-  buffer[0] = val & (0xff << 8);
+  buffer[0] = (val & (0xff << 8)) >> 8;
   buffer[1] = val & 0xff;
 }
 
@@ -219,8 +219,8 @@ ags_midi_buffer_util_put_int24(unsigned char *buffer,
     return;
   }
   
-  buffer[0] = val & (0xff << 16);
-  buffer[1] = val & (0xff << 8);
+  buffer[0] = (val & (0xff << 16)) >> 16;
+  buffer[1] = (val & (0xff << 8)) >> 8;
   buffer[2] = val & 0xff;
 }
 
@@ -269,9 +269,9 @@ ags_midi_buffer_util_put_int32(unsigned char *buffer,
     return;
   }
   
-  buffer[0] = val & (0xff << 24);
-  buffer[1] = val & (0xff << 16);
-  buffer[2] = val & (0xff << 8);
+  buffer[0] = (val & (0xff << 24)) >> 24;
+  buffer[1] = (val & (0xff << 16)) >> 16;
+  buffer[2] = (val & (0xff << 8)) >> 8;
   buffer[3] = val & 0xff;
 }
 
