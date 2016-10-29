@@ -50,8 +50,8 @@ void ags_midi_buffer_util_test_put_key_pressure();
 void ags_midi_buffer_util_test_get_key_pressure();
 void ags_midi_buffer_util_test_put_change_parameter();
 void ags_midi_buffer_util_test_get_change_parameter();
-void ags_midi_buffer_util_test_put_change_pitch_bend();
-void ags_midi_buffer_util_test_get_change_pitch_bend();
+void ags_midi_buffer_util_test_put_pitch_bend();
+void ags_midi_buffer_util_test_get_pitch_bend();
 void ags_midi_buffer_util_test_put_change_program();
 void ags_midi_buffer_util_test_get_change_program();
 void ags_midi_buffer_util_test_put_change_pressure();
@@ -515,6 +515,8 @@ ags_midi_buffer_util_test_put_header()
     }
   }
 
+  CU_ASSERT(success == TRUE);
+
   /* format 1 */
   success = TRUE;
 
@@ -529,6 +531,8 @@ ags_midi_buffer_util_test_put_header()
       break;
     }
   }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -566,97 +570,599 @@ ags_midi_buffer_util_test_get_header()
 void
 ags_midi_buffer_util_test_put_track()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *track = "MTrk\x00\x00\x00\x00";
+
+  guint i;
+  gboolean success;
+  
+  buffer = (unsigned char *) malloc(8 * sizeof(unsigned char));
+
+  /* track */
+  success = TRUE;
+
+  ags_midi_buffer_util_put_track(buffer,
+				 0);
+  
+  for(i = 0; i < 8; i++){
+    if(buffer[i] != track[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_track()
 {
-  //TODO:JK: implement me
+  unsigned char *track = "MTrk\x00\x00\x00\x00";
+
+  glong offset;
+
+  /* invoke with no return location */
+  ags_midi_buffer_util_get_track(track,
+				 NULL);
+  
+  /* track */
+  ags_midi_buffer_util_get_track(track,
+				 &offset);
+
+  CU_ASSERT(offset == 0);
 }
 
 void
 ags_midi_buffer_util_test_put_key_on()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_on = "\x90\x36\x7f";
+  
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    ags_midi_buffer_util_put_key_on(buffer,
+				    varlength[i][1],
+				    0,
+				    54,
+				    127);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], key_on, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_key_on()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_on = "\x90\x36\x7f";
+
+  guint i;
+  glong delta_time, channel, key, velocity;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], key_on, 3);
+
+  ags_midi_buffer_util_get_key_on(buffer,
+				  NULL,
+				  NULL,
+				  NULL,
+				  NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], key_on, 3);
+    
+    ags_midi_buffer_util_get_key_on(buffer,
+				    &delta_time,
+				    &channel,
+				    &key,
+				    &velocity);
+
+    if(delta_time != varlength[i][1] ||
+       channel != 0 ||
+       key != 54 ||
+       velocity != 127){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_key_off()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_off = "\x80\x36\x7f";
+  
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    ags_midi_buffer_util_put_key_off(buffer,
+				     varlength[i][1],
+				     0,
+				     54,
+				     127);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], key_off, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_key_off()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_off = "\x80\x36\x7f";
+
+  guint i;
+  glong delta_time, channel, key, velocity;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], key_off, 3);
+
+  ags_midi_buffer_util_get_key_off(buffer,
+				   NULL,
+				   NULL,
+				   NULL,
+				   NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], key_off, 3);
+    
+    ags_midi_buffer_util_get_key_off(buffer,
+				     &delta_time,
+				     &channel,
+				     &key,
+				     &velocity);
+
+    if(delta_time != varlength[i][1] ||
+       channel != 0 ||
+       key != 54 ||
+       velocity != 127){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_key_pressure()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_pressure = "\xa0\x36\x7f";
+  
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    ags_midi_buffer_util_put_key_pressure(buffer,
+					  varlength[i][1],
+					  0,
+					  54,
+					  127);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], key_pressure, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_key_pressure()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_pressure = "\xa0\x36\x7f";
+
+  guint i;
+  glong delta_time, channel, key, velocity;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], key_pressure, 3);
+  
+  ags_midi_buffer_util_get_key_pressure(buffer,
+					NULL,
+					NULL,
+					NULL,
+					NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], key_pressure, 3);
+    
+    ags_midi_buffer_util_get_key_pressure(buffer,
+					  &delta_time,
+					  &channel,
+					  &key,
+					  &velocity);
+
+    if(delta_time != varlength[i][1] ||
+       channel != 0 ||
+       key != 54 ||
+       velocity != 127){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_change_parameter()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *change_parameter = "\xb0\x00\x7f";
+  
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    ags_midi_buffer_util_put_change_parameter(buffer,
+					      varlength[i][1],
+					      0,
+					      0,
+					      127);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], change_parameter, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_change_parameter()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *change_parameter = "\xb0\x00\x7f";
+
+  guint i;
+  glong delta_time, channel, control, value;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], change_parameter, 3);
+  
+  ags_midi_buffer_util_get_change_parameter(buffer,
+					    NULL,
+					    NULL,
+					    NULL,
+					    NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], change_parameter, 3);
+    
+    ags_midi_buffer_util_get_change_parameter(buffer,
+					      &delta_time,
+					      &channel,
+					      &control,
+					      &value);
+
+    if(delta_time != varlength[i][1] ||
+       channel != 0 ||
+       control != 0 ||
+       value != 127){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
-ags_midi_buffer_util_test_put_change_pitch_bend()
+ags_midi_buffer_util_test_put_pitch_bend()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *pitch_bend = "\xe0\x00\x7f";
+  
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    ags_midi_buffer_util_put_pitch_bend(buffer,
+					varlength[i][1],
+					0,
+					0,
+					127);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], pitch_bend, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
-ags_midi_buffer_util_test_get_change_pitch_bend()
+ags_midi_buffer_util_test_get_pitch_bend()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *pitch_bend = "\xe0\x00\x7f";
+
+  guint i;
+  glong delta_time, channel, pitch, transmitter;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], pitch_bend, 3);
+  
+  ags_midi_buffer_util_get_pitch_bend(buffer,
+				      NULL,
+				      NULL,
+				      NULL,
+				      NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], pitch_bend, 3);
+    
+    ags_midi_buffer_util_get_pitch_bend(buffer,
+					&delta_time,
+					&channel,
+					&pitch,
+					&transmitter);
+
+    if(delta_time != varlength[i][1] ||
+       channel != 0 ||
+       pitch != 0 ||
+       transmitter != 127){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_change_program()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *change_program = "\xc0\x00";
+  
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    ags_midi_buffer_util_put_change_program(buffer,
+					    varlength[i][1],
+					    0,
+					    0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], change_program, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_change_program()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *change_program = "\xc0\x00";
+
+  guint i;
+  glong delta_time, channel, program;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], change_program, 3);
+  
+  ags_midi_buffer_util_get_change_program(buffer,
+					  NULL,
+					  NULL,
+					  NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], change_program, 3);
+    
+    ags_midi_buffer_util_get_change_program(buffer,
+					    &delta_time,
+					    &channel,
+					    &program);
+
+    if(delta_time != varlength[i][1] ||
+       channel != 0 ||
+       program != 0){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_change_pressure()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *change_pressure = "\xd0\x7f";
+  
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    ags_midi_buffer_util_put_change_pressure(buffer,
+					    varlength[i][1],
+					    0,
+					    127);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], change_pressure, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_change_pressure()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *change_pressure = "\xd0\x7f";
+
+  guint i;
+  glong delta_time, channel, pressure;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], change_pressure, 3);
+  
+  ags_midi_buffer_util_get_change_pressure(buffer,
+					  NULL,
+					  NULL,
+					  NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], change_pressure, 3);
+    
+    ags_midi_buffer_util_get_change_pressure(buffer,
+					    &delta_time,
+					    &channel,
+					    &pressure);
+
+    if(delta_time != varlength[i][1] ||
+       channel != 0 ||
+       pressure != 127){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -868,8 +1374,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key pressure\0", ags_midi_buffer_util_test_get_key_pressure) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change parameter\0", ags_midi_buffer_util_test_put_change_parameter) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change parameter\0", ags_midi_buffer_util_test_get_change_parameter) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pitch bend\0", ags_midi_buffer_util_test_put_change_pitch_bend) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change pitch bend\0", ags_midi_buffer_util_test_get_change_pitch_bend) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pitch bend\0", ags_midi_buffer_util_test_put_pitch_bend) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change pitch bend\0", ags_midi_buffer_util_test_get_pitch_bend) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change program\0", ags_midi_buffer_util_test_put_change_program) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change program\0", ags_midi_buffer_util_test_get_change_program) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pressure\0", ags_midi_buffer_util_test_put_change_pressure) == NULL) ||

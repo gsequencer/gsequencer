@@ -136,16 +136,16 @@ guint ags_midi_buffer_util_get_change_parameter(unsigned char *buffer,
 						glong *value);
 
 /* pitch bend */
-void ags_midi_buffer_util_put_change_pitch_bend(unsigned char *buffer,
-						glong delta_time,
-						glong channel,
-						glong pitch,
-						glong transmitter);
-guint ags_midi_buffer_util_get_change_pitch_bend(unsigned char *buffer,
-						 glong *delta_time,
-						 glong *channel,
-						 glong *pitch,
-						 glong *transmitter);
+void ags_midi_buffer_util_put_pitch_bend(unsigned char *buffer,
+					 glong delta_time,
+					 glong channel,
+					 glong pitch,
+					 glong transmitter);
+guint ags_midi_buffer_util_get_pitch_bend(unsigned char *buffer,
+					  glong *delta_time,
+					  glong *channel,
+					  glong *pitch,
+					  glong *transmitter);
 
 /* change program */
 void ags_midi_buffer_util_put_change_program(unsigned char *buffer,
