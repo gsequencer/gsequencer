@@ -56,8 +56,8 @@ void ags_midi_buffer_util_test_put_change_program();
 void ags_midi_buffer_util_test_get_change_program();
 void ags_midi_buffer_util_test_put_change_pressure();
 void ags_midi_buffer_util_test_get_change_pressure();
-void ags_midi_buffer_util_test_put_put_sysex();
-void ags_midi_buffer_util_test_get_get_sysex();
+void ags_midi_buffer_util_test_put_sysex();
+void ags_midi_buffer_util_test_get_sysex();
 void ags_midi_buffer_util_test_put_quarter_frame();
 void ags_midi_buffer_util_test_get_quarter_frame();
 void ags_midi_buffer_util_test_put_song_position();
@@ -1166,13 +1166,13 @@ ags_midi_buffer_util_test_get_change_pressure()
 }
 
 void
-ags_midi_buffer_util_test_put_put_sysex()
+ags_midi_buffer_util_test_put_sysex()
 {
   //TODO:JK: implement me
 }
 
 void
-ags_midi_buffer_util_test_get_get_sysex()
+ags_midi_buffer_util_test_get_sysex()
 {
   //TODO:JK: implement me
 }
@@ -1180,13 +1180,211 @@ ags_midi_buffer_util_test_get_get_sysex()
 void
 ags_midi_buffer_util_test_put_quarter_frame()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  unsigned char *quarter_frame_frame_number_0_lsb = "\xf1\x00";
+  unsigned char *quarter_frame_frame_number_0_msb = "\xf1\x10";
+
+  unsigned char *quarter_frame_frame_number_30_lsb = "\xf1\x0e";
+  unsigned char *quarter_frame_frame_number_30_msb = "\xf1\x11";
+
+  unsigned char *quarter_frame_second_0_lsb = "\xf1\x20";
+  unsigned char *quarter_frame_second_0_msb = "\xf1\x30";
+
+  unsigned char *quarter_frame_second_59_lsb = "\xf1\x2c";
+  unsigned char *quarter_frame_second_59_msb = "\xf1\x33";
+
+  unsigned char *quarter_frame_minute_0_lsb = "\xf1\x40";
+  unsigned char *quarter_frame_minute_0_msb = "\xf1\x50";
+
+  unsigned char *quarter_frame_minute_59_lsb = "\xf1\x4c";
+  unsigned char *quarter_frame_minute_59_msb = "\xf1\x53";
+
+  unsigned char *quarter_frame_hour_0_lsb = "\xf1\x60";
+  unsigned char *quarter_frame_hour_0_msb = "\xf1\x70";
+
+  unsigned char *quarter_frame_hour_23_lsb = "\xf1\x61";
+  unsigned char *quarter_frame_hour_23_msb = "\xf1\x77";
+
+  glong values;
+  guint i;
+  
+  gboolean success;
+  
+  buffer = (unsigned char *) malloc(8 * sizeof(unsigned char));
+
+  success = TRUE;
+  
+  for(i = 0; i < 12; i++){
+    //    ags_midi_buffer_util_put_quarter_frame();
+    //TODO:JK: add more
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_quarter_frame()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  
+  unsigned char *quarter_frame_frame_number_0_lsb = "\xf1\x00";
+  unsigned char *quarter_frame_frame_number_0_msb = "\xf1\x10";
+
+  unsigned char *quarter_frame_frame_number_30_lsb = "\xf1\x0c";
+  unsigned char *quarter_frame_frame_number_30_msb = "\xf1\x10";
+
+  unsigned char *quarter_frame_seconds_0_lsb = "\xf1\x20";
+  unsigned char *quarter_frame_seconds_0_msb = "\xf1\x30";
+
+  unsigned char *quarter_frame_seconds_59_lsb = "\xf1\x2c";
+  unsigned char *quarter_frame_seconds_59_msb = "\xf1\x33";
+
+  unsigned char *quarter_frame_minutes_0_lsb = "\xf1\x40";
+  unsigned char *quarter_frame_minutes_0_msb = "\xf1\x50";
+
+  unsigned char *quarter_frame_minutes_59_lsb = "\xf1\x4b";
+  unsigned char *quarter_frame_minutes_59_msb = "\xf1\x53";
+
+  unsigned char *quarter_frame_hours_0_lsb = "\xf1\x60";
+  unsigned char *quarter_frame_hours_0_msb = "\xf1\x70";
+
+  unsigned char *quarter_frame_hours_23_lsb = "\xf1\x61";
+  unsigned char *quarter_frame_hours_23_msb = "\xf1\x77";
+
+  glong delta_time, message_type, values;
+  guint i;
+  gboolean success;
+  
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  success = TRUE;
+  
+  for(i = 0; i < 12; i++){
+    /* frame number 0 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_frame_number_0_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* frame number 0 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_frame_number_0_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* frame number 30 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_frame_number_30_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB ||
+       values != (0x0f & 0x0c)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* frame number 30 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_frame_number_30_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB ||
+       values != (0x10 & 0x0c)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* seconds 0 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_seconds_0_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_LSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* seconds 0 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_seconds_0_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_MSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* seconds 59 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_seconds_59_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_LSB ||
+       values != (0x0f & 0x3c)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* seconds 59 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_seconds_59_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_MSB ||
+       values != (0x03 & (0x3c >> 4))){
+      success = FALSE;
+      
+      break;
+    }
+    
+    //TODO:JK: add more
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -1380,8 +1578,8 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change program\0", ags_midi_buffer_util_test_get_change_program) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pressure\0", ags_midi_buffer_util_test_put_change_pressure) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change pressure\0", ags_midi_buffer_util_test_get_change_pressure) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sysex\0", ags_midi_buffer_util_test_put_put_sysex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sysex\0", ags_midi_buffer_util_test_get_get_sysex) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sysex\0", ags_midi_buffer_util_test_put_sysex) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sysex\0", ags_midi_buffer_util_test_get_sysex) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put quarter frame\0", ags_midi_buffer_util_test_put_quarter_frame) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get quarter frame\0", ags_midi_buffer_util_test_get_quarter_frame) == NULL) ||
      (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put song position\0", ags_midi_buffer_util_test_put_song_position) == NULL) ||
