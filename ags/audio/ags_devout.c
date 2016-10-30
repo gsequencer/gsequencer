@@ -1162,36 +1162,10 @@ void
 ags_devout_connect(AgsConnectable *connectable)
 {
   AgsDevout *devout;
-  
-  AgsMutexManager *mutex_manager;
 
   GList *list;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
-
   devout = AGS_DEVOUT(connectable);
-
-  /* create devout mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-  
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     &attr);
-
-  /* insert mutex */
-  pthread_mutex_lock(devout->application_mutex);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) devout,
-			   mutex);
-  
-  pthread_mutex_unlock(devout->application_mutex);
 
   /*  */  
   list = devout->audio;
