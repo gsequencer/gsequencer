@@ -1222,11 +1222,6 @@ ags_channel_connect(AgsConnectable *connectable)
   GList *list;
   
   channel = AGS_CHANNEL(connectable);
-
-  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
-    return;
-  }
-
   channel->flags |= AGS_CHANNEL_CONNECTED;
   
 #ifdef AGS_DEBUG

@@ -2009,20 +2009,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			 g_object_unref);
 
 	gobject->audio->notation = notation;
-      }else if(!xmlStrncmp(child->name,
-			   (xmlChar *) "ags-sf-automation-list\0",
-			   23)){
-	GList *automation;
-
-	automation = NULL;
-	ags_simple_file_read_automation_list(simple_file,
-					     child,
-					     &automation);
-
-	g_list_free_full(gobject->audio->automation,
-			 g_object_unref);
-
-	gobject->audio->automation = automation;
       }
     }
 
@@ -2098,6 +2084,27 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   /* connect AgsAudio */
   ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
 
+  
+  /* children */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-automation-list\0",
+			   23)){
+	GList *automation;
+
+	automation = gobject->audio->automation;
+	ags_simple_file_read_automation_list(simple_file,
+					     child,
+					     &automation);
+      }
+    }
+
+    child = child->next;
+  }
+  
   /* launch AgsMachine */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "file\0", simple_file,
@@ -4103,8 +4110,8 @@ ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 						   1, &value,
 						   -1);
 
-				if(!g_strcmp0(specifier,
-					      value)){
+				if(!g_ascii_strcasecmp(specifier,
+						       value)){
 				  gtk_combo_box_set_active_iter(automation_editor->automation_toolbar->port,
 								&iter);
 				}
@@ -4403,6 +4410,7 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
   xmlChar *str;
   
   guint line;
+  gboolean found_last;
   
   file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
 								     node->parent->parent);
@@ -4414,6 +4422,10 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
     line = gobject->line;
     channel_type = gobject->channel_type;
     control_name = gobject->control_name;
+
+    g_list_free_full(gobject->acceleration,
+		     g_object_unref);
+    gobject->acceleration = NULL;
   }else{
     line = 0;
     str = xmlGetProp(node,
@@ -4442,7 +4454,8 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 
   /* children */
   child = node->children;
-
+  found_last = FALSE;
+  
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
@@ -4459,6 +4472,10 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 					     NULL,
 					     10);
 	}
+
+	if(acceleration->x >= AGS_AUTOMATION_DEFAULT_LENGTH){
+	  found_last = TRUE;
+	}
 	
 	str = xmlGetProp(child,
 			 "y\0");
@@ -4467,23 +4484,24 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 	  acceleration->y = g_ascii_strtod(str,
 					   NULL);
 	}
-
-	if((acceleration->x == 0 &&
-	    acceleration->y == 0.0) ||
-	   (acceleration->x == AGS_AUTOMATION_DEFAULT_LENGTH &&
-	    acceleration->y == 0.0)){
-	  /* no need for default */
-	  g_object_unref(acceleration);
-	}else{
-	  /* add */
-	  ags_automation_add_acceleration(gobject,
-					  acceleration,
-					  FALSE);
-	}
+	
+	/* add */
+	ags_automation_add_acceleration(gobject,
+					acceleration,
+					FALSE);
       }
     }
 
     child = child->next;
+  }
+
+  if(!found_last){
+    acceleration = ags_acceleration_new();
+    acceleration->x = AGS_AUTOMATION_DEFAULT_LENGTH;
+    acceleration->y = 0.0;
+    ags_automation_add_acceleration(gobject,
+				    acceleration,
+				    FALSE);
   }
 }
 
@@ -6519,16 +6537,6 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   found_automation = FALSE;
   
   while(list != NULL){
-    /* skip default */
-    if((AGS_ACCELERATION(list->data)->x == 0 &&
-	AGS_ACCELERATION(list->data)->y == 0.0) ||
-       (AGS_ACCELERATION(list->data)->x == AGS_AUTOMATION_DEFAULT_LENGTH &&
-	AGS_ACCELERATION(list->data)->y == 0.0)){
-      list = list->next;
-
-      continue;
-    }
-
     found_automation = TRUE;
     child = xmlNewNode(NULL,
 		       "ags-sf-acceleration\0");
