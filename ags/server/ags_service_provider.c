@@ -47,7 +47,85 @@ ags_service_provider_class_init(AgsServiceProviderInterface *interface)
   /* empty */
 }
 
-AgsServer*
+/**
+ * ags_service_provider_set_registry:
+ * @service_provider: the #AgsServiceProvider
+ * @registry: the #AgsRegistry
+ * 
+ * Set registry.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_service_provider_set_registry(AgsServiceProvider *service_provider,
+				  GObject *registry)
+{
+  AgsServiceProviderInterface *service_provider_interface;
+
+  g_return_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider));
+  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
+  g_return_if_fail(service_provider_interface->set_registry);
+
+  service_provider_interface->set_registry(service_provider,
+					   registry);
+}
+
+/**
+ * ags_service_provider_set_registry:
+ * @service_provider: the #AgsServiceProvider
+ * 
+ * Get registry.
+ *
+ * Returns: the #AgsRegistry
+ *
+ * Since: 1.0.0
+ */
+GObject*
+ags_service_provider_get_registry(AgsServiceProvider *service_provider)
+{
+  AgsServiceProviderInterface *service_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), NULL);
+  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
+  g_return_val_if_fail(service_provider_interface->get_registry, NULL);
+
+  return(service_provider_interface->get_registry(service_provider));
+}
+
+/**
+ * ags_service_provider_set_server:
+ * @service_provider: the #AgsServiceProvider
+ * @server: the #GList-struct containing #AgsServer
+ * 
+ * Set server.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_service_provider_set_server(AgsServiceProvider *service_provider,
+				GList *server)
+{
+  AgsServiceProviderInterface *service_provider_interface;
+
+  g_return_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider));
+  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
+  g_return_if_fail(service_provider_interface->set_server);
+
+  service_provider_interface->set_server(service_provider,
+					 server);
+}
+
+/**
+ * ags_service_provider_set_server:
+ * @service_provider: the #AgsServiceProvider
+ * 
+ * Get server.
+ *
+ * Returns: the #GList-struct containing #AgsServer
+ *
+ * Since: 1.0.0
+ */
+GList*
 ags_service_provider_get_server(AgsServiceProvider *service_provider)
 {
   AgsServiceProviderInterface *service_provider_interface;

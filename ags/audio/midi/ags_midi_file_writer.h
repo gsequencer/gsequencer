@@ -55,12 +55,12 @@ void ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
 
 void ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
 						gchar *track_name,
-						guint status, ...);
+						guint status, va_list ap);
 
 
 void ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
 					       gchar *track_name,
-					       guint status, ...);
+					       guint status, va_list ap);
 
 AgsMidiFileWriter* ags_midi_file_writer_new(gchar *filename);
 

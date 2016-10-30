@@ -1,12 +1,18 @@
 <SECTION>
 <FILE>ags_applicable</FILE>
 <TITLE>AgsApplicable</TITLE>
-AgsApplicableInterface
 ags_applicable_set_update
 ags_applicable_apply
 ags_applicable_reset
 <SUBSECTION Public>
+AGS_APPLICABLE
+AGS_APPLICABLE_GET_INTERFACE
+AGS_APPLICABLE_INTERFACE
+AGS_IS_APPLICABLE
+AGS_IS_APPLICABLE_INTERFACE
 AGS_TYPE_APPLICABLE
+AgsApplicable
+AgsApplicableInterface
 ags_applicable_get_type
 </SECTION>
 
@@ -19,6 +25,7 @@ AGS_DEFAULT_DIRECTORY
 AGS_DEFAULT_CONFIG
 AgsApplicationContextFlags
 ags_application_context_load_config
+ags_application_context_register_types
 ags_application_read
 ags_application_write
 ags_application_context_add_sibling
@@ -98,20 +105,25 @@ ags_complex_get_type
 <SECTION>
 <FILE>ags_concurrency_provider</FILE>
 <TITLE>AgsConcurrencyProvider</TITLE>
-AgsConcurrencyProviderInterface
 ags_concurrency_provider_get_mutex_manager
 ags_concurrency_provider_get_main_loop
 ags_concurrency_provider_get_task_thread
 ags_concurrency_provider_get_thread_pool
 <SUBSECTION Public>
+AGS_CONCURRENCY_PROVIDER
+AGS_CONCURRENCY_PROVIDER_GET_INTERFACE
+AGS_CONCURRENCY_PROVIDER_INTERFACE
+AGS_IS_CONCURRENCY_PROVIDER
+AGS_IS_CONCURRENCY_PROVIDER_INTERFACE
 AGS_TYPE_CONCURRENCY_PROVIDER
+AgsConcurrencyProvider
+AgsConcurrencyProviderInterface
 ags_concurrency_provider_get_type
 </SECTION>
 
 <SECTION>
 <FILE>ags_concurrent_tree</FILE>
 <TITLE>AgsConcurrentTree</TITLE>
-AgsConcurrentTreeInterface
 ags_concurrent_tree_set_parent_locked
 ags_concurrent_tree_get_parent_locked
 ags_concurrent_tree_get_lock
@@ -119,7 +131,14 @@ ags_concurrent_tree_get_parent_lock
 ags_concurrent_tree_lock_context
 ags_concurrent_tree_unlock_context
 <SUBSECTION Public>
+AGS_CONCURRENT_TREE
+AGS_CONCURRENT_TREE_GET_INTERFACE
+AGS_CONCURRENT_TREE_INTERFACE
+AGS_IS_CONCURRENT_TREE
+AGS_IS_CONCURRENT_TREE_INTERFACE
 AGS_TYPE_CONCURRENT_TREE
+AgsConcurrentTree
+AgsConcurrentTreeInterface
 ags_concurrent_tree_get_type
 </SECTION>
 
@@ -131,6 +150,7 @@ AGS_CONFIG_DEFAULT_BUILD_ID
 AGS_CONFIG_GENERIC
 AGS_CONFIG_THREAD
 AGS_CONFIG_SOUNDCARD
+AGS_CONFIG_SOUNDCARD_0
 AGS_CONFIG_SEQUENCER
 AGS_CONFIG_RECALL
 ags_config_load_defaults
@@ -140,6 +160,7 @@ ags_config_set_value
 ags_config_get_value
 ags_config_to_data
 ags_config_save
+ags_config_clear
 ags_config_get_instance
 ags_config_new
 <SUBSECTION Public>
@@ -253,7 +274,6 @@ ags_countable_get_type
 <SECTION>
 <FILE>ags_distributed_manager</FILE>
 <TITLE>AgsDistributedManager</TITLE>
-AgsDistributedManagerInterface
 ags_distributed_manager_set_url
 ags_distributed_manager_get_url
 ags_distributed_manager_set_ports
@@ -267,18 +287,31 @@ ags_distributed_manager_unregister_soundcard
 ags_distributed_manager_register_sequencer
 ags_distributed_manager_unregister_sequencer
 <SUBSECTION Public>
+AGS_DISTRIBUTED_MANAGER
+AGS_DISTRIBUTED_MANAGER_GET_INTERFACE
+AGS_DISTRIBUTED_MANAGER_INTERFACE
+AGS_IS_DISTRIBUTED_MANAGER
+AGS_IS_DISTRIBUTED_MANAGER_INTERFACE
 AGS_TYPE_DISTRIBUTED_MANAGER
+AgsDistributedManager
+AgsDistributedManagerInterface
 ags_distributed_manager_get_type
 </SECTION>
 
 <SECTION>
 <FILE>ags_dynamic_connectable</FILE>
 <TITLE>AgsDynamicConnectable</TITLE>
-AgsDynamicConnectableInterface
-ags_dynamic_connectable_connect
-ags_dynamic_connectable_disconnect
+ags_dynamic_connectable_connect_dynamic
+ags_dynamic_connectable_disconnect_dynamic
 <SUBSECTION Public>
+AGS_DYNAMIC_CONNECTABLE
+AGS_DYNAMIC_CONNECTABLE_GET_INTERFACE
+AGS_DYNAMIC_CONNECTABLE_INTERFACE
+AGS_IS_DYNAMIC_CONNECTABLE
+AGS_IS_DYNAMIC_CONNECTABLE_INTERFACE
 AGS_TYPE_DYNAMIC_CONNECTABLE
+AgsDynamicConnectable
+AgsDynamicConnectableInterface
 ags_dynamic_connectable_get_type
 </SECTION>
 
@@ -569,6 +602,7 @@ g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN
 g_cclosure_user_marshal_VOID__UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT
+g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT
 g_cclosure_user_marshal_VOID__UINT_INT
@@ -605,6 +639,8 @@ g_cclosure_user_marshal_POINTER__VOID
 g_cclosure_user_marshal_POINTER__UINT
 g_cclosure_user_marshal_POINTER__POINTER_UINT
 g_cclosure_user_marshal_POINTER__STRING_STRING
+g_cclosure_user_marshal_POINTER__STRING_STRING_STRING
+g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER
 g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING
 g_cclosure_user_marshal_OBJECT__VOID
 g_cclosure_user_marshal_OBJECT__OBJECT
@@ -616,10 +652,16 @@ g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT
 <SECTION>
 <FILE>ags_mutable</FILE>
 <TITLE>AgsMutable</TITLE>
-AgsMutableInterface
 ags_mutable_set_muted
 <SUBSECTION Public>
+AGS_IS_MUTABLE
+AGS_IS_MUTABLE_INTERFACE
+AGS_MUTABLE
+AGS_MUTABLE_GET_INTERFACE
+AGS_MUTABLE_INTERFACE
 AGS_TYPE_MUTABLE
+AgsMutable
+AgsMutableInterface
 ags_mutable_get_type
 </SECTION>
 
@@ -647,11 +689,17 @@ ags_mutex_manager_get_type
 <SECTION>
 <FILE>ags_packable</FILE>
 <TITLE>AgsPackable</TITLE>
-AgsPackableInterface
 ags_packable_pack
 ags_packable_unpack
 <SUBSECTION Public>
+AGS_IS_PACKABLE
+AGS_IS_PACKABLE_INTERFACE
+AGS_PACKABLE
+AGS_PACKABLE_GET_INTERFACE
+AGS_PACKABLE_INTERFACE
 AGS_TYPE_PACKABLE
+AgsPackable
+AgsPackableInterface
 ags_packable_get_type
 </SECTION>
 
@@ -663,7 +711,6 @@ ags_parameter_grow
 <SECTION>
 <FILE>ags_plugin</FILE>
 <TITLE>AgsPlugin</TITLE>
-AgsPluginInterface
 ags_plugin_get_name
 ags_plugin_set_name
 ags_plugin_get_version
@@ -677,7 +724,14 @@ ags_plugin_set_ports
 ags_plugin_read
 ags_plugin_write
 <SUBSECTION Public>
+AGS_IS_PLUGIN
+AGS_IS_PLUGIN_INTERFACE
+AGS_PLUGIN
+AGS_PLUGIN_GET_INTERFACE
+AGS_PLUGIN_INTERFACE
 AGS_TYPE_PLUGIN
+AgsPlugin
+AgsPluginInterface
 ags_plugin_get_type
 </SECTION>
 
@@ -725,14 +779,20 @@ ags_polling_thread_get_type
 <SECTION>
 <FILE>ags_portlet</FILE>
 <TITLE>AgsPortlet</TITLE>
-AgsPortletInterface
 ags_portlet_get_port
 ags_portlet_set_port
 ags_portlet_list_safe_properties
 ags_portlet_safe_get_property
 ags_portlet_safe_set_property
 <SUBSECTION Public>
+AGS_IS_PORTLET
+AGS_IS_PORTLET_INTERFACE
+AGS_PORTLET
+AGS_PORTLET_GET_INTERFACE
+AGS_PORTLET_INTERFACE
 AGS_TYPE_PORTLET
+AgsPortlet
+AgsPortletInterface
 ags_portlet_get_type
 </SECTION>
 
@@ -802,10 +862,16 @@ ags_returnable_thread_get_type
 <SECTION>
 <FILE>ags_seekable</FILE>
 <TITLE>AgsSeekable</TITLE>
-AgsSeekableInterface
 ags_seekable_seek
 <SUBSECTION Public>
+AGS_IS_SEEKABLE
+AGS_IS_SEEKABLE_INTERFACE
+AGS_SEEKABLE
+AGS_SEEKABLE_GET_INTERFACE
+AGS_SEEKABLE_INTERFACE
 AGS_TYPE_SEEKABLE
+AgsSeekable
+AgsSeekableInterface
 ags_seekable_get_type
 </SECTION>
 
@@ -825,7 +891,6 @@ AGS_SEQUENCER_DEFAULT_SCALE
 AGS_SEQUENCER_DEFAULT_DELAY
 AGS_SEQUENCER_DEFAULT_PERIOD
 AGS_SEQUENCER_DEFAULT_LATENCY
-AgsSequencerInterface
 ags_sequencer_set_application_context
 ags_sequencer_get_application_context
 ags_sequencer_set_application_mutex
@@ -854,7 +919,14 @@ ags_sequencer_get_note_offset
 ags_sequencer_set_audio
 ags_sequencer_get_audio
 <SUBSECTION Public>
+AGS_IS_SEQUENCER
+AGS_IS_SEQUENCER_INTERFACE
+AGS_SEQUENCER
+AGS_SEQUENCER_GET_INTERFACE
+AGS_SEQUENCER_INTERFACE
 AGS_TYPE_SEQUENCER
+AgsSequencer
+AgsSequencerInterface
 ags_sequencer_get_type
 </SECTION>
 
@@ -901,6 +973,9 @@ ags_server_application_context_get_type
 <SECTION>
 <FILE>ags_service_provider</FILE>
 <TITLE>AgsServiceProvider</TITLE>
+ags_service_provider_set_registry
+ags_service_provider_get_registry
+ags_service_provider_set_server
 ags_service_provider_get_server
 <SUBSECTION Public>
 AGS_IS_SERVICE_PROVIDER
@@ -952,7 +1027,6 @@ AGS_SOUNDCARD_DEFAULT_LOOP_LEFT
 AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT
 AGS_SOUNDCARD_DEFAULT_OVERCLOCK
 AgsSoundcardFormat
-AgsSoundcardInterface
 ags_soundcard_set_application_context
 ags_soundcard_get_application_context
 ags_soundcard_set_application_mutex
@@ -993,7 +1067,14 @@ ags_soundcard_get_loop_offset
 ags_soundcard_set_audio
 ags_soundcard_get_audio
 <SUBSECTION Public>
+AGS_IS_SOUNDCARD
+AGS_IS_SOUNDCARD_INTERFACE
+AGS_SOUNDCARD
+AGS_SOUNDCARD_GET_INTERFACE
+AGS_SOUNDCARD_INTERFACE
 AGS_TYPE_SOUNDCARD
+AgsSoundcard
+AgsSoundcardInterface
 ags_soundcard_get_type
 </SECTION>
 
@@ -1007,7 +1088,6 @@ ags_strv_contains
 <SECTION>
 <FILE>ags_tactable</FILE>
 <TITLE>AgsTactable</TITLE>
-AgsTactableInterface
 ags_tactable_get_sequencer_duration
 ags_tactable_get_notation_duration
 ags_tactable_get_tact
@@ -1017,8 +1097,14 @@ ags_tactable_change_notation_duration
 ags_tactable_change_tact
 ags_tactable_change_bpm
 <SUBSECTION Public>
+AGS_IS_TACTABLE
+AGS_IS_TACTABLE_INTERFACE
+AGS_TACTABLE
+AGS_TACTABLE_GET_INTERFACE
+AGS_TACTABLE_INTERFACE
 AGS_TYPE_TACTABLE
 AgsTactable
+AgsTactableInterface
 ags_tactable_get_type
 </SECTION>
 
@@ -1067,6 +1153,8 @@ AGS_TASK_THREAD_DEFAULT_JIFFIE
 AgsTaskThreadAppend
 ags_task_thread_append_task
 ags_task_thread_append_tasks
+ags_task_thread_append_cyclic_task
+ags_task_thread_remove_cyclic_task
 ags_task_thread_clear_cache
 ags_task_thread_new
 <SUBSECTION Public>
@@ -1164,6 +1252,7 @@ ags_thread_get_type
 AGS_THREAD_BUILD_ID
 AGS_THREAD_DEFAULT_VERSION
 AgsThreadApplicationContextFlags
+ags_thread_application_context_register_types
 ags_thread_application_context_new
 <SUBSECTION Public>
 AGS_IS_THREAD_APPLICATION_CONTEXT
@@ -1185,6 +1274,10 @@ ags_file_read_thread_list
 ags_file_write_thread_list
 ags_file_read_thread_pool
 ags_file_write_thread_pool
+ags_file_read_timestamp
+ags_file_write_timestamp
+ags_file_read_timestamp_list
+ags_file_write_timestamp_list
 </SECTION>
 
 <SECTION>

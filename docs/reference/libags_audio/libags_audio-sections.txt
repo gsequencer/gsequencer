@@ -145,6 +145,22 @@ ags_add_region_to_selection_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_add_soundcard</FILE>
+<TITLE>AgsAddSoundcard</TITLE>
+ags_add_soundcard_new
+<SUBSECTION Public>
+AGS_ADD_SOUNDCARD
+AGS_ADD_SOUNDCARD_CLASS
+AGS_ADD_SOUNDCARD_GET_CLASS
+AGS_IS_ADD_SOUNDCARD
+AGS_IS_ADD_SOUNDCARD_CLASS
+AGS_TYPE_ADD_SOUNDCARD
+AgsAddSoundcard
+AgsAddSoundcardClass
+ags_add_soundcard_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_append_audio</FILE>
 <TITLE>AgsAppendAudio</TITLE>
 ags_append_audio_new
@@ -399,6 +415,7 @@ ags_audio_buffer_util_format_from_soundcard
 ags_audio_buffer_util_get_copy_mode
 ags_audio_buffer_util_clear_float
 ags_audio_buffer_util_clear_double
+ags_audio_buffer_util_clear_buffer
 ags_audio_buffer_util_morph_s8
 ags_audio_buffer_util_morph_s16
 ags_audio_buffer_util_morph_s24
@@ -528,10 +545,10 @@ ags_audio_file_link_get_type
 
 <SECTION>
 <FILE>ags_audio_file_xml</FILE>
-ags_file_read_devout
-ags_file_write_devout
-ags_file_read_devout_list
-ags_file_write_devout_list
+ags_file_read_soundcard
+ags_file_write_soundcard
+ags_file_read_soundcard_list
+ags_file_write_soundcard_list
 ags_file_read_playback
 ags_file_write_playback
 ags_file_read_playback_list
@@ -612,10 +629,6 @@ ags_file_read_task
 ags_file_write_task
 ags_file_read_task_list
 ags_file_write_task_list
-ags_file_read_timestamp
-ags_file_write_timestamp
-ags_file_read_timestamp_list
-ags_file_write_timestamp_list
 ags_file_read_embedded_audio
 ags_file_write_embedded_audio
 ags_file_read_embedded_audio_list
@@ -910,9 +923,6 @@ ags_cancel_recall_get_type
 <SECTION>
 <FILE>ags_change_soundcard</FILE>
 <TITLE>AgsChangeSoundcard</TITLE>
-ags_change_soundcard_alsa
-ags_change_soundcard_oss
-ags_change_soundcard_jack
 ags_change_soundcard_new
 <SUBSECTION Public>
 AGS_CHANGE_SOUNDCARD
@@ -978,6 +988,7 @@ ags_channel_recycling_changed
 ags_channel_recursive_set_property
 ags_channel_recursive_play_init
 ags_channel_recursive_play_threaded
+ags_channel_recursive_play
 ags_channel_tillrecycling_cancel
 ags_channel_recursive_reset_recall_ids
 ags_channel_new
@@ -1287,6 +1298,7 @@ AgsDevoutFlags
 AGS_DEVOUT_ERROR
 AgsDevoutError
 ags_devout_error_quark
+ags_devout_switch_buffer_flag
 ags_devout_adjust_delay_and_attack
 ags_devout_realloc_buffer
 ags_devout_new
@@ -1613,8 +1625,11 @@ ags_iterator_thread_get_type
 <FILE>ags_jack_client</FILE>
 <TITLE>AgsJackClient</TITLE>
 AgsJackClientFlags
+ags_jack_client_find_uuid
 ags_jack_client_find
 ags_jack_client_open
+ags_jack_client_add_device
+ags_jack_client_remove_device
 ags_jack_client_add_port
 ags_jack_client_remove_port
 ags_jack_client_activate
@@ -1640,7 +1655,7 @@ AgsJackDevoutSyncFlags
 AGS_JACK_DEVOUT_ERROR
 AgsJackDevoutError
 ags_jack_devout_error_quark
-ags_jack_devout_process_callback
+ags_jack_devout_switch_buffer_flag
 ags_jack_devout_adjust_delay_and_attack
 ags_jack_devout_realloc_buffer
 ags_jack_devout_new
@@ -1709,6 +1724,7 @@ ags_jack_server_find_client
 ags_jack_server_find_port
 ags_jack_server_add_client
 ags_jack_server_remove_client
+ags_jack_server_connect_client
 ags_jack_server_new
 <SUBSECTION Public>
 AGS_IS_JACK_SERVER
@@ -2085,21 +2101,80 @@ AgsMessageInterface
 
 <SECTION>
 <FILE>ags_midi_buffer_util</FILE>
+AgsMidiBufferUtilMtcQuarterFrameMessageType
+AgsMidiBufferUtilSmtpeFrameRate
 ags_midi_buffer_util_get_varlength_size
 ags_midi_buffer_util_put_varlength
 ags_midi_buffer_util_get_varlength
+ags_midi_buffer_util_put_int16
+ags_midi_buffer_util_get_int16
+ags_midi_buffer_util_put_int24
+ags_midi_buffer_util_get_int24
+ags_midi_buffer_util_put_int32
+ags_midi_buffer_util_get_int32
+ags_midi_buffer_util_put_header
+ags_midi_buffer_util_get_header
+ags_midi_buffer_util_put_track
+ags_midi_buffer_util_get_track
 ags_midi_buffer_util_put_key_on
 ags_midi_buffer_util_get_key_on
 ags_midi_buffer_util_put_key_off
 ags_midi_buffer_util_get_key_off
 ags_midi_buffer_util_put_key_pressure
 ags_midi_buffer_util_get_key_pressure
+ags_midi_buffer_util_put_change_parameter
+ags_midi_buffer_util_get_change_parameter
+ags_midi_buffer_util_put_pitch_bend
+ags_midi_buffer_util_get_pitch_bend
+ags_midi_buffer_util_put_change_program
+ags_midi_buffer_util_get_change_program
+ags_midi_buffer_util_put_change_pressure
+ags_midi_buffer_util_get_change_pressure
+ags_midi_buffer_util_put_sysex
+ags_midi_buffer_util_get_sysex
+ags_midi_buffer_util_put_quarter_frame
+ags_midi_buffer_util_get_quarter_frame
+ags_midi_buffer_util_put_song_position
+ags_midi_buffer_util_get_song_position
+ags_midi_buffer_util_put_song_select
+ags_midi_buffer_util_get_song_select
+ags_midi_buffer_util_put_tune_request
+ags_midi_buffer_util_get_tune_request
+ags_midi_buffer_util_put_sequence_number
+ags_midi_buffer_util_get_sequence_number
+ags_midi_buffer_util_put_smtpe
+ags_midi_buffer_util_get_smtpe
+ags_midi_buffer_util_put_tempo
+ags_midi_buffer_util_get_tempo
+ags_midi_buffer_util_put_time_signature
+ags_midi_buffer_util_get_time_signature
+ags_midi_buffer_util_put_key_signature
+ags_midi_buffer_util_get_key_signature
+ags_midi_buffer_util_put_sequencer_meta_event
+ags_midi_buffer_util_get_sequencer_meta_event
+ags_midi_buffer_util_put_text_event
+ags_midi_buffer_util_get_text_event
+ags_midi_buffer_util_put_end_of_track
+ags_midi_buffer_util_get_end_of_track
+ags_midi_buffer_util_seek_message
 ags_midi_buffer_util_decode
 </SECTION>
 
 <SECTION>
 <FILE>ags_midi_builder</FILE>
 <TITLE>AgsMidiBuilder</TITLE>
+AGS_MIDI_BUILDER_HEADER
+AGS_MIDI_BUILDER_TRACK
+AgsMidiBuilderFlags
+AgsMidiBuilderHeader
+AgsMidiBuilderTrack
+ags_midi_builder_header_alloc
+ags_midi_builder_header_free
+ags_midi_builder_track_alloc
+ags_midi_builder_track_free
+ags_midi_builder_track_find_delta_time_with_track_name
+ags_midi_builder_track_insert_midi_message
+ags_midi_builder_track_get_delta_time_offset
 ags_midi_builder_midi_putc
 ags_midi_builder_on_error
 ags_midi_builder_append_header
@@ -2127,8 +2202,6 @@ ags_midi_builder_append_xml_node
 ags_midi_builder_from_xml_doc
 ags_midi_builder_build
 ags_midi_builder_new
-AgsMidiBuilderHeader
-AgsMidiBuilderTrack
 <SUBSECTION Public>
 AGS_IS_MIDI_BUILDER
 AGS_IS_MIDI_BUILDER_CLASS
@@ -2234,6 +2307,7 @@ ags_midi_file_writer_get_type
 AGS_MIDI_PARSER_MAX_TEXT_LENGTH
 AGS_MIDI_PARSER_MTHD
 AGS_MIDI_PARSER_MTCK
+AGS_MIDI_EVENT
 AgsMidiParserFlags
 AgsMidiChunkFlags
 ags_midi_parser_read_gint16
@@ -2477,6 +2551,23 @@ AGS_TYPE_NOTE
 AgsNote
 AgsNoteClass
 ags_note_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_notify_soundcard</FILE>
+<TITLE>AgsNotifySoundcard</TITLE>
+AgsNotifySoundcardFlags
+ags_notify_soundcard_new
+<SUBSECTION Public>
+AGS_IS_NOTIFY_SOUNDCARD
+AGS_IS_NOTIFY_SOUNDCARD_CLASS
+AGS_NOTIFY_SOUNDCARD
+AGS_NOTIFY_SOUNDCARD_CLASS
+AGS_NOTIFY_SOUNDCARD_GET_CLASS
+AGS_TYPE_NOTIFY_SOUNDCARD
+AgsNotifySoundcard
+AgsNotifySoundcardClass
+ags_notify_soundcard_get_type
 </SECTION>
 
 <SECTION>
@@ -2823,6 +2914,8 @@ ags_playable_level_up
 ags_playable_iter_start
 ags_playable_iter_next
 ags_playable_info
+ags_playable_get_samplerate
+ags_playable_get_format
 ags_playable_read
 ags_playable_write
 ags_playable_flush
@@ -3138,6 +3231,7 @@ ags_recall_dependency_get_type
 <SECTION>
 <FILE>ags_recall_dssi</FILE>
 <TITLE>AgsRecallDssi</TITLE>
+ags_recall_dssi_load
 ags_recall_dssi_load_ports
 ags_recall_dssi_load_conversion
 ags_recall_dssi_find
@@ -3199,7 +3293,6 @@ ags_recall_id_set_run_stage
 ags_recall_id_unset_run_stage
 ags_recall_id_find_recycling_context
 ags_recall_id_find_parent_recycling_context
-ags_recall_id_add
 ags_recall_id_new
 <SUBSECTION Public>
 AGS_IS_RECALL_ID
@@ -3216,6 +3309,7 @@ ags_recall_id_get_type
 <SECTION>
 <FILE>ags_recall_ladspa</FILE>
 <TITLE>AgsRecallLadspa</TITLE>
+ags_recall_ladspa_load
 ags_recall_ladspa_load_ports
 ags_recall_ladspa_load_conversion
 ags_recall_ladspa_find
@@ -3252,6 +3346,7 @@ ags_recall_ladspa_run_get_type
 <FILE>ags_recall_lv2</FILE>
 <TITLE>AgsRecallLv2</TITLE>
 AgsRecallLv2FLags
+ags_recall_lv2_load
 ags_recall_lv2_load_ports
 ags_recall_lv2_load_conversion
 ags_recall_lv2_find
@@ -3614,6 +3709,38 @@ AGS_TYPE_REMOVE_REGION_FROM_SELECTION
 AgsRemoveRegionFromSelection
 AgsRemoveRegionFromSelectionClass
 ags_remove_region_from_selection_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_remove_soundcard</FILE>
+<TITLE>AgsRemoveSoundcard</TITLE>
+ags_remove_soundcard_new
+<SUBSECTION Public>
+AGS_IS_REMOVE_SOUNDCARD
+AGS_IS_REMOVE_SOUNDCARD_CLASS
+AGS_REMOVE_SOUNDCARD
+AGS_REMOVE_SOUNDCARD_CLASS
+AGS_REMOVE_SOUNDCARD_GET_CLASS
+AGS_TYPE_REMOVE_SOUNDCARD
+AgsRemoveSoundcard
+AgsRemoveSoundcardClass
+ags_remove_soundcard_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_reset_audio_connection</FILE>
+<TITLE>AgsResetAudioConnection</TITLE>
+ags_reset_audio_connection_new
+<SUBSECTION Public>
+AGS_IS_RESET_AUDIO_CONNECTION
+AGS_IS_RESET_AUDIO_CONNECTION_CLASS
+AGS_RESET_AUDIO_CONNECTION
+AGS_RESET_AUDIO_CONNECTION_CLASS
+AGS_RESET_AUDIO_CONNECTION_GET_CLASS
+AGS_TYPE_RESET_AUDIO_CONNECTION
+AgsResetAudioConnection
+AgsResetAudioConnectionClass
+ags_reset_audio_connection_get_type
 </SECTION>
 
 <SECTION>
