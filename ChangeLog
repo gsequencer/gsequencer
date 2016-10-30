@@ -1,3 +1,10 @@
+ags (0.7.92)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added unit tests of ags_midi_buffer_util.c
+	* fixed ags_midi_buffer_put_varlength(), it was defunctional
+	* fixed missing check of AgsRecallDssi in ags_channel.c
+
 ags (0.7.91)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

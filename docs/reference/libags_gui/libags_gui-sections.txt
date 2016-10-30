@@ -25,6 +25,7 @@ ags_container_add_all
 AGS_DIAL_DEFAULT_PRECISION
 AgsDialFlags
 AgsDialAction
+ags_dial_draw
 ags_dial_value_changed
 ags_dial_new
 <SUBSECTION Public>
@@ -150,54 +151,6 @@ AGS_TYPE_LED
 AgsLed
 AgsLedClass
 ags_led_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_menu</FILE>
-<TITLE>AgsMenu</TITLE>
-ags_menu_new
-<SUBSECTION Public>
-AGS_IS_MENU
-AGS_IS_MENU_CLASS
-AGS_MENU
-AGS_MENU_CLASS
-AGS_MENU_GET_CLASS
-AGS_TYPE_MENU
-AgsMenu
-AgsMenuClass
-ags_menu_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_menu_item</FILE>
-<TITLE>AgsMenuItem</TITLE>
-ags_menu_item_new
-<SUBSECTION Public>
-AGS_IS_MENU_ITEM
-AGS_IS_MENU_ITEM_CLASS
-AGS_MENU_ITEM
-AGS_MENU_ITEM_CLASS
-AGS_MENU_ITEM_GET_CLASS
-AGS_TYPE_MENU_ITEM
-AgsMenuItem
-AgsMenuItemClass
-ags_menu_item_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_option_menu</FILE>
-<TITLE>AgsOptionMenu</TITLE>
-ags_option_menu_new
-<SUBSECTION Public>
-AGS_IS_OPTION_MENU
-AGS_IS_OPTION_MENU_CLASS
-AGS_OPTION_MENU
-AGS_OPTION_MENU_CLASS
-AGS_OPTION_MENU_GET_CLASS
-AGS_TYPE_OPTION_MENU
-AgsOptionMenu
-AgsOptionMenuClass
-ags_option_menu_get_type
 </SECTION>
 
 <SECTION>
