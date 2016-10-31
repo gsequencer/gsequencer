@@ -182,7 +182,9 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
+
   gchar *control_name;
+
   GValue value = {0,};
 
   if((AGS_AUTOMATION_TOOLBAR_RESET_PORT & (automation_toolbar->flags)) != 0){
@@ -198,25 +200,14 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 		     &iter,
 		     1, &control_name,
 		     -1);
-  
-  gtk_tree_model_get_value(model,
-			   &iter,
-			   0,
-			   &value);
 
-  if(g_value_get_boolean(&value)){
-    g_value_set_boolean(&value, FALSE);
-  }else{
-    g_value_set_boolean(&value, TRUE);
+  if(control_name != NULL &&
+     g_ascii_strncasecmp(control_name,
+			 "\0",
+			 1)){
+    ags_automation_toolbar_apply_port(automation_toolbar,
+				      control_name);
   }
   
-  gtk_list_store_set_value(GTK_LIST_STORE(model),
-			   &iter,
-			   0,
-			   &value);
-
-  ags_automation_toolbar_apply_port(automation_toolbar,
-				    control_name);
-
   automation_toolbar->flags &= (~AGS_AUTOMATION_TOOLBAR_RESET_PORT);
 }
