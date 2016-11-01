@@ -1181,43 +1181,297 @@ void
 ags_midi_buffer_util_test_put_quarter_frame()
 {
   unsigned char *buffer;
-
+  unsigned char *quarter_frame;
+  
   unsigned char *quarter_frame_frame_number_0_lsb = "\xf1\x00";
   unsigned char *quarter_frame_frame_number_0_msb = "\xf1\x10";
 
   unsigned char *quarter_frame_frame_number_30_lsb = "\xf1\x0e";
   unsigned char *quarter_frame_frame_number_30_msb = "\xf1\x11";
 
-  unsigned char *quarter_frame_second_0_lsb = "\xf1\x20";
-  unsigned char *quarter_frame_second_0_msb = "\xf1\x30";
+  unsigned char *quarter_frame_seconds_0_lsb = "\xf1\x20";
+  unsigned char *quarter_frame_seconds_0_msb = "\xf1\x30";
 
-  unsigned char *quarter_frame_second_59_lsb = "\xf1\x2c";
-  unsigned char *quarter_frame_second_59_msb = "\xf1\x33";
+  unsigned char *quarter_frame_seconds_59_lsb = "\xf1\x2c";
+  unsigned char *quarter_frame_seconds_59_msb = "\xf1\x33";
 
-  unsigned char *quarter_frame_minute_0_lsb = "\xf1\x40";
-  unsigned char *quarter_frame_minute_0_msb = "\xf1\x50";
+  unsigned char *quarter_frame_minutes_0_lsb = "\xf1\x40";
+  unsigned char *quarter_frame_minutes_0_msb = "\xf1\x50";
 
-  unsigned char *quarter_frame_minute_59_lsb = "\xf1\x4c";
-  unsigned char *quarter_frame_minute_59_msb = "\xf1\x53";
+  unsigned char *quarter_frame_minutes_59_lsb = "\xf1\x4c";
+  unsigned char *quarter_frame_minutes_59_msb = "\xf1\x53";
 
-  unsigned char *quarter_frame_hour_0_lsb = "\xf1\x60";
-  unsigned char *quarter_frame_hour_0_msb = "\xf1\x70";
+  unsigned char *quarter_frame_hours_0_lsb = "\xf1\x60";
+  unsigned char *quarter_frame_hours_0_msb = "\xf1\x70";
 
-  unsigned char *quarter_frame_hour_23_lsb = "\xf1\x61";
-  unsigned char *quarter_frame_hour_23_msb = "\xf1\x77";
+  unsigned char *quarter_frame_hours_23_lsb = "\xf1\x67";
+  unsigned char *quarter_frame_hours_23_msb = "\xf1\x71";
 
-  glong values;
   guint i;
   
   gboolean success;
   
-  buffer = (unsigned char *) malloc(8 * sizeof(unsigned char));
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+  quarter_frame = (unsigned char *) malloc(7 * sizeof(unsigned char));
 
   success = TRUE;
   
   for(i = 0; i < 12; i++){
-    //    ags_midi_buffer_util_put_quarter_frame();
-    //TODO:JK: add more
+    /* frame number 0 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_frame_number_0_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* frame number 0 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_frame_number_0_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* frame number 30 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_frame_number_30_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB, (0x0f & 0x1e));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* frame number 30 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_frame_number_30_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB, ((0x10 & 0x1e) >> 4));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* seconds 0 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_seconds_0_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_LSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* seconds 0 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_seconds_0_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_MSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* seconds 59 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_seconds_59_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_LSB, (0x0f & 0x3c));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* seconds 59 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_seconds_59_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_MSB, ((0x30 & (0x3c)) >> 4));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+      
+      break;
+    }
+    
+    /* minutes 0 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_minutes_0_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_LSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* minutes 0 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_minutes_0_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_MSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* minutes 59 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_minutes_59_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_LSB, (0x0f & 0x3c));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* minutes 59 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_minutes_59_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_MSB, ((0x30 & (0x3c)) >> 4));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+      
+      break;
+    }
+
+    /* hours 0 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_hours_0_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_LSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* hours 0 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_hours_0_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_MSB, 0);
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* hours 23 - lsb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_hours_23_lsb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_LSB, (0x0f & 0x17));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* hours 23 - msb */
+    memcpy(quarter_frame, varlength_buffer[i], varlength[i][2]);
+    memcpy(quarter_frame + varlength[i][2], quarter_frame_hours_23_msb, 2);
+
+    ags_midi_buffer_util_put_quarter_frame(buffer,
+					   varlength[i][1],
+					   AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_MSB, ((0x10 & 0x17) >> 4));
+
+    if(memcmp(buffer,
+	      quarter_frame,
+	      varlength[i][2] + 2)){
+      success = FALSE;
+
+      break;
+    }
   }
   
   CU_ASSERT(success == TRUE);
@@ -1231,8 +1485,8 @@ ags_midi_buffer_util_test_get_quarter_frame()
   unsigned char *quarter_frame_frame_number_0_lsb = "\xf1\x00";
   unsigned char *quarter_frame_frame_number_0_msb = "\xf1\x10";
 
-  unsigned char *quarter_frame_frame_number_30_lsb = "\xf1\x0c";
-  unsigned char *quarter_frame_frame_number_30_msb = "\xf1\x10";
+  unsigned char *quarter_frame_frame_number_30_lsb = "\xf1\x0e";
+  unsigned char *quarter_frame_frame_number_30_msb = "\xf1\x11";
 
   unsigned char *quarter_frame_seconds_0_lsb = "\xf1\x20";
   unsigned char *quarter_frame_seconds_0_msb = "\xf1\x30";
@@ -1243,20 +1497,20 @@ ags_midi_buffer_util_test_get_quarter_frame()
   unsigned char *quarter_frame_minutes_0_lsb = "\xf1\x40";
   unsigned char *quarter_frame_minutes_0_msb = "\xf1\x50";
 
-  unsigned char *quarter_frame_minutes_59_lsb = "\xf1\x4b";
+  unsigned char *quarter_frame_minutes_59_lsb = "\xf1\x4c";
   unsigned char *quarter_frame_minutes_59_msb = "\xf1\x53";
 
   unsigned char *quarter_frame_hours_0_lsb = "\xf1\x60";
   unsigned char *quarter_frame_hours_0_msb = "\xf1\x70";
 
-  unsigned char *quarter_frame_hours_23_lsb = "\xf1\x61";
-  unsigned char *quarter_frame_hours_23_msb = "\xf1\x77";
+  unsigned char *quarter_frame_hours_23_lsb = "\xf1\x67";
+  unsigned char *quarter_frame_hours_23_msb = "\xf1\x71";
 
   glong delta_time, message_type, values;
   guint i;
   gboolean success;
   
-  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
 
   success = TRUE;
   
@@ -1300,7 +1554,7 @@ ags_midi_buffer_util_test_get_quarter_frame()
 					   &message_type, &values);
 
     if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_LSB ||
-       values != (0x0f & 0x0c)){
+       values != (0x0f & 0x1e)){
       success = FALSE;
 
       break;
@@ -1315,7 +1569,7 @@ ags_midi_buffer_util_test_get_quarter_frame()
 					   &message_type, &values);
 
     if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_FRAME_NUMBER_MSB ||
-       values != (0x10 & 0x0c)){
+       values != ((0x10 & 0x1e) >> 4)){
       success = FALSE;
 
       break;
@@ -1375,13 +1629,131 @@ ags_midi_buffer_util_test_get_quarter_frame()
 					   &message_type, &values);
 
     if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_SECONDS_MSB ||
-       values != (0x03 & (0x3c >> 4))){
+       values != ((0x30 & 0x3c) >> 4)){
       success = FALSE;
       
       break;
     }
     
-    //TODO:JK: add more
+    /* minutes 0 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_minutes_0_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_LSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* minutes 0 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_minutes_0_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_MSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* minutes 59 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_minutes_59_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_LSB ||
+       values != (0x0f & 0x3c)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* minutes 59 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_minutes_59_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_MINUTES_MSB ||
+       values != ((0x30 & 0x3c) >> 4)){
+      success = FALSE;
+      
+      break;
+    }
+
+    /* hours 0 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_hours_0_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_LSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* hours 0 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_hours_0_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_MSB ||
+       values != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* hours 23 - lsb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_hours_23_lsb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_LSB ||
+       values != (0x0f & 0x17)){
+      success = FALSE;
+
+      break;
+    }
+    
+    /* hours 23 - msb */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], quarter_frame_hours_23_msb, 2);
+
+    ags_midi_buffer_util_get_quarter_frame(buffer,
+					   &delta_time,
+					   &message_type, &values);
+
+    if(message_type != AGS_MIDI_BUFFER_UTIL_MTC_QUARTER_FRAME_HOURS_MSB ||
+       values != ((0x10 & 0x17) >> 4)){
+      success = FALSE;
+
+      break;
+    }
   }
   
   CU_ASSERT(success == TRUE);
@@ -1390,25 +1762,236 @@ ags_midi_buffer_util_test_get_quarter_frame()
 void
 ags_midi_buffer_util_test_put_song_position()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *song_position_0 = "\xf2\x00\x00";
+  unsigned char *song_position_16 = "\xf2\x10\x00";
+  unsigned char *song_position_16383 = "\xf2\x7f\x7f";
+ 
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    /* position 0 */
+    ags_midi_buffer_util_put_song_position(buffer,
+					   varlength[i][1],
+					   0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], song_position_0, 3)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* position 16 */
+    ags_midi_buffer_util_put_song_position(buffer,
+					   varlength[i][1],
+					   16);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], song_position_16, 3)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* position 16383 (maximum) */
+    ags_midi_buffer_util_put_song_position(buffer,
+					   varlength[i][1],
+					   16383);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], song_position_16383, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_song_position()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *song_position_0 = "\xf2\x00\x00";
+  unsigned char *song_position_16 = "\xf2\x10\x00";
+  unsigned char *song_position_16383 = "\xf2\x7f\x7f";
+
+  guint i;
+  glong delta_time, song_position;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], song_position, 3);
+  
+  ags_midi_buffer_util_get_song_position(buffer,
+					 NULL,
+					 NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* position 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], song_position_0, 3);
+    
+    ags_midi_buffer_util_get_song_position(buffer,
+					   &delta_time,
+					   &song_position);
+
+    if(delta_time != varlength[i][1] ||
+       song_position != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* position 16 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], song_position_16, 3);
+    
+    ags_midi_buffer_util_get_song_position(buffer,
+					   &delta_time,
+					   &song_position);
+
+    if(delta_time != varlength[i][1] ||
+       song_position != 16){
+      success = FALSE;
+
+      break;
+    }
+
+    /* position 16383 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], song_position_16383, 3);
+    
+    ags_midi_buffer_util_get_song_position(buffer,
+					   &delta_time,
+					   &song_position);
+
+    if(delta_time != varlength[i][1] ||
+       song_position != 16383){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_song_select()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *song_select_0 = "\xf3\x00";
+  unsigned char *song_select_127 = "\xf3\x7f";
+ 
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    /* select 0 */
+    ags_midi_buffer_util_put_song_select(buffer,
+					 varlength[i][1],
+					 0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], song_select_0, 2)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 127 */
+    ags_midi_buffer_util_put_song_select(buffer,
+					 varlength[i][1],
+					 127);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], song_select_127, 2)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_song_select()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *song_select_0 = "\xf3\x00";
+  unsigned char *song_select_127 = "\xf3\x7f";
+
+  guint i;
+  glong delta_time, song_select;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], song_select, 2);
+  
+  ags_midi_buffer_util_get_song_select(buffer,
+				       NULL,
+				       NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* select 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], song_select_0, 2);
+    
+    ags_midi_buffer_util_get_song_select(buffer,
+					 &delta_time,
+					 &song_select);
+
+    if(delta_time != varlength[i][1] ||
+       song_select != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 127 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], song_select_127, 2);
+    
+    ags_midi_buffer_util_get_song_select(buffer,
+					 &delta_time,
+					 &song_select);
+
+    if(delta_time != varlength[i][1] ||
+       song_select != 127){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
