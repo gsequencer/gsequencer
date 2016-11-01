@@ -1512,6 +1512,14 @@ ags_midi_buffer_util_test_get_quarter_frame()
   
   buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
 
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], quarter_frame_frame_number_0_lsb, 2);
+  ags_midi_buffer_util_get_quarter_frame(buffer,
+					 NULL,
+					 NULL,
+					 NULL);
+  
+  /* test with different delta-time */
   success = TRUE;
   
   for(i = 0; i < 12; i++){
@@ -1832,7 +1840,7 @@ ags_midi_buffer_util_test_get_song_position()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], song_position, 3);
+  memcpy(buffer + varlength[0][2], song_position_0, 3);
   
   ags_midi_buffer_util_get_song_position(buffer,
 					 NULL,
@@ -1950,7 +1958,7 @@ ags_midi_buffer_util_test_get_song_select()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], song_select, 2);
+  memcpy(buffer + varlength[0][2], song_select_0, 2);
   
   ags_midi_buffer_util_get_song_select(buffer,
 				       NULL,

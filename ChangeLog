@@ -1,3 +1,8 @@
+ags (0.7.95)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unit test ags_midi_buffer_util_get_song_select()
+
 ags (0.7.94)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
