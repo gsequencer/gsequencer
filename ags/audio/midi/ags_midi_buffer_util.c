@@ -1612,9 +1612,6 @@ ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
 
   /* fr */
   buffer[delta_time_size + 6] = fr;
-
-  /* end */
-  buffer[delta_time_size + 7] = 0xf7;
 }
 
 /**
@@ -1678,7 +1675,7 @@ ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
     *fr = buffer[delta_time_size + 6];
   }
   
-  return(delta_time_size + 8);
+  return(delta_time_size + 7);
 }
 
 /**
@@ -1717,7 +1714,7 @@ ags_midi_buffer_util_put_tempo(unsigned char *buffer,
   buffer[delta_time_size + 2] = 3;
   
   /* tempo */
-  ags_midi_buffer_util_put_int24(buffer + 3,
+  ags_midi_buffer_util_put_int24(buffer + delta_time_size + 3,
 				 tempo);
 }
 
@@ -1754,8 +1751,10 @@ ags_midi_buffer_util_get_tempo(unsigned char *buffer,
   }
 
   /* tempo */
-  ags_midi_buffer_util_get_int24(buffer + 3,
+  ags_midi_buffer_util_get_int24(buffer + delta_time_size + 3,
 				 tempo);
+
+  return(delta_time_size + 6);
 }
 
 /**
