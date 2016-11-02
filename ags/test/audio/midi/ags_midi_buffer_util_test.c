@@ -2228,13 +2228,255 @@ ags_midi_buffer_util_test_get_sequence_number()
 void
 ags_midi_buffer_util_test_put_smtpe()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *smtpe_0_0_0_0 = "\xff\x54\x05\x80\x00\x00\x00\xf7";
+  unsigned char *smtpe_0_0_0_30 = "\xff\x54\x05\x80\x00\x00\x1e\xf7";
+  unsigned char *smtpe_0_0_59_30 = "\xff\x54\x05\x80\x00\x3b\x1e\xf7";
+  unsigned char *smtpe_0_59_59_30 = "\xff\x54\x05\x80\x3b\x3b\x1e\xf7";
+  unsigned char *smtpe_23_59_59_30 = "\xff\x54\x05\x97\x3b\x3b\x1e\xf7";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(12 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* smtpe 0 */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   0,
+				   0,
+				   0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_0_0_0, 8)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   0,
+				   0,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_0_0_30, 8)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 s 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   0,
+				   59,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_0_59_30, 8)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 m 59 s 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   59,
+				   59,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_59_59_30, 8)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 23 h 59 m 59 s 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   23,
+				   59,
+				   59,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_23_59_59_30, 8)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_smtpe()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *smtpe_0_0_0_0 = "\xff\x54\x05\x80\x00\x00\x00\xf7";
+  unsigned char *smtpe_0_0_0_30 = "\xff\x54\x05\x80\x00\x00\x1e\xf7";
+  unsigned char *smtpe_0_0_59_30 = "\xff\x54\x05\x80\x00\x3b\x1e\xf7";
+  unsigned char *smtpe_0_59_59_30 = "\xff\x54\x05\x80\x3b\x3b\x1e\xf7";
+  unsigned char *smtpe_23_59_59_30 = "\xff\x54\x05\x97\x3b\x3b\x1e\xf7";
+
+  guint i;
+  glong delta_time, rr, hr, mn, se, fr;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(12 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], smtpe_0_0_0_0, 8);
+  
+  ags_midi_buffer_util_get_smtpe(buffer,
+				 NULL,
+				 NULL,
+				 NULL,
+				 NULL,
+				 NULL,
+				 NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* smtpe 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_0_0_0, 8);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 0 ||
+       se != 0 ||
+       fr != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_0_0_30, 8);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 0 ||
+       se != 0 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 s 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_0_59_30, 8);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 0 ||
+       se != 59 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 m 59 s 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_59_59_30, 8);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 59 ||
+       se != 59 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 23 h 59 m 59 s 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_23_59_59_30, 8);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 23 ||
+       mn != 59 ||
+       se != 59 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
