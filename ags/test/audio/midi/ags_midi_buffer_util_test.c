@@ -2608,7 +2608,7 @@ ags_midi_buffer_util_test_get_tempo()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], tempo_0, 7);
+  memcpy(buffer + varlength[0][2], tempo_0, 6);
   
   ags_midi_buffer_util_get_tempo(buffer,
 				 NULL,
@@ -2892,13 +2892,109 @@ ags_midi_buffer_util_test_get_time_signature()
 void
 ags_midi_buffer_util_test_put_key_signature()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_signature_3_minor = "\xff\x59\x02\x03\x01";
+  unsigned char *key_signature_3_major = "\xff\x59\x02\x03\x00";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(9 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* key signature 3 minor */
+    ags_midi_buffer_util_put_key_signature(buffer,
+					   varlength[i][1],
+					   3, 1);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], key_signature_3_minor, 5)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* key signature 3 major */
+    ags_midi_buffer_util_put_key_signature(buffer,
+					   varlength[i][1],
+					   3, 0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], key_signature_3_major, 5)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_key_signature()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_signature_3_minor = "\xff\x59\x02\x03\x01";
+  unsigned char *key_signature_3_major = "\xff\x59\x02\x03\x00";
+
+  guint i;
+  glong delta_time, sharp_flats, is_minor;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(10 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], key_signature_3_minor, 5);
+  
+  ags_midi_buffer_util_get_key_signature(buffer,
+					 NULL,
+					 NULL,
+					 NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* key signature 3 minor */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], key_signature_3_minor, 5);
+    
+    ags_midi_buffer_util_get_key_signature(buffer,
+					   &delta_time,
+					   &sharp_flats,
+					   &is_minor);
+    
+    if(delta_time != varlength[i][1] ||
+       sharp_flats != 3 ||
+       is_minor != 1){
+      success = FALSE;
+
+      break;
+    }
+
+    /* key signature 3 major */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], key_signature_3_major, 5);
+    
+    ags_midi_buffer_util_get_key_signature(buffer,
+					   &delta_time,
+					   &sharp_flats,
+					   &is_minor);
+    
+    if(delta_time != varlength[i][1] ||
+       sharp_flats != 3 ||
+       is_minor != 0){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -2916,25 +3012,149 @@ ags_midi_buffer_util_test_get_sequencer_meta_event()
 void
 ags_midi_buffer_util_test_put_text_event()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *text_event_MY_TEXT = "\xff\x01\x07MY TEXT\0";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(14 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* text event */
+    ags_midi_buffer_util_put_text_event(buffer,
+					varlength[i][1],
+					"MY TEXT\0", 7);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], text_event_MY_TEXT, 10)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_text_event()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *text_event_MY_TEXT = "\xff\x01\x07MY TEXT\0";
+
+  guint i;
+  unsigned char *text_event;
+  glong delta_time, length;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(14 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], text_event_MY_TEXT, 10);
+  
+  ags_midi_buffer_util_get_text_event(buffer,
+				      NULL,
+				      NULL,
+				      NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* text event */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], text_event_MY_TEXT, 10);
+    
+    ags_midi_buffer_util_get_text_event(buffer,
+					&delta_time,
+					&text_event,
+					&length);
+    
+    if(delta_time != varlength[i][1] ||
+       memcmp(text_event, "MY TEXT\0", 7) ||
+       length != 7){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_end_of_track()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *end_of_track = "\xff\x2f\x00\0";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* text event */
+    ags_midi_buffer_util_put_end_of_track(buffer,
+					  varlength[i][1]);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], end_of_track, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_end_of_track()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *end_of_track = "\xff\x2f\x00\0";
+
+  guint i;
+  glong delta_time;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], end_of_track, 3);
+  
+  ags_midi_buffer_util_get_end_of_track(buffer,
+					NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* text event */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], end_of_track, 3);
+    
+    ags_midi_buffer_util_get_end_of_track(buffer,
+					  &delta_time);
+    
+    if(delta_time != varlength[i][1]){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
