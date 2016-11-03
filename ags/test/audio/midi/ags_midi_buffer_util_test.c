@@ -1512,14 +1512,6 @@ ags_midi_buffer_util_test_get_quarter_frame()
   
   buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
 
-  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], quarter_frame_frame_number_0_lsb, 2);
-  ags_midi_buffer_util_get_quarter_frame(buffer,
-					 NULL,
-					 NULL,
-					 NULL);
-  
-  /* test with different delta-time */
   success = TRUE;
   
   for(i = 0; i < 12; i++){
@@ -1840,7 +1832,7 @@ ags_midi_buffer_util_test_get_song_position()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], song_position_0, 3);
+  memcpy(buffer + varlength[0][2], song_position, 3);
   
   ags_midi_buffer_util_get_song_position(buffer,
 					 NULL,
@@ -1958,7 +1950,7 @@ ags_midi_buffer_util_test_get_song_select()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], song_select_0, 2);
+  memcpy(buffer + varlength[0][2], song_select, 2);
   
   ags_midi_buffer_util_get_song_select(buffer,
 				       NULL,
@@ -2005,73 +1997,1004 @@ ags_midi_buffer_util_test_get_song_select()
 void
 ags_midi_buffer_util_test_put_tune_request()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *tune_request = "\xf6";
+ 
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    /* select 0 */
+    ags_midi_buffer_util_put_tune_request(buffer,
+					  varlength[i][1]);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tune_request, 1)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_tune_request()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *tune_request = "\xf6";
+
+  guint i;
+  glong delta_time;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], tune_request, 1);
+  
+  ags_midi_buffer_util_get_tune_request(buffer,
+					NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* select 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tune_request, 1);
+    
+    ags_midi_buffer_util_get_tune_request(buffer,
+					  &delta_time);
+
+    if(delta_time != varlength[i][1]){
+      success = FALSE;
+
+      break;
+    }
+  }  
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_sequence_number()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *sequence_number_0 = "\xff\x00\x02\x00\x00";
+  unsigned char *sequence_number_255 = "\xff\x00\x02\x00\xff";
+  unsigned char *sequence_number_256 = "\xff\x00\x02\x01\x00";
+  unsigned char *sequence_number_65535 = "\xff\x00\x02\xff\xff";
+ 
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(9 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){
+    /* select 0 */
+    ags_midi_buffer_util_put_sequence_number(buffer,
+					     varlength[i][1],
+					     0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], sequence_number_0, 5)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 255 */
+    ags_midi_buffer_util_put_sequence_number(buffer,
+					     varlength[i][1],
+					     255);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], sequence_number_255, 5)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 256 */
+    ags_midi_buffer_util_put_sequence_number(buffer,
+					     varlength[i][1],
+					     256);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], sequence_number_256, 5)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 65535 */
+    ags_midi_buffer_util_put_sequence_number(buffer,
+					     varlength[i][1],
+					     65535);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], sequence_number_65535, 5)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_sequence_number()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *sequence_number_0 = "\xff\x00\x02\x00\x00";
+  unsigned char *sequence_number_255 = "\xff\x00\x02\x00\xff";
+  unsigned char *sequence_number_256 = "\xff\x00\x02\x01\x00";
+  unsigned char *sequence_number_65535 = "\xff\x00\x02\xff\xff";
+ 
+  guint i;
+  glong delta_time, sequence_number;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(9 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], sequence_number, 5);
+  
+  ags_midi_buffer_util_get_sequence_number(buffer,
+					   NULL,
+					   NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* select 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], sequence_number_0, 5);
+    
+    ags_midi_buffer_util_get_sequence_number(buffer,
+					     &delta_time,
+					     &sequence_number);
+
+    if(delta_time != varlength[i][1] ||
+       sequence_number != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 255 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], sequence_number_255, 5);
+    
+    ags_midi_buffer_util_get_sequence_number(buffer,
+					     &delta_time,
+					     &sequence_number);
+
+    if(delta_time != varlength[i][1] ||
+       sequence_number != 255){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 256 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], sequence_number_256, 5);
+    
+    ags_midi_buffer_util_get_sequence_number(buffer,
+					     &delta_time,
+					     &sequence_number);
+
+    if(delta_time != varlength[i][1] ||
+       sequence_number != 256){
+      success = FALSE;
+
+      break;
+    }
+
+    /* select 65535 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], sequence_number_65535, 5);
+    
+    ags_midi_buffer_util_get_sequence_number(buffer,
+					     &delta_time,
+					     &sequence_number);
+
+    if(delta_time != varlength[i][1] ||
+       sequence_number != 65535){
+      success = FALSE;
+
+      break;
+    }
+  }  
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_smtpe()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *smtpe_0_0_0_0 = "\xff\x54\x05\x80\x00\x00\x00";
+  unsigned char *smtpe_0_0_0_30 = "\xff\x54\x05\x80\x00\x00\x1e";
+  unsigned char *smtpe_0_0_59_30 = "\xff\x54\x05\x80\x00\x3b\x1e";
+  unsigned char *smtpe_0_59_59_30 = "\xff\x54\x05\x80\x3b\x3b\x1e";
+  unsigned char *smtpe_23_59_59_30 = "\xff\x54\x05\x97\x3b\x3b\x1e";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(11 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* smtpe 0 */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   0,
+				   0,
+				   0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_0_0_0, 7)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   0,
+				   0,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_0_0_30, 7)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 s 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   0,
+				   59,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_0_59_30, 7)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 m 59 s 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   0,
+				   59,
+				   59,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_0_59_59_30, 7)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 23 h 59 m 59 s 30 fr */
+    ags_midi_buffer_util_put_smtpe(buffer,
+				   varlength[i][1],
+				   AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS,
+				   23,
+				   59,
+				   59,
+				   30);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], smtpe_23_59_59_30, 7)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_smtpe()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *smtpe_0_0_0_0 = "\xff\x54\x05\x80\x00\x00\x00";
+  unsigned char *smtpe_0_0_0_30 = "\xff\x54\x05\x80\x00\x00\x1e";
+  unsigned char *smtpe_0_0_59_30 = "\xff\x54\x05\x80\x00\x3b\x1e";
+  unsigned char *smtpe_0_59_59_30 = "\xff\x54\x05\x80\x3b\x3b\x1e";
+  unsigned char *smtpe_23_59_59_30 = "\xff\x54\x05\x97\x3b\x3b\x1e";
+
+  guint i;
+  glong delta_time, rr, hr, mn, se, fr;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(11 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], smtpe_0_0_0_0, 7);
+  
+  ags_midi_buffer_util_get_smtpe(buffer,
+				 NULL,
+				 NULL,
+				 NULL,
+				 NULL,
+				 NULL,
+				 NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* smtpe 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_0_0_0, 7);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 0 ||
+       se != 0 ||
+       fr != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_0_0_30, 7);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 0 ||
+       se != 0 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 s 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_0_59_30, 7);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 0 ||
+       se != 59 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 59 m 59 s 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_0_59_59_30, 7);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 0 ||
+       mn != 59 ||
+       se != 59 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+
+    /* smtpe 23 h 59 m 59 s 30 fr */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], smtpe_23_59_59_30, 7);
+    
+    ags_midi_buffer_util_get_smtpe(buffer,
+				   &delta_time,
+				   &rr,
+				   &hr,
+				   &mn,
+				   &se,
+				   &fr);
+
+    if(delta_time != varlength[i][1] ||
+       rr != AGS_MIDI_BUFFER_UTIL_SMTPE_FRAME_RATE_30_FPS ||
+       hr != 23 ||
+       mn != 59 ||
+       se != 59 ||
+       fr != 30){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_tempo()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *tempo_0 = "\xff\x51\x03\x00\x00\x00";
+  unsigned char *tempo_1 = "\xff\x51\x03\x00\x00\x01";
+  unsigned char *tempo_255 = "\xff\x51\x03\x00\x00\xff";
+  unsigned char *tempo_256 = "\xff\x51\x03\x00\x01\x00";
+  unsigned char *tempo_65535 = "\xff\x51\x03\x00\xff\xff";
+  unsigned char *tempo_65536 = "\xff\x51\x03\x01\x00\x00";
+  unsigned char *tempo_16777215 = "\xff\x51\x03\xff\xff\xff";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(10 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* tempo 0 */
+    ags_midi_buffer_util_put_tempo(buffer,
+				   varlength[i][1],
+				   0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tempo_0, 6)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 1 */
+    ags_midi_buffer_util_put_tempo(buffer,
+				   varlength[i][1],
+				   1);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tempo_1, 6)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 255 */
+    ags_midi_buffer_util_put_tempo(buffer,
+				   varlength[i][1],
+				   255);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tempo_255, 6)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 256 */
+    ags_midi_buffer_util_put_tempo(buffer,
+				   varlength[i][1],
+				   256);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tempo_256, 6)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 65535 */
+    ags_midi_buffer_util_put_tempo(buffer,
+				   varlength[i][1],
+				   65535);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tempo_65535, 6)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 65536 */
+    ags_midi_buffer_util_put_tempo(buffer,
+				   varlength[i][1],
+				   65536);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tempo_65536, 6)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 16777215 */
+    ags_midi_buffer_util_put_tempo(buffer,
+				   varlength[i][1],
+				   16777215);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], tempo_16777215, 6)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_tempo()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *tempo_0 = "\xff\x51\x03\x00\x00\x00";
+  unsigned char *tempo_1 = "\xff\x51\x03\x00\x00\x01";
+  unsigned char *tempo_255 = "\xff\x51\x03\x00\x00\xff";
+  unsigned char *tempo_256 = "\xff\x51\x03\x00\x01\x00";
+  unsigned char *tempo_65535 = "\xff\x51\x03\x00\xff\xff";
+  unsigned char *tempo_65536 = "\xff\x51\x03\x01\x00\x00";
+  unsigned char *tempo_16777215 = "\xff\x51\x03\xff\xff\xff";
+
+  guint i;
+  glong delta_time, tempo;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(10 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], tempo_0, 6);
+  
+  ags_midi_buffer_util_get_tempo(buffer,
+				 NULL,
+				 NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* tempo 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tempo_0, 6);
+    
+    ags_midi_buffer_util_get_tempo(buffer,
+				   &delta_time,
+				   &tempo);
+
+    if(delta_time != varlength[i][1] ||
+       tempo != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 1 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tempo_1, 6);
+    
+    ags_midi_buffer_util_get_tempo(buffer,
+				   &delta_time,
+				   &tempo);
+
+    if(delta_time != varlength[i][1] ||
+       tempo != 1){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 255 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tempo_255, 6);
+    
+    ags_midi_buffer_util_get_tempo(buffer,
+				   &delta_time,
+				   &tempo);
+
+    if(delta_time != varlength[i][1] ||
+       tempo != 255){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 256 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tempo_256, 6);
+    
+    ags_midi_buffer_util_get_tempo(buffer,
+				   &delta_time,
+				   &tempo);
+
+    if(delta_time != varlength[i][1] ||
+       tempo != 256){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 65535 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tempo_65535, 6);
+    
+    ags_midi_buffer_util_get_tempo(buffer,
+				   &delta_time,
+				   &tempo);
+
+    if(delta_time != varlength[i][1] ||
+       tempo != 65535){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 65536 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tempo_65536, 6);
+    
+    ags_midi_buffer_util_get_tempo(buffer,
+				   &delta_time,
+				   &tempo);
+
+    if(delta_time != varlength[i][1] ||
+       tempo != 65536){
+      success = FALSE;
+
+      break;
+    }
+
+    /* tempo 16777215 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], tempo_16777215, 6);
+    
+    ags_midi_buffer_util_get_tempo(buffer,
+				   &delta_time,
+				   &tempo);
+
+    if(delta_time != varlength[i][1] ||
+       tempo != 16777215){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_time_signature()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *time_signature_0_0_0_0 = "\xff\x58\x04\x00\x00\x00\x00";
+  unsigned char *time_signature_1_1_96_8 = "\xff\x58\x04\x01\x01\x60\x08";
+  unsigned char *time_signature_4_4_24_8 = "\xff\x58\x04\x04\x04\x18\x08";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(11 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* time signature 0 0 0 0 */
+    ags_midi_buffer_util_put_time_signature(buffer,
+					    varlength[i][1],
+					    0,
+					    0,
+					    0,
+					    0);
+    
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], time_signature_0_0_0_0, 7)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* time signature 1 1 96 8 */
+    ags_midi_buffer_util_put_time_signature(buffer,
+					    varlength[i][1],
+					    1,
+					    1,
+					    96,
+					    8);
+    
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], time_signature_1_1_96_8, 7)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* time signature 4 4 24 8 */
+    ags_midi_buffer_util_put_time_signature(buffer,
+					    varlength[i][1],
+					    4,
+					    4,
+					    24,
+					    8);
+    
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], time_signature_4_4_24_8, 7)){
+      success = FALSE;
+
+      break;
+    }
+  }  
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_time_signature()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *time_signature_0_0_0_0 = "\xff\x58\x04\x00\x00\x00\x00";
+  unsigned char *time_signature_1_1_96_8 = "\xff\x58\x04\x01\x01\x60\x08";
+  unsigned char *time_signature_4_4_24_8 = "\xff\x58\x04\x04\x04\x18\x08";
+
+  guint i;
+  glong delta_time, nn, dd, cc, bb;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(11 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], time_signature_0_0_0_0, 7);
+  
+  ags_midi_buffer_util_get_time_signature(buffer,
+					  NULL,
+					  NULL,
+					  NULL,
+					  NULL,
+					  NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* time signature 0 0 0 0 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], time_signature_0_0_0_0, 7);
+    
+    ags_midi_buffer_util_get_time_signature(buffer,
+					    &delta_time,
+					    &nn,
+					    &dd,
+					    &cc,
+					    &bb);
+    
+    if(delta_time != varlength[i][1] ||
+       nn != 0 ||
+       dd != 0 ||
+       cc != 0 ||
+       bb != 0){
+      success = FALSE;
+
+      break;
+    }
+
+    /* time signature 1 1 96 8 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], time_signature_1_1_96_8, 7);
+    
+    ags_midi_buffer_util_get_time_signature(buffer,
+					    &delta_time,
+					    &nn,
+					    &dd,
+					    &cc,
+					    &bb);
+    
+    if(delta_time != varlength[i][1] ||
+       nn != 1 ||
+       dd != 1 ||
+       cc != 96 ||
+       bb != 8){
+      success = FALSE;
+
+      break;
+    }
+
+    /* time signature 4 4 24 8 */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], time_signature_4_4_24_8, 7);
+    
+    ags_midi_buffer_util_get_time_signature(buffer,
+					    &delta_time,
+					    &nn,
+					    &dd,
+					    &cc,
+					    &bb);
+    
+    if(delta_time != varlength[i][1] ||
+       nn != 4 ||
+       dd != 4 ||
+       cc != 24 ||
+       bb != 8){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_key_signature()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_signature_3_minor = "\xff\x59\x02\x03\x01";
+  unsigned char *key_signature_3_major = "\xff\x59\x02\x03\x00";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(9 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* key signature 3 minor */
+    ags_midi_buffer_util_put_key_signature(buffer,
+					   varlength[i][1],
+					   3, 1);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], key_signature_3_minor, 5)){
+      success = FALSE;
+
+      break;
+    }
+
+    /* key signature 3 major */
+    ags_midi_buffer_util_put_key_signature(buffer,
+					   varlength[i][1],
+					   3, 0);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], key_signature_3_major, 5)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_key_signature()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *key_signature_3_minor = "\xff\x59\x02\x03\x01";
+  unsigned char *key_signature_3_major = "\xff\x59\x02\x03\x00";
+
+  guint i;
+  glong delta_time, sharp_flats, is_minor;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(10 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], key_signature_3_minor, 5);
+  
+  ags_midi_buffer_util_get_key_signature(buffer,
+					 NULL,
+					 NULL,
+					 NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* key signature 3 minor */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], key_signature_3_minor, 5);
+    
+    ags_midi_buffer_util_get_key_signature(buffer,
+					   &delta_time,
+					   &sharp_flats,
+					   &is_minor);
+    
+    if(delta_time != varlength[i][1] ||
+       sharp_flats != 3 ||
+       is_minor != 1){
+      success = FALSE;
+
+      break;
+    }
+
+    /* key signature 3 major */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], key_signature_3_major, 5);
+    
+    ags_midi_buffer_util_get_key_signature(buffer,
+					   &delta_time,
+					   &sharp_flats,
+					   &is_minor);
+    
+    if(delta_time != varlength[i][1] ||
+       sharp_flats != 3 ||
+       is_minor != 0){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -2089,25 +3012,149 @@ ags_midi_buffer_util_test_get_sequencer_meta_event()
 void
 ags_midi_buffer_util_test_put_text_event()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *text_event_MY_TEXT = "\xff\x01\x07MY TEXT\0";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(14 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* text event */
+    ags_midi_buffer_util_put_text_event(buffer,
+					varlength[i][1],
+					"MY TEXT\0", 7);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], text_event_MY_TEXT, 10)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_text_event()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *text_event_MY_TEXT = "\xff\x01\x07MY TEXT\0";
+
+  guint i;
+  unsigned char *text_event;
+  glong delta_time, length;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(14 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], text_event_MY_TEXT, 10);
+  
+  ags_midi_buffer_util_get_text_event(buffer,
+				      NULL,
+				      NULL,
+				      NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* text event */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], text_event_MY_TEXT, 10);
+    
+    ags_midi_buffer_util_get_text_event(buffer,
+					&delta_time,
+					&text_event,
+					&length);
+    
+    if(delta_time != varlength[i][1] ||
+       memcmp(text_event, "MY TEXT\0", 7) ||
+       length != 7){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_put_end_of_track()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *end_of_track = "\xff\x2f\x00\0";
+
+  guint i;
+  gboolean success;
+
+  /* test different delta-time */
+  success = TRUE;
+  
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  for(i = 0; i < 12; i++){    
+    /* text event */
+    ags_midi_buffer_util_put_end_of_track(buffer,
+					  varlength[i][1]);
+
+    if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
+       memcmp(buffer + varlength[i][2], end_of_track, 3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_buffer_util_test_get_end_of_track()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *end_of_track = "\xff\x2f\x00\0";
+
+  guint i;
+  glong delta_time;
+  gboolean success;
+
+  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+
+  /* invoke without return location */
+  memcpy(buffer, varlength_buffer[0], varlength[0][2]);
+  memcpy(buffer + varlength[0][2], end_of_track, 3);
+  
+  ags_midi_buffer_util_get_end_of_track(buffer,
+					NULL);
+  
+  /* test different delta-time */
+  success = TRUE;
+
+  for(i = 0; i < 12; i++){
+    /* text event */
+    memcpy(buffer, varlength_buffer[i], varlength[i][2]);
+    memcpy(buffer + varlength[i][2], end_of_track, 3);
+    
+    ags_midi_buffer_util_get_end_of_track(buffer,
+					  &delta_time);
+    
+    if(delta_time != varlength[i][1]){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
