@@ -530,25 +530,172 @@ ags_turtle_test_read_string_literal_long_single_quote()
 void
 ags_turtle_test_read_uchar()
 {
-  //TODO:JK: implement me
+  gchar *uchar_2_A = "\\u0041\0";
+  gchar *uchar_2_e_diaresis = "\\u00eb\0";
+  gchar *uchar_4_A = "\\Uffef0041\0";
+  gchar *uchar_4_e_diaresis = "\\Uffef00eb\0";
+  gchar *str;
+
+  /* assert 2 byte capital A */
+  str = ags_turtle_read_uchar(uchar_2_A,
+			      uchar_2_A + strlen(uchar_2_A));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(uchar_2_A,
+				 str,
+				 7));
+  
+  /* assert 2 byte e diaresis */
+  str = ags_turtle_read_uchar(uchar_2_e_diaresis,
+			      uchar_2_e_diaresis + strlen(uchar_2_e_diaresis));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(uchar_2_e_diaresis,
+				 str,
+				 7));
+
+  /* assert 4 byte capital A */
+  str = ags_turtle_read_uchar(uchar_4_A,
+			      uchar_4_A + strlen(uchar_4_A));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(uchar_4_A,
+				 str,
+				 11));
+
+  /* assert 4 byte e diaresis */
+  str = ags_turtle_read_uchar(uchar_4_e_diaresis,
+			      uchar_4_e_diaresis + strlen(uchar_4_e_diaresis));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(uchar_4_e_diaresis,
+				 str,
+				 11));
 }
 
 void
 ags_turtle_test_read_echar()
 {
-  //TODO:JK: implement me
+  gchar current[3];
+  gchar *echar = "tbnrf\"\0";
+  gchar *str;
+  
+  guint i;
+  gboolean success;
+
+  /* assert escaped characters */
+  current[0] = '\\';
+  current[2] = '\0';
+
+  success = TRUE;
+
+  for(i = 0; i < 7; i++){
+    current[1] = echar[i];
+
+    str = ags_turtle_read_echar(current,
+				current + 3);
+    
+    if(g_ascii_strncasecmp(current,
+			   str,
+			   3)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
+
+  /* assert not escaped */
+  current[1] = 'x';
+
+  str = ags_turtle_read_echar(current,
+			      current + 3);
+    
+  CU_ASSERT(str == NULL);
 }
 
 void
 ags_turtle_test_read_ws()
 {
-  //TODO:JK: implement me
+  gchar current[2];
+  gchar *ws = "\x20\x09\x0D\x0A\0";
+  gchar *str;
+  
+  guint i;
+  gboolean success;
+
+  /* assert white-space */
+  current[1] = '\0';
+  
+  success = TRUE;
+
+  for(i = 0; i < 4; i++){
+    current[0] = ws[i];
+
+    str = ags_turtle_read_ws(current,
+			     current + 2);
+    
+    if(g_ascii_strncasecmp(current,
+			   str,
+			   2)){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
+
+  /* assert no ws */
+  current[0] = 'a';
+
+  str = ags_turtle_read_ws(current,
+			   current + 2);
+    
+  CU_ASSERT(str == NULL);
 }
 
 void
 ags_turtle_test_read_anon()
 {
-  //TODO:JK: implement me
+  gchar *anon_empty = "[]\0";
+  gchar *anon_ws = "[ ]\0";
+  gchar *anon_tab = "[\t\t\t]\0";
+  gchar *anon_mixed = "[\t \t ]\0";
+  gchar *str;
+  
+  /* assert anon empty */
+  str = ags_turtle_read_anon(anon_empty,
+			     anon_empty + 3);
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strcasecmp(str,
+				anon_empty));
+
+  /* assert anon ws */
+  str = ags_turtle_read_anon(anon_ws,
+			     anon_ws + 5);
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strcasecmp(str,
+				anon_ws));
+
+  /* assert anon tab */
+  str = ags_turtle_read_anon(anon_tab,
+			     anon_tab + 6);
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strcasecmp(str,
+				anon_tab));
+
+  /* assert anon mixed */
+  str = ags_turtle_read_anon(anon_mixed,
+			     anon_mixed + 7);
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strcasecmp(str,
+				anon_mixed));
 }
 
 void

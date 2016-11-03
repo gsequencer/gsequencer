@@ -974,13 +974,11 @@ ags_turtle_read_uchar(gchar *offset,
   
   str = NULL;
 
-  if(!g_ascii_strncasecmp(offset,
-			  "\\u\0",
-			  2)){
+  if(g_str_has_prefix(offset,
+		      "\\u\0")){
     hex_digit_count = 4;
-  }else if(!g_ascii_strncasecmp(offset,
-				"\\U\0",
-				2)){
+  }else if(g_str_has_prefix(offset,
+			    "\\U\0")){
     hex_digit_count = 8;
   }else{
     return(NULL);
@@ -1120,7 +1118,7 @@ ags_turtle_read_anon(gchar *offset,
 
   if(success){
     str = g_strndup(offset,
-		    tmp - offset);
+		    tmp - offset + 1);
   }
   
   return(str);
