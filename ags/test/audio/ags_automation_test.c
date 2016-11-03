@@ -1121,6 +1121,9 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
+  putenv("LC_ALL=C\0");
+  putenv("LANG=C\0");
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();

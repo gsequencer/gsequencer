@@ -1832,7 +1832,7 @@ ags_midi_buffer_util_test_get_song_position()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], song_position, 3);
+  memcpy(buffer + varlength[0][2], song_position_0, 3);
   
   ags_midi_buffer_util_get_song_position(buffer,
 					 NULL,
@@ -1904,7 +1904,7 @@ ags_midi_buffer_util_test_put_song_select()
   /* test different delta-time */
   success = TRUE;
   
-  buffer = (unsigned char *) malloc(7 * sizeof(unsigned char));
+  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
 
   for(i = 0; i < 12; i++){
     /* select 0 */
@@ -1950,7 +1950,7 @@ ags_midi_buffer_util_test_get_song_select()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], song_select, 2);
+  memcpy(buffer + varlength[0][2], song_select_0, 2);
   
   ags_midi_buffer_util_get_song_select(buffer,
 				       NULL,
@@ -2151,7 +2151,7 @@ ags_midi_buffer_util_test_get_sequence_number()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], sequence_number, 5);
+  memcpy(buffer + varlength[0][2], sequence_number_0, 5);
   
   ags_midi_buffer_util_get_sequence_number(buffer,
 					   NULL,
@@ -3173,6 +3173,9 @@ int
 main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
+
+  putenv("LC_ALL=C\0");
+  putenv("LANG=C\0");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
