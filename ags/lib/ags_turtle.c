@@ -393,18 +393,21 @@ ags_turtle_read_blank_node_label(gchar *offset,
 
   tmp_str = NULL;
 
-  if(g_str_has_prefix(offset,
-		      "_:\0") &&
-     ((tmp = ags_turtle_read_pn_chars_u(offset + 2,
-					end_ptr)) != NULL) ||
-      g_ascii_isdigit(offset[2])){
+  if(!g_str_has_prefix(offset,
+		       "_:\0")){
+    return(NULL);
+  }
+  
+  if((tmp = ags_turtle_read_pn_chars_u(offset + 2,
+				       end_ptr)) != NULL ||
+     g_ascii_isdigit(offset[2])){
     if(tmp == NULL){
       str = g_strdup_printf("_:%c\0", offset[2]);
       offset += 3;
     }else{
       str = g_strdup_printf("_:%s\0", tmp);
       offset += (2 + strlen(tmp));
-
+	
       free(tmp);
     }
   }
@@ -439,7 +442,11 @@ ags_turtle_read_blank_node_label(gchar *offset,
 	
 	last_is_point = TRUE;
       }else{
-	return(NULL);
+	if(initial_find){
+	  return(NULL);
+	}else{
+	  break;
+	}
       }
     }else{
       tmp_str = g_strdup_printf("%s%s\0",
@@ -485,7 +492,7 @@ ags_turtle_read_langtag(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
     
-  static const char *langtag_pattern = "(@[a-zA-Z]+(-[a-zA-Z0-9]+))*";
+  static const char *langtag_pattern = "(@[a-zA-Z]+(-[a-zA-Z0-9]+)*)\0";
   
   static const size_t max_matches = 1;
   

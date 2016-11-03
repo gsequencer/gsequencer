@@ -17,6 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <ags/lib/ags_turtle.h>
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -79,31 +81,155 @@ ags_turtle_test_clean_suite()
 void
 ags_turtle_test_read_iriref()
 {
-  //TODO:JK: implement me
+  gchar *iriref_lv2 = "<lv2>\0";
+  gchar *no_iriref = "<nongnu dot org>\0";
+  gchar *str;
+
+  /* assert iriref lv2 */
+  str = ags_turtle_read_iriref(iriref_lv2,
+			       iriref_lv2 + strlen(iriref_lv2));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(str,
+				 "<lv2>\0",
+				 6));
+
+  /* assert no iriref */
+  str = ags_turtle_read_iriref(no_iriref,
+			       no_iriref + strlen(no_iriref));
+
+  CU_ASSERT(str == NULL);
 }
 
 void
 ags_turtle_test_read_pname_ns()
 {
-  //TODO:JK: implement me
+  gchar *pname_ns_port = ":port\0";
+  gchar *pname_ns_swh_plugin = "swh:plugin\0";
+  gchar *no_pname_ns = "port\0";
+  gchar *str;
+
+  /* assert pname ns port */
+  str = ags_turtle_read_pname_ns(pname_ns_port,
+				 pname_ns_port + strlen(pname_ns_port));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(str,
+				 ":\0",
+				 2));
+
+  /* assert pname ns swh plugin */
+  str = ags_turtle_read_pname_ns(pname_ns_swh_plugin,
+				 pname_ns_swh_plugin + strlen(pname_ns_swh_plugin));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(str,
+				 "swh:\0",
+				 5));
+
+  /* assert no pname ns */
+  str = ags_turtle_read_pname_ns(no_pname_ns,
+				 no_pname_ns + strlen(no_pname_ns));
+
+  CU_ASSERT(str == NULL);  
 }
 
 void
 ags_turtle_test_read_pname_ln()
 {
-  //TODO:JK: implement me
+  gchar *pname_ln_port = ":port\0";
+  gchar *pname_ln_swh_plugin = "swh:plugin\0";
+  gchar *no_pname_ln = "port\0";
+  gchar *str;
+
+  /* assert pname ln port */
+  str = ags_turtle_read_pname_ln(pname_ln_port,
+				 pname_ln_port + strlen(pname_ln_port));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(str,
+				 ":port\0",
+				 6));
+
+  /* assert pname ln swh plugin */
+  str = ags_turtle_read_pname_ln(pname_ln_swh_plugin,
+				 pname_ln_swh_plugin + strlen(pname_ln_swh_plugin));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(str,
+				 "swh:plugin\0",
+				 11));
+
+  /* assert no pname ln */
+  str = ags_turtle_read_pname_ln(no_pname_ln,
+				 no_pname_ln + strlen(no_pname_ln));
+
+  CU_ASSERT(str == NULL);  
 }
 
 void
 ags_turtle_test_read_blank_node_label()
 {
-  //TODO:JK: implement me
+  gchar *blank_node_myid = "_:myid\0";
+  gchar *no_blank_node = "_ no id\0";
+  gchar *str;
+
+  /* assert blank node myid */
+  str = ags_turtle_read_blank_node_label(blank_node_myid,
+					 blank_node_myid + strlen(blank_node_myid));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(str,
+				 "_:myid\0",
+				 6));
+
+  /* assert no blank_node */
+  str = ags_turtle_read_blank_node_label(no_blank_node,
+					 no_blank_node + strlen(no_blank_node));
+
+  CU_ASSERT(str == NULL);
 }
 
 void
 ags_turtle_test_read_langtag()
 {
-  //TODO:JK: implement me
+  gchar *langtag_DE = "@DE\0";
+  gchar *langtag_DE_CH = "@DE-CH\0";
+  gchar *langtag_DE_AT = "@DE-AT\0";
+  gchar *no_langtag = "Fr\0";
+  gchar *str;
+
+  /* assert DE */
+  str = ags_turtle_read_langtag(langtag_DE,
+				langtag_DE + strlen(langtag_DE));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(langtag_DE,
+				 str,
+				 4));
+
+  /* assert DE-CH */
+  str = ags_turtle_read_langtag(langtag_DE_CH,
+				langtag_DE_CH + strlen(langtag_DE_CH));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(langtag_DE_CH,
+				 str,
+				 4));
+  
+  /* assert DE-AT */
+  str = ags_turtle_read_langtag(langtag_DE_AT,
+				langtag_DE_AT + strlen(langtag_DE_AT));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(langtag_DE_AT,
+				 str,
+				 4));
+    
+  /* assert no */
+  str = ags_turtle_read_langtag(no_langtag,
+				no_langtag + strlen(no_langtag));
+  CU_ASSERT(str == NULL);
 }
 
 void
@@ -193,6 +319,47 @@ ags_turtle_test_read_anon()
 void
 ags_turtle_test_read_pn_chars_base()
 {
+  gchar pn_chars_base_start[25];
+  gchar pn_chars_base_end[25];
+  gchar current[25];
+  gchar *str;
+  
+  guint i;
+  gboolean success;
+  
+  /* test single char A-Z */
+  success = TRUE;
+
+  for(i = 0; i < 26; i++){
+    current[0] = 'A' + i;
+    current[1] = '\0';
+
+    str = ags_turtle_read_pn_chars(current,
+				   current + 2);
+    
+    if(g_ascii_strncasecmp(current,
+			   str,
+			   2)){
+      success = FALSE;
+      
+      break;
+    }
+    
+    current[0] = 'a' + i;
+    current[1] = '\0';
+    
+    if(g_ascii_strncasecmp(current,
+			   str,
+			   2)){
+      success = FALSE;
+      
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
+  
+  /* test random string */
   //TODO:JK: implement me
 }
 
@@ -269,9 +436,9 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsTurtle read iriref\0", ags_turtle_test_read_iriref) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTurtle read prefixed name namespace\0", ags_turtle_test_read_pname_ns) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read prefixed name localized name\0", ags_turtle_test_read_prefixed_name_localized_name) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read prefixed name localized name\0", ags_turtle_test_read_pname_ln) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTurtle read blank node label\0", ags_turtle_test_read_blank_node_label) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read language tag\0", ags_turtle_test_read_lang_tag) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read language tag\0", ags_turtle_test_read_langtag) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTurtle read boolean\0", ags_turtle_test_read_boolean) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTurtle read integer\0", ags_turtle_test_read_integer) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTurtle read decimal\0", ags_turtle_test_read_decimal) == NULL) ||
@@ -285,15 +452,16 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsTurtle read uchar\0", ags_turtle_test_read_uchar) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTurtle read echar\0", ags_turtle_test_read_echar) == NULL) ||
      (CU_add_test(pSuite, "test of AgsTurtle read ws\0", ags_turtle_test_read_ws) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read anon\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars u\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-prefix\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-local\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read plx\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read percent\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read hex\0", ags_turtle_test_read_) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-local esc\0", ags_turtle_test_read_) == NULL)){
+     (CU_add_test(pSuite, "test of AgsTurtle read anon\0", ags_turtle_test_read_anon) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars base\0", ags_turtle_test_read_pn_chars_base) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars u\0", ags_turtle_test_read_pn_chars_u) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars\0", ags_turtle_test_read_pn_chars) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-prefix\0", ags_turtle_test_read_pn_prefix) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-local\0", ags_turtle_test_read_pn_local) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read plx\0", ags_turtle_test_read_plx) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read percent\0", ags_turtle_test_read_percent) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read hex\0", ags_turtle_test_read_hex) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-local esc\0", ags_turtle_test_read_pn_local_esc) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
