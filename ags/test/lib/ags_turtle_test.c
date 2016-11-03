@@ -393,37 +393,138 @@ ags_turtle_test_read_double()
 void
 ags_turtle_test_read_exponent()
 {
-  //TODO:JK: implement me
+  gchar *exponent_e10 = "e+10\0";
+  gchar *exponent_E10 = "E-10\0";
+  gchar *no_exponent = "e 10\0";
+  gchar *str;
+  
+  /* assert e+10 */
+  str = ags_turtle_read_exponent(exponent_e10,
+				 exponent_e10 + strlen(exponent_e10));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(exponent_e10,
+				 str,
+				 5));
+
+  /* assert E-10 */
+  str = ags_turtle_read_exponent(exponent_E10,
+				 exponent_E10 + strlen(exponent_E10));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(exponent_E10,
+				 str,
+				 5));
 }
 
 void
 ags_turtle_test_read_string()
 {
-  //TODO:JK: implement me
+  gchar *string_literal_quote_MY_TURTLE = "\"MY Turtle\"\0";
+  gchar *string_literal_single_quote_MY_TURTLE = "\'MY Turtle\'\0";
+  gchar *string_literal_long_quote_MY_TURTLE = "\"\"\"MY Turtle\nis just looking at the mirror\nand is waiting to get feed\"\"\"\0";
+  gchar *string_literal_long_single_quote_MY_TURTLE = "'''MY Turtle\nis just looking at the mirror\nand is waiting to get feed'''\0";
+  gchar *str;
+
+  /* assert my turtle quote */
+  str = ags_turtle_read_string(string_literal_quote_MY_TURTLE,
+			       string_literal_quote_MY_TURTLE + strlen(string_literal_quote_MY_TURTLE));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_quote_MY_TURTLE)));
+
+  /* assert my turtle single quote */
+  str = ags_turtle_read_string(string_literal_single_quote_MY_TURTLE,
+			       string_literal_single_quote_MY_TURTLE + strlen(string_literal_single_quote_MY_TURTLE));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_single_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_single_quote_MY_TURTLE)));
+
+  /* assert my turtle long quote */
+  str = ags_turtle_read_string(string_literal_long_quote_MY_TURTLE,
+			       string_literal_long_quote_MY_TURTLE + strlen(string_literal_long_quote_MY_TURTLE));
+	    
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_long_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_long_quote_MY_TURTLE)));
+
+  /* assert my turtle long single quote */
+  str = ags_turtle_read_string(string_literal_long_single_quote_MY_TURTLE,
+			       string_literal_long_single_quote_MY_TURTLE + strlen(string_literal_long_single_quote_MY_TURTLE));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_long_single_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_long_single_quote_MY_TURTLE)));
 }
 
 void
 ags_turtle_test_read_string_literal_quote()
 {
-  //TODO:JK: implement me
+  gchar *string_literal_quote_MY_TURTLE = "\"MY Turtle\"\0";
+  gchar *str;
+
+  /* assert my turtle quote */
+  str = ags_turtle_read_string(string_literal_quote_MY_TURTLE,
+			       string_literal_quote_MY_TURTLE + strlen(string_literal_quote_MY_TURTLE));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_quote_MY_TURTLE)));
 }
 
 void
 ags_turtle_test_read_string_literal_single_quote()
 {
-  //TODO:JK: implement me
+  gchar *string_literal_single_quote_MY_TURTLE = "\'MY Turtle\'\0";
+  gchar *str;
+
+  /* assert my turtle single quote */
+  str = ags_turtle_read_string(string_literal_single_quote_MY_TURTLE,
+			       string_literal_single_quote_MY_TURTLE + strlen(string_literal_single_quote_MY_TURTLE));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_single_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_single_quote_MY_TURTLE)));
 }
 
 void
 ags_turtle_test_read_string_literal_long_quote()
 {
-  //TODO:JK: implement me
+  gchar *string_literal_long_quote_MY_TURTLE = "\"\"\"MY Turtle\nis just looking at the mirror\nand is waiting to get feed\"\"\"\0";
+  gchar *str;
+
+  /* assert my turtle long quote */
+  str = ags_turtle_read_string(string_literal_long_quote_MY_TURTLE,
+			       string_literal_long_quote_MY_TURTLE + strlen(string_literal_long_quote_MY_TURTLE));
+	    
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_long_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_long_quote_MY_TURTLE)));
 }
 
 void
 ags_turtle_test_read_string_literal_long_single_quote()
 {
-  //TODO:JK: implement me
+  gchar *string_literal_long_single_quote_MY_TURTLE = "'''MY Turtle\nis just looking at the mirror\nand is waiting to get feed'''\0";
+  gchar *str;
+
+  /* assert my turtle long single quote */
+  str = ags_turtle_read_string(string_literal_long_single_quote_MY_TURTLE,
+			       string_literal_long_single_quote_MY_TURTLE + strlen(string_literal_long_single_quote_MY_TURTLE));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(string_literal_long_single_quote_MY_TURTLE,
+				 str,
+				 strlen(string_literal_long_single_quote_MY_TURTLE)));
 }
 
 void

@@ -746,20 +746,6 @@ ags_turtle_read_string(gchar *offset,
 {
   gchar *str;
 
-  str = ags_turtle_read_string_literal_quote(offset,
-					     end_ptr);
-  
-  if(str != NULL){
-    return(str);
-  }
-
-  str = ags_turtle_read_string_literal_single_quote(offset,
-						    end_ptr);
-  
-  if(str != NULL){
-    return(str);
-  }
-
   str = ags_turtle_read_string_literal_long_quote(offset,
 						  end_ptr);
   
@@ -769,6 +755,20 @@ ags_turtle_read_string(gchar *offset,
 
   str = ags_turtle_read_string_literal_long_single_quote(offset,
 							 end_ptr);
+  
+  if(str != NULL){
+    return(str);
+  }
+
+  str = ags_turtle_read_string_literal_quote(offset,
+					     end_ptr);
+  
+  if(str != NULL){
+    return(str);
+  }
+
+  str = ags_turtle_read_string_literal_single_quote(offset,
+						    end_ptr);
   
   if(str != NULL){
     return(str);
@@ -892,10 +892,12 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
   
   if(g_str_has_prefix(offset,
 		      "\"\"\"\0")){
-    while((end = strstr(offset + 3,
+    end = offset + 3;
+    
+    while((end = strstr(end,
 			"\"\"\"\0")) != NULL &&
 	  *(end - 1) == '\\'){
-      offset++;
+      end++;
     }
 
     if(end != NULL){
@@ -928,10 +930,12 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
   
   if(g_str_has_prefix(offset,
 		      "'''\0")){
-    while((end = strstr(offset + 3,
+    end = offset + 3;
+    
+    while((end = strstr(end,
 			"'''\0")) != NULL &&
 	  *(end - 1) == '\\'){
-      offset++;
+      end++;
     }
 
     if(end != NULL){
