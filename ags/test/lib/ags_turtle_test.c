@@ -59,8 +59,12 @@ void ags_turtle_test_read_hex();
 void ags_turtle_test_read_pn_local_esc();
 
 #define AGS_TURTLE_TEST_READ_INTEGER_COUNT (1024)
+
 #define AGS_TURTLE_TEST_READ_DECIMAL_COUNT (1024)
+
 #define AGS_TURTLE_TEST_READ_DOUBLE_COUNT (1024)
+
+#define AGS_TURTLE_TEST_READ_PN_CHARS_BASE_ITERATION_COUNT (65535)
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -705,8 +709,9 @@ ags_turtle_test_read_pn_chars_base()
   gchar pn_chars_base_end[25];
   gchar current[25];
   gchar *str;
-  
-  guint i;
+
+  guint n_bytes, nth;
+  guint i, j;
   gboolean success;
   
   /* test single char A-Z */
@@ -729,6 +734,9 @@ ags_turtle_test_read_pn_chars_base()
     
     current[0] = 'a' + i;
     current[1] = '\0';
+
+    str = ags_turtle_read_pn_chars(current,
+				   current + 2);
     
     if(g_ascii_strncasecmp(current,
 			   str,
@@ -740,9 +748,235 @@ ags_turtle_test_read_pn_chars_base()
   }
   
   CU_ASSERT(success == TRUE);
-  
+
   /* test random string */
-  //TODO:JK: implement me
+  success = TRUE;
+
+  for(i = 0; i < AGS_TURTLE_TEST_READ_PN_CHARS_BASE_ITERATION_COUNT; i++){
+    nth = 0;
+    
+    for(j = 0; j < 5; j++){
+      switch(rand() % 13){
+      case 0:
+	{
+	  if(rand() % 2 == 1){
+	    *current = 'a' + (rand() % 27);
+	  }else{
+	    *current = 'A' + (rand() % 27);
+	  }
+
+	  n_bytes = 1;
+	}
+	break;
+      case 1:
+	{
+	  current[nth] = '\xC3';
+	  current[nth + 1] = '\x80' + (rand() % 22);
+	  
+	  n_bytes = 2;
+	}
+	break;
+      case 2:
+	{
+	  current[nth] = '\xC3';
+	  current[nth + 1] = '\x98' + (rand() % 30);
+	  
+	  n_bytes = 2;
+	}
+	break;
+      case 3:
+	{
+	  guint sub;
+
+	  sub = rand() % 3;
+	  
+	  if(sub == 0){
+	    current[nth] = '\xC3';
+	    current[nth + 1] = '\xB8' + (rand() % 8);
+	  }else if(sub == 1){
+	    current[nth] = '\xC3' + (rand() % 7);
+	    current[nth + 1] = '\x80' + (rand() % 64);
+	  }else if(sub == 2){
+	    current[nth] = '\xCB';
+	    current[nth + 1] = '\x80' + (rand() % 64);
+	  }
+	  
+	  n_bytes = 2;
+	}
+	break;
+      case 4:
+	{
+	  current[nth] = '\xCD';
+	  current[nth + 1] = '\xB0' + (rand() % 13);
+	  
+	  n_bytes = 2;
+	}
+	break;
+      case 5:
+	{
+	  guint sub;
+
+	  sub = rand() % 3;
+	  
+	  if(sub == 0){
+	    current[nth] = '\xCD';
+	    current[nth + 1] = '\xBF' + (rand() % 32);
+	  
+	    n_bytes = 2;
+	  }else if(sub == 1){
+	    current[nth] = '\xCE' + (rand() % 7);
+	    current[nth + 1] = '\x80' + (rand() % 64);
+	  
+	    n_bytes = 2;
+	  }else if(sub == 2){
+	    current[nth] = '\xE0' + (rand() % 2);
+	    current[nth + 1] = '\x80' + (rand() % 64);
+	    current[nth + 2] = '\x80' + (rand() % 64);
+	  
+	    n_bytes = 3;
+	  }
+	}
+	break;
+      case 6:
+	{
+	  current[nth] = '\xE2';
+	  current[nth + 1] = '\x80' + (rand() % 13);
+	  current[nth + 2] = '\x8C' + (rand() % 2);
+	  
+	  n_bytes = 3;
+	}
+	break;
+      case 7:
+	{
+	  guint sub;
+
+	  sub = rand() % 3;
+	  
+	  if(sub == 0){
+	    current[nth] = '\E2';
+	    current[nth + 1] = '\x81' + (rand() % 32);
+	    current[nth + 2] = '\xB0' + (rand() % 16);
+	  }else if(sub == 1){
+	    current[nth] = '\xE2' + (rand() % 15);
+	    current[nth + 1] = '\x81' + (rand() % 5);
+	    current[nth + 2] = '\x80' + (rand() % 64);
+	  }else if(sub == 2){
+	    current[nth] = '\xE2';
+	    current[nth + 1] = '\x8F';
+	    current[nth + 2] = '\x80' + (rand() % 16);
+	  }
+	  
+	  n_bytes = 3;
+	}
+	break;
+      case 8:
+	{
+	  guint sub;
+
+	  sub = rand() % 2;
+	  
+	  if(sub == 0){
+	    current[nth] = '\xE2';
+	    current[nth + 1] = '\xB0' + (rand() % 15);
+	    current[nth + 2] = '\x80' + (rand() % 64);
+	  }else if(sub == 1){
+	    current[nth] = '\xE2' + (rand() % 7);
+	    current[nth + 1] = '\xBF';
+	    current[nth + 2] = '\x80' + (rand() % 64);
+	  }
+	  
+	  n_bytes = 3;
+	}
+	break;
+      case 9:
+	{
+	  guint sub;
+
+	  sub = rand() % 2;
+	  
+	  if(sub == 0){
+	    current[nth] = '\xE3';
+	    current[nth + 1] = '\x80' + (rand() % 64);
+	    current[nth + 2] = '\x81' + (rand() % 63);
+	  }else if(sub == 1){
+	    current[nth] = '\xE4' + (rand() % 12);
+	    current[nth + 1] = '\x80' + (rand() % 32);
+	    current[nth + 2] = '\x80' + (rand() % 64);
+	  }
+	  
+	  n_bytes = 3;
+	}
+	break;
+      case 10:
+	{
+	  guint sub;
+
+	  sub = rand() % 2;
+	  
+	  if(sub == 0){
+	    current[nth] = '\xEF';
+	    current[nth + 1] = '\xA4' + (rand() % 18);
+	    current[nth + 2] = '\x80' + (rand() % 64);
+	  }else if(sub == 1){
+	    current[nth] = '\xEF' + (rand() % 7);
+	    current[nth + 1] = '\xBF';
+	    current[nth + 2] = '\x80' + (rand() % 16);
+	  }
+	  
+	  n_bytes = 3;
+	}
+	break;
+      case 11:
+	{
+	  guint sub;
+
+	  sub = rand() % 3;
+	  
+	  if(sub == 0){
+	    current[nth] = '\xEF';
+	    current[nth + 1] = '\xB7';
+	    current[nth + 2] = '\xB0' + (rand() % 16);
+	  }else if(sub == 1){
+	    current[nth] = '\xEF';
+	    current[nth + 1] = '\xB8' + (rand() % 6);
+	    current[nth + 2] = '\x80' + (rand() % 64);
+	  }else if(sub == 2){
+	    current[nth] = '\xEF';
+	    current[nth + 1] = '\xBF';
+	    current[nth + 2] = '\x80' + (rand() % 62);
+	  }
+	  
+	  n_bytes = 3;
+	}
+	break;
+      case 12:
+	{
+	  current[nth] = '\xF0' + (rand() % 4);
+	  current[nth + 1] = '\x90' + (rand() % 32);
+	  current[nth + 2] = '\x80' + (rand() % 64);
+	  current[nth + 3] = '\x80' + (rand() % 64);
+
+	  n_bytes = 4;
+	}
+      }
+      
+      str = ags_turtle_read_pn_chars(current,
+				     current + n_bytes);
+    
+      if(str == NULL ||
+	 g_ascii_strncasecmp(current,
+			     str,
+			     n_bytes)){
+	success = FALSE;
+      
+	break;
+      }
+
+      nth += n_bytes;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
