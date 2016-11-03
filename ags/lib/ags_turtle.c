@@ -623,7 +623,7 @@ ags_turtle_read_decimal(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *decimal_literal_pattern = "^([+-]?[0-9]*.[0-9]+)\0";
+  static const char *decimal_literal_pattern = "^([\\+\\-]?[0-9]*\\.[0-9]+)\0";
 
   static const size_t max_matches = 1;
     
@@ -666,7 +666,7 @@ ags_turtle_read_double(gchar *offset,
   
   static gboolean regex_compiled = FALSE;
   
-  static const char *double_literal_pattern = "^([+-]?([0-9]+.[0-9]*[eE] [+-]?[0-9]+)|(.[0-9]+[eE][+-]?[0-9]+)|([0-9]+[eE][+-]?[0-9]+))\0";
+  static const char *double_literal_pattern = "^([\\+\\-]?(([0-9]+\\.[0-9]*[eE][\\+\\-]?[0-9]+)|(\\.[0-9]+[eE][\\+\\-]?[0-9]+)|([0-9]+[eE][+-]?[0-9]+)))\0";
 
   static const size_t max_matches = 1;
     

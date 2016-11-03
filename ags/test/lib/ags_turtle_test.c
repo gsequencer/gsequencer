@@ -58,6 +58,10 @@ void ags_turtle_test_read_percent();
 void ags_turtle_test_read_hex();
 void ags_turtle_test_read_pn_local_esc();
 
+#define AGS_TURTLE_TEST_READ_INTEGER_COUNT (1024)
+#define AGS_TURTLE_TEST_READ_DECIMAL_COUNT (1024)
+#define AGS_TURTLE_TEST_READ_DOUBLE_COUNT (1024)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -235,25 +239,155 @@ ags_turtle_test_read_langtag()
 void
 ags_turtle_test_read_boolean()
 {
-  //TODO:JK: implement me
+  gchar *boolean_true = "true\0";
+  gchar *boolean_false = "false\0";
+  gchar *not_boolean_0 = "0";
+  gchar *not_boolean_1 = "1";
+  gchar *str;
+
+  /* assert true */
+  str = ags_turtle_read_boolean(boolean_true,
+				boolean_true + strlen(boolean_true));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(boolean_true,
+				 str,
+				 5));
+  
+  /* assert false */
+  str = ags_turtle_read_boolean(boolean_false,
+				boolean_false + strlen(boolean_false));
+
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(boolean_false,
+				 str,
+				 5));
+  
+  /* assert not 0 */
+  str = ags_turtle_read_boolean(not_boolean_0,
+				not_boolean_0 + strlen(not_boolean_0));
+
+  CU_ASSERT(str == NULL);
+  
+  /* assert not 1 */
+  str = ags_turtle_read_boolean(not_boolean_1,
+				not_boolean_1 + strlen(not_boolean_1));
+
+  CU_ASSERT(str == NULL);
 }
 
 void
 ags_turtle_test_read_integer()
 {
-  //TODO:JK: implement me
+  gchar *str, *tmp;
+  gchar *no_integer = "!0\0";
+  
+  guint i;
+  gboolean success;
+
+  /* check random integer */
+  success = TRUE;
+  
+  for(i = 0; i < AGS_TURTLE_TEST_READ_INTEGER_COUNT; i++){
+    tmp = g_strdup_printf("%d\0", rand() % 4294967296 - 2147483648);
+    str = ags_turtle_read_integer(tmp,
+				  tmp + strlen(tmp));
+
+    if(str == NULL ||
+       g_ascii_strcasecmp(tmp,
+			  str)){
+      success = FALSE;
+
+      break;
+    }
+    
+    free(tmp);
+  }
+
+  CU_ASSERT(success == TRUE);
+
+  /* check no */
+  str = ags_turtle_read_integer(no_integer,
+				no_integer + strlen(no_integer));
+  
+  CU_ASSERT(str == NULL);
 }
 
 void
 ags_turtle_test_read_decimal()
 {
-  //TODO:JK: implement me
+  gchar *str, *tmp;
+  gchar *no_double = "!0\0";
+  
+  guint i;
+  gboolean success;
+
+  /* check random double */
+  success = TRUE;
+  
+  for(i = 0; i < AGS_TURTLE_TEST_READ_DECIMAL_COUNT; i++){
+    tmp = g_strdup_printf("%.5f\0", (rand() % 4294967296 - 2147483648) / 31.0);
+    str = ags_turtle_read_decimal(tmp,
+				  tmp + strlen(tmp));
+
+    if(str == NULL ||
+       g_ascii_strcasecmp(tmp,
+			  str)){
+      success = FALSE;
+
+      break;
+    }
+    
+    free(tmp);
+  }
+
+  CU_ASSERT(success == TRUE);
+
+  /* check no */
+  str = ags_turtle_read_decimal(no_double,
+				no_double + strlen(no_double));
+  
+  CU_ASSERT(str == NULL);
 }
 
 void
 ags_turtle_test_read_double()
 {
-  //TODO:JK: implement me
+  gchar *str, *tmp;
+  gchar *no_double = "!0E12\0";
+
+  gdouble val_0;
+  guint i;
+  gboolean success;
+
+  /* check random double */
+  success = TRUE;
+  
+  for(i = 0; i < AGS_TURTLE_TEST_READ_DOUBLE_COUNT; i++){
+    val_0 = (rand() % 4294967296 - 2147483648) / 31.0;
+    
+    tmp = g_strdup_printf("%01.5fE11\0", val_0);
+    str = ags_turtle_read_double(tmp,
+				 tmp + strlen(tmp));
+
+    if(str == NULL ||
+       g_ascii_strcasecmp(str,
+			  tmp)){
+      success = FALSE;
+
+      break;
+    }
+    
+    free(tmp);
+  }
+
+  CU_ASSERT(success == TRUE);
+
+  /* check no */
+  str = ags_turtle_read_double(no_double,
+			       no_double + strlen(no_double));
+  
+  CU_ASSERT(str == NULL);
 }
 
 void
