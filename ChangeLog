@@ -1,3 +1,9 @@
+ags (0.7.96)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed in ags_midi_buffer_util.c some missing return values and other issues
+	* improved test coverage of ags_midi_buffer_util.c to almost completed
+
 ags (0.7.95)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

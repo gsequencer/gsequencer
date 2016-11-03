@@ -1612,9 +1612,6 @@ ags_midi_buffer_util_put_smtpe(unsigned char *buffer,
 
   /* fr */
   buffer[delta_time_size + 6] = fr;
-
-  /* end */
-  buffer[delta_time_size + 7] = 0xf7;
 }
 
 /**
@@ -1678,7 +1675,7 @@ ags_midi_buffer_util_get_smtpe(unsigned char *buffer,
     *fr = buffer[delta_time_size + 6];
   }
   
-  return(delta_time_size + 8);
+  return(delta_time_size + 7);
 }
 
 /**
@@ -1717,7 +1714,7 @@ ags_midi_buffer_util_put_tempo(unsigned char *buffer,
   buffer[delta_time_size + 2] = 3;
   
   /* tempo */
-  ags_midi_buffer_util_put_int24(buffer + 3,
+  ags_midi_buffer_util_put_int24(buffer + delta_time_size + 3,
 				 tempo);
 }
 
@@ -1754,8 +1751,10 @@ ags_midi_buffer_util_get_tempo(unsigned char *buffer,
   }
 
   /* tempo */
-  ags_midi_buffer_util_get_int24(buffer + 3,
+  ags_midi_buffer_util_get_int24(buffer + delta_time_size + 3,
 				 tempo);
+
+  return(delta_time_size + 6);
 }
 
 /**
@@ -2097,8 +2096,7 @@ ags_midi_buffer_util_put_text_event(unsigned char *buffer,
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   ags_midi_buffer_util_put_varlength(buffer,
 				     delta_time);
-
-
+  
   /* status byte */
   buffer[delta_time_size] = 0xff;
 
@@ -2109,7 +2107,7 @@ ags_midi_buffer_util_put_text_event(unsigned char *buffer,
   buffer[delta_time_size + 2] = 0xff & length;
 
   /* text */
-  memcpy(buffer + 3, text, length * sizeof(unsigned char));
+  memcpy(buffer + delta_time_size + 3, text, length * sizeof(unsigned char));
 }
 
 /**
