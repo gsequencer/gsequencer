@@ -1,3 +1,9 @@
+ags (0.7.97)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_buffer_util_test.c using wrong variable
+	* improved test suite to have LC_ALL and LANG set to C
+
 ags (0.7.96)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
