@@ -15,6 +15,49 @@ ags (1.0.0)
 	* improved AgsDial
 	* fixed ags_automation_find_point() to allow accessing first and last entry
 
+ags (0.7.97)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_buffer_util_test.c using wrong variable
+	* improved test suite to have LC_ALL and LANG set to C
+
+ags (0.7.96)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed in ags_midi_buffer_util.c some missing return values and other issues
+	* improved test coverage of ags_midi_buffer_util.c to almost completed
+
+ags (0.7.95)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unit test ags_midi_buffer_util_get_song_select()
+
+ags (0.7.94)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unit test ags_recall_test_duplicate() to have proper type in callback
+	* extended ags_midi_test.c to provide more unit tests
+
+ags (0.7.93)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation edit restore from simple file
+
+ags (0.7.92)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added unit tests of ags_midi_buffer_util.c
+	* fixed ags_midi_buffer_put_varlength(), it was defunctional
+	* fixed missing check of AgsRecallDssi in ags_channel.c
+
+ags (0.7.91)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added unit tests in ags_automation_test.c and ags_recall_test.c
+	* fixed automation toolbar to toggle port correctly and added empty port
+	* fixed ags_midi_buffer_util.c, ags_midi_builder.c and ags_midi_parser.c to conform MIDI specs
+	* NOTE arguments are shifted for MIDI SMTPE related functions
+
 ags (0.7.90)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

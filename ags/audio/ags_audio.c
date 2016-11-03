@@ -1630,7 +1630,8 @@ ags_audio_connect(AgsConnectable *connectable)
   GList *list;
 
   audio = AGS_AUDIO(connectable);
-
+  audio->flags |= AGS_AUDIO_CONNECTED;
+  
 #ifdef AGS_DEBUG
   g_message("connecting audio\0");
 #endif

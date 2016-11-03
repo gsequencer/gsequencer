@@ -526,7 +526,7 @@ SCANGOBJ_OPTIONS = --cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-# SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
+#SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
@@ -686,9 +686,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/gtk-doc.make $(am__c
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libags_audio/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags_audio/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libags_audio/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libags_audio/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

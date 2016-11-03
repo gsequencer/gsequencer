@@ -726,6 +726,8 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
+  GList *soundcard;
+  
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
   if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(xorg_application_context)->flags)) != 0){
@@ -734,6 +736,14 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
 
   ags_xorg_application_context_parent_connectable_interface->connect(connectable);
 
+  soundcard = xorg_application_context->soundcard;
+
+  while(soundcard != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(soundcard->data));
+
+    soundcard = soundcard->next;
+  }
+  
   g_message("connecting gui\0");
 
   ags_connectable_connect(AGS_CONNECTABLE(xorg_application_context->window));

@@ -1110,35 +1110,9 @@ ags_jack_devout_connect(AgsConnectable *connectable)
 {
   AgsJackDevout *jack_devout;
   
-  AgsMutexManager *mutex_manager;
-
   GList *list;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
-
   jack_devout = AGS_JACK_DEVOUT(connectable);
-
-  /* create jack_devout mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-  
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     &attr);
-
-  /* insert mutex */
-  pthread_mutex_lock(jack_devout->application_mutex);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) jack_devout,
-			   mutex);
-  
-  pthread_mutex_unlock(jack_devout->application_mutex);
 
   /*  */  
   list = jack_devout->audio;

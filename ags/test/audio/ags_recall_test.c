@@ -78,9 +78,9 @@ void ags_recall_test_callback(AgsRecall *recall,
 			      gpointer data);
 void ags_recall_test_child_added_callback(AgsRecall *recall, AgsRecall *child,
 					  gpointer data);
-void ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_id,
-					guint n_params, GParameter *parameter,
-					gpointer data);
+AgsRecall* ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_id,
+					      guint *n_params, GParameter *parameter,
+					      gpointer data);
 
 #define AGS_RECALL_RUN_INIT_PRE_N_CHILDREN (4)
 #define AGS_RECALL_RUN_INIT_INTER_N_CHILDREN (4)
@@ -564,12 +564,14 @@ ags_recall_test_is_done()
   CU_ASSERT(is_done == TRUE);
 }
 
-void
+AgsRecall*
 ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_id,
-				   guint n_params, GParameter *parameter,
+				   guint *n_params, GParameter *parameter,
 				   gpointer data)
 {
   *((guint *) data) += 1;
+
+  return(NULL);
 }
 
 void
@@ -987,6 +989,9 @@ int
 main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
+
+  putenv("LC_ALL=C\0");
+  putenv("LANG=C\0");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
