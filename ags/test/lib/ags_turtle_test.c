@@ -65,6 +65,8 @@ void ags_turtle_test_read_pn_local_esc();
 #define AGS_TURTLE_TEST_READ_DOUBLE_COUNT (1024)
 
 #define AGS_TURTLE_TEST_READ_PN_CHARS_BASE_ITERATION_COUNT (65535)
+#define AGS_TURTLE_TEST_READ_PN_CHARS_BASE_ITERATION_COUNT (65535)
+#define AGS_TURTLE_TEST_READ_PN_CHARS_ITERATION_COUNT (256)
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -705,13 +707,11 @@ ags_turtle_test_read_anon()
 void
 ags_turtle_test_read_pn_chars_base()
 {
-  gchar pn_chars_base_start[25];
-  gchar pn_chars_base_end[25];
   gchar current[25];
   gchar *str;
 
   guint n_bytes, nth;
-  guint i, j;
+  guint i;
   gboolean success;
   
   /* test single char A-Z */
@@ -721,8 +721,8 @@ ags_turtle_test_read_pn_chars_base()
     current[0] = 'A' + i;
     current[1] = '\0';
 
-    str = ags_turtle_read_pn_chars(current,
-				   current + 2);
+    str = ags_turtle_read_pn_chars_base(current,
+					current + 2);
     
     if(g_ascii_strncasecmp(current,
 			   str,
@@ -735,8 +735,8 @@ ags_turtle_test_read_pn_chars_base()
     current[0] = 'a' + i;
     current[1] = '\0';
 
-    str = ags_turtle_read_pn_chars(current,
-				   current + 2);
+    str = ags_turtle_read_pn_chars_base(current,
+					current + 2);
     
     if(g_ascii_strncasecmp(current,
 			   str,
@@ -965,8 +965,8 @@ ags_turtle_test_read_pn_chars_base()
     }
 
     current[nth + n_bytes] = '\0';
-    str = ags_turtle_read_pn_chars(current,
-				   current + n_bytes);
+    str = ags_turtle_read_pn_chars_base(current,
+					current + n_bytes);
     
     if(str == NULL ||
        g_ascii_strncasecmp(current,
@@ -984,19 +984,191 @@ ags_turtle_test_read_pn_chars_base()
 void
 ags_turtle_test_read_pn_chars_u()
 {
-  //TODO:JK: implement me
+  gchar *underscore = "_\0";
+  gchar *str;
+  
+  str = ags_turtle_read_pn_chars_u(underscore,
+				   underscore + 2);
+  
+  CU_ASSERT(str != NULL ||
+	    !g_ascii_strncasecmp(underscore,
+				 str,
+				 2));
 }
 
 void
 ags_turtle_test_read_pn_chars()
 {
-  //TODO:JK: implement me
+  gchar *dash = "-\0";
+  gchar *bullet = "\xC2\xB7\0";
+  gchar *key_0 = "\xE2\x80\xBF\0";
+  gchar *key_1 = "\xE2\x81\x80\0";
+  gchar current[25];  
+  gchar *str;
+  
+  guint n_bytes, nth;
+  guint i;
+  gboolean success;
+
+  /* test single char 0-9 */
+  success = TRUE;
+
+  for(i = 0; i < 10; i++){
+    current[0] = '0' + i;
+    current[1] = '\0';
+
+    str = ags_turtle_read_pn_chars(current,
+				   current + 2);
+    
+    if(g_ascii_strncasecmp(current,
+			   str,
+			   2)){
+      success = FALSE;
+      
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
+
+  /* test dash */  
+  str = ags_turtle_read_pn_chars(dash,
+				 dash + 2);
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(dash,
+				 str,
+				 2));
+  
+  /* test bullet */  
+  str = ags_turtle_read_pn_chars(bullet,
+				 bullet + 2);
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(bullet,
+				 str,
+				 2));
+
+  
+  /* test random string */
+  success = TRUE;
+
+  for(i = 0; i < AGS_TURTLE_TEST_READ_PN_CHARS_BASE_ITERATION_COUNT; i++){
+    guint range;
+    
+    nth = 0;
+    n_bytes = 0;
+
+    range = rand() % 2;
+    
+    switch(range){
+    case 0:
+      {
+	current[nth] = 0xCC;
+	current[nth + 1] = 0xB0 + (rand() % 16);
+	
+	n_bytes = 2;
+      }
+      break;
+    case 1:
+      {
+	current[nth] = 0xCD;
+	current[nth + 1] = 0x80 + (rand() % 48);
+	
+	n_bytes = 2;
+      }
+      break;
+    }
+
+    current[nth + n_bytes] = '\0';
+    str = ags_turtle_read_pn_chars(current,
+				   current + n_bytes);
+    
+    if(str == NULL ||
+       g_ascii_strncasecmp(current,
+			   str,
+			   n_bytes)){
+      success = FALSE;
+	
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
+
+  /* test key_0 */  
+  str = ags_turtle_read_pn_chars(key_0,
+				 key_0 + 2);
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(key_0,
+				 str,
+				 2));
+  
+  /* test key_1 */  
+  str = ags_turtle_read_pn_chars(key_1,
+				 key_1 + 2);
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(key_1,
+				 str,
+				 2));
 }
 
 void
 ags_turtle_test_read_pn_prefix()
 {
-  //TODO:JK: implement me
+  gchar *no_prefix = ".\0";
+  gchar *str;
+
+  static const gchar *prefix[] = {
+    "aa.\0",
+    "aaa...\0",
+    "aaa.zzz\0",
+    "aaa...zzz\0",
+  };
+  
+  /* test prefix 0 */  
+  str = ags_turtle_read_pn_prefix(prefix[0],
+				  prefix[0] + strlen(prefix[0]));
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(prefix[0],
+				 str,
+				 strlen(prefix[0])));
+  
+  /* test prefix 1 */  
+  str = ags_turtle_read_pn_prefix(prefix[1],
+				  prefix[1] + strlen(prefix[1]));
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(prefix[1],
+				 str,
+				 strlen(prefix[1])));
+
+  /* test prefix 2 */  
+  str = ags_turtle_read_pn_prefix(prefix[2],
+				  prefix[2] + strlen(prefix[2]));
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(prefix[2],
+				 str,
+				 strlen(prefix[2])));
+
+  /* test prefix 3 */  
+  str = ags_turtle_read_pn_prefix(prefix[3],
+				  prefix[3] + strlen(prefix[3]));
+  
+  CU_ASSERT(str != NULL &&
+	    !g_ascii_strncasecmp(prefix[3],
+				 str,
+				 strlen(prefix[3])));
+
+  /* test no prefix */  
+  str = ags_turtle_read_pn_prefix(no_prefix,
+				  no_prefix + strlen(no_prefix));
+  
+  CU_ASSERT(str == NULL);
 }
 
 void

@@ -1322,15 +1322,12 @@ ags_turtle_read_pn_prefix(gchar *offset,
 					  end_ptr)) != NULL ||
 	  *offset == '.'){
       if(tmp == NULL){
-	tmp = g_strdup(".\0");
-	offset++;
-	
 	last_is_point = TRUE;
       }else{
 	last_is_point = FALSE;
       }
 
-      if(str != NULL){
+      if(tmp != NULL){
 	str_tmp = g_strdup_printf("%s%s\0",
 				  str, tmp);
 	offset += strlen(tmp);
@@ -1340,8 +1337,13 @@ ags_turtle_read_pn_prefix(gchar *offset,
 
 	str = str_tmp;
       }else{
-	str = tmp;
-	offset += strlen(tmp);
+	str_tmp = g_strdup_printf("%s.\0",
+				  str);
+	offset++;	
+
+	free(str);
+
+	str = str_tmp;
       }
     }
   }
