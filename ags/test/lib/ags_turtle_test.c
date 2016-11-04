@@ -1174,7 +1174,39 @@ ags_turtle_test_read_pn_prefix()
 void
 ags_turtle_test_read_pn_local()
 {
-  //TODO:JK: implement me
+  gchar *no_local = "%\0";
+  gchar *str;
+
+  static const gchar *local[] = {
+    "::\0",
+    "_:\0",
+    ":_\0",
+    "_a\0",
+    ":%00:\0",
+    ":%ff:\0",
+    "zzz:\0",
+    "000.999\0",
+    "0xff\0",
+  };
+
+  guint i;
+  
+  /* test local 0 */
+  for(i = 0; i < 9; i++){
+    str = ags_turtle_read_pn_local(local[i],
+				   local[i] + strlen(local[i]));
+  
+    CU_ASSERT(str != NULL &&
+	      !g_ascii_strncasecmp(local[i],
+				   str,
+				   strlen(local[i])));
+  }
+
+  /* test no local */  
+  str = ags_turtle_read_pn_local(no_local,
+				 no_local + strlen(no_local));
+  
+  CU_ASSERT(str == NULL);
 }
 
 void
@@ -1186,19 +1218,70 @@ ags_turtle_test_read_plx()
 void
 ags_turtle_test_read_percent()
 {
-  //TODO:JK: implement me
+  gchar percent[4];
+  gchar *hex = "0123456789abcdef\0";
+  gchar *str;
+  
+  guint i, j;
+  gboolean success;
+  
+  percent[0] = '%';
+  percent[3] = '\0';
+
+  success = TRUE;
+  
+  for(i = 0; i < 16; i++){
+    percent[1] = hex[i];
+    
+    for(j = 0; j < 16; j++){
+      percent[2] = hex[j];
+
+      str = ags_turtle_read_percent(percent,
+				    percent + strlen(percent));
+      
+      if(str == NULL ||
+	 g_ascii_strncasecmp(percent,
+			     str,
+			     4)){
+	success = FALSE;
+
+	break;
+      }
+    }
+  }
+     
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_turtle_test_read_hex()
 {
+  gchar hex[2];
   //TODO:JK: implement me
 }
 
 void
 ags_turtle_test_read_pn_local_esc()
 {
-  //TODO:JK: implement me
+  gchar *local_esc[3];
+  gchar *escapes = "\\_~.-!$&()*+,;=/?#@%\0";
+  gchar *str;
+
+  guint i;
+  
+  local_esc[0] = '\\';
+  local_esc[2] = '\0';
+
+  for(i = 0; i < strlen(escapes); i++){
+    local_esc[1] = escapes[i];
+    str = ags_turtle_read_pn_local_esc(local_esc,
+				       local_esc + strlen(local_esc));
+  
+    CU_ASSERT(str != NULL &&
+	      !g_ascii_strncasecmp(local_esc,
+				   str,
+				   3));
+  }
 }
 
 int
