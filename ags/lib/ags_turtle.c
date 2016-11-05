@@ -1751,11 +1751,11 @@ ags_turtle_load(AgsTurtle *turtle,
       /* skip comments */
       if(buffer == look_ahead){
 	if(*buffer == '#'){
-	  look_ahead = index(look_ahead, '\n');
+	  look_ahead = index(look_ahead, '\n') + 1;
 	  continue;
 	}
       }else if(buffer[look_ahead - buffer - 1] == '\n' && *look_ahead == '#'){
-	look_ahead = index(look_ahead, '\n');
+	look_ahead = index(look_ahead, '\n') + 1;
 	continue;
       }
 
