@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include <regex.h>
+#include <pcre.h>
 
 /**
  * SECTION:ags_function
@@ -359,7 +360,9 @@ gchar**
 ags_function_find_literals(AgsFunction *function,
 			   guint *n_symbols)
 { 
-  regmatch_t match_arr[1];
+  int erroffset;
+  int ovector[3];
+  int rc;
 
   gchar **literals;
   gchar *str;
@@ -368,41 +371,87 @@ ags_function_find_literals(AgsFunction *function,
   
   static gboolean regex_compiled = FALSE;
 
+  static pcre *function_re;
+  static pcre *literal_re;
+  const char *error;
+
   static regex_t literal_regex;
 
-  static const char *literal_pattern = "^((?!log|exp|floor|ceil|round|sin|cos|tan|asin|acos|atan)([a-xA-X][0-9]*))\0";
-
-  static const size_t max_matches = 1;
+  static const char *function_pattern = "^((log)|(exp)|(floor)|(ceil)|(round)|(sin)|(cos)|(tan)|(asin)|(acos)|(atan))\0";
+  static const char *literal_pattern = "^([a-zA-Z])\0";
 
   literals = NULL;
   n_literals = 0;
   
   /* compile regex */
   if(!regex_compiled){
-    regex_compiled = TRUE;
+    function_re = pcre_compile(function_pattern,
+			       0,
+			       &error,
+			       &erroffset,
+			       NULL);
+    
+    if(function_re == NULL){
+      g_warning("failed to compile regular expression at offset %d: %s\0", erroffset, error);
+    }
 
-    regcomp(&literal_regex, literal_pattern, REG_EXTENDED);
+    literal_re = pcre_compile(literal_pattern,
+			      0,
+			      &error,
+			      &erroffset,
+			      NULL);
+
+    if(literal_re == NULL){
+      g_warning("failed to compile regular expression at offset %d: %s\0", erroffset, error);
+    }
   }
 
   /* find literals */
   str = function->source_function;
   
   while(str != NULL && *str != '\0'){
-    if(regexec(&literal_regex, str, max_matches, match_arr, 0) == 0){
-      literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
+    rc = pcre_exec(function_re,
+		   NULL,
+		   str,
+		   strlen(str),
+		   0,
+		   0,
+		   ovector,
+		   2);
 
-      literals[n_literals] = g_strndup(str,
-				       match_arr[0].rm_eo - match_arr[0].rm_so);
-      n_literals++;
-
-      if(str[match_arr[0].rm_eo - match_arr[0].rm_so] != '\0'){
-	str += (match_arr[0].rm_eo - match_arr[0].rm_so);
-      }else{
-	break;
-      }
-    }else{
-      break;
+    if(rc >= 0){
+      str += (ovector[1] - ovector[0]);
+      
+      continue;
     }
+
+    rc = pcre_exec(literal_re,
+		   NULL,
+		   str,
+		   strlen(str),
+		   0,
+		   0,
+		   ovector,
+		   2);
+
+    if(rc < 0){
+      str++;
+      
+      continue;
+    }
+    
+    if(literals == NULL){
+      literals = (gchar **) malloc(sizeof(gchar *));
+    }else{
+      literals = (gchar **) realloc(literals,
+				    (n_literals + 1) * sizeof(gchar *));
+    }
+      
+    literals[n_literals] = g_strndup(str,
+				     ovector[1] - ovector[0]);
+    n_literals++;
+    
+    str += (ovector[1] - ovector[0]);
   }
 
   /* return symbols and its count*/

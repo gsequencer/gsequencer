@@ -197,8 +197,8 @@ libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_s
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
 # library libags
-libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 1:0:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread -lrt -lcrypt $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
+libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(PCRE_CFLAGS)
+libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 1:0:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread -lrt -lcrypt $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(PCRE_LIBS)
 
 # library libags-thread
 libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
@@ -237,6 +237,7 @@ gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.
 # unit and functional tests
 check_PROGRAMS = \
 	ags_thread_test \
+	ags_function_test \
 	ags_turtle_test \
 	ags_audio_test \
 	ags_channel_test \
@@ -255,6 +256,11 @@ ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
 ags_thread_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 ags_thread_test_LDADD = libags_thread.la libags.la
+
+ags_function_test_SOURCES = ags/test/lib/ags_function_test.c
+ags_function_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_function_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_function_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
 ags_turtle_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)

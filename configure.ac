@@ -130,6 +130,10 @@ PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
 
+PKG_CHECK_MODULES([PCRE], [libpcre >= 3.39])
+AC_SUBST(PCRE_CFLAGS)
+AC_SUBST(PCRE_LIBS)
+
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
 

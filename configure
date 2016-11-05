@@ -674,6 +674,8 @@ FONTCONFIG_LIBS
 FONTCONFIG_CFLAGS
 LIBINSTPATCH_LIBS
 LIBINSTPATCH_CFLAGS
+PCRE_LIBS
+PCRE_CFLAGS
 GIO_LIBS
 GIO_CFLAGS
 GOBJECT_LIBS
@@ -866,6 +868,8 @@ GOBJECT_CFLAGS
 GOBJECT_LIBS
 GIO_CFLAGS
 GIO_LIBS
+PCRE_CFLAGS
+PCRE_LIBS
 LIBINSTPATCH_CFLAGS
 LIBINSTPATCH_LIBS
 FONTCONFIG_CFLAGS
@@ -1594,6 +1598,8 @@ Some influential environment variables:
               linker flags for GOBJECT, overriding pkg-config
   GIO_CFLAGS  C compiler flags for GIO, overriding pkg-config
   GIO_LIBS    linker flags for GIO, overriding pkg-config
+  PCRE_CFLAGS C compiler flags for PCRE, overriding pkg-config
+  PCRE_LIBS   linker flags for PCRE, overriding pkg-config
   LIBINSTPATCH_CFLAGS
               C compiler flags for LIBINSTPATCH, overriding pkg-config
   LIBINSTPATCH_LIBS
@@ -14223,6 +14229,100 @@ See \`config.log' for more details" "$LINENO" 5; }
 else
 	GIO_CFLAGS=$pkg_cv_GIO_CFLAGS
 	GIO_LIBS=$pkg_cv_GIO_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCRE" >&5
+$as_echo_n "checking for PCRE... " >&6; }
+
+if test -n "$PCRE_CFLAGS"; then
+    pkg_cv_PCRE_CFLAGS="$PCRE_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libpcre >= 3.39\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libpcre >= 3.39") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_PCRE_CFLAGS=`$PKG_CONFIG --cflags "libpcre >= 3.39" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$PCRE_LIBS"; then
+    pkg_cv_PCRE_LIBS="$PCRE_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libpcre >= 3.39\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libpcre >= 3.39") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_PCRE_LIBS=`$PKG_CONFIG --libs "libpcre >= 3.39" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        PCRE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libpcre >= 3.39" 2>&1`
+        else
+	        PCRE_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libpcre >= 3.39" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$PCRE_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (libpcre >= 3.39) were not met:
+
+$PCRE_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables PCRE_CFLAGS
+and PCRE_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables PCRE_CFLAGS
+and PCRE_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	PCRE_CFLAGS=$pkg_cv_PCRE_CFLAGS
+	PCRE_LIBS=$pkg_cv_PCRE_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
