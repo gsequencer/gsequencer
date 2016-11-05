@@ -1,3 +1,9 @@
+ags (0.7.98)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixes to ags_turtle.c UTF-8 ranges and other issues
+	* added ags_turtle_test unit test
+
 ags (0.7.97)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
