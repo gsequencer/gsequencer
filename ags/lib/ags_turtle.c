@@ -393,18 +393,21 @@ ags_turtle_read_blank_node_label(gchar *offset,
 
   tmp_str = NULL;
 
-  if(g_str_has_prefix(offset,
-		      "_:\0") &&
-     ((tmp = ags_turtle_read_pn_chars_u(offset + 2,
-					end_ptr)) != NULL) ||
-      g_ascii_isdigit(offset[2])){
+  if(!g_str_has_prefix(offset,
+		       "_:\0")){
+    return(NULL);
+  }
+  
+  if((tmp = ags_turtle_read_pn_chars_u(offset + 2,
+				       end_ptr)) != NULL ||
+     g_ascii_isdigit(offset[2])){
     if(tmp == NULL){
       str = g_strdup_printf("_:%c\0", offset[2]);
       offset += 3;
     }else{
       str = g_strdup_printf("_:%s\0", tmp);
       offset += (2 + strlen(tmp));
-
+	
       free(tmp);
     }
   }
@@ -439,7 +442,11 @@ ags_turtle_read_blank_node_label(gchar *offset,
 	
 	last_is_point = TRUE;
       }else{
-	return(NULL);
+	if(initial_find){
+	  return(NULL);
+	}else{
+	  break;
+	}
       }
     }else{
       tmp_str = g_strdup_printf("%s%s\0",
@@ -485,7 +492,7 @@ ags_turtle_read_langtag(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
     
-  static const char *langtag_pattern = "(@[a-zA-Z]+(-[a-zA-Z0-9]+))*";
+  static const char *langtag_pattern = "(@[a-zA-Z]+(-[a-zA-Z0-9]+)*)\0";
   
   static const size_t max_matches = 1;
   
@@ -616,7 +623,7 @@ ags_turtle_read_decimal(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
 
-  static const char *decimal_literal_pattern = "^([+-]?[0-9]*.[0-9]+)\0";
+  static const char *decimal_literal_pattern = "^([\\+\\-]?[0-9]*\\.[0-9]+)\0";
 
   static const size_t max_matches = 1;
     
@@ -659,7 +666,7 @@ ags_turtle_read_double(gchar *offset,
   
   static gboolean regex_compiled = FALSE;
   
-  static const char *double_literal_pattern = "^([+-]?([0-9]+.[0-9]*[eE] [+-]?[0-9]+)|(.[0-9]+[eE][+-]?[0-9]+)|([0-9]+[eE][+-]?[0-9]+))\0";
+  static const char *double_literal_pattern = "^([\\+\\-]?(([0-9]+\\.[0-9]*[eE][\\+\\-]?[0-9]+)|(\\.[0-9]+[eE][\\+\\-]?[0-9]+)|([0-9]+[eE][+-]?[0-9]+)))\0";
 
   static const size_t max_matches = 1;
     
@@ -739,20 +746,6 @@ ags_turtle_read_string(gchar *offset,
 {
   gchar *str;
 
-  str = ags_turtle_read_string_literal_quote(offset,
-					     end_ptr);
-  
-  if(str != NULL){
-    return(str);
-  }
-
-  str = ags_turtle_read_string_literal_single_quote(offset,
-						    end_ptr);
-  
-  if(str != NULL){
-    return(str);
-  }
-
   str = ags_turtle_read_string_literal_long_quote(offset,
 						  end_ptr);
   
@@ -762,6 +755,20 @@ ags_turtle_read_string(gchar *offset,
 
   str = ags_turtle_read_string_literal_long_single_quote(offset,
 							 end_ptr);
+  
+  if(str != NULL){
+    return(str);
+  }
+
+  str = ags_turtle_read_string_literal_quote(offset,
+					     end_ptr);
+  
+  if(str != NULL){
+    return(str);
+  }
+
+  str = ags_turtle_read_string_literal_single_quote(offset,
+						    end_ptr);
   
   if(str != NULL){
     return(str);
@@ -885,10 +892,12 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
   
   if(g_str_has_prefix(offset,
 		      "\"\"\"\0")){
-    while((end = strstr(offset + 3,
+    end = offset + 3;
+    
+    while((end = strstr(end,
 			"\"\"\"\0")) != NULL &&
 	  *(end - 1) == '\\'){
-      offset++;
+      end++;
     }
 
     if(end != NULL){
@@ -921,10 +930,12 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
   
   if(g_str_has_prefix(offset,
 		      "'''\0")){
-    while((end = strstr(offset + 3,
+    end = offset + 3;
+    
+    while((end = strstr(end,
 			"'''\0")) != NULL &&
 	  *(end - 1) == '\\'){
-      offset++;
+      end++;
     }
 
     if(end != NULL){
@@ -963,13 +974,11 @@ ags_turtle_read_uchar(gchar *offset,
   
   str = NULL;
 
-  if(!g_ascii_strncasecmp(offset,
-			  "\\u\0",
-			  2)){
+  if(g_str_has_prefix(offset,
+		      "\\u\0")){
     hex_digit_count = 4;
-  }else if(!g_ascii_strncasecmp(offset,
-				"\\U\0",
-				2)){
+  }else if(g_str_has_prefix(offset,
+			    "\\U\0")){
     hex_digit_count = 8;
   }else{
     return(NULL);
@@ -1109,7 +1118,7 @@ ags_turtle_read_anon(gchar *offset,
 
   if(success){
     str = g_strndup(offset,
-		    tmp - offset);
+		    tmp - offset + 1);
   }
   
   return(str);
@@ -1117,13 +1126,13 @@ ags_turtle_read_anon(gchar *offset,
 
 #define AGS_TURTLE_UTF8_RANGE_0 "([A-Za-z])"
 #define AGS_TURTLE_UTF8_RANGE_1 "(\xC3[\x80-\x96])"
-#define AGS_TURTLE_UTF8_RANGE_2 "(0xC3[\x98-\xB6])"
+#define AGS_TURTLE_UTF8_RANGE_2 "(\xC3[\x98-\xB6])"
 #define AGS_TURTLE_UTF8_RANGE_3 "((\xC3[\xB8-\xBF])|([\xC3-\xCA][\x80-\xBF])|(\xCB[\x80-\xBF]))"
 #define AGS_TURTLE_UTF8_RANGE_4 "(\xCD[\xB0-\xBD])"
-#define AGS_TURTLE_UTF8_RANGE_5 "((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80\xBF][\x80-\xBF]))"
+#define AGS_TURTLE_UTF8_RANGE_5 "((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80-\xBF][\x80-\xBF]))"
 #define AGS_TURTLE_UTF8_RANGE_6 "(\xE2\x80[\x8C-\x8D])"
 #define AGS_TURTLE_UTF8_RANGE_7 "((\xE2\x81[\xB0-\xBF])|(\xE2[\x81-\x85][\x80-\xBF])|(\xE2\x86[\x80-\x8F]))"
-#define AGS_TURTLE_UTF8_RANGE_8 "((\xE2[\xB0-\xBE][\x80-\xBF])(\xE2\xBF[\x80-\xAF]))"
+#define AGS_TURTLE_UTF8_RANGE_8 "((\xE2[\xB0-\xBE][\x80-\xBF])|(\xE2\xBF[\x80-\xAF]))"
 #define AGS_TURTLE_UTF8_RANGE_9 "((\xE3[\x80-\xBF][\x81-\xBF])|([\xE4-\xEC][\x80-\x9F][\x80-\xBF]))"
 #define AGS_TURTLE_UTF8_RANGE_10 "((\xEF[\xA4-\xB6][\x80-\xBF])|(\xEF\xB7[\x80-\x8F]))"
 #define AGS_TURTLE_UTF8_RANGE_11 "((\xEF\xB7[\xB0-\xBF])|(\xEF[\xB8-\xBE][\x80-\xBF])|(\xEF\xBF[\x80-\xBD]))"
@@ -1313,15 +1322,12 @@ ags_turtle_read_pn_prefix(gchar *offset,
 					  end_ptr)) != NULL ||
 	  *offset == '.'){
       if(tmp == NULL){
-	tmp = g_strdup(".\0");
-	offset++;
-	
 	last_is_point = TRUE;
       }else{
 	last_is_point = FALSE;
       }
 
-      if(str != NULL){
+      if(tmp != NULL){
 	str_tmp = g_strdup_printf("%s%s\0",
 				  str, tmp);
 	offset += strlen(tmp);
@@ -1331,8 +1337,13 @@ ags_turtle_read_pn_prefix(gchar *offset,
 
 	str = str_tmp;
       }else{
-	str = tmp;
-	offset += strlen(tmp);
+	str_tmp = g_strdup_printf("%s.\0",
+				  str);
+	offset++;	
+
+	free(str);
+
+	str = str_tmp;
       }
     }
   }
@@ -1740,11 +1751,11 @@ ags_turtle_load(AgsTurtle *turtle,
       /* skip comments */
       if(buffer == look_ahead){
 	if(*buffer == '#'){
-	  look_ahead = index(look_ahead, '\n');
+	  look_ahead = index(look_ahead, '\n') + 1;
 	  continue;
 	}
       }else if(buffer[look_ahead - buffer - 1] == '\n' && *look_ahead == '#'){
-	look_ahead = index(look_ahead, '\n');
+	look_ahead = index(look_ahead, '\n') + 1;
 	continue;
       }
 
