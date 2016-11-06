@@ -25,11 +25,25 @@
 void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
 void ags_add_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_audio_init(AgsAddAudio *add_audio);
+void ags_add_audio_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_add_audio_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_add_audio_connect(AgsConnectable *connectable);
 void ags_add_audio_disconnect(AgsConnectable *connectable);
 void ags_add_audio_finalize(GObject *gobject);
 
 void ags_add_audio_launch(AgsTask *task);
+
+enum{
+  PROP_0,
+  PROP_SOUNDCARD,
+  PROP_AUDIO,
+};
 
 /**
  * SECTION:ags_add_audio
@@ -86,13 +100,50 @@ ags_add_audio_class_init(AgsAddAudioClass *add_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_add_audio_parent_class = g_type_class_peek_parent(add_audio);
 
   /* gobject */
   gobject = (GObjectClass *) add_audio;
 
+  gobject->set_property = ags_add_audio_set_property;
+  gobject->get_property = ags_add_audio_get_property;
+
   gobject->finalize = ags_add_audio_finalize;
+
+  /* properties */
+  /**
+   * AgsAddAudio:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of add audio\0",
+				   "The soundcard of add audio task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsAddAudio:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of add audio\0",
+				   "The audio of add audio task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) add_audio;
@@ -114,6 +165,92 @@ ags_add_audio_init(AgsAddAudio *add_audio)
 {
   add_audio->soundcard = NULL;
   add_audio->audio = NULL;
+}
+
+void
+ags_add_audio_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAddAudio *add_audio;
+
+  add_audio = AGS_ADD_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(add_audio->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(add_audio->soundcard != NULL){
+	g_object_unref(add_audio->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      add_audio->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(add_audio->audio == (GObject *) audio){
+	return;
+      }
+
+      if(add_audio->audio != NULL){
+	g_object_unref(add_audio->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      add_audio->audio = (GObject *) audio;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_add_audio_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAddAudio *add_audio;
+
+  add_audio = AGS_ADD_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, add_audio->soundcard);
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, add_audio->audio);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
