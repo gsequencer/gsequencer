@@ -42,6 +42,14 @@
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_audio_init(AgsAppendAudio *append_audio);
+void ags_append_audio_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_append_audio_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_append_audio_connect(AgsConnectable *connectable);
 void ags_append_audio_disconnect(AgsConnectable *connectable);
 void ags_append_audio_finalize(GObject *gobject);
@@ -60,6 +68,15 @@ void ags_append_audio_launch(AgsTask *task);
 
 static gpointer ags_append_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_append_audio_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUDIO_LOOP,
+  PROP_AUDIO,
+  PROP_DO_PLAYBACK,
+  PROP_DO_SEQUENCER,
+  PROP_DO_NOTATION,
+};
 
 GType
 ags_append_audio_get_type()
@@ -103,13 +120,98 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
-
+  GParamSpec *param_spec;
+  
   ags_append_audio_parent_class = g_type_class_peek_parent(append_audio);
 
   /* gobject */
   gobject = (GObjectClass *) append_audio;
 
+  gobject->set_property = ags_append_audio_set_property;
+  gobject->get_property = ags_append_audio_get_property;
+
   gobject->finalize = ags_append_audio_finalize;
+
+  /* properties */
+  /**
+   * AgsAppendAudio:audio-loop:
+   *
+   * The assigned #AgsAudioLoop
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("audio-loop\0",
+				   "audio loop of append audio\0",
+				   "The audio loop of append audio task\0",
+				   AGS_TYPE_AUDIO_LOOP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_LOOP,
+				  param_spec);
+
+  /**
+   * AgsAppendAudio:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of append audio\0",
+				   "The audio of append audio task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsAppendAudio:do-playback:
+   *
+   * The effect's do-playback.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("do-playback\0",
+				     "do playback\0",
+				     "Do playback of audio\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_PLAYBACK,
+				  param_spec);
+
+  /**
+   * AgsAppendAudio:do-sequencer:
+   *
+   * The effect's do-sequencer.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("do-sequencer\0",
+				     "do sequencer\0",
+				     "Do sequencer of audio\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_SEQUENCER,
+				  param_spec);
+
+  /**
+   * AgsAppendAudio:do-notation:
+   *
+   * The effect's do-notation.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("do-notation\0",
+				     "do notation\0",
+				     "Do notation of audio\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_NOTATION,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) append_audio;
@@ -135,6 +237,134 @@ ags_append_audio_init(AgsAppendAudio *append_audio)
   append_audio->do_playback = FALSE;
   append_audio->do_sequencer = FALSE;
   append_audio->do_notation = FALSE;
+}
+
+void
+ags_append_audio_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAppendAudio *append_audio;
+
+  append_audio = AGS_APPEND_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO_LOOP:
+    {
+      AgsAudioLoop *audio_loop;
+
+      audio_loop = (AgsAudioLoop *) g_value_get_object(value);
+
+      if(append_audio->audio_loop == (GObject *) audio_loop){
+	return;
+      }
+
+      if(append_audio->audio_loop != NULL){
+	g_object_unref(append_audio->audio_loop);
+      }
+
+      if(audio_loop != NULL){
+	g_object_ref(audio_loop);
+      }
+
+      append_audio->audio_loop = (GObject *) audio_loop;
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(append_audio->audio == (GObject *) audio){
+	return;
+      }
+
+      if(append_audio->audio != NULL){
+	g_object_unref(append_audio->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      append_audio->audio = (GObject *) audio;
+    }
+    break;
+  case PROP_DO_PLAYBACK:
+    {
+      guint do_playback;
+
+      do_playback = g_value_get_boolean(value);
+
+      append_audio->do_playback = do_playback;
+    }
+    break;
+  case PROP_DO_SEQUENCER:
+    {
+      guint do_sequencer;
+
+      do_sequencer = g_value_get_boolean(value);
+
+      append_audio->do_sequencer = do_sequencer;
+    }
+    break;
+  case PROP_DO_NOTATION:
+    {
+      guint do_notation;
+
+      do_notation = g_value_get_boolean(value);
+
+      append_audio->do_notation = do_notation;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_append_audio_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAppendAudio *append_audio;
+
+  append_audio = AGS_APPEND_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO_LOOP:
+    {
+      g_value_set_object(value, append_audio->audio_loop);
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, append_audio->audio);
+    }
+    break;
+  case PROP_DO_PLAYBACK:
+    {
+      g_value_set_boolean(value, append_audio->do_playback);
+    }
+    break;
+  case PROP_DO_SEQUENCER:
+    {
+      g_value_set_boolean(value, append_audio->do_sequencer);
+    }
+    break;
+  case PROP_DO_NOTATION:
+    {
+      g_value_set_boolean(value, append_audio->do_notation);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
