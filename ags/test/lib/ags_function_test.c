@@ -60,12 +60,12 @@ ags_function_test_find_literals()
   gchar *exp_x = "exp(x)\0";
   gchar *floor_y_per_x = "floor(y / x)\0";
   gchar *ceil_y_per_x = "ceil(y / x)\0";
-  gchar *round = "round(0.75)\0";
+  gchar *round_number = "round(0.75)\0";
   gchar *sin_per_x = "sin(1.0 / x)\0";
   gchar *cos_per_x_plus_pi_half = "cos(1.0 / x + (𝜋 / 2.0))\0";
   gchar *tan_x = "tan(x)\0";
-  gchar *asin_x0_plus_y1 = "asin(x0 + x1)\0";
-  gchar *acos_x0_plus_y1 = "acos(x0 + x1)\0";
+  gchar *asin_x0_plus_x1 = "asin(x0 + x1)\0";
+  gchar *acos_x0_plus_x1 = "acos(x0 + x1)\0";
   gchar *atan_x_plus_y = "atan(2x + 0.75y)\0";
   gchar **symbols;
 
@@ -79,6 +79,118 @@ ags_function_test_find_literals()
   CU_ASSERT(n_symbols == 1 &&
 	    !g_ascii_strncasecmp(symbols[0],
 				 "x\0",
+				 2));
+
+  /* assert exp x */
+  function = ags_function_new(exp_x);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 1 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x\0",
+				 2));
+
+  /* assert floor y per x */
+  function = ags_function_new(floor_y_per_x);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "y\0",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "x\0",
+				 2));
+
+  /* assert ceil y per x */
+  function = ags_function_new(ceil_y_per_x);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "y\0",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "x\0",
+				 2));
+
+  /* assert round number */
+  function = ags_function_new(round_number);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 0);
+
+  /* assert sin per x */
+  function = ags_function_new(sin_per_x);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 1 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x\0",
+				 2));
+
+  /* assert cos per x */
+  function = ags_function_new(cos_per_x_plus_pi_half);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 1 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x\0",
+				 2));
+
+  /* assert tan x */
+  function = ags_function_new(tan_x);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 1 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x\0",
+				 2));
+
+  /* assert asin x0 plus x1 */
+  function = ags_function_new(asin_x0_plus_x1);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x0\0",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "x1\0",
+				 2));
+
+  /* assert acos x0 plus x1 */
+  function = ags_function_new(acos_x0_plus_x1);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x0\0",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "x1\0",
+				 2));
+
+  /* assert atan x plus y */
+  function = ags_function_new(atan_x_plus_y);
+  symbols = ags_function_find_literals(function,
+				       &n_symbols);
+
+  CU_ASSERT(n_symbols == 2 &&
+	    !g_ascii_strncasecmp(symbols[0],
+				 "x\0",
+				 2) &&
+	    !g_ascii_strncasecmp(symbols[1],
+				 "y\0",
 				 2));
 }
 

@@ -378,7 +378,7 @@ ags_function_find_literals(AgsFunction *function,
   static regex_t literal_regex;
 
   static const char *function_pattern = "^((log)|(exp)|(floor)|(ceil)|(round)|(sin)|(cos)|(tan)|(asin)|(acos)|(atan))\0";
-  static const char *literal_pattern = "^([a-zA-Z])\0";
+  static const char *literal_pattern = "^([a-zA-Z][0-9]*)\0";
 
   literals = NULL;
   n_literals = 0;
