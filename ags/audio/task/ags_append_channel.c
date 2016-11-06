@@ -130,15 +130,15 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
 
   /* properties */
   /**
-   * AgsAppendAudio:audio-loop:
+   * AgsAppendChannel:audio-loop:
    *
    * The assigned #AgsAudioLoop
    * 
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-loop\0",
-				   "audio loop of append audio\0",
-				   "The audio loop of append audio task\0",
+				   "audio loop of append channel\0",
+				   "The audio loop of append channel task\0",
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,7 +146,7 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
 				  param_spec);
 
   /**
-   * AgsAppendAudio:channel:
+   * AgsAppendChannel:channel:
    *
    * The assigned #AgsChannel
    * 
