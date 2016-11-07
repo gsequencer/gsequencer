@@ -1,3 +1,8 @@
+ags (0.7.99)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_turtle_read_langtag() for not being greedy.
+
 ags (0.7.98)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
