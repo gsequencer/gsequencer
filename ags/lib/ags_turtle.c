@@ -492,7 +492,7 @@ ags_turtle_read_langtag(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
     
-  static const char *langtag_pattern = "(@[a-zA-Z]+(-[a-zA-Z0-9]+)*)\0";
+  static const char *langtag_pattern = "^(@[a-zA-Z]+(-[a-zA-Z0-9]+)*)\0";
   
   static const size_t max_matches = 1;
   
