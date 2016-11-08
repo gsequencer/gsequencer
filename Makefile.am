@@ -261,17 +261,17 @@ ags_thread_test_LDADD = libags_thread.la libags.la
 ags_function_test_SOURCES = ags/test/lib/ags_function_test.c
 ags_function_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_function_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_function_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la
+ags_function_test_LDADD = libags_server.la libags_thread.la libags.la
 
 ags_time_test_SOURCES = ags/test/lib/ags_time_test.c
 ags_time_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_time_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_time_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la
+ags_time_test_LDADD = libags_server.la libags_thread.la libags.la
 
 ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
 ags_turtle_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_turtle_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_turtle_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la
+ags_turtle_test_LDADD = libags_server.la libags_thread.la libags.la
 
 ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
 ags_audio_test_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)

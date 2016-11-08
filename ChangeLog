@@ -15,6 +15,17 @@ ags (1.0.0)
 	* improved AgsDial
 	* fixed ags_automation_find_point() to allow accessing first and last entry
 
+ags (0.7.99)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_turtle_read_langtag() for not being greedy.
+
+ags (0.7.98)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixes to ags_turtle.c UTF-8 ranges and other issues
+	* added ags_turtle_test unit test
+
 ags (0.7.97)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
