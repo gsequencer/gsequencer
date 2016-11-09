@@ -113,6 +113,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
 
   gobject->finalize = ags_add_point_to_selection_finalize;
 
+  /* properties */
   /**
    * AgsAddPointToSelection:notation:
    *
@@ -207,9 +208,9 @@ ags_add_point_to_selection_init(AgsAddPointToSelection *add_point_to_selection)
 
 void
 ags_add_point_to_selection_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec)
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec)
 {
   AgsAddPointToSelection *add_point_to_selection;
 
@@ -241,17 +242,17 @@ ags_add_point_to_selection_set_property(GObject *gobject,
     {
       add_point_to_selection->x = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_Y:
     {
       add_point_to_selection->y = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_REPLACE_CURRENT_SELECTION:
     {
       add_point_to_selection->replace_current_selection = g_value_get_boolean(value);
     }
-  break;
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -260,9 +261,9 @@ ags_add_point_to_selection_set_property(GObject *gobject,
 
 void
 ags_add_point_to_selection_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec)
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec)
 {
   AgsAddPointToSelection *add_point_to_selection;
 

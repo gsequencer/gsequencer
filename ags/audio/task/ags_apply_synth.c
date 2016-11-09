@@ -35,6 +35,14 @@
 void ags_apply_synth_class_init(AgsApplySynthClass *apply_synth);
 void ags_apply_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_synth_init(AgsApplySynth *apply_synth);
+void ags_apply_synth_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+void ags_apply_synth_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
 void ags_apply_synth_connect(AgsConnectable *connectable);
 void ags_apply_synth_disconnect(AgsConnectable *connectable);
 void ags_apply_synth_finalize(GObject *gobject);
@@ -53,6 +61,21 @@ void ags_apply_synth_launch(AgsTask *task);
 
 static gpointer ags_apply_synth_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_synth_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_START_CHANNEL,
+  PROP_COUNT,
+  PROP_WAVE,
+  PROP_ATTACK,
+  PROP_FRAME_COUNT,
+  PROP_FREQUENCY,
+  PROP_PHASE,
+  PROP_START_FREQUENCY,
+  PROP_VOLUME,
+  PROP_LOOP_START,
+  PROP_LOOP_END,
+};
 
 GType
 ags_apply_synth_get_type()
@@ -96,13 +119,196 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_apply_synth_parent_class = g_type_class_peek_parent(apply_synth);
 
   /* GObjectClass */
   gobject = (GObjectClass *) apply_synth;
 
+  gobject->set_property = ags_apply_synth_set_property;
+  gobject->get_property = ags_apply_synth_get_property;
+
   gobject->finalize = ags_apply_synth_finalize;
+
+  /* properties */
+  /**
+   * AgsApplySynth:start-channel:
+   *
+   * The assigned #AgsChannel
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("start-channel\0",
+				   "start channel of apply synth\0",
+				   "The start channel of apply synth task\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_START_CHANNEL,
+				  param_spec);
+  
+  /**
+   * AgsApplySynth:count:
+   *
+   * The count of channels to apply.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("count\0",
+				 "count of channels\0",
+				 "The count of channels to apply\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_COUNT,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:attack:
+   *
+   * The attack of audio data.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("attack\0",
+				 "attack of audio data\0",
+				 "The attack of audio data\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:frame-count:
+   *
+   * The frame count of audio data.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("frame-count\0",
+				 "frame count of audio data\0",
+				 "The frame count of audio data\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FRAME_COUNT,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:frequency:
+   *
+   * The frequency of wave.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("frequency\0",
+				 "frequency of wave\0",
+				 "The frequency of wave\0",
+				 0.0,
+				 G_MAXDOUBLE,
+				 0.0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FREQUENCY,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:phase:
+   *
+   * The phase of wave.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("phase\0",
+				 "phase of wave\0",
+				 "The phase of wave\0",
+				 0.0,
+				 G_MAXDOUBLE,
+				 0.0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PHASE,
+				  param_spec);
+  
+  /**
+   * AgsApplySynth:start-frequency:
+   *
+   * The start frequency as base of wave.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("start-frequency\0",
+				 "start frequency\0",
+				 "The start frequency\0",
+				 0.0,
+				 G_MAXDOUBLE,
+				 0.0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_START_FREQUENCY,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:volume:
+   *
+   * The volume of wave.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("volume\0",
+				 "volume of wave\0",
+				 "The volume of wave\0",
+				 0.0,
+				 G_MAXDOUBLE,
+				 0.0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
+  
+  /**
+   * AgsApplySynth:loop-start:
+   *
+   * The loop start of audio data.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("loop-start\0",
+				 "loop start of audio data\0",
+				 "The loop start of audio data\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_START,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:loop-end:
+   *
+   * The loop end of audio data.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("loop-end\0",
+				 "loop end of audio data\0",
+				 "The loop end of audio data\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_END,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_synth;
@@ -128,12 +334,168 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
   apply_synth->wave = AGS_APPLY_SYNTH_INVALID;
   apply_synth->attack = 0;
   apply_synth->frame_count = 0;
-  apply_synth->phase = 0;
-  apply_synth->start_frequency = 0;
+  apply_synth->frequency = 0.0;
+  apply_synth->phase = 0.0;
+  apply_synth->start_frequency = 0.0;
   apply_synth->volume = 1.0;
 
   apply_synth->loop_start = 0;
   apply_synth->loop_end = 0;
+}
+
+void
+ags_apply_synth_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsApplySynth *apply_synth;
+
+  apply_synth = AGS_APPLY_SYNTH(gobject);
+
+  switch(prop_id){
+  case PROP_START_CHANNEL:
+    {
+      AgsChannel *start_channel;
+
+      start_channel = (AgsChannel *) g_value_get_object(value);
+
+      if(apply_synth->start_channel == (GObject *) start_channel){
+	return;
+      }
+
+      if(apply_synth->start_channel != NULL){
+	g_object_unref(apply_synth->start_channel);
+      }
+
+      if(start_channel != NULL){
+	g_object_ref(start_channel);
+      }
+
+      apply_synth->start_channel = (GObject *) start_channel;
+    }
+    break;
+  case PROP_COUNT:
+    {
+      apply_synth->count = g_value_get_uint(value);
+    }
+    break;
+  case PROP_WAVE:
+    {
+      apply_synth->wave = g_value_get_uint(value);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      apply_synth->attack = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FRAME_COUNT:
+    {
+      apply_synth->frame_count = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+      apply_synth->frequency = g_value_get_double(value);
+    }
+    break;
+  case PROP_PHASE:
+    {
+      apply_synth->phase = g_value_get_double(value);
+    }
+    break;
+  case PROP_START_FREQUENCY:
+    {
+      apply_synth->start_frequency = g_value_get_double(value);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      apply_synth->volume = g_value_get_double(value);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      apply_synth->loop_start = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      apply_synth->loop_end = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_apply_synth_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsApplySynth *apply_synth;
+
+  apply_synth = AGS_APPLY_SYNTH(gobject);
+
+  switch(prop_id){
+  case PROP_START_CHANNEL:
+    {
+      g_value_set_object(value, apply_synth->start_channel);
+    }
+    break;
+  case PROP_COUNT:
+    {
+      g_value_set_uint(value, apply_synth->count);
+    }
+    break;
+  case PROP_WAVE:
+    {
+      g_value_set_uint(value, apply_synth->wave);
+    }
+    break;
+  case PROP_FRAME_COUNT:
+    {
+      g_value_set_uint(value, apply_synth->frame_count);
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+      g_value_set_double(value, apply_synth->frequency);
+    }
+    break;
+  case PROP_PHASE:
+    {
+      g_value_set_double(value, apply_synth->phase);
+    }
+    break;
+  case PROP_START_FREQUENCY:
+    {
+      g_value_set_double(value, apply_synth->start_frequency);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      g_value_set_double(value, apply_synth->volume);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      g_value_set_uint(value, apply_synth->loop_start);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      g_value_set_uint(value, apply_synth->loop_end);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
