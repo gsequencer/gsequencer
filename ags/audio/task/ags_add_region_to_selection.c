@@ -24,11 +24,29 @@
 void ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_to_selection);
 void ags_add_region_to_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_region_to_selection_init(AgsAddRegionToSelection *add_region_to_selection);
+void ags_add_region_to_selection_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+void ags_add_region_to_selection_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
 void ags_add_region_to_selection_connect(AgsConnectable *connectable);
 void ags_add_region_to_selection_disconnect(AgsConnectable *connectable);
 void ags_add_region_to_selection_finalize(GObject *gobject);
 
 void ags_add_region_to_selection_launch(AgsTask *task);
+
+enum{
+  PROP_0,
+  PROP_NOTATION,
+  PROP_X0,
+  PROP_X1,
+  PROP_Y0,
+  PROP_Y1,
+  PROP_REPLACE_CURRENT_SELECTION,
+};
 
 /**
  * SECTION:ags_add_region_to_selection
@@ -85,13 +103,120 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_add_region_to_selection_parent_class = g_type_class_peek_parent(add_region_to_selection);
 
   /* gobject */
   gobject = (GObjectClass *) add_region_to_selection;
 
+  gobject->set_property = ags_add_region_to_selection_set_property;
+  gobject->get_property = ags_add_region_to_selection_get_property;
+
   gobject->finalize = ags_add_region_to_selection_finalize;
+
+  /**
+   * AgsAddRegionToSelection:notation:
+   *
+   * The assigned #AgsNotation
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("notation\0",
+				   "notation of add note\0",
+				   "The notation of add note task\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
+				  param_spec);
+  
+  /**
+   * AgsAddRegionToSelection:x0:
+   *
+   * Note offset x0.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("x0\0",
+				 "offset x0\0",
+				 "The x0 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X0,
+				  param_spec);
+  /**
+   * AgsAddRegionToSelection:x1:
+   *
+   * Note offset x1.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("x1\0",
+				 "offset x1\0",
+				 "The x1 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X1,
+				  param_spec);
+
+  /**
+   * AgsAddRegionToSelection:y0:
+   *
+   * Note offset y0.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("y0\0",
+				 "offset y0\0",
+				 "The y0 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y0,
+				  param_spec);
+
+  /**
+   * AgsAddRegionToSelection:y1:
+   *
+   * Note offset y1.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("y1\0",
+				 "offset y1\0",
+				 "The y1 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y1,
+				  param_spec);
+
+  /**
+   * AgsAddRegionToSelection:replace-current-selection:
+   *
+   * The notation's replace-current-selection.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("replace-current-selection\0",
+				     "replace current selection\0",
+				     "Replace current selection of notation\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REPLACE_CURRENT_SELECTION,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) add_region_to_selection;
@@ -117,6 +242,116 @@ ags_add_region_to_selection_init(AgsAddRegionToSelection *add_region_to_selectio
   add_region_to_selection->x1 = 0;
   add_region_to_selection->y1 = 0;
   add_region_to_selection->replace_current_selection = TRUE;
+}
+
+void
+ags_add_region_to_selection_set_property(GObject *gobject,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddRegionToSelection *add_region_to_selection;
+
+  add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(add_region_to_selection->notation == (GObject *) notation){
+	return;
+      }
+
+      if(add_region_to_selection->notation != NULL){
+	g_object_unref(add_region_to_selection->notation);
+      }
+
+      if(notation != NULL){
+	g_object_ref(notation);
+      }
+
+      add_region_to_selection->notation = (GObject *) notation;
+    }
+    break;
+  case PROP_X0:
+    {
+      add_region_to_selection->x0 = g_value_get_uint(value);
+    }
+  break;
+  case PROP_X1:
+    {
+      add_region_to_selection->x1 = g_value_get_uint(value);
+    }
+  break;
+  case PROP_Y0:
+    {
+      add_region_to_selection->y0 = g_value_get_uint(value);
+    }
+  break;
+  case PROP_Y1:
+    {
+      add_region_to_selection->y1 = g_value_get_uint(value);
+    }
+  break;
+  case PROP_REPLACE_CURRENT_SELECTION:
+    {
+      add_region_to_selection->replace_current_selection = g_value_get_boolean(value);
+    }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_add_region_to_selection_get_property(GObject *gobject,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddRegionToSelection *add_region_to_selection;
+
+  add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, add_region_to_selection->notation);
+    }
+    break;
+  case PROP_X0:
+    {
+      g_value_set_uint(value, add_region_to_selection->x0);
+    }
+    break;
+  case PROP_X1:
+    {
+      g_value_set_uint(value, add_region_to_selection->x1);
+    }
+    break;
+  case PROP_Y0:
+    {
+      g_value_set_uint(value, add_region_to_selection->y0);
+    }
+    break;
+  case PROP_Y1:
+    {
+      g_value_set_uint(value, add_region_to_selection->y1);
+    }
+    break;
+  case PROP_REPLACE_CURRENT_SELECTION:
+    {
+      g_value_set_boolean(value, add_region_to_selection->replace_current_selection);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
