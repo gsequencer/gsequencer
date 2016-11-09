@@ -47,8 +47,6 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/audio/task/ags_audio_set_recycling.h>
-
 #include <pthread.h>
 
 #include <stdlib.h>
@@ -1913,11 +1911,9 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
     return(parameter);
   }
   void ags_audio_set_flags_add_recycling_task(GParameter *parameter){
-    AgsAudioSetRecycling *audio_set_recycling;
-
+    //TODO:JK: implement me
+    
     /* create set recycling task */
-    audio_set_recycling = ags_audio_set_recycling_new(audio,
-						      parameter);
 
     /* append AgsAudioSetRecycling */
   }
@@ -2005,11 +2001,9 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
     return(parameter);
   }
   void ags_audio_unset_flags_add_recycling_task(GParameter *parameter){
-    AgsAudioSetRecycling *audio_set_recycling;
-
+    //TODO:JK: implement me
+    
     /* create set recycling task */
-    audio_set_recycling = ags_audio_set_recycling_new(audio,
-						      parameter);
 
     /* append AgsAudioSetRecycling */
   }

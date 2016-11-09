@@ -310,8 +310,6 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_append_recall.lo \
 	ags/audio/task/libags_audio_la-ags_apply_presets.lo \
 	ags/audio/task/libags_audio_la-ags_apply_synth.lo \
-	ags/audio/task/libags_audio_la-ags_apply_wavetable.lo \
-	ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo \
 	ags/audio/task/libags_audio_la-ags_cancel_audio.lo \
 	ags/audio/task/libags_audio_la-ags_cancel_channel.lo \
 	ags/audio/task/libags_audio_la-ags_cancel_recall.lo \
@@ -2287,8 +2285,6 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_append_recall.h \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_synth.h \
-	ags/audio/task/ags_apply_wavetable.h \
-	ags/audio/task/ags_audio_set_recycling.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
 	ags/audio/task/ags_cancel_recall.h \
@@ -2347,8 +2343,6 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_append_recall.c \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_synth.c \
-	ags/audio/task/ags_apply_wavetable.c \
-	ags/audio/task/ags_audio_set_recycling.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
 	ags/audio/task/ags_cancel_recall.c \
@@ -3391,12 +3385,6 @@ ags/audio/task/libags_audio_la-ags_apply_presets.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_apply_synth.lo:  \
-	ags/audio/task/$(am__dirstamp) \
-	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
-ags/audio/task/libags_audio_la-ags_apply_wavetable.lo:  \
-	ags/audio/task/$(am__dirstamp) \
-	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
-ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_cancel_audio.lo:  \
@@ -5076,8 +5064,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_recall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_presets.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_synth.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_recall.Plo@am__quote@
@@ -6188,20 +6174,6 @@ ags/audio/task/libags_audio_la-ags_apply_synth.lo: ags/audio/task/ags_apply_synt
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_apply_synth.c' object='ags/audio/task/libags_audio_la-ags_apply_synth.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_apply_synth.lo `test -f 'ags/audio/task/ags_apply_synth.c' || echo '$(srcdir)/'`ags/audio/task/ags_apply_synth.c
-
-ags/audio/task/libags_audio_la-ags_apply_wavetable.lo: ags/audio/task/ags_apply_wavetable.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_apply_wavetable.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Tpo -c -o ags/audio/task/libags_audio_la-ags_apply_wavetable.lo `test -f 'ags/audio/task/ags_apply_wavetable.c' || echo '$(srcdir)/'`ags/audio/task/ags_apply_wavetable.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_apply_wavetable.c' object='ags/audio/task/libags_audio_la-ags_apply_wavetable.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_apply_wavetable.lo `test -f 'ags/audio/task/ags_apply_wavetable.c' || echo '$(srcdir)/'`ags/audio/task/ags_apply_wavetable.c
-
-ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo: ags/audio/task/ags_audio_set_recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Tpo -c -o ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo `test -f 'ags/audio/task/ags_audio_set_recycling.c' || echo '$(srcdir)/'`ags/audio/task/ags_audio_set_recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_audio_set_recycling.c' object='ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo `test -f 'ags/audio/task/ags_audio_set_recycling.c' || echo '$(srcdir)/'`ags/audio/task/ags_audio_set_recycling.c
 
 ags/audio/task/libags_audio_la-ags_cancel_audio.lo: ags/audio/task/ags_cancel_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_cancel_audio.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_audio.Tpo -c -o ags/audio/task/libags_audio_la-ags_cancel_audio.lo `test -f 'ags/audio/task/ags_cancel_audio.c' || echo '$(srcdir)/'`ags/audio/task/ags_cancel_audio.c

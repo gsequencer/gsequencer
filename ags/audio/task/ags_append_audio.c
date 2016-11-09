@@ -168,7 +168,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
   /**
    * AgsAppendAudio:do-playback:
    *
-   * The effect's do-playback.
+   * The effects do-playback.
    * 
    * Since: 1.0.0
    */
@@ -184,7 +184,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
   /**
    * AgsAppendAudio:do-sequencer:
    *
-   * The effect's do-sequencer.
+   * The effects do-sequencer.
    * 
    * Since: 1.0.0
    */
@@ -200,7 +200,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
   /**
    * AgsAppendAudio:do-notation:
    *
-   * The effect's do-notation.
+   * The effects do-notation.
    * 
    * Since: 1.0.0
    */

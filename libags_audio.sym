@@ -693,10 +693,6 @@ ags_open_file_get_type
 ags_open_file_new
 ags_set_samplerate_get_type
 ags_set_samplerate_new
-ags_apply_wavetable_get_type
-ags_apply_wavetable_new
-ags_audio_set_recycling_get_type
-ags_audio_set_recycling_new
 ags_unref_audio_signal_get_type
 ags_unref_audio_signal_new
 ags_append_audio_get_type
