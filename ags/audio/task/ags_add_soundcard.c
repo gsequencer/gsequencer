@@ -27,11 +27,25 @@
 void ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard);
 void ags_add_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_soundcard_init(AgsAddSoundcard *add_soundcard);
+void ags_add_soundcard_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_add_soundcard_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_add_soundcard_connect(AgsConnectable *connectable);
 void ags_add_soundcard_disconnect(AgsConnectable *connectable);
 void ags_add_soundcard_finalize(GObject *gobject);
 
 void ags_add_soundcard_launch(AgsTask *task);
+
+enum{
+  PROP_0,
+  PROP_APPLICATION_CONTEXT,
+  PROP_SOUNDCARD,
+};
 
 /**
  * SECTION:ags_add_soundcard
@@ -88,13 +102,49 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_add_soundcard_parent_class = g_type_class_peek_parent(add_soundcard);
 
   /* gobject */
   gobject = (GObjectClass *) add_soundcard;
 
+  gobject->set_property = ags_add_soundcard_set_property;
+  gobject->get_property = ags_add_soundcard_get_property;
+
   gobject->finalize = ags_add_soundcard_finalize;
+
+  /**
+   * AgsAddSoundcard:application-context:
+   *
+   * The assigned #AgsApplicationContext
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context of add soundcard\0",
+				   "The application context of add soundcard task\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsAddSoundcard:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of add soundcard\0",
+				   "The soundcard of add soundcard task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) add_soundcard;
@@ -117,6 +167,92 @@ ags_add_soundcard_init(AgsAddSoundcard *add_soundcard)
   add_soundcard->application_context = NULL;
   
   add_soundcard->soundcard = NULL;
+}
+
+void
+ags_add_soundcard_set_property(GObject *gobject,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddSoundcard *add_soundcard;
+
+  add_soundcard = AGS_ADD_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(add_soundcard->application_context == (GObject *) application_context){
+	return;
+      }
+
+      if(add_soundcard->application_context != NULL){
+	g_object_unref(add_soundcard->application_context);
+      }
+
+      if(application_context != NULL){
+	g_object_ref(application_context);
+      }
+
+      add_soundcard->application_context = (GObject *) application_context;
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(add_soundcard->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(add_soundcard->soundcard != NULL){
+	g_object_unref(add_soundcard->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      add_soundcard->soundcard = (GObject *) soundcard;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_add_soundcard_get_property(GObject *gobject,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddSoundcard *add_soundcard;
+
+  add_soundcard = AGS_ADD_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, add_soundcard->application_context);
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, add_soundcard->soundcard);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

@@ -48,7 +48,7 @@ void ags_append_recall_launch(AgsTask *task);
  * @short_description: append recall object to audio loop
  * @title: AgsAppendRecall
  * @section_id:
- * @include: ags/recall/task/ags_append_recall.h
+ * @include: ags/audio/task/ags_append_recall.h
  *
  * The #AgsAppendRecall task appends #AgsRecall to #AgsAudioLoop.
  */
@@ -125,8 +125,8 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-loop\0",
-				   "audio loop of append audio\0",
-				   "The audio loop of append audio task\0",
+				   "audio loop of append recall\0",
+				   "The audio loop of append recall task\0",
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
