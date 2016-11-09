@@ -177,9 +177,9 @@ ags_append_audio_threaded_init(AgsAppendAudioThreaded *append_audio_threaded)
 
 void
 ags_append_audio_threaded_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec)
 {
   AgsAppendAudioThreaded *append_audio_threaded;
 
@@ -236,9 +236,9 @@ ags_append_audio_threaded_set_property(GObject *gobject,
 
 void
 ags_append_audio_threaded_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec)
 {
   AgsAppendAudioThreaded *append_audio_threaded;
 
