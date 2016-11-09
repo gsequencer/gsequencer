@@ -31,11 +31,26 @@
 void ags_add_recall_class_init(AgsAddRecallClass *add_recall);
 void ags_add_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_recall_init(AgsAddRecall *add_recall);
+void ags_add_recall_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_add_recall_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 void ags_add_recall_connect(AgsConnectable *connectable);
 void ags_add_recall_disconnect(AgsConnectable *connectable);
 void ags_add_recall_finalize(GObject *gobject);
 
 void ags_add_recall_launch(AgsTask *task);
+
+enum{
+  PROP_0,
+  PROP_CONTEXT,
+  PROP_RECALL,
+  PROP_IS_PLAY,
+};
 
 /**
  * SECTION:ags_add_recall
@@ -92,13 +107,65 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_add_recall_parent_class = g_type_class_peek_parent(add_recall);
 
   /* gobject */
   gobject = (GObjectClass *) add_recall;
 
+  gobject->set_property = ags_add_recall_set_property;
+  gobject->get_property = ags_add_recall_get_property;
+
   gobject->finalize = ags_add_recall_finalize;
+
+  /**
+   * AgsAddRecall:context:
+   *
+   * The assigned #AgsContext
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("context\0",
+				   "context of add recall\0",
+				   "The context of add recall task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsAddRecall:recall:
+   *
+   * The assigned #AgsRecall
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("recall\0",
+				   "recall of add recall\0",
+				   "The recall of add recall task\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL,
+				  param_spec);
+  
+  /**
+   * AgsAddRecall:is-play:
+   *
+   * The recall's context is-play.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("is-play\0",
+				     "is play context\0",
+				     "Add recall to play context\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IS_PLAY,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) add_recall;
@@ -121,6 +188,102 @@ ags_add_recall_init(AgsAddRecall *add_recall)
   add_recall->context = NULL;
   add_recall->recall = NULL;
   add_recall->is_play = FALSE;
+}
+
+void
+ags_add_recall_set_property(GObject *gobject,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddRecall *add_recall;
+
+  add_recall = AGS_ADD_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_CONTEXT:
+    {
+      GObject *context;
+
+      context = (GObject *) g_value_get_object(value);
+
+      if(add_recall->context == (GObject *) context){
+	return;
+      }
+
+      if(add_recall->context != NULL){
+	g_object_unref(add_recall->context);
+      }
+
+      if(context != NULL){
+	g_object_ref(context);
+      }
+
+      add_recall->context = (GObject *) context;
+    }
+    break;
+  case PROP_RECALL:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(add_recall->recall == (GObject *) recall){
+	return;
+      }
+
+      if(add_recall->recall != NULL){
+	g_object_unref(add_recall->recall);
+      }
+
+      if(recall != NULL){
+	g_object_ref(recall);
+      }
+
+      add_recall->recall = (GObject *) recall;
+    }
+    break;
+  case PROP_IS_PLAY:
+    {
+      add_recall->is_play = g_value_get_boolean(value);
+    }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_add_recall_get_property(GObject *gobject,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddRecall *add_recall;
+
+  add_recall = AGS_ADD_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_CONTEXT:
+    {
+      g_value_set_object(value, add_recall->context);
+    }
+    break;
+  case PROP_RECALL:
+    {
+      g_value_set_object(value, add_recall->recall);
+    }
+    break;
+  case PROP_IS_PLAY:
+    {
+      g_value_set_boolean(value, add_recall->is_play);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
