@@ -141,7 +141,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
 				 "offset x\0",
 				 "The x offset\0",
 				 0,
-				 65535,
+				 G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -159,7 +159,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
 				 "offset y\0",
 				 "The y offset\0",
 				 0,
-				 65535,
+				 G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

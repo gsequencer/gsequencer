@@ -137,7 +137,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    */
   param_spec = g_param_spec_string("filename\0",
 				   "the filename\0",
-				   "The filename containing the effect0",
+				   "The filename containing the effect\0",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -153,7 +153,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    */
   param_spec = g_param_spec_string("effect\0",
 				   "the effect\0",
-				   "The effect",
+				   "The effect\0",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -30,6 +30,14 @@
 void ags_export_output_class_init(AgsExportOutputClass *export_output);
 void ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_output_init(AgsExportOutput *export_output);
+void ags_export_output_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_export_output_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_export_output_connect(AgsConnectable *connectable);
 void ags_export_output_disconnect(AgsConnectable *connectable);
 void ags_export_output_finalize(GObject *gobject);
@@ -38,7 +46,7 @@ void ags_export_output_launch(AgsTask *task);
 
 /**
  * SECTION:ags_export_output
- * @short_description: export output object
+ * @short_description: export output task
  * @title: AgsExportOutput
  * @section_id:
  * @include: ags/audio/task/ags_export_output.h
@@ -48,6 +56,15 @@ void ags_export_output_launch(AgsTask *task);
 
 static gpointer ags_export_output_parent_class = NULL;
 static AgsConnectableInterface *ags_export_output_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_EXPORT_THREAD,
+  PROP_SOUNDCARD,
+  PROP_FILENAME,
+  PROP_TIC,
+  PROP_LIVE_PERFORMANCE,
+};
 
 GType
 ags_export_output_get_type()
@@ -91,14 +108,101 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_export_output_parent_class = g_type_class_peek_parent(export_output);
 
   /* gobject */
   gobject = (GObjectClass *) export_output;
 
+  gobject->set_property = ags_export_output_set_property;
+  gobject->get_property = ags_export_output_get_property;
+
   gobject->finalize = ags_export_output_finalize;
 
+  /* properties */
+  /**
+   * AgsExportOutput:export-thread:
+   *
+   * The assigned #AgsExportThread
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("export-thread\0",
+				   "export thread of export output\0",
+				   "The export thread of export output task\0",
+				   AGS_TYPE_EXPORT_THREAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EXPORT_THREAD,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of export output\0",
+				   "The soundcard of export output task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:filename:
+   *
+   * The assigned filename.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "the filename\0",
+				   "The filename containing the output\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:tic:
+   *
+   * Tic offset of output as end tic of it.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("tic\0",
+				 "tic offset\0",
+				 "The tic offset\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIC,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:live-performance:
+   *
+   * Do output the audio export live.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("live-performance\0",
+				     "export output live\0",
+				     "Do export output live\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LIVE_PERFORMANCE,
+				  param_spec);
+  
   /* task */
   task = (AgsTaskClass *) export_output;
 

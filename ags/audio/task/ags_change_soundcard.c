@@ -29,6 +29,14 @@
 void ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard);
 void ags_change_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_change_soundcard_init(AgsChangeSoundcard *change_soundcard);
+void ags_change_soundcard_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_change_soundcard_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_change_soundcard_connect(AgsConnectable *connectable);
 void ags_change_soundcard_disconnect(AgsConnectable *connectable);
 void ags_change_soundcard_finalize(GObject *gobject);
@@ -47,6 +55,13 @@ void ags_change_soundcard_launch(AgsTask *task);
 
 static gpointer ags_change_soundcard_parent_class = NULL;
 static AgsConnectableInterface *ags_change_soundcard_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_APPLICATION_CONTEXT,
+  PROP_NEW_SOUNDCARD,
+  PROP_OLD_SOUNDCARD,
+};
 
 GType
 ags_change_soundcard_get_type()
@@ -90,14 +105,67 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_change_soundcard_parent_class = g_type_class_peek_parent(change_soundcard);
 
   /* GObjectClass */
   gobject = (GObjectClass *) change_soundcard;
 
+  gobject->set_property = ags_change_soundcard_set_property;
+  gobject->get_property = ags_change_soundcard_get_property;
+
   gobject->finalize = ags_change_soundcard_finalize;
 
+  /* properties */
+  /**
+   * AgsChangeSoundcard:application-context:
+   *
+   * The assigned #AgsApplicationContext
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context of change soundcard\0",
+				   "The application context of change soundcard task\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsChangeSoundcard:new-soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("new-soundcard\0",
+				   "new soundcard of change soundcard\0",
+				   "The new soundcard of change soundcard task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NEW_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsChangeSoundcard:old-soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("old-soundcard\0",
+				   "old soundcard of change soundcard\0",
+				   "The old soundcard of change soundcard task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OLD_SOUNDCARD,
+				  param_spec);
+  
   /* AgsTaskClass */
   task = (AgsTaskClass *) change_soundcard;
 
