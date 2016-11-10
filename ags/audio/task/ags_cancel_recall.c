@@ -24,6 +24,14 @@
 void ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall);
 void ags_cancel_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_recall_init(AgsCancelRecall *cancel_recall);
+void ags_cancel_recall_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_cancel_recall_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_cancel_recall_connect(AgsConnectable *connectable);
 void ags_cancel_recall_disconnect(AgsConnectable *connectable);
 void ags_cancel_recall_finalize(GObject *gobject);
@@ -42,6 +50,12 @@ void ags_cancel_recall_launch(AgsTask *task);
 
 static gpointer ags_cancel_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_cancel_recall_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_RECALL,
+  PROP_PLAYBACK,
+};
 
 GType
 ags_cancel_recall_get_type()
@@ -85,13 +99,50 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_cancel_recall_parent_class = g_type_class_peek_parent(cancel_recall);
 
   /* gobject */
   gobject = (GObjectClass *) cancel_recall;
 
+  gobject->set_property = ags_cancel_recall_set_property;
+  gobject->get_property = ags_cancel_recall_get_property;
+
   gobject->finalize = ags_cancel_recall_finalize;
+
+  /* properties */
+  /**
+   * AgsCancelRecall:recall:
+   *
+   * The assigned #AgsRecall
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("recall\0",
+				   "recall of cancel recall\0",
+				   "The recall of cancel recall task\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL,
+				  param_spec);
+
+  /**
+   * AgsCancelRecall:playback:
+   *
+   * The assigned #AgsPlayback
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("playback\0",
+				   "playback of cancel recall\0",
+				   "The playback of cancel recall task\0",
+				   AGS_TYPE_PLAYBACK,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAYBACK,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) cancel_recall;

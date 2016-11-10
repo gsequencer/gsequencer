@@ -48,7 +48,7 @@ void ags_cancel_audio_launch(AgsTask *task);
 
 /**
  * SECTION:ags_cancel_audio
- * @short_description: cancel audio object in audio loop
+ * @short_description: cancel audio task
  * @title: AgsCancelAudio
  * @section_id:
  * @include: ags/audio/task/ags_cancel_audio.h

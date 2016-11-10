@@ -27,6 +27,14 @@
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
 void ags_cancel_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_channel_init(AgsCancelChannel *cancel_channel);
+void ags_cancel_channel_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_cancel_channel_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_cancel_channel_connect(AgsConnectable *connectable);
 void ags_cancel_channel_disconnect(AgsConnectable *connectable);
 void ags_cancel_channel_finalize(GObject *gobject);
@@ -35,7 +43,7 @@ void ags_cancel_channel_launch(AgsTask *task);
 
 /**
  * SECTION:ags_cancel_channel
- * @short_description: cancel channel object
+ * @short_description: cancel channel task
  * @title: AgsCancelChannel
  * @section_id:
  * @include: ags/audio/task/ags_cancel_channel.h
@@ -45,6 +53,13 @@ void ags_cancel_channel_launch(AgsTask *task);
 
 static gpointer ags_cancel_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_cancel_channel_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+  PROP_RECALL_ID,
+  PROP_PLAYBACK,
+};
 
 GType
 ags_cancel_channel_get_type()
@@ -88,13 +103,66 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
-
+  GParamSpec *param_spec;
+  
   ags_cancel_channel_parent_class = g_type_class_peek_parent(cancel_channel);
 
   /* gobject */
   gobject = (GObjectClass *) cancel_channel;
 
+  gobject->set_property = ags_cancel_channel_set_property;
+  gobject->get_property = ags_cancel_channel_get_property;
+
   gobject->finalize = ags_cancel_channel_finalize;
+
+  /* properties */
+  /**
+   * AgsCancelChannel:channel:
+   *
+   * The assigned #AgsChannel
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "channel of cancel channel\0",
+				   "The channel of cancel channel task\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsCancelChannel:recall-id:
+   *
+   * The assigned #AgsRecallID
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("recall-id\0",
+				   "recall id of cancel channel\0",
+				   "The recall id of cancel channel task\0",
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
+
+  /**
+   * AgsCancelChannel:playback:
+   *
+   * The assigned #AgsPlayback
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("playback\0",
+				   "playback of cancel channel\0",
+				   "The playback of cancel channel task\0",
+				   AGS_TYPE_PLAYBACK,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAYBACK,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) cancel_channel;
