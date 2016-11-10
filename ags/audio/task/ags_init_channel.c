@@ -232,9 +232,9 @@ ags_init_channel_init(AgsInitChannel *init_channel)
 
 void
 ags_init_channel_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
 {
   AgsInitChannel *init_channel;
 
@@ -264,7 +264,7 @@ ags_init_channel_set_property(GObject *gobject,
     break;
   case PROP_PLAY_PAD:
     {
-      guint play_pad;
+      gboolean play_pad;
 
       play_pad = g_value_get_boolean(value);
 
@@ -273,7 +273,7 @@ ags_init_channel_set_property(GObject *gobject,
     break;
   case PROP_DO_PLAYBACK:
     {
-      guint do_playback;
+      gboolean do_playback;
 
       do_playback = g_value_get_boolean(value);
 
@@ -282,7 +282,7 @@ ags_init_channel_set_property(GObject *gobject,
     break;
   case PROP_DO_SEQUENCER:
     {
-      guint do_sequencer;
+      gboolean do_sequencer;
 
       do_sequencer = g_value_get_boolean(value);
 
@@ -291,7 +291,7 @@ ags_init_channel_set_property(GObject *gobject,
     break;
   case PROP_DO_NOTATION:
     {
-      guint do_notation;
+      gboolean do_notation;
 
       do_notation = g_value_get_boolean(value);
 
@@ -306,9 +306,9 @@ ags_init_channel_set_property(GObject *gobject,
 
 void
 ags_init_channel_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec)
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
 {
   AgsInitChannel *init_channel;
 
