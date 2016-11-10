@@ -33,6 +33,14 @@
 void ags_init_channel_class_init(AgsInitChannelClass *init_channel);
 void ags_init_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_init_channel_init(AgsInitChannel *init_channel);
+void ags_init_channel_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_init_channel_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_init_channel_connect(AgsConnectable *connectable);
 void ags_init_channel_disconnect(AgsConnectable *connectable);
 void ags_init_channel_finalize(GObject *gobject);
@@ -41,7 +49,7 @@ void ags_init_channel_launch(AgsTask *task);
 
 /**
  * SECTION:ags_init_channel
- * @short_description: init channel object
+ * @short_description: init channel task
  * @title: AgsInitChannel
  * @section_id:
  * @include: ags/audio/task/ags_init_channel.h
@@ -51,6 +59,15 @@ void ags_init_channel_launch(AgsTask *task);
 
 static gpointer ags_init_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_init_channel_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+  PROP_PLAY_PAD,
+  PROP_DO_PLAYBACK,
+  PROP_DO_SEQUENCER,
+  PROP_DO_NOTATION,
+};
 
 GType
 ags_init_channel_get_type()
@@ -94,13 +111,98 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_init_channel_parent_class = g_type_class_peek_parent(init_channel);
 
   /* GObjectClass */
   gobject = (GObjectClass *) init_channel;
 
+  gobject->set_property = ags_init_channel_set_property;
+  gobject->get_property = ags_init_channel_get_property;
+
   gobject->finalize = ags_init_channel_finalize;
+
+  /* properties */
+  /**
+   * AgsInitChannel:channel:
+   *
+   * The assigned #AgsChannel
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "channel of init channel\0",
+				   "The channel of init channel task\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsInitChannel:play-pad:
+   *
+   * Do play pad.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("play-pad\0",
+				     "play pad\0",
+				     "play pad of channel\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_PAD,
+				  param_spec);
+
+  /**
+   * AgsInitChannel:do-playback:
+   *
+   * The effects do-playback.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("do-playback\0",
+				     "do playback\0",
+				     "Do playback of channel\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_PLAYBACK,
+				  param_spec);
+
+  /**
+   * AgsInitChannel:do-sequencer:
+   *
+   * The effects do-sequencer.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("do-sequencer\0",
+				     "do sequencer\0",
+				     "Do sequencer of channel\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_SEQUENCER,
+				  param_spec);
+
+  /**
+   * AgsInitChannel:do-notation:
+   *
+   * The effects do-notation.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec =  g_param_spec_boolean("do-notation\0",
+				     "do notation\0",
+				     "Do notation of channel\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_NOTATION,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) init_channel;
@@ -126,6 +228,122 @@ ags_init_channel_init(AgsInitChannel *init_channel)
   init_channel->do_playback = FALSE;
   init_channel->do_sequencer = FALSE;
   init_channel->do_notation = FALSE;
+}
+
+void
+ags_init_channel_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsInitChannel *init_channel;
+
+  init_channel = AGS_INIT_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(init_channel->channel == (GObject *) channel){
+	return;
+      }
+
+      if(init_channel->channel != NULL){
+	g_object_unref(init_channel->channel);
+      }
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      init_channel->channel = (GObject *) channel;
+    }
+    break;
+  case PROP_PLAY_PAD:
+    {
+      guint play_pad;
+
+      play_pad = g_value_get_boolean(value);
+
+      init_channel->play_pad = play_pad;
+    }
+    break;
+  case PROP_DO_PLAYBACK:
+    {
+      guint do_playback;
+
+      do_playback = g_value_get_boolean(value);
+
+      init_channel->do_playback = do_playback;
+    }
+    break;
+  case PROP_DO_SEQUENCER:
+    {
+      guint do_sequencer;
+
+      do_sequencer = g_value_get_boolean(value);
+
+      init_channel->do_sequencer = do_sequencer;
+    }
+    break;
+  case PROP_DO_NOTATION:
+    {
+      guint do_notation;
+
+      do_notation = g_value_get_boolean(value);
+
+      init_channel->do_notation = do_notation;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_init_channel_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsInitChannel *init_channel;
+
+  init_channel = AGS_INIT_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, init_channel->channel);
+    }
+    break;
+  case PROP_PLAY_PAD:
+    {
+      g_value_set_boolean(value, init_channel->play_pad);
+    }
+    break;
+  case PROP_DO_PLAYBACK:
+    {
+      g_value_set_boolean(value, init_channel->do_playback);
+    }
+    break;
+  case PROP_DO_SEQUENCER:
+    {
+      g_value_set_boolean(value, init_channel->do_sequencer);
+    }
+    break;
+  case PROP_DO_NOTATION:
+    {
+      g_value_set_boolean(value, init_channel->do_notation);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
