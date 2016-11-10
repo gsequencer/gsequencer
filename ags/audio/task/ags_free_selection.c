@@ -24,6 +24,14 @@
 void ags_free_selection_class_init(AgsFreeSelectionClass *free_selection);
 void ags_free_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_free_selection_init(AgsFreeSelection *free_selection);
+void ags_free_selection_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_free_selection_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_free_selection_connect(AgsConnectable *connectable);
 void ags_free_selection_disconnect(AgsConnectable *connectable);
 void ags_free_selection_finalize(GObject *gobject);
@@ -42,6 +50,11 @@ void ags_free_selection_launch(AgsTask *task);
 
 static gpointer ags_free_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_free_selection_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_NOTATION,
+};
 
 GType
 ags_free_selection_get_type()
@@ -85,13 +98,34 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_free_selection_parent_class = g_type_class_peek_parent(free_selection);
 
   /* gobject */
   gobject = (GObjectClass *) free_selection;
 
+  gobject->set_property = ags_free_selection_set_property;
+  gobject->get_property = ags_free_selection_get_property;
+
   gobject->finalize = ags_free_selection_finalize;
+
+  /* properties */
+  /**
+   * AgsFreeSelection:notation:
+   *
+   * The assigned #AgsNotation
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("notation\0",
+				   "notation of free selection\0",
+				   "The notation of free selection task\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) free_selection;
@@ -112,6 +146,66 @@ void
 ags_free_selection_init(AgsFreeSelection *free_selection)
 {
   free_selection->notation = NULL;
+}
+
+void
+ags_free_selection_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsFreeSelection *free_selection;
+
+  free_selection = AGS_FREE_SELECTION(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(free_selection->notation == (GObject *) notation){
+	return;
+      }
+
+      if(free_selection->notation != NULL){
+	g_object_unref(free_selection->notation);
+      }
+
+      if(notation != NULL){
+	g_object_ref(notation);
+      }
+
+      free_selection->notation = (GObject *) notation;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_free_selection_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsFreeSelection *free_selection;
+
+  free_selection = AGS_FREE_SELECTION(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, free_selection->notation);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -145,7 +239,7 @@ ags_free_selection_launch(AgsTask *task)
 
   free_selection = AGS_FREE_SELECTION(task);
 
-  /* add note */
+  /* free selection */
   ags_notation_free_selection(free_selection->notation);
 }
 

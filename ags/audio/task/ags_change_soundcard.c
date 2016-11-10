@@ -191,6 +191,118 @@ ags_change_soundcard_init(AgsChangeSoundcard *change_soundcard)
 }
 
 void
+ags_change_soundcard_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsChangeSoundcard *change_soundcard;
+
+  change_soundcard = AGS_CHANGE_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(change_soundcard->application_context == (GObject *) application_context){
+	return;
+      }
+
+      if(change_soundcard->application_context != NULL){
+	g_object_unref(change_soundcard->application_context);
+      }
+
+      if(application_context != NULL){
+	g_object_ref(application_context);
+      }
+
+      change_soundcard->application_context = (GObject *) application_context;
+    }
+    break;
+  case PROP_NEW_SOUNDCARD:
+    {
+      GObject *new_soundcard;
+
+      new_soundcard = (GObject *) g_value_get_object(value);
+
+      if(change_soundcard->new_soundcard == (GObject *) new_soundcard){
+	return;
+      }
+
+      if(change_soundcard->new_soundcard != NULL){
+	g_object_unref(change_soundcard->new_soundcard);
+      }
+
+      if(new_soundcard != NULL){
+	g_object_ref(new_soundcard);
+      }
+
+      change_soundcard->new_soundcard = (GObject *) new_soundcard;
+    }
+    break;
+  case PROP_OLD_SOUNDCARD:
+    {
+      GObject *old_soundcard;
+
+      old_soundcard = (GObject *) g_value_get_object(value);
+
+      if(change_soundcard->old_soundcard == (GObject *) old_soundcard){
+	return;
+      }
+
+      if(change_soundcard->old_soundcard != NULL){
+	g_object_unref(change_soundcard->old_soundcard);
+      }
+
+      if(old_soundcard != NULL){
+	g_object_ref(old_soundcard);
+      }
+
+      change_soundcard->old_soundcard = (GObject *) old_soundcard;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_change_soundcard_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsChangeSoundcard *change_soundcard;
+
+  change_soundcard = AGS_CHANGE_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, change_soundcard->application_context);
+    }
+    break;
+  case PROP_NEW_SOUNDCARD:
+    {
+      g_value_set_object(value, change_soundcard->new_soundcard);
+    }
+    break;
+  case PROP_OLD_SOUNDCARD:
+    {
+      g_value_set_object(value, change_soundcard->old_soundcard);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_change_soundcard_connect(AgsConnectable *connectable)
 {
   ags_change_soundcard_parent_connectable_interface->connect(connectable);

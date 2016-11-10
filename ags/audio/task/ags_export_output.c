@@ -229,6 +229,134 @@ ags_export_output_init(AgsExportOutput *export_output)
 }
 
 void
+ags_export_output_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsExportOutput *export_output;
+
+  export_output = AGS_EXPORT_OUTPUT(gobject);
+
+  switch(prop_id){
+  case PROP_EXPORT_THREAD:
+    {
+      AgsExportThread *export_thread;
+
+      export_thread = (AgsExportThread *) g_value_get_object(value);
+
+      if(export_output->export_thread == (GObject *) export_thread){
+	return;
+      }
+
+      if(export_output->export_thread != NULL){
+	g_object_unref(export_output->export_thread);
+      }
+
+      if(export_thread != NULL){
+	g_object_ref(export_thread);
+      }
+
+      export_output->export_thread = (GObject *) export_thread;
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(export_output->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(export_output->soundcard != NULL){
+	g_object_unref(export_output->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      export_output->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      if(export_output->filename == filename){
+	return;
+      }
+
+      if(export_output->filename != NULL){
+        g_free(export_output->filename);
+      }
+
+      export_output->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_TIC:
+    {
+      export_output->tic = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LIVE_PERFORMANCE:
+    {
+      export_output->live_performance = g_value_get_boolean(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_export_output_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsExportOutput *export_output;
+
+  export_output = AGS_EXPORT_OUTPUT(gobject);
+
+  switch(prop_id){
+  case PROP_EXPORT_THREAD:
+    {
+      g_value_set_object(value, export_output->export_thread);
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, export_output->soundcard);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, export_output->filename);
+    }
+    break;
+  case PROP_TIC:
+    {
+      g_value_set_uint(value, export_output->tic);
+    }
+    break;
+  case PROP_LIVE_PERFORMANCE:
+    {
+      g_value_set_boolean(value, export_output->live_performance);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_export_output_connect(AgsConnectable *connectable)
 {
   ags_export_output_parent_connectable_interface->connect(connectable);

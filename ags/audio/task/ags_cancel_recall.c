@@ -168,6 +168,92 @@ ags_cancel_recall_init(AgsCancelRecall *cancel_recall)
 }
 
 void
+ags_cancel_recall_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsCancelRecall *cancel_recall;
+
+  cancel_recall = AGS_CANCEL_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(cancel_recall->recall == (GObject *) recall){
+	return;
+      }
+
+      if(cancel_recall->recall != NULL){
+	g_object_unref(cancel_recall->recall);
+      }
+
+      if(recall != NULL){
+	g_object_ref(recall);
+      }
+
+      cancel_recall->recall = (GObject *) recall;
+    }
+    break;
+  case PROP_PLAYBACK:
+    {
+      AgsPlayback *playback;
+
+      playback = (AgsPlayback *) g_value_get_object(value);
+
+      if(cancel_recall->playback == (GObject *) playback){
+	return;
+      }
+
+      if(cancel_recall->playback != NULL){
+	g_object_unref(cancel_recall->playback);
+      }
+
+      if(playback != NULL){
+	g_object_ref(playback);
+      }
+
+      cancel_recall->playback = (GObject *) playback;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_cancel_recall_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsCancelRecall *cancel_recall;
+
+  cancel_recall = AGS_CANCEL_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL:
+    {
+      g_value_set_object(value, cancel_recall->recall);
+    }
+    break;
+  case PROP_PLAYBACK:
+    {
+      g_value_set_object(value, cancel_recall->playback);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_cancel_recall_connect(AgsConnectable *connectable)
 {
   ags_cancel_recall_parent_connectable_interface->connect(connectable);

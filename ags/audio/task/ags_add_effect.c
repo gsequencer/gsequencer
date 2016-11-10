@@ -38,13 +38,6 @@ void ags_add_effect_finalize(GObject *gobject);
 
 void ags_add_effect_launch(AgsTask *task);
 
-enum{
-  PROP_0,
-  PROP_CHANNEL,
-  PROP_FILENAME,
-  PROP_EFFECT,
-};
-
 /**
  * SECTION:ags_add_effect
  * @short_description: add effect object to context
@@ -57,6 +50,13 @@ enum{
 
 static gpointer ags_add_effect_parent_class = NULL;
 static AgsConnectableInterface *ags_add_effect_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+  PROP_FILENAME,
+  PROP_EFFECT,
+};
 
 GType
 ags_add_effect_get_type()
@@ -112,6 +112,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
 
   gobject->finalize = ags_add_effect_finalize;
 
+  /* properties */
   /**
    * AgsAddEffect:channel:
    *
@@ -196,9 +197,9 @@ ags_add_effect_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_CHANNEL:
     {
-      GObject *channel;
+      AgsChannel *channel;
 
-      channel = (GObject *) g_value_get_object(value);
+      channel = (AgsChannel *) g_value_get_object(value);
 
       if(add_effect->channel == (GObject *) channel){
 	return;

@@ -38,14 +38,6 @@ void ags_add_point_to_selection_finalize(GObject *gobject);
 
 void ags_add_point_to_selection_launch(AgsTask *task);
 
-enum{
-  PROP_0,
-  PROP_NOTATION,
-  PROP_X,
-  PROP_Y,
-  PROP_REPLACE_CURRENT_SELECTION,
-};
-
 /**
  * SECTION:ags_add_point_to_selection
  * @short_description: add point to notation selection
@@ -58,6 +50,14 @@ enum{
 
 static gpointer ags_add_point_to_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_add_point_to_selection_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_NOTATION,
+  PROP_X,
+  PROP_Y,
+  PROP_REPLACE_CURRENT_SELECTION,
+};
 
 GType
 ags_add_point_to_selection_get_type()
@@ -122,8 +122,8 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation\0",
-				   "notation of add note\0",
-				   "The notation of add note task\0",
+				   "notation of add point to selection\0",
+				   "The notation of add point to selection task\0",
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -327,7 +327,7 @@ ags_add_point_to_selection_launch(AgsTask *task)
 
   add_point_to_selection = AGS_ADD_POINT_TO_SELECTION(task);
 
-  /* add note */
+  /* add point to selection */
   ags_notation_add_point_to_selection(add_point_to_selection->notation,
 				      add_point_to_selection->x, add_point_to_selection->y,
 				      add_point_to_selection->replace_current_selection);
