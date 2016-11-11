@@ -120,6 +120,7 @@ ags_soundcard_set_bpm
 ags_soundcard_get_bpm
 ags_soundcard_set_delay_factor
 ags_soundcard_get_delay_factor
+ags_soundcard_get_absolute_delay
 ags_soundcard_get_delay
 ags_soundcard_get_attack
 ags_soundcard_get_delay_counter

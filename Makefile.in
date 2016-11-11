@@ -9500,8 +9500,8 @@ install-ags-docs: ags-docs
 	cp -rv $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	cp -rv $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
-	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
+	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer

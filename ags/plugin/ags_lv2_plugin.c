@@ -459,13 +459,14 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     }
     
     /* load ports */
-    xpath = "(//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object\0";
+    xpath = "(//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object[.//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']]\0";
     xpath = g_strdup_printf(xpath,
 			    escaped_effect);
     port_list = ags_turtle_find_xpath(lv2_plugin->turtle,
 				      xpath);
     free(xpath);
 
+    /*  */
     port_descriptor_list = NULL;
 
     while(port_list != NULL){
@@ -484,6 +485,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       
       port_node = (xmlNode *) port_list->data;
 
+      //      g_message("%s\0", port_node->name);
+      
       /* load flags - control */
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']\0",
 			      -1);
@@ -575,7 +578,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       }
 
       /* load index */
-      xpath = g_ascii_strdown(".//rdf-object-list//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']]\0",
+      xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0",
 			      -1);
       list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
 						     xpath,
@@ -584,14 +587,13 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
-	port->port_index = g_ascii_strtoull(xmlNodeGetContent(current),
+       	port->port_index = g_ascii_strtoull(xmlNodeGetContent(current),
 					    NULL,
 					    10);
-
+	found_port = TRUE;
+	
 	g_list_free(list);
       }else{
-	found_port = FALSE;
-	
 	g_warning("ags_lv2_plugin.c - no port index found\0");
       }
       

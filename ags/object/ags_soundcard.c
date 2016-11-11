@@ -763,11 +763,33 @@ ags_soundcard_get_delay_factor(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXDOUBLE);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_delay_factor, G_MAXUINT);
+  g_return_val_if_fail(soundcard_interface->get_delay_factor, G_MAXDOUBLE);
 
   return(soundcard_interface->get_delay_factor(soundcard));
+}
+
+/**
+ * ags_soundcard_get_absolute_delay:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get current playback delay. 
+ *
+ * Returns: delay
+ *
+ * Since: 0.7.100
+ */
+gdouble
+ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXDOUBLE);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_absolute_delay, G_MAXDOUBLE);
+
+  return(soundcard_interface->get_absolute_delay(soundcard));
 }
 
 /**
@@ -785,9 +807,9 @@ ags_soundcard_get_delay(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
 
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXDOUBLE);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_delay, G_MAXUINT);
+  g_return_val_if_fail(soundcard_interface->get_delay, G_MAXDOUBLE);
 
   return(soundcard_interface->get_delay(soundcard));
 }
