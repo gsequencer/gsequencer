@@ -63,13 +63,13 @@ ags_time_test_get_uptime_from_offset()
   guint offset_16_times_delay = 16 * delay;
   
   gchar *offset_0_str = "0000:00.000\0";
-  gchar *offset_1_times_delay_str = "0000:00.625\0";
-  gchar *offset_4_times_delay_str = "0000:02.625\0";
-  gchar *offset_16_times_delay_str = "0000:10.750\0";
+  gchar *offset_1_times_delay_str = "0000:00.125\0";
+  gchar *offset_4_times_delay_str = "0000:00.500\0";
+  gchar *offset_16_times_delay_str = "0000:02.000\0";
   gchar *str;
 
   /* assert offset 0 */
-  str = ags_time_get_uptime_from_offset(offset_0,
+  str = ags_time_get_uptime_from_offset(0,
 					bpm,
 					delay,
 					delay_factor);
@@ -80,29 +80,29 @@ ags_time_test_get_uptime_from_offset()
 				 12));
 
   /* assert offset 1 */
-  str = ags_time_get_uptime_from_offset(offset_1_times_delay,
+  str = ags_time_get_uptime_from_offset(1,
 					bpm,
 					delay,
 					delay_factor);
-
+  
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(offset_1_times_delay_str,
 				 str,
 				 12));
 
   /* assert offset 4 */
-  str = ags_time_get_uptime_from_offset(offset_4_times_delay,
+  str = ags_time_get_uptime_from_offset(4,
 					bpm,
 					delay,
 					delay_factor);
-
+  
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(offset_4_times_delay_str,
 				 str,
 				 12));
 
   /* assert offset 16 */
-  str = ags_time_get_uptime_from_offset(offset_16_times_delay,
+  str = ags_time_get_uptime_from_offset(16,
 					bpm,
 					delay,
 					delay_factor);

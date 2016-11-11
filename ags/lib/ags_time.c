@@ -57,8 +57,8 @@ ags_time_get_uptime_from_offset(guint offset,
 
   /* translate to time string */
   tact_redux = offset;
-
-  delay_sec = ((bpm / delay_factor) / 60.0);
+  
+  delay_sec = 1.0 / ((60.0 / bpm) * delay_factor);
   delay_min = delay_sec * 60.0;
   delay_msec = delay_sec / 1000.0;
 
