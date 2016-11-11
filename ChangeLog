@@ -1,3 +1,10 @@
+ags (0.7.100)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed devhelp link to docs use underscore instead of minus
+	* fixed in ags_lv2_plugin.c XPath no .// rather // as expression
+	* improved timing issue as exporting audio data
+
 ags (0.7.99)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
