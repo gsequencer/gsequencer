@@ -15,6 +15,18 @@ ags (1.0.0)
 	* improved AgsDial
 	* fixed ags_automation_find_point() to allow accessing first and last entry
 
+ags (0.7.101)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed rounding fault in ags_devout.c and ags_jack_devout.c
+
+ags (0.7.100)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed devhelp link to docs use underscore instead of minus
+	* fixed in ags_lv2_plugin.c XPath no .// rather // as expression
+	* improved timing issue as exporting audio data
+
 ags (0.7.99)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

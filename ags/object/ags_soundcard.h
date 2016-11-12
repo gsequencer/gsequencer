@@ -139,6 +139,8 @@ struct _AgsSoundcardInterface
   void (*set_delay_factor)(AgsSoundcard *soundcard,
 			   gdouble delay_factor);
   gdouble (*get_delay_factor)(AgsSoundcard *soundcard);
+
+  gdouble (*get_absolute_delay)(AgsSoundcard *soundcard);
   
   gdouble (*get_delay)(AgsSoundcard *soundcard);
   guint (*get_attack)(AgsSoundcard *soundcard);
@@ -231,6 +233,8 @@ gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
 void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
 				    gdouble delay_factor);
 gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
+
+gdouble ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard);
 
 gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
 guint ags_soundcard_get_attack(AgsSoundcard *soundcard);

@@ -55,6 +55,7 @@ ags_midi_buffer_util_get_varlength_size(glong varlength)
   
   /* retrieve new size */
   mask = 0x7f;
+
   current = 8 * 4 - 4;
   i = current;
 
@@ -66,7 +67,6 @@ ags_midi_buffer_util_get_varlength_size(glong varlength)
     i -= 7;
     current -= 8;
   }
-
   
   return(floor(current / 8.0) + 1);
 }

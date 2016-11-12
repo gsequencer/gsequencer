@@ -152,6 +152,8 @@ void ags_devout_set_delay_factor(AgsSoundcard *soundcard,
 				 gdouble delay_factor);
 gdouble ags_devout_get_delay_factor(AgsSoundcard *soundcard);
 
+gdouble ags_devout_get_absolute_delay(AgsSoundcard *soundcard);
+
 gdouble ags_devout_get_delay(AgsSoundcard *soundcard);
 guint ags_devout_get_attack(AgsSoundcard *soundcard);
 
@@ -552,7 +554,9 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->set_delay_factor = ags_devout_set_delay_factor;
   soundcard->get_delay_factor = ags_devout_get_delay_factor;
-  
+
+  soundcard->get_absolute_delay = ags_devout_get_absolute_delay;
+
   soundcard->get_delay = ags_devout_get_delay;
   soundcard->get_attack = ags_devout_get_attack;
 
@@ -1884,7 +1888,7 @@ ags_devout_get_uptime(AgsSoundcard *soundcard)
     delay_factor = ags_soundcard_get_delay_factor(soundcard);
 
     /* calculate delays */
-    delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
+    delay = ags_soundcard_get_absolute_delay(soundcard);
   
     uptime = ags_time_get_uptime_from_offset(note_offset,
 					     bpm,
@@ -3425,9 +3429,8 @@ ags_devout_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   delay = devout->delay[devout->tic_counter];
-  devout->delay_counter += 1.0;
 
-  if(devout->delay_counter >= delay){
+  if((guint) devout->delay_counter + 1 >= (guint) delay){
     ags_soundcard_set_note_offset(soundcard,
 				  devout->note_offset + 1);
     
@@ -3438,7 +3441,9 @@ ags_devout_tic(AgsSoundcard *soundcard)
     /* reset - delay counter */
     devout->delay_counter = 0.0;
     devout->tact_counter += 1.0;
-  } 
+  }else{
+    devout->delay_counter += 1.0;
+  }
 }
 
 void
@@ -3513,6 +3518,16 @@ ags_devout_get_delay(AgsSoundcard *soundcard)
   index = devout->tic_counter;
   
   return(devout->delay[index]);
+}
+
+gdouble
+ags_devout_get_absolute_delay(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+  
+  return((60.0 * (((gdouble) devout->samplerate / (gdouble) devout->buffer_size) / (gdouble) devout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) devout->delay_factor))));
 }
 
 guint
@@ -3675,7 +3690,7 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
     return;
   }
   
-  delay = (60.0 * (((gdouble) devout->samplerate / (gdouble) devout->buffer_size) / (gdouble) devout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) devout->delay_factor)));
+  delay = ags_devout_get_absolute_delay(AGS_SOUNDCARD(devout));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f\0", delay);
