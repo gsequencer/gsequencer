@@ -1,3 +1,8 @@
+ags (0.7.101)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed rounding fault in ags_devout.c and ags_jack_devout.c
+
 ags (0.7.100)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

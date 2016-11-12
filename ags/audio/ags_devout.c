@@ -3429,9 +3429,8 @@ ags_devout_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   delay = devout->delay[devout->tic_counter];
-  devout->delay_counter += 1.0;
 
-  if(devout->delay_counter >= delay){
+  if((guint) devout->delay_counter + 1 >= (guint) delay){
     ags_soundcard_set_note_offset(soundcard,
 				  devout->note_offset + 1);
     
@@ -3442,7 +3441,9 @@ ags_devout_tic(AgsSoundcard *soundcard)
     /* reset - delay counter */
     devout->delay_counter = 0.0;
     devout->tact_counter += 1.0;
-  } 
+  }else{
+    devout->delay_counter += 1.0;
+  }
 }
 
 void
