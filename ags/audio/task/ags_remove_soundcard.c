@@ -27,6 +27,14 @@
 void ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard);
 void ags_remove_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_soundcard_init(AgsRemoveSoundcard *remove_soundcard);
+void ags_remove_soundcard_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_remove_soundcard_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_remove_soundcard_connect(AgsConnectable *connectable);
 void ags_remove_soundcard_disconnect(AgsConnectable *connectable);
 void ags_remove_soundcard_finalize(GObject *gobject);
@@ -38,13 +46,19 @@ void ags_remove_soundcard_launch(AgsTask *task);
  * @short_description: remove soundcard object to context
  * @title: AgsRemoveSoundcard
  * @section_id:
- * @include: ags/audio/task/ags_remove_soundcard.h
+ * @include: ags/soundcard/task/ags_remove_soundcard.h
  *
  * The #AgsRemoveSoundcard task removes #AgsSoundcard to context.
  */
 
 static gpointer ags_remove_soundcard_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_soundcard_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_APPLICATION_CONTEXT,
+  PROP_SOUNDCARD,
+};
 
 GType
 ags_remove_soundcard_get_type()
@@ -88,13 +102,50 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_remove_soundcard_parent_class = g_type_class_peek_parent(remove_soundcard);
 
   /* gobject */
   gobject = (GObjectClass *) remove_soundcard;
 
+  gobject->set_property = ags_remove_soundcard_set_property;
+  gobject->get_property = ags_remove_soundcard_get_property;
+
   gobject->finalize = ags_remove_soundcard_finalize;
+  
+  /* properties */
+  /**
+   * AgsRemoveSoundcard:application-context:
+   *
+   * The assigned #AgsApplicationContext
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context of remove soundcard\0",
+				   "The application context of remove soundcard task\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsRemoveSoundcard:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of remove soundcard\0",
+				   "The soundcard of remove soundcard task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) remove_soundcard;
@@ -117,6 +168,92 @@ ags_remove_soundcard_init(AgsRemoveSoundcard *remove_soundcard)
   remove_soundcard->application_context = NULL;
   
   remove_soundcard->soundcard = NULL;
+}
+
+void
+ags_remove_soundcard_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsRemoveSoundcard *remove_soundcard;
+
+  remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(remove_soundcard->application_context == (GObject *) application_context){
+	return;
+      }
+
+      if(remove_soundcard->application_context != NULL){
+	g_object_unref(remove_soundcard->application_context);
+      }
+
+      if(application_context != NULL){
+	g_object_ref(application_context);
+      }
+
+      remove_soundcard->application_context = (GObject *) application_context;
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(remove_soundcard->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(remove_soundcard->soundcard != NULL){
+	g_object_unref(remove_soundcard->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      remove_soundcard->soundcard = (GObject *) soundcard;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_remove_soundcard_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsRemoveSoundcard *remove_soundcard;
+
+  remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, remove_soundcard->application_context);
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, remove_soundcard->soundcard);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

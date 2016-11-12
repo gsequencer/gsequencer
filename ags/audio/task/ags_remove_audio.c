@@ -25,6 +25,14 @@
 void ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio);
 void ags_remove_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_audio_init(AgsRemoveAudio *remove_audio);
+void ags_remove_audio_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_remove_audio_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_remove_audio_connect(AgsConnectable *connectable);
 void ags_remove_audio_disconnect(AgsConnectable *connectable);
 void ags_remove_audio_finalize(GObject *gobject);
@@ -33,7 +41,7 @@ void ags_remove_audio_launch(AgsTask *task);
 
 /**
  * SECTION:ags_remove_audio
- * @short_description: remove audio object of soundcard
+ * @short_description: remove audio of soundcard task
  * @title: AgsRemoveAudio
  * @section_id:
  * @include: ags/audio/task/ags_remove_audio.h
@@ -43,6 +51,12 @@ void ags_remove_audio_launch(AgsTask *task);
 
 static gpointer ags_remove_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_audio_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
+  PROP_SOUNDCARD,
+};
 
 GType
 ags_remove_audio_get_type()
@@ -86,13 +100,50 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_remove_audio_parent_class = g_type_class_peek_parent(remove_audio);
 
   /* gobject */
   gobject = (GObjectClass *) remove_audio;
 
+  gobject->set_property = ags_remove_audio_set_property;
+  gobject->get_property = ags_remove_audio_get_property;
+
   gobject->finalize = ags_remove_audio_finalize;
+  
+  /* properties */
+  /**
+   * AgsRemoveAudio:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of remove audio\0",
+				   "The soundcard of remove audio task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsRemoveAudio:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of remove audio\0",
+				   "The audio of remove audio task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) remove_audio;
@@ -114,6 +165,92 @@ ags_remove_audio_init(AgsRemoveAudio *remove_audio)
 {
   remove_audio->soundcard = NULL;
   remove_audio->audio = NULL;
+}
+
+void
+ags_remove_audio_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsRemoveAudio *remove_audio;
+
+  remove_audio = AGS_REMOVE_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(remove_audio->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(remove_audio->soundcard != NULL){
+	g_object_unref(remove_audio->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      remove_audio->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(remove_audio->audio == (GObject *) audio){
+	return;
+      }
+
+      if(remove_audio->audio != NULL){
+	g_object_unref(remove_audio->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      remove_audio->audio = (GObject *) audio;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_remove_audio_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsRemoveAudio *remove_audio;
+
+  remove_audio = AGS_REMOVE_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, remove_audio->soundcard);
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, remove_audio->audio);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
