@@ -1859,9 +1859,8 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
   
   /* determine if attack should be switched */
   delay = jack_devout->delay[jack_devout->tic_counter];
-  jack_devout->delay_counter += 1.0;
 
-  if(jack_devout->delay_counter >= delay){
+  if((guint) jack_devout->delay_counter + 1 >= (guint) delay){
     ags_soundcard_set_note_offset(soundcard,
 				  jack_devout->note_offset + 1);
     
@@ -1872,7 +1871,9 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
     /* reset - delay counter */
     jack_devout->delay_counter = 0.0;
     jack_devout->tact_counter += 1.0;
-  } 
+  }else{
+    jack_devout->delay_counter += 1.0;
+  }
 }
 
 void
