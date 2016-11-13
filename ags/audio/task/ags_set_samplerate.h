@@ -39,7 +39,7 @@ struct _AgsSetSamplerate
 {
   AgsTask task;
 
-  GObject *gobject;
+  GObject *scope;
   guint samplerate;
 };
 
@@ -50,7 +50,7 @@ struct _AgsSetSamplerateClass
 
 GType ags_set_samplerate_get_type();
 
-AgsSetSamplerate* ags_set_samplerate_new(GObject *gobject,
+AgsSetSamplerate* ags_set_samplerate_new(GObject *scope,
 					 guint samplerate);
 
 #endif /*__AGS_SET_SAMPLERATE_H__*/

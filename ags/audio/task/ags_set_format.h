@@ -39,7 +39,7 @@ struct _AgsSetFormat
 {
   AgsTask task;
 
-  GObject *gobject;
+  GObject *scope;
   guint format;
 };
 
@@ -50,7 +50,7 @@ struct _AgsSetFormatClass
 
 GType ags_set_format_get_type();
 
-AgsSetFormat* ags_set_format_new(GObject *gobject,
-				     guint format);
+AgsSetFormat* ags_set_format_new(GObject *scope,
+				 guint format);
 
 #endif /*__AGS_SET_FORMAT_H__*/

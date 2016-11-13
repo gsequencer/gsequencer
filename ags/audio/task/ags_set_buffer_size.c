@@ -184,9 +184,9 @@ ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size)
 
 void
 ags_set_buffer_size_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
 {
   AgsSetBufferSize *set_buffer_size;
 
@@ -227,9 +227,9 @@ ags_set_buffer_size_set_property(GObject *gobject,
 
 void
 ags_set_buffer_size_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
 {
   AgsSetBufferSize *set_buffer_size;
 

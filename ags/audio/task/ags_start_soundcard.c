@@ -28,6 +28,14 @@
 void ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard);
 void ags_start_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_start_soundcard_init(AgsStartSoundcard *start_soundcard);
+void ags_start_soundcard_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_start_soundcard_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
 void ags_start_soundcard_connect(AgsConnectable *connectable);
 void ags_start_soundcard_disconnect(AgsConnectable *connectable);
 void ags_start_soundcard_finalize(GObject *gobject);
@@ -46,6 +54,11 @@ void ags_start_soundcard_launch(AgsTask *task);
 
 static gpointer ags_start_soundcard_parent_class = NULL;
 static AgsConnectableInterface *ags_start_soundcard_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_SOUNDCARD,
+};
 
 GType
 ags_start_soundcard_get_type()
@@ -72,9 +85,9 @@ ags_start_soundcard_get_type()
     };
 
     ags_type_start_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsStartSoundcard\0",
-						   &ags_start_soundcard_info,
-						   0);
+						      "AgsStartSoundcard\0",
+						      &ags_start_soundcard_info,
+						      0);
 
     g_type_add_interface_static(ags_type_start_soundcard,
 				AGS_TYPE_CONNECTABLE,
@@ -89,13 +102,34 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_start_soundcard_parent_class = g_type_class_peek_parent(start_soundcard);
 
   /* gobject */
   gobject = (GObjectClass *) start_soundcard;
 
+  gobject->set_property = ags_start_soundcard_set_property;
+  gobject->get_property = ags_start_soundcard_get_property;
+
   gobject->finalize = ags_start_soundcard_finalize;
+
+  /* properties */
+  /**
+   * AgsStartSoundcard:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of start soundcard\0",
+				   "The soundcard of start soundcard task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) start_soundcard;
@@ -116,6 +150,66 @@ void
 ags_start_soundcard_init(AgsStartSoundcard *start_soundcard)
 {
   start_soundcard->soundcard = NULL;
+}
+
+void
+ags_start_soundcard_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsStartSoundcard *start_soundcard;
+
+  start_soundcard = AGS_START_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(start_soundcard->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(start_soundcard->soundcard != NULL){
+	g_object_unref(start_soundcard->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      start_soundcard->soundcard = (GObject *) soundcard;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_start_soundcard_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsStartSoundcard *start_soundcard;
+
+  start_soundcard = AGS_START_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, start_soundcard->soundcard);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

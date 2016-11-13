@@ -170,9 +170,9 @@ ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels)
 
 void
 ags_set_audio_channels_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsSetAudioChannels *set_audio_channels;
 
@@ -213,9 +213,9 @@ ags_set_audio_channels_set_property(GObject *gobject,
 
 void
 ags_set_audio_channels_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsSetAudioChannels *set_audio_channels;
 
