@@ -24,6 +24,14 @@
 void ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit);
 void ags_toggle_pattern_bit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_toggle_pattern_bit_init(AgsTogglePatternBit *toggle_pattern_bit);
+void ags_toggle_pattern_bit_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+void ags_toggle_pattern_bit_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
 void ags_toggle_pattern_bit_connect(AgsConnectable *connectable);
 void ags_toggle_pattern_bit_disconnect(AgsConnectable *connectable);
 void ags_toggle_pattern_bit_finalize(GObject *gobject);
@@ -39,6 +47,15 @@ void ags_toggle_pattern_bit_launch(AgsTask *task);
  *
  * The #AgsTogglePatternBit task toggles the specified #AgsPattern.
  */
+
+enum{
+  PROP_0,
+  PROP_PATTERN,
+  PROP_LINE,
+  PROP_INDEX_I,
+  PROP_INDEX_J,
+  PROP_BIT,
+};
 
 enum{
   REFRESH_GUI,
@@ -91,13 +108,106 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_toggle_pattern_bit_parent_class = g_type_class_peek_parent(toggle_pattern_bit);
 
   /* gobject */
   gobject = (GObjectClass *) toggle_pattern_bit;
 
+  gobject->set_property = ags_toggle_pattern_bit_set_property;
+  gobject->get_property = ags_toggle_pattern_bit_get_property;
+
   gobject->finalize = ags_toggle_pattern_bit_finalize;
+
+  /* properties */
+  /**
+   * AgsTogglePatternBit:pattern:
+   *
+   * The assigned #AgsPattern
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("pattern\0",
+				   "pattern of toggle pattern bit\0",
+				   "The pattern of toggle pattern bit task\0",
+				   AGS_TYPE_PATTERN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PATTERN,
+				  param_spec);
+  
+  /**
+   * AgsTogglePatternBit:line:
+   *
+   * The line.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("line\0",
+				 "line\0",
+				 "The line\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LINE,
+				  param_spec);
+
+  /**
+   * AgsTogglePatternBit:index-i:
+   *
+   * The index-i.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("index-i\0",
+				 "index-i\0",
+				 "The index-i\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INDEX_I,
+				  param_spec);
+
+  /**
+   * AgsTogglePatternBit:index-j:
+   *
+   * The index-j.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("index-j\0",
+				 "index-j\0",
+				 "The index-j\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INDEX_J,
+				  param_spec);
+
+  /**
+   * AgsTogglePatternBit:bit:
+   *
+   * The bit.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("bit\0",
+				 "bit\0",
+				 "The bit\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BIT,
+				  param_spec);
 
   /* signals */
   toggle_pattern_bit_signals[REFRESH_GUI] =
@@ -136,6 +246,106 @@ ags_toggle_pattern_bit_init(AgsTogglePatternBit *toggle_pattern_bit)
   toggle_pattern_bit->index_i = 0;
   toggle_pattern_bit->index_j = 0;
   toggle_pattern_bit->bit = 0;
+}
+
+void
+ags_toggle_pattern_bit_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec)
+{
+  AgsTogglePatternBit *toggle_pattern_bit;
+
+  toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
+
+  switch(prop_id){
+  case PROP_PATTERN:
+    {
+      AgsPattern *pattern;
+
+      pattern = (AgsPattern *) g_value_get_object(value);
+
+      if(toggle_pattern_bit->pattern == (GObject *) pattern){
+	return;
+      }
+
+      if(toggle_pattern_bit->pattern != NULL){
+	g_object_unref(toggle_pattern_bit->pattern);
+      }
+
+      if(pattern != NULL){
+	g_object_ref(pattern);
+      }
+
+      toggle_pattern_bit->pattern = (GObject *) pattern;
+    }
+    break;
+  case PROP_LINE:
+    {
+      toggle_pattern_bit->line = g_value_get_uint(value);
+    }
+    break;
+  case PROP_INDEX_I:
+    {
+      toggle_pattern_bit->index_i = g_value_get_uint(value);
+    }
+    break;
+  case PROP_INDEX_J:
+    {
+      toggle_pattern_bit->index_j = g_value_get_uint(value);
+    }
+    break;
+  case PROP_BIT:
+    {
+      toggle_pattern_bit->bit = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_toggle_pattern_bit_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec)
+{
+  AgsTogglePatternBit *toggle_pattern_bit;
+
+  toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
+
+  switch(prop_id){
+  case PROP_PATTERN:
+    {
+      g_value_set_object(value, toggle_pattern_bit->pattern);
+    }
+    break;
+  case PROP_LINE:
+    {
+      g_value_set_uint(value, toggle_pattern_bit->line);
+    }
+    break;
+  case PROP_INDEX_I:
+    {
+      g_value_set_uint(value, toggle_pattern_bit->index_i);
+    }
+    break;
+  case PROP_INDEX_J:
+    {
+      g_value_set_uint(value, toggle_pattern_bit->index_j);
+    }
+    break;
+  case PROP_BIT:
+    {
+      g_value_set_uint(value, toggle_pattern_bit->bit);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

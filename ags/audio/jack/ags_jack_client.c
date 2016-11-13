@@ -39,6 +39,8 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <ags/audio/task/ags_switch_buffer_flag.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_jack_client_class_init(AgsJackClientClass *jack_client);
@@ -620,6 +622,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   AgsJackPort *jack_port;
   AgsJackDevout *jack_devout;
 
+  AgsSwitchBufferFlag *switch_buffer_flag;
+
   AgsAudioLoop *audio_loop;
 
   AgsMutexManager *mutex_manager;
@@ -907,7 +911,14 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
 	  
     /* reset - switch buffer flags */
-    ags_jack_devout_switch_buffer_flag(jack_devout);
+    if(task_thread != NULL){
+      switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_devout);
+      
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) switch_buffer_flag);
+    }else{
+      ags_jack_devout_switch_buffer_flag(jack_devout);
+    }
     
     pthread_mutex_unlock(device_mutex);
 

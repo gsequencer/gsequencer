@@ -40,7 +40,7 @@ void ags_add_audio_signal_launch(AgsTask *task);
 
 /**
  * SECTION:ags_add_audio_signal
- * @short_description: add audio_signal object to recycling
+ * @short_description: add audio signal object to recycling
  * @title: AgsAddAudioSignal
  * @section_id:
  * @include: ags/audio/task/ags_add_audio_signal.h
