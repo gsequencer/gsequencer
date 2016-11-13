@@ -32,6 +32,14 @@
 void ags_set_muted_class_init(AgsSetMutedClass *set_muted);
 void ags_set_muted_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_muted_init(AgsSetMuted *set_muted);
+void ags_set_muted_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_set_muted_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_set_muted_connect(AgsConnectable *connectable);
 void ags_set_muted_disconnect(AgsConnectable *connectable);
 void ags_set_muted_finalize(GObject *gobject);
@@ -51,6 +59,12 @@ void ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio);
  *
  * The #AgsSetMuted task sets muted to #AgsMutable.
  */
+
+enum{
+  PROP_0,
+  PROP_SCOPE,
+  PROP_MUTED,
+};
 
 static gpointer ags_set_muted_parent_class = NULL;
 static AgsConnectableInterface *ags_set_muted_parent_connectable_interface;
@@ -80,9 +94,9 @@ ags_set_muted_get_type()
     };
 
     ags_type_set_muted = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsSetMuted\0",
-						 &ags_set_muted_info,
-						 0);
+						"AgsSetMuted\0",
+						&ags_set_muted_info,
+						0);
     
     g_type_add_interface_static(ags_type_set_muted,
 				AGS_TYPE_CONNECTABLE,
@@ -97,13 +111,50 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_set_muted_parent_class = g_type_class_peek_parent(set_muted);
 
   /* GObjectClass */
   gobject = (GObjectClass *) set_muted;
 
+  gobject->set_property = ags_set_muted_set_property;
+  gobject->get_property = ags_set_muted_get_property;
+
   gobject->finalize = ags_set_muted_finalize;
+
+  /* properties */
+  /**
+   * AgsSetMuted:scope:
+   *
+   * The assigned #GObject as scope.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("scope\0",
+				   "scope of set buffer size\0",
+				   "The scope of set buffer size\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCOPE,
+				  param_spec);
+
+  /**
+   * AgsSetMuted:muted:
+   *
+   * The muted to set to scope.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_boolean("muted\0",
+				    "muted\0",
+				    "The muted to set\0",
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MUTED,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) set_muted;
@@ -123,8 +174,78 @@ ags_set_muted_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_set_muted_init(AgsSetMuted *set_muted)
 {
-  set_muted->gobject = NULL;
+  set_muted->scope = NULL;
   set_muted->muted = FALSE;
+}
+
+void
+ags_set_muted_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsSetMuted *set_muted;
+
+  set_muted = AGS_SET_MUTED(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      GObject *scope;
+
+      scope = (GObject *) g_value_get_object(value);
+
+      if(set_muted->scope == (GObject *) scope){
+	return;
+      }
+
+      if(set_muted->scope != NULL){
+	g_object_unref(set_muted->scope);
+      }
+
+      if(scope != NULL){
+	g_object_ref(scope);
+      }
+
+      set_muted->scope = (GObject *) scope;
+    }
+    break;
+  case PROP_MUTED:
+    {
+      set_muted->muted = g_value_get_boolean(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_set_muted_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsSetMuted *set_muted;
+
+  set_muted = AGS_SET_MUTED(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      g_value_set_object(value, set_muted->scope);
+    }
+    break;
+  case PROP_MUTED:
+    {
+      g_value_set_boolean(value, set_muted->muted);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -158,26 +279,26 @@ ags_set_muted_launch(AgsTask *task)
 
   set_muted = AGS_SET_MUTED(task);
 
-  if(AGS_IS_AUDIO(set_muted->gobject)){
+  if(AGS_IS_AUDIO(set_muted->scope)){
     AgsAudio *audio;
 
-    audio = AGS_AUDIO(set_muted->gobject);
+    audio = AGS_AUDIO(set_muted->scope);
 
     ags_set_muted_audio(set_muted, audio);
-  }else if(AGS_IS_CHANNEL(set_muted->gobject)){
+  }else if(AGS_IS_CHANNEL(set_muted->scope)){
     AgsChannel *channel;
 
-    channel = AGS_CHANNEL(set_muted->gobject);
+    channel = AGS_CHANNEL(set_muted->scope);
 
     ags_set_muted_channel(set_muted, channel);
-  }else if(AGS_IS_RECALL(set_muted->gobject)){
+  }else if(AGS_IS_RECALL(set_muted->scope)){
     AgsRecall *recall;
 
-    recall = AGS_RECALL(set_muted->gobject);
+    recall = AGS_RECALL(set_muted->scope);
 
     ags_set_muted_recall(set_muted, recall);
   }else{
-    g_warning("AgsSetMuted: Not supported gobject\0");
+    g_warning("AgsSetMuted: Not supported scope\0");
   }
 }
 
@@ -254,7 +375,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
 
 /**
  * ags_set_muted_new:
- * @gobject: the #GObject
+ * @scope: the #GObject
  * @muted: muted to set
  *
  * Creates an #AgsSetMuted.
@@ -264,7 +385,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
  * Since: 0.4
  */
 AgsSetMuted*
-ags_set_muted_new(GObject *gobject,
+ags_set_muted_new(GObject *scope,
 		  gboolean muted)
 {
   AgsSetMuted *set_muted;
@@ -272,7 +393,7 @@ ags_set_muted_new(GObject *gobject,
   set_muted = (AgsSetMuted *) g_object_new(AGS_TYPE_SET_MUTED,
 					   NULL);
   
-  set_muted->gobject = gobject;
+  set_muted->scope = scope;
   set_muted->muted = muted;
 
   return(set_muted);

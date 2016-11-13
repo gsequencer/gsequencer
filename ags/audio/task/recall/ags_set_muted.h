@@ -39,7 +39,7 @@ struct _AgsSetMuted
 {
   AgsTask task;
 
-  GObject *gobject;
+  GObject *scope;
 
   gboolean muted;
 };
@@ -51,7 +51,7 @@ struct _AgsSetMutedClass
 
 GType ags_set_muted_get_type();
 
-AgsSetMuted* ags_set_muted_new(GObject *gobject,
+AgsSetMuted* ags_set_muted_new(GObject *scope,
 			       gboolean muted);
 
 #endif /*__AGS_SET_MUTED_H__*/

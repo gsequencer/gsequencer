@@ -62,14 +62,14 @@ void ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *s
  * The #AgsSetBufferSize task resizes buffer size of scope.
  */
 
-static gpointer ags_set_buffer_size_parent_class = NULL;
-static AgsConnectableInterface *ags_set_buffer_size_parent_connectable_interface;
-
 enum{
   PROP_0,
   PROP_SCOPE,
   PROP_BUFFER_SIZE,
 };
+
+static gpointer ags_set_buffer_size_parent_class = NULL;
+static AgsConnectableInterface *ags_set_buffer_size_parent_connectable_interface;
 
 GType
 ags_set_buffer_size_get_type()

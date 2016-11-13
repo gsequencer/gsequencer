@@ -32,6 +32,14 @@
 void ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm);
 void ags_apply_bpm_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_bpm_init(AgsApplyBpm *apply_bpm);
+void ags_apply_bpm_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_apply_bpm_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_apply_bpm_connect(AgsConnectable *connectable);
 void ags_apply_bpm_disconnect(AgsConnectable *connectable);
 void ags_apply_bpm_finalize(GObject *gobject);
@@ -52,6 +60,12 @@ void ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard);
  *
  * The #AgsApplyBpm task applys bpm to #AgsDelayAudio.
  */
+
+enum{
+  PROP_0,
+  PROP_SCOPE,
+  PROP_BPM,
+};
 
 static gpointer ags_apply_bpm_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_bpm_parent_connectable_interface;
@@ -98,13 +112,52 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_apply_bpm_parent_class = g_type_class_peek_parent(apply_bpm);
 
   /* GObjectClass */
   gobject = (GObjectClass *) apply_bpm;
 
+  gobject->set_property = ags_apply_bpm_set_property;
+  gobject->get_property = ags_apply_bpm_get_property;
+
   gobject->finalize = ags_apply_bpm_finalize;
+
+  /* properties */
+  /**
+   * AgsApplyBpm:scope:
+   *
+   * The assigned #GObject as scope.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("scope\0",
+				   "scope of set buffer size\0",
+				   "The scope of set buffer size\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCOPE,
+				  param_spec);
+
+  /**
+   * AgsApplyBpm:bpm:
+   *
+   * The bpm to apply to scope.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_double("bpm\0",
+				   "bpm\0",
+				   "The bpm to apply\0",
+				   0,
+				   G_MAXDOUBLE,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BPM,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_bpm;
@@ -124,8 +177,78 @@ ags_apply_bpm_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_apply_bpm_init(AgsApplyBpm *apply_bpm)
 {
-  apply_bpm->gobject = NULL;
+  apply_bpm->scope = NULL;
   apply_bpm->bpm = 0.0;
+}
+
+void
+ags_apply_bpm_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsApplyBpm *apply_bpm;
+
+  apply_bpm = AGS_APPLY_BPM(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      GObject *scope;
+
+      scope = (GObject *) g_value_get_object(value);
+
+      if(apply_bpm->scope == (GObject *) scope){
+	return;
+      }
+
+      if(apply_bpm->scope != NULL){
+	g_object_unref(apply_bpm->scope);
+      }
+
+      if(scope != NULL){
+	g_object_ref(scope);
+      }
+
+      apply_bpm->scope = (GObject *) scope;
+    }
+    break;
+  case PROP_BPM:
+    {
+      apply_bpm->bpm = g_value_get_double(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_apply_bpm_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsApplyBpm *apply_bpm;
+
+  apply_bpm = AGS_APPLY_BPM(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      g_value_set_object(value, apply_bpm->scope);
+    }
+    break;
+  case PROP_BPM:
+    {
+      g_value_set_double(value, apply_bpm->bpm);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -159,32 +282,32 @@ ags_apply_bpm_launch(AgsTask *task)
   
   apply_bpm = AGS_APPLY_BPM(task);
   
-  if(AGS_IS_SOUNDCARD(apply_bpm->gobject)){
+  if(AGS_IS_SOUNDCARD(apply_bpm->scope)){
     GObject *soundcard;
 
-    soundcard = apply_bpm->gobject;
+    soundcard = apply_bpm->scope;
 
     ags_apply_bpm_soundcard(apply_bpm, soundcard);
-  }else if(AGS_IS_AUDIO(apply_bpm->gobject)){
+  }else if(AGS_IS_AUDIO(apply_bpm->scope)){
     AgsAudio *audio;
 
-    audio = AGS_AUDIO(apply_bpm->gobject);
+    audio = AGS_AUDIO(apply_bpm->scope);
     
     ags_apply_bpm_audio(apply_bpm, audio);
-  }else if(AGS_IS_CHANNEL(apply_bpm->gobject)){
+  }else if(AGS_IS_CHANNEL(apply_bpm->scope)){
     AgsChannel *channel;
 
-    channel = AGS_CHANNEL(apply_bpm->gobject);
+    channel = AGS_CHANNEL(apply_bpm->scope);
 
     ags_apply_bpm_channel(apply_bpm, channel);
-  }else if(AGS_IS_RECALL(apply_bpm->gobject)){
+  }else if(AGS_IS_RECALL(apply_bpm->scope)){
     AgsRecall *recall;
 
-    recall = AGS_RECALL(apply_bpm->gobject);
+    recall = AGS_RECALL(apply_bpm->scope);
 
     ags_apply_bpm_recall(apply_bpm, recall);
   }else{
-    g_warning("AgsApplyBpm: Not supported gobject\0");
+    g_warning("AgsApplyBpm: Not supported scope\0");
   }
 }
 
@@ -281,7 +404,7 @@ ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
 
 /**
  * ags_apply_bpm_new:
- * @gobject: the #GObject
+ * @scope: the #GObject
  * @bpm: the bpm to apply
  *
  * Creates an #AgsApplyBpm.
@@ -291,7 +414,7 @@ ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
  * Since: 0.4
  */
 AgsApplyBpm*
-ags_apply_bpm_new(GObject *gobject,
+ags_apply_bpm_new(GObject *scope,
 		  gdouble bpm)
 {
   AgsApplyBpm *apply_bpm;
@@ -299,7 +422,7 @@ ags_apply_bpm_new(GObject *gobject,
   apply_bpm = (AgsApplyBpm *) g_object_new(AGS_TYPE_APPLY_BPM,
 					   NULL);
 
-  apply_bpm->gobject = gobject;
+  apply_bpm->scope = scope;
   apply_bpm->bpm = bpm;
 
   return(apply_bpm);

@@ -32,6 +32,14 @@
 void ags_apply_tact_class_init(AgsApplyTactClass *apply_tact);
 void ags_apply_tact_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_tact_init(AgsApplyTact *apply_tact);
+void ags_apply_tact_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_apply_tact_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 void ags_apply_tact_connect(AgsConnectable *connectable);
 void ags_apply_tact_disconnect(AgsConnectable *connectable);
 void ags_apply_tact_finalize(GObject *gobject);
@@ -52,6 +60,12 @@ void ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard);
  *
  * The #AgsApplyTact task applys tact to #AgsTactable.
  */
+
+enum{
+  PROP_0,
+  PROP_SCOPE,
+  PROP_TACT,
+};
 
 static gpointer ags_apply_tact_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_tact_parent_connectable_interface;
@@ -98,13 +112,52 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_apply_tact_parent_class = g_type_class_peek_parent(apply_tact);
 
   /* GObjectClass */
   gobject = (GObjectClass *) apply_tact;
 
+  gobject->set_property = ags_apply_tact_set_property;
+  gobject->get_property = ags_apply_tact_get_property;
+
   gobject->finalize = ags_apply_tact_finalize;
+
+  /* properties */
+  /**
+   * AgsApplyTact:scope:
+   *
+   * The assigned #GObject as scope.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("scope\0",
+				   "scope of set buffer size\0",
+				   "The scope of set buffer size\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCOPE,
+				  param_spec);
+
+  /**
+   * AgsApplyTact:tact:
+   *
+   * The tact to apply to scope.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_double("tact\0",
+				   "tact\0",
+				   "The tact to apply\0",
+				   0,
+				   G_MAXDOUBLE,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TACT,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_tact;
@@ -124,8 +177,78 @@ ags_apply_tact_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_apply_tact_init(AgsApplyTact *apply_tact)
 {
-  apply_tact->gobject = NULL;
+  apply_tact->scope = NULL;
   apply_tact->tact = 0.0;
+}
+
+void
+ags_apply_tact_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsApplyTact *apply_tact;
+
+  apply_tact = AGS_APPLY_TACT(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      GObject *scope;
+
+      scope = (GObject *) g_value_get_object(value);
+
+      if(apply_tact->scope == (GObject *) scope){
+	return;
+      }
+
+      if(apply_tact->scope != NULL){
+	g_object_unref(apply_tact->scope);
+      }
+
+      if(scope != NULL){
+	g_object_ref(scope);
+      }
+
+      apply_tact->scope = (GObject *) scope;
+    }
+    break;
+  case PROP_TACT:
+    {
+      apply_tact->tact = g_value_get_double(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_apply_tact_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsApplyTact *apply_tact;
+
+  apply_tact = AGS_APPLY_TACT(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      g_value_set_object(value, apply_tact->scope);
+    }
+    break;
+  case PROP_TACT:
+    {
+      g_value_set_double(value, apply_tact->tact);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -159,32 +282,32 @@ ags_apply_tact_launch(AgsTask *task)
 
   apply_tact = AGS_APPLY_TACT(task);
 
- if(AGS_IS_SOUNDCARD(apply_tact->gobject)){
+ if(AGS_IS_SOUNDCARD(apply_tact->scope)){
     GObject *soundcard;
 
-    soundcard = apply_tact->gobject;
+    soundcard = apply_tact->scope;
 
     ags_apply_tact_soundcard(apply_tact, soundcard);
- }else if(AGS_IS_AUDIO(apply_tact->gobject)){
+ }else if(AGS_IS_AUDIO(apply_tact->scope)){
     AgsAudio *audio;
 
-    audio = AGS_AUDIO(apply_tact->gobject);
+    audio = AGS_AUDIO(apply_tact->scope);
 
     ags_apply_tact_audio(apply_tact, audio);
-  }else if(AGS_IS_CHANNEL(apply_tact->gobject)){
+  }else if(AGS_IS_CHANNEL(apply_tact->scope)){
     AgsChannel *channel;
 
-    channel = AGS_CHANNEL(apply_tact->gobject);
+    channel = AGS_CHANNEL(apply_tact->scope);
 
     ags_apply_tact_channel(apply_tact, channel);
-  }else if(AGS_IS_RECALL(apply_tact->gobject)){
+  }else if(AGS_IS_RECALL(apply_tact->scope)){
     AgsRecall *recall;
 
-    recall = AGS_RECALL(apply_tact->gobject);
+    recall = AGS_RECALL(apply_tact->scope);
 
     ags_apply_tact_recall(apply_tact, recall);
   }else{
-    g_warning("AgsApplyTact: Not supported gobject\0");
+    g_warning("AgsApplyTact: Not supported scope\0");
   }
 }
 
@@ -282,7 +405,7 @@ ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
 
 /**
  * ags_apply_tact_new:
- * @gobject: the #GObject
+ * @scope: the #GObject
  * @tact: the tact to apply
  *
  * Creates an #AgsApplyTact.
@@ -292,7 +415,7 @@ ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
  * Since: 0.4
  */
 AgsApplyTact*
-ags_apply_tact_new(GObject *gobject,
+ags_apply_tact_new(GObject *scope,
 		   gdouble tact)
 {
   AgsApplyTact *apply_tact;
@@ -300,7 +423,7 @@ ags_apply_tact_new(GObject *gobject,
   apply_tact = (AgsApplyTact *) g_object_new(AGS_TYPE_APPLY_TACT,
 					     NULL);
   
-  apply_tact->gobject = gobject;
+  apply_tact->scope = scope;
   apply_tact->tact = tact;
 
   return(apply_tact);
