@@ -15,6 +15,11 @@ ags (1.0.0)
 	* improved AgsDial
 	* fixed ags_automation_find_point() to allow accessing first and last entry
 
+ags (0.7.102)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed use AgsSwitchBufferFlag task in ags_jack_client.c
+
 ags (0.7.101)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

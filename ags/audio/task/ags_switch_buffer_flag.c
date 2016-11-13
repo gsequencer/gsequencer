@@ -153,9 +153,9 @@ ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag)
 
 void
 ags_switch_buffer_flag_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec)
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsSwitchBufferFlag *switch_buffer_flag;
 
@@ -191,9 +191,9 @@ ags_switch_buffer_flag_set_property(GObject *gobject,
 
 void
 ags_switch_buffer_flag_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec)
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsSwitchBufferFlag *switch_buffer_flag;
 
