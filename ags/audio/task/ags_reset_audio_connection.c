@@ -131,8 +131,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of remove soundcard\0",
-				   "The soundcard of remove soundcard task\0",
+				   "soundcard of reset audio connection\0",
+				   "The soundcard of reset audio connection task\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,8 +147,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio\0",
-				   "audio of remove audio\0",
-				   "The audio of remove audio task\0",
+				   "audio of reset audio connection\0",
+				   "The audio of reset audio connection task\0",
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
