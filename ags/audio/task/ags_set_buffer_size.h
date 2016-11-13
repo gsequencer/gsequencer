@@ -39,7 +39,7 @@ struct _AgsSetBufferSize
 {
   AgsTask task;
 
-  GObject *gobject;
+  GObject *scope;
   guint buffer_size;
 };
 
@@ -50,7 +50,7 @@ struct _AgsSetBufferSizeClass
 
 GType ags_set_buffer_size_get_type();
 
-AgsSetBufferSize* ags_set_buffer_size_new(GObject *gobject,
+AgsSetBufferSize* ags_set_buffer_size_new(GObject *scope,
 					  guint buffer_size);
 
 #endif /*__AGS_SET_BUFFER_SIZE_H__*/
