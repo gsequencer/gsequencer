@@ -43,12 +43,6 @@ void ags_add_recall_container_finalize(GObject *gobject);
 
 void ags_add_recall_container_launch(AgsTask *task);
 
-enum{
-  PROP_0,
-  PROP_AUDIO,
-  PROP_RECALL_CONTAINER,
-};
-
 /**
  * SECTION:ags_add_recall_container
  * @short_description: add recall object to context
@@ -61,6 +55,12 @@ enum{
 
 static gpointer ags_add_recall_container_parent_class = NULL;
 static AgsConnectableInterface *ags_add_recall_container_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
+  PROP_RECALL_CONTAINER,
+};
 
 GType
 ags_add_recall_container_get_type()
@@ -116,6 +116,7 @@ ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_conta
 
   gobject->finalize = ags_add_recall_container_finalize;
 
+  /* properties */
   /**
    * AgsAddRecallContainer:audio:
    *

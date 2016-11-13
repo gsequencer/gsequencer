@@ -26,6 +26,14 @@
 void ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signal);
 void ags_remove_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_audio_signal_init(AgsRemoveAudioSignal *remove_audio_signal);
+void ags_remove_audio_signal_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_remove_audio_signal_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_remove_audio_signal_connect(AgsConnectable *connectable);
 void ags_remove_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_remove_audio_signal_finalize(GObject *gobject);
@@ -34,16 +42,22 @@ void ags_remove_audio_signal_launch(AgsTask *task);
 
 /**
  * SECTION:ags_remove_audio_signal
- * @short_description: remove audio_signal object to recycling
+ * @short_description: remove audio_signal object from recycling
  * @title: AgsRemoveAudioSignal
  * @section_id:
  * @include: ags/audio/task/ags_remove_audio_signal.h
  *
- * The #AgsRemoveAudioSignal task removes #AgsAudioSignal to #AgsRecycling.
+ * The #AgsRemoveAudioSignal task removes #AgsAudioSignal from #AgsRecycling.
  */
 
 static gpointer ags_remove_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_audio_signal_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_RECYCLING,
+  PROP_AUDIO_SIGNAL,
+};
 
 GType
 ags_remove_audio_signal_get_type()
@@ -87,13 +101,50 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_remove_audio_signal_parent_class = g_type_class_peek_parent(remove_audio_signal);
 
   /* GObjectClass */
   gobject = (GObjectClass *) remove_audio_signal;
 
+  gobject->set_property = ags_remove_audio_signal_set_property;
+  gobject->get_property = ags_remove_audio_signal_get_property;
+
   gobject->finalize = ags_remove_audio_signal_finalize;
+
+  /* properties */
+  /**
+   * AgsRemoveAudioSignal:recycling:
+   *
+   * The assigned #AgsRecycling
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("recycling\0",
+				   "recycling of remove audio signal\0",
+				   "The recycling of remove audio signal task\0",
+		 		   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING,
+				  param_spec);
+
+  /**
+   * AgsRemoveAudioSignal:audio-signal:
+   *
+   * The assigned #AgsAudioSignal
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("audio-signal\0",
+				   "audio signal of remove audio signal\0",
+				   "The audio signal of remove audio signal task\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) remove_audio_signal;
@@ -115,6 +166,92 @@ ags_remove_audio_signal_init(AgsRemoveAudioSignal *remove_audio_signal)
 {
   remove_audio_signal->recycling = NULL;
   remove_audio_signal->audio_signal = NULL;
+}
+
+void
+ags_remove_audio_signal_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsRemoveAudioSignal *remove_audio_signal;
+
+  remove_audio_signal = AGS_REMOVE_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(remove_audio_signal->recycling == (GObject *) recycling){
+	return;
+      }
+
+      if(remove_audio_signal->recycling != NULL){
+	g_object_unref(remove_audio_signal->recycling);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      remove_audio_signal->recycling = (GObject *) recycling;
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      AgsAudioSignal *audio_signal;
+
+      audio_signal = (AgsAudioSignal *) g_value_get_object(value);
+
+      if(remove_audio_signal->audio_signal == (GObject *) audio_signal){
+	return;
+      }
+
+      if(remove_audio_signal->audio_signal != NULL){
+	g_object_unref(remove_audio_signal->audio_signal);
+      }
+
+      if(audio_signal != NULL){
+	g_object_ref(audio_signal);
+      }
+
+      remove_audio_signal->audio_signal = (GObject *) audio_signal;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_remove_audio_signal_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsRemoveAudioSignal *remove_audio_signal;
+
+  remove_audio_signal = AGS_REMOVE_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      g_value_set_object(value, remove_audio_signal->recycling);
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      g_value_set_object(value, remove_audio_signal->audio_signal);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

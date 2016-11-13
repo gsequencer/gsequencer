@@ -115,6 +115,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 
   gobject->finalize = ags_add_region_to_selection_finalize;
 
+  /* properties */
   /**
    * AgsAddRegionToSelection:notation:
    *

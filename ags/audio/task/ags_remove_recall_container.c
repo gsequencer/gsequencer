@@ -29,6 +29,14 @@
 void ags_remove_recall_container_class_init(AgsRemoveRecallContainerClass *remove_recall_container);
 void ags_remove_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_recall_container_init(AgsRemoveRecallContainer *remove_recall_container);
+void ags_remove_recall_container_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+void ags_remove_recall_container_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
 void ags_remove_recall_container_connect(AgsConnectable *connectable);
 void ags_remove_recall_container_disconnect(AgsConnectable *connectable);
 void ags_remove_recall_container_finalize(GObject *gobject);
@@ -47,6 +55,12 @@ void ags_remove_recall_container_launch(AgsTask *task);
 
 static gpointer ags_remove_recall_container_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_recall_container_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
+  PROP_RECALL_CONTAINER,
+};
 
 GType
 ags_remove_recall_container_get_type()
@@ -90,13 +104,50 @@ ags_remove_recall_container_class_init(AgsRemoveRecallContainerClass *remove_rec
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_remove_recall_container_parent_class = g_type_class_peek_parent(remove_recall_container);
 
   /* GObjectClass */
   gobject = (GObjectClass *) remove_recall_container;
 
+  gobject->set_property = ags_remove_recall_container_set_property;
+  gobject->get_property = ags_remove_recall_container_get_property;
+
   gobject->finalize = ags_remove_recall_container_finalize;
+
+  /* properties */
+  /**
+   * AgsRemoveRecallContainer:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of remove recall container\0",
+				   "The audio of remove recall container task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+  
+  /**
+   * AgsRemoveRecallContainer:recall_container:
+   *
+   * The assigned #AgsRecall_Container
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("recall-container\0",
+				   "recall container of remove recall container\0",
+				   "The recall container of remove recall container task\0",
+				   AGS_TYPE_RECALL_CONTAINER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CONTAINER,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) remove_recall_container;
@@ -118,6 +169,92 @@ ags_remove_recall_container_init(AgsRemoveRecallContainer *remove_recall_contain
 {
   remove_recall_container->audio = NULL;
   remove_recall_container->recall_container = NULL;
+}
+
+void
+ags_remove_recall_container_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec)
+{
+  AgsRemoveRecallContainer *remove_recall_container;
+
+  remove_recall_container = AGS_REMOVE_RECALL_CONTAINER(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(remove_recall_container->audio == (GObject *) audio){
+	return;
+      }
+
+      if(remove_recall_container->audio != NULL){
+	g_object_unref(remove_recall_container->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      remove_recall_container->audio = (GObject *) audio;
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      AgsRecallContainer *recall_container;
+
+      recall_container = (AgsRecallContainer *) g_value_get_object(value);
+
+      if(remove_recall_container->recall_container == (GObject *) recall_container){
+	return;
+      }
+
+      if(remove_recall_container->recall_container != NULL){
+	g_object_unref(remove_recall_container->recall_container);
+      }
+
+      if(recall_container != NULL){
+	g_object_ref(recall_container);
+      }
+
+      remove_recall_container->recall_container = (GObject *) recall_container;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_remove_recall_container_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec)
+{
+  AgsRemoveRecallContainer *remove_recall_container;
+
+  remove_recall_container = AGS_REMOVE_RECALL_CONTAINER(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, remove_recall_container->audio);
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      g_value_set_object(value, remove_recall_container->recall_container);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

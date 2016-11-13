@@ -24,6 +24,14 @@
 void ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *remove_region_from_selection);
 void ags_remove_region_from_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_region_from_selection_init(AgsRemoveRegionFromSelection *remove_region_from_selection);
+void ags_remove_region_from_selection_set_property(GObject *gobject,
+						   guint prop_id,
+						   const GValue *value,
+						   GParamSpec *param_spec);
+void ags_remove_region_from_selection_get_property(GObject *gobject,
+						   guint prop_id,
+						   GValue *value,
+						   GParamSpec *param_spec);
 void ags_remove_region_from_selection_connect(AgsConnectable *connectable);
 void ags_remove_region_from_selection_disconnect(AgsConnectable *connectable);
 void ags_remove_region_from_selection_finalize(GObject *gobject);
@@ -32,16 +40,25 @@ void ags_remove_region_from_selection_launch(AgsTask *task);
 
 /**
  * SECTION:ags_remove_region_from_selection
- * @short_description: remove region to notation selection
- * @title: AgsRemoveRegionToSelection
+ * @short_description: remove region from notation selection
+ * @title: AgsRemoveRegionFromSelection
  * @section_id:
- * @include: ags/audio/task/ags_remove_region_to_selection.h
+ * @include: ags/audio/task/ags_remove_region_from_selection.h
  *
- * The #AgsRemoveRegionToSelection task removes the specified #AgsNote to selection of #AgsNotation.
+ * The #AgsRemoveRegionFromSelection task removes the specified #AgsNote from selection of #AgsNotation.
  */
 
 static gpointer ags_remove_region_from_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_region_from_selection_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_NOTATION,
+  PROP_X0,
+  PROP_X1,
+  PROP_Y0,
+  PROP_Y1,
+};
 
 GType
 ags_remove_region_from_selection_get_type()
@@ -85,13 +102,105 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_remove_region_from_selection_parent_class = g_type_class_peek_parent(remove_region_from_selection);
 
   /* gobject */
   gobject = (GObjectClass *) remove_region_from_selection;
 
+  gobject->set_property = ags_remove_region_from_selection_set_property;
+  gobject->get_property = ags_remove_region_from_selection_get_property;
+
   gobject->finalize = ags_remove_region_from_selection_finalize;
+
+  /* properties */
+  /**
+   * AgsRemoveRegionFromSelection:notation:
+   *
+   * The assigned #AgsNotation
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("notation\0",
+				   "notation of remove note\0",
+				   "The notation of remove note task\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
+				  param_spec);
+  
+  /**
+   * AgsRemoveRegionFromSelection:x0:
+   *
+   * Note offset x0.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("x0\0",
+				 "offset x0\0",
+				 "The x0 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X0,
+				  param_spec);
+  /**
+   * AgsRemoveRegionFromSelection:x1:
+   *
+   * Note offset x1.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("x1\0",
+				 "offset x1\0",
+				 "The x1 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X1,
+				  param_spec);
+
+  /**
+   * AgsRemoveRegionFromSelection:y0:
+   *
+   * Note offset y0.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("y0\0",
+				 "offset y0\0",
+				 "The y0 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y0,
+				  param_spec);
+
+  /**
+   * AgsRemoveRegionFromSelection:y1:
+   *
+   * Note offset y1.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("y1\0",
+				 "offset y1\0",
+				 "The y1 offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y1,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) remove_region_from_selection;
@@ -116,6 +225,106 @@ ags_remove_region_from_selection_init(AgsRemoveRegionFromSelection *remove_regio
   remove_region_from_selection->y0 = 0;
   remove_region_from_selection->x1 = 0;
   remove_region_from_selection->y1 = 0;
+}
+
+void
+ags_remove_region_from_selection_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec)
+{
+  AgsRemoveRegionFromSelection *remove_region_from_selection;
+
+  remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(remove_region_from_selection->notation == (GObject *) notation){
+	return;
+      }
+
+      if(remove_region_from_selection->notation != NULL){
+	g_object_unref(remove_region_from_selection->notation);
+      }
+
+      if(notation != NULL){
+	g_object_ref(notation);
+      }
+
+      remove_region_from_selection->notation = (GObject *) notation;
+    }
+    break;
+  case PROP_X0:
+    {
+      remove_region_from_selection->x0 = g_value_get_uint(value);
+    }
+    break;
+  case PROP_X1:
+    {
+      remove_region_from_selection->x1 = g_value_get_uint(value);
+    }
+    break;
+  case PROP_Y0:
+    {
+      remove_region_from_selection->y0 = g_value_get_uint(value);
+    }
+    break;
+  case PROP_Y1:
+    {
+      remove_region_from_selection->y1 = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_remove_region_from_selection_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec)
+{
+  AgsRemoveRegionFromSelection *remove_region_from_selection;
+
+  remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, remove_region_from_selection->notation);
+    }
+    break;
+  case PROP_X0:
+    {
+      g_value_set_uint(value, remove_region_from_selection->x0);
+    }
+    break;
+  case PROP_X1:
+    {
+      g_value_set_uint(value, remove_region_from_selection->x1);
+    }
+    break;
+  case PROP_Y0:
+    {
+      g_value_set_uint(value, remove_region_from_selection->y0);
+    }
+    break;
+  case PROP_Y1:
+    {
+      g_value_set_uint(value, remove_region_from_selection->y1);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -149,23 +358,23 @@ ags_remove_region_from_selection_launch(AgsTask *task)
 
   remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(task);
 
-  /* add note */
+  /* remove region */
   ags_notation_remove_region_from_selection(remove_region_from_selection->notation,
 					    remove_region_from_selection->x0, remove_region_from_selection->y0,
 					    remove_region_from_selection->x1, remove_region_from_selection->y1);
 }
 
 /**
- * ags_remove_region_to_selection_new:
+ * ags_remove_region_from_selection_new:
  * @notation: the #AgsNotation providing the selection
  * @x0: start x coordinate
  * @y0: start y coordinate
  * @x1: end x coordinate
  * @y1: end y coordinate
  *
- * Creates an #AgsRemoveRegionToSelection.
+ * Creates an #AgsRemoveRegionFromSelection.
  *
- * Returns: an new #AgsRemoveRegionToSelection.
+ * Returns: an new #AgsRemoveRegionFromSelection.
  *
  * Since: 0.4
  */
@@ -177,7 +386,7 @@ ags_remove_region_from_selection_new(AgsNotation *notation,
   AgsRemoveRegionFromSelection *remove_region_from_selection;
 
   remove_region_from_selection = (AgsRemoveRegionFromSelection *) g_object_new(AGS_TYPE_REMOVE_REGION_FROM_SELECTION,
-								     NULL);
+									       NULL);
 
   remove_region_from_selection->notation = notation;
   remove_region_from_selection->x0 = x0;

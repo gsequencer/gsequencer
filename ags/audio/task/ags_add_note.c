@@ -38,13 +38,6 @@ void ags_add_note_finalize(GObject *gobject);
 
 void ags_add_note_launch(AgsTask *task);
 
-enum{
-  PROP_0,
-  PROP_NOTATION,
-  PROP_NOTE,
-  PROP_USE_SELECTION_LIST,
-};
-
 /**
  * SECTION:ags_add_note
  * @short_description: add note object to notation
@@ -57,6 +50,13 @@ enum{
 
 static gpointer ags_add_note_parent_class = NULL;
 static AgsConnectableInterface *ags_add_note_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_NOTATION,
+  PROP_NOTE,
+  PROP_USE_SELECTION_LIST,
+};
 
 GType
 ags_add_note_get_type()
@@ -112,6 +112,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
 
   gobject->finalize = ags_add_note_finalize;
 
+  /* properties */
   /**
    * AgsAddNote:notation:
    *
