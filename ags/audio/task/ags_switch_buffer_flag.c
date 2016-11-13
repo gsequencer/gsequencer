@@ -22,6 +22,7 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/jack/ags_jack_devout.h>
 
 void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
 void ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -39,7 +40,7 @@ void ags_switch_buffer_flag_launch(AgsTask *task);
  * @section_id:
  * @include: ags/audio/task/ags_switch_buffer_flag.h
  *
- * The #AgsSwitchBufferFlag task starts soundcard.
+ * The #AgsSwitchBufferFlag task switches the buffer flag of soundcard.
  */
 
 static gpointer ags_switch_buffer_flag_parent_class = NULL;
@@ -113,7 +114,7 @@ ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag)
 {
-  switch_buffer_flag->devout = NULL;
+  switch_buffer_flag->soundcard = NULL;
 }
 
 void
@@ -147,12 +148,16 @@ ags_switch_buffer_flag_launch(AgsTask *task)
 
   switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(task);
 
-  ags_devout_switch_buffer_flag(switch_buffer_flag->devout);
+  if(AGS_IS_DEVOUT(switch_buffer_flag->soundcard)){
+    ags_devout_switch_buffer_flag(switch_buffer_flag->soundcard);
+  }else if(AGS_IS_JACK_DEVOUT(switch_buffer_flag->soundcard)){
+    ags_jack_devout_switch_buffer_flag(switch_buffer_flag->soundcard);
+  }
 }
 
 /**
  * ags_switch_buffer_flag_new:
- * @devout: the #AgsDevout
+ * @soundcard: the #AgsSoundcard
  *
  * Creates an #AgsSwitchBufferFlag.
  *
@@ -161,14 +166,14 @@ ags_switch_buffer_flag_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsSwitchBufferFlag*
-ags_switch_buffer_flag_new(GObject *devout)
+ags_switch_buffer_flag_new(GObject *soundcard)
 {
   AgsSwitchBufferFlag *switch_buffer_flag;
 
   switch_buffer_flag = (AgsSwitchBufferFlag *) g_object_new(AGS_TYPE_SWITCH_BUFFER_FLAG,
 							    NULL);
 
-  switch_buffer_flag->devout = devout;
+  switch_buffer_flag->soundcard = soundcard;
 
   return(switch_buffer_flag);
 }
