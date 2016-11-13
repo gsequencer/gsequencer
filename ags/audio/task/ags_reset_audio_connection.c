@@ -31,6 +31,14 @@
 void ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_connection);
 void ags_reset_audio_connection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_reset_audio_connection_init(AgsResetAudioConnection *reset_audio_connection);
+void ags_reset_audio_connection_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+void ags_reset_audio_connection_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
 void ags_reset_audio_connection_connect(AgsConnectable *connectable);
 void ags_reset_audio_connection_disconnect(AgsConnectable *connectable);
 void ags_reset_audio_connection_finalize(GObject *gobject);
@@ -39,16 +47,26 @@ void ags_reset_audio_connection_launch(AgsTask *task);
 
 /**
  * SECTION:ags_reset_audio_connection
- * @short_description: resize audio object
+ * @short_description: reset audio connection task
  * @title: AgsResetAudioConnection
  * @section_id:
  * @include: ags/audio/task/ags_reset_audio_connection.h
  *
- * The #AgsResetAudioConnection task resizes #AgsAudio.
+ * The #AgsResetAudioConnection resets audio connection.
  */
 
 static gpointer ags_reset_audio_connection_parent_class = NULL;
 static AgsConnectableInterface *ags_reset_audio_connection_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_SOUNDCARD,
+  PROP_AUDIO,
+  PROP_CHANNEL_TYPE,
+  PROP_PAD,
+  PROP_AUDIO_CHANNEL,
+  PROP_MAPPED_LINE,
+};
 
 GType
 ags_reset_audio_connection_get_type()
@@ -75,9 +93,9 @@ ags_reset_audio_connection_get_type()
     };
     
     ags_type_reset_audio_connection = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsResetAudioConnection\0",
-						   &ags_reset_audio_connection_info,
-						   0);
+							     "AgsResetAudioConnection\0",
+							     &ags_reset_audio_connection_info,
+							     0);
     
     g_type_add_interface_static(ags_type_reset_audio_connection,
 				AGS_TYPE_CONNECTABLE,
@@ -92,13 +110,122 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_reset_audio_connection_parent_class = g_type_class_peek_parent(reset_audio_connection);
 
   /* gobject */
   gobject = (GObjectClass *) reset_audio_connection;
 
+  gobject->set_property = ags_reset_audio_connection_set_property;
+  gobject->get_property = ags_reset_audio_connection_get_property;
+
   gobject->finalize = ags_reset_audio_connection_finalize;
+
+  /* properties */
+  /**
+   * AgsResetAudioConnection:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of remove soundcard\0",
+				   "The soundcard of remove soundcard task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsResetAudioConnection:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of remove audio\0",
+				   "The audio of remove audio task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsResetAudioConnection:channel-type:
+   *
+   * The connection's channel type.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_gtype("channel-type\0",
+				  "channel type\0",
+				  "The channel type of connection\0",
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
+
+  
+  /**
+   * AgsResetAudioConnection:pad:
+   *
+   * The nth pad of audio.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("pad\0",
+				 "nth pad\0",
+				 "The nth pad of audio\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PAD,
+				  param_spec);
+
+
+  /**
+   * AgsResetAudioConnection:audio-channel:
+   *
+   * The nth audio channel of audio.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("audio-channel\0",
+				 "nth audio channel\0",
+				 "The nth audio channel of audio\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+  
+  /**
+   * AgsResetAudioConnection:mapped-line:
+   *
+   * The nth mapped line of connection.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("mapped-line\0",
+				 "nth mapped line\0",
+				 "The nth mapped line of connection\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAPPED_LINE,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) reset_audio_connection;
@@ -127,6 +254,132 @@ ags_reset_audio_connection_init(AgsResetAudioConnection *reset_audio_connection)
   reset_audio_connection->audio_channel = 0;
 
   reset_audio_connection->mapped_line = 0;
+}
+
+void
+ags_reset_audio_connection_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec)
+{
+  AgsResetAudioConnection *reset_audio_connection;
+
+  reset_audio_connection = AGS_RESET_AUDIO_CONNECTION(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(reset_audio_connection->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(reset_audio_connection->soundcard != NULL){
+	g_object_unref(reset_audio_connection->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      reset_audio_connection->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(reset_audio_connection->audio == (GObject *) audio){
+	return;
+      }
+
+      if(reset_audio_connection->audio != NULL){
+	g_object_unref(reset_audio_connection->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      reset_audio_connection->audio = (GObject *) audio;
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      reset_audio_connection->channel_type = g_value_get_gtype(value);
+    }
+    break;
+  case PROP_PAD:
+    {
+      reset_audio_connection->pad = g_value_get_uint(value);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      reset_audio_connection->audio_channel = g_value_get_uint(value);
+    }
+    break;
+  case PROP_MAPPED_LINE:
+    {
+      reset_audio_connection->mapped_line = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_reset_audio_connection_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec)
+{
+  AgsResetAudioConnection *reset_audio_connection;
+
+  reset_audio_connection = AGS_RESET_AUDIO_CONNECTION(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, reset_audio_connection->soundcard);
+    }
+    break;
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, reset_audio_connection->audio);
+    }
+    break;
+  case PROP_CHANNEL_TYPE:
+    {
+      g_value_set_gtype(value, reset_audio_connection->channel_type);
+    }
+    break;
+  case PROP_PAD:
+    {
+      g_value_set_uint(value, reset_audio_connection->pad);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      g_value_set_uint(value, reset_audio_connection->audio_channel);
+    }
+    break;
+  case PROP_MAPPED_LINE:
+    {
+      g_value_set_uint(value, reset_audio_connection->mapped_line);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

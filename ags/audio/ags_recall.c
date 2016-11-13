@@ -335,7 +335,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
   
   /**
-   * AgsRecall:audio-channel:
+   * AgsRecall:child:
    *
    * The child recall.
    * 
