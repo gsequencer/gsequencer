@@ -142,6 +142,10 @@ void ags_jack_devout_set_note_offset(AgsSoundcard *soundcard,
 				     guint note_offset);
 guint ags_jack_devout_get_note_offset(AgsSoundcard *soundcard);
 
+void ags_jack_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
+					      guint note_offset);
+guint ags_jack_devout_get_note_offset_absolute(AgsSoundcard *soundcard);
+
 void ags_jack_devout_set_loop(AgsSoundcard *soundcard,
 			      guint loop_left, guint loop_right,
 			      gboolean do_loop);
@@ -551,6 +555,9 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->set_note_offset = ags_jack_devout_set_note_offset;
   soundcard->get_note_offset = ags_jack_devout_get_note_offset;
 
+  soundcard->set_note_offset_absolute = ags_jack_devout_set_note_offset_absolute;
+  soundcard->get_note_offset_absolute = ags_jack_devout_get_note_offset_absolute;
+
   soundcard->set_loop = ags_jack_devout_set_loop;
   soundcard->get_loop = ags_jack_devout_get_loop;
 
@@ -738,6 +745,7 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->tic_counter = 0;
 
   jack_devout->note_offset = 0;
+  jack_devout->note_offset_absolute = 0;
 
   jack_devout->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
   jack_devout->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
@@ -1480,7 +1488,7 @@ ags_jack_devout_get_uptime(AgsSoundcard *soundcard)
 			      &buffer_size,
 			      NULL);
     
-    note_offset = ags_soundcard_get_note_offset(soundcard);
+    note_offset = ags_soundcard_get_note_offset_absolute(soundcard);
 
     bpm = ags_soundcard_get_bpm(soundcard);
     delay_factor = ags_soundcard_get_delay_factor(soundcard);
@@ -1571,6 +1579,7 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 			 AGS_JACK_DEVOUT_NONBLOCKING);
 
   jack_devout->note_offset = 0;
+  jack_devout->note_offset_absolute = 0;
 
   memset(jack_devout->buffer[0], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   memset(jack_devout->buffer[1], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
@@ -1861,8 +1870,17 @@ ags_jack_devout_tic(AgsSoundcard *soundcard)
   delay = jack_devout->delay[jack_devout->tic_counter];
 
   if((guint) jack_devout->delay_counter + 1 >= (guint) delay){
-    ags_soundcard_set_note_offset(soundcard,
-				  jack_devout->note_offset + 1);
+    if(jack_devout->do_loop &&
+       jack_devout->note_offset + 1 == jack_devout->loop_right){
+      ags_soundcard_set_note_offset(soundcard,
+				    jack_devout->loop_left);
+    }else{
+      ags_soundcard_set_note_offset(soundcard,
+				    jack_devout->note_offset + 1);
+    }
+    
+    ags_soundcard_set_note_offset_absolute(soundcard,
+					   jack_devout->note_offset_absolute + 1);
     
     /* delay */
     ags_soundcard_offset_changed(soundcard,
@@ -2035,6 +2053,19 @@ guint
 ags_jack_devout_get_note_offset(AgsSoundcard *soundcard)
 {
   return(AGS_JACK_DEVOUT(soundcard)->note_offset);
+}
+
+void
+ags_jack_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
+					 guint note_offset)
+{
+  AGS_JACK_DEVOUT(soundcard)->note_offset_absolute = note_offset;
+}
+
+guint
+ags_jack_devout_get_note_offset_absolute(AgsSoundcard *soundcard)
+{
+  return(AGS_JACK_DEVOUT(soundcard)->note_offset_absolute);
 }
 
 void

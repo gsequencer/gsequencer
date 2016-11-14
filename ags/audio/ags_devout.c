@@ -166,6 +166,10 @@ void ags_devout_set_note_offset(AgsSoundcard *soundcard,
 				guint note_offset);
 guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
 
+void ags_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
+					 guint note_offset);
+guint ags_devout_get_note_offset_absolute(AgsSoundcard *soundcard);
+
 void ags_devout_set_loop(AgsSoundcard *soundcard,
 			 guint loop_left, guint loop_right,
 			 gboolean do_loop);
@@ -568,6 +572,9 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->set_note_offset = ags_devout_set_note_offset;
   soundcard->get_note_offset = ags_devout_get_note_offset;
 
+  soundcard->set_note_offset_absolute = ags_devout_set_note_offset_absolute;
+  soundcard->get_note_offset_absolute = ags_devout_get_note_offset_absolute;
+
   soundcard->set_loop = ags_devout_set_loop;
   soundcard->get_loop = ags_devout_get_loop;
 
@@ -793,6 +800,7 @@ ags_devout_init(AgsDevout *devout)
   devout->tic_counter = 0;
 
   devout->note_offset = 0;
+  devout->note_offset_absolute = 0;
 
   devout->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
   devout->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
@@ -1765,13 +1773,13 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
     
     if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 #ifdef AGS_WITH_ALSA
-    /* get poll fds of ALSA */
-    count = snd_pcm_poll_descriptors_count(devout->out.alsa.handle);
+      /* get poll fds of ALSA */
+      count = snd_pcm_poll_descriptors_count(devout->out.alsa.handle);
 
-    if(count > 0){
-      fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
-      snd_pcm_poll_descriptors(devout->out.alsa.handle, fds, count);
-    }
+      if(count > 0){
+	fds = (struct pollfd *) malloc(count * sizeof(struct pollfd));
+	snd_pcm_poll_descriptors(devout->out.alsa.handle, fds, count);
+      }
 #endif
     }else{
       if(devout->out.oss.device_fd != -1){
@@ -1882,7 +1890,7 @@ ags_devout_get_uptime(AgsSoundcard *soundcard)
 			      &buffer_size,
 			      NULL);
     
-    note_offset = ags_soundcard_get_note_offset(soundcard);
+    note_offset = ags_soundcard_get_note_offset_absolute(soundcard);
 
     bpm = ags_soundcard_get_bpm(soundcard);
     delay_factor = ags_soundcard_get_delay_factor(soundcard);
@@ -2036,6 +2044,7 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
 		    AGS_DEVOUT_NONBLOCKING);
 
   devout->note_offset = 0;
+  devout->note_offset_absolute = 0;
 
   memset(devout->buffer[0], 0, devout->pcm_channels * devout->buffer_size * word_size);
   memset(devout->buffer[1], 0, devout->pcm_channels * devout->buffer_size * word_size);
@@ -2513,6 +2522,7 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
 
   devout->note_offset = 0;
+  devout->note_offset_absolute = 0;
 }
 
 void
@@ -2630,6 +2640,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 		    AGS_DEVOUT_NONBLOCKING);
 
   devout->note_offset = 0;
+  devout->note_offset_absolute = 0;
 
   memset(devout->buffer[0], 0, devout->pcm_channels * devout->buffer_size * word_size);
   memset(devout->buffer[1], 0, devout->pcm_channels * devout->buffer_size * word_size);
@@ -2693,17 +2704,17 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* set hardware resampling * /
-  err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 0);
-  if (err < 0) {
-    pthread_mutex_unlock(mutex);
+     err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 0);
+     if (err < 0) {
+     pthread_mutex_unlock(mutex);
 
-    str = snd_strerror(err);
-    g_warning("Resampling setup failed for playback: %s\n", str);
+     str = snd_strerror(err);
+     g_warning("Resampling setup failed for playback: %s\n", str);
 
-    //    free(str);
+     //    free(str);
     
-    return;
-  }
+     return;
+     }
   */
   
   /* set the interleaved read/write format */
@@ -2843,18 +2854,18 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* set the period size * /
-  period_size = devout->buffer_size;
-  err = snd_pcm_hw_params_set_period_size_near(handle, hwparams, period_size, dir);
-  if (err < 0) {
-    pthread_mutex_unlock(mutex);
+     period_size = devout->buffer_size;
+     err = snd_pcm_hw_params_set_period_size_near(handle, hwparams, period_size, dir);
+     if (err < 0) {
+     pthread_mutex_unlock(mutex);
 
-    str = snd_strerror(err);
-    g_warning("Unable to get period size for playback: %s\n", str);
+     str = snd_strerror(err);
+     g_warning("Unable to get period size for playback: %s\n", str);
 
-    //    free(str);
+     //    free(str);
     
-    return;
-  }
+     return;
+     }
   */
   
   /* write the parameters to device */
@@ -2881,58 +2892,58 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   }
 
   /* get the current swparams * /
-  err = snd_pcm_sw_params_current(handle, swparams);
-  if (err < 0) {
-    pthread_mutex_unlock(mutex);
+     err = snd_pcm_sw_params_current(handle, swparams);
+     if (err < 0) {
+     pthread_mutex_unlock(mutex);
 
-    str = snd_strerror(err);
-    g_warning("Unable to determine current swparams for playback: %s\n", str);
+     str = snd_strerror(err);
+     g_warning("Unable to determine current swparams for playback: %s\n", str);
 
-    //    free(str);
+     //    free(str);
     
-    return;
-  }
+     return;
+     }
   */
   /* start the transfer when the buffer is almost full: */
   /* (buffer_size / avail_min) * avail_min * /
-  err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
-  if (err < 0) {
-    pthread_mutex_unlock(mutex);
+     err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
+     if (err < 0) {
+     pthread_mutex_unlock(mutex);
 
-    str = snd_strerror(err);
-    g_warning("Unable to set start threshold mode for playback: %s\n", str);
+     str = snd_strerror(err);
+     g_warning("Unable to set start threshold mode for playback: %s\n", str);
     
-    //    free(str);
+     //    free(str);
     
-    return;
-  }
+     return;
+     }
   */
   /* allow the transfer when at least period_size samples can be processed */
   /* or disable this mechanism when period event is enabled (aka interrupt like style processing) * /
-  err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
-  if (err < 0) {
-    pthread_mutex_unlock(mutex);
+     err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
+     if (err < 0) {
+     pthread_mutex_unlock(mutex);
 
-    str = snd_strerror(err);
-    g_warning("Unable to set avail min for playback: %s\n", str);
+     str = snd_strerror(err);
+     g_warning("Unable to set avail min for playback: %s\n", str);
 
-    //    free(str);
+     //    free(str);
     
-    return;
-  }
+     return;
+     }
 
-  /* write the parameters to the playback device * /
-  err = snd_pcm_sw_params(handle, swparams);
-  if (err < 0) {
-    pthread_mutex_unlock(mutex);
+     /* write the parameters to the playback device * /
+     err = snd_pcm_sw_params(handle, swparams);
+     if (err < 0) {
+     pthread_mutex_unlock(mutex);
 
-    str = snd_strerror(err);
-    g_warning("Unable to set sw params for playback: %s\n", str);
+     str = snd_strerror(err);
+     g_warning("Unable to set sw params for playback: %s\n", str);
 
-    //    free(str);
+     //    free(str);
     
-    return;
-  }
+     return;
+     }
   */
 
   /*  */
@@ -3415,8 +3426,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   
   pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
 
-
   devout->note_offset = 0;
+  devout->note_offset_absolute = 0;
 }
 
 void
@@ -3431,9 +3442,18 @@ ags_devout_tic(AgsSoundcard *soundcard)
   delay = devout->delay[devout->tic_counter];
 
   if((guint) devout->delay_counter + 1 >= (guint) delay){
-    ags_soundcard_set_note_offset(soundcard,
-				  devout->note_offset + 1);
+    if(devout->do_loop &&
+       devout->note_offset + 1 == devout->loop_right){
+      ags_soundcard_set_note_offset(soundcard,
+				    devout->loop_left);
+    }else{
+      ags_soundcard_set_note_offset(soundcard,
+				    devout->note_offset + 1);
+    }
     
+    ags_soundcard_set_note_offset_absolute(soundcard,
+					   devout->note_offset_absolute + 1);
+
     /* delay */
     ags_soundcard_offset_changed(soundcard,
 				 devout->note_offset);
@@ -3610,6 +3630,19 @@ guint
 ags_devout_get_note_offset(AgsSoundcard *soundcard)
 {
   return(AGS_DEVOUT(soundcard)->note_offset);
+}
+
+void
+ags_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
+				    guint note_offset)
+{
+  AGS_DEVOUT(soundcard)->note_offset_absolute = note_offset;
+}
+
+guint
+ags_devout_get_note_offset_absolute(AgsSoundcard *soundcard)
+{
+  return(AGS_DEVOUT(soundcard)->note_offset_absolute);
 }
 
 void
