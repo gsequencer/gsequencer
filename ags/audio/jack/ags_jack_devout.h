@@ -104,7 +104,8 @@ struct _AgsJackDevout
   guint tic_counter; // in the range of default period
 
   guint note_offset;
-
+  guint note_offset_absolute;
+  
   guint loop_left;
   guint loop_right;
   gboolean do_loop;
