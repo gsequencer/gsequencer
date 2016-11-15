@@ -34,6 +34,12 @@
 #define AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH (10.0)
 #define AGS_CARTESIAN_DEFAULT_Y_STEP_HEIGHT (10.0)
 
+#define AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH (10.0)
+#define AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT (10.0)
+
+#define AGS_CARTESIAN_DEFAULT_X_MARGIN (24.0)
+#define AGS_CARTESIAN_DEFAULT_Y_MARGIN (24.0)
+
 #define AGS_CARTESIAN_DEFAULT_X_STEP (1.0)
 #define AGS_CARTESIAN_DEFAULT_Y_STEP (1.0)
 
@@ -170,9 +176,9 @@ struct _AgsCartesianClass
 
 GType ags_cartesian_get_type(void);
 
-gdouble ags_cartesian_linear_step_conversion(gdouble current,
-					     gboolean is_abscissae,
-					     gpointer data);
+gdouble ags_cartesian_linear_step_conversion_func(gdouble current,
+						  gboolean is_abscissae,
+						  gpointer data);
 
 void ags_cartesian_linear_translate_func(gdouble x,
 					 gdouble y,
@@ -194,6 +200,11 @@ gchar* ags_cartesian_linear_x_label_func(gdouble value,
 					 gpointer data);
 gchar* ags_cartesian_linear_y_label_func(gdouble value,
 					 gpointer data);
+
+void ags_cartesian_reallocate_label(AgsCartesian *cartesian,
+				    gboolean do_x_label);
+void ags_cartesian_fill_label(AgsCartesian *cartesian,
+			      gboolean do_x_label);
 
 AgsCartesian* ags_cartesian_new();
 
