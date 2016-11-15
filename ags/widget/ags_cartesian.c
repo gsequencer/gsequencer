@@ -21,7 +21,8 @@
 
 void ags_cartesian_class_init(AgsCartesianClass *cartesian);
 void ags_cartesian_init(AgsCartesian *cartesian);
-void ags_cartesian_show(GtkWidget *widget);
+
+void ags_cartesian_draw(AgsCartesian *cartesian);
 
 static gpointer ags_cartesian_parent_class = NULL;
 
@@ -65,6 +66,156 @@ ags_cartesian_init(AgsCartesian *cartesian)
   g_object_set(G_OBJECT(cartesian),
 	       "app-paintable\0", TRUE,
 	       NULL);
+}
+
+gdouble
+ags_cartesian_linear_step_conversion(gdouble current,
+				     gboolean is_abscissae,
+				     gpointer data)
+{
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    return(current);
+  }
+  
+  if(is_abscissae){
+    return(AGS_CARTESIAN(data)->x_step_factor * current);
+  }else{
+    return(AGS_CARTESIAN(data)->y_step_factor * current);
+  }
+}
+
+void
+ags_cartesian_linear_translate_func(gdouble x,
+				    gdouble y,
+				    gdouble *ret_x,
+				    gdouble *ret_y,
+				    gpointer data)
+{
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    if(ret_x != NULL){
+      *ret_x = x;
+    }
+
+    if(ret_y != NULL){
+      *ret_y = y;
+    }
+
+    return;
+  }
+
+  if(ret_x != NULL){
+    *ret_x = (AGS_CARTESIAN(data)->x_translate_point) - (x - AGS_CARTESIAN(data)->x_translate_point);
+  }
+
+  if(ret_y != NULL){
+    *ret_y = (AGS_CARTESIAN(data)->y_translate_point) - (y - AGS_CARTESIAN(data)->y_translate_point);
+  }
+}
+
+gdouble
+ags_cartesian_linear_x_small_scale_func(gdouble value,
+				      gpointer data)
+{
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    return(value);
+  }
+
+  return(AGS_CARTESIAN(data)->x_small_scale_factor * value);
+}
+
+gdouble
+ags_cartesian_linear_x_big_scale_func(gdouble value,
+				      gpointer data)
+{
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    return(value);
+  }
+
+  return(AGS_CARTESIAN(data)->x_big_scale_factor * value);
+}
+
+gdouble
+ags_cartesian_linear_y_small_scale_func(gdouble value,
+					gpointer data)
+{
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    return(value);
+  }
+
+  return(AGS_CARTESIAN(data)->y_small_scale_factor * value);
+}
+
+gdouble
+ags_cartesian_linear_y_big_scale_func(gdouble value,
+				      gpointer data)
+{
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    return(value);
+  }
+
+  return(AGS_CARTESIAN(data)->y_big_scale_factor * value);
+}
+
+gchar*
+ags_cartesian_linear_x_label_func(gdouble value,
+				  gpointer data)
+{
+  gchar *format;
+  gchar *str;
+  
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    str = g_strdup_printf("%f\0",
+			  value);
+    
+    return(str);
+  }
+
+  format = g_strdup_printf("%%.%df\0",
+			   AGS_CARTESIAN(data)->x_label_precision);
+
+  str = g_strdup_printf(format,
+			value);
+  g_free(format);
+
+  return(str);
+}
+
+gchar*
+ags_cartesian_linear_y_label_func(gdouble value,
+				  gpointer data)
+{
+  gchar *format;
+  gchar *str;
+  
+  if(data == NULL ||
+     !AGS_IS_CARTESIAN(data)){
+    str = g_strdup_printf("%f\0",
+			  value);
+    
+    return(str);
+  }
+
+  format = g_strdup_printf("%%.%df\0",
+			   AGS_CARTESIAN(data)->y_label_precision);
+
+  str = g_strdup_printf(format,
+			value);
+  g_free(format);
+
+  return(str);
+}
+
+void
+ags_cartesian_draw(AgsCartesian *cartesian)
+{
+  //TODO:JK: implement me
 }
 
 AgsCartesian*
