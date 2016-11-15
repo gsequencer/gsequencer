@@ -49,4 +49,3 @@ GType ags_cartesian_get_type(void);
 AgsCartesian* ags_cartesian_new();
 
 #endif /*__AGS_CARTESIAN_H__*/
-

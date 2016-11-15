@@ -1,3 +1,9 @@
+ags (0.7.103)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_soundcard_get_note_offset_absolute()
+	* TODO implemented ags_soundcard_change_note_offset() task
+
 ags (0.7.102)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
