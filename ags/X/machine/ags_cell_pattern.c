@@ -988,6 +988,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     /* led */
     list = gtk_container_get_children((GtkContainer *) cell_pattern->led);
+    active = NULL;
     
     for(i = 0; list != NULL; i++){
       if(i == active_led_new){

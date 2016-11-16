@@ -2767,13 +2767,13 @@ ags_thread_loop(void *ptr)
   running = g_atomic_int_get(&(thread->flags));
   
   /* get start computing time */
-  if(g_atomic_pointer_get(&(thread->parent)) == NULL){
 #ifndef AGS_USE_TIMER
+  if(g_atomic_pointer_get(&(thread->parent)) == NULL){
     thread->delay = 
       thread->tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
     clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
-#endif
   }
+#endif
   
   while((AGS_THREAD_RUNNING & running) != 0){
     /* start queue */

@@ -133,11 +133,11 @@ ags_navigation_rewind_callback(GtkWidget *widget,
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
-			    (-1.0 * AGS_NAVIGATION_REWIND_STEPS));
+			    (-1.0 * AGS_NAVIGATION_DEFAULT_TACT_STEP));
 }
 
 void
@@ -149,11 +149,11 @@ ags_navigation_prev_callback(GtkWidget *widget,
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
-			    (-1.0 * AGS_NAVIGATION_SEEK_STEPS));
+			    (-1.0 * AGS_NAVIGATION_REWIND_STEPS));
 }
 
 void
@@ -240,9 +240,10 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   navigation->start_tact = 0.0;
 
-  timestr = ags_navigation_tact_to_time_string(0.0,
-					       navigation->bpm->adjustment->value,
-					       ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
+  timestr = ags_time_get_uptime_from_offset(0.0,
+					    navigation->bpm->adjustment->value,
+					    ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard)),
+					    ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
   gtk_label_set_text(navigation->duration_time, timestr);
   
   g_free(timestr);
@@ -262,7 +263,7 @@ ags_navigation_next_callback(GtkWidget *widget,
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -278,7 +279,7 @@ ags_navigation_forward_callback(GtkWidget *widget,
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +

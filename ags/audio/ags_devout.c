@@ -2043,9 +2043,6 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
 		    AGS_DEVOUT_PLAY |
 		    AGS_DEVOUT_NONBLOCKING);
 
-  devout->note_offset = 0;
-  devout->note_offset_absolute = 0;
-
   memset(devout->buffer[0], 0, devout->pcm_channels * devout->buffer_size * word_size);
   memset(devout->buffer[1], 0, devout->pcm_channels * devout->buffer_size * word_size);
   memset(devout->buffer[2], 0, devout->pcm_channels * devout->buffer_size * word_size);
@@ -2638,9 +2635,6 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 		    AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY |
 		    AGS_DEVOUT_NONBLOCKING);
-
-  devout->note_offset = 0;
-  devout->note_offset_absolute = 0;
 
   memset(devout->buffer[0], 0, devout->pcm_channels * devout->buffer_size * word_size);
   memset(devout->buffer[1], 0, devout->pcm_channels * devout->buffer_size * word_size);

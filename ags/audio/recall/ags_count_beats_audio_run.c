@@ -746,7 +746,7 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
-  gdouble delay;
+
   guint seq_steps;
   
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(seekable);
@@ -754,9 +754,7 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   delay_audio = (AgsDelayAudio *) AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
 
   soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
-  
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  
+    
   if(delay_audio->sequencer_duration->port_value.ags_port_double != 0.0){
     seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   }else{
@@ -766,18 +764,18 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   if(move_forward){
     count_beats_audio_run->notation_counter += steps;
 
-    if(delay * count_beats_audio_run->sequencer_counter + seq_steps < (guint) delay_audio->sequencer_duration->port_value.ags_port_double){
-      count_beats_audio_run->sequencer_counter += seq_steps / delay;
+    if(count_beats_audio_run->sequencer_counter + seq_steps < (guint) delay_audio->sequencer_duration->port_value.ags_port_double){
+      count_beats_audio_run->sequencer_counter += seq_steps;
     }else{
-      count_beats_audio_run->sequencer_counter = (guint) (seq_steps / delay + count_beats_audio_run->sequencer_counter) % (guint) (delay_audio->sequencer_duration->port_value.ags_port_double / delay);
+      count_beats_audio_run->sequencer_counter = (guint) (seq_steps + count_beats_audio_run->sequencer_counter) % (guint) (delay_audio->sequencer_duration->port_value.ags_port_double);
     }
   }else{
     count_beats_audio_run->notation_counter -= steps;
 
-    if(delay * count_beats_audio_run->sequencer_counter - seq_steps >= 0){
-      count_beats_audio_run->sequencer_counter -= seq_steps / delay;
+    if(count_beats_audio_run->sequencer_counter - seq_steps >= 0){
+      count_beats_audio_run->sequencer_counter -= seq_steps;
     }else{
-      count_beats_audio_run->sequencer_counter = (guint) (delay_audio->sequencer_duration->port_value.ags_port_double / delay) - (seq_steps / delay - count_beats_audio_run->sequencer_counter);
+      count_beats_audio_run->sequencer_counter = (guint) (delay_audio->sequencer_duration->port_value.ags_port_double) - (seq_steps - count_beats_audio_run->sequencer_counter);
     }
   }
 }
@@ -942,7 +940,19 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
+      AgsDelayAudio *delay_audio;
+
+      guint note_offset;
+
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
+    
+      delay_audio = (AgsDelayAudio *) AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+
+      //NOTE:JK: not really thread-safe but might be initialized by a task
+      note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(recall->soundcard));
+      
+      AGS_COUNT_BEATS_AUDIO_RUN(recall)->sequencer_counter = note_offset % (guint) delay_audio->sequencer_duration->port_value.ags_port_double;
+      AGS_COUNT_BEATS_AUDIO_RUN(recall)->notation_counter = note_offset;
 
       i++;
     }
@@ -1013,8 +1023,9 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 
   count_beats_audio_run->notation_hide_ref_counter = 0;
   count_beats_audio_run->sequencer_hide_ref_counter = 0;
-
-  count_beats_audio_run->sequencer_counter = 0;
+  
+  //  count_beats_audio_run->sequencer_counter = 0;
+  //  count_beats_audio_run->notation_counter = 0;
 }
 
 void
