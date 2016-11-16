@@ -109,8 +109,9 @@ ags_cartesian_init(AgsCartesian *cartesian)
   cartesian->y_margin = AGS_CARTESIAN_DEFAULT_Y_MARGIN;
 
   /* line width */
-  cartesian->line_width = 1.0;
   cartesian->center = 0.5;  
+  cartesian->line_width = 1.0;
+  cartesian->point_radius = 1.2;
   
   /* step */
   cartesian->x_step_width = AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH;
@@ -321,6 +322,8 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 
   cairo_text_extents_t te_x_unit, te_y_unit;
 
+  GList *list;
+  
   unsigned char *data;
   
   gdouble x, y;
@@ -342,6 +345,9 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   auto void ags_cartesian_draw_y_small_scale();
   auto void ags_cartesian_draw_y_big_scale();
 
+  auto void ags_cartesian_draw_putpixel(int x, int y, unsigned long int pixel);
+  auto void ags_cartesian_draw_plot(AgsPlot *plot);
+  
   void ags_cartesian_draw_area(){
     static const double dashes[] = {
       2.0,
@@ -664,6 +670,116 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     }
   }
 
+  void ags_cartesian_draw_putpixel(int x, int y, unsigned long int pixel){
+    int bpp = stride / width;
+    /* Here p is the address to the pixel we want to set */
+    unsigned char *p = data + y * stride + x * bpp;
+
+    switch(bpp) {
+    case 1:
+      *p = pixel;
+      break;
+
+    case 2:
+      *(unsigned short int *)p = pixel;
+      break;
+
+    case 3:
+      p[0] = pixel & 0xff;
+      p[1] = (pixel >> 8) & 0xff;
+      p[2] = (pixel >> 16) & 0xff;
+      break;
+
+    case 4:
+      *(unsigned long int *)p = pixel;
+      break;
+    }
+  }
+  
+  void ags_cartesian_draw_plot(AgsPlot *plot){
+    guint i;
+
+    cairo_set_source_rgb(cr,
+			 cartesian_style->fg[0].red / white_gc,
+			 cartesian_style->fg[0].green / white_gc,
+			 cartesian_style->fg[0].blue / white_gc);
+
+    /* points */
+    for(i = 0; i < plot->n_points; i++){
+      if(plot->point[i] != NULL){
+	if(plot->point_color != NULL &&
+	   plot->point_color[i] != NULL){
+	  cairo_set_source_rgb(cr,
+			       plot->point_color[i][0],
+			       plot->point_color[i][1],
+			       plot->point_color[i][2]);
+	}
+
+	cairo_arc(cr,
+		  plot->point[i][0] - cartesian->point_radius,
+		  plot->point[i][1] - cartesian->point_radius,
+		  cartesian->point_radius,
+		  -1.0 * M_PI,
+		  1.0 * M_PI);
+
+	if(plot->join_points){
+	  cairo_line_to(cr,
+			plot->point[i][0], plot->point[i][1]);
+	}
+      }
+    }
+
+    cairo_stroke(cr);
+    
+    /* bitmaps */
+    for(i = 0; i < plot->n_bitmaps; i++){
+      if(plot->bitmap[i] != NULL){
+	unsigned long int pixel;
+	guint nth;
+	guint x, y;
+
+	if(plot->bitmap_color != NULL &&
+	   plot->bitmap_color[i] != NULL){
+	  pixel = ((255 << 16) * plot->bitmap_color[i][0] +
+		   (255 << 8) * plot->bitmap_color[i][1] +
+		   255 * plot->bitmap_color[i][0]);
+	}else{
+	  pixel = 0xffffff;
+	}
+	
+	for(y = 0, nth = 0; y < height; y++){
+	  for(x = 0; x < width; x++, nth++){
+	    if(((1 << (nth % 8)) & (plot->bitmap[i][(guint) floor(nth / 8.0)]))  != 0){
+	      ags_cartesian_draw_putpixel(x, y, pixel);
+	    }
+	  }
+	}
+      }
+    }
+
+    /* pixmaps */
+    for(i = 0; i < plot->n_pixmaps; i++){
+      if(plot->pixmap[i] != NULL){
+	guint nth;
+	guint x, y;
+	
+	for(y = 0, nth = 0; y < height; y++){
+	  for(x = 0; x < width; x++, nth++){
+	    if(plot->pixmap[i][nth] != NULL){
+	      unsigned long int pixel;
+
+	      pixel = ((255 << 16) * plot->pixmap[i][nth][0] +
+		       (255 << 8) * plot->pixmap[i][nth][1] +
+		       255 * plot->pixmap[i][nth][0]);
+	      
+	      ags_cartesian_draw_putpixel(x, y, pixel);
+	    }
+	  }
+	}
+      }
+    }
+  }
+  
   /* entry point */
   widget = GTK_WIDGET(cartesian);
   cartesian_style = gtk_widget_get_style(widget);
@@ -695,8 +811,14 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   memset(data, 0xaf, (4 * width * height * sizeof(unsigned char)));
   
   /* draw plot */
-  //TODO:JK: implement me
+  list = cartesian->plot;
 
+  while(list != NULL){
+    ags_cartesian_draw_plot(list->data);
+
+    list = list->next;
+  }
+  
   cairo_surface_flush(cartesian->surface);
   
   /* surface */
@@ -742,15 +864,77 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 }
 
 AgsPlot*
-ags_plot_alloc(guint n_points, guint n_bitmap, guint n_pixmap)
+ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps)
 {
   AgsPlot *plot;
 
+  guint i;
+
   plot = (AgsPlot *) malloc(sizeof(AgsPlot));
+
+  plot->fill_flags = AGS_PLOT_FILL_REPLACE;
+
+  /* points */
+  plot->n_points = n_points;
+  plot->join_points = FALSE;
+
+  if(n_points == 0){
+    plot->point = NULL;
+    plot->point_color = NULL;
+  }else{
+    plot->point = (gdouble **) malloc(n_points * sizeof(gdouble));
+    plot->point_color = (gdouble **) malloc(n_points * sizeof(gdouble));
+    plot->point_label = (gchar **) malloc((n_points + 1) * sizeof(gchar *));
+
+    for(i = 0; i < n_points; i++){
+      plot->point[i] = (gdouble *) malloc(2 * sizeof(gdouble));
+      plot->point[i][0] = 0.0;
+      plot->point[i][1] = 0.0;
+      
+      plot->point_color[i] = (gdouble *) malloc(3 * sizeof(gdouble));
+      plot->point_color[i][0] = 0.0;
+      plot->point_color[i][1] = 0.0;
+      plot->point_color[i][2] = 0.0;
+      
+      plot->point_label[i] = NULL;
+    }
+
+    plot->point_label[i] = NULL;
+  }
+
+  /* bitmaps */
+  plot->n_bitmaps = n_bitmaps;
   
-  //TODO:JK: implement me
+  if(n_bitmaps == 0){
+    plot->bitmap = NULL;
+    plot->bitmap_color = NULL;
+  }else{
+    plot->bitmap = (unsigned char **) malloc(n_bitmaps * sizeof(unsigned char *));
+    plot->bitmap_color = (gdouble **) malloc(n_bitmaps * sizeof(gdouble *));
 
+    for(i = 0; i < n_bitmaps; i++){
+      plot->bitmap[i] = NULL;
+      
+      plot->bitmap_color[i] = (gdouble *) malloc(3 * sizeof(gdouble));
+      plot->bitmap_color[i][0] = 1.0;
+      plot->bitmap_color[i][1] = 0.0;
+      plot->bitmap_color[i][2] = 0.0;
+    }
+  }
+  
+  /* pixmaps */
+  plot->n_pixmaps = n_pixmaps;
+  
+  if(n_pixmaps == 0){
+    plot->pixmap = NULL;
+  }else{
+    plot->pixmap = (gdouble ***) malloc(n_pixmaps * sizeof(gdouble **));
 
+    for(i = 0; i < n_pixmaps; i++){
+      plot->pixmap[i] = NULL;
+    }
+  }
+  
   return(plot);
 }
 
@@ -758,14 +942,26 @@ void
 ags_cartesian_add_plot(AgsCartesian *cartesian,
 		       AgsPlot *plot)
 {
-  //TODO:JK: implement me
+  if(cartesian != NULL ||
+     !AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  cartesian->plot = g_list_prepend(cartesian->plot,
+				   plot);
 }
 
 void
 ags_cartesian_remove_plot(AgsCartesian *cartesian,
 			  AgsPlot *plot)
 {
-  //TODO:JK: implement me
+  if(cartesian != NULL ||
+     !AGS_IS_CARTESIAN(cartesian)){
+    return;
+  }
+
+  cartesian->plot = g_list_remove(cartesian->plot,
+				  plot);
 }
 
 gdouble

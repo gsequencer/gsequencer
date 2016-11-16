@@ -85,8 +85,8 @@ typedef enum{
 }AgsCartesianFlags;
 
 typedef enum{
-  AGS_CARTESIAN_FILL_REPLACE    = 1,
-  AGS_CARTESIAN_FILL_ADDITIVE   = 1 <<  1,
+  AGS_PLOT_FILL_REPLACE    = 1,
+  //TODO:JK: implement me  AGS_PLOT_FILL_ADDITIVE   = 1 <<  1,
 }AgsPlotFillFlags;
   
 struct _AgsCartesian
@@ -100,6 +100,7 @@ struct _AgsCartesian
 
   gdouble center;
   gdouble line_width;
+  gdouble point_radius;
   
   gdouble x_step_width;
   gdouble y_step_height;
@@ -200,12 +201,12 @@ struct _AgsPlot
 
   guint n_points;
   gboolean join_points;
-  gdouble ***point;
+  gdouble **point;
   gdouble **point_color;
   gchar **point_label;
 
   guint n_bitmaps;
-  unsigned char ***bitmap;
+  unsigned char **bitmap;
   gdouble **bitmap_color;
 
   guint n_pixmaps;
@@ -214,15 +215,8 @@ struct _AgsPlot
 
 GType ags_cartesian_get_type(void);
 
-/* low-level pixel functions */
-void ags_cartesian_put_pixel(AgsCartesian *cartesian,
-			     guint x, guint y,
-			     unsigned long pixel);
-unsigned long ags_cartesian_get_pixel(AgsCartesian *cartesian,
-				      guint x, guint y);
-
 /* plot data */
-AgsPlot* ags_plot_alloc(guint n_points, guint n_bitmap, guint n_pixmap);
+AgsPlot* ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps);
 
 void ags_cartesian_add_plot(AgsCartesian *cartesian,
 			    AgsPlot *plot);
