@@ -915,7 +915,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     }
   }
 
-  /* label */
+  /* x and y label */
   cairo_select_font_face(cr, "Georgia\0",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
   
@@ -928,7 +928,35 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   if((AGS_CARTESIAN_Y_LABEL & (cartesian->flags)) != 0){
     ags_cartesian_draw_y_label();
   }
-  
+
+  /* x unit */
+  cairo_text_extents(cr,
+		     cartesian->x_unit,
+		     &te_x_unit);
+
+  cairo_move_to(cr,
+		cartesian->x_margin - te_x_unit.width - 3.0,
+		cartesian->y_margin + height + cartesian->y_start);
+      
+  cairo_show_text(cr,
+		  cartesian->x_unit);
+
+  cairo_stroke(cr);
+
+  /* y unit */
+  cairo_text_extents(cr,
+		     cartesian->y_unit,
+		     &te_y_unit);
+
+  cairo_move_to(cr,
+		cartesian->x_margin - cartesian->x_start,
+		cartesian->y_margin + height + te_y_unit.height + 3.0);
+      
+  cairo_show_text(cr,
+		  cartesian->y_unit);
+
+  cairo_stroke(cr);
+
   /* pop group */
   cairo_pop_group_to_source(cr);
   
