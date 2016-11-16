@@ -109,9 +109,12 @@ ags_cartesian_init(AgsCartesian *cartesian)
   cartesian->y_margin = AGS_CARTESIAN_DEFAULT_Y_MARGIN;
 
   /* line width */
-  cartesian->center = 0.5;  
+  cartesian->center = 0.5;
+
   cartesian->line_width = 1.0;
   cartesian->point_radius = 1.2;
+
+  cartesian->font_size = 8.0;
   
   /* step */
   cartesian->x_step_width = AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH;
@@ -134,8 +137,11 @@ ags_cartesian_init(AgsCartesian *cartesian)
   cartesian->y_unit_size = 12.0;
 
   /* label step width */
-  cartesian->x_label_step_width = AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH;
-  cartesian->y_label_step_height = AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT;
+  cartesian->x_label_start = AGS_CARTESIAN_DEFAULT_X_LABEL_START;
+  cartesian->x_label_step_width = AGS_CARTESIAN_DEFAULT_X_LABEL_STEP_WIDTH;
+  
+  cartesian->y_label_start = AGS_CARTESIAN_DEFAULT_Y_LABEL_START;
+  cartesian->y_label_step_height = AGS_CARTESIAN_DEFAULT_Y_LABEL_STEP_HEIGHT;
 
   /* region alignment */
   cartesian->x_step = AGS_CARTESIAN_DEFAULT_X_STEP;
@@ -192,12 +198,12 @@ ags_cartesian_init(AgsCartesian *cartesian)
   cartesian->y_big_scale_factor = 5.0;
 
   cartesian->x_label_data = cartesian;
-  cartesian->x_label_factor = 1.0;
-  cartesian->x_label_precision = 0.0;
+  cartesian->x_label_factor = 5.0;
+  cartesian->x_label_precision = 3.0;
   
   cartesian->y_label_data = cartesian;
-  cartesian->y_label_factor = 1.0;
-  cartesian->y_label_precision = 0.0;
+  cartesian->y_label_factor = 5.0;
+  cartesian->y_label_precision = 3.0;
 
   /* plot */
   cartesian->surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
@@ -339,12 +345,15 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 
   auto void ags_cartesian_draw_area();
 
+  auto void ags_cartesian_draw_x_label();
+  auto void ags_cartesian_draw_y_label();
+  
   auto void ags_cartesian_draw_x_small_scale();
   auto void ags_cartesian_draw_x_big_scale();
 
   auto void ags_cartesian_draw_y_small_scale();
   auto void ags_cartesian_draw_y_big_scale();
-
+  
   auto void ags_cartesian_draw_putpixel(int x, int y, unsigned long int pixel);
   auto void ags_cartesian_draw_plot(AgsPlot *plot);
   
@@ -492,7 +501,57 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       y += cartesian->y_step_height;
     }
   }
-  
+
+  void ags_cartesian_draw_x_label(){
+    cairo_text_extents_t te_x_label;
+
+    guint i;
+
+    for(i = 0; i < width / cartesian->x_label_step_width; i++){
+      if(cartesian->x_label[i] == NULL){
+	break;
+      }
+      
+      cairo_text_extents(cr,
+			 cartesian->x_label[i],
+			 &te_x_label);
+
+      cairo_move_to(cr,
+		    cartesian->x_margin + cartesian->x_label_start + (i * cartesian->x_label_step_width) + cartesian->font_size / 3.0,
+		    cartesian->y_margin + height + cartesian->y_start + cartesian->font_size + te_x_label.height);
+      
+      cairo_show_text(cr,
+		      cartesian->x_label[i]);
+    }
+
+    cairo_stroke(cr);
+  }
+
+  void ags_cartesian_draw_y_label(){
+    cairo_text_extents_t te_y_label;
+
+    guint i;
+
+    for(i = 0; i < height / cartesian->y_label_step_height; i++){
+      if(cartesian->y_label[i] == NULL){
+	break;
+      }
+
+      cairo_text_extents(cr,
+			 cartesian->y_label[i],
+			 &te_y_label);
+
+      cairo_move_to(cr,
+		    cartesian->x_margin - cartesian->x_start + cartesian->font_size / 2.0,
+		    cartesian->y_margin + height - cartesian->y_label_start - (i * cartesian->y_label_step_height) - cartesian->font_size / 3.0);
+      
+      cairo_show_text(cr,
+		      cartesian->y_label[i]);
+    }
+
+    cairo_stroke(cr);
+  }
+    
   void ags_cartesian_draw_x_small_scale(){
     /*  line width */
     cairo_set_line_width(cr, cartesian->line_width);
@@ -828,7 +887,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   cairo_surface_mark_dirty(cartesian->surface);
 
   cairo_paint(cr);
-  
+
   /* push group */
   cairo_push_group(cr);
 
@@ -854,6 +913,20 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       ags_cartesian_draw_x_small_scale();
       ags_cartesian_draw_x_big_scale();
     }
+  }
+
+  /* label */
+  cairo_select_font_face(cr, "Georgia\0",
+			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  
+  cairo_set_font_size(cr, (gdouble) cartesian->font_size);
+  
+  if((AGS_CARTESIAN_X_LABEL & (cartesian->flags)) != 0){
+    ags_cartesian_draw_x_label();
+  }
+  
+  if((AGS_CARTESIAN_Y_LABEL & (cartesian->flags)) != 0){
+    ags_cartesian_draw_y_label();
   }
   
   /* pop group */
@@ -1121,7 +1194,7 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
   }
   
   if(do_x_label){
-    i_stop = (guint) ceil((1.0 / cartesian->x_step_width) *
+    i_stop = (guint) ceil((1.0 / cartesian->x_label_step_width) *
 			  (cartesian->x_end - cartesian->x_start));
       
     if(cartesian->x_label == NULL){
@@ -1161,7 +1234,7 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
       cartesian->x_label[i] = NULL;
     }
   }else{
-    i_stop = (guint) ceil((1.0 / cartesian->y_step_height) *
+    i_stop = (guint) ceil((1.0 / cartesian->y_label_step_height) *
 			  (cartesian->y_end - cartesian->y_start));
       
     if(cartesian->y_label == NULL){
@@ -1216,20 +1289,26 @@ ags_cartesian_fill_label(AgsCartesian *cartesian,
   }
 
   if(do_x_label){
-    i_stop = g_strv_length(cartesian->x_label);
+    i_stop = (guint) ceil((1.0 / cartesian->x_label_step_width) *
+			  (cartesian->x_end - cartesian->x_start));
 
     for(i = 0; i < i_stop; i++){
       /* fill x label */
-      cartesian->x_label = cartesian->x_label_func(cartesian->x_start + ((gdouble) i * cartesian->x_step),
-						   cartesian->x_label_data);
+      cartesian->x_label[i] = cartesian->x_label_func((cartesian->x_label_factor *
+						       (gdouble) i + (cartesian->x_start / cartesian->x_step_width) +
+						       (cartesian->x_label_start / cartesian->x_step_width)),
+						      cartesian->x_label_data);
     }
   }else{
-    i_stop = g_strv_length(cartesian->y_label);
+    i_stop = (guint) ceil((1.0 / cartesian->y_label_step_height) *
+			  (cartesian->y_end - cartesian->y_start));
 
     for(i = 0; i < i_stop; i++){
       /* fill y label */
-      cartesian->y_label = cartesian->y_label_func(cartesian->y_start + ((gdouble) i * cartesian->y_step),
-						   cartesian->y_label_data);
+      cartesian->y_label[i] = cartesian->y_label_func((cartesian->y_label_factor *
+						       (gdouble) i + (cartesian->y_start / cartesian->y_step_height) +
+						       (cartesian->y_label_start / cartesian->y_step_height)),
+						      cartesian->y_label_data);
     }
   }
 }

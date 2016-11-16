@@ -43,6 +43,12 @@
 #define AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH (10.0)
 #define AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT (10.0)
 
+#define AGS_CARTESIAN_DEFAULT_X_LABEL_START (10.0)
+#define AGS_CARTESIAN_DEFAULT_X_LABEL_STEP_WIDTH (50.0)
+
+#define AGS_CARTESIAN_DEFAULT_Y_LABEL_START (20.0)
+#define AGS_CARTESIAN_DEFAULT_Y_LABEL_STEP_HEIGHT (50.0)
+
 #define AGS_CARTESIAN_DEFAULT_X_STEP (1.0)
 #define AGS_CARTESIAN_DEFAULT_Y_STEP (1.0)
 
@@ -99,9 +105,12 @@ struct _AgsCartesian
   gdouble y_margin;
 
   gdouble center;
+
   gdouble line_width;
   gdouble point_radius;
-  
+
+  gdouble font_size;
+
   gdouble x_step_width;
   gdouble y_step_height;
 
@@ -116,7 +125,10 @@ struct _AgsCartesian
   gdouble y_unit_y0;
   gdouble y_unit_size;
   
+  gdouble x_label_start;
   gdouble x_label_step_width;
+  
+  gdouble y_label_start;
   gdouble y_label_step_height;
   
   gdouble x_step;
