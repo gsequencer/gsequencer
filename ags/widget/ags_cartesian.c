@@ -368,9 +368,9 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       
     for(x = cartesian->x_start; ; ){
       scale_point = cartesian->x_small_scale_func(x,
-						cartesian->x_scale_data);
+						  cartesian->x_scale_data);
 
-      if(scale_point <= factor * cartesian->x_start){
+      if(scale_point < factor * cartesian->x_start){
 	x += cartesian->x_step_width;
 
 	continue;
@@ -380,10 +380,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 	/* draw scale step */
 	cairo_move_to(cr,
 		      x_offset + scale_point,
-		      y_offset - height);
+		      y_offset - cartesian->y_start - height);
 	cairo_line_to(cr,
 		      x_offset + scale_point,
-		      y_offset);
+		      y_offset - cartesian->y_start);
 	cairo_stroke(cr);
       }else{
 	break;
@@ -397,9 +397,9 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       
     for(y = cartesian->y_start; ; ){
       scale_point = cartesian->y_small_scale_func(y,
-						cartesian->y_scale_data);
+						  cartesian->y_scale_data);
 
-      if(scale_point <= factor * cartesian->y_start){
+      if(scale_point < factor * cartesian->y_start){
 	y += cartesian->y_step_height;
 
 	continue;
@@ -408,10 +408,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
 	/* draw scale step */
 	cairo_move_to(cr,
-		      x_offset,
+		      x_offset + cartesian->x_start,
 		      y_offset - scale_point);
 	cairo_line_to(cr,
-		      x_offset + width,
+		      x_offset + cartesian->x_start + width,
 		      y_offset - scale_point);
 	cairo_stroke(cr);
       }else{
@@ -434,7 +434,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     for(x = cartesian->x_start; ; ){
       scale_point = cartesian->x_big_scale_func(x,
 						cartesian->x_scale_data);
-
+      
       if(scale_point <= factor * cartesian->x_start){
 	x += cartesian->x_step_width;
 
@@ -445,10 +445,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 	/* draw scale step */
 	cairo_move_to(cr,
 		      x_offset + scale_point,
-		      y_offset - height);
+		      y_offset - cartesian->y_start - height);
 	cairo_line_to(cr,
 		      x_offset + scale_point,
-		      y_offset);
+		      y_offset - cartesian->y_start);
 	cairo_stroke(cr);
       }else{
 	break;
@@ -463,8 +463,8 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     for(y = cartesian->y_start; ; ){
       scale_point = cartesian->y_big_scale_func(y,
 						cartesian->y_scale_data);
-
-      if(scale_point <= factor * cartesian->y_start){
+      
+      if(scale_point < factor * cartesian->y_start){
 	y += cartesian->y_step_height;
 
 	continue;
@@ -473,10 +473,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       if(scale_point < factor * cartesian->y_end + cartesian->y_scale_step_height){
 	/* draw scale step */
 	cairo_move_to(cr,
-		      x_offset,
+		      x_offset + cartesian->x_start,
 		      y_offset - scale_point);
 	cairo_line_to(cr,
-		      x_offset + width,
+		      x_offset + cartesian->x_start + width,
 		      y_offset - scale_point);
 	cairo_stroke(cr);
       }else{
@@ -499,11 +499,11 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     
     /* draw line */
     cairo_move_to(cr,
-		  x_offset,
+		  x_offset + cartesian->x_start,
 		  y_offset);
     cairo_line_to(cr,
-		  x_offset,
-		  y_offset - height);
+		  x_offset + cartesian->x_start + width,
+		  y_offset);
     cairo_stroke(cr);
     
     /* draw small scale steps */
@@ -513,7 +513,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       scale_point = cartesian->x_small_scale_func(x,
 						  cartesian->x_scale_data);
 
-      if(scale_point <= factor * cartesian->x_start){
+      if(scale_point < factor * cartesian->x_start){
 	x += cartesian->x_step_width;
 
 	continue;
@@ -546,15 +546,6 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 			 cartesian_style->fg[0].green / white_gc,
 			 cartesian_style->fg[0].blue / white_gc);    
 
-    /* draw line */
-    cairo_move_to(cr,
-		  x_offset,
-		  y_offset);
-    cairo_line_to(cr,
-		  x_offset,
-		  y_offset - height);
-    cairo_stroke(cr);
-
     /* draw big scale steps */
     factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
       
@@ -562,7 +553,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       scale_point = cartesian->x_big_scale_func(x,
 						cartesian->x_scale_data);
 
-      if(scale_point <= factor * cartesian->x_start){
+      if(scale_point < factor * cartesian->x_start){
 	x += cartesian->x_step_width;
 
 	continue;
@@ -597,10 +588,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
     /* draw line */
     cairo_move_to(cr,
 		  x_offset,
-		  y_offset);
+		  y_offset - cartesian->y_start);
     cairo_line_to(cr,
-		  x_offset + width,
-		  y_offset);
+		  x_offset,
+		  y_offset - cartesian->y_start - height);
     cairo_stroke(cr);
 
     /* draw small scale steps */
@@ -610,7 +601,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       scale_point = cartesian->y_small_scale_func(y,
 						  cartesian->y_scale_data);
 
-      if(scale_point <= factor * cartesian->y_start){
+      if(scale_point < factor * cartesian->y_start){
 	y += cartesian->y_step_height;
 
 	continue;
@@ -643,15 +634,6 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 			 cartesian_style->fg[0].green / white_gc,
 			 cartesian_style->fg[0].blue / white_gc);    
 
-    /* draw line */
-    cairo_move_to(cr,
-		  x_offset,
-		  y_offset);
-    cairo_line_to(cr,
-		  x_offset + width,
-		  y_offset);
-    cairo_stroke(cr);
-
     /* draw big scale steps */
     factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
       
@@ -659,7 +641,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
       scale_point = cartesian->y_big_scale_func(y,
 						cartesian->y_scale_data);
 
-      if(scale_point <= factor * cartesian->y_start){
+      if(scale_point < factor * cartesian->y_start){
 	y += cartesian->y_step_height;
 
 	continue;
@@ -703,9 +685,9 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   width = (cartesian->x_end - cartesian->x_start);
   height = (cartesian->y_end - cartesian->y_start);
 
-  x_offset = cartesian->x_margin + (-1.0 * cartesian->x_start) - cartesian->center;
-  y_offset = cartesian->y_margin + height + (-1.0 * cartesian->y_start) - cartesian->center;
-
+  x_offset = cartesian->x_margin - cartesian->x_start - cartesian->center;
+  y_offset = cartesian->y_margin + cartesian->y_start + height + cartesian->center;
+  
   /* clear surface to white */
   data = cairo_image_surface_get_data(cartesian->surface);
   stride = cairo_image_surface_get_stride(cartesian->surface);
@@ -720,7 +702,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   /* surface */
   cairo_set_source_surface(cr,
 			   cartesian->surface,
-  			   x_offset + cartesian->center, y_offset - cartesian->center - height);
+  			   cartesian->x_margin, cartesian->y_margin);
   cairo_surface_mark_dirty(cartesian->surface);
 
   cairo_paint(cr);
@@ -736,8 +718,8 @@ ags_cartesian_draw(AgsCartesian *cartesian)
        (cartesian->x_start == 0.0) ||
        (cartesian->x_start < 0.0 &&
 	cartesian->x_end > 0.0)){
-      ags_cartesian_draw_x_small_scale();
-      ags_cartesian_draw_x_big_scale();
+      ags_cartesian_draw_y_small_scale();
+      ags_cartesian_draw_y_big_scale();
     }
   }
 
@@ -747,8 +729,8 @@ ags_cartesian_draw(AgsCartesian *cartesian)
        (cartesian->y_start == 0.0) ||
        (cartesian->y_start < 0.0 &&
 	cartesian->y_end > 0.0)){
-      ags_cartesian_draw_y_small_scale();
-      ags_cartesian_draw_y_big_scale();
+      ags_cartesian_draw_x_small_scale();
+      ags_cartesian_draw_x_big_scale();
     }
   }
   
@@ -834,7 +816,7 @@ ags_cartesian_linear_translate_func(gdouble x,
 
 gdouble
 ags_cartesian_linear_x_small_scale_func(gdouble value,
-				      gpointer data)
+					gpointer data)
 {
   if(data == NULL ||
      !AGS_IS_CARTESIAN(data)){
