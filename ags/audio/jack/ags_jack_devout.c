@@ -1578,9 +1578,6 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 			 AGS_JACK_DEVOUT_PLAY |
 			 AGS_JACK_DEVOUT_NONBLOCKING);
 
-  jack_devout->note_offset = 0;
-  jack_devout->note_offset_absolute = 0;
-
   memset(jack_devout->buffer[0], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   memset(jack_devout->buffer[1], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
   memset(jack_devout->buffer[2], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
@@ -1817,6 +1814,9 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
 
   /*  */
   pthread_mutex_lock(mutex);
+
+  jack_devout->note_offset = 0;
+  jack_devout->note_offset_absolute = 0;
 
   switch(jack_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
