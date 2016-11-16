@@ -34,6 +34,13 @@
 #define AGS_IS_CARTESIAN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CARTESIAN))
 #define AGS_CARTESIAN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CARTESIAN, AgsCartesianClass))
 
+#define AGS_PLOT(ptr) ((AgsPlot *)(ptr))
+
+#define AGS_CARTESIAN_STEP_CONVERSION_FUNC(current, is_abscissae, data) ((AgsCartesianStepConversionFunc)(current, is_abscissae, data))
+#define AGS_CARTESIAN_TRANSLATE_FUNCT(x, y, ret_x, ret_y, data) ((AgsCartesianTranslateFunc)(x, y, ret_x, ret_y, data))
+#define AGS_CARTESIAN_SCALE_FUNC(value, data) ((AgsCartesianScaleFunc)(value, data))
+#define AGS_CARTESIAN_LABEL_FUNC(value, data) ((AgsCartesianLabelFunc)(value, data))
+
 #define AGS_CARTESIAN_DEFAULT_X_MARGIN (24.0)
 #define AGS_CARTESIAN_DEFAULT_Y_MARGIN (24.0)
 
@@ -63,15 +70,15 @@ typedef struct _AgsCartesianClass AgsCartesianClass;
 
 typedef struct _AgsPlot AgsPlot;
 
-typedef gdouble (*AgsCartesianStepConversion)(gdouble current,
-					      gboolean is_abscissae,
-					      gpointer data);
+typedef gdouble (*AgsCartesianStepConversionFunc)(gdouble current,
+						  gboolean is_abscissae,
+						  gpointer data);
 
-typedef void (*AgsCartesianTranslate)(gdouble x,
-				      gdouble y,
-				      gdouble *ret_x,
-				      gdouble *ret_y,
-				      gpointer data);
+typedef void (*AgsCartesianTranslateFunc)(gdouble x,
+					  gdouble y,
+					  gdouble *ret_x,
+					  gdouble *ret_y,
+					  gpointer data);
 
 typedef gdouble (*AgsCartesianScaleFunc)(gdouble value,
 					 gpointer data);

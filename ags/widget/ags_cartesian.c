@@ -37,6 +37,61 @@ gboolean ags_cartesian_expose(GtkWidget *widget,
 
 void ags_cartesian_draw(AgsCartesian *cartesian);
 
+enum{
+  PROP_0,
+  PROP_X_MARGIN,
+  PROP_Y_MARGIN,
+  PROP_CENTER,
+  PROP_LINE_WIDTH,
+  PROP_POINT_RADIUS,
+  PROP_FONT_SIZE,
+  PROP_X_STEP_WIDTH,
+  PROP_Y_STEP_HEIGHT,
+  PROP_X_SCALE_STEP_WIDTH,
+  PROP_Y_SCALE_STEP_HEIGHT,
+  PROP_X_UNIT_X0,
+  PROP_X_UNIT_Y0,
+  PROP_X_UNIT_SIZE,
+  PROP_Y_UNIT_X0,
+  PROP_Y_UNIT_Y0,
+  PROP_Y_UNIT_SIZE,
+  PROP_X_LABEL_START,
+  PROP_X_LABEL_STEP_WIDTH,
+  PROP_Y_LABEL_START,
+  PROP_Y_LABEL_STEP_WIDTH,
+  PROP_X_STEP,
+  PROP_Y_STEP,
+  PROP_X_START,
+  PROP_X_END,
+  PROP_Y_START,
+  PROP_Y_END,
+  PROP_X_UNIT,
+  PROP_Y_UNIT,
+  PROP_X_LABEL,
+  PROP_Y_LABEL,
+  PROP_X_STEP_DATA,
+  PROP_X_STEP_FACTOR,
+  PROP_Y_STEP_DATA,
+  PROP_Y_STEP_FACTOR,
+  PROP_TRANSLATE_DATA,
+  PROP_X_TRANSLATE_POINT,
+  PROP_Y_TRANSLATE_POINT,
+  PROP_X_SCALE_DATA,
+  PROP_X_SMALL_SCALE_FACTOR,
+  PROP_X_BIG_SCALE_FACTOR,
+  PROP_Y_SCALE_DATA,
+  PROP_Y_SMALL_SCALE_FACTOR,
+  PROP_Y_BIG_SCALE_FACTOR,
+  PROP_X_LABEL_DATA,
+  PROP_X_LABEL_FACTOR,
+  PROP_X_LABEL_PRECISISON,
+  PROP_Y_LABEL_DATA,
+  PROP_Y_LABEL_FACTOR,
+  PROP_Y_LABEL_PRECISISON,
+  PROP_SURFACE,
+  PROP_PLOT,
+};
+
 static gpointer ags_cartesian_parent_class = NULL;
 
 GType
@@ -930,33 +985,37 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   }
 
   /* x unit */
-  cairo_text_extents(cr,
-		     cartesian->x_unit,
-		     &te_x_unit);
+  if((AGS_CARTESIAN_X_UNIT & (cartesian->flags)) != 0){
+    cairo_text_extents(cr,
+		       cartesian->x_unit,
+		       &te_x_unit);
 
-  cairo_move_to(cr,
-		cartesian->x_margin - te_x_unit.width - 3.0,
-		cartesian->y_margin + height + cartesian->y_start);
+    cairo_move_to(cr,
+		  cartesian->x_margin - te_x_unit.width - 3.0,
+		  cartesian->y_margin + height + cartesian->y_start);
       
-  cairo_show_text(cr,
-		  cartesian->x_unit);
+    cairo_show_text(cr,
+		    cartesian->x_unit);
 
-  cairo_stroke(cr);
-
+    cairo_stroke(cr);
+  }
+  
   /* y unit */
-  cairo_text_extents(cr,
-		     cartesian->y_unit,
-		     &te_y_unit);
+  if((AGS_CARTESIAN_Y_UNIT & (cartesian->flags)) != 0){
+    cairo_text_extents(cr,
+		       cartesian->y_unit,
+		       &te_y_unit);
 
-  cairo_move_to(cr,
-		cartesian->x_margin - cartesian->x_start,
-		cartesian->y_margin + height + te_y_unit.height + 3.0);
+    cairo_move_to(cr,
+		  cartesian->x_margin - cartesian->x_start,
+		  cartesian->y_margin + height + te_y_unit.height + 3.0);
       
-  cairo_show_text(cr,
-		  cartesian->y_unit);
+    cairo_show_text(cr,
+		    cartesian->y_unit);
 
-  cairo_stroke(cr);
-
+    cairo_stroke(cr);
+  }
+  
   /* pop group */
   cairo_pop_group_to_source(cr);
   
