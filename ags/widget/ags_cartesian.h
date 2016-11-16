@@ -22,6 +22,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <cairo.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_CARTESIAN                (ags_cartesian_get_type())
@@ -52,6 +55,8 @@
 typedef struct _AgsCartesian AgsCartesian;
 typedef struct _AgsCartesianClass AgsCartesianClass;
 
+typedef struct _AgsPlot AgsPlot;
+
 typedef gdouble (*AgsCartesianStepConversion)(gdouble current,
 					      gboolean is_abscissae,
 					      gpointer data);
@@ -79,6 +84,11 @@ typedef enum{
   AGS_CARTESIAN_Y_LABEL    =  1 << 7,
 }AgsCartesianFlags;
 
+typedef enum{
+  AGS_CARTESIAN_FILL_REPLACE    = 1,
+  AGS_CARTESIAN_FILL_ADDITIVE   = 1 <<  1,
+}AgsPlotFillFlags;
+  
 struct _AgsCartesian
 {
   GtkWidget widget;
@@ -173,6 +183,10 @@ struct _AgsCartesian
   gpointer y_label_data;
   gdouble y_label_factor;
   gdouble y_label_precision;
+
+  cairo_surface_t *surface;
+  
+  GList *plot;
 };
 
 struct _AgsCartesianClass
@@ -180,7 +194,40 @@ struct _AgsCartesianClass
   GtkWidgetClass widget;
 };
 
+struct _AgsPlot
+{			
+  guint fill_flags;
+
+  guint n_points;
+  gboolean join_points;
+  gdouble ***point;
+  gdouble **point_color;
+  gchar **point_label;
+
+  guint n_bitmaps;
+  unsigned char ***bitmap;
+  gdouble **bitmap_color;
+
+  guint n_pixmaps;
+  gdouble ***pixmap;
+};
+
 GType ags_cartesian_get_type(void);
+
+/* low-level pixel functions */
+void ags_cartesian_put_pixel(AgsCartesian *cartesian,
+			     guint x, guint y,
+			     unsigned long pixel);
+unsigned long ags_cartesian_get_pixel(AgsCartesian *cartesian,
+				      guint x, guint y);
+
+/* plot data */
+AgsPlot* ags_plot_alloc(guint n_points, guint n_bitmap, guint n_pixmap);
+
+void ags_cartesian_add_plot(AgsCartesian *cartesian,
+			    AgsPlot *plot);
+void ags_cartesian_remove_plot(AgsCartesian *cartesian,
+			       AgsPlot *plot);
 
 /* predefined linear system */
 gdouble ags_cartesian_linear_step_conversion_func(gdouble current,
