@@ -31,23 +31,23 @@
 #define AGS_IS_CARTESIAN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CARTESIAN))
 #define AGS_CARTESIAN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CARTESIAN, AgsCartesianClass))
 
+#define AGS_CARTESIAN_DEFAULT_X_MARGIN (24.0)
+#define AGS_CARTESIAN_DEFAULT_Y_MARGIN (24.0)
+
 #define AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH (10.0)
 #define AGS_CARTESIAN_DEFAULT_Y_STEP_HEIGHT (10.0)
 
 #define AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH (10.0)
 #define AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT (10.0)
 
-#define AGS_CARTESIAN_DEFAULT_X_MARGIN (24.0)
-#define AGS_CARTESIAN_DEFAULT_Y_MARGIN (24.0)
-
 #define AGS_CARTESIAN_DEFAULT_X_STEP (1.0)
 #define AGS_CARTESIAN_DEFAULT_Y_STEP (1.0)
 
-#define AGS_CARTESIAN_DEFAULT_X_START (0.0)
-#define AGS_CARTESIAN_DEFAULT_X_END (100.0)
+#define AGS_CARTESIAN_DEFAULT_X_START (-10.0)
+#define AGS_CARTESIAN_DEFAULT_X_END (199.0)
 
-#define AGS_CARTESIAN_DEFAULT_Y_START (0.0)
-#define AGS_CARTESIAN_DEFAULT_Y_END (100.0)
+#define AGS_CARTESIAN_DEFAULT_Y_START (-10.0)
+#define AGS_CARTESIAN_DEFAULT_Y_END (99.0)
 
 typedef struct _AgsCartesian AgsCartesian;
 typedef struct _AgsCartesianClass AgsCartesianClass;
@@ -84,7 +84,13 @@ struct _AgsCartesian
   GtkWidget widget;
 
   guint flags;
+  
+  gdouble x_margin;
+  gdouble y_margin;
 
+  gdouble center;
+  gdouble line_width;
+  
   gdouble x_step_width;
   gdouble y_step_height;
 
@@ -176,6 +182,7 @@ struct _AgsCartesianClass
 
 GType ags_cartesian_get_type(void);
 
+/* predefined linear system */
 gdouble ags_cartesian_linear_step_conversion_func(gdouble current,
 						  gboolean is_abscissae,
 						  gpointer data);
@@ -201,6 +208,7 @@ gchar* ags_cartesian_linear_x_label_func(gdouble value,
 gchar* ags_cartesian_linear_y_label_func(gdouble value,
 					 gpointer data);
 
+/* label functions */
 void ags_cartesian_reallocate_label(AgsCartesian *cartesian,
 				    gboolean do_x_label);
 void ags_cartesian_fill_label(AgsCartesian *cartesian,

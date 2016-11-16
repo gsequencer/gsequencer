@@ -24,6 +24,16 @@
 
 void ags_cartesian_class_init(AgsCartesianClass *cartesian);
 void ags_cartesian_init(AgsCartesian *cartesian);
+void ags_cartesian_show();
+
+void ags_cartesian_map(GtkWidget *widget);
+void ags_cartesian_realize(GtkWidget *widget);
+void ags_cartesian_size_request(GtkWidget *widget,
+				GtkRequisition   *requisition);
+void ags_cartesian_size_allocate(GtkWidget *widget,
+				 GtkAllocation *allocation);
+gboolean ags_cartesian_expose(GtkWidget *widget,
+			      GdkEventExpose *event);
 
 void ags_cartesian_draw(AgsCartesian *cartesian);
 
@@ -61,6 +71,18 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   GtkWidgetClass *widget;
 
   ags_cartesian_parent_class = g_type_class_peek_parent(cartesian);
+
+  /* GObjectClass */
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) cartesian;
+
+  //  widget->map = ags_cartesian_map;
+  widget->realize = ags_cartesian_realize;
+  widget->expose_event = ags_cartesian_expose;
+  widget->size_request = ags_cartesian_size_request;
+  widget->size_allocate = ags_cartesian_size_allocate;
+  widget->show = ags_cartesian_show;
 }
 
 void
@@ -82,13 +104,21 @@ ags_cartesian_init(AgsCartesian *cartesian)
 		      AGS_CARTESIAN_X_LABEL |
 		      AGS_CARTESIAN_Y_LABEL);
 
+  /* margin */
+  cartesian->x_margin = AGS_CARTESIAN_DEFAULT_X_MARGIN;
+  cartesian->y_margin = AGS_CARTESIAN_DEFAULT_Y_MARGIN;
+
+  /* line width */
+  cartesian->line_width = 1.0;
+  cartesian->center = 0.5;  
+  
   /* step */
   cartesian->x_step_width = AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH;
   cartesian->y_step_height = AGS_CARTESIAN_DEFAULT_Y_STEP_HEIGHT;
 
   /* scale step */
-  cartesian->x_step_width = AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH;
-  cartesian->y_step_height = AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT;
+  cartesian->x_scale_step_width = AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH;
+  cartesian->y_scale_step_height = AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT;
 
   /* x unit position and font size */
   cartesian->x_unit_x0 = (AGS_CARTESIAN_DEFAULT_X_END + AGS_CARTESIAN_DEFAULT_X_MARGIN) - 12.0;
@@ -107,6 +137,9 @@ ags_cartesian_init(AgsCartesian *cartesian)
   cartesian->y_label_step_height = AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT;
 
   /* region alignment */
+  cartesian->x_step = AGS_CARTESIAN_DEFAULT_X_STEP;
+  cartesian->y_step = AGS_CARTESIAN_DEFAULT_Y_STEP;
+
   cartesian->x_start = AGS_CARTESIAN_DEFAULT_X_START;
   cartesian->x_end = AGS_CARTESIAN_DEFAULT_X_END;
   
@@ -180,9 +213,251 @@ ags_cartesian_init(AgsCartesian *cartesian)
 }
 
 void
+ags_cartesian_map(GtkWidget *widget)
+{
+  if(gtk_widget_get_realized (widget) && !gtk_widget_get_mapped(widget)){
+    GTK_WIDGET_CLASS(ags_cartesian_parent_class)->map(widget);
+    
+    gdk_window_show(widget->window);
+    ags_cartesian_draw((AgsCartesian *) widget);
+  }
+}
+
+void
+ags_cartesian_realize(GtkWidget *widget)
+{
+  AgsCartesian *cartesian;
+  GdkWindowAttr attributes;
+  gint attributes_mask;
+  gint buttons_width;
+  gint border_left, border_top;
+
+  g_return_if_fail(widget != NULL);
+  g_return_if_fail(AGS_IS_CARTESIAN(widget));
+
+  cartesian = AGS_CARTESIAN(widget);
+
+  gtk_widget_set_realized(widget, TRUE);
+
+  /*  */
+  attributes.window_type = GDK_WINDOW_CHILD;
+  
+  attributes.x = widget->allocation.x;
+  attributes.y = widget->allocation.y;
+  attributes.width = widget->allocation.width;
+  attributes.height = widget->allocation.height;
+
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+
+  attributes.window_type = GDK_WINDOW_CHILD;
+
+  attributes.wclass = GDK_INPUT_OUTPUT;
+  attributes.visual = gtk_widget_get_visual (widget);
+  attributes.colormap = gtk_widget_get_colormap (widget);
+  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.event_mask |= (GDK_EXPOSURE_MASK);
+
+  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
+				  &attributes, attributes_mask);
+  gdk_window_set_user_data(widget->window, cartesian);
+
+  widget->style = gtk_style_attach(widget->style,
+				   widget->window);
+  gtk_style_set_background(widget->style,
+			   widget->window,
+			   GTK_STATE_NORMAL);
+
+  gtk_widget_queue_resize(widget);
+}
+
+void
+ags_cartesian_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->show(widget);
+}
+
+void
+ags_cartesian_size_request(GtkWidget *widget,
+			   GtkRequisition *requisition)
+{
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->size_request(widget,
+							     requisition);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_cartesian_size_allocate(GtkWidget *widget,
+			    GtkAllocation *allocation)
+{
+  GTK_WIDGET_CLASS(ags_cartesian_parent_class)->size_allocate(widget,
+							      allocation);
+
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_cartesian_expose(GtkWidget *widget,
+		     GdkEventExpose *event)
+{
+  ags_cartesian_draw(AGS_CARTESIAN(widget));
+
+  return(FALSE);
+}
+
+void
 ags_cartesian_draw(AgsCartesian *cartesian)
 {
-  //TODO:JK: implement me
+  GtkWidget *widget;
+
+  GtkStyle *cartesian_style;
+  cairo_t *cr;
+
+  cairo_text_extents_t te_x_unit, te_y_unit;
+
+  gdouble x, y;
+  gdouble width, height;
+  gdouble factor;
+  gdouble scale_point;
+  guint i_stop;
+  guint i;
+  
+  static const gdouble white_gc = 65535.0;
+
+  widget = GTK_WIDGET(cartesian);
+  cartesian_style = gtk_widget_get_style(widget);
+  
+  cr = gdk_cairo_create(widget->window);
+  
+  /* clear bg */
+  cairo_set_source_rgb(cr,
+		       cartesian_style->bg[0].red / white_gc,
+		       cartesian_style->bg[0].green / white_gc,
+		       cartesian_style->bg[0].blue / white_gc);
+
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  widget->allocation.width, widget->allocation.height);
+  cairo_fill(cr);
+
+  /* push group */
+  cairo_push_group(cr);
+
+  /* cartesian offset, width and height */
+  width = (cartesian->x_end - cartesian->x_start);
+  height = (cartesian->y_end - cartesian->y_start);
+  
+  /* abscissae */
+  if((AGS_CARTESIAN_ABSCISSAE & (cartesian->flags)) != 0){
+    if((cartesian->x_end == 0.0) ||
+       (cartesian->x_start == 0.0) ||
+       (cartesian->x_start < 0.0 &&
+	cartesian->x_end > 0.0)){
+      if(cartesian->x_start < 0.0){
+	x = cartesian->x_start;
+      }else{
+	x = 0.0;
+      }
+
+      /* color and line width */
+      cairo_set_source_rgb(cr,
+			   cartesian_style->fg[0].red / white_gc,
+			   cartesian_style->fg[0].green / white_gc,
+			   cartesian_style->fg[0].blue / white_gc);
+    
+      cairo_set_line_width(cr, cartesian->line_width);
+
+      /* draw line */
+      cairo_move_to(cr,
+		    cartesian->x_margin + x - cartesian->center,
+		    cartesian->y_margin + height - cartesian->center);
+      cairo_line_to(cr,
+		    cartesian->x_margin + x + width - cartesian->center,
+		    cartesian->y_margin + height - cartesian->center);
+      cairo_stroke(cr);
+
+      /* draw small scale steps */
+      factor = (cartesian->y_scale_step_height / cartesian->y_step_height);
+      
+      for(y = cartesian->y_start; ; ){
+	scale_point = cartesian->y_small_scale_func(y,
+						    cartesian->y_scale_data);
+
+	if(scale_point < factor * cartesian->y_end){
+	  /* draw scale step */
+	  cairo_move_to(cr,
+			cartesian->x_margin - 4.0 - cartesian->center,
+			cartesian->y_margin + height - scale_point - cartesian->center);
+	  cairo_line_to(cr,
+			cartesian->x_margin + 4.0 - cartesian->center,
+			cartesian->y_margin + height - scale_point - cartesian->center);
+	  cairo_stroke(cr);
+	}else{
+	  break;
+	}
+	
+	y += cartesian->y_step_height;
+      }
+    }
+  }
+
+  /* ordinate */
+  if((AGS_CARTESIAN_ORDINATE & (cartesian->flags)) != 0){
+    if((cartesian->y_end == 0.0) ||
+       (cartesian->y_start == 0.0) ||
+       (cartesian->y_start < 0.0 &&
+	cartesian->y_end > 0.0)){
+      if(cartesian->y_start < 0.0){
+	y = -1.0 * cartesian->y_start;
+      }else{
+	y = 0.0;
+      }
+
+      /* color and line width */
+      cairo_set_source_rgb(cr,
+			   cartesian_style->fg[0].red / white_gc,
+			   cartesian_style->fg[0].green / white_gc,
+			   cartesian_style->fg[0].blue / white_gc);
+    
+      cairo_set_line_width(cr, cartesian->line_width);
+
+      /* draw line */
+      cairo_move_to(cr,
+		    cartesian->x_margin - cartesian->center,
+		    cartesian->y_margin + y - cartesian->center);
+      cairo_line_to(cr,
+		    cartesian->x_margin - cartesian->center,
+		    cartesian->y_margin + y + height - cartesian->center);
+      cairo_stroke(cr);
+
+      /* draw small scale steps */
+      factor = (cartesian->x_scale_step_width / cartesian->x_step_width);
+      
+      for(x = cartesian->x_start; ; ){
+	scale_point = cartesian->x_small_scale_func(x,
+						    cartesian->x_scale_data);
+
+	if(scale_point < factor * cartesian->x_end){
+	  /* draw scale step */
+	  cairo_move_to(cr,
+			cartesian->x_margin + scale_point - cartesian->center,
+			cartesian->y_margin + height - 4.0 - cartesian->center);
+	  cairo_line_to(cr,
+			cartesian->x_margin + scale_point - cartesian->center,
+			cartesian->y_margin + height + 4.0 - cartesian->center);
+	  cairo_stroke(cr);
+	}else{
+	  break;
+	}
+	
+	x += cartesian->x_step_width;
+      }
+    }
+  }
+  
+  /* pop group */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
 }
 
 gdouble
@@ -366,6 +641,7 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
 	i = i_stop;
 
 	if(i_stop == 0){
+	  /* set label to NULL */
 	  cartesian->x_label = NULL;
 	}
       }
@@ -373,9 +649,11 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
 
     if(cartesian->x_label != NULL){
       for(; i < i_stop; i++){
+	/* initialize array to NULL */
 	cartesian->x_label[i] = NULL;
       }
 
+      /* NULL terminated end */
       cartesian->x_label[i] = NULL;
     }
   }else{
@@ -403,6 +681,7 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
 	i = i_stop;
 
 	if(i_stop == 0){
+	  /* set label to NULL */
 	  cartesian->y_label = NULL;
 	}
       }
@@ -410,9 +689,11 @@ ags_cartesian_reallocate_label(AgsCartesian *cartesian,
 
     if(cartesian->y_label != NULL){
       for(; i < i_stop; i++){
+	/* initialize array to NULL */
 	cartesian->y_label[i] = NULL;
       }
 
+      /* NULL terminated end */
       cartesian->y_label[i] = NULL;
     }
   }
@@ -434,14 +715,16 @@ ags_cartesian_fill_label(AgsCartesian *cartesian,
     i_stop = g_strv_length(cartesian->x_label);
 
     for(i = 0; i < i_stop; i++){
-      cartesian->x_label = cartesian->x_label_func((gdouble) i,
+      /* fill x label */
+      cartesian->x_label = cartesian->x_label_func(cartesian->x_start + ((gdouble) i * cartesian->x_step),
 						   cartesian->x_label_data);
     }
   }else{
     i_stop = g_strv_length(cartesian->y_label);
 
     for(i = 0; i < i_stop; i++){
-      cartesian->y_label = cartesian->y_label_func((gdouble) i,
+      /* fill y label */
+      cartesian->y_label = cartesian->y_label_func(cartesian->y_start + ((gdouble) i * cartesian->y_step),
 						   cartesian->y_label_data);
     }
   }
