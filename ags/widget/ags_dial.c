@@ -206,23 +206,14 @@ ags_dial_class_init(AgsDialClass *dial)
   gobject->set_property = ags_dial_set_property;
   gobject->get_property = ags_dial_get_property;
 
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) dial;
-
-  widget->get_accessible = ags_dial_get_accessible;
-  //  widget->map = ags_dial_map;
-  widget->realize = ags_dial_realize;
-  widget->expose_event = ags_dial_expose;
-  widget->size_request = ags_dial_size_request;
-  widget->size_allocate = ags_dial_size_allocate;
-  widget->button_press_event = ags_dial_button_press;
-  widget->button_release_event = ags_dial_button_release;
-  widget->key_press_event = ags_dial_key_press;
-  widget->key_release_event = ags_dial_key_release;
-  widget->motion_notify_event = ags_dial_motion_notify;
-  widget->show = ags_dial_show;
-
   /* properties */
+  /**
+   * AgsDial:adjustment:
+   *
+   * The adjustment of the dial.
+   * 
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_object("adjustment\0",
 				   "assigned adjustment\0",
 				   "The adjustment it is assigned with\0",
@@ -249,6 +240,22 @@ ags_dial_class_init(AgsDialClass *dial)
   g_object_class_install_property(gobject,
 				  PROP_SCALE_PRECISION,
 				  param_spec);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) dial;
+
+  widget->get_accessible = ags_dial_get_accessible;
+  //  widget->map = ags_dial_map;
+  widget->realize = ags_dial_realize;
+  widget->expose_event = ags_dial_expose;
+  widget->size_request = ags_dial_size_request;
+  widget->size_allocate = ags_dial_size_allocate;
+  widget->button_press_event = ags_dial_button_press;
+  widget->button_release_event = ags_dial_button_release;
+  widget->key_press_event = ags_dial_key_press;
+  widget->key_release_event = ags_dial_key_release;
+  widget->motion_notify_event = ags_dial_motion_notify;
+  widget->show = ags_dial_show;
 
   /* AgsDialClass */
   dial->value_changed = NULL;

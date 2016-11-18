@@ -50,12 +50,6 @@
 #define AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH (10.0)
 #define AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT (10.0)
 
-#define AGS_CARTESIAN_DEFAULT_X_LABEL_START (10.0)
-#define AGS_CARTESIAN_DEFAULT_X_LABEL_STEP_WIDTH (50.0)
-
-#define AGS_CARTESIAN_DEFAULT_Y_LABEL_START (20.0)
-#define AGS_CARTESIAN_DEFAULT_Y_LABEL_STEP_HEIGHT (50.0)
-
 #define AGS_CARTESIAN_DEFAULT_X_STEP (1.0)
 #define AGS_CARTESIAN_DEFAULT_Y_STEP (1.0)
 
@@ -64,6 +58,13 @@
 
 #define AGS_CARTESIAN_DEFAULT_Y_START (-70.0)
 #define AGS_CARTESIAN_DEFAULT_Y_END (99.0)
+
+#define AGS_CARTESIAN_DEFAULT_X_LABEL_START (10.0)
+#define AGS_CARTESIAN_DEFAULT_X_LABEL_STEP_WIDTH (50.0)
+
+#define AGS_CARTESIAN_DEFAULT_Y_LABEL_START (20.0)
+#define AGS_CARTESIAN_DEFAULT_Y_LABEL_STEP_HEIGHT (50.0)
+
 
 typedef struct _AgsCartesian AgsCartesian;
 typedef struct _AgsCartesianClass AgsCartesianClass;
@@ -124,20 +125,6 @@ struct _AgsCartesian
   gdouble x_scale_step_width;
   gdouble y_scale_step_height;
 
-  gdouble x_unit_x0;
-  gdouble x_unit_y0;
-  gdouble x_unit_size;
-  
-  gdouble y_unit_x0;
-  gdouble y_unit_y0;
-  gdouble y_unit_size;
-  
-  gdouble x_label_start;
-  gdouble x_label_step_width;
-  
-  gdouble y_label_start;
-  gdouble y_label_step_height;
-  
   gdouble x_step;
   gdouble y_step;
   
@@ -146,13 +133,29 @@ struct _AgsCartesian
 
   gdouble y_start;
   gdouble y_end;
-  
+
+  gdouble x_unit_x0;
+  gdouble x_unit_y0;
+  gdouble x_unit_size;
+    
   gchar *x_unit;
+
+  gdouble y_unit_x0;
+  gdouble y_unit_y0;
+  gdouble y_unit_size;
+
   gchar *y_unit;
   
+  gdouble x_label_start;
+  gdouble x_label_step_width;
+  
   gchar **x_label;
-  gchar **y_label;
+  
+  gdouble y_label_start;
+  gdouble y_label_step_height;
 
+  gchar **y_label;
+  
   gdouble (*step_conversion_func)(gdouble current,
 				  gboolean is_abscissae,
 				  gpointer data);
@@ -236,6 +239,7 @@ GType ags_cartesian_get_type(void);
 
 /* plot data */
 AgsPlot* ags_plot_alloc(guint n_points, guint n_bitmaps, guint n_pixmaps);
+void ags_plot_free(AgsPlot *plot);
 
 void ags_cartesian_add_plot(AgsCartesian *cartesian,
 			    AgsPlot *plot);
