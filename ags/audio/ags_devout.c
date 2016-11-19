@@ -32,6 +32,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_poll_fd.h>
 
+#include <ags/audio/task/ags_tic_soundcard.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 
@@ -2207,6 +2208,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsTicSoundcard *tic_soundcard;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -2214,6 +2216,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 
   AgsApplicationContext *application_context;
 
+  GList *task;
+  
   gchar *str;
   
   guint word_size;
@@ -2448,16 +2452,24 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(mutex);
 
-  /* tic */
-  ags_soundcard_tic(soundcard);
-
-  /* reset - switch buffer flags */
+  /* update soundcard */
   task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
+  task = NULL;
   
+  /* tic soundcard */
+  tic_soundcard = ags_tic_soundcard_new((GObject *) devout);
+  task = g_list_append(task,
+		       tic_soundcard);
+  
+  /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) switch_buffer_flag);
+  task = g_list_append(task,
+		       switch_buffer_flag);
+
+  /* append tasks */
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       task);
 }
 
 void
@@ -2965,6 +2977,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsTicSoundcard *tic_soundcard;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -2972,6 +2985,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   AgsApplicationContext *application_context;
 
+  GList *task;
+  
   gchar *str;
   
   guint word_size;
@@ -3326,16 +3341,24 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   pthread_mutex_unlock(mutex);
 
-  /* tic */
-  ags_soundcard_tic(soundcard);
-
-  /* reset - switch buffer flags */
+  /* update soundcard */
   task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
+  task = NULL;
   
+  /* tic soundcard */
+  tic_soundcard = ags_tic_soundcard_new((GObject *) devout);
+  task = g_list_append(task,
+		       tic_soundcard);
+  
+  /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) switch_buffer_flag);
+  task = g_list_append(task,
+		       switch_buffer_flag);
+
+  /* append tasks */
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       task);
   
 #ifdef AGS_WITH_ALSA
   snd_pcm_prepare(devout->out.alsa.handle);
