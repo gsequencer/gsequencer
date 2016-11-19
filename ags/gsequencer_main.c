@@ -22,6 +22,8 @@
 
 #include <gdk/gdk.h>
 
+#include <X11/Xlib.h>
+
 #include <libinstpatch/libinstpatch.h>
 
 #include "gsequencer_main.h"
@@ -1204,8 +1206,7 @@ main(int argc, char **argv)
     }
   }
 
-  XInitThreads(NULL,
-	       NULL);
+  XInitThreads();
 
   /**/
   LIBXML_TEST_VERSION;

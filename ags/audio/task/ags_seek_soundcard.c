@@ -36,12 +36,12 @@ void ags_seek_soundcard_launch(AgsTask *task);
 
 /**
  * SECTION:ags_seek_soundcard
- * @short_description: seek soundcard object to soundcard loop
+ * @short_description: seek soundcard object
  * @title: AgsSeekSoundcard
  * @section_id:
- * @include: ags/soundcard/task/ags_seek_soundcard.h
+ * @include: ags/audio/task/ags_seek_soundcard.h
  *
- * The #AgsSeekSoundcard task seeks #AgsSoundcard to #AgsSoundcardLoop.
+ * The #AgsSeekSoundcard task seeks #AgsSoundcard.
  */
 
 static gpointer ags_seek_soundcard_parent_class = NULL;

@@ -344,6 +344,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_set_samplerate.lo \
 	ags/audio/task/libags_audio_la-ags_start_soundcard.lo \
 	ags/audio/task/libags_audio_la-ags_switch_buffer_flag.lo \
+	ags/audio/task/libags_audio_la-ags_tic_soundcard.lo \
 	ags/audio/task/libags_audio_la-ags_toggle_pattern_bit.lo \
 	ags/audio/task/libags_audio_la-ags_unref_audio_signal.lo \
 	ags/audio/task/recall/libags_audio_la-ags_apply_bpm.lo \
@@ -1299,12 +1300,12 @@ gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(UUID_CFLAGS) \
 	$(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) \
 	$(PTH_FLAGS) $(JACK_CFLAGS)
 gsequencer_LDFLAGS = @GSEQUENCER_LDFLAGS@ -ldl -lm -lrt -pthread -lgmp \
-	$(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) \
-	$(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) \
-	$(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) \
-	$(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) \
-	$(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) \
-	$(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
+	-lX11 $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) \
+	$(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) \
+	$(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) \
+	$(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) \
+	$(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) \
+	$(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
 midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@ -I./ -I/usr/include \
 	$(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) \
 	$(GIO_CFLAGS)
@@ -2222,6 +2223,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_samplerate.h \
 	ags/audio/task/ags_start_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
+	ags/audio/task/ags_tic_soundcard.h \
 	ags/audio/task/ags_toggle_pattern_bit.h \
 	ags/audio/task/ags_unref_audio_signal.h \
 	ags/audio/task/recall/ags_apply_bpm.h \
@@ -2282,6 +2284,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_soundcard.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
+	ags/audio/task/ags_tic_soundcard.c \
 	ags/audio/task/ags_toggle_pattern_bit.c \
 	ags/audio/task/ags_unref_audio_signal.c \
 	ags/audio/task/recall/ags_apply_bpm.c \
@@ -3398,6 +3401,9 @@ ags/audio/task/libags_audio_la-ags_start_soundcard.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_switch_buffer_flag.lo:  \
+	ags/audio/task/$(am__dirstamp) \
+	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/libags_audio_la-ags_tic_soundcard.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_toggle_pattern_bit.lo:  \
@@ -4939,6 +4945,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_samplerate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_switch_buffer_flag.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_tic_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_toggle_pattern_bit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_unref_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_apply_bpm.Plo@am__quote@
@@ -6255,6 +6262,13 @@ ags/audio/task/libags_audio_la-ags_switch_buffer_flag.lo: ags/audio/task/ags_swi
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_switch_buffer_flag.c' object='ags/audio/task/libags_audio_la-ags_switch_buffer_flag.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_switch_buffer_flag.lo `test -f 'ags/audio/task/ags_switch_buffer_flag.c' || echo '$(srcdir)/'`ags/audio/task/ags_switch_buffer_flag.c
+
+ags/audio/task/libags_audio_la-ags_tic_soundcard.lo: ags/audio/task/ags_tic_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_tic_soundcard.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_tic_soundcard.Tpo -c -o ags/audio/task/libags_audio_la-ags_tic_soundcard.lo `test -f 'ags/audio/task/ags_tic_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_tic_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_tic_soundcard.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_tic_soundcard.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_tic_soundcard.c' object='ags/audio/task/libags_audio_la-ags_tic_soundcard.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_tic_soundcard.lo `test -f 'ags/audio/task/ags_tic_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_tic_soundcard.c
 
 ags/audio/task/libags_audio_la-ags_toggle_pattern_bit.lo: ags/audio/task/ags_toggle_pattern_bit.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_toggle_pattern_bit.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_toggle_pattern_bit.Tpo -c -o ags/audio/task/libags_audio_la-ags_toggle_pattern_bit.lo `test -f 'ags/audio/task/ags_toggle_pattern_bit.c' || echo '$(srcdir)/'`ags/audio/task/ags_toggle_pattern_bit.c
