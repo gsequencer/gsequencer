@@ -320,6 +320,7 @@ libags_h_sources = \
 	ags/lib/ags_conversion.h \
 	ags/lib/ags_endian.h \
 	ags/lib/ags_function.h \
+	ags/lib/ags_log.h \
 	ags/lib/ags_parameter.h \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
@@ -334,6 +335,7 @@ libags_c_sources = \
 	ags/lib/ags_conversion.c \
 	ags/lib/ags_endian.c \
 	ags/lib/ags_function.c \
+	ags/lib/ags_log.c \
 	ags/lib/ags_parameter.c \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
@@ -1585,6 +1587,7 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/$(PACKAGE_VERSION)/,stylesheet/ags-xsl/midi-xml/}
 	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
 	cp $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	cp $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	cp $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
