@@ -20,6 +20,8 @@
 #include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/lib/ags_string_util.h>
+#include <ags/lib/ags_log.h>
+
 #include <ags/lib/ags_turtle_manager.h>
 
 #include <ags/object/ags_marshal.h>
@@ -773,6 +775,9 @@ ags_lv2_manager_get_instance()
     ags_lv2_manager = ags_lv2_manager_new(AGS_LV2_MANAGER_DEFAULT_LOCALE);
 
     pthread_mutex_unlock(&(mutex));
+
+    ags_log_add_message(ags_log_get_instance(),
+			"* Loading Lv2 plugins\0");
 
     ags_lv2_manager_load_default_directory(ags_lv2_manager);
   }else{

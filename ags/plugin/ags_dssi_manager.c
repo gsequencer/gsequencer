@@ -20,6 +20,8 @@
 #include <ags/plugin/ags_dssi_manager.h>
 
 #include <ags/lib/ags_string_util.h>
+#include <ags/lib/ags_log.h>
+
 #include <ags/object/ags_marshal.h>
 
 #include <ags/plugin/ags_base_plugin.h>
@@ -369,6 +371,9 @@ ags_dssi_manager_get_instance()
     ags_dssi_manager = ags_dssi_manager_new();
 
     pthread_mutex_unlock(&(mutex));
+
+    ags_log_add_message(ags_log_get_instance(),
+			"* Loading DSSI plugins\0");
 
     ags_dssi_manager_load_default_directory(ags_dssi_manager);
   }else{

@@ -20,6 +20,7 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 
 #include <ags/lib/ags_string_util.h>
+#include <ags/lib/ags_log.h>
 
 #include <ags/object/ags_marshal.h>
 
@@ -368,6 +369,9 @@ ags_ladspa_manager_get_instance()
     ags_ladspa_manager = ags_ladspa_manager_new();
 
     pthread_mutex_unlock(&(mutex));
+
+    ags_log_add_message(ags_log_get_instance(),
+			"* Loading LADSPA plugins\0");
 
     ags_ladspa_manager_load_default_directory(ags_ladspa_manager);
   }else{
