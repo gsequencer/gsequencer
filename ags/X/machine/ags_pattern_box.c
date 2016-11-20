@@ -862,6 +862,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     /* led */
     list = gtk_container_get_children((GtkContainer *) pattern_box->led);
+    active = NULL;
     
     for(i = 0; list != NULL; i++){
       if(i == active_led_new){
@@ -870,7 +871,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 	
 	continue;
       }
-      
+
       ags_led_unset_active(AGS_LED(list->data));
       
       list = list->next;

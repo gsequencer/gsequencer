@@ -18,6 +18,11 @@ ags_function_substitute_values
 ags_function_translate_value
 ags_function_new
 ags_endian_swap_float
+ags_log_get_type
+ags_log_add_message
+ags_log_get_messages
+ags_log_get_instance
+ags_log_new
 ags_conversion_get_type
 ags_conversion_convert
 ags_conversion_new
@@ -126,6 +131,8 @@ ags_soundcard_get_attack
 ags_soundcard_get_delay_counter
 ags_soundcard_set_note_offset
 ags_soundcard_get_note_offset
+ags_soundcard_set_note_offset_absolute
+ags_soundcard_get_note_offset_absolute
 ags_soundcard_set_loop
 ags_soundcard_get_loop
 ags_soundcard_get_loop_offset

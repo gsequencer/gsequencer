@@ -452,13 +452,16 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   AgsApplicationContext *application_context;
   
   gchar *timestr;
+  gdouble delay;
+  gdouble delay_factor;
   double tact_factor;
   double tact;
-  gdouble delay;
   guint steps;
+  guint note_offset;
   gboolean move_forward;
 
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   editor = window->editor;
@@ -472,7 +475,9 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   pthread_mutex_lock(application_mutex);
 
   main_loop = (AgsThread *) application_context->main_loop;
-
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     window->soundcard);
+					     
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
@@ -480,22 +485,29 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 						       AGS_TYPE_TASK_THREAD);
 
   /* seek soundcard */
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
+  pthread_mutex_lock(soundcard_mutex);
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
   
-  if(tact < tact_counter){
-    steps = (guint) ((tact_counter - tact) * delay);
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
+  
+  pthread_mutex_unlock(soundcard_mutex);
+  
+  tact = note_offset - navigation->start_tact;
+  
+  if(note_offset < 16 * tact_counter){
+    steps = (guint) (16 * tact_counter - note_offset);
     move_forward = TRUE;
   }else{
-    steps = (guint) ((navigation->start_tact - tact) * delay);
+    steps = (guint) (note_offset - 16 * tact_counter);
     move_forward = FALSE;
   }
   
   seek_soundcard = ags_seek_soundcard_new(window->soundcard,
-				    steps,
-				    move_forward);
-
+					  steps,
+					  move_forward);
+  
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(seek_soundcard));
 
@@ -510,9 +522,10 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 			     tact_counter * AGS_PATTERN_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
   }
   
-  timestr = ags_navigation_absolute_tact_to_time_string(16.0 * tact_counter,
-							navigation->bpm->adjustment->value,
-							ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
+  timestr = ags_time_get_uptime_from_offset(16.0 * tact_counter,
+					    navigation->bpm->adjustment->value,
+					    delay,
+					    delay_factor);
   gtk_label_set_text(navigation->position_time, timestr);
   
   g_free(timestr);

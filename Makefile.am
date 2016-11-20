@@ -231,7 +231,7 @@ libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 
 gsequencer_CFLAGS += $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)
-gsequencer_LDFLAGS += -ldl -lm -lrt -pthread -lgmp $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
+gsequencer_LDFLAGS += -ldl -lm -lrt -pthread -lgmp -lX11 $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
 gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # unit and functional tests
@@ -332,6 +332,7 @@ libags_h_sources = \
 	ags/lib/ags_conversion.h \
 	ags/lib/ags_endian.h \
 	ags/lib/ags_function.h \
+	ags/lib/ags_log.h \
 	ags/lib/ags_parameter.h \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
@@ -346,6 +347,7 @@ libags_c_sources = \
 	ags/lib/ags_conversion.c \
 	ags/lib/ags_endian.c \
 	ags/lib/ags_function.c \
+	ags/lib/ags_log.c \
 	ags/lib/ags_parameter.c \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
@@ -1046,6 +1048,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_samplerate.h \
 	ags/audio/task/ags_start_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
+	ags/audio/task/ags_tic_soundcard.h \
 	ags/audio/task/ags_toggle_pattern_bit.h \
 	ags/audio/task/ags_unref_audio_signal.h \
 	ags/audio/task/recall/ags_apply_bpm.h \
@@ -1104,6 +1107,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_soundcard.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
+	ags/audio/task/ags_tic_soundcard.c \
 	ags/audio/task/ags_toggle_pattern_bit.c \
 	ags/audio/task/ags_unref_audio_signal.c \
 	ags/audio/task/recall/ags_apply_bpm.c \
@@ -1648,6 +1652,7 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/$(PACKAGE_VERSION)/,stylesheet/ags-xsl/midi-xml/}
 	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	cp $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
 	cp $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	cp $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	cp $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/

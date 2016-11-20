@@ -903,6 +903,50 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_set_note_offset_absolute:
+ * @soundcard: an #AgsSoundcard
+ * @note_offset: the note offset to set
+ *
+ * Set current playback note offset. 
+ *
+ * Since: 0.7.103
+ */
+void
+ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
+				       guint note_offset)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_note_offset_absolute);
+  soundcard_interface->set_note_offset_absolute(soundcard,
+						note_offset);
+}
+
+/**
+ * ags_soundcard_get_note_offset_absolute:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get current playback note offset. 
+ *
+ * Returns: offset
+ *
+ * Since: 0.7.103
+ */
+guint
+ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_note_offset_absolute, G_MAXUINT);
+
+  return(soundcard_interface->get_note_offset_absolute(soundcard));
+}
+
+/**
  * ags_soundcard_set_loop:
  *
  * Since: 0.7.35

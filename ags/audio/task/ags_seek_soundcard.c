@@ -44,12 +44,12 @@ void ags_seek_soundcard_launch(AgsTask *task);
 
 /**
  * SECTION:ags_seek_soundcard
- * @short_description: seek soundcard object to soundcard loop
+ * @short_description: seek soundcard object
  * @title: AgsSeekSoundcard
  * @section_id:
- * @include: ags/soundcard/task/ags_seek_soundcard.h
+ * @include: ags/audio/task/ags_seek_soundcard.h
  *
- * The #AgsSeekSoundcard task seeks #AgsSoundcard to #AgsSoundcardLoop.
+ * The #AgsSeekSoundcard task seeks #AgsSoundcard.
  */
 
 static gpointer ags_seek_soundcard_parent_class = NULL;
@@ -301,8 +301,8 @@ ags_seek_soundcard_launch(AgsTask *task)
 
   GList *audio, *recall;
 
-  gdouble delay;
   guint note_offset;
+  guint note_offset_absolute;
 
   seek_soundcard = AGS_SEEK_SOUNDCARD(task);
 
@@ -323,20 +323,29 @@ ags_seek_soundcard_launch(AgsTask *task)
 
     audio = audio->next;
   }
-
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(seek_soundcard->soundcard));
+  
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard));
+  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard));
   
   if(seek_soundcard->move_forward){
     ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				  note_offset + (seek_soundcard->steps / delay));
+				  note_offset + seek_soundcard->steps);
+
+    ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
+					   note_offset_absolute + seek_soundcard->steps);
   }else{
-    if(note_offset > (seek_soundcard->steps / delay)){
+    if(note_offset > seek_soundcard->steps){
       ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    note_offset - (seek_soundcard->steps / delay));
+				    note_offset - seek_soundcard->steps);
+
+      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
+					     note_offset_absolute - seek_soundcard->steps);
     }else{
       ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
 				    0.0);
+
+      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
+					     0.0);
     }
   }
 }

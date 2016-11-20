@@ -20,9 +20,15 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gdk/gdk.h>
+
+#include <X11/Xlib.h>
+
 #include <libinstpatch/libinstpatch.h>
 
 #include "gsequencer_main.h"
+
+#include <ags/lib/ags_log.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
@@ -83,6 +89,9 @@ void ags_signal_handler(int signr);
 void ags_signal_handler_timer(int sig, siginfo_t *si, void *uc);
 static void ags_signal_cleanup();
 
+void* ags_start_animation_thread(void *ptr);
+void ags_start_animation(pthread_t *thread);
+
 void ags_setup(int argc, char **argv);
 
 void ags_launch(gboolean single_thread);
@@ -109,6 +118,8 @@ struct sigevent ags_sev_timer;
 struct itimerspec its;
 
 extern AgsApplicationContext *ags_application_context;
+
+extern volatile gboolean ags_show_start_animation;
 
 void
 ags_signal_handler(int signr)
@@ -148,10 +159,120 @@ ags_signal_cleanup()
   sigemptyset(&(ags_sigact.sa_mask));
 }
 
+void*
+ags_start_animation_thread(void *ptr)
+{
+  GtkWidget *window;
+  GdkRectangle rectangle;
+  
+  cairo_t *cr;
+  cairo_surface_t *surface;
+  
+  AgsLog *log;
+
+  gchar *filename;
+  
+  /* create a buffer suitable to image size */
+  GList *list, *start;
+
+  gdouble x0, y0;
+  guint i, nth;
+  
+  gdk_threads_enter();
+  
+  window = (GdkWindow *) ptr;
+
+  rectangle.x = 0;
+  rectangle.y = 0;
+  rectangle.width = 800;
+  rectangle.height = 450;
+  
+  cr = gdk_cairo_create(window->window);
+  
+  filename = g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png\0");
+
+  surface = cairo_image_surface_create_from_png(filename);
+  
+  cairo_select_font_face(cr, "Georgia\0",
+			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+  cairo_set_font_size(cr, (gdouble) 11.0);
+
+  gdk_window_show(window->window);
+  
+  gdk_threads_leave();
+
+  log = ags_log_get_instance();    
+  nth = 0;
+  
+  while(g_atomic_int_get(&(ags_show_start_animation))){
+    start = 
+      list = ags_log_get_messages(log);
+
+    i = g_list_length(start);
+
+    if(i > nth){
+      cairo_set_source_surface(cr, surface, 0, 0);
+      cairo_paint(cr);
+      cairo_surface_flush(surface);
+    
+      x0 = 4.0;
+      y0 = 4.0 + (i * 12.0);
+
+      while(y0 > 4.0 && list != NULL){
+	cairo_set_source_rgb(cr,
+			     1.0,
+			     0.0,
+			     1.0);
+	
+	cairo_move_to(cr,
+		      x0, y0);
+	cairo_show_text(cr, list->data);
+	
+	list = list->next;
+	y0 -= 12.0;
+      }
+
+      cairo_move_to(cr,
+		    x0, 4.0 + (i + 1) * 12.0);
+      cairo_show_text(cr, "...\0");
+
+      gdk_flush();
+      nth = g_list_length(start);
+    }    
+  }
+
+  gdk_threads_enter();
+
+  gtk_widget_destroy(window);
+  
+  gdk_threads_leave();
+}
+
+void
+ags_start_animation(pthread_t *thread)
+{
+  GtkWindow *window;
+
+  GdkWindowAttr *attr;
+
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  g_object_set(window,
+	       "decorated\0", FALSE,
+	       0);
+  gtk_widget_set_size_request(window,
+			      800, 450);
+  gtk_widget_show_all(window);
+
+  pthread_create(thread, NULL,
+		 ags_start_animation_thread, window);
+}
+
 void
 ags_setup(int argc, char **argv)
 {
   AgsLv2WorkerManager *lv2_worker_manager;
+
+  AgsLog *log;
   
   struct passwd *pw;
 
@@ -163,8 +284,12 @@ ags_setup(int argc, char **argv)
   guint i;
   
   /* check filename */
+  log = ags_log_get_instance();
   filename = NULL;
 
+  ags_log_add_message(log,
+		      "Welcome to Advanced Gtk+ Sequencer\0");
+  
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--filename\0", 11)){
       AgsSimpleFile *simple_file;
@@ -233,7 +358,7 @@ ags_setup(int argc, char **argv)
   ags_application_context->argc = argc;
   ags_application_context->argv = argv;
 
-    /* load managers */
+  /* load managers */
   ags_ladspa_manager_get_instance();
 
   ags_dssi_manager_get_instance();
@@ -254,6 +379,9 @@ ags_setup(int argc, char **argv)
 				AGS_DEFAULT_DIRECTORY);
   gtk_rc_parse(rc_filename);
   g_free(rc_filename);
+
+  g_atomic_int_set(&(ags_show_start_animation),
+		   FALSE);
 }
 
 void
@@ -455,7 +583,7 @@ ags_launch_filename(gchar *filename,
       ags_application_context_quit(ags_application_context);
     }
     
-    /* start engine */
+    /* start engine */  
     pthread_mutex_lock(audio_loop->start_mutex);
     
     start_queue = NULL;
@@ -557,7 +685,7 @@ ags_launch_filename(gchar *filename,
       ags_file_close(file);
     }
   }
-  
+
   if(!single_thread){
     /* join gui thread */
     //    gtk_main();
@@ -972,6 +1100,8 @@ main(int argc, char **argv)
 {  
   AgsConfig *config;
 
+  pthread_t *animation_thread;
+  
   gchar *filename;
   gchar *str;
 
@@ -1076,6 +1206,8 @@ main(int argc, char **argv)
     }
   }
 
+  XInitThreads();
+
   /**/
   LIBXML_TEST_VERSION;
 
@@ -1087,6 +1219,13 @@ main(int argc, char **argv)
   ipatch_init();
   //  g_log_set_fatal_mask("GLib-GObject\0", //G_LOG_DOMAIN,
   //		       G_LOG_LEVEL_CRITICAL);
+
+  /* animate */
+  animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  g_atomic_int_set(&(ags_show_start_animation),
+		   TRUE);
+  
+  ags_start_animation(animation_thread);
   
   /* setup */
   uid = getuid();

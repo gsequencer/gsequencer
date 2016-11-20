@@ -184,6 +184,7 @@ enum{
 };
 
 AgsXorgApplicationContext *ags_xorg_application_context;
+volatile gboolean ags_show_start_animation;
 
 GType
 ags_xorg_application_context_get_type()
@@ -541,7 +542,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     }
   }
   */
-  
+    
   /* AgsWindow */
   window = ags_window_new((GObject *) xorg_application_context);
   g_object_set(window,

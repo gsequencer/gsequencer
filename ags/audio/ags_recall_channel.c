@@ -500,10 +500,8 @@ ags_recall_channel_automate(AgsRecall *recall)
   guint note_offset, delay_counter;
   
   guint loop_left, loop_right;
-  guint loop_offset;
   gboolean do_loop;
 
-  guint offset;
   double x, step;
   guint ret_x;
   gboolean return_prev_on_failure;
@@ -524,25 +522,17 @@ ags_recall_channel_automate(AgsRecall *recall)
 			 &loop_left, &loop_right,
 			 &do_loop);
 
-  loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(soundcard));
-
   return_prev_on_failure = FALSE;
   
   if(do_loop &&
-     loop_offset <= note_offset){
-    offset = note_offset - loop_offset;
-
-    offset = loop_offset + (offset % (loop_right - loop_left));
-
-    if(offset == loop_offset){
+     loop_left <= note_offset){
+    if(note_offset == loop_left){
       return_prev_on_failure = TRUE;
     }
-  }else{
-    offset = note_offset;
   }
 
   /*  */
-  x = ((double) offset + (delay_counter / delay)) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+  x = ((double) note_offset + (delay_counter / delay)) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
   step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   while(port != NULL){

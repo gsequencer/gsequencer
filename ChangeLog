@@ -15,6 +15,25 @@ ags (1.0.0)
 	* improved AgsDial
 	* fixed ags_automation_find_point() to allow accessing first and last entry
 
+ags (0.7.105)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsTicSoundcard task and fixed thereby data-race
+
+ags (0.7.104)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented splash-screen
+
+ags (0.7.103)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_soundcard_get_note_offset_absolute()
+	* improved mutices in ags_navigation.c
+	* fixed possible access of uninitialized memory in ags_cell_pattern_led_queue_draw_timeout()
+	* fixed possible access of uninitialized memory in ags_pattern_box_led_queue_draw_timeout()
+	* simplified seeking
+
 ags (0.7.102)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -572,7 +572,7 @@ ags_drum_map_recall(AgsMachine *machine)
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      (guint) window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
+		      window->navigation->position_tact->adjustment->value,
 		      TRUE);
   }else{
     play_count_beats_audio_run = NULL;
