@@ -21,7 +21,6 @@
 
 #include <ags/lib/ags_string_util.h>
 #include <ags/lib/ags_log.h>
-
 #include <ags/lib/ags_turtle_manager.h>
 
 #include <ags/object/ags_marshal.h>

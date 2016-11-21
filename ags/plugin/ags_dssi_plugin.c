@@ -68,7 +68,7 @@ void ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
  * @short_description: The dssi plugin class
  * @title: AgsDssiPlugin
  * @section_id:
- * @include: ags/object/ags_dssi_plugin.h
+ * @include: ags/plugin/ags_dssi_plugin.h
  *
  * The #AgsDssiPlugin loads/unloads a Dssi plugin.
  */

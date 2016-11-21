@@ -63,7 +63,7 @@ void ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin);
  * @short_description: The lv2ui plugin class
  * @title: AgsLv2uiPlugin
  * @section_id:
- * @include: ags/object/ags_lv2ui_plugin.h
+ * @include: ags/plugin/ags_lv2ui_plugin.h
  *
  * The #AgsLv2uiPlugin loads/unloads a Lv2ui plugin.
  */
