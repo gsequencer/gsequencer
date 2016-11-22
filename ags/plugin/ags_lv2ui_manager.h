@@ -65,7 +65,8 @@ AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manag
 void ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 				 AgsTurtle *turtle,
 				 gchar *lv2ui_path,
-				 gchar *filename);
+				 gchar *filename,
+				 GList *plugin_list);
 void ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager);
 
 /*  */

@@ -248,10 +248,14 @@ ags_lv2_plugin_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_URI:
-    g_value_set_string(value, lv2_plugin->uri);
+    {
+      g_value_set_string(value, lv2_plugin->uri);
+    }
     break;
   case PROP_TURTLE:
-    g_value_set_object(value, lv2_plugin->turtle);
+    {
+      g_value_set_object(value, lv2_plugin->turtle);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
