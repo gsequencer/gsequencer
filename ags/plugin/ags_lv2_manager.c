@@ -663,12 +663,12 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	/* persist XML */
 	//NOTE:JK: no need for it
       
-	xmlDocDumpFormatMemoryEnc(manifest->doc, &buffer, &size, "UTF-8\0", TRUE);
+	//xmlDocDumpFormatMemoryEnc(manifest->doc, &buffer, &size, "UTF-8\0", TRUE);
 
-	out = fopen(g_strdup_printf("%s/manifest.xml\0", plugin_path), "w+\0");
+	//out = fopen(g_strdup_printf("%s/manifest.xml\0", plugin_path), "w+\0");
 
-	fwrite(buffer, size, sizeof(xmlChar), out);
-	fflush(out);
+	//fwrite(buffer, size, sizeof(xmlChar), out);
+	//fflush(out);
             
 	/* load */
 	while(binary_list != NULL){
@@ -734,12 +734,12 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
 	    /* persist XML */
 	    //NOTE:JK: no need for it
-	    xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
+	    //xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
 
-	    out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
+	    //out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
 	
-	    fwrite(buffer, size, sizeof(xmlChar), out);
-	    fflush(out);
+	    //fwrite(buffer, size, sizeof(xmlChar), out);
+	    //fflush(out);
 	    //	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 
 	    ttl_list = ttl_list->next;
