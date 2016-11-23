@@ -52,9 +52,12 @@ struct _AgsLv2uiPlugin
   AgsBasePlugin base_plugin;
 
   guint flags;
+
+  gchar *gui_filename;
   
   gchar *gui_uri;
-  
+
+  AgsTurtle *manifest;
   AgsTurtle *gui_turtle;
 
   GObject *lv2_plugin;

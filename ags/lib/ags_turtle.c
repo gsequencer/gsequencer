@@ -1788,8 +1788,10 @@ ags_turtle_load(AgsTurtle *turtle,
       node = xmlNewNode(NULL,
 			"rdf-iriref\0");
       xmlNodeSetContent(node,
-			g_ascii_strdown(str,
-					-1));
+			str);
+      //      xmlNodeSetContent(node,
+      //		g_ascii_strdown(str,
+      //				-1));
 
 #ifdef AGS_DEBUG
       g_message("iriref = %s\0", str);

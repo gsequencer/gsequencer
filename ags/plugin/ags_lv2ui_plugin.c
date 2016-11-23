@@ -72,7 +72,9 @@ void ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
 enum{
   PROP_0,
+  PROP_GUI_FILENAME,
   PROP_GUI_URI,
+  PROP_MANIFEST,
   PROP_GUI_TURTLE,
   PROP_LV2_PLUGIN,
 };
@@ -126,6 +128,22 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
 
   /* properties */
   /**
+   * AgsLv2uiPlugin:gui-filename:
+   *
+   * The assigned GUI filename.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_string("gui-filename\0",
+				   "GUI filename of the plugin\0",
+				   "The GUI filename this plugin is located in\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_GUI_FILENAME,
+				  param_spec);
+
+  /**
    * AgsLv2uiPlugin:gui-uri:
    *
    * The assigned GUI URI.
@@ -141,6 +159,22 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
 				  PROP_GUI_URI,
 				  param_spec);
   
+  /**
+   * AgsLv2Plugin:manifest:
+   *
+   * The assigned manifest.
+   * 
+   * Since: 0.7.6
+   */
+  param_spec = g_param_spec_object("manifest\0",
+				   "manifest of the plugin\0",
+				   "The manifest this plugin is located in\0",
+				   AGS_TYPE_TURTLE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MANIFEST,
+				  param_spec);
+
   /**
    * AgsLv2uiPlugin:gui-turtle:
    *
@@ -184,7 +218,11 @@ ags_lv2ui_plugin_init(AgsLv2uiPlugin *lv2ui_plugin)
 {
   lv2ui_plugin->flags = 0;
 
+  lv2ui_plugin->gui_filename = NULL;
+
   lv2ui_plugin->gui_uri = NULL;
+
+  lv2ui_plugin->manifest = NULL;
   lv2ui_plugin->gui_turtle = NULL;
 
   lv2ui_plugin->lv2_plugin = NULL;
@@ -201,6 +239,23 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
   lv2ui_plugin = AGS_LV2UI_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_GUI_FILENAME:
+    {
+      gchar *gui_filename;
+
+      gui_filename = (gchar *) g_value_get_string(value);
+
+      if(lv2ui_plugin->gui_filename == gui_filename){
+	return;
+      }
+      
+      if(lv2ui_plugin->gui_filename != NULL){
+	g_free(lv2ui_plugin->gui_filename);
+      }
+
+      lv2ui_plugin->gui_filename = g_strdup(gui_filename);
+    }
+    break;
   case PROP_GUI_URI:
     {
       gchar *gui_uri;
@@ -216,6 +271,27 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
       }
 
       lv2ui_plugin->gui_uri = g_strdup(gui_uri);
+    }
+    break;
+  case PROP_MANIFEST:
+    {
+      AgsTurtle *manifest;
+
+      manifest = (AgsTurtle *) g_value_get_object(value);
+
+      if(lv2ui_plugin->manifest == manifest){
+	return;
+      }
+
+      if(lv2ui_plugin->manifest != NULL){
+	g_object_unref(lv2ui_plugin->manifest);
+      }
+
+      if(manifest != NULL){
+	g_object_ref(manifest);
+      }
+      
+      lv2ui_plugin->manifest = manifest;
     }
     break;
   case PROP_GUI_TURTLE:
@@ -277,9 +353,19 @@ ags_lv2ui_plugin_get_property(GObject *gobject,
   lv2ui_plugin = AGS_LV2UI_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_GUI_FILENAME:
+    {
+      g_value_set_string(value, lv2ui_plugin->gui_filename);
+    }
+    break;
   case PROP_GUI_URI:
     {
       g_value_set_string(value, lv2ui_plugin->gui_uri);
+    }
+    break;
+  case PROP_MANIFEST:
+    {
+      g_value_set_object(value, lv2ui_plugin->manifest);
     }
     break;
   case PROP_GUI_TURTLE:
@@ -306,6 +392,10 @@ ags_lv2ui_plugin_finalize(GObject *gobject)
   lv2ui_plugin = AGS_LV2UI_PLUGIN(gobject);
 
   g_free(lv2ui_plugin->gui_uri);
+
+  if(lv2ui_plugin->manifest != NULL){
+    g_object_unref(lv2ui_plugin->manifest);
+  }
 
   if(lv2ui_plugin->gui_turtle != NULL){
     g_object_unref(lv2ui_plugin->gui_turtle);

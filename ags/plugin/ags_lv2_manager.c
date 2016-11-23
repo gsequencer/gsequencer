@@ -316,6 +316,7 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
 /**
  * ags_lv2_manager_load_file:
  * @lv2_manager: the #AgsLv2Manager
+ * @manifest: the manifest
  * @turtle: the loaded turtle
  * @lv2_path: the lv2 path
  * @filename: the filename of the plugin
@@ -326,6 +327,7 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
  */
 void
 ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
+			  AgsTurtle *manifest,
 			  AgsTurtle *turtle,
 			  gchar *lv2_path,
 			  gchar *filename)
@@ -545,6 +547,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 		      effect);
 
 	    lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
+				      "manifest\0", manifest,
 				      "turtle\0", turtle,
 				      "filename\0", path,
 				      "effect\0", effect,
@@ -724,6 +727,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	
 	    /* load specified plugin */
 	    ags_lv2_manager_load_file(lv2_manager,
+				      manifest,
 				      turtle,
 				      *lv2_path,
 				      filename);

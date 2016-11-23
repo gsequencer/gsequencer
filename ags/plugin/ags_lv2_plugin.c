@@ -76,6 +76,7 @@ void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
 enum{
   PROP_0,
   PROP_URI,
+  PROP_MANIFEST,
   PROP_TURTLE,
 };
 
@@ -126,23 +127,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 
   gobject->finalize = ags_lv2_plugin_finalize;
 
-
-  /**
-   * AgsLv2Plugin:turtle:
-   *
-   * The assigned turtle.
-   * 
-   * Since: 0.7.6
-   */
-  param_spec = g_param_spec_object("turtle\0",
-				   "turtle of the plugin\0",
-				   "The turtle this plugin is located in\0",
-				   AGS_TYPE_TURTLE,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TURTLE,
-				  param_spec);
-
+  /* properties */
   /**
    * AgsLv2Plugin:uri:
    *
@@ -159,6 +144,37 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 				  PROP_URI,
 				  param_spec);
 
+  /**
+   * AgsLv2Plugin:manifest:
+   *
+   * The assigned manifest.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("manifest\0",
+				   "manifest of the plugin\0",
+				   "The manifest this plugin is located in\0",
+				   AGS_TYPE_TURTLE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MANIFEST,
+				  param_spec);
+
+  /**
+   * AgsLv2Plugin:turtle:
+   *
+   * The assigned turtle.
+   * 
+   * Since: 0.7.6
+   */
+  param_spec = g_param_spec_object("turtle\0",
+				   "turtle of the plugin\0",
+				   "The turtle this plugin is located in\0",
+				   AGS_TYPE_TURTLE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TURTLE,
+				  param_spec);
   
   /* AgsBasePluginClass */
   base_plugin = (AgsBasePluginClass *) lv2_plugin;
@@ -179,6 +195,11 @@ void
 ags_lv2_plugin_init(AgsLv2Plugin *lv2_plugin)
 {
   lv2_plugin->flags = 0;
+
+  lv2_plugin->uri = NULL;
+
+  lv2_plugin->manifest = NULL;
+  lv2_plugin->turtle = NULL;
 }
 
 void
@@ -207,6 +228,27 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->uri = g_strdup(uri);
+    }
+    break;
+  case PROP_MANIFEST:
+    {
+      AgsTurtle *manifest;
+
+      manifest = (AgsTurtle *) g_value_get_object(value);
+
+      if(lv2_plugin->manifest == manifest){
+	return;
+      }
+
+      if(lv2_plugin->manifest != NULL){
+	g_object_unref(lv2_plugin->manifest);
+      }
+
+      if(manifest != NULL){
+	g_object_ref(manifest);
+      }
+      
+      lv2_plugin->manifest = manifest;
     }
     break;
   case PROP_TURTLE:
@@ -252,6 +294,11 @@ ags_lv2_plugin_get_property(GObject *gobject,
       g_value_set_string(value, lv2_plugin->uri);
     }
     break;
+  case PROP_MANIFEST:
+    {
+      g_value_set_object(value, lv2_plugin->manifest);
+    }
+    break;
   case PROP_TURTLE:
     {
       g_value_set_object(value, lv2_plugin->turtle);
@@ -271,6 +318,10 @@ ags_lv2_plugin_finalize(GObject *gobject)
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
   g_free(lv2_plugin->uri);
+
+  if(lv2_plugin->manifest != NULL){
+    g_object_unref(lv2_plugin->manifest);
+  }
   
   if(lv2_plugin->turtle != NULL){
     g_object_unref(lv2_plugin->turtle);

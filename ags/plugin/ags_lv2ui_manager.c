@@ -224,10 +224,10 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
 /**
  * ags_lv2ui_manager_load_file:
  * @lv2ui_manager: the #AgsLv2uiManager
+ * @manifest: the manifest
  * @turtle: the #AgsTurtle
  * @lv2ui_path: the lv2ui path
  * @filename: the filename of the plugin
- * @plugin_list: the plugin list
  *
  * Load @filename specified plugin.
  *
@@ -235,10 +235,10 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
  */
 void
 ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
+			    AgsTurtle *manifest,
 			    AgsTurtle *turtle,
 			    gchar *lv2ui_path,
-			    gchar *filename,
-			    GList *plugin_list)
+			    gchar *filename)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
 
@@ -264,10 +264,13 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 
   void ags_lv2ui_manager_load_file_ui_plugin(GList *list){
     GList *uri_list;
+    GList *binary_list;
 
+    gchar *gui_filename;
     gchar *filename;
     gchar *str;
     gchar *path;
+    gchar *gui_path;
     gchar *xpath;
     gchar *uri;
     
@@ -277,7 +280,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 
     while(list != NULL){
       /* find URI */
-      xpath = "./rdf-triple/rdf-subject/rdf-iri\0";    
+      xpath = "//rdf-triple/rdf-subject/rdf-iri\0";    
       uri_list = ags_turtle_find_xpath_with_context_node(turtle,
 							 xpath,
 							 list->data);
@@ -386,11 +389,44 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 	continue;
       }
 
+      xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0";
+      binary_list = ags_turtle_find_xpath_with_context_node(turtle,
+							    xpath,
+							    list->data);
+
+      /* load */
+      while(binary_list != NULL){
+	gchar *tmp;
+	
+	/* read filename of binary */
+	str = xmlNodeGetContent((xmlNode *) binary_list->data);
+	
+	if(str == NULL){
+	  binary_list = binary_list->next;
+	  continue;
+	}
+
+	str = g_strndup(&(str[1]),
+			strlen(str) - 2);
+	tmp = g_strndup(filename,
+			strstr(filename, "/\0") - filename);
+	gui_filename = g_strdup_printf("%s/%s\0",
+				       tmp,
+				       str);
+	free(str);
+
+	break;
+      }
+      
       path = g_strdup_printf("%s/%s\0",
-			     lv2_path,
+			     lv2ui_path,
 			     filename);
       
-      g_message("lv2ui check - %s\0", path);
+      gui_path = g_strdup_printf("%s/%s\0",
+				 lv2ui_path,
+				 gui_filename);
+      
+      g_message("lv2ui check - %s\0", gui_path);
       
       list = list->next;
     }    
@@ -584,10 +620,10 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 	
 	    /* load specified plugin */
 	    ags_lv2ui_manager_load_file(lv2ui_manager,
+					manifest,
 					turtle,
 					*lv2ui_path,
-					filename,
-					ttl_start);
+					filename);
 
 	    /* persist XML */
 	    //NOTE:JK: no need for it
