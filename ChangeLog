@@ -1,3 +1,10 @@
+ags (0.7.106)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsCartesian
+	* fixed case-sensitive iriref in ags_turtle.c
+	* added additional parameter to ags_lv2_manager_load_file() and ags_lv2ui_manager_load_file() in order to provide manifest
+
 ags (0.7.105)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

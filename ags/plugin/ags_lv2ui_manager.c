@@ -267,7 +267,6 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
     GList *binary_list;
 
     gchar *gui_filename;
-    gchar *filename;
     gchar *str;
     gchar *path;
     gchar *gui_path;
@@ -408,8 +407,15 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 
 	str = g_strndup(&(str[1]),
 			strlen(str) - 2);
-	tmp = g_strndup(filename,
-			strstr(filename, "/\0") - filename);
+
+	if((tmp = strstr(filename, "/\0")) != NULL){
+	  tmp = g_strndup(filename,
+			  tmp - filename);
+	}else{
+	  binary_list = binary_list->next;
+	  continue;
+	}
+	
 	gui_filename = g_strdup_printf("%s/%s\0",
 				       tmp,
 				       str);
@@ -432,6 +438,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
     }    
   }
   
+  /* entry point */
   if(turtle == NULL ||
      filename == NULL){
     return;
