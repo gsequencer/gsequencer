@@ -64,6 +64,7 @@ AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
 					      gchar *effect);
 
 void ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
+			       AgsTurtle *manifest,
 			       AgsTurtle *turtle,
 			       gchar *lv2_path,
 			       gchar *filename);

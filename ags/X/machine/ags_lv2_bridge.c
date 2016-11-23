@@ -586,6 +586,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
       gchar *gui_filename;
 
       gui_filename = g_value_get_string(value);
+/*
 
       if(lv2_bridge->gui_filename == gui_filename){
 	return;
@@ -598,7 +599,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
       lv2_bridge->gui_filename = g_strdup(gui_filename);
 
-      /* load GUI */
+      /* load GUI * /
       if(gui_filename != NULL &&
 	 lv2_bridge->lv2_gui != NULL){
 	GtkWidget *widget;
@@ -614,7 +615,6 @@ ags_lv2_bridge_set_property(GObject *gobject,
 	static const LV2_Feature **feature = {
 	  NULL,
 	};
-
 	lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(ags_lv2ui_manager_get_instance(),
 							   gui_filename);
 
@@ -651,7 +651,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 				 TRUE, TRUE,
 				 0);
 	      
-	      /* instantiate and pack ui */
+	      /* instantiate and pack ui * /
 	      bundle_path = g_strndup(gui_filename,
 				      rindex(gui_filename, '/') - gui_filename);
 	      widget = NULL;
@@ -671,6 +671,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 	  }
 	}
       }
+*/
     }
     break;
   case PROP_GUI_URI:
@@ -1504,17 +1505,19 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 #ifdef AGS_DEBUG
   g_message("plugin path - %s\0", plugin_path);
 #endif
-  
+
+  /*
   gui_uri = ags_lv2ui_manager_find_uri(ags_lv2ui_manager_get_instance(),
 				       filename,
 				       lv2_bridge->effect);
 
-  /* apply ui */
+  /* apply ui * /
   g_object_set(lv2_bridge,
 	       "has-gui\0", TRUE,
 	       "gui-uri\0", gui_uri,
 	       "gui-filename\0", filename,
 	       NULL);
+  */
 }
 
 void

@@ -40,7 +40,7 @@ void ags_base_plugin_finalize(GObject *gobject);
  * @short_description: The base plugin class
  * @title: AgsBasePlugin
  * @section_id:
- * @include: ags/object/ags_base_plugin.h
+ * @include: ags/plugin/ags_base_plugin.h
  *
  * The #AgsBasePlugin loads/unloads plugins on a abstraction level.
  */

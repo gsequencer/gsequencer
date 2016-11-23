@@ -40,10 +40,11 @@ typedef struct _AgsLv2uiPlugin AgsLv2uiPlugin;
 typedef struct _AgsLv2uiPluginClass AgsLv2uiPluginClass;
 
 typedef enum{
-  AGS_LV2UI_GTK2       = 1,
-  AGS_LV2UI_GTK3       = 1 <<  1,
-  AGS_LV2UI_QT         = 1 <<  2,
-  AGS_LV2UI_PLUGIN_IS_SYNTHESIZER  = 1 << 3,
+  AGS_LV2UI_PLUGIN_IS_SYNTHESIZER  = 1,
+  AGS_LV2UI_GTK2                   = 1 <<  1,
+  AGS_LV2UI_GTK3                   = 1 <<  2,
+  AGS_LV2UI_QT4                    = 1 <<  3,
+  AGS_LV2UI_QT5                    = 1 <<  4,
 }AgsLv2uiFlags;
 
 struct _AgsLv2uiPlugin
@@ -51,10 +52,15 @@ struct _AgsLv2uiPlugin
   AgsBasePlugin base_plugin;
 
   guint flags;
-  
-  gchar *uri;
 
-  AgsTurtle *turtle;
+  gchar *gui_filename;
+  
+  gchar *gui_uri;
+
+  AgsTurtle *manifest;
+  AgsTurtle *gui_turtle;
+
+  GObject *lv2_plugin;
 };
 
 struct _AgsLv2uiPluginClass
@@ -64,6 +70,6 @@ struct _AgsLv2uiPluginClass
 
 GType ags_lv2ui_plugin_get_type(void);
 
-AgsLv2uiPlugin* ags_lv2ui_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index);
+AgsLv2uiPlugin* ags_lv2ui_plugin_new(AgsTurtle *gui_turtle, gchar *filename, gchar *effect, gchar *gui_uri, guint effect_index);
 
 #endif /*__AGS_LV2UI_PLUGIN_H__*/
