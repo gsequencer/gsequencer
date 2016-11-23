@@ -65,6 +65,7 @@ struct _AgsLv2Plugin
   
   gchar *uri;
 
+  AgsTurtle *manifest;
   AgsTurtle *turtle;
 
   gchar *doap_name;
