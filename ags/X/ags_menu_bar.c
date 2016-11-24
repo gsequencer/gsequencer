@@ -569,16 +569,16 @@ ags_ladspa_bridge_menu_new()
 
   AgsLadspaManager *ladspa_manager;
 
-  GList *list;
+  GList *list, *start;
   
   menu = (GtkMenu *) gtk_menu_new();
 
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  list = ladspa_manager->ladspa_plugin;
+  start = 
+    list = ags_base_plugin_sort(ladspa_manager->ladspa_plugin);
 
-  while(list != NULL){    
-	
+  while(list != NULL){
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
     g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
@@ -590,6 +590,8 @@ ags_ladspa_bridge_menu_new()
     list = list->next;
   }
 
+  g_list_free(start);
+  
   return(menu);
 }
 
@@ -601,16 +603,16 @@ ags_dssi_bridge_menu_new()
 
   AgsDssiManager *dssi_manager;
 
-  GList *list;
+  GList *list, *start;
   
   menu = (GtkMenu *) gtk_menu_new();
 
   dssi_manager = ags_dssi_manager_get_instance();
 
-  list = dssi_manager->dssi_plugin;
+  start = 
+    list = ags_base_plugin_sort(dssi_manager->dssi_plugin);
 
-  while(list != NULL){    
-	
+  while(list != NULL){
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
     g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
@@ -622,6 +624,8 @@ ags_dssi_bridge_menu_new()
     list = list->next;
   }
 
+  g_list_free(start);
+  
   return(menu);
 }
 
@@ -633,16 +637,16 @@ ags_lv2_bridge_menu_new()
 
   AgsLv2Manager *lv2_manager;
 
-  GList *list;
+  GList *list, *start;
   
   menu = (GtkMenu *) gtk_menu_new();
 
   lv2_manager = ags_lv2_manager_get_instance();
 
-  list = lv2_manager->lv2_plugin;
+  start = 
+    list = ags_base_plugin_sort(lv2_manager->lv2_plugin);
 
-  while(list != NULL){    
-	
+  while(list != NULL){
     item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
     g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
@@ -656,6 +660,8 @@ ags_lv2_bridge_menu_new()
     list = list->next;
   }
 
+  g_list_free(start);
+  
   return(menu);
 }
 

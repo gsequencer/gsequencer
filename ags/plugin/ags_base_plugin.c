@@ -576,106 +576,36 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
 GList*
 ags_base_plugin_sort(GList *base_plugin)
 {
-  GList *start, *end;
-  GList *current;
+  auto gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b);
 
-  gboolean do_more, success;
-  gboolean toggle;
-  gboolean first_exchanged, last_exchanged;
+  gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b){
+    return(strcmp(AGS_BASE_PLUGIN(a)->effect,
+		  AGS_BASE_PLUGIN(b)->effect));
+  }
+  
+  GList *start;
+  GList *current, *nth;
+  GList *next, *prev;
 
-  if(base_plugin == NULL){
+  guint stop;
+  guint i, j;
+  gboolean success;
+
+  if(base_plugin == NULL ||
+     base_plugin->next == NULL){
     return(NULL);
   }
   
-  start = base_plugin;
-  end = g_list_last(base_plugin);
+  start = NULL;
 
-  do_more = TRUE;
-  toggle = FALSE;
+  while(base_plugin != NULL){
+    start = g_list_insert_sorted(start,
+				 base_plugin->data,
+				 (GCompareFunc) ags_base_plugin_sort_compare_function);
 
-  first_exchanged = FALSE;
-  last_exchanged = FALSE;
-  
-  while(do_more){
-    if(!toggle){
-      first_exchanged = FALSE;
-      last_exchanged = FALSE;
-
-      current = start;
-      success = FALSE;
-
-      while(current != NULL){
-	if(g_ascii_strcasecmp(AGS_BASE_PLUGIN(current->data)->effect,
-			      AGS_BASE_PLUGIN(start->data)->effect) < 0){
-	  success = TRUE;
-	}else{
-	  break;
-	}
-	
-	current = current->next;
-      }
-      
-      if(success){
-	GList *tmp;
-
-	tmp = start;
-
-	start = start->next;
-	start->prev = NULL;
-
-	current->prev = tmp;
-
-	tmp->next = current;
-	tmp->prev = current->prev;
-
-	tmp->prev->next = tmp;
-
-	first_exchanged = TRUE;
-      }
-
-      toggle = FALSE;
-    }else{
-      current = end;
-      success = FALSE;
-
-      while(current != NULL){
-	if(g_ascii_strcasecmp(AGS_BASE_PLUGIN(current->data)->effect,
-			      AGS_BASE_PLUGIN(start->data)->effect) > 0){
-	  success = TRUE;
-	}else{
-	  break;
-	}
-
-	current = current->prev;
-      }      
-      
-      if(success){
-	GList *tmp;
-
-	tmp = end;
-
-	end = end->prev;
-	end->next = NULL;
-
-	current->next = tmp;
-
-	tmp->next = current->next;
-	tmp->prev = current;
-
-	tmp->next->prev = tmp;
-
-	last_exchanged = TRUE;
-      }
-
-      toggle = TRUE;
-
-      if(!first_exchanged &&
-	 !last_exchanged){
-	do_more = FALSE;
-      }
-    }
+    base_plugin = base_plugin->next;
   }
-  
+
   return(start);
 }
 
