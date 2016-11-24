@@ -99,6 +99,7 @@ ags_port_descriptor_alloc
 ags_port_descriptor_free
 ags_base_plugin_find_filename
 ags_base_plugin_find_effect
+ags_base_plugin_sort
 ags_base_plugin_apply_port_group_by_prefix
 ags_base_plugin_instantiate
 ags_base_plugin_connect_port

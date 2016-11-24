@@ -510,6 +510,14 @@ ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
 
 /**
  * ags_base_plugin_find_filename:
+ * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @filename: the filename as string
+ * 
+ * Find filename in @base_plugin #GList-struct of #AgsBasePlugin.
+ *
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 0.7.6
  */
 GList*
 ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
@@ -528,6 +536,15 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
 
 /**
  * ags_base_plugin_find_effect:
+ * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @filename: the filename as string
+ * @effect: the effect as string
+ * 
+ * Find filename and effect in @base_plugin #GList-struct of #AgsBasePlugin.
+ *
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 0.7.6
  */
 GList*
 ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
@@ -544,6 +561,122 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
   }
 
   return(NULL);
+}
+
+/**
+ * ags_base_plugin_sort:
+ * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ *
+ * Sort @base_plugin alphabetically.
+ * 
+ * Returns: the sorted #GList-struct
+ * 
+ * Since: 0.7.107
+ */
+GList*
+ags_base_plugin_sort(GList *base_plugin)
+{
+  GList *start, *end;
+  GList *current;
+
+  gboolean do_more, success;
+  gboolean toggle;
+  gboolean first_exchanged, last_exchanged;
+
+  if(base_plugin == NULL){
+    return(NULL);
+  }
+  
+  start = base_plugin;
+  end = g_list_last(base_plugin);
+
+  do_more = TRUE;
+  toggle = FALSE;
+
+  first_exchanged = FALSE;
+  last_exchanged = FALSE;
+  
+  while(do_more){
+    if(!toggle){
+      first_exchanged = FALSE;
+      last_exchanged = FALSE;
+
+      current = start;
+      success = FALSE;
+
+      while(current != NULL){
+	if(g_ascii_strcasecmp(AGS_BASE_PLUGIN(current->data)->effect,
+			      AGS_BASE_PLUGIN(start->data)->effect) < 0){
+	  success = TRUE;
+	}else{
+	  break;
+	}
+	
+	current = current->next;
+      }
+      
+      if(success){
+	GList *tmp;
+
+	tmp = start;
+
+	start = start->next;
+	start->prev = NULL;
+
+	current->prev = tmp;
+
+	tmp->next = current;
+	tmp->prev = current->prev;
+
+	tmp->prev->next = tmp;
+
+	first_exchanged = TRUE;
+      }
+
+      toggle = FALSE;
+    }else{
+      current = end;
+      success = FALSE;
+
+      while(current != NULL){
+	if(g_ascii_strcasecmp(AGS_BASE_PLUGIN(current->data)->effect,
+			      AGS_BASE_PLUGIN(start->data)->effect) > 0){
+	  success = TRUE;
+	}else{
+	  break;
+	}
+
+	current = current->prev;
+      }      
+      
+      if(success){
+	GList *tmp;
+
+	tmp = end;
+
+	end = end->prev;
+	end->next = NULL;
+
+	current->next = tmp;
+
+	tmp->next = current->next;
+	tmp->prev = current;
+
+	tmp->next->prev = tmp;
+
+	last_exchanged = TRUE;
+      }
+
+      toggle = TRUE;
+
+      if(!first_exchanged &&
+	 !last_exchanged){
+	do_more = FALSE;
+      }
+    }
+  }
+  
+  return(start);
 }
 
 void

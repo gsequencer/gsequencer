@@ -129,6 +129,8 @@ void ags_port_descriptor_free(AgsPortDescriptor *port_descriptor);
 GList* ags_base_plugin_find_filename(GList *base_plugin, gchar *filename);
 GList* ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect);
 
+GList* ags_base_plugin_sort(GList *base_plugin);
+
 void ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin);
 
 gpointer ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,

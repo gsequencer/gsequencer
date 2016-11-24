@@ -1,3 +1,8 @@
+ags (0.7.107)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_base_plugin_sort() alphabetically plugins by effect name
+
 ags (0.7.106)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
