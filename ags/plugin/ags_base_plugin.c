@@ -575,24 +575,17 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
  */
 GList*
 ags_base_plugin_sort(GList *base_plugin)
-{
+{  
+  GList *start;
+  
   auto gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b);
 
   gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b){
     return(strcmp(AGS_BASE_PLUGIN(a)->effect,
 		  AGS_BASE_PLUGIN(b)->effect));
   }
-  
-  GList *start;
-  GList *current, *nth;
-  GList *next, *prev;
 
-  guint stop;
-  guint i, j;
-  gboolean success;
-
-  if(base_plugin == NULL ||
-     base_plugin->next == NULL){
+  if(base_plugin == NULL){
     return(NULL);
   }
   
