@@ -2,6 +2,7 @@ ags (0.7.107)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_base_plugin_sort() alphabetically plugins by effect name
+	* improved AgsMenuBar to have sorted plugins by effect name see above
 
 ags (0.7.106)
 
