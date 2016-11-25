@@ -64,8 +64,6 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_navigation.h>
 
-#include <ags/X/task/ags_toggle_led.h>
-
 #include <stdlib.h>
 #include <math.h>
 

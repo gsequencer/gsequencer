@@ -180,7 +180,7 @@ ags_start_animation_thread(void *ptr)
   
   gdk_threads_enter();
   
-  window = (GdkWindow *) ptr;
+  window = (GtkWidget *) ptr;
 
   rectangle.x = 0;
   rectangle.y = 0;
