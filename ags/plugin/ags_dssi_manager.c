@@ -225,6 +225,36 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
 }
 
 /**
+ * ags_dssi_manager_load_blacklist:
+ * @dssi_manager: the #AgsDssiManager
+ * @blacklist_filename: the filename as string
+ * 
+ * Load blacklisted plugin filenames.
+ * 
+ * Since: 0.7.108
+ */
+void
+ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
+				gchar *blacklist_filename)
+{
+  if(g_file_test(blacklist_filename,
+		 (G_FILE_TEST_EXISTS |
+		  G_FILE_TEST_IS_REGULAR))){
+    FILE *file;
+
+    gchar *str;
+    
+    file = fopen(blacklist_filename,
+		 "r\0");
+
+    while(getline(&str, NULL, file) != -1){
+      dssi_manager->dssi_plugin_blacklist = g_list_prepend(dssi_manager->dssi_plugin_blacklist,
+							   str);
+    }
+  }
+} 
+
+/**
  * ags_dssi_manager_load_file:
  * @dssi_manager: the #AgsDssiManager
  * @dssi_path: the dssi path
@@ -340,13 +370,16 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
-			  ".so\0")){
+			  ".so\0") &&
+	 !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
+			     filename,
+			     strcmp)){
 	ags_dssi_manager_load_file(dssi_manager,
 				   *dssi_path,
 				   filename);
       }
     }
-
+    
     dssi_path++;
   }
 }
@@ -371,11 +404,6 @@ ags_dssi_manager_get_instance()
     ags_dssi_manager = ags_dssi_manager_new();
 
     pthread_mutex_unlock(&(mutex));
-
-    ags_log_add_message(ags_log_get_instance(),
-			"* Loading DSSI plugins\0");
-
-    ags_dssi_manager_load_default_directory(ags_dssi_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

@@ -39,6 +39,7 @@ struct _AgsDssiManager
 {
   GObject object;
   
+  GList *dssi_plugin_blacklist;
   GList *dssi_plugin;
 };
 
@@ -52,6 +53,9 @@ GType ags_dssi_manager_get_type(void);
 gchar** ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager);
 AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
 						 gchar *filename, gchar *effect);
+
+void ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
+				     gchar *blacklist_filename);
 
 void ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
 				gchar *dssi_path,
