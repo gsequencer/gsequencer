@@ -1,3 +1,8 @@
+ags (0.7.108)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented blacklist of plugins for AgsLadspaManager, AgsDssiManager, AgsLv2Manager and AgsLv2uiManager
+
 ags (0.7.107)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

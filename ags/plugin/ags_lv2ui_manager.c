@@ -222,6 +222,36 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
 }
 
 /**
+ * ags_lv2ui_manager_load_blacklist:
+ * @lv2ui_manager: the #AgsLv2uiManager
+ * @blacklist_filename: the filename as string
+ * 
+ * Load blacklisted plugin filenames.
+ * 
+ * Since: 0.7.108
+ */
+void
+ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
+				 gchar *blacklist_filename)
+{
+  if(g_file_test(blacklist_filename,
+		 (G_FILE_TEST_EXISTS |
+		  G_FILE_TEST_IS_REGULAR))){
+    FILE *file;
+
+    gchar *str;
+    
+    file = fopen(blacklist_filename,
+		 "r\0");
+
+    while(getline(&str, NULL, file) != -1){
+      lv2ui_manager->lv2ui_plugin_blacklist = g_list_prepend(lv2ui_manager->lv2ui_plugin_blacklist,
+							     str);
+    }
+  }
+} 
+
+/**
  * ags_lv2ui_manager_load_file:
  * @lv2ui_manager: the #AgsLv2uiManager
  * @manifest: the manifest
@@ -626,12 +656,16 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 	    }
 	
 	    /* load specified plugin */
-	    ags_lv2ui_manager_load_file(lv2ui_manager,
-					manifest,
-					turtle,
-					*lv2ui_path,
-					filename);
-
+	    if(!g_list_find_custom(lv2ui_manager->lv2ui_plugin_blacklist,
+				   filename,
+				   strcmp)){
+	      ags_lv2ui_manager_load_file(lv2ui_manager,
+					  manifest,
+					  turtle,
+					  *lv2ui_path,
+					  filename);
+	    }
+	    
 	    /* persist XML */
 	    //NOTE:JK: no need for it
 	    //	xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
@@ -676,11 +710,6 @@ ags_lv2ui_manager_get_instance()
     ags_lv2ui_manager = ags_lv2ui_manager_new();
 
     pthread_mutex_unlock(&(mutex));
-
-    ags_log_add_message(ags_log_get_instance(),
-			"* Loading Lv2ui plugins\0");
-
-    ags_lv2ui_manager_load_default_directory(ags_lv2ui_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

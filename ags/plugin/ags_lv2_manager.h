@@ -47,7 +47,8 @@ struct _AgsLv2Manager
   GObject object;
 
   gchar *locale;
-  
+
+  GList *lv2_plugin_blacklist;
   GList *lv2_plugin;
 };
 
@@ -62,6 +63,9 @@ gchar** ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager);
 AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
 					      gchar *filename,
 					      gchar *effect);
+
+void ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
+				    gchar *blacklist_filename);
 
 void ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 			       AgsTurtle *manifest,

@@ -133,9 +133,14 @@ ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
 
 void
 ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
-{
+{  
+  /* initialize lv2 plugin blacklist */
+  lv2_manager->lv2_plugin_blacklist = NULL;
+
+  /* initialize lv2_plugin GList */
   lv2_manager->lv2_plugin = NULL;
 
+  /* initiliaze ags_lv2_default_path string vector */
   if(ags_lv2_default_path == NULL){
     ags_lv2_default_path = (gchar **) malloc(3 * sizeof(gchar *));
 
@@ -312,6 +317,36 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
 
   return(NULL);
 }
+
+/**
+ * ags_lv2_manager_load_blacklist:
+ * @lv2_manager: the #AgsLv2Manager
+ * @blacklist_filename: the filename as string
+ * 
+ * Load blacklisted plugin filenames.
+ * 
+ * Since: 0.7.108
+ */
+void
+ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
+			       gchar *blacklist_filename)
+{
+  if(g_file_test(blacklist_filename,
+		 (G_FILE_TEST_EXISTS |
+		  G_FILE_TEST_IS_REGULAR))){
+    FILE *file;
+
+    gchar *str;
+    
+    file = fopen(blacklist_filename,
+		 "r\0");
+
+    while(getline(&str, NULL, file) != -1){
+      lv2_manager->lv2_plugin_blacklist = g_list_prepend(lv2_manager->lv2_plugin_blacklist,
+							 str);
+    }
+  }
+} 
 
 /**
  * ags_lv2_manager_load_file:
@@ -726,12 +761,16 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	    }
 	
 	    /* load specified plugin */
-	    ags_lv2_manager_load_file(lv2_manager,
-				      manifest,
-				      turtle,
-				      *lv2_path,
-				      filename);
-
+	    if(!g_list_find_custom(lv2_manager->lv2_plugin_blacklist,
+				   filename,
+				   strcmp)){
+	      ags_lv2_manager_load_file(lv2_manager,
+					manifest,
+					turtle,
+					*lv2_path,
+					filename);
+	    }
+	    
 	    /* persist XML */
 	    //NOTE:JK: no need for it
 	    //xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
@@ -776,11 +815,6 @@ ags_lv2_manager_get_instance()
     ags_lv2_manager = ags_lv2_manager_new(AGS_LV2_MANAGER_DEFAULT_LOCALE);
 
     pthread_mutex_unlock(&(mutex));
-
-    ags_log_add_message(ags_log_get_instance(),
-			"* Loading Lv2 plugins\0");
-
-    ags_lv2_manager_load_default_directory(ags_lv2_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }
