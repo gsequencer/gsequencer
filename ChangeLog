@@ -1,3 +1,8 @@
+ags (0.7.109)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed data-race of AgsCellPattern and AgsMatrix callbacks
+
 ags (0.7.108)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
