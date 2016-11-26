@@ -888,7 +888,6 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
   AgsThread *main_loop;
 
   auto void ags_thread_set_sync_all_reset(AgsThread *thread);
-  auto void ags_thread_set_sync_all_reset_after(AgsThread *thread);
   auto void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
 
   void ags_thread_set_sync_all_reset(AgsThread *thread){
@@ -918,8 +917,45 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
       }
     }
   }
+  
+  void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic){
+    AgsThread *child;
 
-  void ags_thread_set_sync_all_reset_after(AgsThread *thread){
+    ags_thread_set_sync(thread, tic);
+
+    child = g_atomic_pointer_get(&(thread->children));
+
+    while(child != NULL){
+      ags_thread_set_sync_all_recursive(child, tic);
+      
+      child = g_atomic_pointer_get(&(child->next));
+    }
+  }
+
+  /* entry point */
+  main_loop = ags_thread_get_toplevel(thread);
+
+  ags_thread_set_sync_all_reset(main_loop);
+  ags_thread_set_sync_all_recursive(main_loop, tic);
+}
+
+/**
+ * ags_thread_reset_all:
+ * @thread: the #AgsThread
+ * 
+ * Reset all threads. E.g. suspended threads. A synchronization
+ * stage after #AgsAsyncQueue run.
+ * 
+ * Since: 0.7.109
+ */
+void
+ags_thread_reset_all(AgsThread *thread)
+{
+  AgsThread *main_loop;
+
+  auto void ags_thread_reset_all_recursive(AgsThread *thread);
+
+  void ags_thread_reset_all_recursive(AgsThread *thread){
     AgsThread *child;
 
     /* check main loop monitor if suspended and interrupted */
@@ -966,31 +1002,16 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
     child = g_atomic_pointer_get(&(thread->children));
 
     while(child != NULL){
-      ags_thread_set_sync_all_reset_after(child);
-      
-      child = g_atomic_pointer_get(&(child->next));
-    }
-  }
-  
-  void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic){
-    AgsThread *child;
-
-    ags_thread_set_sync(thread, tic);
-
-    child = g_atomic_pointer_get(&(thread->children));
-
-    while(child != NULL){
-      ags_thread_set_sync_all_recursive(child, tic);
+      ags_thread_reset_all_recursive(child);
       
       child = g_atomic_pointer_get(&(child->next));
     }
   }
 
+  /* entry point */
   main_loop = ags_thread_get_toplevel(thread);
 
-  ags_thread_set_sync_all_reset(main_loop);
-  ags_thread_set_sync_all_recursive(main_loop, tic);
-  ags_thread_set_sync_all_reset_after(main_loop);
+  ags_thread_reset_all_recursive(main_loop);
 }
 
 /**
@@ -2344,6 +2365,8 @@ ags_thread_real_clock(AgsThread *thread)
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
 
       ags_thread_set_sync_all(main_loop, thread->current_tic);
+
+      ags_thread_reset_all(main_loop);
 
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
     }  

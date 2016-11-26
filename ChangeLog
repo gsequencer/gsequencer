@@ -1,3 +1,9 @@
+ags (0.7.110)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* critical bug-fix data-race in ags_thread-posix.c resume interrupted threads after AgsAsyncQueue run
+	* implemented ags_thread_reset_all() see above
+
 ags (0.7.109)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
