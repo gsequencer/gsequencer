@@ -42,9 +42,9 @@ void ags_midi_file_finalize(GObject *gobject);
  * @short_description: the MIDI file
  * @title: AgsMidiFile
  * @section_id:
- * @include: ags/X/ags_midi_file.h
+ * @include: ags/audio/midi/ags_midi_file.h
  *
- * #AgsMidiFile reads your midi files.
+ * #AgsMidiFile reads or writes your midi files.
  */
 
 enum{

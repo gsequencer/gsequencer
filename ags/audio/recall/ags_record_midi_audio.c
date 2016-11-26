@@ -49,6 +49,7 @@ enum{
   PROP_0,
   PROP_PLAYBACK,
   PROP_RECORD,
+  PROP_FILENAME,
 };
 
 static gpointer ags_record_midi_audio_parent_class = NULL;
@@ -58,10 +59,12 @@ static const gchar *ags_record_midi_audio_plugin_name = "ags-record-midi\0";
 static const gchar *ags_record_midi_audio_specifier[] = {
   "playback[0]\0"
   "record[0]\0",
+  "filename[0]\0",
 };
 static const gchar *ags_record_midi_audio_control_port[] = {
-  "1/2\0",
-  "2/2\0",
+  "1/3\0",
+  "2/3\0",
+  "3/3\0",
 };
 
 GType
@@ -135,6 +138,15 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
   g_object_class_install_property(gobject,
 				  PROP_RECORD,
 				  param_spec);
+
+  param_spec = g_param_spec_object("filename\0",
+				   "filename of record\0",
+				   "The filename of record\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
 }
 
 void
@@ -157,6 +169,7 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 
   port = NULL;
 
+  /* playback */
   record_midi_audio->playback = g_object_new(AGS_TYPE_PORT,
 					     "plugin-name\0", ags_record_midi_audio_plugin_name,
 					     "specifier\0", ags_record_midi_audio_specifier[0],
@@ -169,6 +182,7 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 
   port = g_list_prepend(port, record_midi_audio->playback);
 
+  /* record */
   record_midi_audio->record = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name\0", ags_record_midi_audio_plugin_name,
 					   "specifier\0", ags_record_midi_audio_specifier[1],
@@ -180,6 +194,19 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
   record_midi_audio->record->port_value.ags_port_boolean = TRUE;
 
   port = g_list_prepend(port, record_midi_audio->record);
+
+  /* filename */
+  record_midi_audio->filename = g_object_new(AGS_TYPE_PORT,
+					   "plugin-name\0", ags_record_midi_audio_plugin_name,
+					   "specifier\0", ags_record_midi_audio_specifier[2],
+					   "control-port\0", ags_record_midi_audio_control_port[2],
+					   "port-value-is-pointer\0", FALSE,
+					   "port-value-type\0", G_TYPE_BOOLEAN,
+					   NULL);
+
+  record_midi_audio->filename->port_value.ags_port_boolean = TRUE;
+
+  port = g_list_prepend(port, record_midi_audio->filename);
 
   /* set port */
   AGS_RECALL(record_midi_audio)->port = port;
@@ -238,6 +265,27 @@ ags_record_midi_audio_set_property(GObject *gobject,
       record_midi_audio->record = record;
     }
     break;
+  case PROP_FILENAME:
+    {
+      AgsPort *filename;
+
+      filename = (AgsPort *) g_value_get_object(value);
+
+      if(record_midi_audio->filename == filename){
+	return;
+      }
+
+      if(record_midi_audio->filename != NULL){
+	g_object_unref(G_OBJECT(record_midi_audio->filename));
+      }
+      
+      if(filename != NULL){
+	g_object_ref(G_OBJECT(filename));
+      }
+      
+      record_midi_audio->filename = filename;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -263,6 +311,11 @@ ags_record_midi_audio_get_property(GObject *gobject,
   case PROP_RECORD:
     {
       g_value_set_object(value, record_midi_audio->record);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_object(value, record_midi_audio->filename);
     }
     break;
   default:
@@ -293,10 +346,16 @@ ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port)
 		   "playback\0", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./record[0]\0",
-		11)){
+		      "./record[0]\0",
+		      11)){
       g_object_set(G_OBJECT(plugin),
 		   "record\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./filename[0]\0",
+		      11)){
+      g_object_set(G_OBJECT(plugin),
+		   "filename\0", AGS_PORT(port->data),
 		   NULL);
     }
 

@@ -30,6 +30,271 @@
  */
 
 /**
+ * ags_midi_util_is_key_on:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_key_on(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xf0 & buffer[0]) == 0x90) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_key_off:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_key_off(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xf0 & buffer[0]) == 0x80) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_key_pressure:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_key_pressure(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xf0 & buffer[0]) == 0xa0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_change_parameter:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_change_parameter(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xf0 & buffer[0]) == 0xb0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_pitch_bend:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_pitch_bend(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xf0 & buffer[0]) == 0xe0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_change_program:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_change_program(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xf0 & buffer[0]) == 0xc0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_change_pressure:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_change_pressure(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xf0 & buffer[0]) == 0xd0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_to_smf:
+ * @buffer: the midi buffer
+ * @buffer_length: the buffer length
+ * @smf_buffer_length: the return location of resulting length
+ * 
+ * Convert real-time MIDI to SMF.
+ * 
+ * Returns: the SMF buffer
+ * 
+ * Since: 1.0.0
+ */
+unsigned char*
+ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
+		     glong delta_time,
+		     guint *smf_buffer_length)
+{
+  unsigned char *midi_iter;
+  unsigned char *smf_buffer;
+
+  
+  guint ret_smf_buffer_length;
+  
+  auto unsigned char* ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length);
+
+  unsigned char* ags_midi_util_to_smf_realloc(unsigned char *smf_buffer, guint smf_buffer_length){
+    if(smf_buffer == NULL){
+      smf_buffer = (unsigned char *) malloc(smf_buffer_length * sizeof(unsigned char));
+    }else{
+      smf_buffer = (unsigned char *) realloc(smf_buffer,
+					     smf_buffer_length * sizeof(unsigned char));
+    }
+
+    return(smf_buffer);
+  }
+  
+  if(midi_buffer == NULL){
+    return(NULL);
+  }
+
+  smf_buffer = NULL;
+  ret_smf_buffer_length = 0;
+  
+  /* parse bytes */
+  midi_iter = midi_buffer;
+      
+  while(midi_iter < midi_buffer + buffer_length){
+    if(ags_midi_util_is_key_on(midi_iter)){
+      /* key on */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_key_on(smf_buffer,
+				      delta_time,
+				      0xf & midi_iter[0],
+				      0x7f & midi_iter[1],
+				      0x7f & midi_iter[2]);
+
+      midi_iter += 3;
+    }else if(ags_midi_util_is_key_off(midi_iter)){
+      /* key off */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_key_off(smf_buffer,
+				       delta_time,
+				       0xf & midi_iter[0],
+				       0x7f & midi_iter[1],
+				       0x7f & midi_iter[2]);
+      
+      midi_iter += 3;
+    }else if(ags_midi_util_is_key_pressure(midi_iter)){
+      /* key pressure */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_key_pressure(smf_buffer,
+					    delta_time,
+					    0xf & midi_iter[0],
+					    0x7f & midi_iter[1],
+					    0x7f & midi_iter[2]);
+      
+      midi_iter += 3;
+    }else if(ags_midi_util_is_change_parameter(midi_iter)){
+      /* change parameter */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_change_parameter(smf_buffer,
+						delta_time,
+						0xf & midi_iter[0],
+						0x7f & midi_iter[1],
+						0x7f & midi_iter[2]);
+      
+      midi_iter += 3;
+    }else if(ags_midi_util_is_pitch_bend(midi_iter)){
+      /* pitch bend */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_pitch_bend(smf_buffer,
+					  delta_time,
+					  0xf & midi_iter[0],
+					  0x7f & midi_iter[1],
+					  0x7f & midi_iter[2]);
+      
+      midi_iter += 3;
+    }else if(ags_midi_util_is_change_program(midi_iter)){
+      /* change program */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_change_program(smf_buffer,
+					      delta_time,
+					      0xf & midi_iter[0],
+					      0x7f & midi_iter[1]);
+      
+      midi_iter += 2;
+    }else if(ags_midi_util_is_change_pressure(midi_iter)){
+      /* change pressure */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_change_pressure(smf_buffer,
+					       delta_time,
+					       0xf & midi_iter[0],
+					       0x7f & midi_iter[1]);
+      
+      midi_iter += 2;
+    }else{
+      g_warning("ags_midi_util.c - unexpected byte %x\0", midi_iter[0]);
+	  
+      midi_iter++;
+    }
+  }
+
+  return(smf_buffer);
+}
+
+/**
  * ags_midi_util_envelope_to_velocity:
  * @attack: attack
  * @decay: decay

@@ -285,9 +285,7 @@ am__objects_10 = $(am__objects_1) \
 	ags/audio/midi/libags_audio_la-ags_midi_util.lo \
 	ags/audio/midi/libags_audio_la-ags_midi_builder.lo \
 	ags/audio/midi/libags_audio_la-ags_midi_file.lo \
-	ags/audio/midi/libags_audio_la-ags_midi_parser.lo \
-	ags/audio/midi/libags_audio_la-ags_midi_file_reader.lo \
-	ags/audio/midi/libags_audio_la-ags_midi_file_writer.lo
+	ags/audio/midi/libags_audio_la-ags_midi_parser.lo
 am__objects_11 = $(am__objects_1) \
 	ags/audio/jack/libags_audio_la-ags_jack_client.lo \
 	ags/audio/jack/libags_audio_la-ags_jack_midiin.lo \
@@ -2104,9 +2102,7 @@ libags_audio_midi_h_sources = \
 	ags/audio/midi/ags_midi_util.h \
 	ags/audio/midi/ags_midi_builder.h \
 	ags/audio/midi/ags_midi_file.h \
-	ags/audio/midi/ags_midi_parser.h \
-	ags/audio/midi/ags_midi_file_reader.h \
-	ags/audio/midi/ags_midi_file_writer.h
+	ags/audio/midi/ags_midi_parser.h
 
 deprecated_libags_audio_midi_c_sources = 
 libags_audio_midi_c_sources = \
@@ -2115,9 +2111,7 @@ libags_audio_midi_c_sources = \
 	ags/audio/midi/ags_midi_util.c \
 	ags/audio/midi/ags_midi_builder.c \
 	ags/audio/midi/ags_midi_file.c \
-	ags/audio/midi/ags_midi_parser.c \
-	ags/audio/midi/ags_midi_file_reader.c \
-	ags/audio/midi/ags_midi_file_writer.c
+	ags/audio/midi/ags_midi_parser.c
 
 
 # libags-audio - jack
@@ -3311,12 +3305,6 @@ ags/audio/midi/libags_audio_la-ags_midi_file.lo:  \
 	ags/audio/midi/$(am__dirstamp) \
 	ags/audio/midi/$(DEPDIR)/$(am__dirstamp)
 ags/audio/midi/libags_audio_la-ags_midi_parser.lo:  \
-	ags/audio/midi/$(am__dirstamp) \
-	ags/audio/midi/$(DEPDIR)/$(am__dirstamp)
-ags/audio/midi/libags_audio_la-ags_midi_file_reader.lo:  \
-	ags/audio/midi/$(am__dirstamp) \
-	ags/audio/midi/$(DEPDIR)/$(am__dirstamp)
-ags/audio/midi/libags_audio_la-ags_midi_file_writer.lo:  \
 	ags/audio/midi/$(am__dirstamp) \
 	ags/audio/midi/$(DEPDIR)/$(am__dirstamp)
 ags/audio/jack/$(am__dirstamp):
@@ -4990,8 +4978,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_buffer_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_builder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_reader.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_writer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_buffer_audio_signal.Plo@am__quote@
@@ -6032,20 +6018,6 @@ ags/audio/midi/libags_audio_la-ags_midi_parser.lo: ags/audio/midi/ags_midi_parse
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/midi/ags_midi_parser.c' object='ags/audio/midi/libags_audio_la-ags_midi_parser.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/midi/libags_audio_la-ags_midi_parser.lo `test -f 'ags/audio/midi/ags_midi_parser.c' || echo '$(srcdir)/'`ags/audio/midi/ags_midi_parser.c
-
-ags/audio/midi/libags_audio_la-ags_midi_file_reader.lo: ags/audio/midi/ags_midi_file_reader.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/midi/libags_audio_la-ags_midi_file_reader.lo -MD -MP -MF ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_reader.Tpo -c -o ags/audio/midi/libags_audio_la-ags_midi_file_reader.lo `test -f 'ags/audio/midi/ags_midi_file_reader.c' || echo '$(srcdir)/'`ags/audio/midi/ags_midi_file_reader.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_reader.Tpo ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_reader.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/midi/ags_midi_file_reader.c' object='ags/audio/midi/libags_audio_la-ags_midi_file_reader.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/midi/libags_audio_la-ags_midi_file_reader.lo `test -f 'ags/audio/midi/ags_midi_file_reader.c' || echo '$(srcdir)/'`ags/audio/midi/ags_midi_file_reader.c
-
-ags/audio/midi/libags_audio_la-ags_midi_file_writer.lo: ags/audio/midi/ags_midi_file_writer.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/midi/libags_audio_la-ags_midi_file_writer.lo -MD -MP -MF ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_writer.Tpo -c -o ags/audio/midi/libags_audio_la-ags_midi_file_writer.lo `test -f 'ags/audio/midi/ags_midi_file_writer.c' || echo '$(srcdir)/'`ags/audio/midi/ags_midi_file_writer.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_writer.Tpo ags/audio/midi/$(DEPDIR)/libags_audio_la-ags_midi_file_writer.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/midi/ags_midi_file_writer.c' object='ags/audio/midi/libags_audio_la-ags_midi_file_writer.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/midi/libags_audio_la-ags_midi_file_writer.lo `test -f 'ags/audio/midi/ags_midi_file_writer.c' || echo '$(srcdir)/'`ags/audio/midi/ags_midi_file_writer.c
 
 ags/audio/jack/libags_audio_la-ags_jack_client.lo: ags/audio/jack/ags_jack_client.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/jack/libags_audio_la-ags_jack_client.lo -MD -MP -MF ags/audio/jack/$(DEPDIR)/libags_audio_la-ags_jack_client.Tpo -c -o ags/audio/jack/libags_audio_la-ags_jack_client.lo `test -f 'ags/audio/jack/ags_jack_client.c' || echo '$(srcdir)/'`ags/audio/jack/ags_jack_client.c

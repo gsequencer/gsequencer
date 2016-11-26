@@ -25,6 +25,21 @@
 
 #include <ags/lib/ags_complex.h>
 
+/* real-time channel message utility */
+gboolean ags_midi_util_is_key_on(unsigned char *buffer);
+gboolean ags_midi_util_is_key_off(unsigned char *buffer);
+gboolean ags_midi_util_is_key_pressure(unsigned char *buffer);
+gboolean ags_midi_util_is_change_parameter(unsigned char *buffer);
+gboolean ags_midi_util_is_pitch_bend(unsigned char *buffer);
+gboolean ags_midi_util_is_change_program(unsigned char *buffer);
+gboolean ags_midi_util_is_change_pressure(unsigned char *buffer);
+
+/*  */
+unsigned char* ags_midi_util_to_smf(unsigned char *midi_buffer, guint midi_buffer_length,
+				    glong delta_time,
+				    guint *smf_buffer_length);
+
+/*  */
 glong ags_midi_util_envelope_to_velocity(AgsComplex *attack,
 					 AgsComplex *decay,
 					 AgsComplex *sustain,

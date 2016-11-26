@@ -830,9 +830,7 @@ libags_audio_midi_h_sources = \
 	ags/audio/midi/ags_midi_util.h \
 	ags/audio/midi/ags_midi_builder.h \
 	ags/audio/midi/ags_midi_file.h \
-	ags/audio/midi/ags_midi_parser.h \
-	ags/audio/midi/ags_midi_file_reader.h \
-	ags/audio/midi/ags_midi_file_writer.h
+	ags/audio/midi/ags_midi_parser.h
 
 deprecated_libags_audio_midi_c_sources =
 
@@ -842,9 +840,7 @@ libags_audio_midi_c_sources = \
 	ags/audio/midi/ags_midi_util.c \
 	ags/audio/midi/ags_midi_builder.c \
 	ags/audio/midi/ags_midi_file.c \
-	ags/audio/midi/ags_midi_parser.c \
-	ags/audio/midi/ags_midi_file_reader.c \
-	ags/audio/midi/ags_midi_file_writer.c
+	ags/audio/midi/ags_midi_parser.c
 
 # libags-audio - jack
 deprecated_libags_audio_jack_h_sources =
