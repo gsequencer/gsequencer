@@ -50,8 +50,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 
-#include <ags/X/task/ags_toggle_led.h>
-
 #include <math.h>
 
 void
@@ -211,8 +209,6 @@ ags_matrix_tact_callback(AgsAudio *audio,
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
 
-  AgsToggleLed *toggle_led;
-  
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
@@ -304,15 +300,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
     active_led_old = (gdouble) matrix->cell_pattern->active_led - 1.0;
   }
 
-  //FIXME:JK: memory leak of GList
-  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->cell_pattern->led)),
-				  (guint) active_led_new,
-				  (guint) active_led_old);
-
   pthread_mutex_unlock(audio_mutex);
-
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(toggle_led));
 
   gdk_threads_leave();
 }

@@ -180,7 +180,7 @@ ags_start_animation_thread(void *ptr)
   
   gdk_threads_enter();
   
-  window = (GdkWindow *) ptr;
+  window = (GtkWidget *) ptr;
 
   rectangle.x = 0;
   rectangle.y = 0;
@@ -270,12 +270,17 @@ ags_start_animation(pthread_t *thread)
 void
 ags_setup(int argc, char **argv)
 {
+  AgsLadspaManager *ladspa_manager;
+  AgsDssiManager *dssi_manager;
+  AgsLv2Manager *lv2_manager;
+  AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
 
   AgsLog *log;
   
   struct passwd *pw;
 
+  gchar *blacklist_filename;
   gchar *rc_filename;
   gchar *filename;
   
@@ -353,27 +358,76 @@ ags_setup(int argc, char **argv)
     }
   }
 
+  /* get user information */
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  /* load ladspa manager */
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist\0",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_ladspa_manager_load_blacklist(ladspa_manager,
+				    blacklist_filename);
+
+  ags_log_add_message(ags_log_get_instance(),
+		      "* Loading LADSPA plugins\0");
+  
+  ags_ladspa_manager_load_default_directory(ladspa_manager);
+
+  /* load dssi manager */
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist\0",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_dssi_manager_load_blacklist(dssi_manager,
+				  blacklist_filename);
+
+  ags_log_add_message(ags_log_get_instance(),
+		      "* Loading DSSI plugins\0");
+
+  ags_dssi_manager_load_default_directory(dssi_manager);
+
+  /* load lv2 manager */
+  lv2_manager = ags_lv2_manager_get_instance();
+  lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
+
+  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist\0",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_lv2_manager_load_blacklist(lv2_manager,
+				 blacklist_filename);
+
+  ags_log_add_message(ags_log_get_instance(),
+		      "* Loading Lv2 plugins\0");
+
+  ags_lv2_manager_load_default_directory(lv2_manager);
+
+  /* load lv2ui manager */
+  lv2ui_manager = ags_lv2ui_manager_get_instance();  
+
+  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist\0",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_lv2ui_manager_load_blacklist(lv2ui_manager,
+				   blacklist_filename);
+  
+  ags_log_add_message(ags_log_get_instance(),
+		      "* Loading Lv2ui plugins\0");
+
+  ags_lv2ui_manager_load_default_directory(lv2ui_manager);
+  
   /* application contex */
   ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
   ags_application_context->argc = argc;
   ags_application_context->argv = argv;
 
-  /* load managers */
-  ags_ladspa_manager_get_instance();
-
-  ags_dssi_manager_get_instance();
-
-  ags_lv2_manager_get_instance();
-  lv2_worker_manager = ags_lv2_worker_manager_get_instance();
-    
-  ags_lv2ui_manager_get_instance();  
-
+  /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
   
   /* parse rc file */
-  uid = getuid();
-  pw = getpwuid(uid);
-
   rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
 				pw->pw_dir,
 				AGS_DEFAULT_DIRECTORY);

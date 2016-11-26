@@ -206,6 +206,8 @@ void ags_thread_suspend_handler(int sig);
 void ags_thread_set_sync(AgsThread *thread, guint tic);
 void ags_thread_set_sync_all(AgsThread *thread, guint tic);
 
+void ags_thread_reset_all(AgsThread *thread);
+
 void ags_thread_lock(AgsThread *thread);
 gboolean ags_thread_trylock(AgsThread *thread);
 void ags_thread_unlock(AgsThread *thread);

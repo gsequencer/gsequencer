@@ -224,6 +224,36 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
 }
 
 /**
+ * ags_ladspa_manager_load_blacklist:
+ * @ladspa_manager: the #AgsLadspaManager
+ * @blacklist_filename: the filename as string
+ * 
+ * Load blacklisted plugin filenames.
+ * 
+ * Since: 0.7.108
+ */
+void
+ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
+				  gchar *blacklist_filename)
+{
+  if(g_file_test(blacklist_filename,
+		 (G_FILE_TEST_EXISTS |
+		  G_FILE_TEST_IS_REGULAR))){
+    FILE *file;
+
+    gchar *str;
+    
+    file = fopen(blacklist_filename,
+		 "r\0");
+
+    while(getline(&str, NULL, file) != -1){
+      ladspa_manager->ladspa_plugin_blacklist = g_list_prepend(ladspa_manager->ladspa_plugin_blacklist,
+							       str);
+    }
+  }
+} 
+
+/**
  * ags_ladspa_manager_load_file:
  * @ladspa_manager: the #AgsLadspaManager
  * @ladspa_path: the LADSPA path
@@ -338,13 +368,16 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
-			  ".so\0")){
+			  ".so\0") &&
+	 !g_list_find_custom(ladspa_manager->ladspa_plugin_blacklist,
+			     filename,
+			     strcmp)){
 	ags_ladspa_manager_load_file(ladspa_manager,
 				     *ladspa_path,
 				     filename);
       }
     }
-
+    
     ladspa_path++;
   }
 }
@@ -369,11 +402,6 @@ ags_ladspa_manager_get_instance()
     ags_ladspa_manager = ags_ladspa_manager_new();
 
     pthread_mutex_unlock(&(mutex));
-
-    ags_log_add_message(ags_log_get_instance(),
-			"* Loading LADSPA plugins\0");
-
-    ags_ladspa_manager_load_default_directory(ags_ladspa_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

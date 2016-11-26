@@ -222,6 +222,36 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
 }
 
 /**
+ * ags_lv2ui_manager_load_blacklist:
+ * @lv2ui_manager: the #AgsLv2uiManager
+ * @blacklist_filename: the filename as string
+ * 
+ * Load blacklisted plugin filenames.
+ * 
+ * Since: 0.7.108
+ */
+void
+ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
+				 gchar *blacklist_filename)
+{
+  if(g_file_test(blacklist_filename,
+		 (G_FILE_TEST_EXISTS |
+		  G_FILE_TEST_IS_REGULAR))){
+    FILE *file;
+
+    gchar *str;
+    
+    file = fopen(blacklist_filename,
+		 "r\0");
+
+    while(getline(&str, NULL, file) != -1){
+      lv2ui_manager->lv2ui_plugin_blacklist = g_list_prepend(lv2ui_manager->lv2ui_plugin_blacklist,
+							     str);
+    }
+  }
+} 
+
+/**
  * ags_lv2ui_manager_load_file:
  * @lv2ui_manager: the #AgsLv2uiManager
  * @manifest: the manifest
@@ -267,7 +297,6 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
     GList *binary_list;
 
     gchar *gui_filename;
-    gchar *filename;
     gchar *str;
     gchar *path;
     gchar *gui_path;
@@ -377,7 +406,6 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 	      break;
 	    }
 	  }
-
 	  child = child->next;
 	}
       }
@@ -408,8 +436,15 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 
 	str = g_strndup(&(str[1]),
 			strlen(str) - 2);
-	tmp = g_strndup(filename,
-			strstr(filename, "/\0") - filename);
+
+	if((tmp = strstr(filename, "/\0")) != NULL){
+	  tmp = g_strndup(filename,
+			  tmp - filename);
+	}else{
+	  binary_list = binary_list->next;
+	  continue;
+	}
+
 	gui_filename = g_strdup_printf("%s/%s\0",
 				       tmp,
 				       str);
@@ -432,6 +467,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
     }    
   }
   
+  /* entry point */
   if(turtle == NULL ||
      filename == NULL){
     return;
@@ -482,7 +518,6 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
   GError *error;
 
   lv2ui_path = ags_lv2ui_default_path;
-
   while(*lv2ui_path != NULL){
     if(!g_file_test(*lv2ui_path,
 		    G_FILE_TEST_EXISTS)){
@@ -591,7 +626,6 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 
 	    if(turtle_path == NULL){
 	      ttl_list = ttl_list->next;
-	  
 	      continue;
 	    }
 	
@@ -619,11 +653,15 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 	    }
 	
 	    /* load specified plugin */
-	    ags_lv2ui_manager_load_file(lv2ui_manager,
-					manifest,
-					turtle,
-					*lv2ui_path,
-					filename);
+	    if(!g_list_find_custom(lv2ui_manager->lv2ui_plugin_blacklist,
+				   filename,
+				   strcmp)){
+	      ags_lv2ui_manager_load_file(lv2ui_manager,
+					  manifest,
+					  turtle,
+					  *lv2ui_path,
+					  filename);
+	    }
 
 	    /* persist XML */
 	    //NOTE:JK: no need for it
@@ -669,11 +707,6 @@ ags_lv2ui_manager_get_instance()
     ags_lv2ui_manager = ags_lv2ui_manager_new();
 
     pthread_mutex_unlock(&(mutex));
-
-    ags_log_add_message(ags_log_get_instance(),
-			"* Loading Lv2ui plugins\0");
-
-    ags_lv2ui_manager_load_default_directory(ags_lv2ui_manager);
   }else{
     pthread_mutex_unlock(&(mutex));
   }

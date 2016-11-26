@@ -15,6 +15,35 @@ ags (1.0.0)
 	* improved AgsDial
 	* fixed ags_automation_find_point() to allow accessing first and last entry
 
+ags (0.7.110)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* critical bug-fix data-race in ags_thread-posix.c resume interrupted threads after AgsAsyncQueue run
+	* implemented ags_thread_reset_all() see above
+
+ags (0.7.109)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed data-race of AgsCellPattern and AgsMatrix callbacks
+
+ags (0.7.108)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented blacklist of plugins for AgsLadspaManager, AgsDssiManager, AgsLv2Manager and AgsLv2uiManager
+
+ags (0.7.107)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_base_plugin_sort() alphabetically plugins by effect name
+	* improved AgsMenuBar to have sorted plugins by effect name see above
+
+ags (0.7.106)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsCartesian
+	* fixed case-sensitive iriref in ags_turtle.c
+	* added additional parameter to ags_lv2_manager_load_file() and ags_lv2ui_manager_load_file() in order to provide manifest
+
 ags (0.7.105)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

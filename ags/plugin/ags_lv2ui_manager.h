@@ -47,6 +47,7 @@ struct _AgsLv2uiManager
 {
   GObject gobject;
 
+  GList *lv2ui_plugin_blacklist;
   GList *lv2ui_plugin;
 };
 
@@ -61,6 +62,9 @@ gchar** ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager);
 AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
 						    gchar *filename,
 						    gchar *effect);
+
+void ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
+				      gchar *blacklist_filename);
 
 void ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 				 AgsTurtle *manifest,

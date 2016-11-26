@@ -510,6 +510,14 @@ ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
 
 /**
  * ags_base_plugin_find_filename:
+ * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @filename: the filename as string
+ * 
+ * Find filename in @base_plugin #GList-struct of #AgsBasePlugin.
+ *
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 0.7.6
  */
 GList*
 ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
@@ -528,6 +536,15 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
 
 /**
  * ags_base_plugin_find_effect:
+ * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @filename: the filename as string
+ * @effect: the effect as string
+ * 
+ * Find filename and effect in @base_plugin #GList-struct of #AgsBasePlugin.
+ *
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 0.7.6
  */
 GList*
 ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
@@ -544,6 +561,45 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
   }
 
   return(NULL);
+}
+
+/**
+ * ags_base_plugin_sort:
+ * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ *
+ * Sort @base_plugin alphabetically.
+ * 
+ * Returns: the sorted #GList-struct
+ * 
+ * Since: 0.7.107
+ */
+GList*
+ags_base_plugin_sort(GList *base_plugin)
+{  
+  GList *start;
+  
+  auto gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b);
+
+  gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b){
+    return(strcmp(AGS_BASE_PLUGIN(a)->effect,
+		  AGS_BASE_PLUGIN(b)->effect));
+  }
+
+  if(base_plugin == NULL){
+    return(NULL);
+  }
+  
+  start = NULL;
+
+  while(base_plugin != NULL){
+    start = g_list_insert_sorted(start,
+				 base_plugin->data,
+				 (GCompareFunc) ags_base_plugin_sort_compare_function);
+
+    base_plugin = base_plugin->next;
+  }
+
+  return(start);
 }
 
 void

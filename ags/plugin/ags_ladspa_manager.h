@@ -38,7 +38,8 @@ typedef struct _AgsLadspaManagerClass AgsLadspaManagerClass;
 struct _AgsLadspaManager
 {
   GObject object;
-  
+
+  GList *ladspa_plugin_blacklist;
   GList *ladspa_plugin;
 };
 
@@ -52,6 +53,9 @@ GType ags_ladspa_manager_get_type(void);
 gchar** ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager);
 AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
 						       gchar *filename, gchar *effect);
+
+void ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
+				       gchar *blacklist_filename);
 
 void ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
 				  gchar *ladspa_path,
