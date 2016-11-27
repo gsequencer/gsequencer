@@ -28,14 +28,8 @@
 
 int ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 
-int ags_midi_dialog_add_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-
-int ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_remove_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-
-int ags_midi_dialog_add_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_remove_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
+int ags_midi_dialog_add_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
+int ags_midi_dialog_remove_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 
 int ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 int ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);

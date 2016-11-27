@@ -75,19 +75,8 @@ struct _AgsMidiDialog
   GtkComboBoxText *backend;  
   GtkComboBoxText *midi_device;
   
-  GtkComboBoxText *jack_server;
-  GtkEntry *server_name;
-  GtkButton *add_server;
-  GtkButton *remove_server;
-  
-  GtkComboBoxText *jack_client;
-  GtkEntry *client_name;
-  GtkButton *add_client;
-  GtkButton *remove_client;
-  
-  GtkEntry *port_name;
-  GtkButton *add_port;
-  GtkButton *remove_port;
+  GtkButton *add_sequencer;
+  GtkButton *remove_sequencer;
   
   GtkButton *apply;
   GtkButton *ok;

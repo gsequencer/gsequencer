@@ -875,7 +875,7 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(distributed_manager != NULL){
-    jack_server = distributed_manager->data;
+    jack_server = AGS_JACK_SERVER(distributed_manager->data);
   }else{
     g_warning("distributed manager not found\0");
 

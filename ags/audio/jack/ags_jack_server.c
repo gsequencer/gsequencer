@@ -668,7 +668,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 
   default_client = (AgsJackClient *) jack_server->default_client;
 
-  str = g_strdup_printf("ags-midiin-%d\0",
+  str = g_strdup_printf("ags-jack-midiin-%d\0",
 			jack_server->n_sequencers);
   jack_midiin = ags_jack_midiin_new(jack_server->application_context);
   g_object_set(AGS_JACK_MIDIIN(jack_midiin),

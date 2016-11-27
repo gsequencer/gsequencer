@@ -376,102 +376,8 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  /* server */  
-  label = (GtkLabel *) gtk_label_new("jack server\0");
-  g_object_set(label,
-	       "xalign\0", 0.0,
-	       NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-  
-  midi_dialog->jack_server = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(midi_dialog->jack_server),
-		   1, 2,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(hbox),
-		   0, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  midi_dialog->server_name = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->server_name),
-		     TRUE, TRUE,
-		     0);
-
-  midi_dialog->add_server = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->add_server),
-		     FALSE, FALSE,
-		     0);
-
-  midi_dialog->remove_server = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->remove_server),
-		     FALSE, FALSE,
-		     0);
-
-  /* client */  
-  label = (GtkLabel *) gtk_label_new("jack client\0");
-  g_object_set(label,
-	       "xalign\0", 0.0,
-	       NULL);
-  gtk_table_attach(table,
-		   GTK_WIDGET(label),
-		   0, 1,
-		   4, 5,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-  
-  midi_dialog->jack_client = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_table_attach(table,
-		   GTK_WIDGET(midi_dialog->jack_client),
-		   1, 2,
-		   10, 11,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				  0);
-  gtk_table_attach(table,
-		   GTK_WIDGET(hbox),
-		   0, 2,
-		   5, 6,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  midi_dialog->client_name = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->client_name),
-		     TRUE, TRUE,
-		     0);
-
-  midi_dialog->add_client = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->add_client),
-		     FALSE, FALSE,
-		     0);
-
-  midi_dialog->remove_client = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->remove_client),
-		     FALSE, FALSE,
-		     0);
-
-  /* port */  
-  label = (GtkLabel *) gtk_label_new("jack port\0");
+  /* sequencer */  
+  label = (GtkLabel *) gtk_label_new("jack sequencer\0");
   g_object_set(label,
 	       "xalign\0", 0.0,
 	       NULL);
@@ -491,48 +397,22 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  midi_dialog->port_name = (GtkEntry *) gtk_entry_new();
+  midi_dialog->add_sequencer = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->port_name),
-		     TRUE, TRUE,
-		     0);
-
-  midi_dialog->add_port = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->add_port),
+		     GTK_WIDGET(midi_dialog->add_sequencer),
 		     FALSE, FALSE,
 		     0);
 
-  midi_dialog->remove_port = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  midi_dialog->remove_sequencer = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->remove_port),
+		     GTK_WIDGET(midi_dialog->remove_sequencer),
 		     FALSE, FALSE,
 		     0);
 
   /* insensitive for alsa */
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->jack_server,
+  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_sequencer,
 			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->server_name,
-			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_server,
-			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_server,
-			   FALSE);
-
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->jack_client,
-			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->client_name,
-			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_client,
-			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_client,
-			   FALSE);
-
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->port_name,
-			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_port,
-			   FALSE);
-  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_port,
+  gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_sequencer,
 			   FALSE);
 
   /* GtkButton's in GtkDialog->action_area  */
@@ -633,26 +513,12 @@ ags_midi_dialog_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) midi_dialog->backend, "changed\0",
 		   G_CALLBACK(ags_midi_dialog_backend_changed_callback), (gpointer) midi_dialog);
 
-  /* server */
-  g_signal_connect((GObject *) midi_dialog->add_server, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_add_server_callback), (gpointer) midi_dialog);
+  /* sequencer */
+  g_signal_connect((GObject *) midi_dialog->add_sequencer, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_add_sequencer_callback), (gpointer) midi_dialog);
 
-  g_signal_connect((GObject *) midi_dialog->remove_server, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_remove_server_callback), (gpointer) midi_dialog);
-
-  /* client */
-  g_signal_connect((GObject *) midi_dialog->add_client, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_add_client_callback), (gpointer) midi_dialog);
-
-  g_signal_connect((GObject *) midi_dialog->remove_client, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_remove_client_callback), (gpointer) midi_dialog);
-
-  /* port */
-  g_signal_connect((GObject *) midi_dialog->add_port, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_add_port_callback), (gpointer) midi_dialog);
-
-  g_signal_connect((GObject *) midi_dialog->remove_port, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_remove_port_callback), (gpointer) midi_dialog);
+  g_signal_connect((GObject *) midi_dialog->remove_sequencer, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_remove_sequencer_callback), (gpointer) midi_dialog);
 
   /* applicable */
   g_signal_connect((GObject *) midi_dialog->apply, "clicked\0",
@@ -685,42 +551,16 @@ ags_midi_dialog_disconnect(AgsConnectable *connectable)
 		      (gpointer) midi_dialog,
 		      NULL);
 
-  /* server */
-  g_object_disconnect((GObject *) midi_dialog->add_server,
+  /* sequencer */
+  g_object_disconnect((GObject *) midi_dialog->add_sequencer,
 		      "clicked\0",
-		      G_CALLBACK(ags_midi_dialog_add_server_callback),
+		      G_CALLBACK(ags_midi_dialog_add_sequencer_callback),
 		      (gpointer) midi_dialog,
 		      NULL);
 
-  g_object_disconnect((GObject *) midi_dialog->remove_server,
+  g_object_disconnect((GObject *) midi_dialog->remove_sequencer,
 		      "clicked\0",
-		      G_CALLBACK(ags_midi_dialog_remove_server_callback),
-		      (gpointer) midi_dialog,
-		      NULL);
-
-  /* client */
-  g_object_disconnect((GObject *) midi_dialog->add_client,
-		      "clicked\0",
-		      G_CALLBACK(ags_midi_dialog_add_client_callback),
-		      (gpointer) midi_dialog,
-		      NULL);
-
-  g_object_disconnect((GObject *) midi_dialog->remove_client,
-		      "clicked\0",
-		      G_CALLBACK(ags_midi_dialog_remove_client_callback),
-		      (gpointer) midi_dialog,
-		      NULL);
-
-  /* port */
-  g_object_disconnect((GObject *) midi_dialog->add_port,
-		      "clicked\0",
-		      G_CALLBACK(ags_midi_dialog_add_port_callback),
-		      (gpointer) midi_dialog,
-		      NULL);
-
-  g_object_disconnect((GObject *) midi_dialog->remove_port,
-		      "clicked\0",
-		      G_CALLBACK(ags_midi_dialog_remove_port_callback),
+		      G_CALLBACK(ags_midi_dialog_remove_sequencer_callback),
 		      (gpointer) midi_dialog,
 		      NULL);
 

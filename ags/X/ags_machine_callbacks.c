@@ -388,7 +388,9 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
   if(machine->midi_dialog == NULL){
     midi_dialog = ags_midi_dialog_new(machine);
     machine->midi_dialog = (GtkDialog *) midi_dialog;
-    midi_dialog->flags |= AGS_MIDI_DIALOG_MAPPING;
+    midi_dialog->flags |= (AGS_MIDI_DIALOG_IO_OPTIONS |
+			   AGS_MIDI_DIALOG_MAPPING |
+			   AGS_MIDI_DIALOG_DEVICE);
     
     g_signal_connect(midi_dialog, "delete-event\0",
 		     G_CALLBACK(ags_machine_midi_dialog_delete_event_callback), machine);
