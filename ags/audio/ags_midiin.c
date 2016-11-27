@@ -680,15 +680,43 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
   if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER0);
     midiin->flags |= AGS_MIDIIN_BUFFER1;
+
+    /* clear buffer */
+    if(midiin->buffer[0] != NULL){
+      free(midiin->buffer[0]);
+    }
+
+    midiin->buffer[0] = NULL;
   }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER1);
     midiin->flags |= AGS_MIDIIN_BUFFER2;
+
+    /* clear buffer */
+    if(midiin->buffer[1] != NULL){
+      free(midiin->buffer[1]);
+    }
+
+    midiin->buffer[1] = NULL;
   }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER2);
     midiin->flags |= AGS_MIDIIN_BUFFER3;
+
+    /* clear buffer */
+    if(midiin->buffer[2] != NULL){
+      free(midiin->buffer[2]);
+    }
+
+    midiin->buffer[2] = NULL;
   }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER3);
     midiin->flags |= AGS_MIDIIN_BUFFER0;
+
+    /* clear buffer */
+    if(midiin->buffer[3] != NULL){
+      free(midiin->buffer[3]);
+    }
+
+    midiin->buffer[3] = NULL;
   }
 }
 

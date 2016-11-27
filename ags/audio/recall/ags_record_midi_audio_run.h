@@ -54,6 +54,8 @@ struct _AgsRecordMidiAudioRun
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  GList *note;
+  
   GObject *midi_file;
 };
 

@@ -240,6 +240,8 @@ ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run)
   record_midi_audio_run->delay_audio_run = NULL;
   record_midi_audio_run->count_beats_audio_run = NULL;
 
+  record_midi_audio_run->note = NULL;
+
   record_midi_audio_run->midi_file = NULL;
 }
 
@@ -665,6 +667,8 @@ void
 ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
+  AgsChannel *channel;
+  AgsNotation *notation;
   
   AgsRecordMidiAudio *record_midi_audio;
   AgsRecordMidiAudioRun *record_midi_audio_run;
@@ -674,13 +678,17 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   AgsMutexManager *mutex_manager;
   GObject *sequencer;
 
-  GList *feed_midi;
+  GList *list;
+  GList *note;
   
   unsigned char *midi_buffer;
 
   gdouble bpm, delay_factor;
   guint notation_counter;
   gboolean playback, record;
+  guint audio_start_mapping;
+  guint midi_start_mapping, midi_end_mapping;
+  guint input_pads;
   guint audio_channel;
   guint buffer_length;
   guint i;
@@ -689,6 +697,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *sequencer_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(recall);
@@ -703,11 +713,19 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     return;
   }
 
+  /* get audio fields */
+  audio_start_mapping = audio->audio_start_mapping;
+
+  midi_start_mapping = audio->midi_start_mapping;
+  midi_end_mapping = audio->midi_end_mapping;
+
+  input_pads = audio->input_pads;
+
   /*  */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /*  */
+  /* lookup sequencer mutex */
   pthread_mutex_lock(application_mutex);
 
   sequencer_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -715,16 +733,52 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   pthread_mutex_unlock(application_mutex);
 
-  /*  */
+  /* get sequencer specific data */
   pthread_mutex_lock(sequencer_mutex);
   
   bpm = ags_sequencer_get_bpm(AGS_SEQUENCER(sequencer));
   delay_factor = ags_sequencer_get_delay_factor(AGS_SEQUENCER(sequencer));
 
   pthread_mutex_unlock(sequencer_mutex);
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel;
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get audio channel */
+  pthread_mutex_lock(channel_mutex);
   
-  /*  */
-  audio_channel = AGS_CHANNEL(AGS_RECYCLING(recall->recall_id->recycling)->channel)->audio_channel;
+  audio_channel = channel->audio_channel;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get notation */
+  pthread_mutex_lock(audio_mutex);
+
+  //TODO:JK: make it advanced
+  list = g_list_nth(audio->notation,
+		    audio_channel);
+
+  if(list != NULL){
+    notation = list->data;
+  }else{
+    notation = NULL;
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
 
   /*  */
   notation_counter = count_beats_audio_run->notation_counter;
@@ -757,13 +811,60 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
       
       while(midi_iter < midi_buffer + buffer_length){
 	if(ags_midi_util_is_key_on(midi_iter)){
-	  /* key on */
-	  //TODO:JK: implement me
+	  AgsNote *current_note;
+	  
+	  /* key on - check within mapping */
+	  if(midi_start_mapping <= (0x7f & midi_iter[1]) &&
+	     (((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0 &&
+	       input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1 > 0) ||
+	      ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
+	       (0x7f & midi_iter[1]) - midi_start_mapping < midi_end_mapping))){
+	    /* add note */
+	    current_note = ags_note_new();
+	    
+	    current_note->x[0] = notation_counter;
+	    current_note->x[1] = notation_counter + 1;
+
+	    if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	      current_note->y = input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1;
+	    }else{
+	      current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
+	    }
+	  
+	    record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
+							 current_note);
+	    ags_notation_add_note(notation,
+				  current_note,
+				  FALSE);
+	  }
 	  
 	  midi_iter += 3;
 	}else if(ags_midi_util_is_key_off(midi_iter)){
-	  /* key off */
-	  //TODO:JK: implement me
+	  AgsNote *current_note;
+
+	  /* key off - find matching note */
+	  current_note = NULL;
+	  note = record_midi_audio_run->note;
+
+	  while(note != NULL){
+	    /* check current notes */
+	    if((((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0 &&
+		 AGS_NOTE(note->data)->y == input_pads - (0x7f & midi_iter[1]) - midi_start_mapping) - 1) ||
+	       ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
+		AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping)){
+	      current_note = note->data;
+	      
+	      break;
+	    }
+	    
+	    note = note->next;
+	  }
+	  
+	  /* remove current note */
+	  if(current_note != NULL){
+	    record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
+							current_note);
+	  }
 	  
 	  midi_iter += 3;
 	}else if(ags_midi_util_is_key_pressure(midi_iter)){
@@ -795,6 +896,17 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	  g_warning("ags_record_midi_audio_run.c - unexpected byte %x\0", midi_iter[0]);
 	  
 	  midi_iter++;
+	}
+
+	/* feed notes */
+	note = record_midi_audio_run->note;
+
+	while(note != NULL){
+	  if(AGS_NOTE(note->data)->x[1] != notation_counter + 1){
+	    AGS_NOTE(note->data)->x[1] += 1;
+	  }
+	  
+	  note = note->next;
 	}
       }
     }
