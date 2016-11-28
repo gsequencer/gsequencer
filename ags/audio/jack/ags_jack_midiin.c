@@ -401,6 +401,39 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 void
 ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  /* insert jack midiin mutex */
+  //FIXME:JK: memory leak
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) jack_midiin,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* flags */
   jack_midiin->flags = (AGS_JACK_MIDIIN_ALSA);
 
@@ -432,6 +465,22 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->tact_counter = 0.0;
   jack_midiin->delay_counter = 0;
   jack_midiin->tic_counter = 0;
+
+  /* callback mutex */
+  jack_midiin->callback_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(jack_midiin->callback_mutex,
+		     NULL);
+
+  jack_midiin->callback_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(jack_midiin->callback_cond, NULL);
+
+  /* callback finish mutex */
+  jack_midiin->callback_finish_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(jack_midiin->callback_finish_mutex,
+		     NULL);
+
+  jack_midiin->callback_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(jack_midiin->callback_finish_cond, NULL);
 
   /* parent */
   jack_midiin->application_context = NULL;
@@ -884,8 +933,6 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
     list = list->next;
   }
 
-  g_list_free(list_start);
-  
   pthread_mutex_unlock(application_mutex);
   
   if(card_id != NULL && *card_id != NULL){

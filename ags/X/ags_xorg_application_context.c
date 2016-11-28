@@ -519,11 +519,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsSequencer */
   xorg_application_context->sequencer = NULL;
-
-  sequencer = (GObject *) ags_midiin_new((GObject *) xorg_application_context);
-  xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
-						       sequencer);
-  g_object_ref(G_OBJECT(sequencer));
   
   //TODO:JK: comment out
   /*

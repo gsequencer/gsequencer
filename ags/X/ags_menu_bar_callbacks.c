@@ -415,8 +415,6 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsDrum *drum;
 
-  GObject *sequencer;
-  
   AgsAddAudio *add_audio;
 
   AgsMutexManager *mutex_manager;
@@ -432,11 +430,6 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   drum = ags_drum_new(G_OBJECT(window->soundcard));
 
-  sequencer = (GObject *) ags_midiin_new((GObject *) application_context);
-  g_object_set(AGS_MACHINE(drum)->audio,
-	       "sequencer\0", sequencer,
-	       NULL);
-  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
@@ -593,8 +586,6 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
 
-  GObject *sequencer;
-
   AgsAddAudio *add_audio;
 
   AgsMutexManager *mutex_manager;
@@ -610,11 +601,6 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   
   ffplayer = ags_ffplayer_new(G_OBJECT(window->soundcard));
 
-  sequencer = (GObject *) ags_midiin_new((GObject *) application_context);
-  g_object_set(AGS_MACHINE(ffplayer)->audio,
-	       "sequencer\0", sequencer,
-	       NULL);
-  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);    
 
@@ -654,8 +640,6 @@ ags_menu_bar_add_ladspa_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_b
   AgsWindow *window;
   AgsLadspaBridge *ladspa_bridge;
 
-  GObject *sequencer;
-  
   AgsAddAudio *add_audio;
 
   AgsMutexManager *mutex_manager;
@@ -726,8 +710,6 @@ ags_menu_bar_add_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar
   AgsWindow *window;
   AgsDssiBridge *dssi_bridge;
 
-  GObject *sequencer;
-  
   AgsAddAudio *add_audio;
 
   AgsMutexManager *mutex_manager;
@@ -759,7 +741,7 @@ ags_menu_bar_add_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar
   pthread_mutex_lock(application_mutex);
 
   main_loop = (AgsThread *) application_context->main_loop;
-
+  
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
@@ -798,8 +780,6 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsLv2Bridge *lv2_bridge;
 
-  GObject *sequencer;
-  
   AgsAddAudio *add_audio;
 
   AgsMutexManager *mutex_manager;

@@ -39,11 +39,12 @@ ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_
 {
   gchar *str;
 
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
-  
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
+
   if(!g_ascii_strncasecmp("alsa\0",
 			  str,
 			  4)){
+    /* insensitive for alsa */
     gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_sequencer,
 			     FALSE);
     gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_sequencer,
@@ -51,12 +52,13 @@ ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_
   }else if(!g_ascii_strncasecmp("jack\0",
 				str,
 				4)){
+    /* sensitive for jack */
     gtk_widget_set_sensitive((GtkWidget *) midi_dialog->add_sequencer,
 			     TRUE);
     gtk_widget_set_sensitive((GtkWidget *) midi_dialog->remove_sequencer,
 			     TRUE);
   }
-
+  
   ags_midi_dialog_load_sequencers(midi_dialog);
 
   return(0);
@@ -65,7 +67,17 @@ ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_
 int
 ags_midi_dialog_add_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+    
+  AgsMutexManager *mutex_manager;
+  AgsApplicationContext *application_context;
+
+  GObject *sequencer;
+
   gchar *str;
+
+  pthread_mutex_t *application_mutex;
 
   str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
 
@@ -74,34 +86,24 @@ ags_midi_dialog_add_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_di
 		   -1) == 0){
     return(0);
   }
+    
+  machine = midi_dialog->machine;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
+
+  /* application context and mutex manager */
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
 			  4)){
-    AgsWindow *window;
-    AgsMachine *machine;
-
     AgsJackServer *jack_server;
     
-    AgsMutexManager *mutex_manager;
-    AgsApplicationContext *application_context;
-
-    GObject *sequencer;
-    
     GList *distributed_manager;
-
-    pthread_mutex_t *application_mutex;
-    
-    machine = midi_dialog->machine;
-
-    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						   AGS_TYPE_WINDOW);
-
-    /* application context and mutex manager */
-    application_context = (AgsApplicationContext *) window->application_context;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
     /* find server */
     pthread_mutex_lock(application_mutex);
@@ -138,39 +140,47 @@ ags_midi_dialog_add_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_di
 int
 ags_midi_dialog_remove_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+
+  AgsMutexManager *mutex_manager;
+  AgsApplicationContext *application_context;
+    
+  GObject *sequencer;    
+
   gchar *str;
 
+  pthread_mutex_t *application_mutex;
+
   str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(midi_dialog->backend));
+
+  if(str == NULL ||
+     g_utf8_strlen(str,
+		   -1) == 0){
+    return(0);
+  }
+
+  machine = midi_dialog->machine;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
+
+  /* application context and mutex manager */
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
 			  4)){
-    AgsWindow *window;
-    AgsMachine *machine;
-
     AgsJackServer *jack_server;
     
-    AgsMutexManager *mutex_manager;
-    AgsApplicationContext *application_context;
-    
-    GObject *sequencer;    
-
     GList *distributed_manager;
     GList *list;
-    
-    pthread_mutex_t *application_mutex;
-    
-    machine = midi_dialog->machine;
 
-    window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						   AGS_TYPE_WINDOW);
-
-    /* application context and mutex manager */
-    application_context = (AgsApplicationContext *) window->application_context;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
+    guint i;
+        
     pthread_mutex_lock(application_mutex);
     
     /* find server */
@@ -186,8 +196,14 @@ ags_midi_dialog_remove_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi
     sequencer = NULL;
     
     list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-    list = g_list_nth(list,
-		      gtk_combo_box_get_active(midi_dialog->midi_device));
+
+    for(i = 0; list != NULL && i < gtk_combo_box_get_active(midi_dialog->midi_device) - 1;){
+      if(AGS_IS_JACK_MIDIIN(list->data)){
+	i++;
+      }
+      
+      list = list->next;
+    }
 
     if(list != NULL){
       sequencer = G_OBJECT(list->data);

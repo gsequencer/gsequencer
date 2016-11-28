@@ -377,7 +377,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
 
   /* sequencer */  
-  label = (GtkLabel *) gtk_label_new("jack sequencer\0");
+  label = (GtkLabel *) gtk_label_new("sequencer\0");
   g_object_set(label,
 	       "xalign\0", 0.0,
 	       NULL);
@@ -819,6 +819,8 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   gchar *backend;
 
   pthread_mutex_t *application_mutex;
+
+  gdk_threads_enter();
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) midi_dialog->machine,
 						 AGS_TYPE_WINDOW);
@@ -899,9 +901,11 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
     gtk_combo_box_set_model(GTK_COMBO_BOX(midi_dialog->midi_device),
 			    GTK_TREE_MODEL(model));
   
-    g_list_free(card_id);
-    g_list_free(card_name);
+    //    g_list_free(card_id);
+    //    g_list_free(card_name);
   }
+
+  gdk_threads_leave();
 }
 
 void
