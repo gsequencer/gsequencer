@@ -1211,6 +1211,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_menu_bar.h \
 	ags/X/ags_midi_dialog_callbacks.h \
 	ags/X/ags_midi_dialog.h \
+	ags/X/ags_midi_preferences_callbacks.h \
+	ags/X/ags_midi_preferences.h \
 	ags/X/ags_navigation_callbacks.h \
 	ags/X/ags_navigation.h \
 	ags/X/ags_pad_callbacks.h \
@@ -1231,6 +1233,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_property_editor.h \
 	ags/X/ags_property_listing_editor.h \
 	ags/X/ags_resize_editor.h \
+	ags/X/ags_sequencer_editor_callbacks.h \
+	ags/X/ags_sequencer_editor.h \
 	ags/X/ags_server_preferences_callbacks.h \
 	ags/X/ags_server_preferences.h \
 	ags/X/ags_soundcard_editor_callbacks.h \
@@ -1299,6 +1303,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_menu_bar_callbacks.c \
 	ags/X/ags_midi_dialog.c \
 	ags/X/ags_midi_dialog_callbacks.c \
+	ags/X/ags_midi_preferences_callbacks.c \
+	ags/X/ags_midi_preferences.c \
 	ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c \
 	ags/X/ags_pad.c \
@@ -1319,6 +1325,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_property_editor_callbacks.c \
 	ags/X/ags_property_listing_editor.c \
 	ags/X/ags_resize_editor.c \
+	ags/X/ags_sequencer_editor_callbacks.c \
+	ags/X/ags_sequencer_editor.c \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
 	ags/X/ags_window.c \
