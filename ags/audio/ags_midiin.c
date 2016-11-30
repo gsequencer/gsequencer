@@ -26,8 +26,12 @@
 #include <ags/object/ags_sequencer.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_notation.h>
+
+#include <ags/audio/task/ags_tic_device.h>
+#include <ags/audio/task/ags_switch_buffer_flag.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -1187,9 +1191,15 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
+  AgsTicDevice *tic_device;
+  AgsSwitchBufferFlag *switch_buffer_flag;
+  
+  AgsThread *task_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
+
+  GList *task;
 
   struct timespec time_start, time_now;
 
@@ -1323,15 +1333,24 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
     }
   }
 
-  pthread_mutex_unlock(mutex);  
+  /* update sequencer */
+  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  task = NULL;
 
-  /* tic */
-  ags_sequencer_tic(sequencer);
-
+  /* tic sequencer */
+  tic_device = ags_tic_device_new((GObject *) midiin);
+  task = g_list_append(task,
+		       tic_device);
+  
   /* reset - switch buffer flags */
-  ags_midiin_switch_buffer_flag(midiin);
+  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) midiin);
+  task = g_list_append(task,
+		       switch_buffer_flag);
 
-  pthread_mutex_unlock(mutex);
+  /* append tasks */
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       task);
 }
 
 void
@@ -1456,9 +1475,15 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 {
   AgsMidiin *midiin;
 
+  AgsTicDevice *tic_device;
+  AgsSwitchBufferFlag *switch_buffer_flag;
+  
+  AgsThread *task_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
+
+  GList *task;
 
   struct timespec time_start, time_now;
 
@@ -1585,15 +1610,24 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
     }
   }
 
-  pthread_mutex_unlock(mutex);  
+  /* update sequencer */
+  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  task = NULL;
 
-  /* tic */
-  ags_sequencer_tic(sequencer);
-
+  /* tic sequencer */
+  tic_device = ags_tic_device_new((GObject *) midiin);
+  task = g_list_append(task,
+		       tic_device);
+  
   /* reset - switch buffer flags */
-  ags_midiin_switch_buffer_flag(midiin);
+  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) midiin);
+  task = g_list_append(task,
+		       switch_buffer_flag);
 
-  pthread_mutex_unlock(mutex);
+  /* append tasks */
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       task);
 }
 
 void
