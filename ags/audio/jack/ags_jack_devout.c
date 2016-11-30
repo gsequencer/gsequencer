@@ -1631,6 +1631,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(application_context->mutex);
 
+  /* client */
   pthread_mutex_lock(mutex);
 
   jack_client = (AgsJackClient *) jack_devout->jack_client;

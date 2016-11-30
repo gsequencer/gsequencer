@@ -1067,14 +1067,20 @@ void
 ags_jack_midiin_port_record(AgsSequencer *sequencer,
 			    GError **error)
 {
+  AgsJackClient *jack_client;
   AgsJackMidiin *jack_midiin;
 
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
+  gboolean jack_client_activated;
+
   pthread_mutex_t *mutex;
-  
+  pthread_mutex_t *callback_mutex;
+  pthread_mutex_t *callback_finish_mutex;
+  pthread_mutex_t *client_mutex;
+
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /*  */
@@ -1089,9 +1095,19 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   
   pthread_mutex_unlock(application_context->mutex);
 
-  /* do playback */
+  /* client */
   pthread_mutex_lock(mutex);
 
+  jack_client = (AgsJackClient *) jack_midiin->jack_client;
+  
+  callback_mutex = jack_midiin->callback_mutex;
+  callback_finish_mutex = jack_midiin->callback_finish_mutex;
+
+  pthread_mutex_unlock(mutex);
+
+  /* do record */
+  pthread_mutex_lock(mutex);
+  
   jack_midiin->flags &= (~AGS_JACK_MIDIIN_START_RECORD);
 
   if((AGS_JACK_MIDIIN_INITIALIZED & (jack_midiin->flags)) == 0){
@@ -1101,6 +1117,61 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   }
 
   pthread_mutex_unlock(mutex);
+
+  /*  */
+  pthread_mutex_lock(application_context->mutex);
+  
+  client_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) jack_client);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  pthread_mutex_lock(client_mutex);
+
+  jack_client_activated = ((AGS_JACK_CLIENT_ACTIVATED & (jack_client->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(client_mutex);
+
+  if(jack_client_activated){
+    /* signal */
+    if((AGS_JACK_MIDIIN_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+      pthread_mutex_lock(callback_mutex);
+
+      g_atomic_int_or(&(jack_midiin->sync_flags),
+		      AGS_JACK_MIDIIN_CALLBACK_DONE);
+    
+      if((AGS_JACK_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	pthread_cond_signal(jack_midiin->callback_cond);
+      }
+
+      pthread_mutex_unlock(callback_mutex);
+    }
+    
+    /* wait callback */	
+    if((AGS_JACK_MIDIIN_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+      pthread_mutex_lock(callback_finish_mutex);
+    
+      if((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+	g_atomic_int_or(&(jack_midiin->sync_flags),
+			AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT);
+    
+	while((AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0 &&
+	      (AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	  pthread_cond_wait(jack_midiin->callback_finish_cond,
+			    callback_finish_mutex);
+	}
+      }
+    
+      g_atomic_int_and(&(jack_midiin->sync_flags),
+		       (~(AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT |
+			  AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE)));
+    
+      pthread_mutex_unlock(callback_finish_mutex);
+    }else{
+      g_atomic_int_and(&(jack_midiin->sync_flags),
+		       (~AGS_JACK_MIDIIN_INITIAL_CALLBACK));
+    }
+  }
 }
 
 void
