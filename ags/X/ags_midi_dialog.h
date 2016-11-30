@@ -72,11 +72,7 @@ struct _AgsMidiDialog
 
   GtkVBox *device;
   
-  GtkComboBoxText *backend;  
   GtkComboBoxText *midi_device;
-  
-  GtkButton *add_sequencer;
-  GtkButton *remove_sequencer;
   
   GtkButton *apply;
   GtkButton *ok;

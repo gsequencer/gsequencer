@@ -26,11 +26,6 @@
 
 #include <ags/X/ags_midi_dialog.h>
 
-int ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-
-int ags_midi_dialog_add_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_remove_sequencer_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-
 int ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 int ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 int ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
