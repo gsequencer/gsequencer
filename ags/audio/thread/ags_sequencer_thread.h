@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_sequencer.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
@@ -65,6 +65,9 @@ struct _AgsSequencerThreadClass
 GType ags_sequencer_thread_get_type();
 
 void ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread);
+
+AgsSequencerThread* ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
+							GObject *sequencer);
 
 AgsSequencerThread* ags_sequencer_thread_new(GObject *sequencer);
 

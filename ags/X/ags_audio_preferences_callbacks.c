@@ -135,10 +135,12 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();
-  soundcard_editor->soundcard = soundcard;
-  soundcard_editor->soundcard_thread = (GObject *) ags_thread_find_type((AgsThread *) application_context->main_loop,
-									AGS_TYPE_SOUNDCARD_THREAD);
 
+  if(soundcard != NULL){
+    soundcard_editor->soundcard = soundcard;
+    soundcard_editor->soundcard_thread = (GObject *) ags_thread_find_type((AgsThread *) application_context->main_loop,
+									  AGS_TYPE_SOUNDCARD_THREAD);
+  }
   
   list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
   

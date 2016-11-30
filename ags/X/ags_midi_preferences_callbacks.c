@@ -27,12 +27,12 @@
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
-#include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_sequencer_thread.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
-#include <ags/X/ags_soundcard_editor.h>
+#include <ags/X/ags_sequencer_editor.h>
 
 #include <ags/config.h>
 
@@ -60,12 +60,89 @@ ags_midi_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_paren
 void
 ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsPreferences *preferences;
+  AgsSequencerEditor *sequencer_editor;
+
+  AgsSequencerThread *sequencer_thread;
+  
+  AgsApplicationContext *application_context;
+
+  GList *list;
+  GObject *sequencer;
+
+  pthread_mutex_t *application_mutex;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = (AgsWindow *) preferences->window;
+
+  application_context = (AgsApplicationContext *) window->application_context;
+  application_mutex = window->application_mutex;
+
+  /* retrieve first sequencer */
+  sequencer = NULL;
+  
+  pthread_mutex_lock(application_mutex);
+
+  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  
+  if(list != NULL){
+    sequencer = list->data;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* sequencer editor */
+  sequencer_editor = ags_sequencer_editor_new();
+
+  if(sequencer != NULL){
+    sequencer_editor->sequencer = sequencer;
+    sequencer_editor->sequencer_thread = (GObject *) ags_thread_find_type((AgsThread *) application_context->main_loop,
+									  AGS_TYPE_SEQUENCER_THREAD);
+  }
+  
+  gtk_box_pack_start((GtkBox *) midi_preferences->sequencer_editor,
+		     (GtkWidget *) sequencer_editor,
+		     FALSE, FALSE,
+		     0);
+  
+  ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
+  g_signal_connect(sequencer_editor->remove, "clicked\0",
+		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
+  gtk_widget_show_all((GtkWidget *) sequencer_editor);
 }
 
 void
-ags_midi_preferences_remove_soundcard_editor_callback(GtkWidget *button,
+ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
 						      AgsMidiPreferences *midi_preferences)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsPreferences *preferences;
+  AgsSequencerEditor *sequencer_editor;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+  GObject *sequencer;
+
+  pthread_mutex_t *application_mutex;
+  
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = (AgsWindow *) preferences->window;
+
+  application_context = (AgsApplicationContext *) window->application_context;
+  application_mutex = window->application_mutex;
+
+  sequencer_editor = (AgsSequencerEditor *) gtk_widget_get_ancestor(button,
+								    AGS_TYPE_SEQUENCER_EDITOR);
+
+  if(!AGS_IS_JACK_DEVOUT(sequencer_editor->sequencer)){
+    ags_sequencer_editor_remove_sequencer(sequencer_editor,
+					  sequencer_editor->sequencer);
+  }
+  
+  gtk_widget_destroy((GtkWidget *) sequencer_editor);  
 }

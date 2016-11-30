@@ -839,8 +839,6 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     int device;
     int error;
 
-    *card_id = NULL;
-    *card_name = NULL;
     card_num = -1;
 
     while(TRUE){

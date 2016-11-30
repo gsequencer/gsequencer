@@ -3499,7 +3499,6 @@ ags_thread_find_type(AgsThread *thread, GType type)
     
     current = g_atomic_pointer_get(&(current->next));
   }
-
   
   return(NULL);
 }

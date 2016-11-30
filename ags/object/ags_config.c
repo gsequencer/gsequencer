@@ -145,13 +145,13 @@ ags_config_class_init(AgsConfigClass *config)
 
   /* properties */
   /**
-   * AgsConfig:soundcard:
+   * AgsConfig:application-context:
    *
-   * The assigned soundcard.
+   * The assigned application context.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("application context\0",
+  param_spec = g_param_spec_object("application-context\0",
 				   "application context of config\0",
 				   "The application context which this config is packed into\0",
 				   AGS_TYPE_APPLICATION_CONTEXT,
@@ -387,7 +387,10 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate\0", "48000\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size\0", "1024\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format\0", "16\0");
-  
+
+  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend\0", "jack\0");
+  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device\0", "ags-jack-midiin-0\0");
+
   ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
 }
 

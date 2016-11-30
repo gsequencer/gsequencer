@@ -408,7 +408,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
   g_message("lv2 check - %s\0", path);
   
   /* parse lv2 plugin */
-  xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
+  xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
   effect_list = ags_turtle_find_xpath(turtle,
 				      xpath);
 
@@ -435,7 +435,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
     
     /* find URI */
     escaped_effect = ags_string_util_escape_single_quote(effect);
-    xpath = "//rdf-triple//rdf-string[text()='\"%s\"']/ancestor::*[self::rdf-triple][1]/rdf-subject/rdf-iri\0";
+    xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-string[text()='\"%s\"']/ancestor::*[self::rdf-triple][1]/rdf-subject/rdf-iri\0";
     
     xpath = g_strdup_printf(xpath,
 			    escaped_effect);
@@ -693,7 +693,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
 	/* read binary from turtle */
 	binary_list = ags_turtle_find_xpath(manifest,
-					    "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
+					    "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
 
 	/* persist XML */
 	//NOTE:JK: no need for it

@@ -860,9 +860,59 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
 			   gchar *device)
 {
   AgsJackMidiin *jack_midiin;
+
+  GList *jack_port, *jack_port_start;
+
+  gchar *str;
+  
+  int ret;
+  guint nth_card;
+  guint i;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
-  jack_midiin->card_uri = device;
+
+  if(jack_midiin->card_uri == device ||
+     !g_ascii_strcasecmp(jack_midiin->card_uri,
+			 device)){
+    return;
+  }
+
+  if(!g_str_has_prefix(device,
+		       "ags-jack-midiin-\0")){
+    g_warning("invalid JACK device prefix");
+
+    return;
+  }
+
+  ret = sscanf(device,
+	       "ags-jack-midiin-%u\0",
+	       &nth_card);
+
+  if(ret != 1){
+    g_warning("invalid JACK device specifier");
+
+    return;
+  }
+
+  if(jack_midiin->card_uri != NULL){
+    g_free(jack_midiin->card_uri);
+  }
+  
+  jack_midiin->card_uri = g_strdup(device);
+
+  /* apply name to port */
+  jack_port_start = 
+    jack_port = g_list_copy(jack_midiin->jack_port);
+  
+  str = g_strdup_printf("ags-sequencer%d\0",
+			nth_card);
+    
+  g_object_set(jack_port->data,
+	       "port-name\0", str,
+	       NULL);
+  g_free(str);
+
+  g_list_free(jack_port_start);
 }
 
 gchar*

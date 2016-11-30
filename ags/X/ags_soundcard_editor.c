@@ -36,6 +36,8 @@
 
 #include <ags/audio/task/ags_notify_soundcard.h>
 
+#include <ags/audio/thread/ags_sequencer_thread.h>
+
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -766,10 +768,12 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->card),
 			   nth);
 
-  g_list_free_full(card_id_start,
-		   g_free);
-  g_list_free_full(card_name_start,
-		   g_free);
+  if(card_id_start != NULL){
+    g_list_free_full(card_id_start,
+		     g_free);
+    g_list_free_full(card_name_start,
+		     g_free);
+  }
   
   /*  */
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),

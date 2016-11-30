@@ -336,6 +336,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_set_audio_channels.lo \
 	ags/audio/task/libags_audio_la-ags_set_buffer_size.lo \
 	ags/audio/task/libags_audio_la-ags_set_format.lo \
+	ags/audio/task/libags_audio_la-ags_set_input_device.lo \
 	ags/audio/task/libags_audio_la-ags_set_output_device.lo \
 	ags/audio/task/libags_audio_la-ags_set_samplerate.lo \
 	ags/audio/task/libags_audio_la-ags_start_soundcard.lo \
@@ -616,11 +617,13 @@ am__objects_26 = $(am__objects_1) \
 am__objects_27 = $(am__objects_1) \
 	ags/X/task/libgsequencer_la-ags_add_bulk_member.lo \
 	ags/X/task/libgsequencer_la-ags_add_line_member.lo \
+	ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo \
 	ags/X/task/libgsequencer_la-ags_add_soundcard_editor_jack.lo \
 	ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo \
 	ags/X/task/libgsequencer_la-ags_change_indicator.lo \
 	ags/X/task/libgsequencer_la-ags_change_tact.lo \
 	ags/X/task/libgsequencer_la-ags_display_tact.lo \
+	ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo \
 	ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_jack.lo \
 	ags/X/task/libgsequencer_la-ags_scroll_on_play.lo \
 	ags/X/task/libgsequencer_la-ags_simple_file_read.lo \
@@ -2313,6 +2316,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_audio_channels.h \
 	ags/audio/task/ags_set_buffer_size.h \
 	ags/audio/task/ags_set_format.h \
+	ags/audio/task/ags_set_input_device.h \
 	ags/audio/task/ags_set_output_device.h \
 	ags/audio/task/ags_set_samplerate.h \
 	ags/audio/task/ags_start_soundcard.h \
@@ -2371,6 +2375,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_audio_channels.c \
 	ags/audio/task/ags_set_buffer_size.c \
 	ags/audio/task/ags_set_format.c \
+	ags/audio/task/ags_set_input_device.c \
 	ags/audio/task/ags_set_output_device.c \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_soundcard.c \
@@ -2640,11 +2645,13 @@ libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources) \
 	ags/X/task/ags_add_bulk_member.h \
 	ags/X/task/ags_add_line_member.h \
+	ags/X/task/ags_add_sequencer_editor_jack.h \
 	ags/X/task/ags_add_soundcard_editor_jack.h \
 	ags/X/task/ags_blink_cell_pattern_cursor.h \
 	ags/X/task/ags_change_indicator.h \
 	ags/X/task/ags_change_tact.h \
 	ags/X/task/ags_display_tact.h \
+	ags/X/task/ags_remove_sequencer_editor_jack.h \
 	ags/X/task/ags_remove_soundcard_editor_jack.h \
 	ags/X/task/ags_scroll_on_play.h \
 	ags/X/task/ags_simple_file_read.h \
@@ -2657,11 +2664,13 @@ libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources) \
 	ags/X/task/ags_add_bulk_member.c \
 	ags/X/task/ags_add_line_member.c \
+	ags/X/task/ags_add_sequencer_editor_jack.c \
 	ags/X/task/ags_add_soundcard_editor_jack.c \
 	ags/X/task/ags_blink_cell_pattern_cursor.c \
 	ags/X/task/ags_change_indicator.c \
 	ags/X/task/ags_change_tact.c \
 	ags/X/task/ags_display_tact.c \
+	ags/X/task/ags_remove_sequencer_editor_jack.c \
 	ags/X/task/ags_remove_soundcard_editor_jack.c \
 	ags/X/task/ags_scroll_on_play.c \
 	ags/X/task/ags_simple_file_read.c \
@@ -3475,6 +3484,9 @@ ags/audio/task/libags_audio_la-ags_set_buffer_size.lo:  \
 ags/audio/task/libags_audio_la-ags_set_format.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/libags_audio_la-ags_set_input_device.lo:  \
+	ags/audio/task/$(am__dirstamp) \
+	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_set_output_device.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
@@ -4164,6 +4176,9 @@ ags/X/task/libgsequencer_la-ags_add_bulk_member.lo:  \
 ags/X/task/libgsequencer_la-ags_add_line_member.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
+ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo:  \
+	ags/X/task/$(am__dirstamp) \
+	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/libgsequencer_la-ags_add_soundcard_editor_jack.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
@@ -4177,6 +4192,9 @@ ags/X/task/libgsequencer_la-ags_change_tact.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/libgsequencer_la-ags_display_tact.lo:  \
+	ags/X/task/$(am__dirstamp) \
+	ags/X/task/$(DEPDIR)/$(am__dirstamp)
+ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_jack.lo:  \
@@ -4925,11 +4943,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_pad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_bulk_member.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_line_member.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_jack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_blink_cell_pattern_cursor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_indicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_tact.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_display_tact.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_soundcard_editor_jack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_scroll_on_play.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_simple_file_read.Plo@am__quote@
@@ -5106,6 +5126,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_audio_channels.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_buffer_size.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_format.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_input_device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_output_device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_samplerate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_soundcard.Plo@am__quote@
@@ -6378,6 +6399,13 @@ ags/audio/task/libags_audio_la-ags_set_format.lo: ags/audio/task/ags_set_format.
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_set_format.c' object='ags/audio/task/libags_audio_la-ags_set_format.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_set_format.lo `test -f 'ags/audio/task/ags_set_format.c' || echo '$(srcdir)/'`ags/audio/task/ags_set_format.c
+
+ags/audio/task/libags_audio_la-ags_set_input_device.lo: ags/audio/task/ags_set_input_device.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_set_input_device.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_input_device.Tpo -c -o ags/audio/task/libags_audio_la-ags_set_input_device.lo `test -f 'ags/audio/task/ags_set_input_device.c' || echo '$(srcdir)/'`ags/audio/task/ags_set_input_device.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_input_device.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_input_device.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_set_input_device.c' object='ags/audio/task/libags_audio_la-ags_set_input_device.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_set_input_device.lo `test -f 'ags/audio/task/ags_set_input_device.c' || echo '$(srcdir)/'`ags/audio/task/ags_set_input_device.c
 
 ags/audio/task/libags_audio_la-ags_set_output_device.lo: ags/audio/task/ags_set_output_device.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_set_output_device.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_output_device.Tpo -c -o ags/audio/task/libags_audio_la-ags_set_output_device.lo `test -f 'ags/audio/task/ags_set_output_device.c' || echo '$(srcdir)/'`ags/audio/task/ags_set_output_device.c
@@ -7996,6 +8024,13 @@ ags/X/task/libgsequencer_la-ags_add_line_member.lo: ags/X/task/ags_add_line_memb
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_add_line_member.lo `test -f 'ags/X/task/ags_add_line_member.c' || echo '$(srcdir)/'`ags/X/task/ags_add_line_member.c
 
+ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo: ags/X/task/ags_add_sequencer_editor_jack.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Tpo -c -o ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_add_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_add_sequencer_editor_jack.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_add_sequencer_editor_jack.c' object='ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_add_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_add_sequencer_editor_jack.c
+
 ags/X/task/libgsequencer_la-ags_add_soundcard_editor_jack.lo: ags/X/task/ags_add_soundcard_editor_jack.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_add_soundcard_editor_jack.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_jack.Tpo -c -o ags/X/task/libgsequencer_la-ags_add_soundcard_editor_jack.lo `test -f 'ags/X/task/ags_add_soundcard_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_add_soundcard_editor_jack.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_jack.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_jack.Plo
@@ -8030,6 +8065,13 @@ ags/X/task/libgsequencer_la-ags_display_tact.lo: ags/X/task/ags_display_tact.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_display_tact.c' object='ags/X/task/libgsequencer_la-ags_display_tact.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_display_tact.lo `test -f 'ags/X/task/ags_display_tact.c' || echo '$(srcdir)/'`ags/X/task/ags_display_tact.c
+
+ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo: ags/X/task/ags_remove_sequencer_editor_jack.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Tpo -c -o ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_remove_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_remove_sequencer_editor_jack.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_remove_sequencer_editor_jack.c' object='ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_remove_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_remove_sequencer_editor_jack.c
 
 ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_jack.lo: ags/X/task/ags_remove_soundcard_editor_jack.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_jack.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_soundcard_editor_jack.Tpo -c -o ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_jack.lo `test -f 'ags/X/task/ags_remove_soundcard_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_remove_soundcard_editor_jack.c

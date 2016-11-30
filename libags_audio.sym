@@ -407,6 +407,7 @@ ags_record_thread_get_type
 ags_record_thread_new
 ags_sequencer_thread_get_type
 ags_sequencer_thread_interval_timeout
+ags_sequencer_thread_find_sequencer
 ags_sequencer_thread_new
 ags_soundcard_thread_get_type
 ags_soundcard_thread_find_soundcard
@@ -777,6 +778,8 @@ ags_remove_point_from_selection_new
 ags_apply_presets_get_type
 ags_apply_presets_soundcard
 ags_apply_presets_new
+ags_set_input_device_get_type
+ags_set_input_device_new
 ags_cancel_channel_get_type
 ags_cancel_channel_new
 ags_append_recall_get_type

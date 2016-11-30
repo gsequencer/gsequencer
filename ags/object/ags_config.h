@@ -38,6 +38,7 @@
 #define AGS_CONFIG_SOUNDCARD "soundcard\0"
 #define AGS_CONFIG_SOUNDCARD_0 "soundcard-0\0"
 #define AGS_CONFIG_SEQUENCER "sequencer\0"
+#define AGS_CONFIG_SEQUENCER_0 "sequencer-0\0"
 #define AGS_CONFIG_RECALL "recall\0"
 
 typedef struct _AgsConfig AgsConfig;
