@@ -633,7 +633,7 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   GValue value = {0,};
   
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
-  record_midi_audio = AGS_RECORD_MIDI_AUDIO(recall);
+  record_midi_audio = AGS_RECORD_MIDI_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
 
   audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
   sequencer = audio->sequencer;
@@ -701,7 +701,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *channel_mutex;
 
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
-  record_midi_audio = AGS_RECORD_MIDI_AUDIO(recall);
+  record_midi_audio = AGS_RECORD_MIDI_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
 
   delay_audio_run = record_midi_audio_run->delay_audio_run;
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(record_midi_audio_run->count_beats_audio_run);
