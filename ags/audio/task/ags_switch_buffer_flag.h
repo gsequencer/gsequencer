@@ -39,7 +39,7 @@ struct _AgsSwitchBufferFlag
 {
   AgsTask task;
 
-  GObject *soundcard;
+  GObject *device;
 };
 
 struct _AgsSwitchBufferFlagClass
@@ -49,7 +49,7 @@ struct _AgsSwitchBufferFlagClass
 
 GType ags_switch_buffer_flag_get_type();
 
-AgsSwitchBufferFlag* ags_switch_buffer_flag_new(GObject *soundcard);
+AgsSwitchBufferFlag* ags_switch_buffer_flag_new(GObject *device);
 
 #endif /*__AGS_SWITCH_BUFFER_FLAG_H__*/
 

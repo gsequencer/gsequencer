@@ -103,6 +103,7 @@ struct _AgsJackMidiin
   guint tic_counter; // in the range of default period
 
   guint note_offset;
+  guint note_offset_absolute;
 
   gchar *card_uri;
   GObject *jack_client;

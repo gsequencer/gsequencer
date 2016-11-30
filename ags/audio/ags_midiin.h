@@ -36,6 +36,8 @@
 #define AGS_IS_MIDIIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDIIN))
 #define AGS_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MIDIIN, AgsMidiinClass))
 
+#define AGS_MIDIIN_DEFAULT_ALSA_DEVICE "hw:0,0\0"
+#define AGS_MIDIIN_DEFAULT_OSS_DEVICE "/dev/midi00\0"
 #define AGS_MIDIIN_DEFAULT_BUFFER_SIZE (256)
 
 typedef struct _AgsMidiin AgsMidiin;
@@ -64,7 +66,7 @@ typedef enum
 #define AGS_MIDIIN_ERROR (ags_midiin_error_quark())
 
 typedef enum{
-  AGS_MIDIIN_ERROR_LOCKED_SOUNDCARD,
+  AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
 }AgsMidiinError;
 
 struct _AgsMidiin

@@ -339,6 +339,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_set_input_device.lo \
 	ags/audio/task/libags_audio_la-ags_set_output_device.lo \
 	ags/audio/task/libags_audio_la-ags_set_samplerate.lo \
+	ags/audio/task/libags_audio_la-ags_start_sequencer.lo \
 	ags/audio/task/libags_audio_la-ags_start_soundcard.lo \
 	ags/audio/task/libags_audio_la-ags_switch_buffer_flag.lo \
 	ags/audio/task/libags_audio_la-ags_tic_device.lo \
@@ -2319,6 +2320,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_input_device.h \
 	ags/audio/task/ags_set_output_device.h \
 	ags/audio/task/ags_set_samplerate.h \
+	ags/audio/task/ags_start_sequencer.h \
 	ags/audio/task/ags_start_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
 	ags/audio/task/ags_tic_device.h \
@@ -2378,6 +2380,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_input_device.c \
 	ags/audio/task/ags_set_output_device.c \
 	ags/audio/task/ags_set_samplerate.c \
+	ags/audio/task/ags_start_sequencer.c \
 	ags/audio/task/ags_start_soundcard.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
 	ags/audio/task/ags_tic_device.c \
@@ -3491,6 +3494,9 @@ ags/audio/task/libags_audio_la-ags_set_output_device.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_set_samplerate.lo:  \
+	ags/audio/task/$(am__dirstamp) \
+	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/libags_audio_la-ags_start_sequencer.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_start_soundcard.lo:  \
@@ -5129,6 +5135,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_input_device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_output_device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_set_samplerate.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_sequencer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_switch_buffer_flag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_tic_device.Plo@am__quote@
@@ -6420,6 +6427,13 @@ ags/audio/task/libags_audio_la-ags_set_samplerate.lo: ags/audio/task/ags_set_sam
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_set_samplerate.c' object='ags/audio/task/libags_audio_la-ags_set_samplerate.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_set_samplerate.lo `test -f 'ags/audio/task/ags_set_samplerate.c' || echo '$(srcdir)/'`ags/audio/task/ags_set_samplerate.c
+
+ags/audio/task/libags_audio_la-ags_start_sequencer.lo: ags/audio/task/ags_start_sequencer.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_start_sequencer.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_sequencer.Tpo -c -o ags/audio/task/libags_audio_la-ags_start_sequencer.lo `test -f 'ags/audio/task/ags_start_sequencer.c' || echo '$(srcdir)/'`ags/audio/task/ags_start_sequencer.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_sequencer.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_sequencer.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_start_sequencer.c' object='ags/audio/task/libags_audio_la-ags_start_sequencer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_start_sequencer.lo `test -f 'ags/audio/task/ags_start_sequencer.c' || echo '$(srcdir)/'`ags/audio/task/ags_start_sequencer.c
 
 ags/audio/task/libags_audio_la-ags_start_soundcard.lo: ags/audio/task/ags_start_soundcard.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_start_soundcard.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_start_soundcard.Tpo -c -o ags/audio/task/libags_audio_la-ags_start_soundcard.lo `test -f 'ags/audio/task/ags_start_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_start_soundcard.c

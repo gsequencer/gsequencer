@@ -33,6 +33,8 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/soundcard.h>
+#include <sys/utsname.h>
 #include <alsa/rawmidi.h>
 #include <errno.h>
 
@@ -87,6 +89,18 @@ void ags_midiin_list_cards(AgsSequencer *sequencer,
 
 gboolean ags_midiin_is_starting(AgsSequencer *sequencer);
 gboolean ags_midiin_is_recording(AgsSequencer *sequencer);
+
+void ags_midiin_delegate_record_init(AgsSequencer *sequencer,
+				   GError **error);
+void ags_midiin_delegate_record(AgsSequencer *sequencer,
+			      GError **error);
+void ags_midiin_delegate_stop(AgsSequencer *sequencer);
+
+void ags_midiin_oss_init(AgsSequencer *sequencer,
+			 GError **error);
+void ags_midiin_oss_record(AgsSequencer *sequencer,
+			 GError **error);
+void ags_midiin_oss_free(AgsSequencer *sequencer);
 
 void ags_midiin_alsa_init(AgsSequencer *sequencer,
 			  GError **error);
@@ -257,7 +271,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    */
   param_spec = g_param_spec_pointer("buffer\0",
 				    "the buffer\0",
-				    "The buffer to play\0",
+				    "The buffer to record\0",
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -354,6 +368,11 @@ ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->play_init = NULL;
   sequencer->play = NULL;
 
+  sequencer->record_init = ags_midiin_delegate_record_init;
+  sequencer->record = ags_midiin_delegate_record;
+  
+  sequencer->stop = ags_midiin_delegate_stop;
+
   sequencer->record_init = ags_midiin_alsa_init;
   sequencer->record = ags_midiin_alsa_record;
 
@@ -382,6 +401,12 @@ void
 ags_midiin_init(AgsMidiin *midiin)
 {
   AgsMutexManager *mutex_manager;
+
+  AgsConfig *config;
+  
+  gchar *str;
+
+  gboolean use_alsa;  
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -415,11 +440,45 @@ ags_midiin_init(AgsMidiin *midiin)
   pthread_mutex_unlock(application_mutex);
 
   /* flags */
-  midiin->flags = (AGS_MIDIIN_ALSA);
+  config = ags_config_get_instance();
 
-  //  midiin->in.oss.device = NULL;
-  midiin->in.alsa.handle = NULL;
-  midiin->in.alsa.device = AGS_SEQUENCER_DEFAULT_DEVICE;
+#ifdef AGS_WITH_ALSA
+  use_alsa = TRUE;
+#else
+  use_alsa = FALSE;
+#endif
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SEQUENCER,
+			     "backend\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SEQUENCER_0,
+			       "backend\0");
+  }
+  
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "oss\0",
+			  4)){
+    use_alsa = FALSE;
+  }
+
+  if(use_alsa){
+    midiin->flags = (AGS_MIDIIN_ALSA);
+  }else{
+    midiin->flags = (AGS_MIDIIN_OSS);
+  }
+
+  /* device */
+  if(use_alsa){
+    midiin->in.alsa.handle = NULL;
+    midiin->in.alsa.device = AGS_MIDIIN_DEFAULT_ALSA_DEVICE;
+  }else{
+    midiin->in.oss.device_fd = -1;
+    midiin->in.oss.device = AGS_MIDIIN_DEFAULT_OSS_DEVICE;
+  }
 
   /* buffer */
   midiin->buffer = (char **) malloc(4 * sizeof(char*));
@@ -443,6 +502,7 @@ ags_midiin_init(AgsMidiin *midiin)
     
   /* counters */
   midiin->note_offset = 0;
+
   midiin->tact_counter = 0.0;
   midiin->delay_counter = 0;
   midiin->tic_counter = 0;
@@ -619,7 +679,7 @@ ags_midiin_finalize(GObject *gobject)
   
   pthread_mutex_unlock(midiin->application_mutex);
 
-  /* free output buffer */
+  /* free input buffer */
   if(midiin->buffer[0] != NULL){
     free(midiin->buffer[0]);
   }
@@ -715,24 +775,14 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     midiin->flags |= AGS_MIDIIN_BUFFER1;
 
     /* clear buffer */
-    if(midiin->buffer[0] != NULL){
-      free(midiin->buffer[0]);
-    }
-
-    midiin->buffer[0] = NULL;
-  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
-    midiin->flags &= (~AGS_MIDIIN_BUFFER1);
-    midiin->flags |= AGS_MIDIIN_BUFFER2;
-
-    /* clear buffer */
     if(midiin->buffer[1] != NULL){
       free(midiin->buffer[1]);
     }
 
     midiin->buffer[1] = NULL;
-  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
-    midiin->flags &= (~AGS_MIDIIN_BUFFER2);
-    midiin->flags |= AGS_MIDIIN_BUFFER3;
+  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER1);
+    midiin->flags |= AGS_MIDIIN_BUFFER2;
 
     /* clear buffer */
     if(midiin->buffer[2] != NULL){
@@ -740,9 +790,9 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     }
 
     midiin->buffer[2] = NULL;
-  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
-    midiin->flags &= (~AGS_MIDIIN_BUFFER3);
-    midiin->flags |= AGS_MIDIIN_BUFFER0;
+  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER2);
+    midiin->flags |= AGS_MIDIIN_BUFFER3;
 
     /* clear buffer */
     if(midiin->buffer[3] != NULL){
@@ -750,6 +800,16 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     }
 
     midiin->buffer[3] = NULL;
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER3);
+    midiin->flags |= AGS_MIDIIN_BUFFER0;
+
+    /* clear buffer */
+    if(midiin->buffer[0] != NULL){
+      free(midiin->buffer[0]);
+    }
+
+    midiin->buffer[0] = NULL;
   }
 }
 
@@ -810,7 +870,11 @@ ags_midiin_get_device(AgsSequencer *sequencer)
   
   midiin = AGS_MIDIIN(sequencer);
   
-  return(midiin->in.alsa.device);
+  if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
+    return(midiin->in.alsa.device);
+  }else{
+    return(midiin->in.oss.device);
+  }
 }
 
 void
@@ -882,7 +946,88 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     snd_config_update_free_global();
 #endif
   }else{
-    //TODO:JK: implement me
+#ifdef AGS_WITH_OSS
+    oss_sysinfo sysinfo;
+    oss_midi_info mi;
+
+    char *mixer_device;
+    
+    int mixerfd = -1;
+
+    int next, n;
+    int i;
+
+    if((mixer_device = getenv("OSS_MIXERDEV\0")) == NULL){
+      mixer_device = "/dev/mixer\0";
+    }
+
+    if((mixerfd = open(mixer_device, O_RDONLY, 0)) == -1){
+      int e = errno;
+      
+      switch(e){
+      case ENXIO:
+      case ENODEV:
+	{
+	  g_warning("Open Sound System is not running in your system.\0");
+	}
+	break;
+      case ENOENT:
+	{
+	  g_warning("No %s device available in your system.\nPerhaps Open Sound System is not installed or running.\0", mixer_device);
+	}
+	break;  
+      default:
+	g_warning("%s\0", strerror(e));
+      }
+    }
+      
+    if(ioctl(mixerfd, SNDCTL_SYSINFO, &sysinfo) == -1){
+      if(errno == ENXIO){
+	g_warning("OSS has not detected any supported sound hardware in your system.\0");
+      }else{
+	g_warning("SNDCTL_SYSINFO\0");
+
+	if(errno == EINVAL){
+	  g_warning("Error: OSS version 4.0 or later is required\0");
+	}
+      }
+
+      n = 0;
+    }else{
+      n = sysinfo.nummidis;
+    }
+
+    memset(&mi, 0, sizeof(oss_midi_info));
+    ioctl(mixerfd, SNDCTL_MIDI_INFO, &mi);
+
+    for(i = 0; i < n; i++){
+      mi.dev = i;
+
+      if(ioctl(mixerfd, SNDCTL_ENGINEINFO, &mi) == -1){
+	int e = errno;
+	
+	g_warning("Can't get device info for /dev/midi%2d (SNDCTL_AUDIOINFO)\nerrno = %d: %s\0", i, e, strerror(e));
+	
+	continue;
+      }
+      
+      if((MIDI_CAP_INPUT & (mi.caps)) != 0){
+	if(card_id != NULL){
+	  *card_id = g_list_prepend(*card_id,
+				    g_strdup_printf("/dev/midi2%i\0", i));
+	}
+	
+	if(card_name != NULL){
+	  *card_name = g_list_prepend(*card_name,
+				      g_strdup(mi.name));
+	}
+      }
+
+      if(next <= 0){
+	break;
+      }
+    }
+#endif
   }
 
   if(card_id != NULL){
@@ -913,6 +1058,324 @@ ags_midiin_is_recording(AgsSequencer *sequencer)
   
   return(((AGS_MIDIIN_RECORD & (midiin->flags)) != 0) ? TRUE: FALSE);
 }
+
+void
+ags_midiin_delegate_record_init(AgsSequencer *sequencer,
+				GError **error)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
+    ags_midiin_alsa_init(sequencer,
+			 error);
+  }else if((AGS_MIDIIN_OSS & (midiin->flags)) != 0){
+    ags_midiin_oss_init(sequencer,
+			error);
+  }
+}
+
+void
+ags_midiin_delegate_record(AgsSequencer *sequencer,
+			   GError **error)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
+    ags_midiin_alsa_record(sequencer,
+			   error);
+  }else if((AGS_MIDIIN_OSS & (midiin->flags)) != 0){
+    ags_midiin_oss_record(sequencer,
+			  error);
+  }
+}
+
+void
+ags_midiin_delegate_stop(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
+    ags_midiin_alsa_free(sequencer);
+  }else if((AGS_MIDIIN_OSS & (midiin->flags)) != 0){
+    ags_midiin_oss_free(sequencer);
+  }
+}
+
+void
+ags_midiin_oss_init(AgsSequencer *sequencer,
+		    GError **error)
+{
+  AgsMidiin *midiin;
+  
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  gchar *str;
+
+  guint word_size;
+  int format;
+  int tmp;
+
+  pthread_mutex_t *mutex;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  application_context = ags_sequencer_get_application_context(sequencer);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) midiin);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* prepare for playback */
+  pthread_mutex_lock(mutex);
+
+  midiin->flags |= (AGS_MIDIIN_BUFFER3 |
+		    AGS_MIDIIN_START_RECORD |
+		    AGS_MIDIIN_RECORD |
+		    AGS_MIDIIN_NONBLOCKING);
+
+#ifdef AGS_WITH_OSS
+  /* open device fd */
+  str = midiin->in.oss.device;
+  midiin->in.oss.device_fd = open(str, O_WRONLY, 0);
+
+  if(midiin->in.oss.device_fd == -1){
+    pthread_mutex_unlock(mutex);
+
+    g_warning("couldn't open device %s\0", midiin->in.oss.device);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_MIDIIN_ERROR,
+		  AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
+		  "unable to open MIDI device: %s\n\0",
+		  str);
+    }
+
+    return;
+  }
+#endif
+  
+  midiin->tact_counter = 0.0;
+  midiin->delay_counter = 0.0;
+  midiin->tic_counter = 0;
+
+  midiin->flags |= AGS_MIDIIN_INITIALIZED;
+  midiin->flags |= AGS_MIDIIN_BUFFER0;
+  midiin->flags &= (~(AGS_MIDIIN_BUFFER1 |
+		      AGS_MIDIIN_BUFFER2 |
+		      AGS_MIDIIN_BUFFER3));
+  
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_midiin_oss_record(AgsSequencer *sequencer,
+		      GError **error)
+{
+  AgsMidiin *midiin;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  struct timespec time_start, time_now;
+
+  unsigned char buf[64];
+
+  gdouble delay;
+  guint64 time_spent, time_exceed;
+  int num_read;
+  gboolean running;
+  
+  pthread_mutex_t *mutex;
+  
+  midiin = AGS_MIDIIN(sequencer);
+  clock_gettime(CLOCK_MONOTONIC, &time_start);
+
+  /*  */
+  application_context = ags_sequencer_get_application_context(sequencer);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) midiin);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* do recording */
+  pthread_mutex_lock(mutex);
+
+  midiin->flags &= (~AGS_MIDIIN_START_RECORD);
+
+  if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
+
+  /* get timing */
+  delay = midiin->delay;
+  time_exceed = (NSEC_PER_SEC / delay) - midiin->latency;
+
+  pthread_mutex_unlock(mutex);
+  
+  running = TRUE;
+  
+  /* check buffer flag */
+  while(running){
+    pthread_mutex_lock(mutex);
+
+#ifdef AGS_WITH_OSS
+    num_read = read(midiin->in.oss.device_fd, buf, sizeof(buf));
+    
+    if((num_read < 0)){
+      g_warning("Problem reading MIDI input\0");
+    }
+
+    if(num_read > 0){
+      if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
+	if(ceil((midiin->buffer_size[0] + num_read) / 256.0) > ceil(midiin->buffer_size[0] / 256.0)){
+	  if(midiin->buffer[0] == NULL){
+	    midiin->buffer[0] = malloc(256 * sizeof(char));
+	  }else{
+	    midiin->buffer[0] = realloc(midiin->buffer[0],
+					(midiin->buffer_size[0] + 256) * sizeof(char));
+	  }
+	}
+
+	memcpy(&(midiin->buffer[0][midiin->buffer_size[0]]),
+	       buf,
+	       num_read);
+	midiin->buffer_size[0] += num_read;
+      }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+	if(ceil((midiin->buffer_size[1] + num_read) / 256.0) > ceil(midiin->buffer_size[1] / 256.0)){
+	  if(midiin->buffer[1] == NULL){
+	    midiin->buffer[1] = malloc(256 * sizeof(char));
+	  }else{
+	    midiin->buffer[1] = realloc(midiin->buffer[1],
+					(midiin->buffer_size[1] + 256) * sizeof(char));
+	  }
+	}
+
+	memcpy(&(midiin->buffer[1][midiin->buffer_size[1]]),
+	       buf,
+	       num_read);
+	midiin->buffer_size[1] += num_read;
+      }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+	if(ceil((midiin->buffer_size[2] + num_read) / 256.0) > ceil(midiin->buffer_size[2] / 256.0)){
+	  if(midiin->buffer[2] == NULL){
+	    midiin->buffer[2] = malloc(256 * sizeof(char));
+	  }else{
+	    midiin->buffer[2] = realloc(midiin->buffer[2],
+					(midiin->buffer_size[2] + 256) * sizeof(char));
+	  }
+	}
+
+	memcpy(&(midiin->buffer[2][midiin->buffer_size[2]]),
+	       buf,
+	       num_read);
+	midiin->buffer_size[2] += num_read;
+      }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
+	if(ceil((midiin->buffer_size[3] + num_read) / 256.0) > ceil(midiin->buffer_size[3] / 256.0)){
+	  if(midiin->buffer[3] == NULL){
+	    midiin->buffer[3] = malloc(256 * sizeof(char));
+	  }else{
+	    midiin->buffer[3] = realloc(midiin->buffer[3],
+					(midiin->buffer_size[3] + 256) * sizeof(char));
+	  }
+	}
+
+	memcpy(&(midiin->buffer[3][midiin->buffer_size[3]]),
+	       buf,
+	       num_read);
+	midiin->buffer_size[3] += num_read;
+      }
+    }
+#endif
+    
+    pthread_mutex_unlock(mutex);
+      
+    clock_gettime(CLOCK_MONOTONIC, &time_now);
+
+    if(time_now.tv_sec > time_start.tv_sec){
+      time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - time_start.tv_nsec);
+    }else{
+      time_spent = time_now.tv_nsec - time_start.tv_nsec;
+    }
+
+    if(time_spent > time_exceed){
+      running = FALSE;
+    }
+  }
+
+  pthread_mutex_unlock(mutex);  
+
+  /* tic */
+  ags_sequencer_tic(sequencer);
+
+  /* reset - switch buffer flags */
+  ags_midiin_switch_buffer_flag(midiin);
+
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_midiin_oss_free(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  GList *poll_fd;
+
+  pthread_mutex_t *mutex;
+  
+  midiin = AGS_MIDIIN(sequencer);
+  
+  application_context = ags_sequencer_get_application_context(sequencer);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) midiin);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    return;
+  }
+  
+  close(midiin->in.oss.device_fd);
+  midiin->in.oss.device_fd = -1;
+
+  midiin->flags &= (~(AGS_MIDIIN_BUFFER0 |
+		      AGS_MIDIIN_BUFFER1 |
+		      AGS_MIDIIN_BUFFER2 |
+		      AGS_MIDIIN_BUFFER3 |
+		      AGS_MIDIIN_RECORD |
+		      AGS_MIDIIN_INITIALIZED));
+
+  midiin->note_offset = 0;
+}  
 
 void
 ags_midiin_alsa_init(AgsSequencer *sequencer,
@@ -949,7 +1412,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   /*  */
   pthread_mutex_lock(mutex);
 
-  /* prepare for playback */
+  /* prepare for record */
   midiin->flags |= (AGS_MIDIIN_BUFFER3 |
 		    AGS_MIDIIN_START_RECORD |
 		    AGS_MIDIIN_RECORD |
@@ -965,7 +1428,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
     printf("Record midi open error: %s\n", snd_strerror(err));
     g_set_error(error,
 		AGS_MIDIIN_ERROR,
-		AGS_MIDIIN_ERROR_LOCKED_SOUNDCARD,
+		AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
 		"unable to open midi device: %s\n\0",
 		snd_strerror(err));
 
@@ -1002,7 +1465,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   gdouble delay;
   guint64 time_spent, time_exceed;
   int status;
-  gchar c;
+  unsigned char c;
   gboolean running;
   
   pthread_mutex_t *mutex;
@@ -1051,7 +1514,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
     status = snd_rawmidi_read(midiin->in.alsa.handle, &c, 1);
 
     if((status < 0) && (status != -EBUSY) && (status != -EAGAIN)){
-      g_warning("Problem reading MIDI input: %s", snd_strerror(status));
+      g_warning("Problem reading MIDI input: %s\0", snd_strerror(status));
     }
 
     if(status >= 0){
@@ -1200,27 +1663,23 @@ ags_midiin_tic(AgsSequencer *sequencer)
   gdouble delay;
   
   midiin = AGS_MIDIIN(sequencer);
+  
+  /* determine if attack should be switched */
+  delay = midiin->delay;
 
-  if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
-    if(midiin->buffer[1] != NULL){
-      free(midiin->buffer[1]);
-      midiin->buffer_size[1] = 0;
-    }
-  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
-    if(midiin->buffer[2] != NULL){
-      free(midiin->buffer[2]);
-      midiin->buffer_size[2] = 0;
-    }
-  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
-    if(midiin->buffer[3] != NULL){
-      free(midiin->buffer[3]);
-      midiin->buffer_size[3] = 0;
-    }
-  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
-    if(midiin->buffer[0] != NULL){
-      free(midiin->buffer[0]);
-      midiin->buffer_size[0] = 0;
-    }
+  if((guint) midiin->delay_counter + 1 >= (guint) delay){
+    ags_sequencer_set_note_offset(sequencer,
+				  midiin->note_offset + 1);
+
+    /* delay */
+    ags_sequencer_offset_changed(sequencer,
+				 midiin->note_offset);
+    
+    /* reset - delay counter */
+    midiin->delay_counter = 0.0;
+    midiin->tact_counter += 1.0;
+  }else{
+    midiin->delay_counter += 1.0;
   }
 }
 

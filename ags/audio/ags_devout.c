@@ -759,7 +759,7 @@ ags_devout_init(AgsDevout *devout)
     free(str);
   }
 
-  /*  */
+  /* device */
   if(use_alsa){
     devout->out.alsa.handle = NULL;
     devout->out.alsa.device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
@@ -1500,7 +1500,7 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     int next, n;
     int i;
 
-    if((mixer_device=getenv("OSS_MIXERDEV\0")) == NULL){
+    if((mixer_device = getenv("OSS_MIXERDEV\0")) == NULL){
       mixer_device = "/dev/mixer\0";
     }
 

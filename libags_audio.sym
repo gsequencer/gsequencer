@@ -704,6 +704,8 @@ ags_add_note_get_type
 ags_add_note_new
 ags_free_selection_get_type
 ags_free_selection_new
+ags_start_sequencer_get_type
+ags_start_sequencer_new
 ags_toggle_pattern_bit_get_type
 ags_toggle_pattern_bit_refresh_gui
 ags_toggle_pattern_bit_new

@@ -46,6 +46,7 @@
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_start_soundcard.h>
+#include <ags/audio/task/ags_start_sequencer.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_open_file.h>
 
@@ -1536,6 +1537,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
     AgsStartSoundcard *start_soundcard;
+    AgsStartSequencer *start_sequencer;
     GList *list;
 
     list = NULL;
@@ -1580,9 +1582,11 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
       pthread_mutex_unlock(audio_loop_mutex);
 
+      /* start soundcard */
       start_soundcard = ags_start_soundcard_new(window->soundcard);
       list = g_list_prepend(list, start_soundcard);
 
+      /* task completion */
       task_completion = ags_task_completion_new((GObject *) start_soundcard,
 						NULL);
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
@@ -1596,8 +1600,12 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					  task_completion));
 
       pthread_mutex_unlock(gui_thread->task_completion_mutex);
-      
-      /* append AgsStartSoundcard */
+
+      /* start sequencer */
+      start_sequencer = ags_start_sequencer_new(machine->audio->sequencer);
+      list = g_list_prepend(list, start_sequencer);
+
+      /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);
 
       ags_task_thread_append_tasks((AgsTaskThread *) task_thread,

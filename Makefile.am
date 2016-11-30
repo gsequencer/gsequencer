@@ -1043,6 +1043,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_input_device.h \
 	ags/audio/task/ags_set_output_device.h \
 	ags/audio/task/ags_set_samplerate.h \
+	ags/audio/task/ags_start_sequencer.h \
 	ags/audio/task/ags_start_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
 	ags/audio/task/ags_tic_device.h \
@@ -1103,6 +1104,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_input_device.c \
 	ags/audio/task/ags_set_output_device.c \
 	ags/audio/task/ags_set_samplerate.c \
+	ags/audio/task/ags_start_sequencer.c \
 	ags/audio/task/ags_start_soundcard.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
 	ags/audio/task/ags_tic_device.c \
