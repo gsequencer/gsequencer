@@ -19,6 +19,8 @@
 
 #include <ags/audio/midi/ags_midi_util.h>
 
+#include <ags/lib/ags_time.h>
+
 /**
  * SECTION:ags_midi_util
  * @short_description: MIDI util
@@ -156,9 +158,118 @@ ags_midi_util_is_change_pressure(unsigned char *buffer)
 }
 
 /**
+ * ags_midi_util_is_sysex:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_sysex(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xff & buffer[0]) == 0xf0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_quarter_frame:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_quarter_frame(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xff & buffer[0]) == 0xf1) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_song_position:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_song_position(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xff & buffer[0]) == 0xf2) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_song_select:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_song_select(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xff & buffer[0]) == 0xf3) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_tune_request:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_tune_request(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xff & buffer[0]) == 0xf6) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_util_is_meta_event:
+ * @buffer: the midi buffer
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_midi_util_is_meta_event(unsigned char *buffer)
+{
+  gboolean retval;
+
+  retval = ((0xff & buffer[0]) == 0xff) ? TRUE: FALSE;
+  
+  return(retval);
+}
+
+/**
  * ags_midi_util_to_smf:
  * @buffer: the midi buffer
  * @buffer_length: the buffer length
+ * @delta_time: the delta time
  * @smf_buffer_length: the return location of resulting length
  * 
  * Convert real-time MIDI to SMF.
@@ -264,7 +375,7 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
       midi_iter += 3;
     }else if(ags_midi_util_is_change_program(midi_iter)){
       /* change program */
-      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 2);
       smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
 						ret_smf_buffer_length);
       ags_midi_buffer_util_put_change_program(smf_buffer,
@@ -275,7 +386,7 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
       midi_iter += 2;
     }else if(ags_midi_util_is_change_pressure(midi_iter)){
       /* change pressure */
-      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 2);
       smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
 						ret_smf_buffer_length);
       ags_midi_buffer_util_put_change_pressure(smf_buffer,
@@ -284,6 +395,82 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
 					       0x7f & midi_iter[1]);
       
       midi_iter += 2;
+    }else if(ags_midi_util_is_sysex(midi_iter)){
+      guint n;
+	  
+      /* sysex */
+      n = 1;
+	  
+      while(midi_iter[n] != 0xf7){
+	n++;
+      }
+
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_sysex(smf_buffer,
+				     delta_time,
+				     &(midi_iter[1]),
+				     n);
+      
+      midi_iter += (n + 2);
+    }else if(ags_midi_util_is_song_position(midi_iter)){
+      /* song position */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_song_position(smf_buffer,
+					     delta_time,
+					     ((0x7f & midi_iter[0]) | ((0x7f & midi_iter[1]) << 7)));
+
+      midi_iter += 3;
+    }else if(ags_midi_util_is_song_select(midi_iter)){
+      /* song select */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_change_program(smf_buffer,
+					      delta_time,
+					      0x7f & midi_iter[1]);
+
+      midi_iter += 2;
+    }else if(ags_midi_util_is_tune_request(midi_iter)){
+      /* tune request */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+      ags_midi_buffer_util_put_tune_request(smf_buffer,
+					    delta_time);
+      
+      midi_iter += 1;
+    }else if(ags_midi_util_is_meta_event(midi_iter)){
+      /* meta event */
+      ret_smf_buffer_length += (ags_midi_buffer_util_get_varlength_size(delta_time) + 3);
+      smf_buffer = ags_midi_util_to_smf_realloc(smf_buffer,
+						ret_smf_buffer_length);
+
+      if(midi_iter[1] == 0x01){
+	ags_midi_buffer_util_put_text_event(smf_buffer,
+					    delta_time,
+					    midi_iter + 3,
+					    0xff & midi_iter[2]);
+      }else if(midi_iter[1] == 0x7f){
+	if(midi_iter[2] == 3){
+	  ags_midi_buffer_util_put_sequencer_meta_event(smf_buffer,
+							delta_time,
+							midi_iter[2],
+							midi_iter[3],
+							((midi_iter[4]) | ((midi_iter[5]) << 8)) | ((midi_iter[5]) << 16));
+	}else if(midi_iter[2] == 2){
+	  ags_midi_buffer_util_put_sequencer_meta_event(smf_buffer,
+							delta_time,
+							midi_iter[2],
+							midi_iter[3],
+							((midi_iter[4]) | ((midi_iter[5]) << 8)));
+	}
+      }
+      
+      midi_iter += (3 + midi_iter[2]);
     }else{
       g_warning("ags_midi_util.c - unexpected byte %x\0", midi_iter[0]);
 	  
@@ -428,11 +615,10 @@ ags_midi_util_pressure_to_envelope(glong delta_time,
 
 /**
  * ags_midi_util_delta_time_to_offset:
- * @delta_time: delta time
+ * @division: division
+ * @tempo: tempo
  * @bpm: bpm
- * @delay_factor: delay factor
- * @delay: delay
- * @attack: attack
+ * @delta_time: delta time
  *
  * Delta time to offset
  *
@@ -441,24 +627,30 @@ ags_midi_util_pressure_to_envelope(glong delta_time,
  * Since: 0.7.2
  */
 guint
-ags_midi_util_delta_time_to_offset(glong delta_time,
-				   gdouble bpm, gdouble delay_factor,
-				   gdouble *delay, guint *attack)
+ags_midi_util_delta_time_to_offset(glong division,
+				   glong tempo,
+				   glong bpm,
+				   glong delta_time)
 {
   guint offset;
-  
-  offset = 0;
 
-  //TODO:JK: implement me
+  if(((1 << 15) & division) == 0){
+    /* ticks per quarter note */
+    offset = (16.0 * bpm / 60.0) * delta_time * (tempo / division / ((gdouble) USEC_PER_SEC));
+  }else{
+    /* SMTPE */
+    offset = (16.0 * bpm / 60.0) * delta_time / (((division * division) / 256.0) / ((gdouble) USEC_PER_SEC));
+  }
 
   return(offset);
 }
 
 /**
  * ags_midi_util_offset_to_delta_time:
- * @x: offset
+ * @division: division
+ * @tempo: tempo
  * @bpm: bpm
- * @delay_factor: delay factor
+ * @x: note offset
  *
  * Offset to delta time
  *
@@ -467,8 +659,20 @@ ags_midi_util_delta_time_to_offset(glong delta_time,
  * Since: 0.7.2
  */
 glong
-ags_midi_util_offset_to_delta_time(guint x,
-				   gdouble bpm, gdouble delay_factor)
+ags_midi_util_offset_to_delta_time(glong division,
+				   glong tempo,
+				   glong bpm,
+				   guint x)
 {
-  //TODO:JK: implement me
+  guint delta_time;
+
+  if(((1 << 15) & division) == 0){
+    /* ticks per quarter note */
+    delta_time = x / (16.0 * bpm / 60.0) / (tempo / division / ((gdouble) USEC_PER_SEC));
+  }else{
+    /* SMTPE */
+    delta_time = x / (16.0 * bpm / 60.0) * (((division * division) / 256.0) / ((gdouble) USEC_PER_SEC));
+  }
+
+  return(delta_time);
 }

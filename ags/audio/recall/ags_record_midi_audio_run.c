@@ -683,8 +683,9 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   
   unsigned char *midi_buffer;
 
-  gdouble bpm, delay_factor;
+  glong division, tempo, bpm;
   guint notation_counter;
+  gboolean pattern_mode;
   gboolean playback, record;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
@@ -713,13 +714,26 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     return;
   }
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 audio);
+
+  pthread_mutex_unlock(application_mutex);
+
   /* get audio fields */
+  pthread_mutex_lock(audio_mutex);
+
+  pattern_mode = ((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0) ? TRUE: FALSE;
   audio_start_mapping = audio->audio_start_mapping;
 
   midi_start_mapping = audio->midi_start_mapping;
   midi_end_mapping = audio->midi_end_mapping;
 
   input_pads = audio->input_pads;
+
+  pthread_mutex_unlock(audio_mutex);
 
   /*  */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -737,7 +751,6 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_lock(sequencer_mutex);
   
   bpm = ags_sequencer_get_bpm(AGS_SEQUENCER(sequencer));
-  delay_factor = ags_sequencer_get_delay_factor(AGS_SEQUENCER(sequencer));
 
   pthread_mutex_unlock(sequencer_mutex);
 
@@ -756,14 +769,6 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   audio_channel = channel->audio_channel;
 
   pthread_mutex_unlock(channel_mutex);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 audio);
-
-  pthread_mutex_unlock(application_mutex);
 
   /* get notation */
   pthread_mutex_lock(audio_mutex);
@@ -796,6 +801,28 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		     &value);
 
   record = g_value_get_boolean(&value);
+
+  /* delta time specific fields */
+  g_value_unset(&value);
+
+  g_value_init(&value,
+	       G_TYPE_LONG);
+  ags_port_safe_read(record_midi_audio->division,
+		     &value);
+
+  division = g_value_get_long(&value);
+  
+  g_value_reset(&value);
+  ags_port_safe_read(record_midi_audio->tempo,
+		     &value);
+
+  tempo = g_value_get_long(&value);
+
+  g_value_reset(&value);
+  ags_port_safe_read(record_midi_audio->bpm,
+		     &value);
+
+  bpm = g_value_get_long(&value);
 
   /* retrieve buffer */
   midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(sequencer),
@@ -830,9 +857,12 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    }else{
 	      current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
 	    }
-	  
-	    record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
-							 current_note);
+
+	    if(!pattern_mode){
+	      record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
+							   current_note);
+	    }
+	    
 	    ags_notation_add_note(notation,
 				  current_note,
 				  FALSE);
@@ -892,6 +922,39 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	  //TODO:JK: implement me	  
 	  
 	  midi_iter += 2;
+	}else if(ags_midi_util_is_sysex(midi_iter)){
+	  guint n;
+	  
+	  /* sysex */
+	  n = 0;
+	  
+	  while(midi_iter[n] != 0xf7){
+	    n++;
+	  }
+
+	  //TODO:JK: implement me	  
+	  
+	  midi_iter += (n + 1);
+	}else if(ags_midi_util_is_song_position(midi_iter)){
+	  /* song position */
+	  //TODO:JK: implement me	  
+	  
+	  midi_iter += 3;
+	}else if(ags_midi_util_is_song_select(midi_iter)){
+	  /* song select */
+	  //TODO:JK: implement me	  
+	  
+	  midi_iter += 2;
+	}else if(ags_midi_util_is_tune_request(midi_iter)){
+	  /* tune request */
+	  //TODO:JK: implement me	  
+	  
+	  midi_iter += 1;
+	}else if(ags_midi_util_is_meta_event(midi_iter)){
+	  /* meta event */
+	  //TODO:JK: implement me	  
+	  
+	  midi_iter += (3 + midi_iter[2]);
 	}else{
 	  g_warning("ags_record_midi_audio_run.c - unexpected byte %x\0", midi_iter[0]);
 	  
@@ -918,8 +981,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
       glong delta_time;
       guint smf_buffer_length;
 
-      delta_time = ags_midi_util_offset_to_delta_time(notation_counter,
-						      bpm, delay_factor);
+      delta_time = ags_midi_util_offset_to_delta_time(division,
+						      tempo,
+						      bpm,
+						      notation_counter);
       
       smf_buffer = ags_midi_util_to_smf(midi_buffer, buffer_length,
 					delta_time,

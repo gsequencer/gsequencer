@@ -43,6 +43,10 @@ struct _AgsRecordMidiAudio
 
   AgsPort *record;
   AgsPort *filename;
+
+  AgsPort *division;
+  AgsPort *tempo;
+  AgsPort *bpm;
 };
 
 struct _AgsRecordMidiAudioClass

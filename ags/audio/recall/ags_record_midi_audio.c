@@ -50,6 +50,9 @@ enum{
   PROP_PLAYBACK,
   PROP_RECORD,
   PROP_FILENAME,
+  PROP_DIVISION,
+  PROP_TEMPO,
+  PROP_BPM,
 };
 
 static gpointer ags_record_midi_audio_parent_class = NULL;
@@ -60,11 +63,17 @@ static const gchar *ags_record_midi_audio_specifier[] = {
   "playback[0]\0"
   "record[0]\0",
   "filename[0]\0",
+  "division[0]\0",
+  "tempo[0]\0",
+  "bpm[0]\0",
 };
 static const gchar *ags_record_midi_audio_control_port[] = {
-  "1/3\0",
-  "2/3\0",
-  "3/3\0",
+  "1/6\0",
+  "2/6\0",
+  "3/6\0",
+  "4/6\0",
+  "5/6\0",
+  "6/6\0",
 };
 
 GType
@@ -147,6 +156,33 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
+
+  param_spec = g_param_spec_object("division\0",
+				   "division of record\0",
+				   "The division of record\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DIVISION,
+				  param_spec);
+
+  param_spec = g_param_spec_object("tempo\0",
+				   "tempo of record\0",
+				   "The tempo of record\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TEMPO,
+				  param_spec);
+
+  param_spec = g_param_spec_object("bpm\0",
+				   "bpm of record\0",
+				   "The bpm of record\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BPM,
+				  param_spec);
 }
 
 void
@@ -197,16 +233,55 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 
   /* filename */
   record_midi_audio->filename = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name\0", ags_record_midi_audio_plugin_name,
-					   "specifier\0", ags_record_midi_audio_specifier[2],
-					   "control-port\0", ags_record_midi_audio_control_port[2],
-					   "port-value-is-pointer\0", FALSE,
-					   "port-value-type\0", G_TYPE_BOOLEAN,
-					   NULL);
+					     "plugin-name\0", ags_record_midi_audio_plugin_name,
+					     "specifier\0", ags_record_midi_audio_specifier[2],
+					     "control-port\0", ags_record_midi_audio_control_port[2],
+					     "port-value-is-pointer\0", FALSE,
+					     "port-value-type\0", G_TYPE_BOOLEAN,
+					     NULL);
 
   record_midi_audio->filename->port_value.ags_port_boolean = TRUE;
 
   port = g_list_prepend(port, record_midi_audio->filename);
+
+  /* division */
+  record_midi_audio->division = g_object_new(AGS_TYPE_PORT,
+					     "plugin-name\0", ags_record_midi_audio_plugin_name,
+					     "specifier\0", ags_record_midi_audio_specifier[2],
+					     "control-port\0", ags_record_midi_audio_control_port[2],
+					     "port-value-is-pointer\0", FALSE,
+					     "port-value-type\0", G_TYPE_INT64,
+					     NULL);
+
+  record_midi_audio->division->port_value.ags_port_int = 0;
+
+  port = g_list_prepend(port, record_midi_audio->division);
+
+  /* tempo */
+  record_midi_audio->tempo = g_object_new(AGS_TYPE_PORT,
+					  "plugin-name\0", ags_record_midi_audio_plugin_name,
+					  "specifier\0", ags_record_midi_audio_specifier[2],
+					  "control-port\0", ags_record_midi_audio_control_port[2],
+					  "port-value-is-pointer\0", FALSE,
+					  "port-value-type\0", G_TYPE_INT64,
+					  NULL);
+
+  record_midi_audio->tempo->port_value.ags_port_int = 0;
+
+  port = g_list_prepend(port, record_midi_audio->tempo);
+
+  /* bpm */
+  record_midi_audio->bpm = g_object_new(AGS_TYPE_PORT,
+					"plugin-name\0", ags_record_midi_audio_plugin_name,
+					"specifier\0", ags_record_midi_audio_specifier[2],
+					"control-port\0", ags_record_midi_audio_control_port[2],
+					"port-value-is-pointer\0", FALSE,
+					"port-value-type\0", G_TYPE_INT64,
+					NULL);
+
+  record_midi_audio->bpm->port_value.ags_port_int = 120;
+
+  port = g_list_prepend(port, record_midi_audio->bpm);
 
   /* set port */
   AGS_RECALL(record_midi_audio)->port = port;
@@ -286,6 +361,69 @@ ags_record_midi_audio_set_property(GObject *gobject,
       record_midi_audio->filename = filename;
     }
     break;
+  case PROP_DIVISION:
+    {
+      AgsPort *division;
+
+      division = (AgsPort *) g_value_get_object(value);
+
+      if(record_midi_audio->division == division){
+	return;
+      }
+
+      if(record_midi_audio->division != NULL){
+	g_object_unref(G_OBJECT(record_midi_audio->division));
+      }
+      
+      if(division != NULL){
+	g_object_ref(G_OBJECT(division));
+      }
+      
+      record_midi_audio->division = division;
+    }
+    break;
+  case PROP_TEMPO:
+    {
+      AgsPort *tempo;
+
+      tempo = (AgsPort *) g_value_get_object(value);
+
+      if(record_midi_audio->tempo == tempo){
+	return;
+      }
+
+      if(record_midi_audio->tempo != NULL){
+	g_object_unref(G_OBJECT(record_midi_audio->tempo));
+      }
+      
+      if(tempo != NULL){
+	g_object_ref(G_OBJECT(tempo));
+      }
+      
+      record_midi_audio->tempo = tempo;
+    }
+    break;
+  case PROP_BPM:
+    {
+      AgsPort *bpm;
+
+      bpm = (AgsPort *) g_value_get_object(value);
+
+      if(record_midi_audio->bpm == bpm){
+	return;
+      }
+
+      if(record_midi_audio->bpm != NULL){
+	g_object_unref(G_OBJECT(record_midi_audio->bpm));
+      }
+      
+      if(bpm != NULL){
+	g_object_ref(G_OBJECT(bpm));
+      }
+      
+      record_midi_audio->bpm = bpm;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -316,6 +454,21 @@ ags_record_midi_audio_get_property(GObject *gobject,
   case PROP_FILENAME:
     {
       g_value_set_object(value, record_midi_audio->filename);
+    }
+    break;
+  case PROP_DIVISION:
+    {
+      g_value_set_object(value, record_midi_audio->division);
+    }
+    break;
+  case PROP_TEMPO:
+    {
+      g_value_set_object(value, record_midi_audio->tempo);
+    }
+    break;
+  case PROP_BPM:
+    {
+      g_value_set_object(value, record_midi_audio->bpm);
     }
     break;
   default:
@@ -356,6 +509,24 @@ ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port)
 		      11)){
       g_object_set(G_OBJECT(plugin),
 		   "filename\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./division[0]\0",
+		      11)){
+      g_object_set(G_OBJECT(plugin),
+		   "division\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./tempo[0]\0",
+		      11)){
+      g_object_set(G_OBJECT(plugin),
+		   "tempo\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./bpm[0]\0",
+		      11)){
+      g_object_set(G_OBJECT(plugin),
+		   "bpm\0", AGS_PORT(port->data),
 		   NULL);
     }
 

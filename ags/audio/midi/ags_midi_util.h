@@ -34,6 +34,18 @@ gboolean ags_midi_util_is_pitch_bend(unsigned char *buffer);
 gboolean ags_midi_util_is_change_program(unsigned char *buffer);
 gboolean ags_midi_util_is_change_pressure(unsigned char *buffer);
 
+/* real-time sysex utility */
+gboolean ags_midi_util_is_sysex(unsigned char *buffer);
+
+/* real-time system common utility */
+gboolean ags_midi_util_is_quarter_frame(unsigned char *buffer);
+gboolean ags_midi_util_is_song_position(unsigned char *buffer);
+gboolean ags_midi_util_is_song_select(unsigned char *buffer);
+gboolean ags_midi_util_is_tune_request(unsigned char *buffer);
+
+/* real-time meta event utility */
+gboolean ags_midi_util_is_meta_event(unsigned char *buffer);
+
 /*  */
 unsigned char* ags_midi_util_to_smf(unsigned char *midi_buffer, guint midi_buffer_length,
 				    glong delta_time,
@@ -74,10 +86,13 @@ void ags_midi_util_pressure_to_envelope(glong delta_time,
 					guint *samplerate,
 					guint *start_frame, guint *end_frame);
 
-guint ags_midi_util_delta_time_to_offset(glong delta_time,
-					 gdouble bpm, gdouble delay_factor,
-					 gdouble *delay, guint *attack);
-glong ags_midi_util_offset_to_delta_time(guint x,
-					 gdouble bpm, gdouble delay_factor);
+guint ags_midi_util_delta_time_to_offset(glong division,
+					 glong tempo,
+					 glong bpm,
+					 glong delta_time);
+glong ags_midi_util_offset_to_delta_time(glong division,
+				   glong tempo,
+				   glong bpm,
+				   guint x);
 
 #endif /*__AGS_MIDI_UTIL_H__*/
