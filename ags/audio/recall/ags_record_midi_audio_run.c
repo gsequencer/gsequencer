@@ -714,6 +714,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     return;
   }
 
+  /*  */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
 
@@ -734,10 +738,6 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   input_pads = audio->input_pads;
 
   pthread_mutex_unlock(audio_mutex);
-
-  /*  */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* lookup sequencer mutex */
   pthread_mutex_lock(application_mutex);
@@ -806,23 +806,23 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   g_value_unset(&value);
 
   g_value_init(&value,
-	       G_TYPE_LONG);
+	       G_TYPE_INT64);
   ags_port_safe_read(record_midi_audio->division,
 		     &value);
 
-  division = g_value_get_long(&value);
+  division = g_value_get_int64(&value);
   
   g_value_reset(&value);
   ags_port_safe_read(record_midi_audio->tempo,
 		     &value);
 
-  tempo = g_value_get_long(&value);
+  tempo = g_value_get_int64(&value);
 
   g_value_reset(&value);
   ags_port_safe_read(record_midi_audio->bpm,
 		     &value);
 
-  bpm = g_value_get_long(&value);
+  bpm = g_value_get_int64(&value);
 
   /* retrieve buffer */
   midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(sequencer),
@@ -862,10 +862,14 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	      record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
 							   current_note);
 	    }
-	    
+
+	    pthread_mutex_lock(audio_mutex);
+
 	    ags_notation_add_note(notation,
 				  current_note,
 				  FALSE);
+
+	    pthread_mutex_unlock(audio_mutex);
 	  }
 	  
 	  midi_iter += 3;
@@ -962,15 +966,17 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	}
 
 	/* feed notes */
+	pthread_mutex_lock(audio_mutex);
+
 	note = record_midi_audio_run->note;
 
 	while(note != NULL){
-	  if(AGS_NOTE(note->data)->x[1] != notation_counter + 1){
-	    AGS_NOTE(note->data)->x[1] += 1;
-	  }
+	  AGS_NOTE(note->data)->x[1] = notation_counter + 1;
 	  
 	  note = note->next;
 	}
+
+	pthread_mutex_unlock(audio_mutex);
       }
     }
 

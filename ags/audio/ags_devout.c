@@ -894,6 +894,7 @@ ags_devout_set_property(GObject *gobject,
       
       devout->application_mutex = application_mutex;
     }
+    break;
   case PROP_DEVICE:
     {
       char *device;

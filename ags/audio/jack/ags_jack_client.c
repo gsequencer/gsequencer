@@ -295,7 +295,7 @@ ags_jack_client_finalize(GObject *gobject)
   if(jack_client->jack_server != NULL){
     g_object_unref(jack_client->jack_server);
   }
-  
+
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
 
@@ -639,7 +639,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   jack_default_audio_sample_t *out;
   jack_midi_event_t in_event;
 
-  GList *device, *port;
+  GList *device, *device_start, *port;
 
   void *port_buf;
 
@@ -650,6 +650,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   guint event_size;
   guint i, j;
   gboolean no_event;
+  gboolean synced, do_sync;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -683,7 +684,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     application_context = NULL;
   }
 
-  device = jack_client->device;
+  device_start = jack_client->device;
   
   pthread_mutex_unlock(mutex);
 
@@ -732,6 +733,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   if(task_thread != NULL){
     pthread_mutex_unlock(task_thread->launch_mutex);
   }
+
+  device = device_start;
+  synced = FALSE;
+  do_sync = TRUE;
   
   if(device == NULL){
     g_atomic_int_dec_and_test(&(jack_client->queued));
@@ -742,7 +747,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
 		   (~(AGS_THREAD_TIMING)));
 
-  /* retrieve word size */
+  /*  */
   while(device != NULL){
     /*  */  
     pthread_mutex_lock(application_mutex);
@@ -760,36 +765,45 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       jack_devout = (AgsJackDevout *) device->data;
 
       /* wait callback */      
-      if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-	no_event = FALSE;
+      no_event = TRUE;
 
+      if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
 	callback_mutex = jack_devout->callback_mutex;
 
 	pthread_mutex_unlock(device_mutex);
 	
 	/* give back computing time until ready */
-	pthread_mutex_lock(callback_mutex);
+	if(do_sync &&
+	   !synced){
+	  pthread_mutex_lock(callback_mutex);
     
-	if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
-	  g_atomic_int_or(&(jack_devout->sync_flags),
-			  AGS_JACK_DEVOUT_CALLBACK_WAIT);
+	  if((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
+	    g_atomic_int_or(&(jack_devout->sync_flags),
+			    AGS_JACK_DEVOUT_CALLBACK_WAIT);
     
-	  while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
-		(AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-	    pthread_cond_wait(jack_devout->callback_cond,
-			      callback_mutex);
+	    while((AGS_JACK_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0 &&
+		  (AGS_JACK_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	      pthread_cond_wait(jack_devout->callback_cond,
+				callback_mutex);
+	    }
 	  }
-	}
     
-	g_atomic_int_and(&(jack_devout->sync_flags),
-			 (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
-			    AGS_JACK_DEVOUT_CALLBACK_DONE)));
+	  g_atomic_int_and(&(jack_devout->sync_flags),
+			   (~(AGS_JACK_DEVOUT_CALLBACK_WAIT |
+			      AGS_JACK_DEVOUT_CALLBACK_DONE)));
     
-	pthread_mutex_unlock(callback_mutex);
+	  pthread_mutex_unlock(callback_mutex);
 
+	  synced = TRUE;
+	}
+
+	do_sync = FALSE;
+	
 	pthread_mutex_lock(device_mutex);
-      }else{
-	no_event = TRUE;
+      }
+      
+      if(synced){
+	no_event = FALSE;
       }
 
       /* clear buffer */
@@ -962,11 +976,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
    * process MIDI
    */
   /* get device */
-  pthread_mutex_lock(mutex);
-
-  device = jack_client->device;
-  
-  pthread_mutex_unlock(mutex);
+  device = device_start;  
 
   while(device != NULL){
     /*  */  
@@ -985,36 +995,45 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       jack_midiin = (AgsJackMidiin *) device->data;
 
       /* wait callback */      
+      no_event = TRUE;
+      
       if((AGS_JACK_MIDIIN_PASS_THROUGH & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
-	no_event = FALSE;
-
 	callback_mutex = jack_midiin->callback_mutex;
 
 	pthread_mutex_unlock(device_mutex);
 	
 	/* give back computing time until ready */
-	pthread_mutex_lock(callback_mutex);
+	if(do_sync &&
+	   !synced){
+	  pthread_mutex_lock(callback_mutex);
     
-	if((AGS_JACK_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
-	  g_atomic_int_or(&(jack_midiin->sync_flags),
-			  AGS_JACK_MIDIIN_CALLBACK_WAIT);
+	  if((AGS_JACK_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
+	    g_atomic_int_or(&(jack_midiin->sync_flags),
+			    AGS_JACK_MIDIIN_CALLBACK_WAIT);
     
-	  while((AGS_JACK_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0 &&
-		(AGS_JACK_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
-	    pthread_cond_wait(jack_midiin->callback_cond,
-			      callback_mutex);
+	    while((AGS_JACK_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0 &&
+		  (AGS_JACK_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	      pthread_cond_wait(jack_midiin->callback_cond,
+				callback_mutex);
+	    }
 	  }
-	}
     
-	g_atomic_int_and(&(jack_midiin->sync_flags),
-			 (~(AGS_JACK_MIDIIN_CALLBACK_WAIT |
-			    AGS_JACK_MIDIIN_CALLBACK_DONE)));
-    
-	pthread_mutex_unlock(callback_mutex);
+	  g_atomic_int_and(&(jack_midiin->sync_flags),
+			   (~(AGS_JACK_MIDIIN_CALLBACK_WAIT |
+			      AGS_JACK_MIDIIN_CALLBACK_DONE)));
+	  
+	  pthread_mutex_unlock(callback_mutex);
 
+	  synced = TRUE;
+	}
+
+	do_sync = FALSE;
+	
 	pthread_mutex_lock(device_mutex);
-      }else{
-	no_event = TRUE;
+      }
+
+      if(synced){
+	no_event = FALSE;
       }
 
       /*  */
@@ -1024,7 +1043,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	jack_port = port->data;
 
 	port_buf = jack_port_get_buffer(jack_port->port,
-					nframes);
+					256);
 	event_count = jack_midi_get_event_count(port_buf);
 	
 	if(!no_event){
@@ -1101,35 +1120,53 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
       /*  */
       if(!no_event){
-	if(task_thread != NULL){
-	  AgsTicDevice *tic_device;
-	  AgsSwitchBufferFlag *switch_buffer_flag;
-      
-	  GList *task;
-      
-	  task = NULL;
-  
-	  /* tic sequencer */
-	  tic_device = ags_tic_device_new((GObject *) jack_midiin);
-	  task = g_list_append(task,
-			       tic_device);
-  
-	  /* reset - switch buffer flags */
-	  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_midiin);
-	  task = g_list_append(task,
-			       switch_buffer_flag);
+	/* signal finish */
+	pthread_mutex_lock(device_mutex);
 
-	  /* append tasks */
-	  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-				       task);
-	}else{
-	  /* tic */
-	  ags_sequencer_tic(AGS_SEQUENCER(jack_midiin));
-	  
-	  /* reset - switch buffer flags */
-	  ags_jack_midiin_switch_buffer_flag(jack_midiin);
-	}	
+	callback_finish_mutex = jack_midiin->callback_finish_mutex;
+
+	pthread_mutex_unlock(device_mutex);
+	
+	pthread_mutex_lock(callback_finish_mutex);
+
+	g_atomic_int_or(&(jack_midiin->sync_flags),
+			AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
+    
+	if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	  pthread_cond_signal(jack_midiin->callback_finish_cond);
+	}
+
+	pthread_mutex_unlock(callback_finish_mutex);
       }
+
+      if(task_thread != NULL){
+	AgsTicDevice *tic_device;
+	AgsSwitchBufferFlag *switch_buffer_flag;
+      
+	GList *task;
+      
+	task = NULL;
+  
+	/* tic sequencer */
+	tic_device = ags_tic_device_new((GObject *) jack_midiin);
+	task = g_list_append(task,
+			     tic_device);
+  
+	/* reset - switch buffer flags */
+	switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_midiin);
+	task = g_list_append(task,
+			     switch_buffer_flag);
+
+	/* append tasks */
+	ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+				     task);
+      }else{
+	/* tic */
+	ags_sequencer_tic(AGS_SEQUENCER(jack_midiin));
+	  
+	/* reset - switch buffer flags */
+	ags_jack_midiin_switch_buffer_flag(jack_midiin);
+      }	
     }
         
     pthread_mutex_unlock(device_mutex);

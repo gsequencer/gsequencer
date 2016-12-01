@@ -25,6 +25,8 @@
 
 #include <ags/thread/ags_task.h>
 
+#include <ags/object/ags_application_context.h>
+
 #define AGS_TYPE_START_SEQUENCER                (ags_start_sequencer_get_type())
 #define AGS_START_SEQUENCER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_START_SEQUENCER, AgsStartSequencer))
 #define AGS_START_SEQUENCER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_START_SEQUENCER, AgsStartSequencerClass))
@@ -39,7 +41,7 @@ struct _AgsStartSequencer
 {
   AgsTask task;
 
-  GObject *sequencer;
+  AgsApplicationContext *application_context;
 };
 
 struct _AgsStartSequencerClass
@@ -49,7 +51,7 @@ struct _AgsStartSequencerClass
 
 GType ags_start_sequencer_get_type();
 
-AgsStartSequencer* ags_start_sequencer_new(GObject *sequencer);
+AgsStartSequencer* ags_start_sequencer_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_START_SEQUENCER_H__*/
 

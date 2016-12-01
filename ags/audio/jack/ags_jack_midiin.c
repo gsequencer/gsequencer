@@ -89,7 +89,7 @@ void ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 				GList **card_id, GList **card_name);
 
 gboolean ags_jack_midiin_is_starting(AgsSequencer *sequencer);
-gboolean ags_jack_midiin_is_playing(AgsSequencer *sequencer);
+gboolean ags_jack_midiin_is_recording(AgsSequencer *sequencer);
 
 void ags_jack_midiin_port_init(AgsSequencer *sequencer,
 			       GError **error);
@@ -261,7 +261,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    */
   param_spec = g_param_spec_pointer("buffer\0",
 				    "the buffer\0",
-				    "The buffer to play\0",
+				    "The buffer to record\0",
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -368,8 +368,8 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->list_cards = ags_jack_midiin_list_cards;
 
   sequencer->is_starting =  ags_jack_midiin_is_starting;
-  sequencer->is_playing = ags_jack_midiin_is_playing;
-  sequencer->is_recording = NULL;
+  sequencer->is_playing = NULL;
+  sequencer->is_recording = ags_jack_midiin_is_recording;
 
   sequencer->play_init = NULL;
   sequencer->play = NULL;
@@ -436,9 +436,14 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 
   /* flags */
   jack_midiin->flags = (AGS_JACK_MIDIIN_ALSA);
+  g_atomic_int_set(&(jack_midiin->sync_flags),
+		   AGS_JACK_MIDIIN_PASS_THROUGH);
 
   jack_midiin->card_uri = NULL;
   jack_midiin->jack_client = NULL;
+
+  jack_midiin->port_name = NULL;
+  jack_midiin->jack_port = NULL;
 
   /* buffer */
   jack_midiin->buffer = (char **) malloc(4 * sizeof(char*));
@@ -526,14 +531,7 @@ ags_jack_midiin_set_property(GObject *gobject,
 	
 	g_object_ref(G_OBJECT(application_context));
 
-	jack_midiin->application_mutex = application_context->mutex;
-	
-	config = ags_config_get_instance();
-
-	jack_midiin->jack_client = NULL;
-	jack_midiin->card_uri = g_strdup(ags_config_get_value(config,
-							      AGS_CONFIG_SEQUENCER,
-							      "jack-midi-client\0"));
+	jack_midiin->application_mutex = application_context->mutex;	
       }else{
 	jack_midiin->application_mutex = NULL;
       }
@@ -553,6 +551,7 @@ ags_jack_midiin_set_property(GObject *gobject,
       
       jack_midiin->application_mutex = application_mutex;
     }
+    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -765,7 +764,7 @@ ags_jack_midiin_disconnect(AgsConnectable *connectable)
  * ags_jack_midiin_switch_buffer_flag:
  * @jack_midiin: an #AgsJackMidiin
  *
- * The buffer flag indicates the currently played buffer.
+ * The buffer flag indicates the currently recorded buffer.
  *
  * Since: 0.7.0
  */
@@ -777,24 +776,15 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
     jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER1;
 
     /* clear buffer */
-    if(jack_midiin->buffer[0] != NULL){
-      free(jack_midiin->buffer[0]);
-    }
-
-    jack_midiin->buffer[0] = NULL;
-  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER1);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER2;
-
-    /* clear buffer */
     if(jack_midiin->buffer[1] != NULL){
       free(jack_midiin->buffer[1]);
     }
 
     jack_midiin->buffer[1] = NULL;
-  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER2);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER3;
+    jack_midiin->buffer_size[1] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER1);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER2;
 
     /* clear buffer */
     if(jack_midiin->buffer[2] != NULL){
@@ -802,9 +792,10 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
     }
 
     jack_midiin->buffer[2] = NULL;
-  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER3);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER0;
+    jack_midiin->buffer_size[2] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER2);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER3;
 
     /* clear buffer */
     if(jack_midiin->buffer[3] != NULL){
@@ -812,6 +803,18 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
     }
 
     jack_midiin->buffer[3] = NULL;
+    jack_midiin->buffer_size[3] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER3);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER0;
+
+    /* clear buffer */
+    if(jack_midiin->buffer[0] != NULL){
+      free(jack_midiin->buffer[0]);
+    }
+
+    jack_midiin->buffer[0] = NULL;
+    jack_midiin->buffer_size[0] = 0;
   }
 }
 
@@ -1005,7 +1008,7 @@ ags_jack_midiin_is_starting(AgsSequencer *sequencer)
 }
 
 gboolean
-ags_jack_midiin_is_playing(AgsSequencer *sequencer)
+ags_jack_midiin_is_recording(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
 
@@ -1042,7 +1045,7 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   /*  */
   pthread_mutex_lock(mutex);
 
-  /* prepare for playback */
+  /* prepare for record */
   jack_midiin->flags |= (AGS_JACK_MIDIIN_BUFFER3 |
 			 AGS_JACK_MIDIIN_START_RECORD |
 			 AGS_JACK_MIDIIN_RECORD |
@@ -1058,8 +1061,15 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   jack_midiin->delay_counter = 0.0;
   jack_midiin->tic_counter = 0;
 
-  jack_midiin->flags |= AGS_JACK_MIDIIN_INITIALIZED;
-
+  jack_midiin->flags |= (AGS_JACK_MIDIIN_INITIALIZED |
+			 AGS_JACK_MIDIIN_START_RECORD |
+			 AGS_JACK_MIDIIN_RECORD);
+  
+  g_atomic_int_and(&(jack_midiin->sync_flags),
+		   (~(AGS_JACK_MIDIIN_PASS_THROUGH)));
+  g_atomic_int_or(&(jack_midiin->sync_flags),
+		  AGS_JACK_MIDIIN_INITIAL_CALLBACK);
+  
   pthread_mutex_unlock(mutex);
 }
 
@@ -1184,6 +1194,8 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   AgsApplicationContext *application_context;
 
   pthread_mutex_t *mutex;
+  pthread_mutex_t *callback_mutex;
+  pthread_mutex_t *callback_finish_mutex;
   
   application_context = ags_sequencer_get_application_context(sequencer);
   
@@ -1200,13 +1212,52 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
     return;
   }
 
+  pthread_mutex_lock(mutex);
+
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  callback_mutex = jack_midiin->callback_mutex;
+  callback_finish_mutex = jack_midiin->callback_finish_mutex;
 
   jack_midiin->flags &= (~(AGS_JACK_MIDIIN_BUFFER0 |
 			   AGS_JACK_MIDIIN_BUFFER1 |
 			   AGS_JACK_MIDIIN_BUFFER2 |
 			   AGS_JACK_MIDIIN_BUFFER3 |
 			   AGS_JACK_MIDIIN_RECORD));
+
+  g_atomic_int_or(&(jack_midiin->sync_flags),
+		  AGS_JACK_MIDIIN_PASS_THROUGH);
+  g_atomic_int_and(&(jack_midiin->sync_flags),
+		   (~AGS_JACK_MIDIIN_INITIAL_CALLBACK));
+
+  pthread_mutex_unlock(mutex);
+
+  /* signal callback */
+  pthread_mutex_lock(callback_mutex);
+
+  g_atomic_int_or(&(jack_midiin->sync_flags),
+		  AGS_JACK_MIDIIN_CALLBACK_DONE);
+    
+  if((AGS_JACK_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+    pthread_cond_signal(jack_midiin->callback_cond);
+  }
+
+  pthread_mutex_unlock(callback_mutex);
+
+  /* signal thread */
+  pthread_mutex_lock(callback_finish_mutex);
+
+  g_atomic_int_or(&(jack_midiin->sync_flags),
+		  AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
+    
+  if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+    pthread_cond_signal(jack_midiin->callback_finish_cond);
+  }
+
+  pthread_mutex_unlock(callback_finish_mutex);
+
+  /*  */
+  pthread_mutex_lock(mutex);
 
   if(jack_midiin->buffer[1] != NULL){
     free(jack_midiin->buffer[1]);
@@ -1227,6 +1278,8 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
     free(jack_midiin->buffer[0]);
     jack_midiin->buffer_size[0] = 0;
   }
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -1236,27 +1289,23 @@ ags_jack_midiin_tic(AgsSequencer *sequencer)
   gdouble delay;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
+  
+  /* determine if attack should be switched */
+  delay = jack_midiin->delay;
 
-  if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
-    if(jack_midiin->buffer[1] != NULL){
-      free(jack_midiin->buffer[1]);
-      jack_midiin->buffer_size[1] = 0;
-    }
-  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-    if(jack_midiin->buffer[2] != NULL){
-      free(jack_midiin->buffer[2]);
-      jack_midiin->buffer_size[2] = 0;
-    }
-  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-    if(jack_midiin->buffer[3] != NULL){
-      free(jack_midiin->buffer[3]);
-      jack_midiin->buffer_size[3] = 0;
-    }
-  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
-    if(jack_midiin->buffer[0] != NULL){
-      free(jack_midiin->buffer[0]);
-      jack_midiin->buffer_size[0] = 0;
-    }
+  if((guint) jack_midiin->delay_counter + 1 >= (guint) delay){
+    ags_sequencer_set_note_offset(sequencer,
+				  jack_midiin->note_offset_absolute + 1);
+    
+    /* delay */
+    ags_sequencer_offset_changed(sequencer,
+				 jack_midiin->note_offset);
+    
+    /* reset - delay counter */
+    jack_midiin->delay_counter = 0.0;
+    jack_midiin->tact_counter += 1.0;
+  }else{
+    jack_midiin->delay_counter += 1.0;
   }
 }
 

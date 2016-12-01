@@ -35,7 +35,6 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
-#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>

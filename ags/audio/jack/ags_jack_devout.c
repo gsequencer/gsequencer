@@ -852,6 +852,7 @@ ags_jack_devout_set_property(GObject *gobject,
       
       jack_devout->application_mutex = application_mutex;
     }
+    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -1621,7 +1622,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   application_context = ags_soundcard_get_application_context(soundcard);
   
-  /* mutics */
+  /* mutices */
   pthread_mutex_lock(application_context->mutex);
   
   mutex_manager = ags_mutex_manager_get_instance();

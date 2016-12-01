@@ -227,7 +227,7 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					   "port-value-type\0", G_TYPE_BOOLEAN,
 					   NULL);
 
-  record_midi_audio->record->port_value.ags_port_boolean = TRUE;
+  record_midi_audio->record->port_value.ags_port_boolean = FALSE;
 
   port = g_list_prepend(port, record_midi_audio->record);
 

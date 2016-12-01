@@ -57,7 +57,7 @@ static AgsConnectableInterface *ags_start_soundcard_parent_connectable_interface
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_APPLICATION_CONTEXT,
 };
 
 GType
@@ -116,19 +116,19 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
 
   /* properties */
   /**
-   * AgsStartSoundcard:soundcard:
+   * AgsStartSoundcard:application-context:
    *
-   * The assigned #AgsSoundcard
+   * The assigned #AgsApplicationContext
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of start soundcard\0",
-				   "The soundcard of start soundcard task\0",
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context of start soundcard\0",
+				   "The application context of start soundcard task\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /* task */
@@ -149,7 +149,7 @@ ags_start_soundcard_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_start_soundcard_init(AgsStartSoundcard *start_soundcard)
 {
-  start_soundcard->soundcard = NULL;
+  start_soundcard->application_context = NULL;
 }
 
 void
@@ -163,25 +163,25 @@ ags_start_soundcard_set_property(GObject *gobject,
   start_soundcard = AGS_START_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_APPLICATION_CONTEXT:
     {
-      GObject *soundcard;
+      GObject *application_context;
 
-      soundcard = (GObject *) g_value_get_object(value);
+      application_context = (GObject *) g_value_get_object(value);
 
-      if(start_soundcard->soundcard == (GObject *) soundcard){
+      if(start_soundcard->application_context == (GObject *) application_context){
 	return;
       }
 
-      if(start_soundcard->soundcard != NULL){
-	g_object_unref(start_soundcard->soundcard);
+      if(start_soundcard->application_context != NULL){
+	g_object_unref(start_soundcard->application_context);
       }
 
-      if(soundcard != NULL){
-	g_object_ref(soundcard);
+      if(application_context != NULL){
+	g_object_ref(application_context);
       }
 
-      start_soundcard->soundcard = (GObject *) soundcard;
+      start_soundcard->application_context = (GObject *) application_context;
     }
     break;
   default:
@@ -201,9 +201,9 @@ ags_start_soundcard_get_property(GObject *gobject,
   start_soundcard = AGS_START_SOUNDCARD(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_APPLICATION_CONTEXT:
     {
-      g_value_set_object(value, start_soundcard->soundcard);
+      g_value_set_object(value, start_soundcard->application_context);
     }
     break;
   default:
@@ -237,9 +237,7 @@ ags_start_soundcard_finalize(GObject *gobject)
   AgsApplicationContext *application_context;
   AgsSoundcard *soundcard;
 
-  soundcard = AGS_SOUNDCARD(AGS_START_SOUNDCARD(gobject)->soundcard);
-
-  application_context = ags_soundcard_get_application_context(soundcard);
+  application_context = AGS_START_SOUNDCARD(gobject)->application_context;
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
   soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
@@ -269,9 +267,7 @@ ags_start_soundcard_launch(AgsTask *task)
   
   start_soundcard = AGS_START_SOUNDCARD(task);
 
-  soundcard = AGS_SOUNDCARD(start_soundcard->soundcard);
-
-  application_context = ags_soundcard_get_application_context(soundcard);
+  application_context = start_soundcard->application_context;
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
@@ -314,23 +310,23 @@ ags_start_soundcard_launch(AgsTask *task)
 
 /**
  * ags_start_soundcard_new:
- * @soundcard: the #AgsSoundcard
+ * @application_context: the #AgsApplicationContext
  *
  * Creates an #AgsStartSoundcard.
  *
  * Returns: an new #AgsStartSoundcard.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsStartSoundcard*
-ags_start_soundcard_new(GObject *soundcard)
+ags_start_soundcard_new(AgsApplicationContext *application_context)
 {
   AgsStartSoundcard *start_soundcard;
 
   start_soundcard = (AgsStartSoundcard *) g_object_new(AGS_TYPE_START_SOUNDCARD,
 						       NULL);
 
-  start_soundcard->soundcard = soundcard;
+  start_soundcard->application_context = application_context;
 
   return(start_soundcard);
 }

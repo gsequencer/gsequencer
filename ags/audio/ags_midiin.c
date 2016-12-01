@@ -569,6 +569,7 @@ ags_midiin_set_property(GObject *gobject,
       
       midiin->application_mutex = application_mutex;
     }
+    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -784,6 +785,7 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     }
 
     midiin->buffer[1] = NULL;
+    midiin->buffer_size[1] = 0;
   }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER1);
     midiin->flags |= AGS_MIDIIN_BUFFER2;
@@ -794,6 +796,7 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     }
 
     midiin->buffer[2] = NULL;
+    midiin->buffer_size[2] = 0;
   }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER2);
     midiin->flags |= AGS_MIDIIN_BUFFER3;
@@ -804,6 +807,7 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     }
 
     midiin->buffer[3] = NULL;
+    midiin->buffer_size[3] = 0;
   }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
     midiin->flags &= (~AGS_MIDIIN_BUFFER3);
     midiin->flags |= AGS_MIDIIN_BUFFER0;
@@ -814,6 +818,7 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     }
 
     midiin->buffer[0] = NULL;
+    midiin->buffer_size[0] = 0;
   }
 }
 

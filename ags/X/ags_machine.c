@@ -1583,7 +1583,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
       pthread_mutex_unlock(audio_loop_mutex);
 
       /* start soundcard */
-      start_soundcard = ags_start_soundcard_new(window->soundcard);
+      start_soundcard = ags_start_soundcard_new(window->application_context);
       list = g_list_prepend(list, start_soundcard);
 
       /* task completion */
@@ -1602,12 +1602,12 @@ ags_machine_set_run_extended(AgsMachine *machine,
       pthread_mutex_unlock(gui_thread->task_completion_mutex);
 
       /* start sequencer */
-      start_sequencer = ags_start_sequencer_new(machine->audio->sequencer);
+      start_sequencer = ags_start_sequencer_new(window->application_context);
       list = g_list_prepend(list, start_sequencer);
-
+      
       /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);
-
+      
       ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 				   list);
     }

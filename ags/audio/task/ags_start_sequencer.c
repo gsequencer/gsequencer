@@ -20,7 +20,6 @@
 #include <ags/audio/task/ags_start_sequencer.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_sequencer.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
@@ -57,7 +56,7 @@ static AgsConnectableInterface *ags_start_sequencer_parent_connectable_interface
 
 enum{
   PROP_0,
-  PROP_SEQUENCER,
+  PROP_APPLICATION_CONTEXT,
 };
 
 GType
@@ -116,19 +115,19 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
 
   /* properties */
   /**
-   * AgsStartSequencer:sequencer:
+   * AgsStartSequencer:application-context:
    *
-   * The assigned #AgsSequencer
+   * The assigned #AgsApplicationContext
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("sequencer\0",
-				   "sequencer of start sequencer\0",
-				   "The sequencer of start sequencer task\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context of start sequencer\0",
+				   "The application context of start sequencer task\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SEQUENCER,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /* task */
@@ -149,7 +148,7 @@ ags_start_sequencer_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_start_sequencer_init(AgsStartSequencer *start_sequencer)
 {
-  start_sequencer->sequencer = NULL;
+  start_sequencer->application_context = NULL;
 }
 
 void
@@ -163,25 +162,25 @@ ags_start_sequencer_set_property(GObject *gobject,
   start_sequencer = AGS_START_SEQUENCER(gobject);
 
   switch(prop_id){
-  case PROP_SEQUENCER:
+  case PROP_APPLICATION_CONTEXT:
     {
-      GObject *sequencer;
+      GObject *application_context;
 
-      sequencer = (GObject *) g_value_get_object(value);
+      application_context = (GObject *) g_value_get_object(value);
 
-      if(start_sequencer->sequencer == (GObject *) sequencer){
+      if(start_sequencer->application_context == (GObject *) application_context){
 	return;
       }
 
-      if(start_sequencer->sequencer != NULL){
-	g_object_unref(start_sequencer->sequencer);
+      if(start_sequencer->application_context != NULL){
+	g_object_unref(start_sequencer->application_context);
       }
 
-      if(sequencer != NULL){
-	g_object_ref(sequencer);
+      if(application_context != NULL){
+	g_object_ref(application_context);
       }
 
-      start_sequencer->sequencer = (GObject *) sequencer;
+      start_sequencer->application_context = (GObject *) application_context;
     }
     break;
   default:
@@ -201,9 +200,9 @@ ags_start_sequencer_get_property(GObject *gobject,
   start_sequencer = AGS_START_SEQUENCER(gobject);
 
   switch(prop_id){
-  case PROP_SEQUENCER:
+  case PROP_APPLICATION_CONTEXT:
     {
-      g_value_set_object(value, start_sequencer->sequencer);
+      g_value_set_object(value, start_sequencer->application_context);
     }
     break;
   default:
@@ -237,9 +236,7 @@ ags_start_sequencer_finalize(GObject *gobject)
   AgsApplicationContext *application_context;
   AgsSequencer *sequencer;
 
-  sequencer = AGS_SEQUENCER(AGS_START_SEQUENCER(gobject)->sequencer);
-
-  application_context = ags_sequencer_get_application_context(sequencer);
+  application_context = AGS_START_SEQUENCER(gobject)->application_context;
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
   sequencer_thread = (AgsSequencerThread *) ags_thread_find_type((AgsThread *) audio_loop,
@@ -263,20 +260,13 @@ ags_start_sequencer_launch(AgsTask *task)
   AgsThread *sequencer_thread;
 
   AgsApplicationContext *application_context;
-  AgsSequencer *sequencer;
 
   GList *start_queue;
   
   start_sequencer = AGS_START_SEQUENCER(task);
 
-  sequencer = AGS_SEQUENCER(start_sequencer->sequencer);
-
-  application_context = ags_sequencer_get_application_context(sequencer);
+  application_context = start_sequencer->application_context;
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-
-  audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
-			AGS_AUDIO_LOOP_PLAY_CHANNEL |
-			AGS_AUDIO_LOOP_PLAY_RECALL);
 
   /*
   if(ags_sequencer_is_starting(sequencer) ||
@@ -314,7 +304,7 @@ ags_start_sequencer_launch(AgsTask *task)
 
 /**
  * ags_start_sequencer_new:
- * @sequencer: the #AgsSequencer
+ * @application_context: the #AgsApplicationContext
  *
  * Creates an #AgsStartSequencer.
  *
@@ -323,14 +313,14 @@ ags_start_sequencer_launch(AgsTask *task)
  * Since: 1.0.0
  */
 AgsStartSequencer*
-ags_start_sequencer_new(GObject *sequencer)
+ags_start_sequencer_new(AgsApplicationContext *application_context)
 {
   AgsStartSequencer *start_sequencer;
 
   start_sequencer = (AgsStartSequencer *) g_object_new(AGS_TYPE_START_SEQUENCER,
 						       NULL);
 
-  start_sequencer->sequencer = sequencer;
+  start_sequencer->application_context = application_context;
 
   return(start_sequencer);
 }
