@@ -898,6 +898,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		current_note->flags &= (~AGS_NOTE_FEED);
 		record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							    current_note);
+	      }else{
+		current_note->x[1] = notation_counter + 1;
 	      }
 	    }
 	  }
