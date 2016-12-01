@@ -203,7 +203,27 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->note != NULL &&
      (AGS_NOTE_FEED & (AGS_NOTE(AGS_RECALL_AUDIO_SIGNAL(recall)->source->note)->flags)) != 0){
+    AgsAudioSignal *template, *audio_signal;
+
+    gdouble notation_delay;
+    guint frame_count;
+
+    audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
+    template = NULL;
     
+    if(audio_signal->recycling != NULL){
+      template = ags_audio_signal_get_template(AGS_RECYCLING(audio_signal->recycling)->audio_signal);
+    }
+    
+    /* get notation delay */
+    notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(recall->soundcard));
+
+    /* feed audio signal */
+    frame_count = (audio_signal->length * audio_signal->buffer_size) + notation_delay * audio_signal->buffer_size;
+    
+    ags_audio_signal_feed(audio_signal,
+			  template,
+			  frame_count);
   }else{
     ags_recall_done(recall);
   }

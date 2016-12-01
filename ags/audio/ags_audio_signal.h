@@ -58,6 +58,8 @@ struct _AgsAudioSignal
   guint length;
   guint first_frame;
   guint last_frame; // the last frame at stream_end
+
+  guint frame_count; // initial size
   guint loop_start;
   guint loop_end;
 

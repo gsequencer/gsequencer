@@ -886,6 +886,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	  GValue value = {0,};
 
+	  /* get notation delay */
 	  g_value_init(&value,
 		       G_TYPE_DOUBLE);
 	  ags_port_safe_read(delay_audio->notation_delay,
@@ -893,7 +894,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	  notation_delay = g_value_get_double(&value);
 	  g_value_unset(&value);
-		
+
+	  /* create audio signal with frame count */
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
 							     (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0])),

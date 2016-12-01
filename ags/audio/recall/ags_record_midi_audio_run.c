@@ -848,31 +848,51 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	       input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1 > 0) ||
 	      ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
 	       (0x7f & midi_iter[1]) - midi_start_mapping < midi_end_mapping))){
-	    /* add note */
-	    current_note = ags_note_new();
+	    current_note = NULL;
+	    note = record_midi_audio_run->note;
+
+	    while(note != NULL){
+	      /* check current notes */
+	      if((((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0 &&
+		   AGS_NOTE(note->data)->y == input_pads - (0x7f & midi_iter[1]) - midi_start_mapping) - 1) ||
+		 ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
+		  AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping)){
+		current_note = note->data;
+
+		break;
+	      }
 	    
-	    current_note->x[0] = notation_counter;
-	    current_note->x[1] = notation_counter + 1;
-
-	    if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-	      current_note->y = input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1;
-	    }else{
-	      current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
+	      note = note->next;
 	    }
+	    
+	    /* add note */
+	    if(current_note == NULL){
+	      current_note = ags_note_new();
+	    
+	      current_note->x[0] = notation_counter;
+	      current_note->x[1] = notation_counter + 1;
+	      
+	      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+		current_note->y = input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1;
+	      }else{
+		current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
+	      }
+	      
 
-	    if(!pattern_mode){
-	      record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
-							   current_note);
-	      current_note->flags |= AGS_NOTE_FEED;
+	      if(!pattern_mode){
+		record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
+							     current_note);
+		current_note->flags |= AGS_NOTE_FEED;
+	      }
+
+	      pthread_mutex_lock(audio_mutex);
+	      
+	      ags_notation_add_note(notation,
+				    current_note,
+				    FALSE);
+	      
+	      pthread_mutex_unlock(audio_mutex);
 	    }
-
-	    pthread_mutex_lock(audio_mutex);
-
-	    ags_notation_add_note(notation,
-				  current_note,
-				  FALSE);
-
-	    pthread_mutex_unlock(audio_mutex);
 	  }
 	  
 	  midi_iter += 3;
@@ -890,7 +910,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	       ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
 		AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping)){
 	      current_note = note->data;
-	      current_note->flags &= (AGS_NOTE_FEED);
+	      current_note->flags &= (~AGS_NOTE_FEED);
 	      
 	      break;
 	    }

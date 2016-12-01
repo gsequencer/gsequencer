@@ -1104,6 +1104,25 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 
     current = current->next_pad;
   }
+  
+  /*  */
+  current = source;
+
+  while(current != NULL){
+    /* ags-feed */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-feed\0",
+			      0, audio->audio_channels, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
 
   /*  */
   current = source;

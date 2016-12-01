@@ -75,6 +75,7 @@ enum{
   PROP_LENGTH,
   PROP_FIRST_FRAME,
   PROP_LAST_FRAME,
+  PROP_FRAME_COUNT,
   PROP_LOOP_START,
   PROP_LOOP_END,
   PROP_DELAY,
@@ -322,6 +323,24 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  param_spec);
 
   /**
+   * AgsAudioSignal:frame-count:
+   *
+   * The initial size of audio data.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("frame-count\0",
+				 "frame count of audio data\0",
+				 "The initial frame count of audio data\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FRAME_COUNT,
+				  param_spec);
+
+  /**
    * AgsAudioSignal:loop-start:
    *
    * The loop start of stream.
@@ -565,6 +584,8 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   /*  */
   audio_signal->length = 0;
   audio_signal->last_frame = 0;
+
+  audio_signal->frame_count = 0;
   audio_signal->loop_start = 0;
   audio_signal->loop_end = 0;
 
@@ -727,6 +748,15 @@ ags_audio_signal_set_property(GObject *gobject,
       audio_signal->last_frame = last_frame;
     }
     break;
+  case PROP_FRAME_COUNT:
+    {
+      guint frame_count;
+
+      frame_count = g_value_get_uint(value);
+
+      audio_signal->frame_count = frame_count;
+    }
+    break;
   case PROP_LOOP_START:
     {
       guint loop_start;
@@ -864,6 +894,11 @@ ags_audio_signal_get_property(GObject *gobject,
   case PROP_LAST_FRAME:
     {
       g_value_set_uint(value, audio_signal->last_frame);
+    }
+    break;
+  case PROP_FRAME_COUNT:
+    {
+      g_value_set_uint(value, audio_signal->frame_count);
     }
     break;
   case PROP_LOOP_START:
