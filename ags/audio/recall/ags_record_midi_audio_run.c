@@ -38,6 +38,8 @@
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_note.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -861,6 +863,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    if(!pattern_mode){
 	      record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
 							   current_note);
+	      current_note->flags |= AGS_NOTE_FEED;
 	    }
 
 	    pthread_mutex_lock(audio_mutex);
@@ -887,6 +890,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	       ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
 		AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping)){
 	      current_note = note->data;
+	      current_note->flags &= (AGS_NOTE_FEED);
 	      
 	      break;
 	    }

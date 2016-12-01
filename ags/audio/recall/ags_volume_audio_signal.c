@@ -31,14 +31,6 @@ void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_
 void ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_volume_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal);
-void ags_volume_audio_signal_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_volume_audio_signal_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
 void ags_volume_audio_signal_connect(AgsConnectable *connectable);
 void ags_volume_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_volume_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
@@ -59,11 +51,6 @@ AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall,
  *
  * The #AgsVolumeAudioSignal class volumes the audio signal.
  */
-
-enum{
-  PROP_0,
-  PROP_VOLUME,
-};
 
 static gpointer ags_volume_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_audio_signal_parent_connectable_interface;

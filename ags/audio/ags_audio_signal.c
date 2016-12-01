@@ -62,7 +62,6 @@ void ags_audio_signal_connect(AgsConnectable *connectable);
 void ags_audio_signal_disconnect(AgsConnectable *connectable);
 
 void ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
-void ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 
 enum{
   PROP_0,
@@ -88,7 +87,6 @@ enum{
 
 enum{
   REALLOC_BUFFER_SIZE,
-  MORPH_SAMPLERATE,
   LAST_SIGNAL,
 };
 
@@ -459,7 +457,6 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 
   /* AgsAudioSignalClass */
   audio_signal->realloc_buffer_size = ags_audio_signal_real_realloc_buffer_size;
-  audio_signal->morph_samplerate = ags_audio_signal_real_morph_samplerate;
 
   /* signals */
   /**
@@ -478,23 +475,6 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
-
-  /**
-   * AgsAudioSignal::morph-samplerate:
-   * @audio_signal: the object to morph samplerate
-   * @samplerate: new samplerate
-   *
-   * The ::morph-samplerate signal is invoked to notify modified samplerate.
-   */
-  audio_signal_signals[MORPH_SAMPLERATE] =
-    g_signal_new("morph-samplerate\0",
-		 G_TYPE_FROM_CLASS (audio_signal),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsAudioSignalClass, morph_samplerate),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE,
-		 G_TYPE_NONE, 2,
-		 G_TYPE_UINT, G_TYPE_DOUBLE);
 }
 
 void
@@ -1439,108 +1419,6 @@ ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_
   g_signal_emit(G_OBJECT(audio_signal),
 		audio_signal_signals[REALLOC_BUFFER_SIZE], 0,
 		buffer_size);
-  g_object_unref(G_OBJECT(audio_signal));
-}
-
-void
-ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph)
-{
-  GList *current, *old, *tmp; 
-  guint old_samplerate;
-  guint counter;
-  guint i_old, i_current;
-  guint j_old, j_current;
-  double k_old, k_current;
-  guint frame;
-  double factor, value, preview;
-  
-  old = audio_signal->stream_beginning;
-  old_samplerate = audio_signal->samplerate;
-
-  current = NULL;
-  current = g_list_prepend(current,
-			   ags_stream_alloc(audio_signal->buffer_size,
-					    audio_signal->format));
-  counter = 0;
-
-  i_old = 0;
-  i_current = 0;
-
-  factor = samplerate / old_samplerate;
-
-  if(k_morph == 0.0){
-    k_morph = (samplerate < old_samplerate) ? 2.0 * factor: 0.5 * factor;
-  }
-
-  while(old != NULL){
-    value = (double) (((signed short *) old->data)[i_old]);
-
-    for(j_old = 0, j_current = 0; (((samplerate < old_samplerate) && (j_old < ceil(1.0 / factor))) ||
-				   (j_current < ceil(factor))); j_old++, j_current++){
-      preview = 0.0;
-
-      for(frame = 0; frame < ceil(factor); frame++){
-	//	preview += ;
-      }
-
-      for(frame = 0; frame < ceil(factor); frame++){
-	//	preview += ;
-      }
-
-      for(k_old = 0.0, k_current = 0.0; (((k_morph < 1.0) && (k_old < ceil(1.0 / k_morph))) ||
-					 (k_current < ceil(k_morph))); k_old++, k_current++){
-	//	value = value * ( / );
-      }
-    }
-
-    ((signed short *) current->data)[i_current] = value;
-
-    if(i_current == samplerate){
-      current = g_list_prepend(current,
-			       ags_stream_alloc(audio_signal->buffer_size,
-						audio_signal->format));
-
-      i_current = 0;
-
-      counter++;
-    }
-
-    if(i_old == old_samplerate){
-      old = old->next;
-
-      i_old = 0;
-    }
-
-    i_current++;
-    i_old++;
-  }
-
-  /*  */
-  audio_signal->length = counter;
-  audio_signal->last_frame = i_current;
-
-  audio_signal->stream_end = current;
-  audio_signal->stream_beginning = g_list_reverse(current);
-}
-
-/**
- * ags_audio_signal_morph_samplerate:
- * @audio_signal: an #AgsAudioSignal
- * @samplerate: the new samplerate
- * @k_morph: reserved for future usage
- *
- * Morph audio quality to new samplerate.
- *
- * Since: 0.4
- */
-void
-ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph)
-{
-  g_return_if_fail(AGS_IS_AUDIO_SIGNAL(audio_signal));
-  g_object_ref(G_OBJECT(audio_signal));
-  g_signal_emit(G_OBJECT(audio_signal),
-		audio_signal_signals[MORPH_SAMPLERATE], 0,
-		samplerate, k_morph);
   g_object_unref(G_OBJECT(audio_signal));
 }
 
@@ -2532,6 +2410,143 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 
     if(template_k == template->buffer_size){
       source = source->next;
+    }
+  }
+}
+
+/**
+ * ags_audio_signal_feed:
+ * @audio_signal: the #AgsAudioSignal
+ * @template: the template #AgsAudioSignal
+ * @frame_count: the new frame count
+ * 
+ * Feed audio signal to grow upto frame count.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_audio_signal_feed(AgsAudioSignal *audio_signal,
+		      AgsAudioSignal *template,
+		      guint frame_count)
+{
+  GList *stream, *template_stream;
+
+  guint old_length;
+  guint old_last_frame;
+  guint old_frame_count;
+  gdouble delay;
+  guint attack;
+  guint loop_length;
+  guint loop_frame_count;
+  guint n_frames;
+  guint copy_n_frames;
+  guint nth_loop;
+  guint i, j, k;
+  guint copy_mode;
+
+  if(audio_signal == NULL ||
+     template == NULL){
+    return;
+  }
+  
+  old_length = audio_signal->length;
+  old_last_frame = audio_signal->last_frame;
+  old_frame_count = old_last_frame + (old_length * audio_signal->buffer_size) - audio_signal->first_frame;
+  
+  /* resize */
+  if(template->loop_end > template->loop_start){
+    loop_length = template->loop_end - template->loop_start;
+    loop_frame_count = ((frame_count - template->loop_start) / loop_length) * template->buffer_size;
+
+    ags_audio_signal_stream_resize(audio_signal,
+				   (guint) ceil(frame_count / audio_signal->buffer_size) + 1);
+    
+  }else{
+    ags_audio_signal_stream_resize(audio_signal,
+				   (guint) ceil(frame_count / audio_signal->buffer_size) + 1);
+
+    return;
+  }
+
+    audio_signal->last_frame = ((guint) (delay * audio_signal->buffer_size) + frame_count + attack) % audio_signal->buffer_size;
+
+  if(template->length == 0){
+    return;
+  }
+
+  delay = audio_signal->delay;
+  attack = audio_signal->attack;
+
+  /* generic copying */
+  stream = g_list_nth(audio_signal->stream_beginning,
+		      (guint) ((delay * audio_signal->buffer_size) + attack) / audio_signal->buffer_size);
+  template_stream = template->stream_beginning;
+
+  /* loop related copying */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						  ags_audio_buffer_util_format_from_soundcard(template->format));
+  
+  for(i = 0, j = 0, k = attack, nth_loop = 0; i < frame_count;){    
+    /* compute count of frames to copy */
+    copy_n_frames = audio_signal->buffer_size;
+
+    /* limit nth loop */
+    if(i > template->loop_start &&
+       i + copy_n_frames > template->loop_start + loop_length &&
+       i + copy_n_frames < template->loop_start + loop_frame_count &&
+       i + copy_n_frames >= template->loop_start + (nth_loop + 1) * loop_length){
+      copy_n_frames = (template->loop_start + (nth_loop + 1) * loop_length) - i;
+    }
+
+    /* check boundaries */
+    if((k % audio_signal->buffer_size) + copy_n_frames > audio_signal->buffer_size){
+      copy_n_frames = audio_signal->buffer_size - (k % audio_signal->buffer_size);
+    }
+
+    if(j + copy_n_frames > audio_signal->buffer_size){
+      copy_n_frames = audio_signal->buffer_size - j;
+    }
+
+    if(stream == NULL ||
+       template_stream == NULL){
+      break;
+    }
+    
+    /* copy */
+    if(k + audio_signal->buffer_size >= old_frame_count - (template->loop_end - template->loop_start)){
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, k % audio_signal->buffer_size,
+						  template_stream->data, 1, j,
+						  copy_n_frames, copy_mode);
+    }
+    
+    /* increment and iterate */
+    if((i + copy_n_frames) % audio_signal->buffer_size == 0){
+      stream = stream->next;
+    }
+
+    if(j + copy_n_frames == template->buffer_size){
+      template_stream = template_stream->next;
+    }
+    
+    if(template_stream == NULL ||
+       (i > template->loop_start &&
+	i + copy_n_frames > template->loop_start + loop_length &&
+	i + copy_n_frames < template->loop_start + loop_frame_count &&
+	i + copy_n_frames >= template->loop_start + (nth_loop + 1) * loop_length)){
+      j = template->loop_start % template->buffer_size;
+      template_stream = g_list_nth(template->stream_beginning,
+				   floor(template->loop_start / template->buffer_size));
+
+      nth_loop++;
+    }else{
+      j += copy_n_frames;
+    }
+    
+    i += copy_n_frames;
+    k += copy_n_frames;
+
+    if(j == template->buffer_size){
+      j = 0;
     }
   }
 }

@@ -77,7 +77,6 @@ struct _AgsAudioSignalClass
 
   void (*reset_format)(AgsAudioSignal *audio_signal, guint format);
   void (*realloc_buffer_size)(AgsAudioSignal *audio_signal, guint buffer_size);
-  void (*morph_samplerate)(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 };
 
 GType ags_audio_signal_get_type();
@@ -97,7 +96,6 @@ void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length);
 
 void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
-void ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);
@@ -115,6 +113,9 @@ void ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 void ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 			    AgsAudioSignal *template,
 			    guint length);
+void ags_audio_signal_feed(AgsAudioSignal *audio_signal,
+			   AgsAudioSignal *template,
+			   guint frame_count);
 
 void ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
 			       gdouble attack,

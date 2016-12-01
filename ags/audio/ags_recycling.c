@@ -907,7 +907,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   AgsMutexManager *mutex_manager;
 
-  GList *stream, *template_stream, *template_loop;
+  GList *stream, *template_stream;
 
   guint loop_length;
   guint loop_frame_count;
