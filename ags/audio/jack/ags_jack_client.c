@@ -766,6 +766,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
       /* wait callback */      
       no_event = TRUE;
+      synced = FALSE;
 
       if((AGS_JACK_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(jack_devout->sync_flags)))) == 0){
 	callback_mutex = jack_devout->callback_mutex;
@@ -797,7 +798,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	  synced = TRUE;
 	}
 
-	do_sync = FALSE;
+	//	do_sync = FALSE;
 	
 	pthread_mutex_lock(device_mutex);
       }
@@ -912,26 +913,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
 
       /*  */
-      if(!no_event){
-	/* signal finish */
-	pthread_mutex_lock(device_mutex);
-
-	callback_finish_mutex = jack_devout->callback_finish_mutex;
-
-	pthread_mutex_unlock(device_mutex);
-	
-	pthread_mutex_lock(callback_finish_mutex);
-
-	g_atomic_int_or(&(jack_devout->sync_flags),
-			AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
-    
-	if((AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
-	  pthread_cond_signal(jack_devout->callback_finish_cond);
-	}
-
-	pthread_mutex_unlock(callback_finish_mutex);
-      }
-
       if(task_thread != NULL){
 	AgsTicDevice *tic_device;
 	AgsSwitchBufferFlag *switch_buffer_flag;
@@ -959,6 +940,26 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	  
 	/* reset - switch buffer flags */
 	ags_jack_devout_switch_buffer_flag(jack_devout);
+      }
+
+      if(!no_event){
+	/* signal finish */
+	pthread_mutex_lock(device_mutex);
+
+	callback_finish_mutex = jack_devout->callback_finish_mutex;
+
+	pthread_mutex_unlock(device_mutex);
+	
+	pthread_mutex_lock(callback_finish_mutex);
+
+	g_atomic_int_or(&(jack_devout->sync_flags),
+			AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE);
+    
+	if((AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devout->sync_flags)))) != 0){
+	  pthread_cond_signal(jack_devout->callback_finish_cond);
+	}
+
+	pthread_mutex_unlock(callback_finish_mutex);
       }
     }
         
@@ -996,6 +997,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
       /* wait callback */      
       no_event = TRUE;
+      synced = FALSE;
       
       if((AGS_JACK_MIDIIN_PASS_THROUGH & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
 	callback_mutex = jack_midiin->callback_mutex;
@@ -1027,7 +1029,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	  synced = TRUE;
 	}
 
-	do_sync = FALSE;
+	//	do_sync = FALSE;
 	
 	pthread_mutex_lock(device_mutex);
       }
@@ -1043,7 +1045,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	jack_port = port->data;
 
 	port_buf = jack_port_get_buffer(jack_port->port,
-					256);
+					4096);
 	event_count = jack_midi_get_event_count(port_buf);
 	
 	if(!no_event){
@@ -1052,12 +1054,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
 	    if(in_event.size > 0){
 	      if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
-		if(ceil((jack_midiin->buffer_size[0] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[0] / 256.0)){
+		if(ceil((jack_midiin->buffer_size[0] + in_event.size) / 4096.0) > ceil(jack_midiin->buffer_size[0] / 4096.0)){
 		  if(jack_midiin->buffer[0] == NULL){
-		    jack_midiin->buffer[0] = malloc(256 * sizeof(char));
+		    jack_midiin->buffer[0] = malloc(4096 * sizeof(char));
 		  }else{
 		    jack_midiin->buffer[0] = realloc(jack_midiin->buffer[0],
-						     (jack_midiin->buffer_size[0] + 256) * sizeof(char));
+						     (ceil(jack_midiin->buffer_size[0] / 4096.0) * 4096 + 4096) * sizeof(char));
 		  }
 		}
 
@@ -1066,12 +1068,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 		       in_event.size);
 		jack_midiin->buffer_size[0] += in_event.size;
 	      }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-		if(ceil((jack_midiin->buffer_size[1] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[1] / 256.0)){
+		if(ceil((jack_midiin->buffer_size[1] + in_event.size) / 4096.0) > ceil(jack_midiin->buffer_size[1] / 4096.0)){
 		  if(jack_midiin->buffer[1] == NULL){
-		    jack_midiin->buffer[1] = malloc(256 * sizeof(char));
+		    jack_midiin->buffer[1] = malloc(4096 * sizeof(char));
 		  }else{
 		    jack_midiin->buffer[1] = realloc(jack_midiin->buffer[1],
-						     (jack_midiin->buffer_size[1] + 256) * sizeof(char));
+						     (ceil(jack_midiin->buffer_size[1] / 4096.0) * 4096 + 4096) * sizeof(char));
 		  }
 		}
 
@@ -1080,12 +1082,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 		       in_event.size);
 		jack_midiin->buffer_size[1] += in_event.size;
 	      }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-		if(ceil((jack_midiin->buffer_size[2] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[2] / 256.0)){
+		if(ceil((jack_midiin->buffer_size[2] + in_event.size) / 4096.0) > ceil(jack_midiin->buffer_size[2] / 4096.0)){
 		  if(jack_midiin->buffer[2] == NULL){
-		    jack_midiin->buffer[2] = malloc(256 * sizeof(char));
+		    jack_midiin->buffer[2] = malloc(4096 * sizeof(char));
 		  }else{
 		    jack_midiin->buffer[2] = realloc(jack_midiin->buffer[2],
-						     (jack_midiin->buffer_size[2] + 256) * sizeof(char));
+						     (ceil(jack_midiin->buffer_size[2] / 4096.0) * 4096 + 4096) * sizeof(char));
 		  }
 		}
 
@@ -1094,12 +1096,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 		       in_event.size);
 		jack_midiin->buffer_size[2] += in_event.size;
 	      }else if((AGS_JACK_MIDIIN_BUFFER3 & jack_midiin->flags) != 0){
-		if(ceil((jack_midiin->buffer_size[3] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[3] / 256.0)){
+		if(ceil((jack_midiin->buffer_size[3] + in_event.size) / 4096.0) > ceil(jack_midiin->buffer_size[3] / 4096.0)){
 		  if(jack_midiin->buffer[3] == NULL){
-		    jack_midiin->buffer[3] = malloc(256 * sizeof(char));
+		    jack_midiin->buffer[3] = malloc(4096 * sizeof(char));
 		  }else{
 		    jack_midiin->buffer[3] = realloc(jack_midiin->buffer[3],
-						     (jack_midiin->buffer_size[3] + 256) * sizeof(char));
+						     (ceil(jack_midiin->buffer_size[3] / 4096.0) * 4096 + 4096) * sizeof(char));
 		  }
 		}
 
@@ -1116,27 +1118,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	jack_midi_clear_buffer(port_buf);
 	
 	port = port->next;
-      }
-
-      /*  */
-      if(!no_event){
-	/* signal finish */
-	pthread_mutex_lock(device_mutex);
-
-	callback_finish_mutex = jack_midiin->callback_finish_mutex;
-
-	pthread_mutex_unlock(device_mutex);
-	
-	pthread_mutex_lock(callback_finish_mutex);
-
-	g_atomic_int_or(&(jack_midiin->sync_flags),
-			AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
-    
-	if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
-	  pthread_cond_signal(jack_midiin->callback_finish_cond);
-	}
-
-	pthread_mutex_unlock(callback_finish_mutex);
       }
 
       if(task_thread != NULL){
@@ -1167,6 +1148,27 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	/* reset - switch buffer flags */
 	ags_jack_midiin_switch_buffer_flag(jack_midiin);
       }	
+
+      /*  */
+      if(!no_event){
+	/* signal finish */
+	pthread_mutex_lock(device_mutex);
+
+	callback_finish_mutex = jack_midiin->callback_finish_mutex;
+
+	pthread_mutex_unlock(device_mutex);
+	
+	pthread_mutex_lock(callback_finish_mutex);
+
+	g_atomic_int_or(&(jack_midiin->sync_flags),
+			AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
+    
+	if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	  pthread_cond_signal(jack_midiin->callback_finish_cond);
+	}
+
+	pthread_mutex_unlock(callback_finish_mutex);
+      }
     }
         
     pthread_mutex_unlock(device_mutex);
