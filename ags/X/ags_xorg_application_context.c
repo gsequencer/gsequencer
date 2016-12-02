@@ -828,7 +828,7 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
-  GList *soundcard;
+  GList *soundcard, *sequencer;
   
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
@@ -838,12 +838,22 @@ ags_xorg_application_context_connect(AgsConnectable *connectable)
 
   ags_xorg_application_context_parent_connectable_interface->connect(connectable);
 
+  /* soundcard */
   soundcard = xorg_application_context->soundcard;
 
   while(soundcard != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(soundcard->data));
 
     soundcard = soundcard->next;
+  }
+
+  /* sequencer */
+  sequencer = xorg_application_context->sequencer;
+
+  while(sequencer != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(sequencer->data));
+
+    sequencer = sequencer->next;
   }
   
   g_message("connecting gui\0");

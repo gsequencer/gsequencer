@@ -27,12 +27,16 @@
 #include <ags/object/ags_distributed_manager.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_port.h>
+
+#include <ags/audio/task/ags_tic_device.h>
+#include <ags/audio/task/ags_switch_buffer_flag.h>
 
 #include <jack/midiport.h>
 #include <jack/weakmacros.h>
@@ -776,37 +780,15 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
     jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER1;
 
     /* clear buffer */
-    if(jack_midiin->buffer[1] != NULL){
-      free(jack_midiin->buffer[1]);
-    }
-
-    jack_midiin->buffer[1] = NULL;
-    jack_midiin->buffer_size[1] = 0;
-  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER1);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER2;
-
-    /* clear buffer */
-    if(jack_midiin->buffer[2] != NULL){
-      free(jack_midiin->buffer[2]);
-    }
-
-    jack_midiin->buffer[2] = NULL;
-    jack_midiin->buffer_size[2] = 0;
-  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER2);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER3;
-
-    /* clear buffer */
     if(jack_midiin->buffer[3] != NULL){
       free(jack_midiin->buffer[3]);
     }
 
     jack_midiin->buffer[3] = NULL;
     jack_midiin->buffer_size[3] = 0;
-  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER3);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER0;
+  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER1);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER2;
 
     /* clear buffer */
     if(jack_midiin->buffer[0] != NULL){
@@ -815,6 +797,28 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
 
     jack_midiin->buffer[0] = NULL;
     jack_midiin->buffer_size[0] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER2);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER3;
+
+    /* clear buffer */
+    if(jack_midiin->buffer[1] != NULL){
+      free(jack_midiin->buffer[1]);
+    }
+
+    jack_midiin->buffer[1] = NULL;
+    jack_midiin->buffer_size[1] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER3);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER0;
+
+    /* clear buffer */
+    if(jack_midiin->buffer[2] != NULL){
+      free(jack_midiin->buffer[2]);
+    }
+
+    jack_midiin->buffer[2] = NULL;
+    jack_midiin->buffer_size[2] = 0;
   }
 }
 
@@ -1081,6 +1085,7 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   AgsJackMidiin *jack_midiin;
 
   AgsMutexManager *mutex_manager;
+  AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1099,6 +1104,7 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   pthread_mutex_lock(application_context->mutex);
   
   mutex_manager = ags_mutex_manager_get_instance();
+  task_thread = (AgsTaskThread *) application_context->task_thread;
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) jack_midiin);
@@ -1182,6 +1188,35 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
 		       (~AGS_JACK_MIDIIN_INITIAL_CALLBACK));
     }
   }
+
+  if(task_thread != NULL){
+    AgsTicDevice *tic_device;
+    AgsSwitchBufferFlag *switch_buffer_flag;
+      
+    GList *task;
+      
+    task = NULL;
+  
+    /* tic sequencer */
+    tic_device = ags_tic_device_new((GObject *) jack_midiin);
+    task = g_list_append(task,
+			 tic_device);
+  
+    /* reset - switch buffer flags */
+    switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_midiin);
+    task = g_list_append(task,
+			 switch_buffer_flag);
+
+    /* append tasks */
+    ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+				 task);
+  }else{
+    /* tic */
+    ags_sequencer_tic(AGS_SEQUENCER(jack_midiin));
+	  
+    /* reset - switch buffer flags */
+    ags_jack_midiin_switch_buffer_flag(jack_midiin);
+  }  
 }
 
 void
@@ -1208,13 +1243,15 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   
   pthread_mutex_unlock(application_context->mutex);
 
-  if((AGS_JACK_MIDIIN_INITIALIZED & (jack_midiin->flags)) == 0){
-    return;
-  }
-
   pthread_mutex_lock(mutex);
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  if((AGS_JACK_MIDIIN_INITIALIZED & (jack_midiin->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
 
   callback_mutex = jack_midiin->callback_mutex;
   callback_finish_mutex = jack_midiin->callback_finish_mutex;

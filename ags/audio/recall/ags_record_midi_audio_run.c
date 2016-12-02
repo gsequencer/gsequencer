@@ -893,7 +893,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	      
 	      pthread_mutex_unlock(audio_mutex);
 	    }else{
-	      if(midi_iter[2] == 0){
+	      if((0x7f & (midi_iter[2])) == 0){
 		/* note-off */
 		current_note->flags &= (~AGS_NOTE_FEED);
 		record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,

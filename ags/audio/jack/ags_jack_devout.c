@@ -39,6 +39,8 @@
 #include <ags/audio/jack/ags_jack_port.h>
 
 #include <ags/audio/task/ags_notify_soundcard.h>
+#include <ags/audio/task/ags_tic_device.h>
+#include <ags/audio/task/ags_switch_buffer_flag.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -1609,6 +1611,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   AgsJackDevout *jack_devout;
 
   AgsMutexManager *mutex_manager;
+  AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1626,6 +1629,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_lock(application_context->mutex);
   
   mutex_manager = ags_mutex_manager_get_instance();
+  task_thread = (AgsTaskThread *) application_context->task_thread;
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) jack_devout);
@@ -1721,6 +1725,35 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   }
   
   pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->return_mutex);
+
+  if(task_thread != NULL){
+    AgsTicDevice *tic_device;
+    AgsSwitchBufferFlag *switch_buffer_flag;
+      
+    GList *task;
+      
+    task = NULL;
+  
+    /* tic soundcard */
+    tic_device = ags_tic_device_new((GObject *) jack_devout);
+    task = g_list_append(task,
+			 tic_device);
+  
+    /* reset - switch buffer flags */
+    switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_devout);
+    task = g_list_append(task,
+			 switch_buffer_flag);
+
+    /* append tasks */
+    ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+				 task);
+  }else{
+    /* tic */
+    ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
+	  
+    /* reset - switch buffer flags */
+    ags_jack_devout_switch_buffer_flag(jack_devout);
+  }
 }
 
 void

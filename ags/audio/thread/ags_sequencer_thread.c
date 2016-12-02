@@ -458,7 +458,6 @@ ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
     sequencer_thread = g_atomic_pointer_get(&(((AgsThread *) sequencer_thread)->next));
   }
 
-  
   return(NULL);
 }
 
