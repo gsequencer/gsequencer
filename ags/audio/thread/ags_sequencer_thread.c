@@ -26,6 +26,9 @@
 
 #include <ags/thread/ags_timestamp_thread.h>
 
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_midiin.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread);
@@ -179,15 +182,61 @@ void
 ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread)
 {
   AgsThread *thread;
+
+  AgsConfig *config;
   
-  thread = AGS_THREAD(sequencer_thread);
+  gchar *str0, *str1;
   
-  thread->freq = AGS_SEQUENCER_THREAD_DEFAULT_JIFFIE;
+  thread = (AgsThread *) sequencer_thread;
+
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_START_SYNCED_FREQ));  
+  
+  config = ags_config_get_instance();
+
+  str0 = ags_config_get_value(config,
+			      AGS_CONFIG_SOUNDCARD,
+			      "samplerate\0");
+
+  if(str0 == NULL){
+    str0 = ags_config_get_value(config,
+				AGS_CONFIG_SOUNDCARD_0,
+				"samplerate\0");
+  }
+  
+  str1 = ags_config_get_value(config,
+			      AGS_CONFIG_SOUNDCARD,
+			      "buffer-size\0");
+
+  if(str1 == NULL){
+    str1 = ags_config_get_value(config,
+				AGS_CONFIG_SOUNDCARD_0,
+				"buffer-size\0");
+  }
+
+  if(str0 == NULL || str1 == NULL){
+    thread->freq = AGS_SEQUENCER_THREAD_DEFAULT_JIFFIE;
+  }else{
+    guint samplerate;
+    guint buffer_size;
+
+    samplerate = g_ascii_strtoull(str0,
+				  NULL,
+				  10);
+    buffer_size = g_ascii_strtoull(str1,
+				   NULL,
+				   10);
+
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  }
+
+  g_free(str0);
+  g_free(str1);
 
   sequencer_thread->sequencer = NULL;
 
-  sequencer_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
-  ags_thread_add_child(thread, sequencer_thread->timestamp_thread);
+  //  sequencer_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
+  //  ags_thread_add_child(thread, sequencer_thread->timestamp_thread);
 
   sequencer_thread->error = NULL;
 }
@@ -303,9 +352,8 @@ ags_sequencer_thread_start(AgsThread *thread)
 			      NULL) == NULL){
     ags_sequencer_record_init(sequencer,
 			    &(sequencer_thread->error));
-      
 #ifdef AGS_DEBUG
-    g_message("ags_midiin_alsa_record\0");
+    g_message("ags_sequencer_record\0");
 #endif
   }
 
@@ -325,6 +373,21 @@ ags_sequencer_thread_run(AgsThread *thread)
   sequencer_thread = AGS_SEQUENCER_THREAD(thread);
 
   sequencer = AGS_SEQUENCER(sequencer_thread->sequencer);
+
+  /* real-time setup */
+  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+    struct sched_param param;
+    
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_RT_PRIORITY;
+      
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_RT_SETUP);
+  }
 
   if(ags_sequencer_is_recording(sequencer)){
     error = NULL;
@@ -378,6 +441,26 @@ ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread)
   g_object_unref((GObject *) sequencer_thread);
 }
 
+AgsSequencerThread*
+ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
+				    GObject *sequencer)
+{
+  if(sequencer_thread == NULL ||
+     !AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
+    return(NULL);
+  }
+  
+  while(sequencer_thread != NULL){
+    if(sequencer_thread->sequencer == sequencer){
+      return(sequencer_thread);
+    }
+    
+    sequencer_thread = g_atomic_pointer_get(&(((AgsThread *) sequencer_thread)->next));
+  }
+
+  return(NULL);
+}
+
 /**
  * ags_sequencer_thread_new:
  * @sequencer: the #AgsSequencer
@@ -396,7 +479,6 @@ ags_sequencer_thread_new(GObject *sequencer)
   sequencer_thread = (AgsSequencerThread *) g_object_new(AGS_TYPE_SEQUENCER_THREAD,
 							 "sequencer\0", sequencer,
 							 NULL);
-
 
   return(sequencer_thread);
 }

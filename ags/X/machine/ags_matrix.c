@@ -66,6 +66,8 @@
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
 #include <ags/audio/recall/ags_buffer_channel_run.h>
+#include <ags/audio/recall/ags_record_midi_audio.h>
+#include <ags/audio/recall/ags_record_midi_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
@@ -232,7 +234,17 @@ ags_matrix_init(AgsMatrix *matrix)
 		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_HAS_NOTATION |
 		   AGS_AUDIO_PATTERN_MODE);
-  //  audio->audio_channels = 1;
+  g_object_set(audio,
+	       "audio-start-mapping\0", 0,
+	       "audio-end-mapping\0", 128,
+	       "midi-start-mapping\0", 0,
+	       "midi-end-mapping\0", 128,
+	       NULL);
+
+  AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_REVERSE_NOTATION);
+
+  ags_machine_popup_add_connection_options((AgsMachine *) matrix,
+					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
   
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->input_line_type = G_TYPE_NONE;
@@ -639,6 +651,8 @@ ags_matrix_map_recall(AgsMachine *machine)
   AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
   AgsPlayNotationAudio  *play_notation;
   AgsCopyPatternChannel *copy_pattern_channel;
+  AgsRecordMidiAudio *recall_record_midi_audio;
+  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
 
@@ -762,6 +776,33 @@ ags_matrix_map_recall(AgsMachine *machine)
       channel = channel->next;
     }
   }
+
+  /* ags-record-midi */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-record-midi\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+
+  if(list != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+    
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }  
 
   /* ags-play-notation */
   ags_recall_factory_create(audio,

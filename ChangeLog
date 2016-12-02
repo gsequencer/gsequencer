@@ -1,3 +1,8 @@
+ags (0.7.111)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented experimental MIDI support for ALSA, OSS4 and JACK
+
 ags (0.7.110)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

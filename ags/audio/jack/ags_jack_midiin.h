@@ -67,6 +67,15 @@ typedef enum
   AGS_JACK_MIDIIN_PORTAUDIO                      = 1 << 17,
 }AgsJackMidiinFlags;
 
+typedef enum{
+  AGS_JACK_MIDIIN_PASS_THROUGH                   = 1,
+  AGS_JACK_MIDIIN_INITIAL_CALLBACK               = 1 <<  1,
+  AGS_JACK_MIDIIN_CALLBACK_WAIT                  = 1 <<  2,
+  AGS_JACK_MIDIIN_CALLBACK_DONE                  = 1 <<  3,
+  AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT           = 1 <<  4,
+  AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE           = 1 <<  5,
+}AgsJackMidiinSyncFlags;
+
 #define AGS_JACK_MIDIIN_ERROR (ags_jack_midiin_error_quark())
 
 typedef enum{
@@ -78,7 +87,8 @@ struct _AgsJackMidiin
   GObject object;
 
   guint flags;
-
+  volatile guint sync_flags;
+  
   char **buffer;
   guint buffer_size[4];
 
@@ -93,12 +103,19 @@ struct _AgsJackMidiin
   guint tic_counter; // in the range of default period
 
   guint note_offset;
+  guint note_offset_absolute;
 
   gchar *card_uri;
   GObject *jack_client;
 
   gchar **port_name;
   GList *jack_port;
+
+  pthread_mutex_t *callback_mutex;
+  pthread_cond_t *callback_cond;
+
+  pthread_mutex_t *callback_finish_mutex;
+  pthread_cond_t *callback_finish_cond;
   
   GObject *application_context;
   pthread_mutex_t *application_mutex;

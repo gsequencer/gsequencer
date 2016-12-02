@@ -52,10 +52,10 @@ struct _AgsJackClient
   gchar *name;
   
   jack_client_t *client;
-  
+
   GList *device;
   GList *port;
-
+  
   volatile guint queued;
 };
 

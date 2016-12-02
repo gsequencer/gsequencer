@@ -275,7 +275,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     tasks = g_list_reverse(tasks);
 
     /* create start task */
-    start_soundcard = ags_start_soundcard_new(soundcard);
+    start_soundcard = ags_start_soundcard_new(application_context);
     tasks = g_list_prepend(tasks, start_soundcard);
 
     ags_task_thread_append_tasks(task_thread,

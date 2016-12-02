@@ -145,7 +145,7 @@ ags_note_class_init(AgsNoteClass *note)
    */
   param_spec = g_param_spec_uint("x1\0",
 				 "offset x1\0",
-				 "The first x offset\0",
+				 "The last x offset\0",
 				 0,
 				 65535,
 				 0,
@@ -163,7 +163,7 @@ ags_note_class_init(AgsNoteClass *note)
    */
   param_spec = g_param_spec_uint("y\0",
 				 "offset y\0",
-				 "The first x offset\0",
+				 "The y offset\0",
 				 0,
 				 65535,
 				 0,

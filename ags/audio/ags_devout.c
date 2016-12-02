@@ -32,7 +32,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_poll_fd.h>
 
-#include <ags/audio/task/ags_tic_soundcard.h>
+#include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 
@@ -759,7 +759,7 @@ ags_devout_init(AgsDevout *devout)
     free(str);
   }
 
-  /*  */
+  /* device */
   if(use_alsa){
     devout->out.alsa.handle = NULL;
     devout->out.alsa.device = AGS_DEVOUT_DEFAULT_ALSA_DEVICE;
@@ -894,6 +894,7 @@ ags_devout_set_property(GObject *gobject,
       
       devout->application_mutex = application_mutex;
     }
+    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -1500,7 +1501,7 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     int next, n;
     int i;
 
-    if((mixer_device=getenv("OSS_MIXERDEV\0")) == NULL){
+    if((mixer_device = getenv("OSS_MIXERDEV\0")) == NULL){
       mixer_device = "/dev/mixer\0";
     }
 
@@ -2208,7 +2209,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
-  AgsTicSoundcard *tic_soundcard;
+  AgsTicDevice *tic_device;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -2458,9 +2459,9 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   task = NULL;
   
   /* tic soundcard */
-  tic_soundcard = ags_tic_soundcard_new((GObject *) devout);
+  tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
-		       tic_soundcard);
+		       tic_device);
   
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
@@ -2977,7 +2978,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
-  AgsTicSoundcard *tic_soundcard;
+  AgsTicDevice *tic_device;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -3347,9 +3348,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   task = NULL;
   
   /* tic soundcard */
-  tic_soundcard = ags_tic_soundcard_new((GObject *) devout);
+  tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
-		       tic_soundcard);
+		       tic_device);
   
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);

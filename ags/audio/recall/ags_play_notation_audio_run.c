@@ -743,13 +743,23 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     return;
   }
 
-  //FIXME:JK: nth_run isn't best joice
-  pthread_mutex_lock(audio_mutex);
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel;
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get audio channel */
+  pthread_mutex_lock(channel_mutex);
   
-  audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
+  audio_channel = channel->audio_channel;
 
-  pthread_mutex_unlock(audio_mutex);
+  pthread_mutex_unlock(channel_mutex);
 
+  /* get channel */
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     channel = ags_channel_nth(audio->input,
 			      audio_channel);
@@ -758,7 +768,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			      audio_channel);
   }
   
-  /*  */
+  /* get notation */
   pthread_mutex_lock(audio_mutex);
   
   //TODO:JK: make it advanced
@@ -876,6 +886,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	  GValue value = {0,};
 
+	  /* get notation delay */
 	  g_value_init(&value,
 		       G_TYPE_DOUBLE);
 	  ags_port_safe_read(delay_audio->notation_delay,
@@ -883,7 +894,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	  notation_delay = g_value_get_double(&value);
 	  g_value_unset(&value);
-		
+
+	  /* create audio signal with frame count */
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
 							     (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0])),

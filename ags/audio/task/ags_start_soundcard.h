@@ -25,6 +25,8 @@
 
 #include <ags/thread/ags_task.h>
 
+#include <ags/object/ags_application_context.h>
+
 #define AGS_TYPE_START_SOUNDCARD                (ags_start_soundcard_get_type())
 #define AGS_START_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_START_SOUNDCARD, AgsStartSoundcard))
 #define AGS_START_SOUNDCARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_START_SOUNDCARD, AgsStartSoundcardClass))
@@ -39,7 +41,7 @@ struct _AgsStartSoundcard
 {
   AgsTask task;
 
-  GObject *soundcard;
+  AgsApplicationContext *application_context;
 };
 
 struct _AgsStartSoundcardClass
@@ -49,7 +51,7 @@ struct _AgsStartSoundcardClass
 
 GType ags_start_soundcard_get_type();
 
-AgsStartSoundcard* ags_start_soundcard_new(GObject *soundcard);
+AgsStartSoundcard* ags_start_soundcard_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_START_SOUNDCARD_H__*/
 

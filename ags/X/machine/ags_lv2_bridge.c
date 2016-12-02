@@ -56,6 +56,8 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_record_midi_audio.h>
+#include <ags/audio/recall/ags_record_midi_audio_run.h>
 #include <ags/audio/recall/ags_route_lv2_audio.h>
 #include <ags/audio/recall/ags_route_lv2_audio_run.h>
 
@@ -1167,6 +1169,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   AgsDelayAudioRun *play_delay_audio_run;
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsRecordMidiAudio *recall_record_midi_audio;
+  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
   AgsRouteLv2Audio *recall_route_lv2_audio;
@@ -1236,6 +1240,33 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
     }else{
       play_count_beats_audio_run = NULL;
     }
+
+    /* ags-record-midi */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-record-midi\0",
+			      0, 0,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
+
+    list = ags_recall_find_type(audio->recall, AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+
+    if(list != NULL){
+      recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+    
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		   "delay-audio-run\0", play_delay_audio_run,
+		   NULL);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		   "count-beats-audio-run\0", play_count_beats_audio_run,
+		   NULL);
+    }  
 
     /* ags-route-lv2 */
     ags_recall_factory_create(audio,
@@ -1528,15 +1559,6 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
   gchar *uri;
 
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
-    g_object_set(AGS_MACHINE(lv2_bridge)->audio,
-		 "audio-start-mapping\0", 0,
-		 "audio-end-mapping\0", 128,
-		 "midi-start-mapping\0", 0,
-		 "midi-end-mapping\0", 128,
-		 NULL);
-    
-    ags_machine_popup_add_connection_options((AgsMachine *) lv2_bridge,
-					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
   }
   
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),

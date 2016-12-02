@@ -176,6 +176,11 @@ ags_preferences_init(AgsPreferences *preferences)
 			   GTK_WIDGET(preferences->audio_preferences),
 			   gtk_label_new("audio\0"));
 
+  preferences->midi_preferences = ags_midi_preferences_new();
+  gtk_notebook_append_page(preferences->notebook,
+			   GTK_WIDGET(preferences->midi_preferences),
+			   gtk_label_new("midi\0"));
+
   preferences->performance_preferences = ags_performance_preferences_new();
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->performance_preferences),
@@ -219,6 +224,7 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(preferences->generic_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->audio_preferences));
+  ags_connectable_connect(AGS_CONNECTABLE(preferences->midi_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->performance_preferences));
 
   if(preferences->server_preferences != NULL){
@@ -247,6 +253,7 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 
   ags_applicable_set_update(AGS_APPLICABLE(preferences->generic_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->audio_preferences), update);
+  ags_applicable_set_update(AGS_APPLICABLE(preferences->midi_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->performance_preferences), update);
 
   if(preferences->server_preferences != NULL){
@@ -275,6 +282,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
+  ags_applicable_apply(AGS_APPLICABLE(preferences->midi_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
 
   if(preferences->server_preferences != NULL){
@@ -293,6 +301,7 @@ ags_preferences_reset(AgsApplicable *applicable)
 
   ags_applicable_reset(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->audio_preferences));
+  ags_applicable_reset(AGS_APPLICABLE(preferences->midi_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->performance_preferences));
 
   if(preferences->server_preferences != NULL){

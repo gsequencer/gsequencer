@@ -39,7 +39,6 @@
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
-#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
 #include <ags/audio/task/recall/ags_set_muted.h>

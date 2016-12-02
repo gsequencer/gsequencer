@@ -825,6 +825,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_envelope_channel.h \
 	ags/audio/recall/ags_envelope_channel_run.h \
 	ags/audio/recall/ags_envelope_recycling.h \
+	ags/audio/recall/ags_feed_audio_signal.h \
+	ags/audio/recall/ags_feed_channel.h \
+	ags/audio/recall/ags_feed_channel_run.h \
+	ags/audio/recall/ags_feed_recycling.h \
 	ags/audio/recall/ags_loop_channel.h \
 	ags/audio/recall/ags_loop_channel_run.h \
 	ags/audio/recall/ags_mute_audio.h \
@@ -889,6 +893,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_envelope_channel.c \
 	ags/audio/recall/ags_envelope_channel_run.c \
 	ags/audio/recall/ags_envelope_recycling.c \
+	ags/audio/recall/ags_feed_audio_signal.c \
+	ags/audio/recall/ags_feed_channel.c \
+	ags/audio/recall/ags_feed_channel_run.c \
+	ags/audio/recall/ags_feed_recycling.c \
 	ags/audio/recall/ags_loop_channel.c \
 	ags/audio/recall/ags_loop_channel_run.c \
 	ags/audio/recall/ags_mute_audio.c \
@@ -978,11 +986,13 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_audio_channels.h \
 	ags/audio/task/ags_set_buffer_size.h \
 	ags/audio/task/ags_set_format.h \
+	ags/audio/task/ags_set_input_device.h \
 	ags/audio/task/ags_set_output_device.h \
 	ags/audio/task/ags_set_samplerate.h \
+	ags/audio/task/ags_start_sequencer.h \
 	ags/audio/task/ags_start_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
-	ags/audio/task/ags_tic_soundcard.h \
+	ags/audio/task/ags_tic_device.h \
 	ags/audio/task/ags_toggle_pattern_bit.h \
 	ags/audio/task/ags_unref_audio_signal.h \
 	ags/audio/task/recall/ags_apply_bpm.h \
@@ -1040,11 +1050,13 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_audio_channels.c \
 	ags/audio/task/ags_set_buffer_size.c \
 	ags/audio/task/ags_set_format.c \
+	ags/audio/task/ags_set_input_device.c \
 	ags/audio/task/ags_set_output_device.c \
 	ags/audio/task/ags_set_samplerate.c \
+	ags/audio/task/ags_start_sequencer.c \
 	ags/audio/task/ags_start_soundcard.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
-	ags/audio/task/ags_tic_soundcard.c \
+	ags/audio/task/ags_tic_device.c \
 	ags/audio/task/ags_toggle_pattern_bit.c \
 	ags/audio/task/ags_unref_audio_signal.c \
 	ags/audio/task/recall/ags_apply_bpm.c \
@@ -1152,6 +1164,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_menu_bar.h \
 	ags/X/ags_midi_dialog_callbacks.h \
 	ags/X/ags_midi_dialog.h \
+	ags/X/ags_midi_preferences.h \
+	ags/X/ags_midi_preferences_callbacks.h \
 	ags/X/ags_navigation_callbacks.h \
 	ags/X/ags_navigation.h \
 	ags/X/ags_pad_callbacks.h \
@@ -1172,6 +1186,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_property_editor.h \
 	ags/X/ags_property_listing_editor.h \
 	ags/X/ags_resize_editor.h \
+	ags/X/ags_sequencer_editor_callbacks.h \
+	ags/X/ags_sequencer_editor.h \
 	ags/X/ags_server_preferences_callbacks.h \
 	ags/X/ags_server_preferences.h \
 	ags/X/ags_soundcard_editor_callbacks.h \
@@ -1240,6 +1256,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_menu_bar_callbacks.c \
 	ags/X/ags_midi_dialog.c \
 	ags/X/ags_midi_dialog_callbacks.c \
+	ags/X/ags_midi_preferences.c \
+	ags/X/ags_midi_preferences_callbacks.c \
 	ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c \
 	ags/X/ags_pad.c \
@@ -1260,6 +1278,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_property_editor_callbacks.c \
 	ags/X/ags_property_listing_editor.c \
 	ags/X/ags_resize_editor.c \
+	ags/X/ags_sequencer_editor_callbacks.c \
+	ags/X/ags_sequencer_editor.c \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
 	ags/X/ags_window.c \
@@ -1305,11 +1325,13 @@ libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources) \
 	ags/X/task/ags_add_bulk_member.h \
 	ags/X/task/ags_add_line_member.h \
+	ags/X/task/ags_add_sequencer_editor_jack.h \
 	ags/X/task/ags_add_soundcard_editor_jack.h \
 	ags/X/task/ags_blink_cell_pattern_cursor.h \
 	ags/X/task/ags_change_indicator.h \
 	ags/X/task/ags_change_tact.h \
 	ags/X/task/ags_display_tact.h \
+	ags/X/task/ags_remove_sequencer_editor_jack.h \
 	ags/X/task/ags_remove_soundcard_editor_jack.h \
 	ags/X/task/ags_scroll_on_play.h \
 	ags/X/task/ags_simple_file_read.h \
@@ -1323,11 +1345,13 @@ libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources) \
 	ags/X/task/ags_add_bulk_member.c \
 	ags/X/task/ags_add_line_member.c \
+	ags/X/task/ags_add_sequencer_editor_jack.c \
 	ags/X/task/ags_add_soundcard_editor_jack.c \
 	ags/X/task/ags_blink_cell_pattern_cursor.c \
 	ags/X/task/ags_change_indicator.c \
 	ags/X/task/ags_change_tact.c \
 	ags/X/task/ags_display_tact.c \
+	ags/X/task/ags_remove_sequencer_editor_jack.c \
 	ags/X/task/ags_remove_soundcard_editor_jack.c \
 	ags/X/task/ags_scroll_on_play.c \
 	ags/X/task/ags_simple_file_read.c \
