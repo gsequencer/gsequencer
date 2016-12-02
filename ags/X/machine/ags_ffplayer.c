@@ -1104,7 +1104,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 
     current = current->next_pad;
   }
-  
+
   /*  */
   current = source;
 
@@ -1123,7 +1123,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 
     current = current->next_pad;
   }
-
+  
   /*  */
   current = source;
 

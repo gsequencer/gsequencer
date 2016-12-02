@@ -2548,11 +2548,9 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
     }
     
     /* copy */
-    if(k + audio_signal->buffer_size >= old_frame_count - (template->loop_end - template->loop_start)){
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, k % audio_signal->buffer_size,
-						  template_stream->data, 1, j,
-						  copy_n_frames, copy_mode);
-    }
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, k % audio_signal->buffer_size,
+						template_stream->data, 1, j,
+						copy_n_frames, copy_mode);
     
     /* increment and iterate */
     if((i + copy_n_frames) % audio_signal->buffer_size == 0){

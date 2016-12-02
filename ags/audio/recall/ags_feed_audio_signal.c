@@ -199,18 +199,21 @@ ags_feed_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connecta
 void
 ags_feed_audio_signal_run_pre(AgsRecall *recall)
 {
+  AgsAudioSignal *template, *audio_signal;
+  AgsNote *note;
+
   AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_pre(recall);
 
-  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->note != NULL &&
-     (AGS_NOTE_FEED & (AGS_NOTE(AGS_RECALL_AUDIO_SIGNAL(recall)->source->note)->flags)) != 0){
-    AgsAudioSignal *template, *audio_signal;
+  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
+  note = audio_signal->note;
 
+  template = NULL;
+  
+  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->note != NULL &&
+     (AGS_NOTE_FEED & (note->flags)) != 0){
     gdouble notation_delay;
     guint frame_count;
 
-    audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-    template = NULL;
-    
     if(audio_signal->recycling != NULL){
       template = ags_audio_signal_get_template(AGS_RECYCLING(audio_signal->recycling)->audio_signal);
     }
@@ -219,7 +222,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
     notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(recall->soundcard));
 
     /* feed audio signal */
-    frame_count = (audio_signal->length * audio_signal->buffer_size) + notation_delay * audio_signal->buffer_size;
+    frame_count = (guint) (((gdouble) audio_signal->samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0]));
     
     ags_audio_signal_feed(audio_signal,
 			  template,
