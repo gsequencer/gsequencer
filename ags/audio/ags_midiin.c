@@ -770,7 +770,7 @@ ags_midiin_disconnect(AgsConnectable *connectable)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 0.3
+ * Since: 0.7.0
  */
 void
 ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
@@ -780,37 +780,15 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
     midiin->flags |= AGS_MIDIIN_BUFFER1;
 
     /* clear buffer */
-    if(midiin->buffer[1] != NULL){
-      free(midiin->buffer[1]);
-    }
-
-    midiin->buffer[1] = NULL;
-    midiin->buffer_size[1] = 0;
-  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
-    midiin->flags &= (~AGS_MIDIIN_BUFFER1);
-    midiin->flags |= AGS_MIDIIN_BUFFER2;
-
-    /* clear buffer */
-    if(midiin->buffer[2] != NULL){
-      free(midiin->buffer[2]);
-    }
-
-    midiin->buffer[2] = NULL;
-    midiin->buffer_size[2] = 0;
-  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
-    midiin->flags &= (~AGS_MIDIIN_BUFFER2);
-    midiin->flags |= AGS_MIDIIN_BUFFER3;
-
-    /* clear buffer */
     if(midiin->buffer[3] != NULL){
       free(midiin->buffer[3]);
     }
 
     midiin->buffer[3] = NULL;
     midiin->buffer_size[3] = 0;
-  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
-    midiin->flags &= (~AGS_MIDIIN_BUFFER3);
-    midiin->flags |= AGS_MIDIIN_BUFFER0;
+  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER1);
+    midiin->flags |= AGS_MIDIIN_BUFFER2;
 
     /* clear buffer */
     if(midiin->buffer[0] != NULL){
@@ -819,6 +797,28 @@ ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
 
     midiin->buffer[0] = NULL;
     midiin->buffer_size[0] = 0;
+  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER2);
+    midiin->flags |= AGS_MIDIIN_BUFFER3;
+
+    /* clear buffer */
+    if(midiin->buffer[1] != NULL){
+      free(midiin->buffer[1]);
+    }
+
+    midiin->buffer[1] = NULL;
+    midiin->buffer_size[1] = 0;
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER3);
+    midiin->flags |= AGS_MIDIIN_BUFFER0;
+
+    /* clear buffer */
+    if(midiin->buffer[2] != NULL){
+      free(midiin->buffer[2]);
+    }
+
+    midiin->buffer[2] = NULL;
+    midiin->buffer_size[2] = 0;
   }
 }
 
@@ -1213,6 +1213,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   gdouble delay;
   guint64 time_spent, time_exceed;
   int num_read;
+  guint nth_buffer;
   gboolean running;
   
   pthread_mutex_t *mutex;
@@ -1264,63 +1265,29 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
 
     if(num_read > 0){
       if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
-	if(ceil((midiin->buffer_size[0] + num_read) / 256.0) > ceil(midiin->buffer_size[0] / 256.0)){
-	  if(midiin->buffer[0] == NULL){
-	    midiin->buffer[0] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[0] = realloc(midiin->buffer[0],
-					(midiin->buffer_size[0] + 256) * sizeof(char));
-	  }
-	}
-
-	memcpy(&(midiin->buffer[0][midiin->buffer_size[0]]),
-	       buf,
-	       num_read);
-	midiin->buffer_size[0] += num_read;
+	nth_buffer = 1;
       }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
-	if(ceil((midiin->buffer_size[1] + num_read) / 256.0) > ceil(midiin->buffer_size[1] / 256.0)){
-	  if(midiin->buffer[1] == NULL){
-	    midiin->buffer[1] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[1] = realloc(midiin->buffer[1],
-					(midiin->buffer_size[1] + 256) * sizeof(char));
-	  }
-	}
-
-	memcpy(&(midiin->buffer[1][midiin->buffer_size[1]]),
-	       buf,
-	       num_read);
-	midiin->buffer_size[1] += num_read;
+	nth_buffer = 2;
       }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
-	if(ceil((midiin->buffer_size[2] + num_read) / 256.0) > ceil(midiin->buffer_size[2] / 256.0)){
-	  if(midiin->buffer[2] == NULL){
-	    midiin->buffer[2] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[2] = realloc(midiin->buffer[2],
-					(midiin->buffer_size[2] + 256) * sizeof(char));
-	  }
-	}
-
-	memcpy(&(midiin->buffer[2][midiin->buffer_size[2]]),
-	       buf,
-	       num_read);
-	midiin->buffer_size[2] += num_read;
+	nth_buffer = 3;
       }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
-	if(ceil((midiin->buffer_size[3] + num_read) / 256.0) > ceil(midiin->buffer_size[3] / 256.0)){
-	  if(midiin->buffer[3] == NULL){
-	    midiin->buffer[3] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[3] = realloc(midiin->buffer[3],
-					(midiin->buffer_size[3] + 256) * sizeof(char));
-	  }
-	}
-
-	memcpy(&(midiin->buffer[3][midiin->buffer_size[3]]),
-	       buf,
-	       num_read);
-	midiin->buffer_size[3] += num_read;
+	nth_buffer = 0;
       }
     }
+
+    if(ceil((midiin->buffer_size[nth_buffer] + num_read) / 4096.0) > ceil(midiin->buffer_size[nth_buffer] / 4096.0)){
+      if(midiin->buffer[nth_buffer] == NULL){
+	midiin->buffer[nth_buffer] = malloc(4096 * sizeof(char));
+      }else{
+	midiin->buffer[nth_buffer] = realloc(midiin->buffer[nth_buffer],
+					     (4096 * ceil(midiin->buffer_size[nth_buffer] / 4096.0) + 4096) * sizeof(char));
+      }
+    }
+
+    memcpy(&(midiin->buffer[nth_buffer][midiin->buffer_size[nth_buffer]]),
+	   buf,
+	   num_read);
+    midiin->buffer_size[nth_buffer] += num_read;
 #endif
     
     pthread_mutex_unlock(mutex);
@@ -1496,6 +1463,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   guint64 time_spent, time_exceed;
   int status;
   unsigned char c;
+  guint nth_buffer;
   gboolean running;
   
   pthread_mutex_t *mutex;
@@ -1549,55 +1517,27 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 
     if(status >= 0){
       if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
-	if(midiin->buffer_size[0] % 256 == 0){
-	  if(midiin->buffer[0] == NULL){
-	    midiin->buffer[0] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[0] = realloc(midiin->buffer[0],
-					(midiin->buffer_size[0] + 256) * sizeof(char));
-	  }
-	}
-
-	midiin->buffer[0][midiin->buffer_size[0]] = (unsigned char) c;
-	midiin->buffer_size[0]++;
+	nth_buffer = 1;
       }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
-	if(midiin->buffer_size[1] % 256 == 0){
-	  if(midiin->buffer[1] == NULL){
-	    midiin->buffer[1] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[1] = realloc(midiin->buffer[1],
-					(midiin->buffer_size[1] + 256) * sizeof(char));
-	  }
-	}
-
-	midiin->buffer[1][midiin->buffer_size[1]] = (unsigned char) c;
-	midiin->buffer_size[1]++;
+	nth_buffer = 2;
       }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
-	if(midiin->buffer_size[2] % 256 == 0){
-	  if(midiin->buffer[2] == NULL){
-	    midiin->buffer[2] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[2] = realloc(midiin->buffer[2],
-					(midiin->buffer_size[2] + 256) * sizeof(char));
-	  }
-	}
-
-	midiin->buffer[2][midiin->buffer_size[2]] = (unsigned char) c;
-	midiin->buffer_size[2]++;
+	nth_buffer = 3;
       }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
-	if(midiin->buffer_size[3] % 256 == 0){
-	  if(midiin->buffer[3] == NULL){
-	    midiin->buffer[3] = malloc(256 * sizeof(char));
-	  }else{
-	    midiin->buffer[3] = realloc(midiin->buffer[3],
-					(midiin->buffer_size[3] + 256) * sizeof(char));
-	  }
-	}
-
-	midiin->buffer[3][midiin->buffer_size[3]] = (unsigned char) c;
-	midiin->buffer_size[3]++;
+	nth_buffer = 0;
       }
     }
+
+    if(midiin->buffer_size[nth_buffer] % 4096 == 0){
+      if(midiin->buffer[nth_buffer] == NULL){
+	midiin->buffer[nth_buffer] = malloc(4096 * sizeof(char));
+      }else{
+	midiin->buffer[nth_buffer] = realloc(midiin->buffer[nth_buffer],
+					     (midiin->buffer_size[nth_buffer] + 4096) * sizeof(char));
+      }
+    }
+
+    midiin->buffer[nth_buffer][midiin->buffer_size[nth_buffer]] = (unsigned char) c;
+    midiin->buffer_size[nth_buffer]++;
 #endif
     
     pthread_mutex_unlock(mutex);
