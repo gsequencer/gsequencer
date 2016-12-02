@@ -22,11 +22,22 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_midiin.h>
+
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_midiin.h>
 
 void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
 void ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag);
+void ags_switch_buffer_flag_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+void ags_switch_buffer_flag_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
 void ags_switch_buffer_flag_connect(AgsConnectable *connectable);
 void ags_switch_buffer_flag_disconnect(AgsConnectable *connectable);
 void ags_switch_buffer_flag_finalize(GObject *gobject);
@@ -35,16 +46,21 @@ void ags_switch_buffer_flag_launch(AgsTask *task);
 
 /**
  * SECTION:ags_switch_buffer_flag
- * @short_description: start soundcard object
+ * @short_description: switch buffer flag of device
  * @title: AgsSwitchBufferFlag
  * @section_id:
  * @include: ags/audio/task/ags_switch_buffer_flag.h
  *
- * The #AgsSwitchBufferFlag task switches the buffer flag of soundcard.
+ * The #AgsSwitchBufferFlag task switches the buffer flag of device.
  */
 
 static gpointer ags_switch_buffer_flag_parent_class = NULL;
 static AgsConnectableInterface *ags_switch_buffer_flag_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_DEVICE,
+};
 
 GType
 ags_switch_buffer_flag_get_type()
@@ -88,13 +104,34 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_switch_buffer_flag_parent_class = g_type_class_peek_parent(switch_buffer_flag);
 
   /* gobject */
   gobject = (GObjectClass *) switch_buffer_flag;
 
+  gobject->set_property = ags_switch_buffer_flag_set_property;
+  gobject->get_property = ags_switch_buffer_flag_get_property;
+
   gobject->finalize = ags_switch_buffer_flag_finalize;
+
+  /* properties */
+  /**
+   * AgsSwitchBufferFlag:device:
+   *
+   * The assigned #AgsSoundcard or #AgsSequencer
+   * 
+   * Since: 0.7.111
+   */
+  param_spec = g_param_spec_object("device\0",
+				   "device of change device\0",
+				   "The device of change device task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVICE,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) switch_buffer_flag;
@@ -114,7 +151,67 @@ ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag)
 {
-  switch_buffer_flag->soundcard = NULL;
+  switch_buffer_flag->device = NULL;
+}
+
+void
+ags_switch_buffer_flag_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec)
+{
+  AgsSwitchBufferFlag *switch_buffer_flag;
+
+  switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(gobject);
+
+  switch(prop_id){
+  case PROP_DEVICE:
+    {
+      GObject *device;
+
+      device = (GObject *) g_value_get_object(value);
+
+      if(switch_buffer_flag->device == (GObject *) device){
+	return;
+      }
+
+      if(switch_buffer_flag->device != NULL){
+	g_object_unref(switch_buffer_flag->device);
+      }
+
+      if(device != NULL){
+	g_object_ref(device);
+      }
+
+      switch_buffer_flag->device = (GObject *) device;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_switch_buffer_flag_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec)
+{
+  AgsSwitchBufferFlag *switch_buffer_flag;
+
+  switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(gobject);
+
+  switch(prop_id){
+  case PROP_DEVICE:
+    {
+      g_value_set_object(value, switch_buffer_flag->device);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -148,16 +245,20 @@ ags_switch_buffer_flag_launch(AgsTask *task)
 
   switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(task);
 
-  if(AGS_IS_DEVOUT(switch_buffer_flag->soundcard)){
-    ags_devout_switch_buffer_flag(switch_buffer_flag->soundcard);
-  }else if(AGS_IS_JACK_DEVOUT(switch_buffer_flag->soundcard)){
-    ags_jack_devout_switch_buffer_flag(switch_buffer_flag->soundcard);
+  if(AGS_IS_DEVOUT(switch_buffer_flag->device)){
+    ags_devout_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_JACK_DEVOUT(switch_buffer_flag->device)){
+    ags_jack_devout_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
+    ags_midiin_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_JACK_MIDIIN(switch_buffer_flag->device)){
+    ags_jack_midiin_switch_buffer_flag(switch_buffer_flag->device);
   }
 }
 
 /**
  * ags_switch_buffer_flag_new:
- * @soundcard: the #AgsSoundcard
+ * @device: the #AgsSoundcard or #AgsSequencer
  *
  * Creates an #AgsSwitchBufferFlag.
  *
@@ -166,14 +267,14 @@ ags_switch_buffer_flag_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsSwitchBufferFlag*
-ags_switch_buffer_flag_new(GObject *soundcard)
+ags_switch_buffer_flag_new(GObject *device)
 {
   AgsSwitchBufferFlag *switch_buffer_flag;
 
   switch_buffer_flag = (AgsSwitchBufferFlag *) g_object_new(AGS_TYPE_SWITCH_BUFFER_FLAG,
 							    NULL);
 
-  switch_buffer_flag->soundcard = soundcard;
+  switch_buffer_flag->device = device;
 
   return(switch_buffer_flag);
 }

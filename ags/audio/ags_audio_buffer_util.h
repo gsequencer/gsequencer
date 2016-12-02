@@ -128,41 +128,69 @@ void ags_audio_buffer_util_clear_double(double *buffer, guint channels,
 void ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
 					guint count, guint format);
 
-/* morph */
-signed char* ags_audio_buffer_util_morph_s8(signed char *buffer, guint channels,
-					    guint buffer_length,
-					    guint morph_lookbehind,
-					    AgsComplex *morph);
-signed short* ags_audio_buffer_util_morph_s16(signed short *buffer, guint channels,
-					      guint buffer_length,
-					      guint morph_lookbehind,
-					      AgsComplex *morph);
-signed long* ags_audio_buffer_util_morph_s24(signed long *buffer, guint channels,
-					     guint buffer_length,
-					     guint morph_lookbehind,
-					     AgsComplex *morph);
-signed long* ags_audio_buffer_util_morph_s32(signed long *buffer, guint channels,
-					     guint buffer_length,
-					     guint morph_lookbehind,
-					     AgsComplex *morph);
-signed long long* ags_audio_buffer_util_morph_s64(signed long long *buffer, guint channels,
-						  guint buffer_length,
-						  guint morph_lookbehind,
-						  AgsComplex *morph);
-float* ags_audio_buffer_util_morph_float(float *buffer, guint channels,
-					 guint buffer_length,
-					 guint morph_lookbehind,
-					 AgsComplex *morph);
-double* ags_audio_buffer_util_morph_double(double *buffer, guint channels,
+/* envelope */
+gdouble ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
+					  guint buffer_length,
+					  gdouble current_volume,
+					  gdouble ratio);
+gdouble ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
 					   guint buffer_length,
-					   guint morph_lookbehind,
-					   AgsComplex *morph);
+					   gdouble current_volume,
+					   gdouble ratio);
+gdouble ags_audio_buffer_util_envelope_s24(signed long *buffer, guint channels,
+					   guint buffer_length,
+					   gdouble current_volume,
+					   gdouble ratio);
+gdouble ags_audio_buffer_util_envelope_s32(signed long *buffer, guint channels,
+					   guint buffer_length,
+					   gdouble current_volume,
+					   gdouble ratio);
+gdouble ags_audio_buffer_util_envelope_s64(signed long long *buffer, guint channels,
+					   guint buffer_length,
+					   gdouble current_volume,
+					   gdouble ratio);
+gdouble ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
+					     guint buffer_length,
+					     gdouble current_volume,
+					     gdouble ratio);
+gdouble ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
+					      guint buffer_length,
+					      gdouble current_volume,
+					      gdouble ratio);
 
-void* ags_audio_buffer_util_morph(void *buffer, guint channels,
+gdouble ags_audio_buffer_util_envelope(void *buffer, guint channels,
+				       guint format,
+				       guint buffer_length,
+				       gdouble current_volume,
+				       gdouble ratio);
+
+/* volume */
+void ags_audio_buffer_util_volume_s8(signed char *buffer, guint channels,
+				     guint buffer_length,
+				     gdouble volume);
+void ags_audio_buffer_util_volume_s16(signed short *buffer, guint channels,
+				      guint buffer_length,
+				      gdouble volume);
+void ags_audio_buffer_util_volume_s24(signed long *buffer, guint channels,
+				      guint buffer_length,
+				      gdouble volume);
+void ags_audio_buffer_util_volume_s32(signed long *buffer, guint channels,
+				      guint buffer_length,
+				      gdouble volume);
+void ags_audio_buffer_util_volume_s64(signed long long *buffer, guint channels,
+				      guint buffer_length,
+				      gdouble volume);
+void ags_audio_buffer_util_volume_float(float *buffer, guint channels,
+					guint buffer_length,
+					gdouble volume);
+void ags_audio_buffer_util_volume_double(double *buffer, guint channels,
+					 guint buffer_length,
+					 gdouble volume);
+
+void ags_audio_buffer_util_volume(void *buffer, guint channels,
 				  guint format,
 				  guint buffer_length,
-				  guint morph_lookbehind,
-				  AgsComplex *morph);
+				  gdouble volume);
 
 /* resample */
 signed char* ags_audio_buffer_util_resample_s8(signed char *buffer, guint channels,

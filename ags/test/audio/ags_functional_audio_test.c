@@ -553,7 +553,7 @@ ags_functional_audio_test_playback()
     task = g_list_prepend(task,
 			  append_audio);
     
-    start_soundcard = ags_start_soundcard_new(soundcard);
+    start_soundcard = ags_start_soundcard_new(audio_application_context);
     task = g_list_prepend(task,
 			  start_soundcard);
     

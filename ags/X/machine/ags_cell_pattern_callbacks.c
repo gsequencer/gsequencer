@@ -264,7 +264,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     tasks = g_list_prepend(tasks, append_channel);
 
     /* create start task */
-    start_soundcard = ags_start_soundcard_new(soundcard);
+    start_soundcard = ags_start_soundcard_new(application_context);
     tasks = g_list_prepend(tasks,
 			   start_soundcard);
 

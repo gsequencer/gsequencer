@@ -871,7 +871,7 @@ ags_pad_play(AgsPad *pad)
       gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
 							 AGS_TYPE_GUI_THREAD);
 
-      start_soundcard = ags_start_soundcard_new(window->soundcard);
+      start_soundcard = ags_start_soundcard_new(application_context);
       tasks = g_list_prepend(tasks, start_soundcard);
 
       task_completion = ags_task_completion_new((GObject *) start_soundcard,

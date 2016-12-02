@@ -668,13 +668,14 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 
   default_client = (AgsJackClient *) jack_server->default_client;
 
-  str = g_strdup_printf("ags-midiin-%d\0",
+  str = g_strdup_printf("ags-jack-midiin-%d\0",
 			jack_server->n_sequencers);
   jack_midiin = ags_jack_midiin_new(jack_server->application_context);
   g_object_set(AGS_JACK_MIDIIN(jack_midiin),
 	       "jack-client\0", default_client,
 	       "device\0", str,
 	       NULL);
+  g_object_ref(jack_midiin);
   default_client->device = g_list_prepend(default_client->device,
 					  jack_midiin);
 
@@ -689,6 +690,9 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   jack_port = ags_jack_port_new((GObject *) default_client);
   ags_jack_client_add_port(default_client,
 			   (GObject *) jack_port);
+
+  jack_midiin->jack_port = g_list_append(jack_midiin->jack_port,
+					 jack_port);
   
   ags_jack_port_register(jack_port,
 			 str,

@@ -27,6 +27,9 @@
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_timestamp_thread.h>
 
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_devout.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread);
@@ -398,7 +401,9 @@ ags_soundcard_thread_run(AgsThread *thread)
   GError *error;
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
-  
+
+  soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
+    
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
@@ -414,8 +419,6 @@ ags_soundcard_thread_run(AgsThread *thread)
 		    AGS_THREAD_RT_SETUP);
   }
 
-  soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
-  
   if(ags_soundcard_is_playing(soundcard)){
     error = NULL;
     ags_soundcard_play(soundcard,

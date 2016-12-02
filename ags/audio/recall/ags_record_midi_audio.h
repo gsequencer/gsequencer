@@ -40,7 +40,13 @@ struct _AgsRecordMidiAudio
   AgsRecallAudio recall_audio;
 
   AgsPort *playback;
+
   AgsPort *record;
+  AgsPort *filename;
+
+  AgsPort *division;
+  AgsPort *tempo;
+  AgsPort *bpm;
 };
 
 struct _AgsRecordMidiAudioClass

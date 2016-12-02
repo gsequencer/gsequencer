@@ -53,6 +53,8 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_record_midi_audio.h>
+#include <ags/audio/recall/ags_record_midi_audio_run.h>
 #include <ags/audio/recall/ags_route_dssi_audio.h>
 #include <ags/audio/recall/ags_route_dssi_audio_run.h>
 
@@ -290,7 +292,8 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_HAS_NOTATION | 
-		   AGS_AUDIO_NOTATION_DEFAULT);
+		   AGS_AUDIO_NOTATION_DEFAULT |
+		   AGS_AUDIO_REVERSE_MAPPING);
   g_object_set(audio,
 	       "audio-start-mapping\0", 0,
 	       "audio-end-mapping\0", 128,
@@ -951,6 +954,8 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   AgsDelayAudioRun *play_delay_audio_run;
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsRecordMidiAudio *recall_record_midi_audio;
+  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
   AgsRouteDssiAudio *recall_route_dssi_audio;
@@ -1049,6 +1054,33 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   }else{
     recall_route_dssi_audio_run = NULL;
   }
+
+  /* ags-record-midi */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-record-midi\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+
+  if(list != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+    
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }  
 
   /* ags-play-notation */
   ags_recall_factory_create(audio,

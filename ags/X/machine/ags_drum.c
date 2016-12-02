@@ -73,6 +73,8 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_record_midi_audio.h>
+#include <ags/audio/recall/ags_record_midi_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
@@ -241,8 +243,15 @@ ags_drum_init(AgsDrum *drum)
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_HAS_NOTATION | 
 		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_PATTERN_MODE);
-  
+		   AGS_AUDIO_PATTERN_MODE |
+		   AGS_AUDIO_REVERSE_MAPPING);
+  g_object_set(audio,
+	       "audio-start-mapping\0", 0,
+	       "audio-end-mapping\0", 128,
+	       "midi-start-mapping\0", 0,
+	       "midi-end-mapping\0", 128,
+	       NULL);
+
   AGS_MACHINE(drum)->flags |= (AGS_MACHINE_IS_SEQUENCER
 			       | AGS_MACHINE_TAKES_FILE_INPUT);
   AGS_MACHINE(drum)->file_input_flags |= (AGS_MACHINE_ACCEPT_WAV);
@@ -253,8 +262,8 @@ ags_drum_init(AgsDrum *drum)
 
   ags_machine_popup_add_edit_options((AgsMachine *) drum,
 				     (AGS_MACHINE_POPUP_COPY_PATTERN));
-  //  ags_machine_popup_add_connection_options(drum,
-  //					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
+  ags_machine_popup_add_connection_options(drum,
+  					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
   
   g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
 			 G_CALLBACK(ags_drum_set_audio_channels), drum);
@@ -514,6 +523,8 @@ ags_drum_map_recall(AgsMachine *machine)
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsCopyPatternAudio *recall_copy_pattern_audio;
   AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
+  AgsRecordMidiAudio *recall_record_midi_audio;
+  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
 
@@ -600,8 +611,34 @@ ags_drum_map_recall(AgsMachine *machine)
 		 "delay-audio-run\0", play_delay_audio_run,
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
-
   }
+
+  /* ags-record-midi */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-record-midi\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+
+  if(list != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+    
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }  
   
   /* ags-play-notation */
   ags_recall_factory_create(audio,
