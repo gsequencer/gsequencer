@@ -240,7 +240,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
  *
  * Returns: a new #AgsFeedAudioSignal
  *
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 AgsFeedAudioSignal*
 ags_feed_audio_signal_new(AgsAudioSignal *audio_signal)

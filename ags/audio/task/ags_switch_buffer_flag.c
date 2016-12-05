@@ -122,7 +122,7 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
    *
    * The assigned #AgsSoundcard or #AgsSequencer
    * 
-   * Since: 1.0.0
+   * Since: 0.7.111
    */
   param_spec = g_param_spec_object("device\0",
 				   "device of change device\0",

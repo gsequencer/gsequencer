@@ -413,7 +413,7 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
@@ -471,7 +471,7 @@ ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
@@ -529,7 +529,7 @@ ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope_s24(signed long *buffer, guint channels,
@@ -587,7 +587,7 @@ ags_audio_buffer_util_envelope_s24(signed long *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope_s32(signed long *buffer, guint channels,
@@ -645,7 +645,7 @@ ags_audio_buffer_util_envelope_s32(signed long *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope_s64(signed long long *buffer, guint channels,
@@ -703,7 +703,7 @@ ags_audio_buffer_util_envelope_s64(signed long long *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
@@ -761,7 +761,7 @@ ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
@@ -820,7 +820,7 @@ ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
  * 
  * Returns: the last volume used
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 gdouble
 ags_audio_buffer_util_envelope(void *buffer, guint channels,
@@ -904,7 +904,7 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume_s8(signed char *buffer, guint channels,
@@ -950,7 +950,7 @@ ags_audio_buffer_util_volume_s8(signed char *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume_s16(signed short *buffer, guint channels,
@@ -996,7 +996,7 @@ ags_audio_buffer_util_volume_s16(signed short *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume_s24(signed long *buffer, guint channels,
@@ -1042,7 +1042,7 @@ ags_audio_buffer_util_volume_s24(signed long *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume_s32(signed long *buffer, guint channels,
@@ -1088,7 +1088,7 @@ ags_audio_buffer_util_volume_s32(signed long *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume_s64(signed long long *buffer, guint channels,
@@ -1134,7 +1134,7 @@ ags_audio_buffer_util_volume_s64(signed long long *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume_float(float *buffer, guint channels,
@@ -1180,7 +1180,7 @@ ags_audio_buffer_util_volume_float(float *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume_double(double *buffer, guint channels,
@@ -1227,7 +1227,7 @@ ags_audio_buffer_util_volume_double(double *buffer, guint channels,
  * 
  * Adjust volume of buffer.
  * 
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 void
 ags_audio_buffer_util_volume(void *buffer, guint channels,

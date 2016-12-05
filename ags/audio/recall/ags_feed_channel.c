@@ -169,7 +169,7 @@ ags_feed_channel_finalize(GObject *gobject)
  *
  * Returns: a new #AgsFeedChannel
  *
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 AgsFeedChannel*
 ags_feed_channel_new()

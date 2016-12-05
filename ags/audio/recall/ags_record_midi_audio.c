@@ -541,7 +541,7 @@ ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port)
  *
  * Returns: a new #AgsRecordMidiAudio
  *
- * Since: 0.4
+ * Since: 0.7.0
  */
 AgsRecordMidiAudio*
 ags_record_midi_audio_new()

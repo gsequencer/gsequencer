@@ -40,6 +40,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/X/ags_midi_preferences.h>
+
 #include <ags/config.h>
 
 void ags_sequencer_editor_class_init(AgsSequencerEditorClass *sequencer_editor);
@@ -1078,7 +1080,7 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
  *
  * Returns: a new #AgsSequencerEditor
  *
- * Since: 0.7.65
+ * Since: 0.7.111
  */
 AgsSequencerEditor*
 ags_sequencer_editor_new()

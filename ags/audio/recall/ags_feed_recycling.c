@@ -223,7 +223,7 @@ ags_feed_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsFeedRecycling
  *
- * Since: 1.0.0
+ * Since: 0.7.111
  */
 AgsFeedRecycling*
 ags_feed_recycling_new(AgsRecycling *recycling)
