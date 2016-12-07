@@ -416,7 +416,7 @@ ags_ladspa_manager_get_instance()
  *
  * Returns: a new #AgsLadspaManager
  *
- * Since: 0.4
+ * Since: 0.7.6
  */
 AgsLadspaManager*
 ags_ladspa_manager_new()

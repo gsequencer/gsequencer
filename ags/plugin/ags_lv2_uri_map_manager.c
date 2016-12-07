@@ -35,7 +35,7 @@ void ags_lv2_uri_map_manager_destroy_data(gpointer data);
  * @short_description: uri map
  * @title: AgsLv2UriMapManager
  * @section_id:
- * @include: ags/thread/ags_lv2_uri_map_manager.h
+ * @include: ags/plugin/ags_lv2_uri_map_manager.h
  *
  * The #AgsLv2UriMapManager keeps your uri in a hash table where you can lookup your
  * ids.

@@ -28,7 +28,7 @@
  * @short_description: Conversion of values
  * @title: AgsLadspaConversion
  * @section_id:
- * @include: ags/lib/ags_ladspa_conversion.h
+ * @include: ags/plugin/ags_ladspa_conversion.h
  *
  * The #AgsLadspaConversion converts values.
  */

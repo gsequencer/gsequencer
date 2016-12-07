@@ -194,6 +194,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * @samplerate: the samplerate
    *
    * The ::instantiate signal creates a new instance of plugin.
+   * 
+   * Since: 0.7.6
    */
   base_plugin_signals[INSTANTIATE] =
     g_signal_new("instantiate\0",
@@ -210,6 +212,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * @base_plugin: the plugin to connect-port
    *
    * The ::connect-port signal creates a new instance of plugin.
+   * 
+   * Since: 0.7.6
    */
   base_plugin_signals[CONNECT_PORT] =
     g_signal_new("connect-port\0",
@@ -228,6 +232,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * @base_plugin: the plugin to activate
    *
    * The ::activate signal creates a new instance of plugin.
+   * 
+   * Since: 0.7.6
    */
   base_plugin_signals[ACTIVATE] =
     g_signal_new("activate\0",
@@ -244,6 +250,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * @base_plugin: the plugin to deactivate
    *
    * The ::deactivate signal creates a new instance of plugin.
+   * 
+   * Since: 0.7.6
    */
   base_plugin_signals[DEACTIVATE] =
     g_signal_new("deactivate\0",
@@ -260,6 +268,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * @base_plugin: the plugin to run
    *
    * The ::run signal creates a new instance of plugin.
+   * 
+   * Since: 0.7.6
    */
   base_plugin_signals[RUN] =
     g_signal_new("run\0",
@@ -278,6 +288,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * @base_plugin: the plugin to load_plugin
    *
    * The ::load_plugin signal creates a new instance of plugin.
+   * 
+   * Since: 0.7.6
    */
   base_plugin_signals[LOAD_PLUGIN] =
     g_signal_new("load_plugin\0",
