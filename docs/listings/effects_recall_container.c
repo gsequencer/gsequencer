@@ -1,4 +1,8 @@
-AgsMachine *machine;
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 AgsAudio *audio;
 AgsChannel *channel;
@@ -6,13 +10,8 @@ AgsRecallContainer *echo_container;
 
 GObject *soundcard;
 
-/* some pseudo code */
-machine = (AgsMachine *) gtk_widget_get_ancestor(widget,
-                                                 AGS_TYPE_MACHINE);
-
-/* retrieve some essencial objects */
-audio = machine->audio;
-soundcard = audio->soundcard;
+soundcard = ags_devout_new(NULL);
+audio = ags_audio_new(devout);
 
 /* create the container */
 recall_container = (AgsRecallContainer *) g_object_new(AGS_TYPE_RECALL_CONTAINER,

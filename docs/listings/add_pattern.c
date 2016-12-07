@@ -1,5 +1,8 @@
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_pattern.h>
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 AgsChannel *channel;
 AgsPattern *pattern;

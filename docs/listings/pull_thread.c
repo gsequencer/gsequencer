@@ -1,3 +1,8 @@
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+
 void thread_run_callback(AgsThread *thread, gpointer data);
 
 void
@@ -10,8 +15,8 @@ int
 main(int argc, char **argv)
 {
   AgsThread *main_loop;
-  AgsThreadPool *thread_pool;
   AgsThread *thread_0, *thread_1;
+  AgsThreadPool *thread_pool;
   
   AgsApplicationContext *application_context;
 

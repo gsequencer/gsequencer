@@ -1,8 +1,8 @@
-#include <ags/object/ags_application_context.h>
+#include <glib.h>
+#include <glib-object.h>
 
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_audio_signal.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 AgsRecycling *recycling;
 AgsAudioSignal *template;

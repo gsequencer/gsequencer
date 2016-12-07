@@ -1,3 +1,9 @@
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 AgsApplicationContext *application_context;
 AgsThread *task_thread;
 
