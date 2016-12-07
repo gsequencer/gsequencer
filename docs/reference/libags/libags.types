@@ -21,6 +21,7 @@ ags_file_lookup_get_type
 ags_function_get_type
 ags_generic_main_loop_get_type
 ags_history_get_type
+ags_log_get_type
 ags_main_loop_get_type
 ags_mutable_get_type
 ags_mutex_manager_get_type

@@ -152,6 +152,7 @@ AGS_CONFIG_THREAD
 AGS_CONFIG_SOUNDCARD
 AGS_CONFIG_SOUNDCARD_0
 AGS_CONFIG_SEQUENCER
+AGS_CONFIG_SEQUENCER_0
 AGS_CONFIG_RECALL
 ags_config_load_defaults
 ags_config_load_from_file
@@ -559,6 +560,25 @@ ags_history_get_type
 <SECTION>
 <FILE>ags_id_generator</FILE>
 ags_id_generator_create_uuid
+</SECTION>
+
+<SECTION>
+<FILE>ags_log</FILE>
+<TITLE>AgsLog</TITLE>
+ags_log_add_message
+ags_log_get_messages
+ags_log_get_instance
+ags_log_new
+<SUBSECTION Public>
+AGS_IS_LOG
+AGS_IS_LOG_CLASS
+AGS_LOG
+AGS_LOG_CLASS
+AGS_LOG_GET_CLASS
+AGS_TYPE_LOG
+AgsLog
+AgsLogClass
+ags_log_get_type
 </SECTION>
 
 <SECTION>
@@ -1056,11 +1076,14 @@ ags_soundcard_set_bpm
 ags_soundcard_get_bpm
 ags_soundcard_set_delay_factor
 ags_soundcard_get_delay_factor
+ags_soundcard_get_absolute_delay
 ags_soundcard_get_delay
 ags_soundcard_get_attack
 ags_soundcard_get_delay_counter
 ags_soundcard_set_note_offset
 ags_soundcard_get_note_offset
+ags_soundcard_set_note_offset_absolute
+ags_soundcard_get_note_offset_absolute
 ags_soundcard_set_loop
 ags_soundcard_get_loop
 ags_soundcard_get_loop_offset
@@ -1187,6 +1210,7 @@ ags_thread_resume_handler
 ags_thread_suspend_handler
 ags_thread_set_sync
 ags_thread_set_sync_all
+ags_thread_reset_all
 ags_thread_lock
 ags_thread_trylock
 ags_thread_unlock
