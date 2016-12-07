@@ -1,33 +1,10 @@
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_application_context.h>
+#include <glib.h>
+#include <glib-object.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/ags_audio_application_context.h>
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_playback_domain.h>
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall_audio_run.h>
-
-#include <ags/audio/thread/ags_audio_thread.h>
-#include <ags/audio/thread/ags_channel_thread.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/audio/recall/ags_play_channel.h>
+#include <pthread.h>
 
 AgsAudio* setup_master(AgsApplicationContext *application_context);
 AgsAudio* setup_slave(AgsApplicationContext *application_context);

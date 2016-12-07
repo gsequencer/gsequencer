@@ -1,3 +1,8 @@
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+
 AgsApplicationContext *application_context;
 AgsFile *file;
 

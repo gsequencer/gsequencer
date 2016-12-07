@@ -1,12 +1,8 @@
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
+#include <glib.h>
+#include <glib-object.h>
 
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 AgsApplicationContext *application_context;
 GList *soundcard;

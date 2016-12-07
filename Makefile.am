@@ -83,7 +83,7 @@ EXTRA_DIST += docs/reference/libags_gui/libags_gui-overrides.txt docs/reference/
 
 # include
 otherincludedir = $(includedir)/ags
-nobase_include_HEADERS = ags/libags.h ags/libags-audio.h ags/libags-gui.h $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_gui_la_HEADERS_0)
+nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_gui_la_HEADERS_0)
 # nobase_include_HEADERS += $(libgsequencer_la_HEADERS_0)
 
 # doc
