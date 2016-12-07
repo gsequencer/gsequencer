@@ -122,6 +122,13 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
   gobject->finalize = ags_file_link_finalize;
 
   /* properties */
+  /**
+   * AgsFileLink:filename:
+   *
+   * The filename this #AgsFileLink refers.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_string("filename\0",
 				   "the filename\0",
 				   "The filename to locate the file\0",
@@ -131,6 +138,13 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
 				  PROP_FILENAME,
 				  param_spec);
 
+  /**
+   * AgsFileLink:data:
+   *
+   * The data this #AgsFileLink contains.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_string("data\0",
 				   "the data\0",
 				   "The embedded data\0",
@@ -247,6 +261,24 @@ ags_file_link_get_property(GObject *gobject,
   }
 }
 
+void
+ags_file_link_finalize(GObject *gobject)
+{
+  AgsFileLink *file_link;
+
+  file_link = AGS_FILE_LINK(gobject);
+
+  /* filename */
+  if(file_link->filename != NULL){
+    g_free(file_link->filename);
+  }
+
+  /* data */
+  if(file_link->data != NULL){
+    g_free(file_link->data);
+  }
+}
+
 gchar*
 ags_file_link_get_name(AgsPlugin *plugin)
 {
@@ -340,24 +372,6 @@ ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 
   return(node);
-}
-
-void
-ags_file_link_finalize(GObject *gobject)
-{
-  AgsFileLink *file_link;
-
-  file_link = AGS_FILE_LINK(gobject);
-
-  /* filename */
-  if(file_link->filename != NULL){
-    g_free(file_link->filename);
-  }
-
-  /* data */
-  if(file_link->data != NULL){
-    g_free(file_link->data);
-  }
 }
 
 /**

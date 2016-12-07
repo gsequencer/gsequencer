@@ -102,7 +102,7 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
  *
  * Disconnect the connectable.
  *
- * Returns: the #xmlNode-struct descrbing howto update
+ * Returns: the #xmlNode-struct describing howto update
  *
  * Since: 0.7.65
  */

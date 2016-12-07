@@ -104,6 +104,13 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
   gobject->finalize = ags_file_id_ref_finalize;
 
   /* properties */
+  /**
+   * AgsFileIdRef:node:
+   *
+   * The assigned xmlNode being refered by this #AgsFileIdRef.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_pointer("node\0",
 				    "the node\0",
 				    "The node to find the element\0",
@@ -112,6 +119,13 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  PROP_NODE,
 				  param_spec);
 
+  /**
+   * AgsFileIdRef:xpath:
+   *
+   * The XPath short-cut that can be used with this #AgsFileIdRef.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_string("xpath\0",
 				   "the xpath\0",
 				   "The xpath to find the element\0",
@@ -121,6 +135,13 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  PROP_XPATH,
 				  param_spec);
 
+  /**
+   * AgsFileIdRef:reference:
+   *
+   * The object refered by this #AgsFileIdRef.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_pointer("reference\0",
 				    "reference of the locator\0",
 				    "The reference resulted by the xpath locator\0",
@@ -129,6 +150,14 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  PROP_REFERENCE,
 				  param_spec);
 
+
+  /**
+   * AgsFileIdRef:file:
+   *
+   * The #AgsFile this #AgsFileIdRef belongs to.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_object("file\0",
 				   "file assigned to\0",
 				   "The entire file assigned to\0",
@@ -138,6 +167,13 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  PROP_FILE,
 				  param_spec);
 
+  /**
+   * AgsFileIdRef:application-context:
+   *
+   * The #AgsApplicationContext to be used.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context access\0",
 				   "The application-context object to access the tree\0",
@@ -148,6 +184,14 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  param_spec);
 
   /* signals */
+  /**
+   * AgsFileIdRef::resolved:
+   * @file_id_ref: the #AgsFileIdRef
+   * 
+   * Signal ::resolved to notify about resolved :reference.
+   *
+   * Since: 0.7.0
+   */
   file_id_ref_signals[RESOLVED] = 
     g_signal_new("resolved\0",
 		 G_TYPE_FROM_CLASS(file_id_ref),
@@ -315,6 +359,14 @@ ags_file_id_ref_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_file_id_ref_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_file_id_ref_resolved:
+ * @file_id_ref: the #AgsFileIdRef
+ *
+ * Notify about resolved reference.
+ * 
+ * Since: 0.7.0
+ */
 void
 ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
 {

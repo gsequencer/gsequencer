@@ -30,8 +30,11 @@
     <xi:include href="xml/ags_complex.xml"/>
     <xi:include href="xml/ags_conversion.xml"/>
     <xi:include href="xml/ags_function.xml"/>
+    <xi:include href="xml/ags_log.xml"/>
     <xi:include href="xml/ags_parameter.xml"/>
+    <xi:include href="xml/ags_time.xml"/>
     <xi:include href="xml/ags_turtle.xml"/>
+    <xi:include href="xml/ags_turtle_manager.xml"/>
   </part>
 
   <part id="util">
@@ -43,9 +46,9 @@
   <part id="object">
     <title>Object - Interfaces and marshallers</title>
 
-    <xi:include href="xml/ags_async_queue.xml"/>
     <xi:include href="xml/ags_applicable.xml"/>
     <xi:include href="xml/ags_application_context.xml"/>
+    <xi:include href="xml/ags_async_queue.xml"/>
     <xi:include href="xml/ags_concurrent_tree.xml"/>
     <xi:include href="xml/ags_config.xml"/>
     <xi:include href="xml/ags_connectable.xml"/>
@@ -54,17 +57,18 @@
     <xi:include href="xml/ags_countable.xml"/>
     <xi:include href="xml/ags_distributed_manager.xml"/>
     <xi:include href="xml/ags_dynamic_connectable.xml"/>
+    <xi:include href="xml/ags_macros.xml"/>
     <xi:include href="xml/ags_main_loop.xml"/>
     <xi:include href="xml/ags_marshal.xml"/>
     <xi:include href="xml/ags_mutable.xml"/>
     <xi:include href="xml/ags_packable.xml"/>
+    <xi:include href="xml/ags_plugin.xml"/>
     <xi:include href="xml/ags_portlet.xml"/>
     <xi:include href="xml/ags_seekable.xml"/>
     <xi:include href="xml/ags_sequencer.xml"/>
     <xi:include href="xml/ags_soundcard.xml"/>
     <xi:include href="xml/ags_tactable.xml"/>
     <xi:include href="xml/ags_tree_iterator.xml"/>
-    <xi:include href="xml/ags_plugin.xml"/>
   </part>
   
   <part id="xml-io">

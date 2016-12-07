@@ -197,6 +197,8 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * @application_context: the #AgsApplicationContext
    *
    * The ::load-config notifies to load configuration.
+   *
+   * Since: 0.7.68
    */
   application_context_signals[LOAD_CONFIG] =
     g_signal_new("load-config\0",
@@ -213,6 +215,8 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The ::register-types signal should be implemented to load
    * your types.
+   *
+   * Since: 0.7.68
    */
   application_context_signals[REGISTER_TYPES] =
     g_signal_new("register-types\0",
@@ -542,6 +546,15 @@ ags_application_context_remove_sibling(AgsApplicationContext *application_contex
   //TODO:JK: implement me
 }
 
+/**
+ * ags_application_context_find_default:
+ * @application_context: the #GList-struct containing #AgsAppilcationContext
+ *
+ * Find default context in @application_context #GList-struct containing
+ * #AgsApplicationContext.
+ *
+ * Since: 0.7.111
+ */
 AgsApplicationContext*
 ags_application_context_find_default(GList *application_context)
 {
@@ -556,6 +569,15 @@ ags_application_context_find_default(GList *application_context)
   return(NULL);
 }
 
+/**
+ * ags_application_context_find_main_loop:
+ * @application_context: the #GList-struct containing #AgsAppilcationContext
+ *
+ * Find :main-loop in @application_context #GList-struct containing
+ * #AgsApplicationContext.
+ *
+ * Since: 0.7.111
+ */
 GList*
 ags_application_context_find_main_loop(GList *application_context)
 {
@@ -583,7 +605,7 @@ ags_application_context_real_quit(AgsApplicationContext *application_context)
  *
  * Calls exit()
  *
- * Since: 0.7.0
+ * Since: 0.7.111
  */
 void
 ags_application_context_quit(AgsApplicationContext *application_context)
@@ -617,6 +639,17 @@ ags_application_context_get_instance()
   return(ags_application_context);
 }
 
+/**
+ * ags_application_context_new:
+ * @main_loop: the #AgsMainLoop
+ * @config: the #AgsConfig
+ *
+ * Create a new instance of #AgsApplicationContext
+ * 
+ * Returns: the #AgsApplicationContext instance
+ *
+ * Since: 0.7.0
+ */
 AgsApplicationContext*
 ags_application_context_new(GObject *main_loop,
 			    AgsConfig *config)

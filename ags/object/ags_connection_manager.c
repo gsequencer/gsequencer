@@ -109,6 +109,15 @@ ags_connection_manager_get_connection(AgsConnectionManager *connection_manager)
   return(connection_manager->connection);
 }
 
+/**
+ * ags_connection_manager_add_connection:
+ * @connection_manager: the #AgsConnectionManager
+ * @connection: the #AgsConnection
+ * 
+ * Add an #AgsConnection to @connection_manager.
+ * 
+ * Since: 0.7.65
+ */
 void
 ags_connection_manager_add_connection(AgsConnectionManager *connection_manager,
 				      AgsConnection *connection)
@@ -121,6 +130,15 @@ ags_connection_manager_add_connection(AgsConnectionManager *connection_manager,
 						  connection);
 }
 
+/**
+ * ags_connection_manager_remove_connection:
+ * @connection_manager: the #AgsConnectionManager
+ * @connection: the #AgsConnection
+ * 
+ * Remove an #AgsConnection from @connection_manager.
+ * 
+ * Since: 0.7.65
+ */
 void
 ags_connection_manager_remove_connection(AgsConnectionManager *connection_manager,
 					 AgsConnection *connection)
