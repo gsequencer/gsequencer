@@ -25,7 +25,7 @@ void ags_seekable_class_init(AgsSeekableInterface *interface);
 
 /**
  * SECTION:ags_seekable
- * @short_description: unique access to recalls
+ * @short_description: unique access to seekable classes
  * @title: AgsSeekable
  * @section_id: AgsSeekable
  * @include: ags/object/ags_seekable.h

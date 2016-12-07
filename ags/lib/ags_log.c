@@ -32,7 +32,7 @@ void ags_log_finalize(GObject *gobject);
  * @section_id:
  * @include: ags/lib/ags_log.h
  *
- * The #AgsLog.
+ * The #AgsLog logging class.
  */
 
 static gpointer ags_log_parent_class = NULL;
@@ -93,6 +93,7 @@ ags_log_finalize(GObject *gobject)
 
   log = AGS_LOG(gobject);
 
+  /* free messages and list */
   g_list_free_full(g_atomic_pointer_get(&(log->messages)),
 		   g_free);
 
@@ -118,6 +119,15 @@ ags_log_get_instance()
   return(ags_log);
 }
 
+/**
+ * ags_log_add_message:
+ * @log: the #AgsLog
+ * @str: the message
+ * 
+ * Add a message to @log.
+ *
+ * Since: 0.7.104
+ */
 void
 ags_log_add_message(AgsLog *log,
 		    gchar *str)
@@ -127,6 +137,16 @@ ags_log_add_message(AgsLog *log,
 				      str));
 }
 
+/**
+ * ags_log_get_messages:
+ * @log: the #AgsLog
+ * 
+ * Get log messages as #GList-struct containing strings.
+ *
+ * Returns: the #GList-struct containing log messages
+ *
+ * Since: 0.7.104
+ */
 GList*
 ags_log_get_messages(AgsLog *log)
 {

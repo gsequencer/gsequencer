@@ -209,9 +209,10 @@ ags_config_class_init(AgsConfigClass *config)
    * @config: the object to resolve
    * @group: the group to retrieve from
    * @key: the key to get
-   * Returns: the value
    *
    * The ::get-value signal notifies about value been getting.
+   *
+   * Returns: the value
    *
    * Since: 0.4.2
    */

@@ -149,6 +149,10 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    * @reverse: the direction to translate
    *
    * The ::convert signal notifies about converted value.
+   *
+   * Returns: the converted value
+   * 
+   * Since: 0.7.8
    */
   conversion_signals[CONVERT] =
     g_signal_new("convert\0",
@@ -267,6 +271,19 @@ ags_conversion_real_convert(AgsConversion *conversion,
   return(value);
 }
 
+/**
+ * ags_conversion_convert:
+ * @conversion: the #AgsConversion
+ * @value: the value to convert
+ * @reverse: the direction to convert
+ *
+ * Convert a value if @reverse is %FALSE then use the target format
+ * otherwise if %TRUE convert back to original format.
+ *
+ * Returns: the converted value as gdouble
+ *
+ * Since: 0.7.8
+ */
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
 		       gdouble value,

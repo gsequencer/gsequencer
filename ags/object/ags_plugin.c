@@ -30,8 +30,8 @@ void ags_plugin_base_init(AgsPluginInterface *interface);
  * @section_id: AgsPlugin
  * @include: ags/object/ags_plugin.h
  *
- * The #AgsPlugin interface gives you a unique access to recalls,
- * line members, lines, pads or machines ...
+ * The #AgsPlugin interface gives you a unique access to classes. It
+ * can be used by #AgsFile and solves some of the serialization.
  */
 
 GType

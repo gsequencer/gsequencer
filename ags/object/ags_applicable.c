@@ -25,12 +25,12 @@ void ags_applicable_base_init(AgsApplicableInterface *interface);
 
 /**
  * SECTION:ags_applicable
- * @short_description: unique access to dialogs
+ * @short_description: unique access to applicable objects
  * @title: AgsApplicable
  * @section_id: AgsApplicable
  * @include: ags/object/ags_applicable.h
  *
- * The #AgsApplicable interface gives you a unique access to dialogs.
+ * The #AgsApplicable interface gives you a unique access to applicable objects.
  */
 
 GType
@@ -62,7 +62,7 @@ ags_applicable_base_init(AgsApplicableInterface *interface)
 /**
  * ags_applicable_set_update:
  * @applicable: an #AgsApplicable
- * @update: if %TRUE do ::reset after ::update
+ * @update: if %TRUE do ::reset after ::apply
  *
  * Update behaviour.
  *
