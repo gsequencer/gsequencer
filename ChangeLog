@@ -1,3 +1,9 @@
+ags (0.7.112)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* providing headers libags.h, libags-audio.h and libags-gui.h
+	* improved API reference
+
 ags (0.7.111)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
