@@ -28,7 +28,7 @@
  * @short_description: Conversion of values
  * @title: AgsLv2Conversion
  * @section_id:
- * @include: ags/lib/ags_lv2_conversion.h
+ * @include: ags/plugin/ags_lv2_conversion.h
  *
  * The #AgsLv2Conversion converts values.
  */

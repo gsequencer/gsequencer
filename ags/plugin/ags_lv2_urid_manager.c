@@ -36,7 +36,7 @@ gboolean ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user
  * @short_description: urid 
  * @title: AgsLv2UridManager
  * @section_id:
- * @include: ags/thread/ags_lv2_urid_manager.h
+ * @include: ags/plugin/ags_lv2_urid_manager.h
  *
  * The #AgsLv2UridManager keeps your urid in a hash table where you can lookup your
  * ids.

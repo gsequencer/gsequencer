@@ -67,7 +67,7 @@ void ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin);
  * @short_description: The ladspa plugin class
  * @title: AgsLadspaPlugin
  * @section_id:
- * @include: ags/object/ags_ladspa_plugin.h
+ * @include: ags/plugin/ags_ladspa_plugin.h
  *
  * The #AgsLadspaPlugin loads/unloads a Ladspa plugin.
  */

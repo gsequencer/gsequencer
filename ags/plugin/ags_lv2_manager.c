@@ -119,7 +119,7 @@ ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
    *
    * The assigned locale.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_string("locale\0",
 				   "locale of lv2 manager\0",
@@ -228,7 +228,7 @@ ags_lv2_manager_finalize(GObject *gobject)
  *
  * Returns: a %NULL-terminated array of filenames
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 gchar**
 ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
@@ -285,7 +285,7 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
  *
  * Returns: the #AgsLv2Plugin-struct
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsLv2Plugin*
 ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
@@ -358,7 +358,7 @@ ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
@@ -611,7 +611,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
@@ -802,7 +802,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
  *
  * Returns: the #AgsLv2Manager
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsLv2Manager*
 ags_lv2_manager_get_instance()
@@ -830,7 +830,7 @@ ags_lv2_manager_get_instance()
  *
  * Returns: a new #AgsLv2Manager
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsLv2Manager*
 ags_lv2_manager_new(gchar *locale)
