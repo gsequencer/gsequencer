@@ -1,3 +1,9 @@
+ags (0.7.114)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled unused buttons yet
+	* improved ags-record-midi recall
+
 ags (0.7.113)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
