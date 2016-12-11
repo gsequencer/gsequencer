@@ -1,3 +1,9 @@
+ags (0.7.115)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed copyright statements replaced deprecated
+	* fixed exclude OSS in GUI if not provided
+
 ags (0.7.114)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
