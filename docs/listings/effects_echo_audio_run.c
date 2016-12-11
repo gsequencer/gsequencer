@@ -1,3 +1,9 @@
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 echo_audio_run = (AgsEchoAudioRun *) g_object_new(AGS_TYPE_ECHO_AUDIO_RUN,
 						  "soundcard\0", soundcard,
                                                   "audio\0", audio,

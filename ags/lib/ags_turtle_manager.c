@@ -29,7 +29,7 @@ void ags_turtle_manager_finalize(GObject *gobject);
  * @short_description: Singleton pattern to organize turtles
  * @title: AgsTurtleManager
  * @section_id:
- * @include: ags/object/ags_turtle_manager.h
+ * @include: ags/lib/ags_turtle_manager.h
  *
  * The #AgsTurtleManager keeps track of your turtles.
  */
@@ -99,6 +99,15 @@ ags_turtle_manager_finalize(GObject *gobject)
 		   g_object_unref);
 }
 
+/**
+ * ags_turtle_manager_find:
+ * @turtle_manager: the #AgsTurtleManager
+ * @filename: the filename as string
+ * 
+ * Find @filename in @turtle_manager.
+ *
+ * Since: 0.7.111
+ */
 GObject*
 ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
 			gchar *filename)
@@ -119,6 +128,15 @@ ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
   return(NULL);
 }
 
+/**
+ * ags_turtle_manager_add:
+ * @turtle_manager: the #AgsTurtleManager
+ * @turtle: the #AgsTurtle
+ * 
+ * Adds @turtle to @turtle_manager.
+ *
+ * Since: 0.7.111
+ */
 void
 ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
 		       GObject *turtle)
@@ -135,11 +153,11 @@ ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
 /**
  * ags_turtle_manager_get_instance:
  *
- * Get instance.
+ * Get instance of #AgsTurtleManager.
  *
  * Returns: the #AgsTurtleManager
  *
- * Since: 0.4.3
+ * Since: 0.7.111
  */
 AgsTurtleManager*
 ags_turtle_manager_get_instance()
@@ -166,7 +184,7 @@ ags_turtle_manager_get_instance()
  *
  * Returns: a new #AgsTurtleManager
  *
- * Since: 0.4.3
+ * Since: 0.7.111
  */
 AgsTurtleManager*
 ags_turtle_manager_new()

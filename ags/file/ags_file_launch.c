@@ -101,6 +101,13 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
   gobject->finalize = ags_file_launch_finalize;
 
   /* properties */
+  /**
+   * AgsFileLaunch:node:
+   *
+   * The assigned xmlNode being refered by this #AgsFileLaunch.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_pointer("node\0",
 				    "the node\0",
 				    "The node to find the element\0",
@@ -109,6 +116,13 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				  PROP_NODE,
 				  param_spec);
 
+  /**
+   * AgsFileLaunch:reference:
+   *
+   * The object refered by this #AgsFileLaunch.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_pointer("reference\0",
 				    "the reference\0",
 				    "The reference to find the element\0",
@@ -117,6 +131,13 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				  PROP_REFERENCE,
 				  param_spec);
 
+  /**
+   * AgsFileLaunch:file:
+   *
+   * The #AgsFile this #AgsFileLaunch belongs to.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_object("file\0",
 				   "file assigned to\0",
 				   "The entire file assigned to\0",
@@ -126,6 +147,13 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				  PROP_FILE,
 				  param_spec);
 
+  /**
+   * AgsFileLaunch:application-context:
+   *
+   * The #AgsApplicationContext to be used.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context access\0",
 				   "The application context to access the tree\0",
@@ -138,6 +166,14 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
   /* AgsFileLaunchClass */
   file_launch->start = NULL;
 
+  /**
+   * AgsFileLaunch::start:
+   * @file_id_ref: the #AgsFileLaunch
+   * 
+   * Signal ::start to notify about start :reference.
+   *
+   * Since: 0.7.0
+   */
   file_launch_signals[START] =
     g_signal_new("start\0",
 		 G_TYPE_FROM_CLASS(file_launch),
@@ -262,17 +298,6 @@ ags_file_launch_get_property(GObject *gobject,
 }
 
 void
-ags_file_launch_start(AgsFileLaunch *file_launch)
-{
-  g_return_if_fail(AGS_IS_FILE_LAUNCH(file_launch));
-
-  g_object_ref((GObject *) file_launch);
-  g_signal_emit(G_OBJECT(file_launch),
-		file_launch_signals[START], 0);
-  g_object_unref((GObject *) file_launch);
-}
-
-void
 ags_file_launch_finalize(GObject *gobject)
 {
   AgsFileLaunch *file_launch;
@@ -288,6 +313,25 @@ ags_file_launch_finalize(GObject *gobject)
   }
 
   G_OBJECT_CLASS(ags_file_launch_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_file_launch_start:
+ * @file_launch: the #AgsFileLaunch
+ * 
+ * Start #AgsFileLaunch to fulfill a task.
+ * 
+ * Since: 0.7.0 
+ */
+void
+ags_file_launch_start(AgsFileLaunch *file_launch)
+{
+  g_return_if_fail(AGS_IS_FILE_LAUNCH(file_launch));
+
+  g_object_ref((GObject *) file_launch);
+  g_signal_emit(G_OBJECT(file_launch),
+		file_launch_signals[START], 0);
+  g_object_unref((GObject *) file_launch);
 }
 
 /**

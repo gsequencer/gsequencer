@@ -15,6 +15,29 @@ ags (1.0.0)
 	* improved AgsDial
 	* fixed ags_automation_find_point() to allow accessing first and last entry
 
+ags (0.7.115)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed copyright statements replaced deprecated
+	* fixed exclude OSS in GUI if not provided
+
+ags (0.7.114)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled unused buttons yet
+	* improved ags-record-midi recall
+
+ags (0.7.113)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed API docs and updated sections
+
+gs (0.7.112)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* providing headers libags.h, libags-audio.h and libags-gui.h
+	* improved API reference
+
 ags (0.7.111)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

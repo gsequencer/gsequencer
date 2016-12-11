@@ -1011,7 +1011,7 @@ ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
 /**
  * ags_soundcard_set_audio:
  * @soundcard: an #AgsSoundcard
- * @audio: the audio to set
+ * @audio: the audio as #GList-struct to set
  *
  * Set audio. 
  *
@@ -1036,7 +1036,7 @@ ags_soundcard_set_audio(AgsSoundcard *soundcard,
  *
  * Get audio. 
  *
- * Returns: a #GList container #AgsAudio
+ * Returns: a #GList-struct container #AgsAudio
  *
  * Since: 0.4.3
  */

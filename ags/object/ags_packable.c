@@ -23,13 +23,12 @@ void ags_packable_base_init(AgsPackableInterface *interface);
 
 /**
  * SECTION:ags_packable
- * @short_description: packing recalls
+ * @short_description: pack ressources
  * @title: AgsPackable
  * @section_id:
  * @include: ags/object/ags_packable.h
  *
- * The #AgsPackable interface gives you a unique access to recalls
- * to be packed into a #AgsRecallContainer.
+ * The #AgsPackable interface gives you a unique access to packable classes.
  */
 
 GType
@@ -85,7 +84,7 @@ ags_packable_pack(AgsPackable *packable, GObject *container)
  * ags_packable_unpack:
  * @packable: the #AgsPackable
  *
- * Unpack of container.
+ * Unpack from container.
  *
  * Returns: %TRUE on success
  *

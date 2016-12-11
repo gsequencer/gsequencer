@@ -416,14 +416,22 @@ ags_audio_buffer_util_get_copy_mode
 ags_audio_buffer_util_clear_float
 ags_audio_buffer_util_clear_double
 ags_audio_buffer_util_clear_buffer
-ags_audio_buffer_util_morph_s8
-ags_audio_buffer_util_morph_s16
-ags_audio_buffer_util_morph_s24
-ags_audio_buffer_util_morph_s32
-ags_audio_buffer_util_morph_s64
-ags_audio_buffer_util_morph_float
-ags_audio_buffer_util_morph_double
-ags_audio_buffer_util_morph
+ags_audio_buffer_util_envelope_s8
+ags_audio_buffer_util_envelope_s16
+ags_audio_buffer_util_envelope_s24
+ags_audio_buffer_util_envelope_s32
+ags_audio_buffer_util_envelope_s64
+ags_audio_buffer_util_envelope_float
+ags_audio_buffer_util_envelope_double
+ags_audio_buffer_util_envelope
+ags_audio_buffer_util_volume_s8
+ags_audio_buffer_util_volume_s16
+ags_audio_buffer_util_volume_s24
+ags_audio_buffer_util_volume_s32
+ags_audio_buffer_util_volume_s64
+ags_audio_buffer_util_volume_float
+ags_audio_buffer_util_volume_double
+ags_audio_buffer_util_volume
 ags_audio_buffer_util_resample_s8
 ags_audio_buffer_util_resample_s16
 ags_audio_buffer_util_resample_s24
@@ -690,13 +698,13 @@ ags_audio_signal_add_stream
 ags_audio_signal_stream_resize
 ags_audio_signal_stream_safe_resize
 ags_audio_signal_realloc_buffer_size
-ags_audio_signal_morph_samplerate
 ags_audio_signal_duplicate_stream
 ags_audio_signal_get_template
 ags_audio_signal_get_stream_current
 ags_audio_signal_get_by_recall_id
 ags_audio_signal_tile
 ags_audio_signal_scale
+ags_audio_signal_feed
 ags_audio_signal_envelope
 ags_audio_signal_new
 ags_audio_signal_new_with_length
@@ -788,6 +796,7 @@ ags_port_descriptor_alloc
 ags_port_descriptor_free
 ags_base_plugin_find_filename
 ags_base_plugin_find_effect
+ags_base_plugin_sort
 ags_base_plugin_apply_port_group_by_prefix
 ags_base_plugin_instantiate
 ags_base_plugin_connect_port
@@ -1319,6 +1328,7 @@ ags_devout_get_type
 <TITLE>AgsDssiManager</TITLE>
 ags_dssi_manager_get_filenames
 ags_dssi_manager_find_dssi_plugin
+ags_dssi_manager_load_blacklist
 ags_dssi_manager_load_file
 ags_dssi_manager_load_default_directory
 ags_dssi_manager_get_instance
@@ -1456,6 +1466,70 @@ AGS_TYPE_EXPORT_THREAD
 AgsExportThread
 AgsExportThreadClass
 ags_export_thread_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_feed_audio_signal</FILE>
+<TITLE>AgsFeedAudioSignal</TITLE>
+ags_feed_audio_signal_new
+<SUBSECTION Public>
+AGS_FEED_AUDIO_SIGNAL
+AGS_FEED_AUDIO_SIGNAL_CLASS
+AGS_FEED_AUDIO_SIGNAL_GET_CLASS
+AGS_IS_FEED_AUDIO_SIGNAL
+AGS_IS_FEED_AUDIO_SIGNAL_CLASS
+AGS_TYPE_FEED_AUDIO_SIGNAL
+AgsFeedAudioSignal
+AgsFeedAudioSignalClass
+ags_feed_audio_signal_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_feed_channel</FILE>
+<TITLE>AgsFeedChannel</TITLE>
+ags_feed_channel_new
+<SUBSECTION Public>
+AGS_FEED_CHANNEL
+AGS_FEED_CHANNEL_CLASS
+AGS_FEED_CHANNEL_GET_CLASS
+AGS_IS_FEED_CHANNEL
+AGS_IS_FEED_CHANNEL_CLASS
+AGS_TYPE_FEED_CHANNEL
+AgsFeedChannel
+AgsFeedChannelClass
+ags_feed_channel_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_feed_channel_run</FILE>
+<TITLE>AgsFeedChannelRun</TITLE>
+ags_feed_channel_run_new
+<SUBSECTION Public>
+AGS_FEED_CHANNEL_RUN
+AGS_FEED_CHANNEL_RUN_CLASS
+AGS_FEED_CHANNEL_RUN_GET_CLASS
+AGS_IS_FEED_CHANNEL_RUN
+AGS_IS_FEED_CHANNEL_RUN_CLASS
+AGS_TYPE_FEED_CHANNEL_RUN
+AgsFeedChannelRun
+AgsFeedChannelRunClass
+ags_feed_channel_run_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_feed_recycling</FILE>
+<TITLE>AgsFeedRecycling</TITLE>
+ags_feed_recycling_new
+<SUBSECTION Public>
+AGS_FEED_RECYCLING
+AGS_FEED_RECYCLING_CLASS
+AGS_FEED_RECYCLING_GET_CLASS
+AGS_IS_FEED_RECYCLING
+AGS_IS_FEED_RECYCLING_CLASS
+AGS_TYPE_FEED_RECYCLING
+AgsFeedRecycling
+AgsFeedRecyclingClass
+ags_feed_recycling_get_type
 </SECTION>
 
 <SECTION>
@@ -1676,6 +1750,7 @@ ags_jack_devout_get_type
 <TITLE>AgsJackMidiin</TITLE>
 AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE
 AgsJackMidiinFlags
+AgsJackMidiinSyncFlags
 AGS_JACK_MIDIIN_ERROR
 AgsJackMidiinError
 ags_jack_midiin_error_quark
@@ -1760,6 +1835,7 @@ ags_ladspa_conversion_get_type
 <TITLE>AgsLadspaManager</TITLE>
 ags_ladspa_manager_get_filenames
 ags_ladspa_manager_find_ladspa_plugin
+ags_ladspa_manager_load_blacklist
 ags_ladspa_manager_load_file
 ags_ladspa_manager_load_default_directory
 ags_ladspa_manager_get_instance
@@ -1902,6 +1978,7 @@ ags_lv2_log_manager_get_type
 AGS_LV2_MANAGER_DEFAULT_LOCALE
 ags_lv2_manager_get_filenames
 ags_lv2_manager_find_lv2_plugin
+ags_lv2_manager_load_blacklist
 ags_lv2_manager_load_file
 ags_lv2_manager_load_default_directory
 ags_lv2_manager_get_instance
@@ -2041,10 +2118,9 @@ ags_lv2_worker_manager_get_type
 <TITLE>AgsLv2uiManager</TITLE>
 ags_lv2ui_manager_get_filenames
 ags_lv2ui_manager_find_lv2ui_plugin
+ags_lv2ui_manager_load_blacklist
 ags_lv2ui_manager_load_file
 ags_lv2ui_manager_load_default_directory
-ags_lv2ui_manager_uri_index
-ags_lv2ui_manager_find_uri
 ags_lv2ui_manager_get_instance
 ags_lv2ui_manager_new
 <SUBSECTION Public>
@@ -2358,6 +2434,20 @@ ags_midi_parser_get_type
 
 <SECTION>
 <FILE>ags_midi_util</FILE>
+ags_midi_util_is_key_on
+ags_midi_util_is_key_off
+ags_midi_util_is_key_pressure
+ags_midi_util_is_change_parameter
+ags_midi_util_is_pitch_bend
+ags_midi_util_is_change_program
+ags_midi_util_is_change_pressure
+ags_midi_util_is_sysex
+ags_midi_util_is_quarter_frame
+ags_midi_util_is_song_position
+ags_midi_util_is_song_select
+ags_midi_util_is_tune_request
+ags_midi_util_is_meta_event
+ags_midi_util_to_smf
 ags_midi_util_envelope_to_velocity
 ags_midi_util_velocity_to_envelope
 ags_midi_util_envelope_to_pressure
@@ -2369,6 +2459,8 @@ ags_midi_util_offset_to_delta_time
 <SECTION>
 <FILE>ags_midiin</FILE>
 <TITLE>AgsMidiin</TITLE>
+AGS_MIDIIN_DEFAULT_ALSA_DEVICE
+AGS_MIDIIN_DEFAULT_OSS_DEVICE
 AGS_MIDIIN_DEFAULT_BUFFER_SIZE
 AgsMidiinFlags
 AGS_MIDIIN_ERROR
@@ -3860,6 +3952,7 @@ ags_seek_soundcard_get_type
 <TITLE>AgsSequencerThread</TITLE>
 AGS_SEQUENCER_THREAD_DEFAULT_JIFFIE
 ags_sequencer_thread_interval_timeout
+ags_sequencer_thread_find_sequencer
 ags_sequencer_thread_new
 <SUBSECTION Public>
 AGS_IS_SEQUENCER_THREAD
@@ -3919,6 +4012,22 @@ AGS_TYPE_SET_FORMAT
 AgsSetFormat
 AgsSetFormatClass
 ags_set_format_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_set_input_device</FILE>
+<TITLE>AgsSetInputDevice</TITLE>
+ags_set_input_device_new
+<SUBSECTION Public>
+AGS_IS_SET_INPUT_DEVICE
+AGS_IS_SET_INPUT_DEVICE_CLASS
+AGS_SET_INPUT_DEVICE
+AGS_SET_INPUT_DEVICE_CLASS
+AGS_SET_INPUT_DEVICE_GET_CLASS
+AGS_TYPE_SET_INPUT_DEVICE
+AgsSetInputDevice
+AgsSetInputDeviceClass
+ags_set_input_device_get_type
 </SECTION>
 
 <SECTION>
@@ -4025,6 +4134,22 @@ AGS_TYPE_SOUNDCARD_THREAD
 AgsSoundcardThread
 AgsSoundcardThreadClass
 ags_soundcard_thread_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_start_sequencer</FILE>
+<TITLE>AgsStartSequencer</TITLE>
+ags_start_sequencer_new
+<SUBSECTION Public>
+AGS_IS_START_SEQUENCER
+AGS_IS_START_SEQUENCER_CLASS
+AGS_START_SEQUENCER
+AGS_START_SEQUENCER_CLASS
+AGS_START_SEQUENCER_GET_CLASS
+AGS_TYPE_START_SEQUENCER
+AgsStartSequencer
+AgsStartSequencerClass
+ags_start_sequencer_get_type
 </SECTION>
 
 <SECTION>
@@ -4188,6 +4313,22 @@ ags_synth_util_sin
 ags_synth_util_sawtooth
 ags_synth_util_triangle
 ags_synth_util_square
+</SECTION>
+
+<SECTION>
+<FILE>ags_tic_device</FILE>
+<TITLE>AgsTicDevice</TITLE>
+ags_tic_device_new
+<SUBSECTION Public>
+AGS_IS_TIC_DEVICE
+AGS_IS_TIC_DEVICE_CLASS
+AGS_TIC_DEVICE
+AGS_TIC_DEVICE_CLASS
+AGS_TIC_DEVICE_GET_CLASS
+AGS_TYPE_TIC_DEVICE
+AgsTicDevice
+AgsTicDeviceClass
+ags_tic_device_get_type
 </SECTION>
 
 <SECTION>

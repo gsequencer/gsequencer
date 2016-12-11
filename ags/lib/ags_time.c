@@ -22,6 +22,16 @@
 #include <math.h>
 
 /**
+ * SECTION:ags_time
+ * @short_description: utility functions of time
+ * @title: AgsTime
+ * @section_id:
+ * @include: ags/lib/ags_time.h
+ *
+ * Functions to help you dealing with time.
+ */
+
+/**
  * ags_time_get_uptime_from_offset:
  * @offset: the offset in tics
  * @bpm: the beats per minute

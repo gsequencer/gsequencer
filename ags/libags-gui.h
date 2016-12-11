@@ -17,18 +17,17 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_LV2_BROWSER_CALLBACKS_H__
-#define __AGS_LV2_BROWSER_CALLBACKS_H__
+#ifndef __LIBAGS_GUI_H__
+#define __LIBAGS_GUI_H__
 
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
+#include <ags/widget/ags_cartesian.h>
+#include <ags/widget/ags_dial.h>
+#include <ags/widget/ags_expander_set.h>
+#include <ags/widget/ags_hindicator.h>
+#include <ags/widget/ags_indicator.h>
+#include <ags/widget/ags_led.h>
+#include <ags/widget/ags_ruler.h>
+#include <ags/widget/ags_vindicator.h>
+#include <ags/widget/ags_container.h>
 
-#include <ags/X/ags_lv2_browser.h>
-
-void ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
-					      AgsLv2Browser *lv2_browser);
-void ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
-					 AgsLv2Browser *lv2_browser);
-
-#endif /*__AGS_LV2_BROWSER_CALLBACKS_H__*/
+#endif /*__LIBAGS_GUI_H__*/

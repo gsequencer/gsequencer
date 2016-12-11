@@ -28,7 +28,7 @@
  * @section_id:
  * @include: ags/lib/ags_complex.h
  *
- * GBoxed of complex data type.
+ * Boxed type of complex data type.
  */
 
 GType

@@ -1,3 +1,10 @@
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+
+#include <pthread.h>
+
 AgsApplicationContext *application_context;
 
 AgsThread *main_loop;

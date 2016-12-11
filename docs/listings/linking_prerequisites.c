@@ -1,10 +1,18 @@
-GObject *soundcard;
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 AgsAudio *master_audio, *slave_audio;
 AgsLinkChannel *linkChannel;
+
+GObject *soundcard;
+
 GError *error;
 
-/* some pseudo code */
-soundcard = AGS_WINDOW(gtk_widget_get_toblevel(widget))->soundcard;
+/* instantiate AgsDevout */
+soundcard = ags_devout_new(NULL);
 
 /* create AgsAudio objects */
 master_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,

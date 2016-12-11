@@ -867,31 +867,33 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    
 	    /* add note */
 	    if(current_note == NULL){
-	      current_note = ags_note_new();
+	      if((0x7f & (midi_iter[2])) != 0){
+		current_note = ags_note_new();
 	    
-	      current_note->x[0] = notation_counter;
-	      current_note->x[1] = notation_counter + 1;
+		current_note->x[0] = notation_counter;
+		current_note->x[1] = notation_counter + 1;
 	      
-	      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-		current_note->y = input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1;
-	      }else{
-		current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
-	      }
+		if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+		  current_note->y = input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1;
+		}else{
+		  current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
+		}
 	      
 
-	      if(!pattern_mode){
-		record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
-							     current_note);
-		current_note->flags |= AGS_NOTE_FEED;
-	      }
+		if(!pattern_mode){
+		  record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
+							       current_note);
+		  current_note->flags |= AGS_NOTE_FEED;
+		}
 
-	      pthread_mutex_lock(audio_mutex);
+		pthread_mutex_lock(audio_mutex);
 	      
-	      ags_notation_add_note(notation,
-				    current_note,
-				    FALSE);
+		ags_notation_add_note(notation,
+				      current_note,
+				      FALSE);
 	      
-	      pthread_mutex_unlock(audio_mutex);
+		pthread_mutex_unlock(audio_mutex);
+	      }
 	    }else{
 	      if((0x7f & (midi_iter[2])) == 0){
 		/* note-off */
@@ -1021,22 +1023,18 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	}
       }
       
-      /* check remove feed notes */
+      /* feed notes */
       pthread_mutex_lock(audio_mutex);
 
       note = record_midi_audio_run->note;
 
       while(note != NULL){
-	note_next = note->next;
+	AgsNote *current_note;
 	
-	if(AGS_NOTE(note->data)->x[1] != notation_counter + 1){
-	  AGS_NOTE(note->data)->flags &= (~AGS_NOTE_FEED);
-	  record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
-						      note->data);
-	  
-	}
-	  
-	note = note_next;
+	current_note = note->data;
+	current_note->x[1] = notation_counter + 1;
+
+	note = note->next;
       }
 
       pthread_mutex_unlock(audio_mutex);
