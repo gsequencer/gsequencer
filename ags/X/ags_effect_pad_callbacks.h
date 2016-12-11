@@ -17,6 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __AGS_EFFECT_PAD_CALLBACKS_H__
+#define __AGS_EFFECT_PAD_CALLBACKS_H__
+
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>

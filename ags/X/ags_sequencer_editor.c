@@ -188,8 +188,11 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 				 "alsa\0");
 #endif
   
+#ifdef AGS_WITH_OSS
   gtk_combo_box_text_append_text(sequencer_editor->backend,
 				 "oss\0");
+#endif
+
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
 			   0);
   
