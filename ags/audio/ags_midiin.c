@@ -1300,11 +1300,13 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
 	     buf,
 	     num_read);
       midiin->buffer_size[nth_buffer] += num_read;
+    }else{
+      running = FALSE;
     }
 #endif
     
     pthread_mutex_unlock(mutex);
-      
+    
     clock_gettime(CLOCK_MONOTONIC, &time_now);
 
     if(time_now.tv_sec > time_start.tv_sec){
@@ -1550,7 +1552,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
       }
 
       midiin->buffer[nth_buffer][midiin->buffer_size[nth_buffer]] = (unsigned char) c;
-      midiin->buffer_size[nth_buffer]++;
+      midiin->buffer_size[nth_buffer] += 1;
+    }else{
+      running = FALSE;
     }
 #endif
     
