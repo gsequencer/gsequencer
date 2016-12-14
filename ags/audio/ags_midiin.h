@@ -70,7 +70,7 @@ typedef enum{
   AGS_MIDIIN_POLL_DONE                      = 1 <<  3,
   AGS_MIDIIN_POLL_FINISH_WAIT               = 1 <<  4,
   AGS_MIDIIN_POLL_FINISH_DONE               = 1 <<  5,
-  AGS_MIDIIN_POLL_SWAP_BUFFER               = 1 <<  6,
+  AGS_MIDIIN_POLL_SWITCH_BUFFER             = 1 <<  6,
 }AgsMidiinSyncFlags;
 
 #define AGS_MIDIIN_ERROR (ags_midiin_error_quark())

@@ -1234,21 +1234,10 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   AgsApplicationContext *application_context;
 
   GList *task;
-
-  struct timespec time_start, time_now;
-
-  unsigned char buf[64];
-
-  gdouble delay;
-  guint64 time_spent, time_exceed;
-  int num_read;
-  guint nth_buffer;
-  gboolean running;
   
   pthread_mutex_t *mutex;
   
   midiin = AGS_MIDIIN(sequencer);
-  clock_gettime(CLOCK_MONOTONIC, &time_start);
 
   /*  */
   application_context = ags_sequencer_get_application_context(sequencer);
@@ -1273,70 +1262,11 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
     return;
   }
 
-  /* get timing */
-  delay = midiin->delay;
-  time_exceed = (NSEC_PER_SEC / delay) - midiin->latency;
-
-  /* nth buffer */
-  if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
-    nth_buffer = 1;
-  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
-    nth_buffer = 2;
-  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
-    nth_buffer = 3;
-  }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
-    nth_buffer = 0;
-  }
-
   pthread_mutex_unlock(mutex);
   
-  running = TRUE;
+  /* sync poll worker */
+  //TODO:JK: implement me
   
-  /* check buffer flag */
-  while(running){
-    pthread_mutex_lock(mutex);
-
-#ifdef AGS_WITH_OSS
-    num_read = read(midiin->in.oss.device_fd, buf, sizeof(buf));
-    
-    if((num_read < 0)){
-      g_warning("Problem reading MIDI input\0");
-    }
-
-    if(num_read > 0){
-      if(ceil((midiin->buffer_size[nth_buffer] + num_read) / 4096.0) > ceil(midiin->buffer_size[nth_buffer] / 4096.0)){
-	if(midiin->buffer[nth_buffer] == NULL){
-	  midiin->buffer[nth_buffer] = malloc(4096 * sizeof(char));
-	}else{
-	  midiin->buffer[nth_buffer] = realloc(midiin->buffer[nth_buffer],
-					       (4096 * ceil(midiin->buffer_size[nth_buffer] / 4096.0) + 4096) * sizeof(char));
-	}
-      }
-
-      memcpy(&(midiin->buffer[nth_buffer][midiin->buffer_size[nth_buffer]]),
-	     buf,
-	     num_read);
-      midiin->buffer_size[nth_buffer] += num_read;
-    }else{
-      running = FALSE;
-    }
-#endif
-    
-    pthread_mutex_unlock(mutex);
-    
-    clock_gettime(CLOCK_MONOTONIC, &time_now);
-
-    if(time_now.tv_sec > time_start.tv_sec){
-      time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - time_start.tv_nsec);
-    }else{
-      time_spent = time_now.tv_nsec - time_start.tv_nsec;
-    }
-
-    if(time_spent > time_exceed){
-      running = FALSE;
-    }
-  }
-
   /* update sequencer */
   task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
@@ -1518,7 +1448,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 
   pthread_mutex_unlock(mutex);
   
-  /* check buffer flag */
+  /* sync poll worker */
   //TODO:JK: implement me
   
   /* update sequencer */
@@ -1807,7 +1737,15 @@ ags_midiin_oss_poll(void *ptr)
 
   AgsApplicationContext *application_context;
 
+  char **ring_buffer;
+  char buf[128];
+  
   gboolean no_event;
+  guint nth_buffer;
+  guint nth_ring_buffer;
+  guint ring_buffer_size;
+  int device_fd;
+  int num_read;
   
   pthread_mutex_t *mutex;
   pthread_mutex_t *poll_mutex;
@@ -1868,11 +1806,74 @@ ags_midiin_oss_poll(void *ptr)
 
     /*  */
     if(!no_event){
-      while((AGS_MIDIIN_POLL_SWAP_BUFFER & (g_atomic_int_get(&(midiin->sync_flags)))) == 0){
+      pthread_mutex_lock(mutex);
+
+      device_fd = midiin->in.oss.device_fd;
+      
+      /* nth buffer */
+      if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
+	nth_buffer = 1;
+	nth_ring_buffer = 0;
+      }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+	nth_buffer = 2;
+	nth_ring_buffer = 1;
+      }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+	nth_buffer = 3;
+	nth_ring_buffer = 0;
+      }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
+	nth_buffer = 0;
+	nth_ring_buffer = 1;
+      }
+
+      ring_buffer = midiin->ring_buffer;
+      ring_buffer_size = midiin->ring_buffer_size[nth_ring_buffer];
+
+      pthread_mutex_unlock(mutex);
+      
+      while((AGS_MIDIIN_POLL_SWITCH_BUFFER & (g_atomic_int_get(&(midiin->sync_flags)))) == 0){
+#ifdef AGS_WITH_OSS
+	num_read = read(device_fd, buf, sizeof(buf));
+    
+	if((num_read < 0)){
+	  g_warning("Problem reading MIDI input\0");
+	}
+
+	if(num_read > 0){
+	  if(ceil((ring_buffer_size + num_read) / 4096.0) > ceil(ring_buffer_size / 4096.0)){
+	    if(ring_buffer[nth_ring_buffer] == NULL){
+	      ring_buffer[nth_ring_buffer] = malloc(4096 * sizeof(char));
+	    }else{
+	      ring_buffer[nth_ring_buffer] = realloc(ring_buffer[nth_ring_buffer],
+						     (4096 * ceil(ring_buffer_size / 4096.0) + 4096) * sizeof(char));
+	    }
+	  }
+
+	  memcpy(&(ring_buffer[nth_ring_buffer][ring_buffer_size]),
+		 buf,
+		 num_read);
+	  ring_buffer_size += num_read;
+	}
+#endif
       }
 
       g_atomic_int_and(&(midiin->sync_flags),
-		       (~AGS_MIDIIN_POLL_SWAP_BUFFER));      
+		       (~AGS_MIDIIN_POLL_SWITCH_BUFFER));      
+
+      /* switch buffer */
+      pthread_mutex_lock(mutex);
+
+      /* update byte array and buffer size */
+      midiin->ring_buffer[nth_ring_buffer] = ring_buffer;
+      midiin->ring_buffer_size[nth_ring_buffer] = ring_buffer_size;
+
+      /* fill buffer */
+      if(ring_buffer_size > 0){
+	midiin->buffer[nth_buffer] = malloc(ring_buffer_size * sizeof(char));
+	
+	memcpy(midiin->buffer[nth_buffer], ring_buffer, ring_buffer_size * sizeof(char));
+      }
+      
+      pthread_mutex_unlock(mutex);
     }
 
     /* signal finish */
@@ -2006,7 +2007,7 @@ ags_midiin_alsa_poll(void *ptr)
 
       pthread_mutex_unlock(mutex);
       
-      while((AGS_MIDIIN_POLL_SWAP_BUFFER & (g_atomic_int_get(&(midiin->sync_flags)))) == 0){
+      while((AGS_MIDIIN_POLL_SWITCH_BUFFER & (g_atomic_int_get(&(midiin->sync_flags)))) == 0){
 	status = 0;
 
 #ifdef AGS_WITH_ALSA
@@ -2022,7 +2023,7 @@ ags_midiin_alsa_poll(void *ptr)
 	      ring_buffer[nth_ring_buffer] = malloc(4096 * sizeof(char));
 	    }else{
 	      ring_buffer[nth_ring_buffer] = realloc(ring_buffer[nth_ring_buffer],
-						(ring_buffer_size + 4096) * sizeof(char));
+						     (ring_buffer_size + 4096) * sizeof(char));
 	    }
 	  }
 
@@ -2033,9 +2034,9 @@ ags_midiin_alsa_poll(void *ptr)
       }
 
       g_atomic_int_and(&(midiin->sync_flags),
-		       (~AGS_MIDIIN_POLL_SWAP_BUFFER));
+		       (~AGS_MIDIIN_POLL_SWITCH_BUFFER));
 
-      /* swap buffer */
+      /* switch buffer */
       pthread_mutex_lock(mutex);
 
       /* update byte array and buffer size */
