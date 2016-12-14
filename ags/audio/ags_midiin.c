@@ -2158,11 +2158,11 @@ ags_midiin_alsa_poll(void *ptr)
       ring_buffer_size = midiin->ring_buffer_size[nth_ring_buffer];
 
       if(nth_ring_buffer % 2 == 1){
-	midiin->ring_buffer[0] = NULL;
-	midiin->ring_buffer_size[0] = 0;
-      }else{
 	midiin->ring_buffer[1] = NULL;
 	midiin->ring_buffer_size[1] = 0;
+      }else{
+	midiin->ring_buffer[0] = NULL;
+	midiin->ring_buffer_size[0] = 0;
       }
       
       pthread_mutex_unlock(mutex);
