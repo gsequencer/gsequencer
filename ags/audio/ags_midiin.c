@@ -1972,6 +1972,14 @@ ags_midiin_oss_poll(void *ptr)
       ring_buffer = midiin->ring_buffer;
       ring_buffer_size = midiin->ring_buffer_size[nth_ring_buffer];
 
+      if(nth_ring_buffer % 2 == 1){
+	midiin->ring_buffer[0] = NULL;
+	midiin->ring_buffer_size[0] = 0;
+      }else{
+	midiin->ring_buffer[1] = NULL;
+	midiin->ring_buffer_size[1] = 0;
+      }
+      
       pthread_mutex_unlock(mutex);
       
       while((AGS_MIDIIN_POLL_SWITCH_BUFFER & (g_atomic_int_get(&(midiin->sync_flags)))) == 0){
@@ -2149,6 +2157,14 @@ ags_midiin_alsa_poll(void *ptr)
       ring_buffer = midiin->ring_buffer;
       ring_buffer_size = midiin->ring_buffer_size[nth_ring_buffer];
 
+      if(nth_ring_buffer % 2 == 1){
+	midiin->ring_buffer[0] = NULL;
+	midiin->ring_buffer_size[0] = 0;
+      }else{
+	midiin->ring_buffer[1] = NULL;
+	midiin->ring_buffer_size[1] = 0;
+      }
+      
       pthread_mutex_unlock(mutex);
       
       while((AGS_MIDIIN_POLL_SWITCH_BUFFER & (g_atomic_int_get(&(midiin->sync_flags)))) == 0){
