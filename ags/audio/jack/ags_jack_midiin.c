@@ -1149,7 +1149,7 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   pthread_mutex_unlock(client_mutex);
 
   if(jack_client_activated){
-    /* signal */
+    /* signal client */
     if((AGS_JACK_MIDIIN_INITIAL_CALLBACK & (g_atomic_int_get(&(jack_midiin->sync_flags)))) == 0){
       pthread_mutex_lock(callback_mutex);
 

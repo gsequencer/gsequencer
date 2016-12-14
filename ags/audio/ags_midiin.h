@@ -38,7 +38,7 @@
 
 #define AGS_MIDIIN_DEFAULT_ALSA_DEVICE "hw:0,0\0"
 #define AGS_MIDIIN_DEFAULT_OSS_DEVICE "/dev/midi00\0"
-#define AGS_MIDIIN_DEFAULT_BUFFER_SIZE (256)
+#define AGS_MIDIIN_DEFAULT_BUFFER_SIZE (4096)
 
 typedef struct _AgsMidiin AgsMidiin;
 typedef struct _AgsMidiinClass AgsMidiinClass;
@@ -116,6 +116,8 @@ struct _AgsMidiin
     }alsa;
   }in;
 
+  pthread_t *poll_thread;
+  
   pthread_mutex_t *poll_mutex;
   pthread_cond_t *poll_cond;
 
