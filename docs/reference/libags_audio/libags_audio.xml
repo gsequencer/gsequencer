@@ -223,12 +223,9 @@
       <xi:include href="xml/ags_apply_sequencer_length.xml"/>
       <xi:include href="xml/ags_apply_synth.xml"/>
       <xi:include href="xml/ags_apply_tact.xml"/>
-      <xi:include href="xml/ags_apply_wavetable.xml"/>
-      <xi:include href="xml/ags_audio_set_recycling.xml"/>
       <xi:include href="xml/ags_cancel_audio.xml"/>
       <xi:include href="xml/ags_cancel_channel.xml"/>
       <xi:include href="xml/ags_cancel_recall.xml"/>
-      <xi:include href="xml/ags_channel_set_recycling.xml"/>
       <xi:include href="xml/ags_export_output.xml"/>
       <xi:include href="xml/ags_free_selection.xml"/>
       <xi:include href="xml/ags_init_audio.xml"/>

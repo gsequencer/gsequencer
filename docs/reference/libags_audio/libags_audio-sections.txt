@@ -307,22 +307,6 @@ ags_apply_tact_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_apply_wavetable</FILE>
-<TITLE>AgsApplyWavetable</TITLE>
-ags_apply_wavetable_new
-<SUBSECTION Public>
-AGS_APPLY_WAVETABLE
-AGS_APPLY_WAVETABLE_CLASS
-AGS_APPLY_WAVETABLE_GET_CLASS
-AGS_IS_APPLY_WAVETABLE
-AGS_IS_APPLY_WAVETABLE_CLASS
-AGS_TYPE_APPLY_WAVETABLE
-AgsApplyWavetable
-AgsApplyWavetableClass
-ags_apply_wavetable_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_audio</FILE>
 <TITLE>AgsAudio</TITLE>
 AgsAudioFlags
@@ -669,22 +653,6 @@ ags_audio_loop_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_audio_set_recycling</FILE>
-<TITLE>AgsAudioSetRecycling</TITLE>
-ags_audio_set_recycling_new
-<SUBSECTION Public>
-AGS_AUDIO_SET_RECYCLING
-AGS_AUDIO_SET_RECYCLING_CLASS
-AGS_AUDIO_SET_RECYCLING_GET_CLASS
-AGS_IS_AUDIO_SET_RECYCLING
-AGS_IS_AUDIO_SET_RECYCLING_CLASS
-AGS_TYPE_AUDIO_SET_RECYCLING
-AgsAudioSetRecycling
-AgsAudioSetRecyclingClass
-ags_audio_set_recycling_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_audio_signal</FILE>
 <TITLE>AgsAudioSignal</TITLE>
 AgsAudioSignalFlags
@@ -1021,22 +989,6 @@ ags_channel_iter_alloc
 ags_channel_iter_free
 ags_channel_iter_prev
 ags_channel_iter_next
-</SECTION>
-
-<SECTION>
-<FILE>ags_channel_set_recycling</FILE>
-<TITLE>AgsChannelSetRecycling</TITLE>
-ags_channel_set_recycling_new
-<SUBSECTION Public>
-AGS_CHANNEL_SET_RECYCLING
-AGS_CHANNEL_SET_RECYCLING_CLASS
-AGS_CHANNEL_SET_RECYCLING_GET_CLASS
-AGS_IS_CHANNEL_SET_RECYCLING
-AGS_IS_CHANNEL_SET_RECYCLING_CLASS
-AGS_TYPE_CHANNEL_SET_RECYCLING
-AgsChannelSetRecycling
-AgsChannelSetRecyclingClass
-ags_channel_set_recycling_get_type
 </SECTION>
 
 <SECTION>
@@ -2463,6 +2415,7 @@ AGS_MIDIIN_DEFAULT_ALSA_DEVICE
 AGS_MIDIIN_DEFAULT_OSS_DEVICE
 AGS_MIDIIN_DEFAULT_BUFFER_SIZE
 AgsMidiinFlags
+AgsMidiinSyncFlags
 AGS_MIDIIN_ERROR
 AgsMidiinError
 ags_midiin_error_quark

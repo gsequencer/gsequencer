@@ -1,3 +1,9 @@
+ags (0.7.118)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed API reference removed unused objects
+	* added COPYING.docs
+
 ags (0.7.117)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
