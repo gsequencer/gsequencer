@@ -44,6 +44,14 @@
 void ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets);
 void ags_apply_presets_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_presets_init(AgsApplyPresets *apply_presets);
+void ags_apply_presets_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_apply_presets_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_apply_presets_connect(AgsConnectable *connectable);
 void ags_apply_presets_disconnect(AgsConnectable *connectable);
 void ags_apply_presets_finalize(GObject *gobject);
@@ -66,6 +74,15 @@ void ags_apply_presets_audio_signal(AgsApplyPresets *apply_presets,
  *
  * The #AgsApplyPresets task apply the specified presets.
  */
+
+enum{
+  PROP_0,
+  PROP_SCOPE,
+  PROP_PCM_CHANNELS,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
+};
 
 static gpointer ags_apply_presets_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_presets_parent_connectable_interface;
@@ -112,13 +129,89 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
-
+  GParamSpec *param_spec;
+  
   ags_apply_presets_parent_class = g_type_class_peek_parent(apply_presets);
 
   /* GObjectClass */
   gobject = (GObjectClass *) apply_presets;
 
+  gobject->set_property = ags_apply_presets_set_property;
+  gobject->get_property = ags_apply_presets_get_property;
+
   gobject->finalize = ags_apply_presets_finalize;
+
+  /* properties */
+  /**
+   * AgsApplyPresets:scope:
+   *
+   * The assigned #GObject
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("scope\0",
+				   "scope of apply presets\0",
+				   "The scope of apply presets task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCOPE,
+				  param_spec);
+
+  /**
+   * AgsApplyPresets:samplerate:
+   *
+   * The count of samplerate to apply.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("samplerate\0",
+				 "samplerate\0",
+				 "The samplerate to apply\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  
+  /**
+   * AgsApplyPresets:buffer-size:
+   *
+   * The count of buffer-size to apply.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("buffer-size\0",
+				 "buffer size\0",
+				 "The buffer size to apply\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsApplyPresets:format:
+   *
+   * The count of format to apply.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("format\0",
+				 "format\0",
+				 "The format to apply\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_presets;
@@ -144,6 +237,106 @@ ags_apply_presets_init(AgsApplyPresets *apply_presets)
   apply_presets->samplerate = 0;
   apply_presets->buffer_size = 0;
   apply_presets->format = 0;
+}
+
+void
+ags_apply_presets_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsApplyPresets *apply_presets;
+
+  apply_presets = AGS_APPLY_PRESETS(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      GObject *scope;
+
+      scope = (GObject *) g_value_get_object(value);
+
+      if(apply_presets->scope == (GObject *) scope){
+	return;
+      }
+
+      if(apply_presets->scope != NULL){
+	g_object_unref(apply_presets->scope);
+      }
+
+      if(scope != NULL){
+	g_object_ref(scope);
+      }
+
+      apply_presets->scope = (GObject *) scope;
+    }
+    break;
+  case PROP_PCM_CHANNELS:
+    {
+      apply_presets->pcm_channels = g_value_get_uint(value);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      apply_presets->samplerate = g_value_get_uint(value);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      apply_presets->buffer_size = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      apply_presets->format = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_apply_presets_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsApplyPresets *apply_presets;
+
+  apply_presets = AGS_APPLY_PRESETS(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      g_value_set_object(value, apply_presets->scope);
+    }
+    break;
+  case PROP_PCM_CHANNELS:
+    {
+      g_value_set_uint(value, apply_presets->pcm_channels);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value, apply_presets->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, apply_presets->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, apply_presets->format);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

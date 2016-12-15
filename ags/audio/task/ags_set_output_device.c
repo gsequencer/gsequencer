@@ -27,6 +27,14 @@
 void ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device);
 void ags_set_output_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_output_device_init(AgsSetOutputDevice *set_output_device);
+void ags_set_output_device_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_set_output_device_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
 void ags_set_output_device_connect(AgsConnectable *connectable);
 void ags_set_output_device_disconnect(AgsConnectable *connectable);
 void ags_set_output_device_finalize(GObject *gobject);
@@ -45,6 +53,12 @@ void ags_set_output_device_launch(AgsTask *task);
 
 static gpointer ags_set_output_device_parent_class = NULL;
 static AgsConnectableInterface *ags_set_output_device_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_SOUNDCARD,
+  PROP_DEVICE,
+};
 
 GType
 ags_set_output_device_get_type()
@@ -88,13 +102,50 @@ ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_set_output_device_parent_class = g_type_class_peek_parent(set_output_device);
 
   /* gobject */
   gobject = (GObjectClass *) set_output_device;
 
+  gobject->set_property = ags_set_output_device_set_property;
+  gobject->get_property = ags_set_output_device_get_property;
+
   gobject->finalize = ags_set_output_device_finalize;
+
+  /* properties */
+  /**
+   * AgsSetOutputDevice:soundcard:
+   *
+   * The assigned #AgsSoundcard instance.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of set audio channels\0",
+				   "The soundcard of set audio channels\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsSetOutputDevice:device:
+   *
+   * The soundcard indentifier
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_string("device\0",
+				   "device identifier\0",
+				   "The device identifier to set\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVICE,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) set_output_device;
@@ -115,7 +166,89 @@ void
 ags_set_output_device_init(AgsSetOutputDevice *set_output_device)
 {
   set_output_device->soundcard = NULL;
-  set_output_device->card_id = NULL;
+  set_output_device->device = NULL;
+}
+
+void
+ags_set_output_device_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsSetOutputDevice *set_output_device;
+
+  set_output_device = AGS_SET_OUTPUT_DEVICE(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(set_output_device->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(set_output_device->soundcard != NULL){
+	g_object_unref(set_output_device->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      set_output_device->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_DEVICE:
+    {
+      char *device;
+
+      device = (char *) g_value_get_string(value);
+
+      if(device == set_output_device->device){
+	return;
+      }
+
+      if(set_output_device->device != NULL){
+	g_free(set_output_device->device);
+      }
+
+      set_output_device->device = g_strdup(device);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_set_output_device_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsSetOutputDevice *set_output_device;
+
+  set_output_device = AGS_SET_OUTPUT_DEVICE(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, set_output_device->soundcard);
+    }
+    break;
+  case PROP_DEVICE:
+    {
+      g_value_set_string(value, set_output_device->device);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -147,35 +280,35 @@ ags_set_output_device_launch(AgsTask *task)
 {
   GObject *soundcard;
   AgsSetOutputDevice *set_output_device;
-  char *card_id;
+  char *device;
 
   set_output_device = AGS_SET_OUTPUT_DEVICE(task);
 
   soundcard = set_output_device->soundcard;
-  card_id = set_output_device->card_id;
+  device = set_output_device->device;
 
   if(AGS_IS_DEVOUT(soundcard) &&
      (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
-    if(index(card_id, ',') == NULL){
+    if(index(device, ',') == NULL){
       gchar *tmp;
     
       tmp = g_strdup_printf("%s,0\0",
-			    card_id);
+			    device);
       
-      g_free(card_id);
-      card_id = tmp;
+      g_free(device);
+      device = tmp;
     }
   }
   
   /* perform task */
   ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			   card_id);
+			   device);
 }
 
 /**
  * ags_set_output_device_new:
  * @soundcard: the #AgsSoundcard to reset
- * @card_id: the new soundcard
+ * @device: the new soundcard
  *
  * Creates an #AgsSetOutputDevice.
  *
@@ -185,7 +318,7 @@ ags_set_output_device_launch(AgsTask *task)
  */
 AgsSetOutputDevice*
 ags_set_output_device_new(GObject *soundcard,
-			  char *card_id)
+			  char *device)
 {
   AgsSetOutputDevice *set_output_device;
 
@@ -193,7 +326,7 @@ ags_set_output_device_new(GObject *soundcard,
 							  NULL);
 
   set_output_device->soundcard = soundcard;
-  set_output_device->card_id = card_id;
+  set_output_device->device = device;
 
   return(set_output_device);
 }

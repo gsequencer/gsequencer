@@ -32,6 +32,14 @@
 void ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size);
 void ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size);
+void ags_set_buffer_size_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_set_buffer_size_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
 void ags_set_buffer_size_connect(AgsConnectable *connectable);
 void ags_set_buffer_size_disconnect(AgsConnectable *connectable);
 void ags_set_buffer_size_finalize(GObject *gobject);
@@ -47,12 +55,18 @@ void ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *s
 /**
  * SECTION:ags_set_buffer_size
  * @short_description: resizes buffer size
- * @title: AgsSetAudioChannels
+ * @title: AgsSetBufferSize
  * @section_id:
  * @include: ags/audio/task/ags_set_buffer_size.h
  *
- * The #AgsSetAudioChannels task resizes buffer size of #AgsSoundcard.
+ * The #AgsSetBufferSize task resizes buffer size of scope.
  */
+
+enum{
+  PROP_0,
+  PROP_SCOPE,
+  PROP_BUFFER_SIZE,
+};
 
 static gpointer ags_set_buffer_size_parent_class = NULL;
 static AgsConnectableInterface *ags_set_buffer_size_parent_connectable_interface;
@@ -99,13 +113,52 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_set_buffer_size_parent_class = g_type_class_peek_parent(set_buffer_size);
 
   /* gobject */
   gobject = (GObjectClass *) set_buffer_size;
 
+  gobject->set_property = ags_set_buffer_size_set_property;
+  gobject->get_property = ags_set_buffer_size_get_property;
+
   gobject->finalize = ags_set_buffer_size_finalize;
+
+  /* properties */
+  /**
+   * AgsSetBufferSize:scope:
+   *
+   * The assigned #GObject as scope.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("scope\0",
+				   "scope of set buffer size\0",
+				   "The scope of set buffer size\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCOPE,
+				  param_spec);
+
+  /**
+   * AgsSetBufferSize:buffer-size:
+   *
+   * The buffer size to apply to scope.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("buffer-size\0",
+				 "buffer size\0",
+				 "The buffer size to apply\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) set_buffer_size;
@@ -125,8 +178,78 @@ ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size)
 {
-  set_buffer_size->gobject = NULL;
+  set_buffer_size->scope = NULL;
   set_buffer_size->buffer_size = 128;
+}
+
+void
+ags_set_buffer_size_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsSetBufferSize *set_buffer_size;
+
+  set_buffer_size = AGS_SET_BUFFER_SIZE(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      GObject *scope;
+
+      scope = (GObject *) g_value_get_object(value);
+
+      if(set_buffer_size->scope == (GObject *) scope){
+	return;
+      }
+
+      if(set_buffer_size->scope != NULL){
+	g_object_unref(set_buffer_size->scope);
+      }
+
+      if(scope != NULL){
+	g_object_ref(scope);
+      }
+
+      set_buffer_size->scope = (GObject *) scope;
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      set_buffer_size->buffer_size = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_set_buffer_size_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsSetBufferSize *set_buffer_size;
+
+  set_buffer_size = AGS_SET_BUFFER_SIZE(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      g_value_set_object(value, set_buffer_size->scope);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, set_buffer_size->buffer_size);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -157,22 +280,22 @@ void
 ags_set_buffer_size_launch(AgsTask *task)
 {
   AgsSetBufferSize *set_buffer_size;
-  GObject *gobject;
+  GObject *scope;
 
   set_buffer_size = AGS_SET_BUFFER_SIZE(task);
 
-  gobject = set_buffer_size->gobject;
+  scope = set_buffer_size->scope;
 
-  if(AGS_IS_SOUNDCARD(gobject)){
-    ags_set_buffer_size_soundcard(set_buffer_size, gobject);
-  }else if(AGS_IS_AUDIO(gobject)){
-    ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(gobject));
-  }else if(AGS_IS_CHANNEL(gobject)){
-    ags_set_buffer_size_channel(set_buffer_size, AGS_CHANNEL(gobject));
-  }else if(AGS_IS_RECYCLING(gobject)){
-    ags_set_buffer_size_recycling(set_buffer_size, AGS_RECYCLING(gobject));
-  }else if(AGS_IS_AUDIO_SIGNAL(gobject)){
-    ags_set_buffer_size_audio_signal(set_buffer_size, AGS_AUDIO_SIGNAL(gobject));
+  if(AGS_IS_SOUNDCARD(scope)){
+    ags_set_buffer_size_soundcard(set_buffer_size, scope);
+  }else if(AGS_IS_AUDIO(scope)){
+    ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(scope));
+  }else if(AGS_IS_CHANNEL(scope)){
+    ags_set_buffer_size_channel(set_buffer_size, AGS_CHANNEL(scope));
+  }else if(AGS_IS_RECYCLING(scope)){
+    ags_set_buffer_size_recycling(set_buffer_size, AGS_RECYCLING(scope));
+  }else if(AGS_IS_AUDIO_SIGNAL(scope)){
+    ags_set_buffer_size_audio_signal(set_buffer_size, AGS_AUDIO_SIGNAL(scope));
   }
 }
 
@@ -307,17 +430,17 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
 
 /**
  * ags_set_buffer_size_new:
- * @gobject: the #AgsSoundcard reset
- * @buffer_size: the new count of buffer size
+ * @scope: the #GObject to reset
+ * @buffer_size: the new buffer size
  *
- * Creates an #AgsSetAudioChannels.
+ * Creates an #AgsSetBufferSize.
  *
- * Returns: an new #AgsSetAudioChannels.
+ * Returns: an new #AgsSetBufferSize.
  *
  * Since: 0.4
  */
 AgsSetBufferSize*
-ags_set_buffer_size_new(GObject *gobject,
+ags_set_buffer_size_new(GObject *scope,
 			guint buffer_size)
 {
   AgsSetBufferSize *set_buffer_size;
@@ -325,7 +448,7 @@ ags_set_buffer_size_new(GObject *gobject,
   set_buffer_size = (AgsSetBufferSize *) g_object_new(AGS_TYPE_SET_BUFFER_SIZE,
 						      NULL);
 
-  set_buffer_size->gobject = gobject;
+  set_buffer_size->scope = scope;
   set_buffer_size->buffer_size = buffer_size;
 
   return(set_buffer_size);

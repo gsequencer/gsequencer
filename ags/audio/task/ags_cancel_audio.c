@@ -32,6 +32,14 @@
 void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
 void ags_cancel_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_audio_init(AgsCancelAudio *cancel_audio);
+void ags_cancel_audio_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_cancel_audio_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_cancel_audio_connect(AgsConnectable *connectable);
 void ags_cancel_audio_disconnect(AgsConnectable *connectable);
 void ags_cancel_audio_finalize(GObject *gobject);
@@ -40,7 +48,7 @@ void ags_cancel_audio_launch(AgsTask *task);
 
 /**
  * SECTION:ags_cancel_audio
- * @short_description: cancel audio object in audio loop
+ * @short_description: cancel audio task
  * @title: AgsCancelAudio
  * @section_id:
  * @include: ags/audio/task/ags_cancel_audio.h
@@ -50,6 +58,14 @@ void ags_cancel_audio_launch(AgsTask *task);
 
 static gpointer ags_cancel_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_cancel_audio_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
+  PROP_DO_PLAYBACK,
+  PROP_DO_SEQUENCER,
+  PROP_DO_NOTATION,
+};
 
 GType
 ags_cancel_audio_get_type()
@@ -93,13 +109,82 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
-
+  GParamSpec *param_spec;
+  
   ags_cancel_audio_parent_class = g_type_class_peek_parent(cancel_audio);
 
   /* gobject */
   gobject = (GObjectClass *) cancel_audio;
 
+  gobject->set_property = ags_cancel_audio_set_property;
+  gobject->get_property = ags_cancel_audio_get_property;
+
   gobject->finalize = ags_cancel_audio_finalize;
+
+  /* properties */
+  /**
+   * AgsCancelAudio:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of cancel audio\0",
+				   "The audio of cancel audio task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsCancelAudio:do-playback:
+   *
+   * The effects do-playback.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("do-playback\0",
+				     "do playback\0",
+				     "Do playback of audio\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_PLAYBACK,
+				  param_spec);
+
+  /**
+   * AgsCancelAudio:do-sequencer:
+   *
+   * The effects do-sequencer.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("do-sequencer\0",
+				     "do sequencer\0",
+				     "Do sequencer of audio\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_SEQUENCER,
+				  param_spec);
+
+  /**
+   * AgsCancelAudio:do-notation:
+   *
+   * The effects do-notation.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("do-notation\0",
+				     "do notation\0",
+				     "Do notation of audio\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_NOTATION,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) cancel_audio;
@@ -124,6 +209,108 @@ ags_cancel_audio_init(AgsCancelAudio *cancel_audio)
   cancel_audio->do_playback = FALSE;
   cancel_audio->do_sequencer = FALSE;
   cancel_audio->do_notation = FALSE;
+}
+
+void
+ags_cancel_audio_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsCancelAudio *cancel_audio;
+
+  cancel_audio = AGS_CANCEL_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(cancel_audio->audio == (GObject *) audio){
+	return;
+      }
+
+      if(cancel_audio->audio != NULL){
+	g_object_unref(cancel_audio->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      cancel_audio->audio = (GObject *) audio;
+    }
+    break;
+  case PROP_DO_PLAYBACK:
+    {
+      guint do_playback;
+
+      do_playback = g_value_get_boolean(value);
+
+      cancel_audio->do_playback = do_playback;
+    }
+    break;
+  case PROP_DO_SEQUENCER:
+    {
+      guint do_sequencer;
+
+      do_sequencer = g_value_get_boolean(value);
+
+      cancel_audio->do_sequencer = do_sequencer;
+    }
+    break;
+  case PROP_DO_NOTATION:
+    {
+      guint do_notation;
+
+      do_notation = g_value_get_boolean(value);
+
+      cancel_audio->do_notation = do_notation;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_cancel_audio_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsCancelAudio *cancel_audio;
+
+  cancel_audio = AGS_CANCEL_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, cancel_audio->audio);
+    }
+    break;
+  case PROP_DO_PLAYBACK:
+    {
+      g_value_set_boolean(value, cancel_audio->do_playback);
+    }
+    break;
+  case PROP_DO_SEQUENCER:
+    {
+      g_value_set_boolean(value, cancel_audio->do_sequencer);
+    }
+    break;
+  case PROP_DO_NOTATION:
+    {
+      g_value_set_boolean(value, cancel_audio->do_notation);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

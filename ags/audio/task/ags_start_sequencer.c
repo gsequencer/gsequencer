@@ -119,7 +119,7 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context of start sequencer\0",
@@ -310,7 +310,7 @@ ags_start_sequencer_launch(AgsTask *task)
  *
  * Returns: an new #AgsStartSequencer.
  *
- * Since: 1.0.0
+ * Since: 0.7.117
  */
 AgsStartSequencer*
 ags_start_sequencer_new(AgsApplicationContext *application_context)

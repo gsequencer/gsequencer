@@ -39,7 +39,7 @@ struct _AgsApplyBpm
 {
   AgsTask task;
 
-  GObject *gobject;
+  GObject *scope;
 
   gdouble bpm;
 };
@@ -51,7 +51,7 @@ struct _AgsApplyBpmClass
 
 GType ags_apply_bpm_get_type();
 
-AgsApplyBpm* ags_apply_bpm_new(GObject *gobject,
+AgsApplyBpm* ags_apply_bpm_new(GObject *scope,
 			       gdouble bpm);
 
 #endif /*__AGS_APPLY_BPM_H__*/

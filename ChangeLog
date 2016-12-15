@@ -1,3 +1,12 @@
+ags (0.7.117)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAudio:midi-channel
+	* implemented midi channel in AgsMidiDialog
+	* implemented using midi channel in ags-record-midi
+	* back-ported properties of tasks of branch 1.0
+	* fixed ags-record-midi recall to proper key-on and key-off
+
 ags (0.7.116)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -30,6 +30,14 @@
 void ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard);
 void ags_notify_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notify_soundcard_init(AgsNotifySoundcard *notify_soundcard);
+void ags_notify_soundcard_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_notify_soundcard_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_notify_soundcard_connect(AgsConnectable *connectable);
 void ags_notify_soundcard_disconnect(AgsConnectable *connectable);
 void ags_notify_soundcard_finalize(GObject *gobject);
@@ -38,7 +46,7 @@ void ags_notify_soundcard_launch(AgsTask *task);
 
 /**
  * SECTION:ags_notify_soundcard
- * @short_description: notify soundcard object
+ * @short_description: notify soundcard task
  * @title: AgsNotifySoundcard
  * @section_id:
  * @include: ags/audio/task/ags_notify_soundcard.h
@@ -48,6 +56,11 @@ void ags_notify_soundcard_launch(AgsTask *task);
 
 static gpointer ags_notify_soundcard_parent_class = NULL;
 static AgsConnectableInterface *ags_notify_soundcard_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_SOUNDCARD_THREAD,
+};
 
 GType
 ags_notify_soundcard_get_type()
@@ -91,14 +104,35 @@ ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_notify_soundcard_parent_class = g_type_class_peek_parent(notify_soundcard);
 
   /* gobject */
   gobject = (GObjectClass *) notify_soundcard;
 
+  gobject->set_property = ags_notify_soundcard_set_property;
+  gobject->get_property = ags_notify_soundcard_get_property;
+
   gobject->finalize = ags_notify_soundcard_finalize;
 
+  /* properties */
+  /**
+   * AgsNotifySoundcard:soundcard-thread:
+   *
+   * The assigned #AgsSoundcardThread
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("soundcard-thread\0",
+				   "soundcard thread of notify soundcard\0",
+				   "The soundcard thread of notify soundcard task\0",
+				   AGS_TYPE_SOUNDCARD_THREAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD_THREAD,
+				  param_spec);
+  
   /* task */
   task = (AgsTaskClass *) notify_soundcard;
 
@@ -136,6 +170,66 @@ ags_notify_soundcard_init(AgsNotifySoundcard *notify_soundcard)
 
   /* soundcard */  
   notify_soundcard->soundcard_thread = NULL;
+}
+
+void
+ags_notify_soundcard_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsNotifySoundcard *notify_soundcard;
+
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD_THREAD:
+    {
+      AgsSoundcardThread *soundcard_thread;
+
+      soundcard_thread = (AgsSoundcardThread *) g_value_get_object(value);
+
+      if(notify_soundcard->soundcard_thread == (GObject *) soundcard_thread){
+	return;
+      }
+
+      if(notify_soundcard->soundcard_thread != NULL){
+	g_object_unref(notify_soundcard->soundcard_thread);
+      }
+
+      if(soundcard_thread != NULL){
+	g_object_ref(soundcard_thread);
+      }
+
+      notify_soundcard->soundcard_thread = (GObject *) soundcard_thread;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_notify_soundcard_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsNotifySoundcard *notify_soundcard;
+
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD_THREAD:
+    {
+      g_value_set_object(value, notify_soundcard->soundcard_thread);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

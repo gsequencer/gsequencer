@@ -28,6 +28,14 @@
 void ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio);
 void ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_resize_audio_init(AgsResizeAudio *resize_audio);
+void ags_resize_audio_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_resize_audio_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_resize_audio_connect(AgsConnectable *connectable);
 void ags_resize_audio_disconnect(AgsConnectable *connectable);
 void ags_resize_audio_finalize(GObject *gobject);
@@ -36,7 +44,7 @@ void ags_resize_audio_launch(AgsTask *task);
 
 /**
  * SECTION:ags_resize_audio
- * @short_description: resize audio object
+ * @short_description: resize audio task
  * @title: AgsResizeAudio
  * @section_id:
  * @include: ags/audio/task/ags_resize_audio.h
@@ -46,6 +54,14 @@ void ags_resize_audio_launch(AgsTask *task);
 
 static gpointer ags_resize_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_resize_audio_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
+  PROP_OUTPUT_PADS,
+  PROP_INPUT_PADS,
+  PROP_AUDIO_CHANNELS,
+};
 
 GType
 ags_resize_audio_get_type()
@@ -89,13 +105,89 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_resize_audio_parent_class = g_type_class_peek_parent(resize_audio);
 
   /* gobject */
   gobject = (GObjectClass *) resize_audio;
 
+  gobject->set_property = ags_resize_audio_set_property;
+  gobject->get_property = ags_resize_audio_get_property;
+
   gobject->finalize = ags_resize_audio_finalize;
+
+  /* properties */
+  /**
+   * AgsResizeAudio:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of resize audio\0",
+				   "The audio of resize audio task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsResizeAudio:output-pads:
+   *
+   * The count of output pads to apply to audio.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("output-pads\0",
+				 "output pads\0",
+				 "The count of output pads\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT_PADS,
+				  param_spec);
+
+  /**
+   * AgsResizeAudio:input-pads:
+   *
+   * The count of input pads to apply to audio.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("input-pads\0",
+				 "input pads\0",
+				 "The count of input pads\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_PADS,
+				  param_spec);
+
+  /**
+   * AgsResizeAudio:audio-channels:
+   *
+   * The count of audio channels to apply to audio.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("audio-channels\0",
+				 "audio channels\0",
+				 "The count of audio channels\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNELS,
+				  param_spec);
+  
 
   /* task */
   task = (AgsTaskClass *) resize_audio;
@@ -119,6 +211,96 @@ ags_resize_audio_init(AgsResizeAudio *resize_audio)
   resize_audio->output_pads = 0;
   resize_audio->input_pads = 0;
   resize_audio->audio_channels = 0;
+}
+
+void
+ags_resize_audio_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsResizeAudio *resize_audio;
+
+  resize_audio = AGS_RESIZE_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(resize_audio->audio == (GObject *) audio){
+	return;
+      }
+
+      if(resize_audio->audio != NULL){
+	g_object_unref(resize_audio->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      resize_audio->audio = (GObject *) audio;
+    }
+    break;
+  case PROP_OUTPUT_PADS:
+    {
+      resize_audio->output_pads = g_value_get_uint(value);
+    }
+    break;
+  case PROP_INPUT_PADS:
+    {
+      resize_audio->input_pads = g_value_get_uint(value);
+    }
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      resize_audio->audio_channels = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_resize_audio_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsResizeAudio *resize_audio;
+
+  resize_audio = AGS_RESIZE_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, resize_audio->audio);
+    }
+    break;
+  case PROP_OUTPUT_PADS:
+    {
+      g_value_set_uint(value, resize_audio->output_pads);
+    }
+    break;
+  case PROP_INPUT_PADS:
+    {
+      g_value_set_uint(value, resize_audio->input_pads);
+    }
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      g_value_set_uint(value, resize_audio->audio_channels);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

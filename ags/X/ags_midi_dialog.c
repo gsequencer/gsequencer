@@ -202,6 +202,27 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     FALSE, FALSE,
 		     0);
 
+  /* midi channel */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
+		     GTK_WIDGET(hbox),
+  		     FALSE, FALSE,
+  		     0);
+  
+  label = (GtkLabel *) gtk_label_new("midi channel\0");
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(label),
+  		     FALSE, FALSE,
+  		     0);
+  
+  midi_dialog->midi_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 15.0, 1.0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->midi_channel),
+  		     FALSE, FALSE,
+  		     0);
+  
+  /* playback */
   midi_dialog->playback = NULL;
   //  midi_dialog->playback = (GtkCheckButton *) gtk_check_button_new_with_label("playback\0");
   //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
@@ -209,6 +230,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   //		     FALSE, FALSE,
   //		     0);
 
+  /* record */
   midi_dialog->record = NULL;
   //  midi_dialog->record = (GtkCheckButton *) gtk_check_button_new_with_label("record\0");
   //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
@@ -527,6 +549,7 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
   
   /* set properties */
   g_object_set(audio,
+	       "midi-channel\0", gtk_spin_button_get_value_as_int(midi_dialog->midi_channel),
 	       "audio-start-mapping\0", gtk_spin_button_get_value_as_int(midi_dialog->audio_start),
 	       "audio-end-mapping\0", gtk_spin_button_get_value_as_int(midi_dialog->audio_end),
 	       "midi-start-mapping\0", gtk_spin_button_get_value_as_int(midi_dialog->midi_start),
@@ -550,6 +573,7 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  guint midi_channel;
   guint audio_start, audio_end;
   guint midi_start, midi_end;
   guint i;
@@ -567,6 +591,7 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
 
   /*  */
   g_object_get(audio,
+	       "midi-channel\0", &midi_channel,
 	       "audio-start-mapping\0", &audio_start,
 	       "audio-end-mapping\0", &audio_end,
 	       "midi-start-mapping\0", &midi_start,
@@ -575,6 +600,9 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
 	       NULL);
   
   /* mapping */
+  gtk_spin_button_set_value(midi_dialog->midi_channel,
+			    (gdouble) midi_channel);
+
   gtk_spin_button_set_value(midi_dialog->audio_start,
 			    (gdouble) audio_start);
   gtk_spin_button_set_value(midi_dialog->audio_end,

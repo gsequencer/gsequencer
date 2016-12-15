@@ -28,6 +28,14 @@
 void ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard);
 void ags_seek_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard);
+void ags_seek_soundcard_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_seek_soundcard_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_seek_soundcard_connect(AgsConnectable *connectable);
 void ags_seek_soundcard_disconnect(AgsConnectable *connectable);
 void ags_seek_soundcard_finalize(GObject *gobject);
@@ -46,6 +54,13 @@ void ags_seek_soundcard_launch(AgsTask *task);
 
 static gpointer ags_seek_soundcard_parent_class = NULL;
 static AgsConnectableInterface *ags_seek_soundcard_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_SOUNDCARD,
+  PROP_STEPS,
+  PROP_MOVE_FORWARD,
+};
 
 GType
 ags_seek_soundcard_get_type()
@@ -89,13 +104,68 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_seek_soundcard_parent_class = g_type_class_peek_parent(seek_soundcard);
 
   /* gobject */
   gobject = (GObjectClass *) seek_soundcard;
 
+  gobject->set_property = ags_seek_soundcard_set_property;
+  gobject->get_property = ags_seek_soundcard_get_property;
+
   gobject->finalize = ags_seek_soundcard_finalize;
+
+  /* properties */
+  /**
+   * AgsSeekSoundcard:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of seek soundcard\0",
+				   "The soundcard of seek soundcard\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+  
+  /**
+   * AgsSeekSoundcard:steps:
+   *
+   * The amount of steps to seek.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("steps\0",
+				 "steps\0",
+				 "The amount of steps\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEPS,
+				  param_spec);
+
+  /**
+   * AgsSeekSoundcard:move-forward:
+   *
+   * The notation's move-forward.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_boolean("move-forward\0",
+				    "move forward\0",
+				    "Do moving forward\0",
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MOVE_FORWARD,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) seek_soundcard;
@@ -118,6 +188,86 @@ ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard)
   seek_soundcard->soundcard = NULL;
   seek_soundcard->steps = 0;
   seek_soundcard->move_forward = FALSE;
+}
+
+void
+ags_seek_soundcard_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsSeekSoundcard *seek_soundcard;
+
+  seek_soundcard = AGS_SEEK_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(seek_soundcard->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(seek_soundcard->soundcard != NULL){
+	g_object_unref(seek_soundcard->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      seek_soundcard->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_STEPS:
+    {
+      seek_soundcard->steps = g_value_get_uint(value);
+    }
+    break;
+  case PROP_MOVE_FORWARD:
+    {
+      seek_soundcard->move_forward = g_value_get_boolean(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_seek_soundcard_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsSeekSoundcard *seek_soundcard;
+
+  seek_soundcard = AGS_SEEK_SOUNDCARD(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, seek_soundcard->soundcard);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      g_value_set_uint(value, seek_soundcard->steps);
+    }
+    break;
+  case PROP_MOVE_FORWARD:
+    {
+      g_value_set_boolean(value, seek_soundcard->move_forward);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

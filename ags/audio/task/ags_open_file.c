@@ -32,6 +32,14 @@
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
 void ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_file_init(AgsOpenFile *open_file);
+void ags_open_file_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_open_file_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_open_file_connect(AgsConnectable *connectable);
 void ags_open_file_disconnect(AgsConnectable *connectable);
 void ags_open_file_finalize(GObject *gobject);
@@ -39,7 +47,7 @@ void ags_open_file_launch(AgsTask *task);
 
 /**
  * SECTION:ags_open_file
- * @short_description: open file object
+ * @short_description: open file task
  * @title: AgsOpenFile
  * @section_id:
  * @include: ags/audio/task/ags_open_file.h
@@ -49,6 +57,14 @@ void ags_open_file_launch(AgsTask *task);
 
 static gpointer ags_open_file_parent_class = NULL;
 static AgsConnectableInterface *ags_open_file_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
+  PROP_FILENAMES,
+  PROP_OVERWRITE_CHANNELS,
+  PROP_CREATE_CHANNELS,
+};
 
 GType
 ags_open_file_get_type()
@@ -92,13 +108,81 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_open_file_parent_class = g_type_class_peek_parent(open_file);
 
   /* GObject */
   gobject = (GObjectClass *) open_file;
 
+  gobject->set_property = ags_open_file_set_property;
+  gobject->get_property = ags_open_file_get_property;
+
   gobject->finalize = ags_open_file_finalize;
+
+  /* properties */
+  /**
+   * AgsOpenFile:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "audio of open file\0",
+				   "The audio of open file task\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+  
+  /**
+   * AgsOpenFile:filenames:
+   *
+   * The assigned #GSList-struct providing filenames as string
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_pointer("filenames\0",
+				    "filenames of open file\0",
+				    "The filenames of open file task\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAMES,
+				  param_spec);
+  
+  /**
+   * AgsOpenFile:overwrite-channels:
+   *
+   * As open files overwrite #AgsChannel.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("overwrite-channels\0",
+				     "open file overwriting channels\0",
+				     "Do overwrite channels as open files\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OVERWRITE_CHANNELS,
+				  param_spec);
+
+  /**
+   * AgsOpenFile:create-channels:
+   *
+   * As open files create #AgsChannel.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("create-channels\0",
+				     "open file creating channels\0",
+				     "Do create channels as open files\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CREATE_CHANNELS,
+				  param_spec);
 
   /* AgsTask */
   task = (AgsTaskClass *) open_file;
@@ -122,6 +206,96 @@ ags_open_file_init(AgsOpenFile *open_file)
   open_file->filenames = NULL;
   open_file->overwrite_channels = FALSE;
   open_file->create_channels = FALSE;
+}
+
+void
+ags_open_file_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsOpenFile *open_file;
+
+  open_file = AGS_OPEN_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(open_file->audio == (GObject *) audio){
+	return;
+      }
+
+      if(open_file->audio != NULL){
+	g_object_unref(open_file->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      open_file->audio = (GObject *) audio;
+    }
+    break;
+  case PROP_FILENAMES:
+    {
+      open_file->filenames = g_value_get_pointer(value);
+    }
+    break;
+  case PROP_OVERWRITE_CHANNELS:
+    {
+      open_file->overwrite_channels = g_value_get_boolean(value);
+    }
+    break;
+  case PROP_CREATE_CHANNELS:
+    {
+      open_file->create_channels = g_value_get_boolean(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_open_file_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsOpenFile *open_file;
+
+  open_file = AGS_OPEN_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, open_file->audio);
+    }
+    break;
+  case PROP_FILENAMES:
+    {
+      g_value_set_pointer(value, open_file->filenames);
+    }
+    break;
+  case PROP_OVERWRITE_CHANNELS:
+    {
+      g_value_set_boolean(value, open_file->overwrite_channels);
+    }
+    break;
+  case PROP_CREATE_CHANNELS:
+    {
+      g_value_set_boolean(value, open_file->create_channels);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

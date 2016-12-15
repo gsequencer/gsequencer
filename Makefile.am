@@ -955,13 +955,10 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_append_recall.h \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_synth.h \
-	ags/audio/task/ags_apply_wavetable.h \
-	ags/audio/task/ags_audio_set_recycling.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
 	ags/audio/task/ags_cancel_recall.h \
 	ags/audio/task/ags_change_soundcard.h \
-	ags/audio/task/ags_channel_set_recycling.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
 	ags/audio/task/ags_init_audio.h \
@@ -1019,13 +1016,10 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_append_recall.c \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_synth.c \
-	ags/audio/task/ags_apply_wavetable.c \
-	ags/audio/task/ags_audio_set_recycling.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
 	ags/audio/task/ags_cancel_recall.c \
 	ags/audio/task/ags_change_soundcard.c \
-	ags/audio/task/ags_channel_set_recycling.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
 	ags/audio/task/ags_init_audio.c \

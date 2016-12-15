@@ -24,6 +24,14 @@
 void ags_add_note_class_init(AgsAddNoteClass *add_note);
 void ags_add_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_note_init(AgsAddNote *add_note);
+void ags_add_note_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec);
+void ags_add_note_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec);
 void ags_add_note_connect(AgsConnectable *connectable);
 void ags_add_note_disconnect(AgsConnectable *connectable);
 void ags_add_note_finalize(GObject *gobject);
@@ -42,6 +50,13 @@ void ags_add_note_launch(AgsTask *task);
 
 static gpointer ags_add_note_parent_class = NULL;
 static AgsConnectableInterface *ags_add_note_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_NOTATION,
+  PROP_NOTE,
+  PROP_USE_SELECTION_LIST,
+};
 
 GType
 ags_add_note_get_type()
@@ -85,13 +100,66 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_add_note_parent_class = g_type_class_peek_parent(add_note);
 
   /* gobject */
   gobject = (GObjectClass *) add_note;
 
+  gobject->set_property = ags_add_note_set_property;
+  gobject->get_property = ags_add_note_get_property;
+
   gobject->finalize = ags_add_note_finalize;
+
+  /* properties */
+  /**
+   * AgsAddNote:notation:
+   *
+   * The assigned #AgsNotation
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("notation\0",
+				   "notation of add note\0",
+				   "The notation of add note task\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
+				  param_spec);
+  
+  /**
+   * AgsAddNote:note:
+   *
+   * The assigned #AgsNote
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("note\0",
+				   "note of add note\0",
+				   "The note of add note task\0",
+				   AGS_TYPE_NOTE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE,
+				  param_spec);
+
+  /**
+   * AgsAddNote:use-selection-list:
+   *
+   * The notation's use-selection-list.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("use-selection-list\0",
+				     "use selection list\0",
+				     "Use selection list of notation\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_USE_SELECTION_LIST,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) add_note;
@@ -114,6 +182,102 @@ ags_add_note_init(AgsAddNote *add_note)
   add_note->notation = NULL;
   add_note->note = NULL;
   add_note->use_selection_list = FALSE;
+}
+
+void
+ags_add_note_set_property(GObject *gobject,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddNote *add_note;
+
+  add_note = AGS_ADD_NOTE(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(add_note->notation == (GObject *) notation){
+	return;
+      }
+
+      if(add_note->notation != NULL){
+	g_object_unref(add_note->notation);
+      }
+
+      if(notation != NULL){
+	g_object_ref(notation);
+      }
+
+      add_note->notation = (GObject *) notation;
+    }
+    break;
+  case PROP_NOTE:
+    {
+      AgsNote *note;
+
+      note = (AgsNote *) g_value_get_object(value);
+
+      if(add_note->note == (GObject *) note){
+	return;
+      }
+
+      if(add_note->note != NULL){
+	g_object_unref(add_note->note);
+      }
+
+      if(note != NULL){
+	g_object_ref(note);
+      }
+
+      add_note->note = (GObject *) note;
+    }
+    break;
+  case PROP_USE_SELECTION_LIST:
+    {
+      add_note->use_selection_list = g_value_get_boolean(value);
+    }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_add_note_get_property(GObject *gobject,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsAddNote *add_note;
+
+  add_note = AGS_ADD_NOTE(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, add_note->notation);
+    }
+    break;
+  case PROP_NOTE:
+    {
+      g_value_set_object(value, add_note->note);
+    }
+    break;
+  case PROP_USE_SELECTION_LIST:
+    {
+      g_value_set_boolean(value, add_note->use_selection_list);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
