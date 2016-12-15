@@ -1296,7 +1296,6 @@ top_srcdir = @top_srcdir@
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
-LICENSE = "GPLv3+ & GFDLv1.3+"
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = . docs/reference/ags
 ACLOCAL_AMFLAGS = -I m4
@@ -1333,8 +1332,8 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 # pkgconfig_DATA += libgsequencer.pc
 
 # extra
-EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 \
-	aclocal.m4 gsequencer.1 README ags_example.xml \
+EXTRA_DIST = COPYING.docs config.h.in gtk-doc.make gsequencer.share \
+	acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml \
 	gsequencer-documentation midi2xml.1 \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
