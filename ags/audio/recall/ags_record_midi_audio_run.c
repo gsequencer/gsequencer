@@ -839,6 +839,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
       midi_iter = midi_buffer;
       
       while(midi_iter < midi_buffer + buffer_length){
+
+#ifdef AGS_DEBUG
+	g_message("0x%x\0", *midi_iter);
+#endif
+	
 	if(ags_midi_util_is_key_on(midi_iter)){
 	  AgsNote *current_note;
 	  
@@ -853,13 +858,18 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
 	    while(note != NULL){
 	      /* check current notes */
-	      if((((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0 &&
-		   AGS_NOTE(note->data)->y == input_pads - (0x7f & midi_iter[1]) - midi_start_mapping) - 1) ||
-		 ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
-		  AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping)){
-		current_note = note->data;
+	      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+		if(AGS_NOTE(note->data)->y == input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1){
+		  current_note = note->data;
 
-		break;
+		  break;
+		}
+	      }else{
+		if(AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping){
+		  current_note = note->data;
+
+		  break;
+		}
 	      }
 	    
 	      note = note->next;
@@ -878,8 +888,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		}else{
 		  current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
 		}
-	      
 
+#ifdef AGS_DEBUG
+		g_message("add %d\0", current_note->y);
+#endif
+		
 		if(!pattern_mode){
 		  record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
 							       current_note);
@@ -916,14 +929,18 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
 	  while(note != NULL){
 	    /* check current notes */
-	    if((((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0 &&
-		 AGS_NOTE(note->data)->y == input_pads - (0x7f & midi_iter[1]) - midi_start_mapping) - 1) ||
-	       ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
-		AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping)){
-	      current_note = note->data;
-	      current_note->flags &= (~AGS_NOTE_FEED);
-	      
-	      break;
+	    if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	      if(AGS_NOTE(note->data)->y == input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1){
+		current_note = note->data;
+
+		break;
+	      }
+	    }else{
+	      if(AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping){
+		current_note = note->data;
+
+		break;
+	      }
 	    }
 	    
 	    note = note->next;
@@ -931,8 +948,13 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	  
 	  /* remove current note */
 	  if(current_note != NULL){
+	    current_note->flags &= (~AGS_NOTE_FEED);
 	    record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							current_note);
+
+#ifdef AGS_DEBUG
+	    g_message("remove %d\0", current_note->y);
+#endif	    
 	  }
 	  
 	  midi_iter += 3;
@@ -945,13 +967,18 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
 	  while(note != NULL){
 	    /* check current notes */
-	    if((((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0 &&
-		 AGS_NOTE(note->data)->y == input_pads - (0x7f & midi_iter[1]) - midi_start_mapping) - 1) ||
-	       ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
-		AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping)){
-	      current_note = note->data;
+	    if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	      if(AGS_NOTE(note->data)->y == input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1){
+		current_note = note->data;
 
-	      break;
+		break;
+	      }
+	    }else{
+	      if(AGS_NOTE(note->data)->y == (0x7f & midi_iter[1]) - midi_start_mapping){
+		current_note = note->data;
+
+		break;
+	      }
 	    }
 	    
 	    note = note->next;
