@@ -1,6 +1,7 @@
 ags (0.7.116)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_midiin_alsa_poll() and ags_midiin_oss_poll()
 	* fixed possible NULL pointer access in ags_midiin_list_cards()
 	* fixed AgsMidiin to always set nth_buffer during record
 	* fixed in ags_midiin_set_device() to duplicate string and handle OSS4
