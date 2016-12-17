@@ -41,6 +41,20 @@ void ags_export_window_stop_callback(AgsThread *thread,
 				     AgsExportWindow *export_window);
 
 void
+ags_export_window_add_export_soundcard_callback(GtkWidget *button,
+						AgsExportWindow *export_window)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
+						   AgsExportWindow *export_window)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_export_window_tact_callback(GtkWidget *spin_button,
 				AgsExportWindow *export_window)
 {

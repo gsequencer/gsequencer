@@ -56,8 +56,8 @@ struct _AgsExportWindow
   GtkLabel *duration;
 
   GtkVBox *export_soundcard;
-
   GtkButton *add;
+
   GtkToggleButton *export;
 };
 

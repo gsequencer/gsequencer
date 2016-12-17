@@ -158,7 +158,8 @@ ags_export_window_init(AgsExportWindow *export_window)
   GtkHBox *hbox;
   GtkTable *table;
   GtkLabel *label;
-
+  GtkAlignment *alignment;
+  
   gchar *str;
   
   export_window->flags = 0;
@@ -289,6 +290,26 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
+  /* export soundcard */
+  export_window->export_soundcard = (GtkVBox *) gtk_vbox_new(FALSE,
+							     0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(export_window->export_soundcard),
+		     FALSE, FALSE,
+		     0);
+
+  /* add */
+  alignment = (GtkAlignment *) gtk_alignment_new(1.0, 0.5,
+						 0.0, 0.0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(alignment),
+		     FALSE, FALSE,
+		     0);
+  
+  export_window->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_container_add(GTK_CONTAINER(alignment),
+		    GTK_WIDGET(export_window->add));
+  
   /* export */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
@@ -302,7 +323,6 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     GTK_WIDGET(export_window->export),
 		     FALSE, FALSE,
 		     0);
-
 }
 
 void
@@ -377,6 +397,9 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   export_window->flags |= AGS_EXPORT_WINDOW_CONNECTED;
 
+  g_signal_connect_after(G_OBJECT(export_window->add), "add\0",
+			 G_CALLBACK(ags_export_window_add_export_soundcard_callback), export_window);
+
   g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed\0",
 			 G_CALLBACK(ags_export_window_tact_callback), export_window);
 
@@ -396,7 +419,13 @@ ags_export_window_disconnect(AgsConnectable *connectable)
   }
 
   export_window->flags &= (~AGS_EXPORT_WINDOW_CONNECTED);
-  
+
+  g_object_disconnect(G_OBJECT(export_window->add),
+		      "add\0",
+		      G_CALLBACK(ags_export_window_add_export_soundcard_callback),
+		      export_window,
+		      NULL);
+
   g_object_disconnect(G_OBJECT(export_window->tact),
 		      "value-changed\0",
 		      G_CALLBACK(ags_export_window_tact_callback),
