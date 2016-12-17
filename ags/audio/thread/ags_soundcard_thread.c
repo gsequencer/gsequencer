@@ -493,6 +493,16 @@ ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
   }
 }
 
+/**
+ * ags_soundcard_thread_find_soundcard:
+ * @soundcard_thread: the #AgsSoundcardThread
+ * @soundcard: the #AgsSoundcard to find
+ * 
+ * Returns: the matching #AgsSoundcardThread, if not
+ * found %NULL.
+ * 
+ * Since: 0.7.119
+ */
 AgsSoundcardThread*
 ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
 				    GObject *soundcard)
@@ -503,13 +513,13 @@ ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
   }
   
   while(soundcard_thread != NULL){
-    if(soundcard_thread->soundcard == soundcard){
+    if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread) &&
+       soundcard_thread->soundcard == soundcard){
       return(soundcard_thread);
     }
     
     soundcard_thread = g_atomic_pointer_get(&(((AgsThread *) soundcard_thread)->next));
   }
-
   
   return(NULL);
 }

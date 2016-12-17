@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_EXPORT_WINDOW                (ags_export_window_get_type())
@@ -46,19 +47,17 @@ struct _AgsExportWindow
   guint flags;
 
   GObject *application_context;
-  GObject *soundcard;
 
   GtkCheckButton *live_export;
   GtkCheckButton *exclude_sequencer;
 
-  GtkEntry *filename;
-  GtkButton *file_chooser_button;
-
   GtkComboBoxText *mode;
   GtkSpinButton *tact;
   GtkLabel *duration;
-  GtkComboBoxText *output_format;
 
+  GtkVBox *export_soundcard;
+
+  GtkButton *add;
   GtkToggleButton *export;
 };
 

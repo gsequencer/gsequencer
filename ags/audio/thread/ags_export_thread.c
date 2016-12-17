@@ -424,6 +424,37 @@ ags_export_thread_stop(AgsThread *thread)
 }
 
 /**
+ * ags_export_thread_find_soundcard:
+ * @export_thread: the #AgsExportThread
+ * @soundcard: the #AgsSoundcard to find
+ * 
+ * Returns: the matching #AgsExportThread, if not
+ * found %NULL.
+ * 
+ * Since: 0.7.119
+ */
+AgsExportThread*
+ags_export_thread_find_soundcard(AgsExportThread *export_thread,
+				 GObject *soundcard)
+{
+  if(export_thread == NULL ||
+     !AGS_IS_EXPORT_THREAD(export_thread)){
+    return(NULL);
+  }
+  
+  while(export_thread != NULL){
+    if(AGS_IS_EXPORT_THREAD(export_thread) &&
+       export_thread->soundcard == soundcard){
+      return(export_thread);
+    }
+    
+    export_thread = g_atomic_pointer_get(&(((AgsThread *) export_thread)->next));
+  }
+  
+  return(NULL);
+}
+
+/**
  * ags_export_thread_new:
  * @soundcard: the #AgsSoundcard
  * @audio_file: the output file

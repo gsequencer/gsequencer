@@ -442,6 +442,16 @@ ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread)
   g_object_unref((GObject *) sequencer_thread);
 }
 
+/**
+ * ags_sequencer_thread_find_sequencer:
+ * @sequencer_thread: the #AgsSequencerThread
+ * @sequencer: the #AgsSequencer to find
+ * 
+ * Returns: the matching #AgsSequencerThread, if not
+ * found %NULL.
+ * 
+ * Since: 0.7.119
+ */
 AgsSequencerThread*
 ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
 				    GObject *sequencer)
@@ -452,7 +462,8 @@ ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
   }
   
   while(sequencer_thread != NULL){
-    if(sequencer_thread->sequencer == sequencer){
+    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread) &&
+       sequencer_thread->sequencer == sequencer){
       return(sequencer_thread);
     }
     

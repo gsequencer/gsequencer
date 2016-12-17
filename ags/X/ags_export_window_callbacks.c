@@ -33,34 +33,12 @@
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
+#include <ags/X/ags_export_soundcard.h>
 
 #include <glib/gstdio.h>
 
 void ags_export_window_stop_callback(AgsThread *thread,
 				     AgsExportWindow *export_window);
-
-void
-ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
-					       AgsExportWindow *export_window)
-{
-  GtkFileChooserDialog *file_chooser;
-
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...\0",
-								      GTK_WINDOW(export_window),
-								      GTK_FILE_CHOOSER_ACTION_SAVE,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-								      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-								      NULL);
-  if(gtk_dialog_run(GTK_DIALOG(file_chooser)) == GTK_RESPONSE_ACCEPT){
-    char *filename;
-
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
-    gtk_entry_set_text(export_window->filename,
-		       filename);
-  }
-  
-  gtk_widget_destroy((GtkWidget *) file_chooser);
-}
 
 void
 ags_export_window_tact_callback(GtkWidget *spin_button,
@@ -151,37 +129,67 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
     AgsExportOutput *export_output;
-    AgsExportThread *export_thread;
+
+    AgsExportThread *export_thread, *current_export_thread;
+
+    GList *export_soundcard, *export_soundcard_start;
     GList *machines;
+    GList *all_filename;
+    GList *remove_filename;
+    GList *task;
+    GList *list;
+    
     gchar *filename;
+
+    gboolean file_exists;
     gboolean live_performance;
 
     export_thread = (AgsExportThread *) ags_thread_find_type(main_loop,
 							     AGS_TYPE_EXPORT_THREAD);
 
-    filename = gtk_entry_get_text(export_window->filename);
+    export_soundcard_start = 
+      export_soundcard = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
+    
+    all_filename = NULL;
+    remove_filename = NULL;
+    
+    file_exists = FALSE;
 
-    /* test filename */
-    if(filename == NULL ||
-       strlen(filename) == 0){
-      return;
-    }
-
-    if(g_file_test(filename,
-		   G_FILE_TEST_EXISTS)){
-      GtkDialog *dialog;
-      gint response;
+    while(export_soundcard != NULL){
+      filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
+      all_filename = g_list_prepend(all_filename,
+				    filename);
       
-      if(g_file_test(filename,
-		     (G_FILE_TEST_IS_DIR | G_FILE_TEST_IS_SYMLINK))){
+      /* test filename */
+      if(filename == NULL ||
+	 strlen(filename) == 0){
 	return;
       }
+      
+      if(g_file_test(filename,
+		     G_FILE_TEST_EXISTS)){      
+	if(g_file_test(filename,
+		       (G_FILE_TEST_IS_DIR | G_FILE_TEST_IS_SYMLINK))){
+	  //TODO:JK: improve me
+	  
+	  return;
+	}
 
-      dialog = (GtkDialog *)gtk_message_dialog_new((GtkWindow *) export_window,
-						   GTK_DIALOG_MODAL,
-						   GTK_MESSAGE_QUESTION,
-						   GTK_BUTTONS_OK_CANCEL,
-						   "Replace existing file?\0");
+	remove_filename = g_list_prepend(remove_filename,
+					 filename);
+	file_exists = TRUE;
+      }
+    }
+
+    if(file_exists){
+      GtkDialog *dialog;
+      gint response;
+
+      dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) export_window,
+						    GTK_DIALOG_MODAL,
+						    GTK_MESSAGE_QUESTION,
+						    GTK_BUTTONS_OK_CANCEL,
+						    "Replace existing file(s)?\0");
       response = gtk_dialog_run(dialog);
       gtk_widget_destroy((GtkWidget *) dialog);
 
@@ -189,7 +197,16 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	return;
       }
 
-      g_remove(filename);
+      /* remove files */
+      list = remove_filename;
+      
+      while(list != NULL){
+	g_remove(list->data);
+
+	list = list->next;
+      }
+
+      g_list_free(remove_filename);
     }
 
     /* get some preferences */
@@ -230,32 +247,49 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       pthread_mutex_lock(application_mutex);
 
       soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) window->soundcard);
+						 (GObject *) window->soundcard);
   
       pthread_mutex_unlock(application_mutex);
 
+      /* create task */
       pthread_mutex_lock(soundcard_mutex);
 
-      /* create task */
       delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(window->soundcard));
       delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
-
-      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
-
-      export_output = ags_export_output_new(export_thread,
-					    window->soundcard,
-					    filename,
-					    tic,
-					    live_performance);
-      g_signal_connect(export_thread, "stop\0",
-		       G_CALLBACK(ags_export_window_stop_callback), export_window);
-
+	
       pthread_mutex_unlock(soundcard_mutex);
 
-      /* append AgsStartSoundcard */
-      ags_task_thread_append_task(task_thread,
-				  (AgsTask *) export_output);
+      /*  */
+      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
 
+      export_soundcard = export_soundcard_start;
+      
+      while(export_soundcard != NULL){
+	filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
+	
+	export_output = ags_export_output_new(ags_export_thread_find_soundcard(export_thread,
+									       AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard),
+					      AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard,
+					      filename,
+					      tic,
+					      live_performance);
+	task = g_list_prepend(task,
+			      export_output);
+	
+	if(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard == window->soundcard){
+	  g_signal_connect(export_thread, "stop\0",
+			   G_CALLBACK(ags_export_window_stop_callback), export_window);
+	}
+
+	export_soundcard = export_soundcard->next;
+      }
+      
+      /* append AgsStartSoundcard */
+      task = g_list_reverse(task);
+      
+      ags_task_thread_append_tasks(task_thread,
+				   task);
+      
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);
     }

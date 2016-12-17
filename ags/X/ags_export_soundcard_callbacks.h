@@ -17,18 +17,15 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_EXPORT_WINDOW_CALLBACKS_H__
-#define __AGS_EXPORT_WINDOW_CALLBACKS_H__
+#ifndef __AGS_EXPORT_SOUNDCARD_CALLBACKS_H__
+#define __AGS_EXPORT_SOUNDCARD_CALLBACKS_H__
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_export_window.h>
+#include <ags/X/ags_export_soundcard.h>
 
-void ags_export_window_tact_callback(GtkWidget *spin_button,
-				     AgsExportWindow *export_window);
+void ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button,
+						       AgsExportSoundcard *export_soundcard);
 
-void ags_export_window_export_callback(GtkWidget *toggle_button,
-				       AgsExportWindow *export_window);
-
-#endif /*__AGS_EXPORT_WINDOW_CALLBACKS_H__*/
+#endif /*__AGS_EXPORT_SOUNDCARD_CALLBACKS_H__*/
