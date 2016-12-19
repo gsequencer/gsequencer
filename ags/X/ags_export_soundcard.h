@@ -32,6 +32,10 @@
 #define AGS_IS_EXPORT_SOUNDCARD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EXPORT_SOUNDCARD))
 #define AGS_EXPORT_SOUNDCARD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EXPORT_SOUNDCARD, AgsExportSoundcardClass))
 
+#define AGS_EXPORT_SOUNDCARD_FORMAT_WAV "wav\0"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_FLAC "flac\0"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_OGG "ogg\0"
+ 
 typedef struct _AgsExportSoundcard AgsExportSoundcard;
 typedef struct _AgsExportSoundcardClass AgsExportSoundcardClass;
 
@@ -46,13 +50,14 @@ struct _AgsExportSoundcard
   guint flags;
 
   GObject *soundcard;
+
+  GtkComboBoxText *backend;
+  GtkComboBoxText *card;
   
   GtkEntry *filename;
   GtkButton *file_chooser_button;
 
   GtkComboBoxText *output_format;
-
-  GtkButton *remove;
 };
 
 struct _AgsExportSoundcardClass
@@ -62,6 +67,22 @@ struct _AgsExportSoundcardClass
 
 GType ags_export_soundcard_get_type(void);
 
+/* soundcard */
+gboolean ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
+					  gchar *backend);
+
+gboolean ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
+				       gchar *card);
+
+/* filename */
+void ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
+				       gchar *filename);
+
+/* format */
+void ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
+				     gchar *format);
+
+/*  */
 AgsExportSoundcard* ags_export_soundcard_new();
 
 #endif /*__AGS_EXPORT_SOUNDCARD_H__*/

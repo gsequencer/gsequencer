@@ -2,6 +2,8 @@ ags (0.7.119)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags-audio.h to remove unused headers
+	* implemented ags_export_window_reload_soundcard_editor()
+	* refactored AgsExportWindow to allow export multiple soundcards
 
 ags (0.7.118)
 

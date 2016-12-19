@@ -24,9 +24,17 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_notation.h>
 
+#include <ags/audio/jack/ags_jack_devout.h>
+
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
+#include <ags/X/ags_export_soundcard.h>
 
 #include <stdlib.h>
 
@@ -60,6 +68,7 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
+  PROP_MAIN_WINDOW,
 };
 
 static gpointer ags_export_window_parent_class = NULL;
@@ -134,6 +143,21 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
+  /**
+   * AgsExportWindow:main-window:
+   *
+   * The assigned #AgsWindow.
+   * 
+   * Since: 0.7.119
+   */
+  param_spec = g_param_spec_object("main-window\0",
+				   "assigned main window\0",
+				   "The assigned main window\0",
+				   AGS_TYPE_WINDOW,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAIN_WINDOW,
+				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) export_window;
@@ -168,6 +192,11 @@ ags_export_window_init(AgsExportWindow *export_window)
 	       "title\0", "export to audio data\0",
 	       NULL);
 
+  export_window->application_context = NULL;
+
+  export_window->main_window = NULL;
+
+  /* pack */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE,
 				  0);
   gtk_container_add(GTK_CONTAINER(export_window),
@@ -342,9 +371,10 @@ ags_export_window_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if((AgsApplicationContext *) export_window->application_context == application_context)
+      if((AgsApplicationContext *) export_window->application_context == application_context){
 	return;
-
+      }
+      
       if(export_window->application_context != NULL){
 	g_object_unref(export_window->application_context);
       }
@@ -354,6 +384,27 @@ ags_export_window_set_property(GObject *gobject,
       }
 
       export_window->application_context = (GObject *) application_context;
+    }
+    break;
+  case PROP_MAIN_WINDOW:
+    {
+      AgsWindow *main_window;
+
+      main_window = (AgsWindow *) g_value_get_object(value);
+
+      if((AgsWindow *) export_window->main_window == main_window){
+	return;
+      }
+
+      if(export_window->main_window != NULL){
+	g_object_unref(export_window->main_window);
+      }
+
+      if(main_window != NULL){
+	g_object_ref(main_window);
+      }
+
+      export_window->main_window = (GObject *) main_window;
     }
     break;
   default:
@@ -376,6 +427,11 @@ ags_export_window_get_property(GObject *gobject,
   case PROP_APPLICATION_CONTEXT:
     {
       g_value_set_object(value, export_window->application_context);
+    }
+    break;
+  case PROP_MAIN_WINDOW:
+    {
+      g_value_set_object(value, export_window->main_window);
     }
     break;
   default:
@@ -467,6 +523,106 @@ ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
   //  GTK_WIDGET_CLASS(ags_export_window_parent_class)->delete_event(widget, event);
 
   return(TRUE);
+}
+
+/**
+ * ags_export_window_reload_soundcard_editor:
+ * @export_window: the #AgsExportWindow
+ * 
+ * Reload soundcard editor.
+ * 
+ * Since: 0.7.119
+ */
+void
+ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
+{
+  AgsWindow *main_window;
+  AgsExportSoundcard *export_soundcard;
+  
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+
+  gchar *backend;
+  gchar *str;
+  
+  guint i;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* retrieve main window and application context */
+  main_window = export_window->main_window;
+
+  application_context = export_window->application_context;
+  
+  /* retrieve soundcard */
+  pthread_mutex_lock(application_mutex);
+
+  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* create export soundcard */
+  for(i = 0; list != NULL; i++){
+    pthread_mutex_lock(application_mutex);
+
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) list->data);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* instantiate export soundcard */
+    export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
+							   "soundcard\0", list->data,
+							   NULL);
+    
+    /* set backend */
+    backend = NULL;
+
+    if(AGS_IS_DEVOUT(list->data)){
+      if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(list->data)->flags)) != 0){
+	backend = "alsa\0";
+      }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(list->data)->flags)) != 0){
+	backend = "oss\0";
+      }
+    }else if(AGS_IS_JACK_DEVOUT(list->data)){
+      backend = "jack\0";
+    }
+
+    ags_export_soundcard_set_backend(export_soundcard,
+				     backend);
+    
+    /* set card */
+    pthread_mutex_lock(soundcard_mutex);
+
+    str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
+
+    pthread_mutex_unlock(soundcard_mutex);
+
+    ags_export_soundcard_set_card(export_soundcard,
+				  str);
+    
+    g_free(str);
+
+    /* filename */
+    str = g_strdup_printf("out-%d.wav\0",
+			  i);
+    
+    ags_export_soundcard_set_card(export_soundcard,
+				  str);
+    
+    g_free(str);
+
+    /* set format */
+    ags_export_soundcard_set_format(export_soundcard,
+				    AGS_EXPORT_SOUNDCARD_FORMAT_WAV);
+  }
 }
 
 /**

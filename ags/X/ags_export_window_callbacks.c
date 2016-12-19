@@ -72,11 +72,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* retrieve window */
-  pthread_mutex_lock(application_mutex);
-  
-  window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
-
-  pthread_mutex_unlock(application_mutex);
+  window = export_window->main_window;
 
   /* retrieve soundcard mutex */
   pthread_mutex_lock(application_mutex);

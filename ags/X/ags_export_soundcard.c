@@ -147,13 +147,70 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   export_soundcard->flags = 0;
 
   /* table */
-  table = (GtkTable *) gtk_table_new(5, 2,
+  table = (GtkTable *) gtk_table_new(4, 2,
 				     FALSE);
   gtk_box_pack_start(GTK_BOX(export_soundcard),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
 		     0);
 
+  /* backend */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "backend\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  export_soundcard->backend = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(export_soundcard->backend),
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  gtk_combo_box_text_append_text(export_soundcard->backend,
+				 "jack\0");
+  
+#ifdef AGS_WITH_ALSA
+  gtk_combo_box_text_append_text(export_soundcard->backend,
+				 "alsa\0");
+#endif
+  
+#ifdef AGS_WITH_OSS
+  gtk_combo_box_text_append_text(export_soundcard->backend,
+				 "oss\0");
+#endif
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
+			   0);
+  
+  /* sound card */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "sound card\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  export_soundcard->card = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(export_soundcard->card),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  
   /* filename */
   label = (GtkLabel *) gtk_label_new("file\0");
   g_object_set(G_OBJECT(label),
@@ -162,7 +219,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   0, 1,
+		   2, 3,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
@@ -171,7 +228,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
 		   1, 2,
-		   0, 1,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -197,19 +254,25 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   4, 5,
+		   3, 4,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
   export_soundcard->output_format = (GtkComboBoxText *) gtk_combo_box_text_new();
+
   gtk_combo_box_text_append_text(export_soundcard->output_format,
-				 "WAV\0");
+				 AGS_EXPORT_SOUNDCARD_FORMAT_WAV);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_FLAC);
+  gtk_combo_box_text_append_text(export_soundcard->output_format,
+				 AGS_EXPORT_SOUNDCARD_FORMAT_OGG);
+
   gtk_combo_box_set_active((GtkComboBox *) export_soundcard->output_format,
 			   0);
   gtk_table_attach(table,
 		   GTK_WIDGET(export_soundcard->output_format),
 		   1, 2,
-		   4, 5,
+		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 }
@@ -319,6 +382,161 @@ ags_export_soundcard_finalize(GObject *gobject)
   }
   
   G_OBJECT_CLASS(ags_export_soundcard_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_export_soundcard_set_backend:
+ * @export_soundcard: the #AgsExportSoundcard
+ * @backend: the backend
+ * 
+ * Set backend.
+ * 
+ * Since: 0.7.119
+ */
+gboolean
+ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
+				 gchar *backend)
+{
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+
+  gchar *str;
+  
+  guint i;
+  
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->backend));
+  i = 0;    
+
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    do{
+      gtk_tree_model_get(model,
+			 &iter,
+			 0, &str,
+			 -1);
+      
+      if(!g_ascii_strcasecmp(str,
+			     backend)){
+	break;
+      }
+      
+      i++;
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
+			   i);
+}
+
+/**
+ * ags_export_soundcard_set_card:
+ * @export_soundcard: the #AgsExportSoundcard
+ * @card: the card
+ * 
+ * Set card.
+ * 
+ * Since: 0.7.119
+ */
+gboolean
+ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
+			      gchar *card)
+{
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+
+  gchar *str;
+  
+  guint i;
+  
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
+  i = 0;    
+
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    do{
+      gtk_tree_model_get(model,
+			 &iter,
+			 0, &str,
+			 -1);
+      
+      if(!g_ascii_strcasecmp(str,
+			     card)){
+	break;
+      }
+      
+      i++;
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->card),
+			   i);
+}
+
+/**
+ * ags_export_soundcard_set_filename:
+ * @export_soundcard: the #AgsExportSoundcard
+ * @filename: the filename
+ * 
+ * Set filename.
+ * 
+ * Since: 0.7.119
+ */
+void
+ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
+				  gchar *filename)
+{
+  gtk_entry_set_text(export_soundcard->filename,
+		     filename);
+}
+
+/**
+ * ags_export_soundcard_set_format:
+ * @export_soundcard: the #AgsExportSoundcard
+ * @format: the format
+ * 
+ * Set format.
+ * 
+ * Since: 0.7.119
+ */
+void
+ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
+				gchar *format)
+{
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+
+  gchar *str;
+  
+  guint i;
+  
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->output_format));
+  i = 0;    
+
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    do{
+      gtk_tree_model_get(model,
+			 &iter,
+			 0, &str,
+			 -1);
+      
+      if(!g_ascii_strcasecmp(str,
+			     format)){
+	break;
+      }
+      
+      i++;
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->output_format),
+			   i);
 }
 
 /**

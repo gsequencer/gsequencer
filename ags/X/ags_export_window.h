@@ -48,6 +48,8 @@ struct _AgsExportWindow
 
   GObject *application_context;
 
+  GtkWidget *main_window;
+  
   GtkCheckButton *live_export;
   GtkCheckButton *exclude_sequencer;
 
@@ -67,6 +69,8 @@ struct _AgsExportWindowClass
 };
 
 GType ags_export_window_get_type(void);
+
+void ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window);
 
 AgsExportWindow* ags_export_window_new();
 
