@@ -347,7 +347,10 @@ ags_export_soundcard_connect(AgsConnectable *connectable)
   }
 
   export_soundcard->flags |= AGS_EXPORT_SOUNDCARD_CONNECTED;
-  
+
+  g_signal_connect(G_OBJECT(export_soundcard->backend), "changed\0",
+		   G_CALLBACK(ags_export_soundcard_backend_callback), export_soundcard);
+
   g_signal_connect_after(G_OBJECT(export_soundcard->file_chooser_button), "clicked\0",
 			 G_CALLBACK(ags_export_soundcard_file_chooser_button_callback), export_soundcard);
 }
@@ -364,6 +367,12 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
   }
 
   export_soundcard->flags &= (~AGS_EXPORT_SOUNDCARD_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(export_soundcard->backend),
+		      "changed\0",
+		      G_CALLBACK(ags_export_soundcard_backend_callback),
+		      export_soundcard,
+		      NULL);
   
   g_object_disconnect(G_OBJECT(export_soundcard->file_chooser_button),
 		      "clicked\0",
@@ -430,6 +439,65 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
 			   i);
+}
+
+/**
+ * ags_export_soundcard_refresh_card:
+ * @export_soundcard: the #AgsExportSoundcard
+ * 
+ * Refresh cards.
+ * 
+ * Since: 0.7.119
+ */
+void
+ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
+{
+  GList *soundcard;
+  GList *card;
+  
+  gchar *backend;
+
+  soundcard = NULL;
+  
+  if(export_soundcard->application_context != NULL){
+    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_soundcard->application_context));
+  }
+  
+  backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
+
+  if(!g_ascii_strncasecmp(backend,
+			  "alsa\0",
+			  5)){
+    while(soundcard != NULL){
+      if(AGS_IS_DEVOUT(soundcard->data) &&
+	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	break;
+      }
+      
+      soundcard = soundcard->next;
+    }
+  }else if(!g_ascii_strncasecmp(backend,
+				"oss\0",
+				4)){    
+    while(soundcard != NULL){
+      if(AGS_IS_DEVOUT(soundcard->data) &&
+	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	break;
+      }
+      
+      soundcard = soundcard->next;
+    }
+  }else if(!g_ascii_strncasecmp(backend,
+				"jack\0",
+				5)){
+    while(soundcard != NULL){
+      if(AGS_IS_JACK_DEVOUT(soundcard->data)){
+	break;
+      }
+      
+      soundcard = soundcard->next;
+    }
+  }
 }
 
 /**

@@ -445,6 +445,8 @@ ags_export_window_connect(AgsConnectable *connectable)
 {
   AgsExportWindow *export_window;
 
+  GList *list, *list_start;
+
   export_window = AGS_EXPORT_WINDOW(connectable);
 
   if((AGS_EXPORT_WINDOW_CONNECTED & (export_window->flags)) != 0){
@@ -461,12 +463,26 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(export_window->export), "clicked\0",
 			 G_CALLBACK(ags_export_window_export_callback), export_window);
+
+  /* export soundcard */
+  list_start =
+    list = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
 ags_export_window_disconnect(AgsConnectable *connectable)
 {
   AgsExportWindow *export_window;
+
+  GList *list, *list_start;
 
   export_window = AGS_EXPORT_WINDOW(connectable);
 
@@ -493,6 +509,18 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_export_window_export_callback),
 		      export_window,
 		      NULL);
+
+  /* export soundcard */
+  list_start =
+    list = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void

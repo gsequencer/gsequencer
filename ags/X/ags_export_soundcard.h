@@ -71,6 +71,7 @@ GType ags_export_soundcard_get_type(void);
 gboolean ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
 					  gchar *backend);
 
+void ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard);
 gboolean ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
 				       gchar *card);
 

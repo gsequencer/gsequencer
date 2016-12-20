@@ -22,6 +22,13 @@
 #include <ags/X/ags_export_window.h>
 
 void
+ags_export_soundcard_backend_callback(GtkWidget *combo_box,
+				      AgsExportSoundcard *export_soundcard)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button,
 						  AgsExportSoundcard *export_soundcard)
 {
