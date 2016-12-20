@@ -572,8 +572,8 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 			       (GObject *) jack_port);
 
       jack_devout->jack_port = g_list_append(jack_devout->jack_port,
-					      jack_port);
-
+					     jack_port);
+      
       if(jack_devout->port_name == NULL){
 	jack_devout->port_name = (gchar **) malloc(2 * sizeof(gchar *));
 	jack_devout->port_name[0] = g_strdup(str);

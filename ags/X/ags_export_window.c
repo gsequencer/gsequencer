@@ -538,6 +538,9 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 {
   AgsWindow *main_window;
   AgsExportSoundcard *export_soundcard;
+  GtkHBox *hbox;
+  GtkAlignment *alignment;
+  GtkButton *button;
   
   AgsMutexManager *mutex_manager;
 
@@ -577,10 +580,34 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   
     pthread_mutex_unlock(application_mutex);
 
+    /* create GtkHBox */
+    hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				    0);
+    gtk_box_pack_start((GtkBox *) export_window->export_soundcard,
+		       (GtkWidget *) hbox,
+		       FALSE, FALSE,
+		       0);
+    
     /* instantiate export soundcard */
     export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
 							   "soundcard\0", list->data,
 							   NULL);
+    gtk_box_pack_start((GtkBox *) hbox,
+		       (GtkWidget *) export_soundcard,
+		       FALSE, FALSE,
+		       0);
+
+    /* remove button */
+    alignment = (GtkAlignment *) gtk_alignment_new(0.5, 1.0,
+						   0.0, 0.0);
+    gtk_box_pack_start((GtkBox *) hbox,
+		       (GtkWidget *) alignment,
+		       FALSE, FALSE,
+		       0);
+    
+    button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+    gtk_container_add((GtkContainer *) alignment,
+		      (GtkWidget *) button);
     
     /* set backend */
     backend = NULL;
@@ -614,14 +641,20 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     str = g_strdup_printf("out-%d.wav\0",
 			  i);
     
-    ags_export_soundcard_set_card(export_soundcard,
-				  str);
+    ags_export_soundcard_set_filename(export_soundcard,
+				      str);
     
     g_free(str);
 
     /* set format */
     ags_export_soundcard_set_format(export_soundcard,
 				    AGS_EXPORT_SOUNDCARD_FORMAT_WAV);
+
+    /* show all */
+    gtk_widget_show_all((GtkWidget *) hbox);
+    
+    /* iterate */
+    list = list->next;
   }
 }
 

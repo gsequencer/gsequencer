@@ -222,7 +222,9 @@ ags_window_init(AgsWindow *window)
 
   window->automation_window = ags_automation_window_new((GtkWidget *) window);
 
-  window->export_window = ags_export_window_new();
+  window->export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
+							   "main-window\0", window,
+							   NULL);
   window->import_window = NULL;
   
   window->preferences = NULL;
@@ -298,6 +300,7 @@ ags_window_set_property(GObject *gobject,
       g_object_set(G_OBJECT(window->export_window),
 		   "application-context\0", application_context,
 		   NULL);
+      ags_export_window_reload_soundcard_editor(window->export_window);
     }
     break;
   default:

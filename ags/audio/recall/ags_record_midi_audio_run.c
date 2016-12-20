@@ -827,9 +827,13 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   bpm = g_value_get_int64(&value);
 
   /* retrieve buffer */
+  pthread_mutex_lock(sequencer_mutex);
+
   midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(sequencer),
 					 &buffer_length);
-  
+
+  pthread_mutex_unlock(sequencer_mutex);
+
   /* playback */
   if(midi_buffer != NULL){
     if(playback){
@@ -897,7 +901,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  if(!pattern_mode){
 		    record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
 								 current_note);
+		    pthread_mutex_lock(audio_mutex);
+
 		    current_note->flags |= AGS_NOTE_FEED;
+
+		    pthread_mutex_unlock(audio_mutex);
 		  }
 
 		  pthread_mutex_lock(audio_mutex);
@@ -911,11 +919,20 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	      }else{
 		if((0x7f & (midi_iter[2])) == 0){
 		  /* note-off */
+		  pthread_mutex_lock(audio_mutex);
+		  
 		  current_note->flags &= (~AGS_NOTE_FEED);
+
+		  pthread_mutex_unlock(audio_mutex);
+
 		  record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							      current_note);
 		}else{
+		  pthread_mutex_lock(audio_mutex);
+
 		  current_note->x[1] = notation_counter + 1;
+
+		  pthread_mutex_unlock(audio_mutex);
 		}
 	      }
 	    }
@@ -951,7 +968,12 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	  
 	    /* remove current note */
 	    if(current_note != NULL){
+	      pthread_mutex_lock(audio_mutex);
+	      
 	      current_note->flags &= (~AGS_NOTE_FEED);
+
+	      pthread_mutex_unlock(audio_mutex);
+	      
 	      record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							  current_note);
 

@@ -4,6 +4,7 @@ ags (0.7.119)
 	* fixed ags-audio.h to remove unused headers
 	* implemented ags_export_window_reload_soundcard_editor()
 	* refactored AgsExportWindow to allow export multiple soundcards
+	* improved mutices in ags_record_midi_audio_run.c
 
 ags (0.7.118)
 
