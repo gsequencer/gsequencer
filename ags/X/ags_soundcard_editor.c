@@ -1028,7 +1028,7 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
 
   if(distributed_manager != NULL){
     ags_distributed_manager_unregister_soundcard(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
-						 soundcard);
+						 jack_devout);
   }
 
   /* remove */
