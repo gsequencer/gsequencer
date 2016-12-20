@@ -25,7 +25,7 @@ void
 ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 				      AgsExportSoundcard *export_soundcard)
 {
-  //TODO:JK: implement me
+  ags_export_soundcard_refresh_card(export_soundcard);
 }
 
 void

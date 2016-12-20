@@ -698,11 +698,13 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   guint audio_channel;
   guint input_pads;
   guint selected_pad;
+  guint note_y;
   guint start_frame, end_frame;
   long seq_length;
   long velocity, pressure;
 
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *selected_channel_mutex;
   pthread_mutex_t *link_mutex;
@@ -717,7 +719,17 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   /* get audio */
   audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio;
 
+  /* audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* get audio fields */
+  pthread_mutex_lock(audio_mutex);
+
   audio_start_mapping = audio->audio_start_mapping;
 
   midi_start_mapping = audio->midi_start_mapping;
@@ -725,6 +737,10 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 
   channel = audio->input;
   input_pads = audio->input_pads;
+
+  note_y = note->y;
+
+  pthread_mutex_unlock(audio_mutex);
 
   /* channel mutex */
   pthread_mutex_lock(application_mutex);
@@ -747,10 +763,10 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 
   if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
     selected_channel = ags_channel_pad_nth(channel,
-					   audio_start_mapping + input_pads - note->y - 1);
+					   audio_start_mapping + input_pads - note_y - 1);
   }else{
     selected_channel = ags_channel_pad_nth(channel,
-					   audio_start_mapping + note->y);
+					   audio_start_mapping + note_y);
   }
 
   /* selected channel mutex */
@@ -923,10 +939,14 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   GList *list;
 
   guint audio_channel;
+  guint audio_start_mapping, audio_end_mapping;
+  guint note_y;
+  guint note_x0;
   guint i;
   gchar *str;
   
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
   if((guint) floor(delay) != 0){
@@ -936,10 +956,18 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(route_lv2_audio_run)->recall_audio);
 
-  audio = AGS_RECALL_AUDIO(route_lv2_audio)->audio;
-
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  audio = AGS_RECALL_AUDIO(route_lv2_audio)->audio;
+
+  /* audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* channel mutex */
   pthread_mutex_lock(application_mutex);
@@ -957,26 +985,42 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   pthread_mutex_unlock(channel_mutex);
 
   /*  */  
+  pthread_mutex_lock(audio_mutex);
+
   //TODO:JK: make it advanced
   list = audio->notation;
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
   //						   timestamp_thread->timestamp)->data);
 
   current_position = notation->notes; // start_loop
+
+  pthread_mutex_unlock(audio_mutex);
   
   while(current_position != NULL){
+    pthread_mutex_lock(audio_mutex);
+
+    audio_start_mapping = audio->audio_start_mapping;
+    audio_end_mapping = audio->audio_end_mapping;
+    
     note = AGS_NOTE(current_position->data);
+
+    note_y = note->y;
+    note_x0 = note->x[0];
+    
+    pthread_mutex_unlock(audio_mutex);
 
     //    g_message("--- %f %f ; %d %d\0",
     //	      note->stream_delay, delay,
     //	      note->x[0], route_lv2_audio_run->count_beats_audio_run->notation_counter);
 
     //FIXME:JK: should consider delay
-    if(note->x[0] == route_lv2_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
+    if(note_y >= audio_start_mapping &&
+       note_y < audio_end_mapping &&
+       note_x0 == route_lv2_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
       //      g_object_ref(note);
       ags_route_lv2_audio_run_feed_midi((AgsRecall *) route_lv2_audio_run,
 					note);      
-    }else if(note->x[0] > route_lv2_audio_run->count_beats_audio_run->notation_counter){
+    }else if(note_x0 > route_lv2_audio_run->count_beats_audio_run->notation_counter){
       break;
     }
     

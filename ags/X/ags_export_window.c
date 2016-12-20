@@ -455,8 +455,8 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   export_window->flags |= AGS_EXPORT_WINDOW_CONNECTED;
 
-  g_signal_connect_after(G_OBJECT(export_window->add), "add\0",
-			 G_CALLBACK(ags_export_window_add_export_soundcard_callback), export_window);
+  g_signal_connect(G_OBJECT(export_window->add), "clicked\0",
+		   G_CALLBACK(ags_export_window_add_export_soundcard_callback), export_window);
 
   g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed\0",
 			 G_CALLBACK(ags_export_window_tact_callback), export_window);
@@ -469,8 +469,15 @@ ags_export_window_connect(AgsConnectable *connectable)
     list = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
 
   while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    GList *child;
+
+    child = gtk_container_get_children(GTK_CONTAINER(list->data));
     
+    ags_connectable_connect(AGS_CONNECTABLE(child->data));
+
+    g_list_free(child);
+
+    /* iterate */
     list = list->next;
   }
 
@@ -568,7 +575,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   AgsExportSoundcard *export_soundcard;
   GtkHBox *hbox;
   GtkAlignment *alignment;
-  GtkButton *button;
+  GtkButton *remove_button;
   
   AgsMutexManager *mutex_manager;
 
@@ -624,7 +631,8 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 		       (GtkWidget *) export_soundcard,
 		       FALSE, FALSE,
 		       0);
-
+    ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
+    
     /* remove button */
     alignment = (GtkAlignment *) gtk_alignment_new(0.5, 1.0,
 						   0.0, 0.0);
@@ -633,9 +641,12 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 		       FALSE, FALSE,
 		       0);
     
-    button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+    remove_button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
     gtk_container_add((GtkContainer *) alignment,
-		      (GtkWidget *) button);
+		      (GtkWidget *) remove_button);
+    
+    g_signal_connect(G_OBJECT(remove_button), "clicked\0",
+		     G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
     
     /* set backend */
     backend = NULL;
@@ -652,6 +663,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 
     ags_export_soundcard_set_backend(export_soundcard,
 				     backend);
+    ags_export_soundcard_refresh_card(export_soundcard);
     
     /* set card */
     pthread_mutex_lock(soundcard_mutex);
@@ -662,8 +674,6 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 
     ags_export_soundcard_set_card(export_soundcard,
 				  str);
-    
-    g_free(str);
 
     /* filename */
     str = g_strdup_printf("out-%d.wav\0",

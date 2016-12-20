@@ -4,6 +4,8 @@ ags (0.7.119)
 	* implemented ags_export_window_reload_soundcard_editor()
 	* refactored AgsExportWindow to allow export multiple soundcards
 	* improved mutices in ags_record_midi_audio_run.c
+	* improved mutices in ags_route_dssi_audio_run.c
+	* improved mutices in ags_route_lv2_audio_run.c
 	* fixed ags-audio.h to remove unused headers
 	* fixed AgsSoundcardEditor and AgsSequencerEditor to remove JACK device
 

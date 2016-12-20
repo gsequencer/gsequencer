@@ -269,10 +269,6 @@ ags_window_set_property(GObject *gobject,
       g_object_set(G_OBJECT(window->navigation),
 		   "soundcard\0", soundcard,
 		   NULL);
-
-      g_object_set(G_OBJECT(window->export_window),
-		   "soundcard\0", soundcard,
-		   NULL);
     }
     break;
   case PROP_APPLICATION_CONTEXT:

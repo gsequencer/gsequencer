@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
@@ -44,14 +45,56 @@ void
 ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 						AgsExportWindow *export_window)
 {
-  //TODO:JK: implement me
+  AgsExportSoundcard *export_soundcard;
+  GtkHBox *hbox;
+  GtkAlignment *alignment;
+  GtkButton *remove_button;
+  
+  /* create GtkHBox */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start((GtkBox *) export_window->export_soundcard,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
+    
+  /* instantiate export soundcard */
+  export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
+							 NULL);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) export_soundcard,
+		     FALSE, FALSE,
+		     0);
+  ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
+    
+  /* remove button */
+  alignment = (GtkAlignment *) gtk_alignment_new(0.5, 1.0,
+						 0.0, 0.0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) alignment,
+		     FALSE, FALSE,
+		     0);
+    
+  remove_button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_container_add((GtkContainer *) alignment,
+		    (GtkWidget *) remove_button);
+    
+  g_signal_connect(G_OBJECT(remove_button), "clicked\0",
+		   G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
+
+  /* show all */
+  gtk_widget_show_all(hbox);
 }
 
 void
 ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 						   AgsExportWindow *export_window)
 {
-  //TODO:JK: implement me
+  GtkHBox *hbox;
+
+  hbox = gtk_widget_get_ancestor(button,
+				 GTK_TYPE_HBOX);
+  gtk_widget_destroy(hbox);
 }
 
 void

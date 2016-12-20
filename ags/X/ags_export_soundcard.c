@@ -24,6 +24,13 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_devout.h>
+
+#include <ags/audio/jack/ags_jack_devout.h>
+
+#include <ags/X/ags_export_window.h>
+
 #include <ags/config.h>
 
 void ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard);
@@ -452,17 +459,24 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
 void
 ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 {
+  AgsExportWindow *export_window;
+  
   GList *soundcard;
-  GList *card;
+  GList *card, *card_start;
   
   gchar *backend;
 
+  export_window = gtk_widget_get_ancestor(export_soundcard,
+					  AGS_TYPE_EXPORT_WINDOW);
+ 
   soundcard = NULL;
   
-  if(export_soundcard->application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_soundcard->application_context));
+  if(export_window != NULL &&
+     export_window->application_context != NULL){
+    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_window->application_context));
   }
-  
+
+  card_start = NULL;
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
 
   if(!g_ascii_strncasecmp(backend,
@@ -471,6 +485,9 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard->data),
+				 &card_start, NULL);
+	
 	break;
       }
       
@@ -482,6 +499,9 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard->data),
+				 &card_start, NULL);
+
 	break;
       }
       
@@ -492,11 +512,32 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 				5)){
     while(soundcard != NULL){
       if(AGS_IS_JACK_DEVOUT(soundcard->data)){
+	ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard->data),
+				 &card_start, NULL);
+
 	break;
       }
       
       soundcard = soundcard->next;
     }
+  }
+
+  if(card_start != NULL){
+    GtkTreeModel *model;
+
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
+    gtk_list_store_clear(GTK_LIST_STORE(model));
+
+    card = card_start;
+
+    while(card != NULL){
+      gtk_combo_box_text_append_text(export_soundcard->card,
+				     (gchar *) card->data);
+
+      card = card->next;
+    }
+
+    g_list_free(card_start);
   }
 }
 
