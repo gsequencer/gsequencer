@@ -293,7 +293,11 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     /* start export thread */
     if(success){
+      gchar *str;
+      
       guint tic;
+      guint format;
+      
       gdouble delay;
       gdouble delay_factor;
       
@@ -314,7 +318,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       /*  */
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
-
+      
       export_soundcard = export_soundcard_start;
       
       while(export_soundcard != NULL){
@@ -326,6 +330,28 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 					      filename,
 					      tic,
 					      live_performance);
+
+	str = gtk_combo_box_text_get_active_text(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->output_format);
+	format = 0;
+
+	if(!g_ascii_strncasecmp(str,
+				"wav\0",
+				4)){
+	  format = AGS_EXPORT_OUTPUT_FORMAT_WAV;
+	}else if(!g_ascii_strncasecmp(str,
+				      "flac\0",
+				      5)){
+	  format = AGS_EXPORT_OUTPUT_FORMAT_FLAC;
+	}else if(!g_ascii_strncasecmp(str,
+				      "ogg\0",
+				      4)){
+	  format = AGS_EXPORT_OUTPUT_FORMAT_OGG;
+	}
+
+	g_object_set(G_OBJECT(export_output),
+		     "format\0", format,
+		     NULL);
+	
 	task = g_list_prepend(task,
 			      export_output);
 	
