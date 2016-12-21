@@ -62,6 +62,7 @@ enum{
   PROP_EXPORT_THREAD,
   PROP_SOUNDCARD,
   PROP_FILENAME,
+  PROP_FORMAT,
   PROP_TIC,
   PROP_LIVE_PERFORMANCE,
 };
@@ -170,6 +171,24 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
 				  param_spec);
 
   /**
+   * AgsExportOutput:format:
+   *
+   * Format to use.
+   * 
+   * Since: 0.7.119
+   */
+  param_spec = g_param_spec_uint("format\0",
+				 "audio format\0",
+				 "The audio format to use\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
    * AgsExportOutput:tic:
    *
    * Tic offset of output as end tic of it.
@@ -223,7 +242,10 @@ ags_export_output_init(AgsExportOutput *export_output)
 {
   export_output->export_thread = NULL;
   export_output->soundcard = NULL;
+
   export_output->filename = NULL;
+  export_output->format = 0;
+
   export_output->tic = 0;
   export_output->live_performance = TRUE;
 }
@@ -298,6 +320,11 @@ ags_export_output_set_property(GObject *gobject,
       export_output->filename = g_strdup(filename);
     }
     break;
+  case PROP_FORMAT:
+    {
+      export_output->format = g_value_get_uint(value);
+    }
+    break;
   case PROP_TIC:
     {
       export_output->tic = g_value_get_uint(value);
@@ -340,6 +367,10 @@ ags_export_output_get_property(GObject *gobject,
       g_value_set_string(value, export_output->filename);
     }
     break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, export_output->format);
+    }
   case PROP_TIC:
     {
       g_value_set_uint(value, export_output->tic);
@@ -417,18 +448,15 @@ ags_export_output_launch(AgsTask *task)
   audio_file->channels = pcm_channels;
 
   //TODO:JK: more formats
-  if(g_str_has_suffix(filename,
-		      ".wav\0")){
+  if((AGS_EXPORT_OUTPUT_FORMAT_WAV & (audio_file->format)) != 0){
     major_format = SF_FORMAT_WAV;
 
     audio_file->format = major_format | SF_FORMAT_PCM_16;
-  }else if(g_str_has_suffix(filename,
-		      ".flac\0")){    
+  }else if((AGS_EXPORT_OUTPUT_FORMAT_FLAC & (audio_file->format)) != 0){    
     major_format = SF_FORMAT_FLAC;
 
     audio_file->format = major_format | SF_FORMAT_PCM_24;
-  }else if(g_str_has_suffix(filename,
-			    ".ogg\0")){
+  }else if((AGS_EXPORT_OUTPUT_FORMAT_OGG & (audio_file->format)) != 0){
     major_format = SF_FORMAT_OGG;
 
     audio_file->format = major_format | SF_FORMAT_VORBIS;

@@ -334,6 +334,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AgsJackServer *jack_server;
 
   AgsThread *soundcard_thread;
+  AgsThread *export_thread;
   AgsThread *sequencer_thread;
 
   AgsConfig *config;
@@ -677,7 +678,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 		   G_CALLBACK(ags_xorg_application_context_clear_cache), NULL);
 
   
-  /* AgsSoundcardThread */
+  /* AgsSoundcardThread and AgsExportThread */
   xorg_application_context->soundcard_thread = NULL;
   list = xorg_application_context->soundcard;
     
@@ -702,11 +703,24 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				       notify_soundcard);
 
+    /* export thread */
+    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+							NULL);
+    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				  (AgsThread *) export_thread,
+				  TRUE, TRUE);
+
     /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){
       xorg_application_context->soundcard_thread = soundcard_thread;
     }
-    
+
+    /* default export thread */
+    if(export_thread != NULL){
+      xorg_application_context->export_thread = export_thread;
+    }
+
+    /* iterate */
     list = list->next;      
   }
   
@@ -721,13 +735,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
     list = list->next;      
   }
-
-  /* AgsExportThread */
-  xorg_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
-										NULL);
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				(AgsThread *) xorg_application_context->export_thread,
-				TRUE, TRUE);
 
   /* AgsGuiThread */
   //  xorg_application_context->gui_thread = NULL;

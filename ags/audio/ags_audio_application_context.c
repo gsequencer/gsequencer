@@ -34,6 +34,7 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_sequencer.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
@@ -294,6 +295,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   AgsJackServer *jack_server;
 
   AgsThread *soundcard_thread;
+  AgsThread *sequencer_thread;
+  AgsThread *export_thread;
   
   AgsConfig *config;
 
@@ -301,9 +304,11 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   JSList *jslist;
 
   gchar *soundcard_group;
+  gchar *sequencer_group;
   gchar *str;
 
   guint i;
+  gboolean has_jack;
   
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
 
@@ -473,13 +478,98 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   
   g_free(soundcard_group);
   
+
   /* AgsSequencer */
   audio_application_context->sequencer = NULL;
+  sequencer = NULL;
 
-  sequencer = (GObject *) ags_midiin_new((GObject *) audio_application_context);
-  audio_application_context->sequencer = g_list_prepend(audio_application_context->sequencer,
-							sequencer);
-  g_object_ref(G_OBJECT(sequencer));
+  sequencer_group = g_strdup("sequencer\0");
+  
+  for(i = 0; ; i++){
+    guint pcm_channels, buffer_size, samplerate, format;
+
+    if(!g_key_file_has_group(config->key_file,
+			     sequencer_group)){
+      if(i == 0){
+	g_free(sequencer_group);    
+	sequencer_group = g_strdup_printf("%s-%d\0",
+					  AGS_CONFIG_SEQUENCER,
+					  i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+
+    str = ags_config_get_value(config,
+			       sequencer_group,
+			       "backend\0");
+    
+    /* change sequencer */
+    if(str != NULL){
+      if(!g_ascii_strncasecmp(str,
+			      "jack\0",
+			      5)){
+	sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
+							       FALSE);
+
+	has_jack = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
+				    "alsa\0",
+				    5)){
+	sequencer = (GObject *) ags_midiin_new((GObject *) audio_application_context);
+	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_OSS);
+	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_ALSA;
+      }else if(!g_ascii_strncasecmp(str,
+				    "oss\0",
+				    4)){
+	sequencer = (GObject *) ags_midiin_new((GObject *) audio_application_context);
+	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_ALSA);
+	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_OSS;
+      }else{
+	g_warning("unknown sequencer backend\0");
+
+	g_free(sequencer_group);    
+	sequencer_group = g_strdup_printf("%s-%d\0",
+					  AGS_CONFIG_SEQUENCER,
+					  i);
+    
+	continue;
+      }
+    }else{
+      g_warning("unknown sequencer backend\0");
+
+      g_free(sequencer_group);    
+      sequencer_group = g_strdup_printf("%s-%d\0",
+					AGS_CONFIG_SEQUENCER,
+					i);
+          
+      continue;
+    }
+    
+    audio_application_context->sequencer = g_list_append(audio_application_context->sequencer,
+							 sequencer);
+    g_object_ref(sequencer);
+
+    /* device */
+    str = ags_config_get_value(config,
+			       sequencer_group,
+			       "device\0");
+    
+    if(str != NULL){
+      ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+			       str);
+      g_free(str);
+    }
+
+    g_free(sequencer_group);    
+    sequencer_group = g_strdup_printf("%s-%d\0",
+				      AGS_CONFIG_SEQUENCER,
+				      i);
+  }
+
+  g_free(sequencer_group);
 
   //TODO:JK: comment out
   /*
@@ -545,21 +635,39 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread,
 				       notify_soundcard);
 
+    /* export thread */
+    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+							NULL);
+    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				  (AgsThread *) export_thread,
+				  TRUE, TRUE);
+
     /* default soundcard thread */
     if(audio_application_context->soundcard_thread == NULL){
       audio_application_context->soundcard_thread = soundcard_thread;
     }
 
+    /* default export thread */
+    if(export_thread != NULL){
+      audio_application_context->export_thread = export_thread;
+    }
+
+    /* iterate */
     list = list->next;
   }
-  
-  /* AgsExportThread */
-  audio_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
-										 NULL);
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				audio_application_context->export_thread,
-				TRUE, TRUE);
 
+  /* AgsSequencerThread */
+  list = audio_application_context->sequencer;
+    
+  while(list != NULL){
+    sequencer_thread = (AgsThread *) ags_sequencer_thread_new(list->data);
+    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				  (AgsThread *) sequencer_thread,
+				  TRUE, TRUE);
+
+    list = list->next;      
+  }
+  
   /* AgsAutosaveThread */
   audio_application_context->autosave_thread = NULL;
 
