@@ -28,6 +28,9 @@
 void ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 					   AgsExportSoundcard *export_soundcard);
 
+void ags_export_soundcard_card_callback(GtkWidget *combo_box,
+					AgsExportSoundcard *export_soundcard);
+
 void ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button,
 						       AgsExportSoundcard *export_soundcard);
 

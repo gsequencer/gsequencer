@@ -2,6 +2,7 @@ ags (0.7.119)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_export_window_reload_soundcard_editor()
+	* implemented AgsExportSoundcard UI
 	* refactored AgsExportWindow to allow export multiple soundcards
 	* improved mutices in ags_record_midi_audio_run.c
 	* improved mutices in ags_route_dssi_audio_run.c

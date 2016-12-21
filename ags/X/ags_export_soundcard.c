@@ -355,8 +355,11 @@ ags_export_soundcard_connect(AgsConnectable *connectable)
 
   export_soundcard->flags |= AGS_EXPORT_SOUNDCARD_CONNECTED;
 
-  g_signal_connect(G_OBJECT(export_soundcard->backend), "changed\0",
-		   G_CALLBACK(ags_export_soundcard_backend_callback), export_soundcard);
+  g_signal_connect_after(G_OBJECT(export_soundcard->backend), "changed\0",
+			 G_CALLBACK(ags_export_soundcard_backend_callback), export_soundcard);
+
+  g_signal_connect_after(G_OBJECT(export_soundcard->card), "changed\0",
+			 G_CALLBACK(ags_export_soundcard_card_callback), export_soundcard);
 
   g_signal_connect_after(G_OBJECT(export_soundcard->file_chooser_button), "clicked\0",
 			 G_CALLBACK(ags_export_soundcard_file_chooser_button_callback), export_soundcard);
@@ -378,6 +381,12 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(export_soundcard->backend),
 		      "changed\0",
 		      G_CALLBACK(ags_export_soundcard_backend_callback),
+		      export_soundcard,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(export_soundcard->card),
+		      "changed\0",
+		      G_CALLBACK(ags_export_soundcard_card_callback),
 		      export_soundcard,
 		      NULL);
   
@@ -461,6 +470,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 {
   AgsExportWindow *export_window;
   
+  GtkTreeModel *model;
+  
   GList *soundcard;
   GList *card, *card_start;
   
@@ -485,10 +496,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
-	ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard->data),
-				 &card_start, NULL);
-	
-	break;
+	card_start = g_list_prepend(card_start,
+				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
       }
       
       soundcard = soundcard->next;
@@ -499,10 +508,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
-	ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard->data),
-				 &card_start, NULL);
-
-	break;
+	card_start = g_list_prepend(card_start,
+				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
       }
       
       soundcard = soundcard->next;
@@ -512,22 +519,19 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 				5)){
     while(soundcard != NULL){
       if(AGS_IS_JACK_DEVOUT(soundcard->data)){
-	ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard->data),
-				 &card_start, NULL);
-
-	break;
+	card_start = g_list_prepend(card_start,
+				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
       }
       
       soundcard = soundcard->next;
     }
   }
+  
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
+  gtk_list_store_clear(GTK_LIST_STORE(model));
 
   if(card_start != NULL){
-    GtkTreeModel *model;
-
-    model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
-    gtk_list_store_clear(GTK_LIST_STORE(model));
-
+    card_start = g_list_reverse(card_start);
     card = card_start;
 
     while(card != NULL){
