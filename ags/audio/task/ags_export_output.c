@@ -448,15 +448,15 @@ ags_export_output_launch(AgsTask *task)
   audio_file->channels = pcm_channels;
 
   //TODO:JK: more formats
-  if((AGS_EXPORT_OUTPUT_FORMAT_WAV & (audio_file->format)) != 0){
+  if((AGS_EXPORT_OUTPUT_FORMAT_WAV & (export_output->format)) != 0){
     major_format = SF_FORMAT_WAV;
 
     audio_file->format = major_format | SF_FORMAT_PCM_16;
-  }else if((AGS_EXPORT_OUTPUT_FORMAT_FLAC & (audio_file->format)) != 0){    
+  }else if((AGS_EXPORT_OUTPUT_FORMAT_FLAC & (export_output->format)) != 0){    
     major_format = SF_FORMAT_FLAC;
 
     audio_file->format = major_format | SF_FORMAT_PCM_24;
-  }else if((AGS_EXPORT_OUTPUT_FORMAT_OGG & (audio_file->format)) != 0){
+  }else if((AGS_EXPORT_OUTPUT_FORMAT_OGG & (export_output->format)) != 0){
     major_format = SF_FORMAT_OGG;
 
     audio_file->format = major_format | SF_FORMAT_VORBIS;

@@ -186,6 +186,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     AgsExportThread *export_thread, *current_export_thread;
 
     GList *export_soundcard, *export_soundcard_start;
+    GList *child_start;
     GList *machines;
     GList *all_filename;
     GList *remove_filename;
@@ -209,7 +210,9 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     file_exists = FALSE;
 
     while(export_soundcard != NULL){
-      filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
+      child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
+      
+      filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child_start->data)->filename);
       all_filename = g_list_prepend(all_filename,
 				    filename);
       
@@ -232,6 +235,10 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 					 filename);
 	file_exists = TRUE;
       }
+
+      g_list_free(child_start);
+      
+      export_soundcard = export_soundcard->next;
     }
 
     if(file_exists){
@@ -320,18 +327,21 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
       
       export_soundcard = export_soundcard_start;
+      task = NULL;
       
       while(export_soundcard != NULL){
-	filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->filename);
+	child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
+      
+	filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child_start->data)->filename);
 	
 	export_output = ags_export_output_new(ags_export_thread_find_soundcard(export_thread,
-									       AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard),
-					      AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard,
+									       AGS_EXPORT_SOUNDCARD(child_start->data)->soundcard),
+					      AGS_EXPORT_SOUNDCARD(child_start->data)->soundcard,
 					      filename,
 					      tic,
 					      live_performance);
 
-	str = gtk_combo_box_text_get_active_text(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->output_format);
+	str = gtk_combo_box_text_get_active_text(AGS_EXPORT_SOUNDCARD(child_start->data)->output_format);
 	format = 0;
 
 	if(!g_ascii_strncasecmp(str,
@@ -355,12 +365,14 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	task = g_list_prepend(task,
 			      export_output);
 	
-	if(AGS_EXPORT_SOUNDCARD(export_soundcard->data)->soundcard == window->soundcard){
+	if(AGS_EXPORT_SOUNDCARD(child_start->data)->soundcard == window->soundcard){
 	  g_signal_connect(export_thread, "stop\0",
 			   G_CALLBACK(ags_export_window_stop_callback), export_window);
 	}
 
-	export_soundcard = export_soundcard->next;
+	g_list_free(child_start);
+	
+      	export_soundcard = export_soundcard->next;
       }
       
       /* append AgsStartSoundcard */
@@ -372,6 +384,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);
     }
+
+    g_list_free(export_soundcard_start);
   }else{
     GList *machines;
 
