@@ -1,3 +1,8 @@
+ags (0.7.121)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am to use -p and -m 644 parameter
+
 ags (0.7.120)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
