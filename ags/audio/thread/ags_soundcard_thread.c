@@ -28,6 +28,8 @@
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_timestamp_thread.h>
 
+#include <ags/audio/ags_devout.h>
+
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
@@ -130,11 +132,11 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
   gobject->finalize = ags_soundcard_thread_finalize;
 
   /**
-   * AgsThread:soundcard:
+   * AgsSoundcardThread:soundcard:
    *
    * The assigned #AgsSoundcard.
    * 
-   * Since: 0.4
+   * Since: 0.7.121
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard assigned to\0",
@@ -174,7 +176,8 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   thread = (AgsThread *) soundcard_thread;
 
   g_atomic_int_or(&(thread->flags),
-		  (AGS_THREAD_START_SYNCED_FREQ));  
+		  (AGS_THREAD_START_SYNCED_FREQ |
+		   AGS_THREAD_INTERMEDIATE_POST_SYNC));  
   
   config = ags_config_get_instance();
 
@@ -262,6 +265,11 @@ ags_soundcard_thread_set_property(GObject *gobject,
 	g_object_set(soundcard_thread,
 		     "frequency\0", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		     NULL);
+
+	if(AGS_IS_DEVOUT(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}
       }
 
       soundcard_thread->soundcard = G_OBJECT(soundcard);

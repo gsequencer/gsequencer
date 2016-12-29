@@ -2222,6 +2222,9 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   gchar *str;
   
   guint word_size;
+  guint nth_buffer;
+  guint next_buffer;
+  guint nth_ring_buffer;
 
   int n_write;
   
@@ -2381,73 +2384,42 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   }
 
   /* check buffer flag */
-#ifdef AGS_WITH_OSS
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-    
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[0],
-					 devout->format,
-					 devout->ring_buffer[0],
-					 devout->pcm_channels,
-					 devout->buffer_size);
-
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[0],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
-
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
-    }
+    nth_buffer = 0;
+    next_buffer = 1;
+    nth_ring_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[1],
-					 devout->format,
-					 devout->ring_buffer[1],
-					 devout->pcm_channels,
-					 devout->buffer_size);
-
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[1],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
-
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
-    }
+    nth_buffer = 1;
+    next_buffer = 2;
+    nth_ring_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[2],
-					 devout->format,
-					 devout->ring_buffer[0],
-					 devout->pcm_channels,
-					 devout->buffer_size);
-
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[0],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
-
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
-    }
+    nth_buffer = 2;
+    next_buffer = 3;
+    nth_ring_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[3],
-					 devout->format,
-					 devout->ring_buffer[1],
-					 devout->pcm_channels,
-					 devout->buffer_size);
+    nth_buffer = 3;
+    next_buffer = 0;
+    nth_ring_buffer = 1;
+  }
 
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[1],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+  /* clear next buffer */
+  memset(devout->buffer[next_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
 
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
-    }
+#ifdef AGS_WITH_OSS    
+  /* fill ring buffer */
+  ags_devout_oss_play_fill_ring_buffer(devout->buffer[nth_buffer],
+				       devout->format,
+				       devout->ring_buffer[nth_ring_buffer],
+				       devout->pcm_channels,
+				       devout->buffer_size);
+
+  /* write ring buffer */
+  n_write = write(devout->out.oss.device_fd,
+		  devout->ring_buffer[nth_ring_buffer],
+		  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+
+  if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
+    g_critical("write() return doesn't match written bytes\0");
   }
 #endif
   
@@ -2991,6 +2963,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   gchar *str;
   
   guint word_size;
+  guint nth_buffer;
+  guint next_buffer;
+  guint nth_ring_buffer;
   
   pthread_mutex_t *mutex;
 
@@ -3173,171 +3148,72 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   //				AGS_DEVOUT_BUFFER3) & (devout->flags)));
 
   /* check buffer flag */
-#ifdef AGS_WITH_ALSA
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-    
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[0], devout->format, devout->ring_buffer[0], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->ring_buffer[0],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
-
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	snd_pcm_prepare(devout->out.alsa.handle);
-
-#ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
-#endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
-
-	int err;
-
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
-      }
-    }      
-    //      g_message("ags_devout_play 0\0");
+    nth_buffer = 0;
+    next_buffer = 1;
+    nth_ring_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[1], devout->format, devout->ring_buffer[1], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->ring_buffer[1],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
-     
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	snd_pcm_prepare(devout->out.alsa.handle);
-
-#ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
-#endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
-
-	int err;	
-
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
-      }
-    }      
-    //      g_message("ags_devout_play 1\0");
+    nth_buffer = 1;
+    next_buffer = 2;
+    nth_ring_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[2], devout->format, devout->ring_buffer[0], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->buffer[0],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
-
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	snd_pcm_prepare(devout->out.alsa.handle);
-
-#ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
-#endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
-
-	int err;
-
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
-      }
-    }
-    //      g_message("ags_devout_play 2\0");
+    nth_buffer = 2;
+    next_buffer = 3;
+    nth_ring_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[3], devout->format, devout->ring_buffer[1], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->ring_buffer[1],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
+    nth_buffer = 3;
+    next_buffer = 0;
+    nth_ring_buffer = 1;
+  }
 
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	snd_pcm_prepare(devout->out.alsa.handle);
+  /* clear next buffer */
+  memset(devout->buffer[next_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+
+#ifdef AGS_WITH_ALSA
+
+  /* fill ring buffer */
+  ags_devout_alsa_play_fill_ring_buffer(devout->buffer[nth_buffer], devout->format,
+					devout->ring_buffer[nth_ring_buffer],
+					devout->pcm_channels, devout->buffer_size);
+
+  /* write ring buffer */
+  devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
+				       devout->ring_buffer[nth_ring_buffer],
+				       (snd_pcm_uframes_t) (devout->buffer_size));
+
+  /* check error flag */
+  if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
+    if(devout->out.alsa.rc == -EPIPE){
+      /* EPIPE means underrun */
+      snd_pcm_prepare(devout->out.alsa.handle);
 
 #ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
+      g_message("underrun occurred\0");
 #endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
+    }else if(devout->out.alsa.rc == -ESTRPIPE){
+      static const struct timespec idle = {
+	0,
+	4000,
+      };
 
-	int err;
+      int err;
 
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
+      while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
+	nanosleep(&idle, NULL); /* wait until the suspend flag is released */
       }
+	
+      if(err < 0){
+	err = snd_pcm_prepare(devout->out.alsa.handle);
+      }
+    }else if(devout->out.alsa.rc < 0){
+      str = snd_strerror(devout->out.alsa.rc);
+      
+      g_message("error from writei: %s\0", str);
+    }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
+      g_message("short write, write %d frames\0", devout->out.alsa.rc);
     }
-    //      g_message("ags_devout_play 3\0");
-  }
+  }      
+  
 #endif
 
   pthread_mutex_unlock(mutex);

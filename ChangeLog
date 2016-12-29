@@ -1,3 +1,13 @@
+ags (0.7.122)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented intermediate pre and post sync
+	* refactored interfacing soundcard to do intermediate post sync
+	* refactored interfacing sequencer to do intermediate pre sync
+	* refactored ags_devout.c tightened the code and intermediate post sync
+	* refactored ags_midiin.c intermediate pre sync
+	* improved XPath doing lv2 turtle
+
 ags (0.7.121)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

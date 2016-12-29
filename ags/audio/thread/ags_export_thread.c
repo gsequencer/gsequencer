@@ -24,6 +24,8 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/ags_devout.h>
+
 #include <math.h>
 
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
@@ -180,7 +182,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
   thread = (AgsThread *) export_thread;
 
   g_atomic_int_or(&(thread->flags),
-		  (AGS_THREAD_START_SYNCED_FREQ));  
+		  (AGS_THREAD_START_SYNCED_FREQ));
   
   config = ags_config_get_instance();
   
@@ -256,6 +258,11 @@ ags_export_thread_set_property(GObject *gobject,
 
       if(soundcard != NULL){
 	g_object_ref(G_OBJECT(soundcard));
+
+	if(AGS_IS_DEVOUT(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}
       }
 
       export_thread->soundcard = G_OBJECT(soundcard);

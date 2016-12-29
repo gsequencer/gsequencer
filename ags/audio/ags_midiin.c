@@ -1923,16 +1923,16 @@ ags_midiin_oss_poll(void *ptr)
       
     /* nth buffer */
     if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
-      nth_buffer = 2;
+      nth_buffer = 1;
       nth_ring_buffer = 0;
     }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
-      nth_buffer = 3;
+      nth_buffer = 2;
       nth_ring_buffer = 1;
     }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
-      nth_buffer = 0;
+      nth_buffer = 3;
       nth_ring_buffer = 0;
     }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
-      nth_buffer = 1;
+      nth_buffer = 0;
       nth_ring_buffer = 1;
     }
 
