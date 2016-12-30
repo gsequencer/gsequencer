@@ -811,13 +811,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       
       /* get buffer */
       if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
-	nth_buffer = 0;
-      }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
-	nth_buffer = 1;
-      }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
-	nth_buffer = 2;
-      }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
 	nth_buffer = 3;
+      }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+	nth_buffer = 0;
+      }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+	nth_buffer = 1;
+      }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+	nth_buffer = 2;
       }else{
 	/* iterate */
 	device = device->next;
