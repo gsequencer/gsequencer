@@ -242,10 +242,15 @@ ags_start_sequencer_finalize(GObject *gobject)
   sequencer_thread = (AgsSequencerThread *) ags_thread_find_type((AgsThread *) audio_loop,
 								 AGS_TYPE_SEQUENCER_THREAD);
 
-  if(sequencer_thread->error != NULL){
-    g_error_free(sequencer_thread->error);
+  while((sequencer_thread = ags_thread_find_type(sequencer_thread,
+						 AGS_TYPE_SEQUENCER_THREAD)) != NULL){
+    if(sequencer_thread->error != NULL){
+      g_error_free(sequencer_thread->error);
+      
+      sequencer_thread->error = NULL;
+    }
 
-    sequencer_thread->error = NULL;
+    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
   }
 
   G_OBJECT_CLASS(ags_start_sequencer_parent_class)->finalize(gobject);
