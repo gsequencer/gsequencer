@@ -7,6 +7,8 @@ ags (0.7.122)
 	* refactored ags_devout.c tightened the code and intermediate post sync
 	* refactored ags_midiin.c intermediate pre sync
 	* improved XPath doing lv2 turtle
+	* fixed stop export and sequencer thread during soundcard stop
+	* fixed ags_start_soundcard_finalize() without configured sequencer crashing
 
 ags (0.7.121)
 

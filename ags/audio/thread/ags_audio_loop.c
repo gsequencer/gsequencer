@@ -38,6 +38,7 @@
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
@@ -734,8 +735,10 @@ ags_audio_loop_run(AgsThread *thread)
      audio_loop->play_audio_ref == 0 &&
      audio_loop->play_notation_ref == 0){
     AgsThread *soundcard_thread;
+    AgsThread *sequencer_thread;
     AgsThread *export_thread;
 
+    /* soundcard thread */
     soundcard_thread = thread;
 
     while((soundcard_thread = ags_thread_find_type(soundcard_thread,
@@ -747,13 +750,28 @@ ags_audio_loop_run(AgsThread *thread)
       soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
     }
 
-    /* export thread */
-    export_thread = ags_thread_find_type(thread,
-					 AGS_TYPE_EXPORT_THREAD);
+    /* sequencer thread */
+    sequencer_thread = thread;
 
-    if(export_thread != NULL &&
-       (AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
-      ags_thread_stop(export_thread);
+    while((sequencer_thread = ags_thread_find_type(sequencer_thread,
+						   AGS_TYPE_SEQUENCER_THREAD)) != NULL){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(sequencer_thread->flags)))) != 0){
+	ags_thread_stop(sequencer_thread);
+      }
+
+      sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
+    }
+
+    /* export thread */
+    export_thread = thread;
+
+    while((export_thread = ags_thread_find_type(export_thread,
+						AGS_TYPE_EXPORT_THREAD)) != NULL){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
+	ags_thread_stop(export_thread);
+      }
+
+      export_thread = g_atomic_pointer_get(&(export_thread->next));
     }
   }
 }
