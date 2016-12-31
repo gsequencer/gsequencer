@@ -1359,6 +1359,9 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
     return;
   }
 
+  midiin->flags &= (~(AGS_MIDIIN_RECORD |
+		      AGS_MIDIIN_INITIALIZED));
+
   poll_mutex = midiin->poll_mutex;
   poll_finish_mutex = midiin->poll_finish_mutex;
   
@@ -1400,9 +1403,7 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
   midiin->flags &= (~(AGS_MIDIIN_BUFFER0 |
 		      AGS_MIDIIN_BUFFER1 |
 		      AGS_MIDIIN_BUFFER2 |
-		      AGS_MIDIIN_BUFFER3 |
-		      AGS_MIDIIN_RECORD |
-		      AGS_MIDIIN_INITIALIZED));
+		      AGS_MIDIIN_BUFFER3));
 
   g_atomic_int_or(&(midiin->sync_flags),
 		  AGS_MIDIIN_PASS_THROUGH);
@@ -1638,6 +1639,9 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
     return;
   }
 
+  midiin->flags &= (~(AGS_MIDIIN_RECORD |
+		      AGS_MIDIIN_INITIALIZED));
+
   poll_mutex = midiin->poll_mutex;
   poll_finish_mutex = midiin->poll_finish_mutex;
 
@@ -1681,8 +1685,7 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
   midiin->flags &= (~(AGS_MIDIIN_BUFFER0 |
 		      AGS_MIDIIN_BUFFER1 |
 		      AGS_MIDIIN_BUFFER2 |
-		      AGS_MIDIIN_BUFFER3 |
-		      AGS_MIDIIN_RECORD));
+		      AGS_MIDIIN_BUFFER3));
 
   g_atomic_int_or(&(midiin->sync_flags),
 		  AGS_MIDIIN_PASS_THROUGH);
