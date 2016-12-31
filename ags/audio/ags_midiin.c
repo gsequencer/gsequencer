@@ -1335,6 +1335,8 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
   GList *poll_fd;
 
   pthread_mutex_t *mutex;
+  pthread_mutex_t *poll_mutex;
+  pthread_mutex_t *poll_finish_mutex;
   
   midiin = AGS_MIDIIN(sequencer);
   
@@ -1349,10 +1351,49 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
   
   pthread_mutex_unlock(application_context->mutex);
 
+  pthread_mutex_lock(mutex);  
+
   if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    pthread_mutex_unlock(mutex);  
+
     return;
   }
+
+  poll_mutex = midiin->poll_mutex;
+  poll_finish_mutex = midiin->poll_finish_mutex;
   
+  pthread_mutex_unlock(mutex);  
+
+  g_atomic_int_or(&(midiin->sync_flags),
+		  AGS_MIDIIN_POLL_FINISH_WAIT);
+
+  /* signal finish */
+  pthread_mutex_lock(poll_finish_mutex);
+
+  g_atomic_int_or(&(midiin->sync_flags),
+		  AGS_MIDIIN_POLL_FINISH_DONE);
+    
+  if((AGS_MIDIIN_POLL_FINISH_WAIT & (g_atomic_int_get(&(midiin->sync_flags)))) != 0){
+    pthread_cond_signal(midiin->poll_finish_cond);
+  }
+
+  pthread_mutex_unlock(poll_finish_mutex);
+
+  /* signal poll */
+  pthread_mutex_lock(poll_mutex);
+
+  g_atomic_int_or(&(midiin->sync_flags),
+		  AGS_MIDIIN_POLL_DONE);
+    
+  if((AGS_MIDIIN_POLL_WAIT & (g_atomic_int_get(&(midiin->sync_flags)))) != 0){
+    pthread_cond_signal(midiin->poll_cond);
+  }
+
+  pthread_mutex_unlock(poll_mutex);
+
+  /*  */
+  pthread_mutex_lock(mutex);  
+
   close(midiin->in.oss.device_fd);
   midiin->in.oss.device_fd = -1;
 
@@ -1367,6 +1408,8 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
 		  AGS_MIDIIN_PASS_THROUGH);
 
   midiin->note_offset = 0;
+  
+  pthread_mutex_unlock(mutex);  
 }  
 
 void
@@ -1570,7 +1613,11 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
   AgsApplicationContext *application_context;
 
   pthread_mutex_t *mutex;
+  pthread_mutex_t *poll_mutex;
+  pthread_mutex_t *poll_finish_mutex;
   
+  midiin = AGS_MIDIIN(sequencer);
+
   application_context = ags_sequencer_get_application_context(sequencer);
   
   pthread_mutex_lock(application_context->mutex);
@@ -1582,11 +1629,49 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
   
   pthread_mutex_unlock(application_context->mutex);
 
+  /*  */
+  pthread_mutex_lock(mutex);
+
   if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
     return;
   }
 
-  midiin = AGS_MIDIIN(sequencer);
+  poll_mutex = midiin->poll_mutex;
+  poll_finish_mutex = midiin->poll_finish_mutex;
+
+  pthread_mutex_unlock(mutex);
+
+  g_atomic_int_or(&(midiin->sync_flags),
+		  AGS_MIDIIN_POLL_FINISH_WAIT);
+  
+  /* signal poll */
+  pthread_mutex_lock(poll_mutex);
+
+  g_atomic_int_or(&(midiin->sync_flags),
+		  AGS_MIDIIN_POLL_DONE);
+    
+  if((AGS_MIDIIN_POLL_WAIT & (g_atomic_int_get(&(midiin->sync_flags)))) != 0){
+    pthread_cond_signal(midiin->poll_cond);
+  }
+
+  pthread_mutex_unlock(poll_mutex);
+
+  /* signal finish */
+  pthread_mutex_lock(poll_finish_mutex);
+
+  g_atomic_int_or(&(midiin->sync_flags),
+		  AGS_MIDIIN_POLL_FINISH_DONE);
+    
+  if((AGS_MIDIIN_POLL_FINISH_WAIT & (g_atomic_int_get(&(midiin->sync_flags)))) != 0){
+    pthread_cond_signal(midiin->poll_finish_cond);
+  }
+
+  pthread_mutex_unlock(poll_finish_mutex);
+
+  /*  */
+  pthread_mutex_lock(mutex);
 
 #ifdef AGS_WITH_ALSA
   snd_rawmidi_close(midiin->in.alsa.handle);
@@ -1621,6 +1706,8 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
     free(midiin->buffer[0]);
     midiin->buffer_size[0] = 0;
   }
+
+  pthread_mutex_unlock(mutex);  
 }
 
 void
@@ -1997,6 +2084,8 @@ ags_midiin_oss_poll(void *ptr)
       pthread_mutex_unlock(poll_mutex);
 
       no_event = FALSE;
+    }else{
+      pthread_mutex_unlock(mutex);
     }
 
     /*  */    
@@ -2216,6 +2305,8 @@ ags_midiin_alsa_poll(void *ptr)
       pthread_mutex_unlock(poll_mutex);
 
       no_event = FALSE;	
+    }else{
+      pthread_mutex_unlock(mutex);
     }
 
     /*  */    

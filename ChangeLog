@@ -9,6 +9,8 @@ ags (0.7.122)
 	* improved XPath doing lv2 turtle
 	* fixed stop export and sequencer thread during soundcard stop
 	* fixed ags_start_soundcard_finalize() without configured sequencer crashing
+	* fixed potential dead-lock in ags_midiin_oss_poll() and ags_midiin_alsa_poll()
+	* fixed proper termination of OSS and ALSA poll
 
 ags (0.7.121)
 
