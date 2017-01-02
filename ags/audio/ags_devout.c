@@ -2402,9 +2402,6 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     nth_ring_buffer = 1;
   }
 
-  /* clear next buffer */
-  memset(devout->buffer[next_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
 #ifdef AGS_WITH_OSS    
   /* fill ring buffer */
   ags_devout_oss_play_fill_ring_buffer(devout->buffer[nth_buffer],
@@ -2422,6 +2419,9 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     g_critical("write() return doesn't match written bytes\0");
   }
 #endif
+
+  /* clear buffer */
+  memset(devout->buffer[nth_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
   
   pthread_mutex_unlock(mutex);
 
@@ -3166,9 +3166,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     nth_ring_buffer = 1;
   }
 
-  /* clear next buffer */
-  memset(devout->buffer[next_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
 #ifdef AGS_WITH_ALSA
 
   /* fill ring buffer */
@@ -3215,6 +3212,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   }      
   
 #endif
+
+  /* clear buffer */
+  memset(devout->buffer[nth_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
 
   pthread_mutex_unlock(mutex);
 

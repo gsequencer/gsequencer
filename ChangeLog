@@ -1,3 +1,8 @@
+ags (0.7.123)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
+
 ags (0.7.122)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
