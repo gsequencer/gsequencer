@@ -2523,48 +2523,46 @@ ags_thread_real_clock(AgsThread *thread)
     pthread_mutex_unlock(thread->timer_mutex);
   }
 #else
-  if(g_atomic_pointer_get(&(thread->parent)) == NULL){
+  if(thread->tic_delay == thread->delay &&
+     (AGS_THREAD_TIMING & (g_atomic_int_get(&(thread->flags)))) != 0){
     gdouble time_spent, relative_time_spent;
     gdouble time_cycle;
 
     static const gdouble nsec_per_jiffie = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
     
-    if(thread->tic_delay == thread->delay &&
-       (AGS_THREAD_TIMING & (g_atomic_int_get(&(thread->flags)))) != 0){
-      struct timespec timed_sleep = {
-	0,
-	0,
-      };
+    struct timespec timed_sleep = {
+      0,
+      0,
+    };
 
-      clock_gettime(CLOCK_MONOTONIC, &time_now);
+    clock_gettime(CLOCK_MONOTONIC, &time_now);
       
-      if(time_now.tv_sec == thread->computing_time->tv_sec + 1){
-	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
-      }else if(time_now.tv_sec > thread->computing_time->tv_sec + 1){
-	time_spent = (time_now.tv_sec - thread->computing_time->tv_sec) * NSEC_PER_SEC;
-	time_spent += (time_now.tv_nsec - thread->computing_time->tv_nsec);
-      }else{
-	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
-      }
-
-      time_cycle = NSEC_PER_SEC / thread->freq;
-      
-      relative_time_spent = time_cycle - time_spent - g_atomic_int_get(&(thread->time_late)) - AGS_THREAD_TOLERANCE;
-
-      if(relative_time_spent < 0.0){
-	g_atomic_int_set(&(thread->time_late),
-			 (guint) ceil(-1.25 * relative_time_spent));
-      }else if(relative_time_spent > 0.0 &&
-	       relative_time_spent < time_cycle){
-	g_atomic_int_set(&(thread->time_late),
-			 0);
-	timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
-      
-	nanosleep(&timed_sleep, NULL);
-      }
-
-      clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
+    if(time_now.tv_sec == thread->computing_time->tv_sec + 1){
+      time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
+    }else if(time_now.tv_sec > thread->computing_time->tv_sec + 1){
+      time_spent = (time_now.tv_sec - thread->computing_time->tv_sec) * NSEC_PER_SEC;
+      time_spent += (time_now.tv_nsec - thread->computing_time->tv_nsec);
+    }else{
+      time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
     }
+
+    time_cycle = NSEC_PER_SEC / thread->freq;
+      
+    relative_time_spent = time_cycle - time_spent - g_atomic_int_get(&(thread->time_late)) - AGS_THREAD_TOLERANCE;
+
+    if(relative_time_spent < 0.0){
+      g_atomic_int_set(&(thread->time_late),
+		       (guint) ceil(-1.25 * relative_time_spent));
+    }else if(relative_time_spent > 0.0 &&
+	     relative_time_spent < time_cycle){
+      g_atomic_int_set(&(thread->time_late),
+		       0);
+      timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
+      
+      nanosleep(&timed_sleep, NULL);
+    }
+
+    clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
   }
 #endif
   

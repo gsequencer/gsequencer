@@ -775,6 +775,9 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[1] = NULL;
   devout->buffer[2] = NULL;
   devout->buffer[3] = NULL;
+
+  devout->ring_buffer_size = AGS_DEVOUT_DEFAULT_RING_BUFFER_SIZE;
+  devout->nth_ring_buffer = 0;
   
   devout->ring_buffer = NULL;
 
@@ -1974,6 +1977,7 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   guint word_size;
   int format;
   int tmp;
+  guint i;
 
   pthread_mutex_t *mutex;
 
@@ -2051,10 +2055,14 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   memset(devout->buffer[3], 0, devout->pcm_channels * devout->buffer_size * word_size);
 
   /* allocate ring buffer */
-  devout->ring_buffer = (unsigned char **) malloc(2 * sizeof(unsigned char *));
-  devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
-  devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
-  
+  devout->ring_buffer = (unsigned char **) malloc(devout->ring_buffer_size * sizeof(unsigned char *));
+
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    devout->ring_buffer[i] = (unsigned char *) malloc(devout->pcm_channels *
+						      devout->buffer_size * word_size *
+						      sizeof(unsigned char));
+  }
+
 #ifdef AGS_WITH_OSS
   /* open device fd */
   str = devout->out.oss.device;
@@ -2192,6 +2200,8 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
 
+  devout->nth_ring_buffer = 0;
+  
   ags_soundcard_get_poll_fd(soundcard);
   
   devout->flags |= AGS_DEVOUT_INITIALIZED;
@@ -2223,8 +2233,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   
   guint word_size;
   guint nth_buffer;
-  guint next_buffer;
-  guint nth_ring_buffer;
+  guint prev_buffer;
 
   int n_write;
   
@@ -2386,33 +2395,29 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   /* check buffer flag */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     nth_buffer = 0;
-    next_buffer = 1;
-    nth_ring_buffer = 0;
+    prev_buffer = 3;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     nth_buffer = 1;
-    next_buffer = 2;
-    nth_ring_buffer = 1;
+    prev_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     nth_buffer = 2;
-    next_buffer = 3;
-    nth_ring_buffer = 0;
+    prev_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     nth_buffer = 3;
-    next_buffer = 0;
-    nth_ring_buffer = 1;
+    prev_buffer = 2;
   }
 
 #ifdef AGS_WITH_OSS    
   /* fill ring buffer */
   ags_devout_oss_play_fill_ring_buffer(devout->buffer[nth_buffer],
 				       devout->format,
-				       devout->ring_buffer[nth_ring_buffer],
+				       devout->ring_buffer[devout->nth_ring_buffer],
 				       devout->pcm_channels,
 				       devout->buffer_size);
 
   /* write ring buffer */
   n_write = write(devout->out.oss.device_fd,
-		  devout->ring_buffer[nth_ring_buffer],
+		  devout->ring_buffer[devout->nth_ring_buffer],
 		  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
 
   if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
@@ -2421,7 +2426,13 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 #endif
 
   /* clear buffer */
-  memset(devout->buffer[nth_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[prev_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+
+  if(devout->nth_ring_buffer + 1 >= devout->ring_buffer_size){
+    devout->nth_ring_buffer = 0;
+  }else{
+    devout->nth_ring_buffer += 1;
+  }
   
   pthread_mutex_unlock(mutex);
 
@@ -2456,6 +2467,8 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
 
   GList *poll_fd;
 
+  guint i;
+  
   pthread_mutex_t *mutex;
   
   devout = AGS_DEVOUT(soundcard);
@@ -2478,12 +2491,16 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   close(devout->out.oss.device_fd);
   devout->out.oss.device_fd = -1;
 
-  free(devout->ring_buffer[0]);
-  free(devout->ring_buffer[1]);
+  /* free ring-buffer */
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    free(devout->ring_buffer[i]);
+  }
+  
   free(devout->ring_buffer);
 
   devout->ring_buffer = NULL;
-  
+
+  /* reset flags */
   devout->flags &= (~(AGS_DEVOUT_BUFFER0 |
 		      AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |
@@ -2542,6 +2559,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 #endif
 
   guint word_size;
+  guint i;
   
   pthread_mutex_t *mutex; 
  
@@ -2628,10 +2646,14 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /* allocate ring buffer */
 #ifdef AGS_WITH_ALSA
-  devout->ring_buffer = (unsigned char **) malloc(2 * sizeof(unsigned char *));
-  devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
-  devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
-  
+  devout->ring_buffer = (unsigned char **) malloc(devout->ring_buffer_size * sizeof(unsigned char *));
+
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    devout->ring_buffer[i] = (unsigned char *) malloc(devout->pcm_channels *
+						      devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
+						      sizeof(unsigned char));
+  }
+ 
   /*  */
   period_event = 0;
   
@@ -2933,6 +2955,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
 
+  devout->nth_ring_buffer = 0;
+  
   ags_soundcard_get_poll_fd(soundcard);
   
   devout->flags |= AGS_DEVOUT_INITIALIZED;
@@ -2964,8 +2988,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
   guint word_size;
   guint nth_buffer;
-  guint next_buffer;
-  guint nth_ring_buffer;
   
   pthread_mutex_t *mutex;
 
@@ -3150,32 +3172,24 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   /* check buffer flag */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     nth_buffer = 0;
-    next_buffer = 1;
-    nth_ring_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     nth_buffer = 1;
-    next_buffer = 2;
-    nth_ring_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     nth_buffer = 2;
-    next_buffer = 3;
-    nth_ring_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     nth_buffer = 3;
-    next_buffer = 0;
-    nth_ring_buffer = 1;
   }
 
 #ifdef AGS_WITH_ALSA
 
   /* fill ring buffer */
   ags_devout_alsa_play_fill_ring_buffer(devout->buffer[nth_buffer], devout->format,
-					devout->ring_buffer[nth_ring_buffer],
+					devout->ring_buffer[devout->nth_ring_buffer],
 					devout->pcm_channels, devout->buffer_size);
 
   /* write ring buffer */
   devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-				       devout->ring_buffer[nth_ring_buffer],
+				       devout->ring_buffer[devout->nth_ring_buffer],
 				       (snd_pcm_uframes_t) (devout->buffer_size));
 
   /* check error flag */
@@ -3215,7 +3229,13 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   /* clear buffer */
   memset(devout->buffer[nth_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
+  
+  if(devout->nth_ring_buffer + 1 >= devout->ring_buffer_size){
+    devout->nth_ring_buffer = 0;
+  }else{
+    devout->nth_ring_buffer += 1;
+  }
+  
   pthread_mutex_unlock(mutex);
 
   /* update soundcard */
@@ -3253,6 +3273,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   GList *poll_fd;
 
+  guint i;
+  
   pthread_mutex_t *mutex;
   
   devout = AGS_DEVOUT(soundcard);
@@ -3295,12 +3317,16 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   devout->out.alsa.handle = NULL;
 #endif
 
-  free(devout->ring_buffer[0]);
-  free(devout->ring_buffer[1]);
+  /* free ring-buffer */
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    free(devout->ring_buffer[i]);
+  }
+
   free(devout->ring_buffer);
 
   devout->ring_buffer = NULL;
-  
+
+  /* reset flags */
   devout->flags &= (~(AGS_DEVOUT_BUFFER0 |
 		      AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |

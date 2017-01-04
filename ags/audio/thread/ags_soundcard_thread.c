@@ -179,6 +179,9 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
 		  (AGS_THREAD_START_SYNCED_FREQ |
 		   AGS_THREAD_INTERMEDIATE_POST_SYNC));  
   
+  g_atomic_int_or(&(thread->flags),
+  		  AGS_THREAD_TIMING);
+
   config = ags_config_get_instance();
 
   str0 = ags_config_get_value(config,

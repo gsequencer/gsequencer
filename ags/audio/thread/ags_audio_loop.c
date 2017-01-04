@@ -294,9 +294,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  //  g_atomic_int_or(&(thread->flags),
-  //		  AGS_THREAD_TIMING);
-
   //  thread->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
   pthread_mutex_lock(application_mutex);
 

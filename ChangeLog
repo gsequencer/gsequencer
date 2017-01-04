@@ -1,3 +1,8 @@
+ags (0.7.124)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: fixed asynchronous ALSA output by incrementing ring-buffer size
+
 ags (0.7.123)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
