@@ -98,6 +98,8 @@ struct _AgsDevout
 
   void** buffer;
 
+  volatile gboolean available;
+  
   guint ring_buffer_size;
   guint nth_ring_buffer;
   

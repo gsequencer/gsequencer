@@ -179,8 +179,8 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
 		  (AGS_THREAD_START_SYNCED_FREQ |
 		   AGS_THREAD_INTERMEDIATE_POST_SYNC));  
   
-  g_atomic_int_or(&(thread->flags),
-  		  AGS_THREAD_TIMING);
+  //  g_atomic_int_or(&(thread->flags),
+  //		  AGS_THREAD_TIMING);
 
   config = ags_config_get_instance();
 
@@ -385,10 +385,19 @@ ags_soundcard_thread_start(AgsThread *thread)
     
   while(poll_fd != NULL){
     if(polling_thread != NULL){
+      gint position;
+      
       ags_polling_thread_add_poll_fd(polling_thread,
 				     poll_fd->data);
       g_signal_connect(G_OBJECT(poll_fd->data), "dispatch\0",
 		       G_CALLBACK(ags_soundcard_thread_dispatch_callback), soundcard_thread);
+
+      position = ags_polling_thread_fd_position(polling_thread,
+						AGS_POLL_FD(poll_fd->data)->fd);
+      
+      if(position != -1){
+	polling_thread->fds[position].events = POLLOUT;
+      }
     }
     
     poll_fd = poll_fd->next;
@@ -450,9 +459,15 @@ ags_soundcard_thread_stop(AgsThread *thread)
 {
   AgsSoundcardThread *soundcard_thread;
 
-  AgsSoundcard *soundcard;
+  AgsThread *main_loop;
+  AgsPollingThread *polling_thread;
   
+  AgsSoundcard *soundcard;
+
+  GList *poll_fd;
+    
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
+  main_loop = ags_thread_get_toplevel(thread);
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
@@ -461,6 +476,24 @@ ags_soundcard_thread_stop(AgsThread *thread)
 
   //FIXME:JK: is this safe?
   ags_soundcard_stop(soundcard);
+
+  /* find polling thread */
+  polling_thread = (AgsPollingThread *) ags_thread_find_type(main_loop,
+							     AGS_TYPE_POLLING_THREAD);
+    
+  /* remove poll fd */
+  poll_fd = ags_soundcard_get_poll_fd(soundcard);
+    
+  while(poll_fd != NULL){
+    if(polling_thread != NULL){
+      gint position;
+      
+      ags_polling_thread_remove_poll_fd(polling_thread,
+					poll_fd->data);
+    }
+    
+    poll_fd = poll_fd->next;
+  }
 }
 
 void

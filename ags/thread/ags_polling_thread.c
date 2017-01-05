@@ -300,10 +300,10 @@ ags_polling_thread_run(AgsThread *thread)
 	  ags_poll_fd_dispatch(list->data);
       
 	  AGS_POLL_FD(list->data)->flags &= (~(AGS_POLL_FD_INPUT |
+					       AGS_POLL_FD_PRIORITY_INPUT |   
 					       AGS_POLL_FD_OUTPUT |
 					       AGS_POLL_FD_HANG_UP));
-	  AGS_POLL_FD(list->data)->poll_fd->revents = 0;
-
+	  
 	  AGS_POLL_FD(list->data)->delay_counter = 0.0;
 	}else{
 	  AGS_POLL_FD(list->data)->delay_counter += 1.0;

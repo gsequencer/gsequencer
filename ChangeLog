@@ -1,7 +1,9 @@
 ags (0.7.124)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: fixed asynchronous ALSA output by incrementing ring-buffer size
+	* fixed asynchronous ALSA output by incrementing ring-buffer size
+	* fixed proper use of ppoll() with AgsDevout prior events wasn't set
+	* implemented wait playback until device is available with AgsDevout
 
 ags (0.7.123)
 
