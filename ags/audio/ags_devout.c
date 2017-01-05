@@ -33,6 +33,7 @@
 #include <ags/thread/ags_poll_fd.h>
 
 #include <ags/audio/task/ags_tic_device.h>
+#include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 
@@ -2234,6 +2235,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   AgsDevout *devout;
 
   AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -2249,7 +2251,6 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   
   guint word_size;
   guint nth_buffer;
-  guint prev_buffer;
 
   int n_write;
   
@@ -2416,16 +2417,12 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   /* check buffer flag */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     nth_buffer = 0;
-    prev_buffer = 3;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     nth_buffer = 1;
-    prev_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     nth_buffer = 2;
-    prev_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     nth_buffer = 3;
-    prev_buffer = 2;
   }
 
 #ifdef AGS_WITH_OSS    
@@ -2467,9 +2464,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   }
 #endif
 
-  /* clear buffer */
-  memset(devout->buffer[prev_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
+  /* increment nth ring-buffer */
   if(devout->nth_ring_buffer + 1 >= devout->ring_buffer_size){
     devout->nth_ring_buffer = 0;
   }else{
@@ -2488,6 +2483,11 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   task = g_list_append(task,
 		       tic_device);
   
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
+
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
   task = g_list_append(task,
@@ -3023,6 +3023,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   AgsDevout *devout;
 
   AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -3206,7 +3207,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }
     break;
   default:
+    pthread_mutex_unlock(mutex);
+    
     g_warning("ags_devout_alsa_play(): unsupported word size\0");
+
     return;
   }
 
@@ -3303,11 +3307,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
 #endif
 
-  /* clear buffer */
+  /* increment nth ring-buffer */
   g_atomic_int_set(&(devout->available),
 		   FALSE);
-  
-  memset(devout->buffer[nth_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
   
   if(devout->nth_ring_buffer + 1 >= devout->ring_buffer_size){
     devout->nth_ring_buffer = 0;
@@ -3326,7 +3328,12 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
 		       tic_device);
-  
+
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
+
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
   task = g_list_append(task,

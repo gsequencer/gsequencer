@@ -4,6 +4,8 @@ ags (0.7.124)
 	* fixed asynchronous ALSA output by incrementing ring-buffer size
 	* fixed proper use of ppoll() with AgsDevout prior events wasn't set
 	* implemented wait playback until device is available with AgsDevout
+	* implemented AgsClearBuffer task
+	* refactored AgsDevout and AgsJackDevout to use AgsClearBuffer task
 
 ags (0.7.123)
 

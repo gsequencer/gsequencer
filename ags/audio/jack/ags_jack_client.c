@@ -647,7 +647,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   guint event_size;
   guint i, j;
   guint nth_buffer;
-  guint prev_buffer;
   gboolean no_event;
   
   pthread_mutex_t *application_mutex;
@@ -813,16 +812,12 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       /* get buffer */
       if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
 	nth_buffer = 3;
-	prev_buffer = 2;
       }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
 	nth_buffer = 0;
-	prev_buffer = 3;
       }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
 	nth_buffer = 1;
-	prev_buffer = 0;
       }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
 	nth_buffer = 2;
-	prev_buffer = 1;
       }else{
 	/* iterate */
 	device = device->next;
@@ -891,8 +886,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
     
       if(!no_event){
-	memset(jack_devout->buffer[prev_buffer], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
-
 	/* signal finish */
 	pthread_mutex_lock(device_mutex);
 
