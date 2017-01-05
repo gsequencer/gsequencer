@@ -246,7 +246,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
 
-  soundcard = AGS_RECALL(play_audio_signal)->soundcard;
+  soundcard = recall->soundcard;
   source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
 

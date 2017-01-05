@@ -365,9 +365,9 @@ void
 ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
-  AgsSoundcard *soundcard;
 
   AgsMutexManager *mutex_manager;
+  AgsSoundcard *soundcard;
 
   void *soundcard_buffer;
 

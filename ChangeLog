@@ -1,3 +1,9 @@
+ags (0.7.125)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash in ags_jack_midiin_port_free() NULL pointer access
+	* improved mutices doing playback
+
 ags (0.7.124)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

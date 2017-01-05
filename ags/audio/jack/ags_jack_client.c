@@ -887,11 +887,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     
       if(!no_event){
 	/* signal finish */
-	pthread_mutex_lock(device_mutex);
-
 	callback_finish_mutex = jack_devout->callback_finish_mutex;
-
-	pthread_mutex_unlock(device_mutex);
 	
 	pthread_mutex_lock(callback_finish_mutex);
 
@@ -1019,11 +1015,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	}
 
 	/* signal finish */
-	pthread_mutex_lock(device_mutex);
-
 	callback_finish_mutex = jack_midiin->callback_finish_mutex;
-
-	pthread_mutex_unlock(device_mutex);
 	
 	pthread_mutex_lock(callback_finish_mutex);
 

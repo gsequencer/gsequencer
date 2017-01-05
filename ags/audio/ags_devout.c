@@ -2234,6 +2234,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
   AgsTicDevice *tic_device;
   AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
@@ -2361,17 +2362,19 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   /* lock */
   pthread_mutex_lock(mutex);
 
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
+  
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   /* retrieve word size */
   switch(devout->format){
@@ -2503,6 +2506,8 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
+  
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -2526,7 +2531,31 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   
   pthread_mutex_unlock(application_context->mutex);
 
+  /*  */
+  pthread_mutex_lock(mutex);
+
+#ifdef AGS_WITH_OSS
+  /* remove poll fd */
+  poll_fd = devout->poll_fd;
+  
+  while(poll_fd != NULL){
+    ags_polling_thread_remove_poll_fd(AGS_POLL_FD(poll_fd->data)->polling_thread,
+				      poll_fd->data);
+    g_object_unref(poll_fd->data);
+    
+    poll_fd = poll_fd->next;
+  }
+
+  g_list_free(poll_fd);
+
+  devout->poll_fd = NULL;
+#endif
+
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
+
   if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
     return;
   }
   
@@ -2537,7 +2566,7 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   g_atomic_int_set(&(devout->available),
 		   FALSE);
   
-    for(i = 0; i < devout->ring_buffer_size; i++){
+  for(i = 0; i < devout->ring_buffer_size; i++){
     free(devout->ring_buffer[i]);
   }
   
@@ -2554,19 +2583,21 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_INITIALIZED));
 
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   devout->note_offset = 0;
   devout->note_offset_absolute = 0;
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -3022,6 +3053,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
   AgsTicDevice *tic_device;
   AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
@@ -3167,17 +3199,19 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   /* lock */
   pthread_mutex_lock(mutex);
 
-  /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  /* notify cyclic task */
+  pthread_mutex_lock(notify_soundcard->return_mutex);
+
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   /* retrieve word size */
   switch(devout->format){
@@ -3353,6 +3387,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
+
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -3364,6 +3400,20 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   pthread_mutex_t *mutex;
   
   devout = AGS_DEVOUT(soundcard);
+  
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* lock */
+  pthread_mutex_lock(mutex);
 
 #ifdef AGS_WITH_ALSA
   /* remove poll fd */
@@ -3381,19 +3431,12 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   devout->poll_fd = NULL;
 #endif
-  
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devout);
-  
-  pthread_mutex_unlock(application_context->mutex);
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
 
   if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
     return;
   }
   
@@ -3421,19 +3464,21 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_INITIALIZED));
 
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   devout->note_offset = 0;
   devout->note_offset_absolute = 0;
+
+  pthread_mutex_unlock(mutex);
 }
 
 void

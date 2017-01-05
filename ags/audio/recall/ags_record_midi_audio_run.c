@@ -703,22 +703,15 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
-  record_midi_audio = AGS_RECORD_MIDI_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
-
-  delay_audio_run = record_midi_audio_run->delay_audio_run;
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(record_midi_audio_run->count_beats_audio_run);
-  
-  audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
-  sequencer = audio->sequencer;
-
-  if(sequencer == NULL){
-    return;
-  }
-
   /*  */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get defaults */
+  record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
+  record_midi_audio = AGS_RECORD_MIDI_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
+
+  audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -727,6 +720,20 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 					 audio);
 
   pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(audio_mutex);
+  
+  delay_audio_run = record_midi_audio_run->delay_audio_run;
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(record_midi_audio_run->count_beats_audio_run);
+  
+  sequencer = audio->sequencer;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  if(sequencer == NULL){
+    return;
+  }
 
   /* get audio fields */
   pthread_mutex_lock(audio_mutex);
@@ -785,10 +792,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     notation = NULL;
   }
   
-  pthread_mutex_unlock(audio_mutex);
-
   /*  */
   notation_counter = count_beats_audio_run->notation_counter;
+  
+  pthread_mutex_unlock(audio_mutex);
 
   /* get mode */
   g_value_init(&value,

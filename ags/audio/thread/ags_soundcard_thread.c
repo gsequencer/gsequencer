@@ -24,6 +24,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_polling_thread.h>
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_timestamp_thread.h>
@@ -413,18 +414,33 @@ ags_soundcard_thread_run(AgsThread *thread)
 {
   AgsSoundcardThread *soundcard_thread;
 
+  AgsMutexManager *mutex_manager;
   AgsSoundcard *soundcard;
 
   GList *poll_fd;
   
-  long delay;
+  gboolean is_playing;
   
   GError *error;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
-    
+
+  /*  */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) soundcard_thread->soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+  
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
@@ -440,7 +456,14 @@ ags_soundcard_thread_run(AgsThread *thread)
 		    AGS_THREAD_RT_SETUP);
   }
 
-  if(ags_soundcard_is_playing(soundcard)){
+  /* playback */
+  pthread_mutex_lock(mutex);
+  
+  is_playing = ags_soundcard_is_playing(soundcard);
+
+  pthread_mutex_unlock(mutex);
+  
+  if(is_playing){
     error = NULL;
     ags_soundcard_play(soundcard,
 		       &error);
