@@ -26,6 +26,8 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
@@ -441,16 +443,24 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
 
+  AgsMutexManager *mutex_manager;
+  
   gdouble notation_delay, sequencer_delay;
+  gdouble delay;
+  guint attack;
 
   GValue value = { 0, };
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
 
   //  g_message("ags_delay_audio_run_run_pre()\0");
   
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
+  /* check done */  
   if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&
      delay_audio_run->dependency_ref == 0){
     delay_audio_run->notation_counter = 0;
@@ -462,6 +472,17 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }
 
   delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     recall->soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* read notation-delay port */
   g_value_init(&value, G_TYPE_DOUBLE);
@@ -489,21 +510,21 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }else{
     delay_audio_run->sequencer_counter += 1;
   }
+  
+  /* delay and attack */
+  pthread_mutex_lock(soundcard_mutex);
 
+  attack = ags_soundcard_get_attack(AGS_SOUNDCARD(recall->soundcard));
+  
+  pthread_mutex_unlock(soundcard_mutex);
+  
+  delay = 0.0;
+
+  /* notation */
   if(delay_audio_run->notation_counter == 0){    
     guint run_order;
-    gdouble delay;
-    guint attack;
 
     run_order = 0; //NOTE:JK: old hide_ref style
-
-    /* delay and attack */
-    //TODO:JK: unclear
-    attack = ags_soundcard_get_attack(AGS_SOUNDCARD(recall->soundcard));
-      
-    delay = 0.0; // soundcard->delay[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   soundcard->tic_counter + 1)];
 
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
     //	      delay_audio_run,
@@ -521,8 +542,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 				       delay, attack);
   }else{
     guint run_order;
-    gdouble delay;
-    guint attack;
 
     run_order = 0;
     
@@ -541,17 +560,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 				       delay, attack);
   }
 
+  /* sequencer */
   if(delay_audio_run->sequencer_counter == 0){
     guint run_order;
-    gdouble delay;
-    guint attack;
-
-    /* delay and attack */
-    //TODO:JK: unclear
-    attack = ags_soundcard_get_attack(AGS_SOUNDCARD(recall->soundcard));
-    delay = 0.0; // soundcard->delay[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   soundcard->tic_counter + 1)];
 
     run_order = 0;
 
@@ -572,8 +583,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 					delay, attack);
   }else{
     guint run_order;
-    gdouble delay;
-    guint attack;
 
     run_order = 0;
     

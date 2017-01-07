@@ -634,10 +634,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   */
     
   /* AgsWindow */
-  window = ags_window_new((GObject *) xorg_application_context);
-  g_object_set(window,
-	       "soundcard\0", soundcard,
-	       NULL);
+  window = g_object_new(AGS_TYPE_WINDOW,
+			"soundcard\0", soundcard,
+			"application-context\0", xorg_application_context,
+			NULL);
   AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->window = window;
   g_object_ref(G_OBJECT(window));
 

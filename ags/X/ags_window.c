@@ -277,8 +277,9 @@ ags_window_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if((AgsApplicationContext *) window->application_context == application_context)
+      if((AgsApplicationContext *) window->application_context == application_context){
 	return;
+      }
 
       if(window->application_context != NULL){
 	window->application_mutex = NULL;
@@ -587,7 +588,7 @@ ags_window_new(GObject *application_context)
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
-				      "application-context", application_context,
+				      "application-context\0", application_context,
 				      NULL);
 
   return(window);

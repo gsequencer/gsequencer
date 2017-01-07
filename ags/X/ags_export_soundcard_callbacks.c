@@ -61,12 +61,16 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   soundcard = NULL;
 
   if(application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUNDCARD(application_context));
+    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
+  if(device == NULL){
+    return;
+  }
+  
   found_card = FALSE;
   
   while(soundcard != NULL){
@@ -154,12 +158,16 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   soundcard = NULL;
     
   if(application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUNDCARD(application_context));
+    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
+  if(device == NULL){
+    return;
+  }
+  
   found_card = FALSE;
 
   while(soundcard != NULL){
