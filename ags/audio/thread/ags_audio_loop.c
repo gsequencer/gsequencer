@@ -621,8 +621,8 @@ ags_audio_loop_start(AgsThread *thread)
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
 
-    pthread_create(audio_loop->timing_thread, NULL,
-    		   ags_audio_loop_timing_thread, audio_loop);
+    //    pthread_create(audio_loop->timing_thread, NULL,
+    //		   ags_audio_loop_timing_thread, audio_loop);
   }
 }
 
@@ -829,9 +829,9 @@ ags_audio_loop_timing_thread(void *ptr)
 
     g_atomic_int_set(&(audio_loop->time_spent),
 		     audio_loop->time_cycle);
-    ags_main_loop_interrupt(AGS_MAIN_LOOP(thread),
-    			    AGS_THREAD_SUSPEND_SIG,
-    			    audio_loop->time_cycle, &time_spent);
+    //    ags_main_loop_interrupt(AGS_MAIN_LOOP(thread),
+    //			    AGS_THREAD_SUSPEND_SIG,
+    //			    audio_loop->time_cycle, &time_spent);
     
     //    g_message("inter\0");    
   }

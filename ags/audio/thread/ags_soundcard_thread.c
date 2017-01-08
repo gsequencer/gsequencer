@@ -537,9 +537,9 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
 
     pthread_mutex_unlock(audio_loop->timing_mutex);
 
-    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
-			    AGS_THREAD_SUSPEND_SIG,
-			    0, &time_spent);
+    //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+    //			    AGS_THREAD_SUSPEND_SIG,
+    //			    0, &time_spent);
 
     if(poll_fd->polling_thread != NULL){
       poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
