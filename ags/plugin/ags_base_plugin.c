@@ -60,6 +60,9 @@ enum{
   PROP_FILENAME,
   PROP_EFFECT,
   PROP_EFFECT_INDEX,
+  PROP_UI_FILENAME,
+  PROP_UI_EFFECT,
+  PROP_UI_EFFECT_INDEX,  
   PROP_UI_PLUGIN,
 };
 
@@ -158,6 +161,56 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_EFFECT_INDEX,
+				  param_spec);
+
+  /**
+   * AgsBasePlugin:ui-filename:
+   *
+   * The assigned UI filename.
+   * 
+   * Since: 0.7.127
+   */
+  param_spec = g_param_spec_string("ui-filename\0",
+				   "UI filename of the plugin\0",
+				   "The UI filename this plugin is located in\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UI_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsBasePlugin:ui-effect:
+   *
+   * The assigned ui-effect.
+   * 
+   * Since: 0.7.127
+   */
+  param_spec = g_param_spec_string("ui-effect\0",
+				   "UI effect of the plugin\0",
+				   "The UI effect this plugin is assigned with\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UI_EFFECT,
+				  param_spec);
+
+  /**
+   * AgsBasePlugin:ui-effect-index:
+   *
+   * The assigned ui-effect-index.
+   * 
+   * Since: 0.7.127
+   */
+  param_spec = g_param_spec_uint("ui-effect-index\0",
+				 "UI effect-index of the plugin\0",
+				 "The UI effect-index this plugin is assigned with\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UI_EFFECT_INDEX,
 				  param_spec);
 
   /**
@@ -375,6 +428,49 @@ ags_base_plugin_set_property(GObject *gobject,
       base_plugin->effect_index = effect_index;
     }
     break;
+  case PROP_UI_FILENAME:
+    {
+      gchar *ui_filename;
+
+      ui_filename = (gchar *) g_value_get_string(value);
+
+      if(base_plugin->ui_filename == ui_filename){
+	return;
+      }
+      
+      if(base_plugin->ui_filename != NULL){
+	g_free(base_plugin->ui_filename);
+      }
+
+      base_plugin->ui_filename = g_strdup(ui_filename);
+    }
+    break;
+  case PROP_UI_EFFECT:
+    {
+      gchar *ui_effect;
+
+      ui_effect = (gchar *) g_value_get_string(value);
+
+      if(base_plugin->ui_effect == ui_effect){
+	return;
+      }
+      
+      if(base_plugin->ui_effect != NULL){
+	g_free(base_plugin->ui_effect);
+      }
+
+      base_plugin->ui_effect = g_strdup(ui_effect);
+    }
+    break;
+  case PROP_UI_EFFECT_INDEX:
+    {
+      guint ui_effect_index;
+
+      ui_effect_index = g_value_get_uint(value);
+
+      base_plugin->ui_effect_index = ui_effect_index;
+    }
+    break;
   case PROP_UI_PLUGIN:
     {
       GObject *ui_plugin;
@@ -414,16 +510,39 @@ ags_base_plugin_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    g_value_set_string(value, base_plugin->filename);
+    {
+      g_value_set_string(value, base_plugin->filename);
+    }
     break;
   case PROP_EFFECT:
-    g_value_set_string(value, base_plugin->effect);
+    {
+      g_value_set_string(value, base_plugin->effect);
+    }
     break;
   case PROP_EFFECT_INDEX:
-    g_value_set_uint(value, base_plugin->effect_index);
+    {
+      g_value_set_uint(value, base_plugin->effect_index);
+    }
+    break;
+  case PROP_UI_FILENAME:
+    {
+      g_value_set_string(value, base_plugin->ui_filename);
+    }
+    break;
+  case PROP_UI_EFFECT:
+    {
+      g_value_set_string(value, base_plugin->ui_effect);
+    }
+    break;
+  case PROP_UI_EFFECT_INDEX:
+    {
+      g_value_set_uint(value, base_plugin->ui_effect_index);
+    }
     break;
   case PROP_UI_PLUGIN:
-    g_value_set_object(value, base_plugin->ui_plugin);
+    {
+      g_value_set_object(value, base_plugin->ui_plugin);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -552,7 +671,7 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
  * @filename: the filename as string
  * @effect: the effect as string
  * 
- * Find filename and effect in @base_plugin #GList-struct of #AgsBasePlugin.
+ * Find @filename and @effect in @base_plugin #GList-struct of #AgsBasePlugin.
  *
  * Returns: the next matching #GList-struct
  * 
@@ -566,6 +685,34 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
 			   filename) &&
        !g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->effect,
 			   effect)){
+      return(base_plugin);
+    }
+
+    base_plugin = base_plugin->next;
+  }
+
+  return(NULL);
+}
+
+/**
+ * ags_base_plugin_find_ui_effect_index:
+ * @base_plugin: the #GList-struct containing #AgsBasePlugin
+ * @ui_filename: the UI filename as string
+ * @ui_effect_index: the UI effect index
+ * 
+ * Find @ui_filename and @ui_effect_index in @base_plugin #GList-struct of #AgsBasePlugin.
+ *
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 0.7.127
+ */
+GList*
+ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, guint ui_effect_index)
+{
+  while(base_plugin != NULL){
+    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->ui_filename,
+			   ui_filename) &&
+       AGS_BASE_PLUGIN(base_plugin->data)->ui_effect_index == ui_effect_index){
       return(base_plugin);
     }
 

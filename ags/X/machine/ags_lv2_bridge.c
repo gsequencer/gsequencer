@@ -570,15 +570,6 @@ ags_lv2_bridge_set_property(GObject *gobject,
       }
 
       lv2_bridge->has_gui = has_gui;
-
-      if(has_gui){
-	lv2_bridge->lv2_gui = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	g_signal_connect(G_OBJECT(lv2_bridge->lv2_gui), "delete-event\0",
-			 G_CALLBACK(ags_lv2_bridge_delete_event_callback), lv2_bridge);
-      }else{
-	gtk_widget_destroy(lv2_bridge->lv2_gui);
-	lv2_bridge->lv2_gui = NULL;
-      }
     }
     break;
   case PROP_GUI_FILENAME:
@@ -588,18 +579,18 @@ ags_lv2_bridge_set_property(GObject *gobject,
       gchar *gui_filename;
 
       gui_filename = g_value_get_string(value);
-/*
 
       if(lv2_bridge->gui_filename == gui_filename){
 	return;
       }
 
+      lv2_bridge->gui_filename = g_strdup(gui_filename);
+/*
+
       if(lv2_bridge->gui_filename != NULL){
 	gtk_widget_destroy(gtk_bin_get_child((GtkBin *) lv2_bridge->lv2_gui));
 	free(lv2_bridge->gui_filename);
       }
-
-      lv2_bridge->gui_filename = g_strdup(gui_filename);
 
       /* load GUI * /
       if(gui_filename != NULL &&

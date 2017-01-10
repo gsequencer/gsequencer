@@ -53,8 +53,6 @@ struct _AgsLv2uiPlugin
 
   guint flags;
 
-  gchar *gui_filename;
-  
   gchar *gui_uri;
 
   AgsTurtle *manifest;
