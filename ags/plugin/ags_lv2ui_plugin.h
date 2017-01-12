@@ -68,6 +68,9 @@ struct _AgsLv2uiPluginClass
 
 GType ags_lv2ui_plugin_get_type(void);
 
+GList* ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
+				     gchar *gui_uri);
+
 AgsLv2uiPlugin* ags_lv2ui_plugin_new(AgsTurtle *gui_turtle, gchar *filename, gchar *effect, gchar *gui_uri, guint effect_index);
 
 #endif /*__AGS_LV2UI_PLUGIN_H__*/

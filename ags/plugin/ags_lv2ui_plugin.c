@@ -369,7 +369,39 @@ ags_lv2ui_plugin_finalize(GObject *gobject)
 void
 ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
+  //TODO:JK: implement me  
+}
+
+/**
+ * ags_lv2ui_plugin_find_gui_uri:
+ * @lv2ui_plugin: the #GList-struct containing #AgsLv2uiPlugin
+ * @gui_uri: the gui-uri as string
+ * 
+ * Find next matching gui-uri in @lv2ui_plugin.
+ * 
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 0.7.127
+ */
+GList*
+ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
+			      gchar *gui_uri)
+{
+  if(gui_uri == NULL){
+    return(NULL);
+  }
   
+  while(lv2ui_plugin != NULL){
+    if(AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->gui_uri != NULL &&
+       !g_ascii_strcasecmp(AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->gui_uri,
+			   gui_uri)){
+      return(lv2ui_plugin);
+    }
+
+    lv2ui_plugin = lv2ui_plugin->next;
+  }
+
+  return(NULL);
 }
 
 /**
