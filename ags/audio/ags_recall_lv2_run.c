@@ -298,7 +298,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   path = g_strndup(recall_lv2->filename,
 		   rindex(recall_lv2->filename, '/') - recall_lv2->filename + 1);
 
-  /**/
+  /* feature array */
   recall_lv2_run->feature = 
     feature = (LV2_Feature **) malloc(7 * sizeof(LV2_Feature *));
 

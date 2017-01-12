@@ -24,17 +24,120 @@
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/X/ags_window.h>
+
+#include <ags/plugin/ags_lv2ui_manager.h>
+#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_lv2ui_plugin.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+extern GHashTable *ags_lv2_bridge_lv2ui_idle;
+
 void
 ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 {
-  gtk_widget_show_all(lv2_bridge->lv2_gui);
-  gtk_widget_show_all(gtk_bin_get_child((GtkBin *) lv2_bridge->lv2_gui));
+  AgsWindow *window;
+  
+  AgsLv2uiPlugin *lv2ui_plugin;
+  
+  GList *list;
+  
+  gchar *uri;
+  
+  LV2UI_DescriptorFunction lv2ui_descriptor;
+  LV2UI_Descriptor *ui_descriptor;
+  
+  uint32_t ui_index;
+
+  static const LV2_Feature **feature = {
+    NULL,
+  };
+
+  window = gtk_widget_get_ancestor(lv2_bridge,
+				   AGS_TYPE_WINDOW);
+  
+  if(lv2_bridge->gui_uri == NULL){
+    return;
+  }
+  
+  list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
+				       lv2_bridge->gui_uri);
+  
+  if(list == NULL){
+    return;
+  }
+
+  lv2ui_plugin = list->data;
+
+  if(lv2_bridge->ui_handle == NULL){
+    gchar *ui_filename;
+    gchar *bundle_path;	
+
+    LV2_Feature **feature;
+
+    /* feature array */
+    lv2_bridge->ui_feature = 
+      feature = (LV2_Feature **) malloc(3 * sizeof(LV2_Feature *));
+
+    /* idle interface */
+    feature[0] = (LV2_Feature *) malloc(sizeof(LV2_Feature));    
+    feature[0]->URI = LV2_UI__idleInterface;
+    feature[0]->data = NULL;
+    
+    /* show interface */
+    feature[1] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[1]->URI = LV2_UI__showInterface;
+    feature[1]->data = NULL;
+
+    feature[2] = NULL;
+    
+    if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so == NULL){
+      AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
+							RTLD_NOW);
+    }
+    
+    if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so){
+      lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so,
+						    "lv2ui_descriptor\0");
+      
+      if(dlerror() == NULL && lv2ui_descriptor){
+	ui_descriptor = lv2ui_descriptor(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect_index);
+	ui_filename = AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename;
+	
+	/* instantiate */
+	bundle_path = g_strndup(ui_filename,
+				rindex(ui_filename, '/') - ui_filename);
+
+	lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
+							   lv2_bridge->uri,
+							   bundle_path,
+							   ags_lv2_bridge_lv2ui_write_function,
+							   lv2_bridge,
+							   window,
+							   feature);
+	
+	g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
+			    lv2_bridge, ags_lv2_bridge_lv2ui_idle_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge);
+      }
+    }
+  }
+
+  if(lv2_bridge->ui_feature != NULL &&
+     lv2_bridge->ui_feature[1]->data != NULL){
+    ((struct _LV2UI_Show_Interface *) lv2_bridge->ui_feature[1]->data)->show(lv2_bridge->ui_handle);
+  }
 }
 
 gboolean
 ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge)
 {
-  gtk_widget_hide(lv2_bridge->lv2_gui);
   
   return(TRUE);
 }

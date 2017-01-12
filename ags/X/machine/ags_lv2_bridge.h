@@ -78,6 +78,7 @@ struct _AgsLv2Bridge
   gchar *gui_filename;
   gchar *gui_uri;
 
+  LV2_Feature **ui_feature;
   LV2UI_Handle ui_handle;
   
   GtkWidget *lv2_gui;
@@ -99,6 +100,8 @@ void ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_chan
 void ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge);
+
+gboolean ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget);
 
 AgsLv2Bridge* ags_lv2_bridge_new(GObject *soundcard,
 				 gchar *filename,
