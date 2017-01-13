@@ -21,6 +21,7 @@
 #include <glib-object.h>
 
 #include <gdk/gdk.h>
+#include <pango/pangocairo.h>
 
 #include <X11/Xlib.h>
 
@@ -164,10 +165,11 @@ ags_start_animation_thread(void *ptr)
 {
   GtkWidget *window;
   GdkRectangle rectangle;
-  
-  cairo_t *cr;
+
+  cairo_t *gdk_cr, *cr;
   cairo_surface_t *surface;
-  
+  cairo_surface_t *cached_surface;
+
   AgsLog *log;
 
   gchar *filename;
@@ -187,21 +189,24 @@ ags_start_animation_thread(void *ptr)
   rectangle.width = 800;
   rectangle.height = 450;
   
-  cr = gdk_cairo_create(window->window);
+  gdk_cr = gdk_cairo_create(window->window);
   
   filename = g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png\0");
 
   surface = cairo_image_surface_create_from_png(filename);
+  cr = cairo_create(surface);
   
   cairo_select_font_face(cr, "Georgia\0",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, (gdouble) 11.0);
-
+  
   gdk_window_show(window->window);
   
   gdk_threads_leave();
 
-  log = ags_log_get_instance();    
+  cached_surface = NULL;
+  
+  log = ags_log_get_instance();  
   nth = 0;
   
   while(g_atomic_int_get(&(ags_show_start_animation))){
@@ -226,8 +231,9 @@ ags_start_animation_thread(void *ptr)
 	
 	cairo_move_to(cr,
 		      x0, y0);
+
 	cairo_show_text(cr, list->data);
-	
+
 	list = list->next;
 	y0 -= 12.0;
       }
@@ -235,10 +241,14 @@ ags_start_animation_thread(void *ptr)
       cairo_move_to(cr,
 		    x0, 4.0 + (i + 1) * 12.0);
       cairo_show_text(cr, "...\0");
-
-      gdk_flush();
+      
       nth = g_list_length(start);
-    }    
+    }
+
+    cairo_set_source_surface(gdk_cr, surface, 0, 0);
+    cairo_paint(gdk_cr);
+    cairo_surface_flush(surface);
+    gdk_flush();
   }
 
   gdk_threads_enter();

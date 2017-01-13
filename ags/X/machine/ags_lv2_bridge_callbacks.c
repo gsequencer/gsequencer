@@ -124,10 +124,15 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 							   lv2_bridge,
 							   &plugin_widget,
 							   feature);
-	
-	g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
-			    lv2_bridge, ags_lv2_bridge_lv2ui_idle_timeout);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge);
+
+	if(ui_descriptor->extension_data != NULL){
+	  lv2_bridge->ui_feature[0]->data = ui_descriptor->extension_data(LV2_UI__idleInterface);
+	  lv2_bridge->ui_feature[1]->data = ui_descriptor->extension_data(LV2_UI__showInterface);
+
+	  g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
+			      lv2_bridge, ags_lv2_bridge_lv2ui_idle_timeout);
+	  g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge);
+	}	
       }
     }
   }

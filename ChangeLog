@@ -1,3 +1,9 @@
+ags (0.7.127)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented LV2UI related code to do idle and show interface
+	* improved splash picture to refresh frequently
+
 ags (0.7.126)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
