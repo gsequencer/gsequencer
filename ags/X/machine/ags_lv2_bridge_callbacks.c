@@ -43,6 +43,7 @@ void
 ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 {
   AgsWindow *window;
+  GtkWidget *plugin_widget;
   
   AgsLv2uiPlugin *lv2ui_plugin;
   
@@ -111,6 +112,8 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 	ui_filename = AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename;
 	
 	/* instantiate */
+	plugin_widget = NULL;
+	
 	bundle_path = g_strndup(ui_filename,
 				rindex(ui_filename, '/') - ui_filename);
 
@@ -119,7 +122,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 							   bundle_path,
 							   ags_lv2_bridge_lv2ui_write_function,
 							   lv2_bridge,
-							   window,
+							   &plugin_widget,
 							   feature);
 	
 	g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
