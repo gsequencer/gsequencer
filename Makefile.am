@@ -700,6 +700,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
+	ags/plugin/ags_lv2_option_manager.h \
 	ags/plugin/ags_lv2_uri_map_manager.h \
 	ags/plugin/ags_lv2_urid_manager.h \
 	ags/plugin/ags_lv2_worker_manager.h \
@@ -723,6 +724,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
+	ags/plugin/ags_lv2_option_manager.c \
 	ags/plugin/ags_lv2_uri_map_manager.c \
 	ags/plugin/ags_lv2_urid_manager.c \
 	ags/plugin/ags_lv2_worker_manager.c \
