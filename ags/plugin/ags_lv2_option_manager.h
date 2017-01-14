@@ -88,6 +88,16 @@ gpointer ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option
 						 AgsLv2OptionRessource *option_ressource);
 
 /*  */
+void ags_lv2_option_manager_get_option(AgsLv2OptionManager *option_manager,
+				       LV2_Handle instance,
+				       LV2_Options_Option* options,
+				       GError **error);
+void ags_lv2_option_manager_set_option(AgsLv2OptionManager *option_manager,
+				       LV2_Handle instance,
+				       LV2_Options_Option* options,
+				       GError **error);
+
+/*  */
 AgsLv2OptionManager* ags_lv2_option_manager_get_instance();
 AgsLv2OptionManager* ags_lv2_option_manager_new();
 
