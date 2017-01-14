@@ -33,18 +33,11 @@
 #define AGS_IS_LV2_OPTION_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_OPTION_MANAGER))
 #define AGS_LV2_OPTION_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_OPTION_MANAGER, AgsLv2OptionManagerClass))
 
+#define AGS_LV2_OPTION_RESSOURCE(ptr) ((AgsLv2OptionRessource *)(ptr))
+
 typedef struct _AgsLv2OptionManager AgsLv2OptionManager;
 typedef struct _AgsLv2OptionManagerClass AgsLv2OptionManagerClass;
 typedef struct _AgsLv2OptionRessource AgsLv2OptionRessource;
-
-#define AGS_LV2_OPTION_MANAGER_ERROR (ags_lv2_option_manager_error_quark())
-
-typedef enum{
-  AGS_LV2_OPTION_MANAGER_ERR_UNKNOWN,
-  AGS_LV2_OPTION_MANAGER_ERR_BAD_SUBJECT,
-  AGS_LV2_OPTION_MANAGER_ERR_BAD_KEY,
-  AGS_LV2_OPTION_MANAGER_ERR_BAD_VALUE,
-}AgsLv2OptionManagerError;
 
 struct _AgsLv2OptionManager
 {
@@ -59,22 +52,20 @@ struct _AgsLv2OptionManagerClass
 
   void (*get_option)(AgsLv2OptionManager *option_manager,
 		     LV2_Handle instance,
-		     LV2_Options_Option* options,
-		     GError **error);
+		     LV2_Options_Option *options,
+		     uint32_t *retval);
   void (*set_option)(AgsLv2OptionManager *option_manager,
 		     LV2_Handle instance,
-		     LV2_Options_Option* options,
-		     GError **error);
+		     LV2_Options_Option *options,
+		     uint32_t *retval);
 };
 
 struct _AgsLv2OptionRessource{
   LV2_Handle instance;
-  LV2_Options_Option option;
+  LV2_Options_Option *option;
 };
 
 GType ags_lv2_option_manager_get_type(void);
-
-GQuark ags_lv2_option_manager_error_quark();
 
 /* option ressource */
 AgsLv2OptionRessource* ags_lv2_option_ressource_alloc();
@@ -90,12 +81,12 @@ gpointer ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option
 /*  */
 void ags_lv2_option_manager_get_option(AgsLv2OptionManager *option_manager,
 				       LV2_Handle instance,
-				       LV2_Options_Option* options,
-				       GError **error);
+				       LV2_Options_Option *options,
+				       uint32_t *retval);
 void ags_lv2_option_manager_set_option(AgsLv2OptionManager *option_manager,
 				       LV2_Handle instance,
-				       LV2_Options_Option* options,
-				       GError **error);
+				       LV2_Options_Option *options,
+				       uint32_t *retval);
 
 /*  */
 AgsLv2OptionManager* ags_lv2_option_manager_get_instance();
