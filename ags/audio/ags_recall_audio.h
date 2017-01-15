@@ -36,11 +36,26 @@
 typedef struct _AgsRecallAudio AgsRecallAudio;
 typedef struct _AgsRecallAudioClass AgsRecallAudioClass;
 
+typedef enum{
+  AGS_RECALL_AUDIO_INTERLEAVED        = 1,
+  AGS_RECALL_AUDIO_STEREO             = 1 <<  1,
+  AGS_RECALL_AUDIO_TWO_POINT_ONE      = 1 <<  2,
+  AGS_RECALL_AUDIO_THREE_POINT_ONE    = 1 <<  3,
+  AGS_RECALL_AUDIO_FOUR_POINT_ONE     = 1 <<  4,
+  AGS_RECALL_AUDIO_FIVE_POINT_ONE     = 1 <<  5,
+  AGS_RECALL_AUDIO_SIX_POINT_ONE      = 1 <<  6,
+  AGS_RECALL_AUDIO_SEVEN_POINT_ONE    = 1 <<  7,
+}AgsRecallAudioFlags;
+
 struct _AgsRecallAudio
 {
   AgsRecall recall;
 
+  guint flags;
+
   AgsAudio *audio;
+
+  guint *mapping;
 };
 
 struct _AgsRecallAudioClass

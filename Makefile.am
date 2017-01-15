@@ -576,6 +576,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_ladspa_run.h \
 	ags/audio/ags_recall_lv2.h \
 	ags/audio/ags_recall_lv2_run.h \
+	ags/audio/ags_recall_adaptor_run.h \
 	ags/audio/ags_recall_recycling_dummy.h \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
@@ -627,6 +628,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_ladspa_run.c \
 	ags/audio/ags_recall_lv2.c \
 	ags/audio/ags_recall_lv2_run.c \
+	ags/audio/ags_recall_adaptor_run.c \
 	ags/audio/ags_recall_recycling.c \
 	ags/audio/ags_recall_recycling_dummy.c \
 	ags/audio/ags_recycling.c \
