@@ -1040,6 +1040,9 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   
   /* gui */
   //TODO:JK: move me
+  ags_led_get_type();
+  ags_vindicator_get_type();
+  ags_hindicator_get_type();
   ags_dial_get_type();
 
   /* register machine */

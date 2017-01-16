@@ -65,6 +65,8 @@
 #include <ags/audio/task/ags_add_recall_container.h>
 #include <ags/audio/task/ags_add_recall.h>
 
+#include <ags/widget/ags_led.h>
+#include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>
@@ -1010,9 +1012,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
       
       step_count = AGS_DIAL_DEFAULT_PRECISION;
@@ -1448,9 +1458,17 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       }
 
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
 
       step_count = AGS_DIAL_DEFAULT_PRECISION;
@@ -1898,9 +1916,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       }
 
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
 
       step_count = AGS_DIAL_DEFAULT_PRECISION;

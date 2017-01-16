@@ -48,6 +48,9 @@
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
 
+#include <ags/widget/ags_led.h>
+#include <ags/widget/ags_vindicator.h>
+#include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>

@@ -127,7 +127,7 @@ ags_indicator_init(AgsIndicator *indicator)
   gtk_widget_set_style((GtkWidget *) indicator,
 		       indicator_style);
 
-  indicator->adjustment = NULL;
+  indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
 }
 
 void

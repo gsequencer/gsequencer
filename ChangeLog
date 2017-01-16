@@ -1,3 +1,11 @@
+ags (0.7.128)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsLv2OptionManager
+	* implemented passing options for AgsRecallLv2Run
+	* modified UI to show visualization widgets for plugin output ports
+	* TODO:JK: disable output ports in automation editor
+
 ags (0.7.127)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

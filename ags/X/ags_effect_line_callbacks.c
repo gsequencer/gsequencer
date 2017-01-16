@@ -162,6 +162,21 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
 	      controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
 
 	      if(!g_ascii_strncasecmp(controls,
+				      "led\0",
+				      4)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsLed\0");
+	      }else if(!g_ascii_strncasecmp(controls,
+				      "vertical indicator\0",
+				      19)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsVIndicator\0");
+	      }else if(!g_ascii_strncasecmp(controls,
+				      "horizontal indicator\0",
+				      19)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsHIndicator\0");
+	      }else if(!g_ascii_strncasecmp(controls,
 				      "spin button\0",
 				      12)){
 		control_type_name = g_list_prepend(control_type_name,
