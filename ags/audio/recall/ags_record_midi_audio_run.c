@@ -87,7 +87,7 @@ void ags_record_midi_audio_run_read_resolve_dependency(AgsFileLookup *file_looku
  * @section_id:
  * @include: ags/audio/recall/ags_record_midi_audio_run.h
  *
- * The #AgsRecordMidiAudioRun class record midi.
+ * The #AgsRecordMidiAudioRun does record midi.
  */
 
 enum{
@@ -610,7 +610,7 @@ ags_record_midi_audio_run_duplicate(AgsRecall *recall,
 				    AgsRecallID *recall_id,
 				    guint *n_params, GParameter *parameter)
 {
-  AgsRecordMidiAudioRun *copy, *record_midi_audio_run;
+  AgsRecordMidiAudioRun *copy;
 
   copy = AGS_RECORD_MIDI_AUDIO_RUN(AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->duplicate(recall,
 												       recall_id,
@@ -1142,6 +1142,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     }
   }
 
+  /* call parent */
   AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_pre(recall);
 }
 

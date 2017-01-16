@@ -184,6 +184,15 @@ ags_recall_audio_packable_interface_init(AgsPackableInterface *packable)
 void
 ags_recall_audio_init(AgsRecallAudio *recall_audio)
 {
+  recall_audio->flags = 0;
+
+  recall_audio->samplerate = 0;
+  recall_audio->buffer_size = 0;
+  recall_audio->audio_buffer_util_format = 0;
+  
+  recall_audio->n_channels = 0;
+  recall_audio->mapping = NULL;
+  
   recall_audio->audio = NULL;
 }
 
@@ -202,17 +211,32 @@ ags_recall_audio_set_property(GObject *gobject,
     {
       AgsAudio *audio;
 
+      guint i;
+      
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(recall_audio->audio == audio)
+      if(recall_audio->audio == audio){
 	return;
+      }
 
-      if(recall_audio->audio != NULL)
+      if(recall_audio->audio != NULL){
 	g_object_unref(recall_audio->audio);
-
-      if(audio != NULL)
+      }
+      
+      if(audio != NULL){
 	g_object_ref(audio);
 
+	/* get audio channels */
+	recall_audio->n_channels = audio->audio_channels;
+	
+	/* allocate mapping */
+	recall_audio->mapping = (guint *) malloc(recall_audio->n_channels * sizeof(guint));
+
+	for(i = 0; i < recall_audio->n_channels; i++){
+	  recall_audio->mapping[i] = i;
+	}
+      }
+      
       recall_audio->audio = audio;
     }
     break;
@@ -296,13 +320,15 @@ ags_recall_audio_unpack(AgsPackable *packable)
 
   recall = AGS_RECALL(packable);
 
-  if(recall == NULL)
+  if(recall == NULL){
     return(TRUE);
+  }
 
   recall_container = AGS_RECALL_CONTAINER(recall->container);
 
-  if(recall_container == NULL)
+  if(recall_container == NULL){
     return(TRUE);
+  }
 
   /* ref */
   g_object_ref(recall);
@@ -343,9 +369,14 @@ ags_recall_audio_finalize(GObject *gobject)
 
   recall_audio = AGS_RECALL_AUDIO(gobject);
 
-  if(recall_audio->audio != NULL)
+  if(recall_audio->audio != NULL){
     g_object_unref(G_OBJECT(recall_audio->audio));
+  }
 
+  if(recall_audio->mapping != NULL){
+    free(recall_audio->mapping);
+  }
+  
   G_OBJECT_CLASS(ags_recall_audio_parent_class)->finalize(gobject);
 }
 
@@ -488,12 +519,13 @@ ags_recall_audio_duplicate(AgsRecall *recall,
 {
   AgsRecallAudio *copy;
 
+  /* duplicate */
   copy = AGS_RECALL_AUDIO(AGS_RECALL_CLASS(ags_recall_audio_parent_class)->duplicate(recall,
 										     recall_id,
 										     n_params, parameter));
 
   g_message("ags warning - ags_recall_audio_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
-
+  
   return((AgsRecall *) copy);
 }
 

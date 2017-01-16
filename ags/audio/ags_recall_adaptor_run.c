@@ -24,7 +24,6 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
@@ -35,7 +34,6 @@
 void ags_recall_adaptor_run_class_init(AgsRecallAdaptorRunClass *recall_adaptor_run);
 void ags_recall_adaptor_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_adaptor_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
-void ags_recall_adaptor_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_adaptor_run_init(AgsRecallAdaptorRun *recall_adaptor_run);
 void ags_recall_adaptor_run_set_property(GObject *gobject,
 					 guint prop_id,
@@ -50,29 +48,27 @@ void ags_recall_adaptor_run_connect(AgsConnectable *connectable);
 void ags_recall_adaptor_run_disconnect(AgsConnectable *connectable);
 void ags_recall_adaptor_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_adaptor_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable); 
-void ags_recall_adaptor_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_recall_adaptor_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+
+AgsRecall* ags_recall_adaptor_run_duplicate(AgsRecall *recall,
+					    AgsRecallID *recall_id,
+					    guint *n_params, GParameter *parameter);
+void ags_recall_adaptor_run_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_recall_adaptor_run
- * @short_description: recall midi
+ * @short_description: recall adaptor
  * @title: AgsRecallAdaptorRun
  * @section_id:
  * @include: ags/audio/recall/ags_recall_adaptor_run.h
  *
- * The #AgsRecallAdaptorRun class recall midi.
+ * The #AgsRecallAdaptorRun acts as an adaptor of different audio
+ * mapping. It is used to divide out non-/interleaved multi channel
+ * audio buffers.
  */
-
-enum{
-  PROP_0,
-  PROP_DELAY_AUDIO_RUN,
-  PROP_COUNT_BEATS_AUDIO_RUN,
-};
 
 static gpointer ags_recall_adaptor_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_adaptor_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_recall_adaptor_run_parent_dynamic_connectable_interface;
-static AgsPluginInterface *ags_recall_adaptor_run_parent_plugin_interface;
 
 GType
 ags_recall_adaptor_run_get_type()
@@ -104,12 +100,6 @@ ags_recall_adaptor_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_recall_adaptor_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_adaptor_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							 "AgsRecallAdaptorRun\0",
 							 &ags_recall_adaptor_run_info,
@@ -122,13 +112,9 @@ ags_recall_adaptor_run_get_type()
     g_type_add_interface_static(ags_type_recall_adaptor_run,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_adaptor_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
-  return (ags_type_recall_adaptor_run);
+  return(ags_type_recall_adaptor_run);
 }
 
 void
@@ -152,6 +138,8 @@ ags_recall_adaptor_run_class_init(AgsRecallAdaptorRunClass *recall_adaptor_run)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_adaptor_run;
+
+  recall->run_inter = ags_recall_adaptor_run_run_inter;
 }
 
 void
@@ -170,15 +158,6 @@ ags_recall_adaptor_run_dynamic_connectable_interface_init(AgsDynamicConnectableI
 
   dynamic_connectable->connect_dynamic = ags_recall_adaptor_run_connect_dynamic;
   dynamic_connectable->disconnect_dynamic = ags_recall_adaptor_run_disconnect_dynamic;
-}
-
-void
-ags_recall_adaptor_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_recall_adaptor_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-  
-  plugin->read = ags_recall_adaptor_run_read;
-  plugin->write = ags_recall_adaptor_run_write;
 }
 
 void
@@ -278,23 +257,131 @@ ags_recall_adaptor_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connect
   recall_adaptor_run = AGS_RECALL_ADAPTOR_RUN(dynamic_connectable);
 }
 
-void
-ags_recall_adaptor_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+AgsRecall*
+ags_recall_adaptor_run_duplicate(AgsRecall *recall,
+				 AgsRecallID *recall_id,
+				 guint *n_params, GParameter *parameter)
 {
-  /* read parent */
-  ags_recall_adaptor_run_parent_plugin_interface->read(file, node, plugin);
+  AgsRecallAudio *recall_audio;
+  AgsRecallAdaptorRun *copy;
 
+  AgsMutexManager *mutex_manager;
+
+  guint buffer_size;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /*  */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get recall audio */
+  recall_audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio;
+
+  /* duplicate */
+  copy = AGS_RECALL_ADAPTOR_RUN(AGS_RECALL_CLASS(ags_recall_adaptor_run_parent_class)->duplicate(recall,
+												 recall_id,
+												 n_params, parameter));
+
+  /* audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 recall_audio->audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get buffer size */
+  pthread_mutex_lock(audio_mutex);
+  
+  buffer_size = recall_audio->audio->buffer_size;
+
+  pthread_mutex_unlock(audio_mutex);
+  
+  /* allocate multi-channel buffer */
+  copy->buffer = malloc(recall_audio->n_channels * buffer_size);
+  memset(copy->buffer, 0, recall_audio->n_channels * buffer_size);
+  
+  return((AgsRecall *) copy);
 }
 
-xmlNode*
-ags_recall_adaptor_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+void
+ags_recall_adaptor_run_run_inter(AgsRecall *recall)
 {
-  xmlNode *node, *child;
+  AgsAudio *audio;
+  AgsChannel *start, *current;
+  AgsRecallAudio *recall_audio;
+  AgsRecallAdaptorRun *recall_adaptor_run;
+  
+  AgsMutexManager *mutex_manager;
 
-  /* write parent */
-  ags_recall_adaptor_run_parent_plugin_interface->write(file, node, plugin);
+  guint samplerate;
+  guint buffer_size;
+  guint format;
 
-  return(node);
+  guint audio_channels;
+
+  guint i;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /*  */
+  recall_adaptor_run = (AgsRecallAdaptorRun *) recall;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get recall audio */
+  recall_audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio;
+  audio = recall_audio->audio;
+  
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get buffer size */
+  pthread_mutex_lock(audio_mutex);
+
+  start = audio->input;
+
+  samplerate = audio->samplerate;
+  buffer_size = audio->buffer_size;
+  format = audio->format;
+
+  audio_channels = audio->audio_channels;
+  
+  pthread_mutex_unlock(audio_mutex);
+  
+  /* fill the adapted buffers */
+  for(i = 0; i < audio_channels; i++){
+    current = ags_channel_nth(start, recall_audio->mapping[i]);
+
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     current);
+
+    pthread_mutex_unlock(application_mutex);
+
+    if(current != NULL){
+      pthread_mutex_lock(channel_mutex);
+      pthread_mutex_unlock(channel_mutex);
+      
+      //TODO:JK: implement me
+      //      ags_audio_buffer_util_copy_buffer_to_buffer(,);
+    }
+  }
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_recall_adaptor_run_parent_class)->run_inter(recall);
 }
 
 /**

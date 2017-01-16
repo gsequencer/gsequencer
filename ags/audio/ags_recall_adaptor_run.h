@@ -34,12 +34,16 @@
 typedef struct _AgsRecallAdaptorRun AgsRecallAdaptorRun;
 typedef struct _AgsRecallAdaptorRunClass AgsRecallAdaptorRunClass;
 
+typedef enum{
+  AGS_RECALL_ADAPTOR_RUN_PROCESSED     = 1,
+};
+
 struct _AgsRecallAdaptorRun
 {
   AgsRecallAudioRun recall_audio_run;
 
   guint flags;
-
+  
   void *buffer;
 };
 
