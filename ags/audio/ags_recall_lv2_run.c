@@ -32,6 +32,7 @@
 #include <ags/plugin/ags_lv2_worker_manager.h>
 #include <ags/plugin/ags_lv2_worker.h>
 #include <ags/plugin/ags_lv2_urid_manager.h>
+#include <ags/plugin/ags_lv2_option_manager.h>
 
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -50,6 +51,9 @@
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
+#include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
+#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
+#include <lv2/lv2plug.in/ns/ext/options/options.h>
 
 void ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run_class);
 void ags_recall_lv2_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -287,6 +291,9 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   LV2_URID_Map *urid_map;
   LV2_URID_Unmap *urid_unmap;
 
+  LV2_Options_Interface *options_interface;
+  LV2_Options_Option *options;
+  
   LV2_Feature **feature;
   
   /* call parent */
@@ -300,7 +307,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   /* feature array */
   recall_lv2_run->feature = 
-    feature = (LV2_Feature **) malloc(7 * sizeof(LV2_Feature *));
+    feature = (LV2_Feature **) malloc(8 * sizeof(LV2_Feature *));
 
   /* URI map feature */
   uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
@@ -363,7 +370,16 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   feature[5]->URI = LV2_URID_UNMAP_URI;
   feature[5]->data = urid_unmap;
 
-  feature[6] = NULL;
+  /* Options interface */
+  options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
+  options_interface->set = ags_lv2_option_manager_lv2_options_set;
+  options_interface->get = ags_lv2_option_manager_lv2_options_get;
+  
+  feature[6]->URI = LV2_OPTIONS__interface;
+  feature[6]->data = options_interface;
+
+  /* terminate */
+  feature[7] = NULL;
 
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
@@ -389,6 +405,56 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 											  feature);
   AGS_LV2_WORKER(worker_handle)->handle = recall_lv2_run->lv2_handle[0];
 
+  /* some options */
+  options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
+
+  /* samplerate */
+  options[0].context = LV2_OPTIONS_INSTANCE;
+  options[0].subject = 0;
+  options[0].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_PARAMETERS__sampleRate);
+
+  options[0].size = sizeof(float);
+  options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_ATOM__Float);
+  options[0].value = &(audio_signal->samplerate);
+  
+  /* min-block-length */
+  options[1].context = LV2_OPTIONS_INSTANCE;
+  options[1].subject = 0;
+  options[1].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_BUF_SIZE__minBlockLength);
+
+  options[1].size = sizeof(float);
+  options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_ATOM__Int);
+  options[1].value = &(audio_signal->buffer_size);
+
+  /* max-block-length */
+  options[2].context = LV2_OPTIONS_INSTANCE;
+  options[2].subject = 0;
+  options[2].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_BUF_SIZE__maxBlockLength);
+
+  options[2].size = sizeof(float);
+  options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_ATOM__Int);
+  options[2].value = &(audio_signal->buffer_size);
+
+  /* terminate */
+  options[3].context = LV2_OPTIONS_INSTANCE;
+  options[3].subject = 0;
+  options[3].key = 0;
+
+  options[3].size = 0;
+  options[3].type = 0;
+  options[3].value = NULL;
+
+  /* set options */
+  ags_lv2_option_manager_lv2_options_set(recall_lv2_run->lv2_handle[0],
+					 options);
+
+  /*  */  
   free(path);
   
 #ifdef AGS_DEBUG
