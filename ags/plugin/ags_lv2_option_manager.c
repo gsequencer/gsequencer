@@ -522,7 +522,34 @@ uint32_t
 ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
 				       LV2_Options_Option* options)
 {
-  //TODO:JK: implement me
+  guint retval, tmpval;
+  guint i;
+  
+  if(options == NULL){
+    return(LV2_OPTIONS_ERR_BAD_SUBJECT |
+	   LV2_OPTIONS_ERR_BAD_KEY);
+  }
+
+  retval = 0;
+  
+  for(i = 0; ; i++){
+    if(options[i].subject == 0 &&
+       options[i].key == 0 &&
+       options[i].type == 0 &&
+       options[i].size == 0 &&
+       options[i].value == NULL){
+      break;
+    }
+
+    ags_lv2_option_manager_get_option(ags_lv2_option_manager_get_instance(),
+				      instance,
+				      &(options[i]),
+				      &tmpval);
+
+    retval |= tmpval;
+  }
+
+  return(retval);
 }
 
 /**
@@ -538,7 +565,34 @@ uint32_t
 ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
 				       LV2_Options_Option* options)
 {
-  //TODO:JK: implement me
+  guint retval, tmpval;
+  guint i;
+  
+  if(options == NULL){
+    return(LV2_OPTIONS_ERR_BAD_SUBJECT |
+	   LV2_OPTIONS_ERR_BAD_KEY);
+  }
+
+  retval = 0;
+  
+  for(i = 0; ; i++){
+    if(options[i].subject == 0 &&
+       options[i].key == 0 &&
+       options[i].type == 0 &&
+       options[i].size == 0 &&
+       options[i].value == NULL){
+      break;
+    }
+
+    ags_lv2_option_manager_set_option(ags_lv2_option_manager_get_instance(),
+				      instance,
+				      &(options[i]),
+				      &tmpval);
+
+    retval |= tmpval;
+  }
+
+  return(retval);
 }
 
 /**
