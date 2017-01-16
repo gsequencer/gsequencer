@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2015,2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,11 +52,11 @@ struct _AgsLv2OptionManagerClass
 
   void (*get_option)(AgsLv2OptionManager *option_manager,
 		     LV2_Handle instance,
-		     LV2_Options_Option *options,
+		     LV2_Options_Option *option,
 		     uint32_t *retval);
   void (*set_option)(AgsLv2OptionManager *option_manager,
 		     LV2_Handle instance,
-		     LV2_Options_Option *options,
+		     LV2_Options_Option *option,
 		     uint32_t *retval);
 };
 
@@ -71,22 +71,28 @@ GType ags_lv2_option_manager_get_type(void);
 AgsLv2OptionRessource* ags_lv2_option_ressource_alloc();
 
 gboolean ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
-						 AgsLv2OptionRessource *option_ressource, gpointer data);
+						 AgsLv2OptionRessource *lv2_option_ressource, gpointer data);
 gboolean ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
-						 AgsLv2OptionRessource *option_ressource);
+						 AgsLv2OptionRessource *lv2_option_ressource);
 
 gpointer ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
-						 AgsLv2OptionRessource *option_ressource);
+						 AgsLv2OptionRessource *lv2_option_ressource);
 
-/*  */
-void ags_lv2_option_manager_get_option(AgsLv2OptionManager *option_manager,
+/* get and set option */
+void ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
 				       LV2_Handle instance,
-				       LV2_Options_Option *options,
+				       LV2_Options_Option *option,
 				       uint32_t *retval);
-void ags_lv2_option_manager_set_option(AgsLv2OptionManager *option_manager,
+void ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
 				       LV2_Handle instance,
-				       LV2_Options_Option *options,
+				       LV2_Options_Option *option,
 				       uint32_t *retval);
+
+/* the lv2 interface */
+uint32_t ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
+						LV2_Options_Option* options);
+uint32_t ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
+						LV2_Options_Option* options);
 
 /*  */
 AgsLv2OptionManager* ags_lv2_option_manager_get_instance();

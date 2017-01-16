@@ -248,6 +248,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The ::instantiate signal creates a new instance of plugin.
    * 
+   * Returns: the new plugin instance
+   * 
    * Since: 0.7.6
    */
   base_plugin_signals[INSTANTIATE] =

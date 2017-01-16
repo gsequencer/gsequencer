@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2015,2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/plugin/ags_lv2_option_manager.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_marshal.h>
 
 void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager);
 void ags_lv2_option_manager_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -118,7 +119,51 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
   lv2_option_manager->set_option = ags_lv2_option_manager_set_option;
 
   /* signals */
-  
+  /**
+   * AgsLv2OptionManager::get-option:
+   * @option_manager: the plugin to instantiate
+   * @intstance: the LV2 plugin instance
+   * @option: the LV2 option pointer
+   * @retval: the location of the return value
+   *
+   * The ::get-option signal gets options of the manager.
+   * 
+   * Since: 0.7.128
+   */
+  lv2_option_manager_signals[GET_OPTION] =
+    g_signal_new("get-option\0",
+		 G_TYPE_FROM_CLASS(lv2_option_manager),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLv2OptionManagerClass, get_option),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER);
+
+  /**
+   * AgsLv2OptionManager::set-option:
+   * @option_manager: the plugin to instantiate
+   * @intstance: the LV2 plugin instance
+   * @option: the LV2 option pointer
+   * @retval: the location of the return value
+   *
+   * The ::set-option signal sets options for the manager.
+   * 
+   * Since: 0.7.128
+   */
+  lv2_option_manager_signals[SET_OPTION] =
+    g_signal_new("set-option\0",
+		 G_TYPE_FROM_CLASS(lv2_option_manager),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLv2OptionManagerClass, set_option),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER);
 }
 
 void
@@ -219,6 +264,7 @@ ags_lv2_option_ressource_alloc()
   lv2_option_ressource->option->context = 0;
   lv2_option_ressource->option->subject = 0;
   lv2_option_ressource->option->key = 0;
+  
   lv2_option_ressource->option->size = 0;
   lv2_option_ressource->option->type = 0;  
   lv2_option_ressource->option->value = NULL;
@@ -227,7 +273,7 @@ ags_lv2_option_ressource_alloc()
 }
 
 /**
- * ags_lv2_option_manager_insert:
+ * ags_lv2_option_manager_ressource_insert:
  * @lv2_option_manager: the #AgsLv2OptionManager
  * @lv2_option_ressource: the #AgsOptionRessource-struct as key
  * @data: the data
@@ -239,8 +285,8 @@ ags_lv2_option_ressource_alloc()
  * Since: 0.7.128
  */
 gboolean
-ags_lv2_option_manager_insert(AgsLv2OptionManager *lv2_option_manager,
-			      AgsLv2OptionRessource *lv2_option_ressource, gpointer data)
+ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
+					AgsLv2OptionRessource *lv2_option_ressource, gpointer data)
 {
   if(lv2_option_manager == NULL ||
      lv2_option_ressource == NULL ||
@@ -255,7 +301,7 @@ ags_lv2_option_manager_insert(AgsLv2OptionManager *lv2_option_manager,
 }
 
 /**
- * ags_lv2_option_manager_remove:
+ * ags_lv2_option_manager_ressource_remove:
  * @lv2_option_manager: the #AgsLv2OptionManager
  * @lv2_option_ressource: the struct to remove
  * 
@@ -266,8 +312,8 @@ ags_lv2_option_manager_insert(AgsLv2OptionManager *lv2_option_manager,
  * Since: 0.7.128
  */
 gboolean
-ags_lv2_option_manager_remove(AgsLv2OptionManager *lv2_option_manager,
-			      AgsLv2OptionRessource *lv2_option_ressource)
+ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
+					AgsLv2OptionRessource *lv2_option_ressource)
 {
   gpointer data;
 
@@ -283,7 +329,7 @@ ags_lv2_option_manager_remove(AgsLv2OptionManager *lv2_option_manager,
 }
 
 /**
- * ags_lv2_option_manager_lookup:
+ * ags_lv2_option_manager_ressource_lookup:
  * @lv2_option_manager: the #AgsLv2OptionManager
  * @lv2_option_ressource: the #AgsLv2OptionRessource to lookup
  *
@@ -295,8 +341,8 @@ ags_lv2_option_manager_remove(AgsLv2OptionManager *lv2_option_manager,
  * Since: 0.7.128
  */
 gpointer
-ags_lv2_option_manager_lookup(AgsLv2OptionManager *lv2_option_manager,
-			      AgsLv2OptionRessource *lv2_option_ressource)
+ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
+					AgsLv2OptionRessource *lv2_option_ressource)
 {
   gpointer data;
   
@@ -309,39 +355,44 @@ ags_lv2_option_manager_lookup(AgsLv2OptionManager *lv2_option_manager,
 void
 ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
 				       LV2_Handle instance,
-				       LV2_Options_Option *options,
+				       LV2_Options_Option *option,
 				       uint32_t *retval)
 {
   gpointer data;
   gpointer key_ptr, value_ptr;
-  
-  if(options == NULL){
-    return;
-  }
 
   /* initial set to success */
   if(retval != NULL){
     *retval = 0;
   }
+  
+  /* check option to be non NULL */
+  if(option == NULL){
+    if(retval != NULL){
+      *retval |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
+		  LV2_OPTIONS_ERR_BAD_KEY);
+    }
 
-  for(; options->subject != 0; options++){
-    if(options->context == LV2_OPTIONS_RESOURCE){
-      key_ptr = NULL;
-      value_ptr = NULL;
+    return;
+  }
+
+  /* get option */
+  if(option->context == LV2_OPTIONS_RESOURCE){
+    key_ptr = NULL;
+    value_ptr = NULL;
       
-      if(g_hash_table_lookup_extended(lv2_option_manager->ressource,
-				      options,
-				      &key_ptr, &value_ptr)){
-	/* set requested fields */
-	options->type = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type;
-	options->size = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size;
-	options->value = value_ptr;
-      }else{
-	/* do error reporting */
-	if(retval != NULL){
-	  *retval |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
-		      LV2_OPTIONS_ERR_BAD_KEY);
-	}
+    if(g_hash_table_lookup_extended(lv2_option_manager->ressource,
+				    option,
+				    &key_ptr, &value_ptr)){
+      /* set requested fields */
+      option->type = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type;
+      option->size = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size;
+      option->value = value_ptr;
+    }else{
+      /* do error reporting */
+      if(retval != NULL){
+	*retval |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
+		    LV2_OPTIONS_ERR_BAD_KEY);
       }
     }
   }
@@ -351,7 +402,7 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
  * ags_lv2_option_manager_get_option:
  * @lv2_option_manager: the #AgsLv2OptionManager
  * @instance: the instance
- * @options: the options
+ * @option: the option
  * @retval: return value for #LV2_Options_Status-enum
  * 
  * Get option.
@@ -361,7 +412,7 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
 void
 ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
 				  LV2_Handle instance,
-				  LV2_Options_Option *options,
+				  LV2_Options_Option *option,
 				  uint32_t *retval)
 {
   g_return_if_fail(AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager));
@@ -369,7 +420,7 @@ ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
   g_signal_emit(G_OBJECT(lv2_option_manager),
 		lv2_option_manager_signals[GET_OPTION], 0,
 		instance,
-		options,
+		option,
 		retval);
   g_object_unref(G_OBJECT(lv2_option_manager));
 }
@@ -377,17 +428,65 @@ ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
 void
 ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
 				       LV2_Handle instance,
-				       LV2_Options_Option *options,
+				       LV2_Options_Option *option,
 				       uint32_t *retval)
 {
-  //TODO:JK: implement me
+  gpointer data;
+  gpointer key_ptr, value_ptr;
+
+  /* initial set to success */
+  if(retval != NULL){
+    *retval = 0;
+  }
+
+  /* check option to be non NULL */
+  if(option == NULL){
+    *retval |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
+		LV2_OPTIONS_ERR_BAD_KEY);
+    
+    return;
+  }
+
+  /* set option */
+  if(option->context == LV2_OPTIONS_RESOURCE){
+    key_ptr = NULL;
+    value_ptr = NULL;
+      
+    if(g_hash_table_lookup_extended(lv2_option_manager->ressource,
+				    option,
+				    &key_ptr, &value_ptr)){
+      /* set fields */
+      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type = option->type;
+      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size = option->size;
+      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->value = option->value;
+    }else{
+      AgsLv2OptionRessource *lv2_option_ressource;
+      
+      /* allocate new */
+      lv2_option_ressource = ags_lv2_option_ressource_alloc();
+
+      /* set fields */
+      lv2_option_ressource->instance = instance;
+      
+      lv2_option_ressource->option->context = option->context;
+      lv2_option_ressource->option->subject = option->subject;
+      lv2_option_ressource->option->key = option->key;
+
+      lv2_option_ressource->option->type = option->type;
+      lv2_option_ressource->option->size = option->size;
+      lv2_option_ressource->option->value = option->value;
+
+      ags_lv2_option_manager_ressource_insert(lv2_option_manager,
+					      lv2_option_ressource, option->value);
+    }
+  }
 }
 
 /**
  * ags_lv2_option_manager_set_option:
  * @lv2_option_manager: the #AgsLv2OptionManager
  * @instance: the instance
- * @options: the options
+ * @option: the option
  * @retval: return value for #LV2_Options_Status-enum
  * 
  * Set option.
@@ -397,7 +496,7 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
 void
 ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
 				  LV2_Handle instance,
-				  LV2_Options_Option *options,
+				  LV2_Options_Option *option,
 				  uint32_t *retval)
 {
   g_return_if_fail(AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager));
@@ -405,9 +504,41 @@ ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
   g_signal_emit(G_OBJECT(lv2_option_manager),
 		lv2_option_manager_signals[SET_OPTION], 0,
 		instance,
-		options,
+		option,
 		retval);
   g_object_unref(G_OBJECT(lv2_option_manager));
+}
+
+/**
+ * ags_lv2_option_manager_lv2_options_get:
+ * @instance: the lv2 instance
+ * @options: the LV2_Options
+ * 
+ * The LV2 options interface's get method.
+ * 
+ * Since: 0.7.128
+ */
+uint32_t
+ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
+				       LV2_Options_Option* options)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_lv2_option_manager_lv2_options_set:
+ * @instance: the lv2 instance
+ * @options: the LV2_Options
+ * 
+ * The LV2 options interface's set method.
+ * 
+ * Since: 0.7.128
+ */
+uint32_t
+ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
+				       LV2_Options_Option* options)
+{
+  //TODO:JK: implement me
 }
 
 /**
