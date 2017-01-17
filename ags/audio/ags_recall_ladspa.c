@@ -640,6 +640,10 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  current->flags |= AGS_PORT_IS_OUTPUT;
+	}
 	
 	current->port_descriptor = port_descriptor->data;	
 	ags_recall_ladspa_load_conversion(recall_ladspa,

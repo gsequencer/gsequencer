@@ -131,7 +131,7 @@ enum{
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
 
-GHashTable *ags_indicator_queue_draw = NULL;
+GHashTable *ags_line_indicator_queue_draw = NULL;
 
 GType
 ags_line_get_type(void)
@@ -388,8 +388,8 @@ ags_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_line_init(AgsLine *line)
 {
-  if(ags_indicator_queue_draw == NULL){
-    ags_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+  if(ags_line_indicator_queue_draw == NULL){
+    ags_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 						     NULL,
 						     NULL);
   }
@@ -443,7 +443,7 @@ ags_line_finalize(GObject *gobject)
   line = AGS_LINE(gobject);
   
   if(line->indicator != NULL){
-    g_hash_table_remove(ags_indicator_queue_draw,
+    g_hash_table_remove(ags_line_indicator_queue_draw,
 			line->indicator);
   }
   
@@ -946,8 +946,12 @@ ags_line_add_ladspa_effect(AgsLine *line,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
 				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }else if(AGS_IS_INDICATOR(child_widget)){
+	g_hash_table_insert(ags_line_indicator_queue_draw,
+			    child_widget, ags_line_indicator_queue_draw_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
-
+      
 #ifdef AGS_DEBUG
       g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
 #endif
@@ -1166,6 +1170,10 @@ ags_line_add_lv2_effect(AgsLine *line,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
 				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }else if(AGS_IS_INDICATOR(child_widget)){
+	g_hash_table_insert(ags_line_indicator_queue_draw,
+			    child_widget, ags_line_indicator_queue_draw_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -1547,7 +1555,7 @@ ags_line_find_next_grouped(GList *line)
 gboolean
 ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 {
-  if(g_hash_table_lookup(ags_indicator_queue_draw,
+  if(g_hash_table_lookup(ags_line_indicator_queue_draw,
 			 widget) != NULL){
     gtk_widget_queue_draw(widget);
     

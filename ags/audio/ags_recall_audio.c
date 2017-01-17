@@ -393,6 +393,12 @@ ags_recall_audio_load_automation(AgsRecall *recall,
   audio = AGS_RECALL_AUDIO(recall)->audio;
 
   while(automation_port != NULL){
+    if((AGS_PORT_IS_OUTPUT & (AGS_PORT(automation_port->data)->flags)) != 0){
+      automation_port = automation_port->next;
+
+      continue;
+    }
+
     if(ags_automation_find_port(audio->automation,
 				automation_port->data) == NULL){
       current = ags_automation_new((GObject *) audio,

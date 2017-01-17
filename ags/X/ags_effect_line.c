@@ -132,6 +132,8 @@ enum{
 static gpointer ags_effect_line_parent_class = NULL;
 static guint effect_line_signals[LAST_SIGNAL];
 
+GHashTable *ags_effect_line_indicator_queue_draw = NULL;
+
 GType
 ags_effect_line_get_type(void)
 {
@@ -757,6 +759,10 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
 				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }else if(AGS_IS_INDICATOR(child_widget)){
+	g_hash_table_insert(ags_effect_line_indicator_queue_draw,
+			    child_widget, ags_effect_line_indicator_queue_draw_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_line_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -978,6 +984,10 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
 				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }else if(AGS_IS_INDICATOR(child_widget)){
+	g_hash_table_insert(ags_effect_line_indicator_queue_draw,
+			    child_widget, ags_effect_line_indicator_queue_draw_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_line_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -1327,6 +1337,29 @@ ags_effect_line_find_port(AgsEffectLine *effect_line)
   g_object_unref((GObject *) effect_line);
 
   return(list);
+}
+
+/**
+ * ags_effect_line_indicator_queue_draw_timeout:
+ * @widget: the indicator widgt
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 0.7.128
+ */
+gboolean
+ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
+{
+  if(g_hash_table_lookup(ags_effect_line_indicator_queue_draw,
+			 widget) != NULL){
+    gtk_widget_queue_draw(widget);
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

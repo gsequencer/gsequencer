@@ -62,7 +62,7 @@ void ags_mixer_input_line_map_recall(AgsLine *line,
 static gpointer ags_mixer_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_mixer_input_line_parent_connectable_interface;
 
-extern GHashTable *ags_indicator_queue_draw;
+extern GHashTable *ags_line_indicator_queue_draw;
 
 GType
 ags_mixer_input_line_get_type()
@@ -145,7 +145,7 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 		   1, 1);
   widget = gtk_bin_get_child(GTK_BIN(line_member));
   AGS_LINE(mixer_input_line)->indicator = widget;
-  g_hash_table_insert(ags_indicator_queue_draw,
+  g_hash_table_insert(ags_line_indicator_queue_draw,
 		      widget, ags_line_indicator_queue_draw_timeout);
   g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
 

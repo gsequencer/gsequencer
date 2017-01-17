@@ -767,7 +767,11 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 			       "port-value-is-pointer\0", FALSE,
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
-
+	
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  current->flags |= AGS_PORT_IS_OUTPUT;
+	}
+	
 	current->port_descriptor = port_descriptor->data;
 	ags_recall_lv2_load_conversion(recall_lv2,
 				       (GObject *) current,

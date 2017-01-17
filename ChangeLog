@@ -4,7 +4,7 @@ ags (0.7.128)
 	* implemented AgsLv2OptionManager
 	* implemented passing options for AgsRecallLv2Run
 	* modified UI to show visualization widgets for plugin output ports
-	* TODO:JK: disable output ports in automation editor
+	* disabled loading automation of output ports
 
 ags (0.7.127)
 
