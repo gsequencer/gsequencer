@@ -41,11 +41,29 @@ AgsApplicationContext *application_context;
 
 volatile struct timespec *synchronization_idle;
 
+typedef enum{
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_NANOSLEEP       = 1,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_COMPUTE_ADD     = 1 <<  1,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_COMPUTE_SIN     = 1 <<  2,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_COMPUTE_LOG     = 1 <<  3,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_HARD_LIMIT      = 1 <<  4,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_SOFT_LIMIT      = 1 <<  5,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_INTERRUPT       = 1 <<  6,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_START_QUEUE     = 1 <<  7,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_START_WAIT      = 1 <<  8,
+  AGS_FUNCTIONAL_THREAD_TEST_SYNCHRONIZATION_STRATEGY_START_CONDITION = 1 <<  9,
+}AgsFunctionalThreadTestSynchronizationStrategyFlags;
+
 struct _AgsFunctionalThreadTestSynchronizationStrategy{
   guint strategy_flags;
   
   gchar *strategy_name;
 
+  guint buffer_length;
+  GType buffer_type;
+  
+  void *buffer;
+  
   void (*compute_idle)(struct timespec *idle_source);
 };
 
