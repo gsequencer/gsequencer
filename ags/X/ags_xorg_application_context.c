@@ -63,6 +63,9 @@
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/audio/task/ags_cancel_channel.h>
+
 #include <ags/audio/recall/ags_play_audio.h>
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
@@ -982,6 +985,12 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   /*  */
   ags_audio_file_get_type();
   ags_audio_file_link_get_type();
+
+  /* register tasks */
+  ags_cancel_audio_get_type();
+  ags_cancel_channel_get_type();
+  
+  //TODO:JK: extend me
   
   /* register recalls */
   ags_recall_channel_run_dummy_get_type();
@@ -1041,6 +1050,7 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   /* gui */
   //TODO:JK: move me
   ags_led_get_type();
+  ags_indicator_get_type();
   ags_vindicator_get_type();
   ags_hindicator_get_type();
   ags_dial_get_type();

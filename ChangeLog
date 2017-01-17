@@ -4,7 +4,9 @@ ags (0.7.128)
 	* implemented AgsLv2OptionManager
 	* implemented passing options for AgsRecallLv2Run
 	* modified UI to show visualization widgets for plugin output ports
+	* modified ags-peak, ags-volume and ags-mute recalls to use float ports
 	* disabled loading automation of output ports
+	* fixed buggy code in ags_machine_selector_remove_index() by a work-around has a need for refactoring
 
 ags (0.7.127)
 

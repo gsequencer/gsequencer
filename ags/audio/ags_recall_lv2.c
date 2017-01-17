@@ -440,10 +440,11 @@ ags_recall_lv2_connect(AgsConnectable *connectable)
     return;
   }
 
-  //  g_message("load automation %x\0", recall);
+  /* load automation */
   ags_recall_load_automation(recall,
 			     g_list_copy(recall->port));
 
+  /* call parent */
   ags_recall_lv2_parent_connectable_interface->connect(connectable);
 }
 

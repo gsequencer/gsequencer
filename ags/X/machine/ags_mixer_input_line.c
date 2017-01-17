@@ -270,7 +270,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
     recall_handler->signal_name = "run-post\0";
-    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
     recall_handler->data = (gpointer) line;
 
     ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
@@ -286,7 +286,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
     recall_handler->signal_name = "run-post\0";
-    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
     recall_handler->data = (gpointer) line;
 
     ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);

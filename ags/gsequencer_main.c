@@ -434,6 +434,8 @@ ags_setup(int argc, char **argv)
   ags_application_context->argc = argc;
   ags_application_context->argv = argv;
 
+  ags_application_context_register_types(ags_application_context);
+
   /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
   

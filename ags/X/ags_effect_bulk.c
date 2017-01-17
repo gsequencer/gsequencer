@@ -107,6 +107,7 @@ gchar* ags_effect_bulk_get_version(AgsPlugin *plugin);
 void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
+void ags_effect_bulk_finalize(GObject *gobject);
 void ags_effect_bulk_show(GtkWidget *widget);
 
 GList* ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
@@ -230,6 +231,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   gobject->set_property = ags_effect_bulk_set_property;
   gobject->get_property = ags_effect_bulk_get_property;
 
+  gobject->finalize = ags_effect_bulk_finalize;
   
   /* properties */
   /**
@@ -488,6 +490,8 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     0);
 
   effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) effect_bulk);
+
+  effect_bulk->queued_drawing = NULL;
 }
 
 void
@@ -708,6 +712,41 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
 }
 
 void
+ags_effect_bulk_finalize(GObject *gobject)
+{
+  AgsEffectBulk *effect_bulk;
+
+  GList *list;
+  
+  effect_bulk = (AgsEffectBulk *) gobject;
+
+  /* unref audio */
+  if(effect_bulk->audio != NULL){
+    g_object_unref(effect_bulk->audio);
+  }
+
+  /* free plugin list */
+  g_list_free_full(effect_bulk,
+		   ags_effect_bulk_plugin_free);
+
+  /* destroy plugin browser */
+  gtk_widget_destroy(effect_bulk->plugin_browser);
+
+  /* remove of the queued drawing hash */
+  list = effect_bulk->queued_drawing;
+
+  while(list != NULL){
+    g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+			list->data);
+
+    list = list->next;
+  }
+  
+  /* call parent */  
+  G_OBJECT_CLASS(ags_effect_bulk_parent_class)->finalize(gobject);
+}
+
+void
 ags_effect_bulk_show(GtkWidget *widget)
 {
   AgsEffectBulk *effect_bulk;
@@ -725,6 +764,17 @@ ags_effect_bulk_show(GtkWidget *widget)
   }
 }
 
+/**
+ * ags_effect_bulk_plugin_alloc:
+ * @filename: the filename as string
+ * @effect: the effect as string
+ * 
+ * Allocate #AgsEffectBulkPlugin-struct.
+ * 
+ * Returns: the newly allocated #AgsEffectBulkPlugin-struct
+ * 
+ * Since: 0.7.128
+ */
 AgsEffectBulkPlugin*
 ags_effect_bulk_plugin_alloc(gchar *filename,
 			     gchar *effect)
@@ -739,6 +789,36 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
   effect_plugin->control_type_name = NULL;
   
   return(effect_plugin);
+}
+
+/**
+ * ags_effect_bulk_plugin_free:
+ * @effect_bulk_plugin: the #AgsEffectBulkPlugin-struct
+ * 
+ * Free @effect_bulk_plugin.
+ * 
+ * Since: 0.7.128
+ */
+void
+ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin)
+{
+  if(effect_bulk_plugin == NULL){
+    return;
+  }
+
+  if(effect_bulk_plugin->filename != NULL){
+    free(effect_bulk_plugin->filename);
+  }
+
+  if(effect_bulk_plugin->effect != NULL){
+    free(effect_bulk_plugin->effect);
+  }
+
+  if(effect_bulk_plugin->control_type_name != NULL){
+    g_list_free(effect_bulk_plugin->control_type_name);
+  }
+  
+  free(effect_bulk_plugin);
 }
 
 GList*
@@ -1183,6 +1263,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
 			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+						     child_widget);
 	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
@@ -1669,6 +1751,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
 			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+						     child_widget);
 	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
@@ -2122,6 +2206,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
 			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+						     child_widget);
 	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 

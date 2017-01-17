@@ -63,6 +63,8 @@ struct _AgsEffectLine
   GtkLabel *label;
   
   GtkTable *table;
+
+  GList *queued_drawing;
 };
 
 struct _AgsEffectLineClass

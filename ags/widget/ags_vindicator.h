@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include "ags_indicator.h"

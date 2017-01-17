@@ -43,6 +43,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_lv2.h>
 
@@ -439,14 +440,27 @@ void
 ags_line_finalize(GObject *gobject)
 {
   AgsLine *line;
-
-  line = AGS_LINE(gobject);
+  GList *list;
   
+  line = AGS_LINE(gobject);
+
+  /* remove indicator widget */
   if(line->indicator != NULL){
     g_hash_table_remove(ags_line_indicator_queue_draw,
 			line->indicator);
   }
-  
+
+  /* remove of the queued drawing hash */
+  list = line->queued_drawing;
+
+  while(list != NULL){
+    g_hash_table_remove(ags_line_indicator_queue_draw,
+			list->data);
+
+    list = list->next;
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_line_parent_class)->finalize(gobject);
 }
 
@@ -746,6 +760,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
   AgsLineMember *line_member;
   GtkAdjustment *adjustment;
 
+  AgsRecallHandler *recall_handler;
+
   AgsLadspaPlugin *ladspa_plugin;
 
   AgsMutexManager *mutex_manager;
@@ -757,11 +773,17 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
   gdouble step;
   guint port_count;
+  gboolean has_output_port;
+
   guint x, y;
   guint k;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
@@ -781,10 +803,6 @@ ags_line_add_ladspa_effect(AgsLine *line,
     list = list->next;
   }
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get channel mutex */
   pthread_mutex_lock(application_mutex);
 
@@ -793,18 +811,49 @@ ags_line_add_ladspa_effect(AgsLine *line,
   
   pthread_mutex_unlock(application_mutex);
   
-  /* find ports */
+  /* play - find ports */
   pthread_mutex_lock(channel_mutex);
   
   recall_start =
     recall = ags_recall_get_by_effect(line->channel->play,
 				      filename,
 				      effect);
+  
+  if(recall == NULL){
+    pthread_mutex_unlock(channel_mutex);
+    
+    return(NULL);
+  }
+
   recall = g_list_last(recall);
   port = AGS_RECALL(recall->data)->port;
 
   g_list_free(recall_start);
 
+  /* check has output port */
+  if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall->data)->flags)) != 0){
+    has_output_port = TRUE;
+  }else{
+    has_output_port = FALSE;
+  }
+
+  /* recall handler of output port */
+  if(has_output_port){
+    AgsRecall *recall_channel_run_dummy;
+
+    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run);
+    
+    /* alloc handler */
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+  }
+  
+  /* recall - find ports */
   recall_start = 
     recall = ags_recall_get_by_effect(line->channel->recall,
 				      filename,
@@ -815,13 +864,29 @@ ags_line_add_ladspa_effect(AgsLine *line,
   g_list_free(recall_start);
 
   pthread_mutex_unlock(channel_mutex);
+
+  /* recall handler of output port */
+  if(has_output_port){
+    AgsRecall *recall_channel_run_dummy;
+
+    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run);
+    
+    /* alloc handler */
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+  }
   
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
 
   port_count = g_list_length(port_descriptor);
   k = 0;
-
+  
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
@@ -833,9 +898,17 @@ ags_line_add_ladspa_effect(AgsLine *line,
       guint step_count;
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
 
       if(control_type_name != NULL){
@@ -950,6 +1023,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_line_indicator_queue_draw,
 			    child_widget, ags_line_indicator_queue_draw_timeout);
+	line->queued_drawing = g_list_prepend(line->queued_drawing,
+					      child_widget);
 	g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
       
@@ -985,6 +1060,8 @@ ags_line_add_lv2_effect(AgsLine *line,
   AgsLineMember *line_member;
   GtkAdjustment *adjustment;
 
+  AgsRecallHandler *recall_handler;
+
   AgsLv2Plugin *lv2_plugin;
 
   AgsMutexManager *mutex_manager;
@@ -999,11 +1076,17 @@ ags_line_add_lv2_effect(AgsLine *line,
 
   gdouble step;
   guint port_count;
+  gboolean has_output_port;
+
   guint x, y;
   guint k;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
@@ -1023,10 +1106,6 @@ ags_line_add_lv2_effect(AgsLine *line,
     list = list->next;
   }
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get channel mutex */
   pthread_mutex_lock(application_mutex);
 
@@ -1035,7 +1114,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   
   pthread_mutex_unlock(application_mutex);
   
-  /* find ports */
+  /* play - find ports */
   pthread_mutex_lock(channel_mutex);
   
   recall_start =
@@ -1054,6 +1133,30 @@ ags_line_add_lv2_effect(AgsLine *line,
 
   g_list_free(recall_start);
 
+  /* check has output port */
+  if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall->data)->flags)) != 0){
+    has_output_port = TRUE;
+  }else{
+    has_output_port = FALSE;
+  }
+
+  /* recall handler of output port */
+  if(has_output_port){
+    AgsRecall *recall_channel_run_dummy;
+
+    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run)->data;
+    
+    /* alloc handler */
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+  }
+
+  /* recall - find ports */
   recall_start = 
     recall = ags_recall_get_by_effect(line->channel->recall,
 				      filename,
@@ -1063,8 +1166,24 @@ ags_line_add_lv2_effect(AgsLine *line,
   recall_port = AGS_RECALL(recall->data)->port;
   g_list_free(recall_start);
 
-  pthread_mutex_unlock(channel_mutex);
-  
+  pthread_mutex_unlock(channel_mutex);  
+
+  /* recall handler of output port */
+  if(has_output_port){
+    AgsRecall *recall_channel_run_dummy;
+
+    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run)->data;
+    
+    /* alloc handler */
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+  }
+
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
@@ -1083,9 +1202,17 @@ ags_line_add_lv2_effect(AgsLine *line,
       guint step_count;
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
 
       if(control_type_name != NULL){
@@ -1174,6 +1301,8 @@ ags_line_add_lv2_effect(AgsLine *line,
       }else if(AGS_IS_INDICATOR(child_widget)){
 	g_hash_table_insert(ags_line_indicator_queue_draw,
 			    child_widget, ags_line_indicator_queue_draw_timeout);
+	line->queued_drawing = g_list_prepend(line->queued_drawing,
+					      child_widget);
 	g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 

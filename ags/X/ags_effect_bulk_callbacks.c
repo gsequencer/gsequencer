@@ -169,8 +169,6 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 
   GList *list, *list_start;
   GList *port, *port_start;
-  
-  //  guint input_lines;
 
   /* lock gdk threads */
   gdk_threads_enter();
@@ -209,11 +207,18 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	GValue value = {0,};
 
 	current = AGS_BULK_PORT(port->data)->port;
+
+	if(current == NULL){
+	  port = port->next;
+	
+	  continue;
+	}      
 	
 	/* check if output port and specifier matches */
 	pthread_mutex_lock(current->mutex);
 
 	if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
+	   current->port_descriptor == NULL ||
 	   g_ascii_strcasecmp(current->specifier,
 			      AGS_BULK_MEMBER(list->data)->specifier)){
 	  pthread_mutex_unlock(current->mutex);
@@ -222,13 +227,17 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 
 	  continue;
 	}
-	  
+
+	/* lower and upper */
 	lower = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->lower_value);
 	upper = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->upper_value);
 	  
 	pthread_mutex_unlock(current->mutex);
 
-	/*  */
+	/* get range */
+	range = upper - lower;
+
+	/* port read value */
 	g_value_init(&value, G_TYPE_FLOAT);
 	ags_port_safe_read(current,
 			   &value);
@@ -236,8 +245,7 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	peak = g_value_get_float(&value);
 	g_value_unset(&value);
 
-	range = upper - lower;
-
+	/* calculate peak */
 	if(range == 0.0 ||
 	   current->port_value_type == G_TYPE_BOOLEAN){
 	  if(peak != 0.0){
@@ -247,7 +255,8 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	}else{
 	  average_peak += ((1.0 / (range / peak)) * 10.0);
 	}
-	  
+
+	/* iterate port */
 	port = port->next;
       }
 
@@ -267,7 +276,8 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 				 average_peak);
       }
     }
-    
+
+    /* iterate bulk member */
     list = list->next;
   }
 

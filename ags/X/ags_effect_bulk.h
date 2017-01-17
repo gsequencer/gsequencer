@@ -76,6 +76,8 @@ struct _AgsEffectBulk
 
   GList *plugin;
   GtkDialog *plugin_browser;
+
+  GList *queued_drawing;
 };
 
 struct _AgsEffectBulkClass
@@ -112,6 +114,7 @@ GType ags_effect_bulk_get_type(void);
 
 AgsEffectBulkPlugin* ags_effect_bulk_plugin_alloc(gchar *filename,
 						  gchar *effect);
+void ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin);
 
 GList* ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
 				  GList *control_type_name,
