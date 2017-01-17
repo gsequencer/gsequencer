@@ -167,6 +167,8 @@ enum{
 static gpointer ags_effect_bulk_parent_class = NULL;
 static guint effect_bulk_signals[LAST_SIGNAL];
 
+GHashTable *ags_effect_bulk_indicator_queue_draw = NULL;
+
 GType
 ags_effect_bulk_get_type(void)
 {
@@ -750,6 +752,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLadspa *recall_ladspa;
+  AgsRecallHandler *recall_handler;
 
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
@@ -771,6 +774,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
+  gboolean has_output_port;
+  
   guint x, y;
   guint i, j;
   guint k;
@@ -840,6 +845,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
   task = NULL;
   retport = NULL;
+
+  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -860,6 +867,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					    filename,
 					    effect,
 					    AGS_BASE_PLUGIN(ladspa_plugin)->effect_index);
+
       g_object_set(G_OBJECT(recall_ladspa),
 		   "soundcard\0", soundcard,
 		   "recall-container\0", recall_container,
@@ -874,6 +882,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
       port = ags_recall_ladspa_load_ports(recall_ladspa);
 
+      if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall_ladspa)->flags)) != 0){
+	has_output_port = TRUE;
+      }
+      
       if(retport == NULL){
 	retport = port;
       }else{
@@ -907,6 +919,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+      
       /* ladspa recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
@@ -963,6 +986,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+      
       /* iterate */
       pthread_mutex_lock(channel_mutex);
       
@@ -1186,6 +1220,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallDssi *recall_dssi;
+  AgsRecallHandler *recall_handler;
 
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
@@ -1207,6 +1242,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
+  gboolean has_output_port;
+  
   guint x, y;
   guint i, j;
   guint k;
@@ -1276,6 +1313,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   task = NULL;
   retport = NULL;
+
+  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1323,6 +1362,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 				port);
       }
 
+      if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall_dssi)->flags)) != 0){
+	has_output_port = TRUE;
+      }
+
       ags_channel_add_recall(current,
 			     (GObject *) recall_dssi,
 			     TRUE);
@@ -1348,7 +1391,18 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+      
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+      
       /* dssi recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
@@ -1411,6 +1465,17 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
       
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+
       /* iterate */
       pthread_mutex_lock(channel_mutex);
       
@@ -1632,6 +1697,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLv2 *recall_lv2;
+  AgsRecallHandler *recall_handler;
 
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
@@ -1659,6 +1725,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   gdouble step;
   guint pads, audio_channels;
   guint port_count;
+  gboolean has_output_port;
+
   guint x, y;
   guint i, j;
   guint k;
@@ -1730,6 +1798,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   task = NULL;
   retport = NULL;
+
+  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1779,6 +1849,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				port);
       }
 
+      if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall_lv2)->flags)) != 0){
+	has_output_port = TRUE;
+      }
+      
       ags_channel_add_recall(current,
 			     (GObject *) recall_lv2,
 			     TRUE);
@@ -1804,6 +1878,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
 
       /* lv2 recall */
       recall_container = ags_recall_container_new();
@@ -1868,7 +1953,18 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-      
+
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+
       /* iterate */
       pthread_mutex_lock(channel_mutex);
       
@@ -2675,6 +2771,29 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
   g_object_unref((GObject *) effect_bulk);
 
   return(list);
+}
+
+/**
+ * ags_effect_bulk_indicator_queue_draw_timeout:
+ * @widget: the indicator widgt
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 0.7.128
+ */
+gboolean
+ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
+{
+  if(g_hash_table_lookup(ags_effect_bulk_indicator_queue_draw,
+			 widget) != NULL){
+    gtk_widget_queue_draw(widget);
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

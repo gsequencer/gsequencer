@@ -23,7 +23,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
@@ -57,8 +56,6 @@
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
-
-#include <ags/X/task/ags_change_indicator.h>
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -362,7 +359,6 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   AgsPort *port;
 
   AgsMutexManager *mutex_manager;
-  AgsTaskThread *task_thread;
 
   GList *list, *list_start;
 

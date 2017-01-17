@@ -642,6 +642,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
 
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
+
 	  current->flags |= AGS_PORT_IS_OUTPUT;
 	}
 	

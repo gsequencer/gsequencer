@@ -769,6 +769,8 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 			       NULL);
 	
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
+	  
 	  current->flags |= AGS_PORT_IS_OUTPUT;
 	}
 	
