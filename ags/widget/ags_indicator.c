@@ -147,8 +147,9 @@ ags_indicator_set_property(GObject *gobject,
 
       adjustment = (GtkAdjustment *) g_value_get_object(value);
 
-      if(indicator->adjustment == adjustment)
+      if(indicator->adjustment == adjustment){
 	return;
+      }
 
       if(indicator->adjustment != NULL){
 	g_object_unref(G_OBJECT(indicator->adjustment));
@@ -179,7 +180,9 @@ ags_indicator_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_ADJUSTMENT:
-    g_value_set_object(value, indicator->adjustment);
+    {
+      g_value_set_object(value, indicator->adjustment);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

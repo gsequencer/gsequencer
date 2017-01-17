@@ -946,7 +946,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
 				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
-      }else if(AGS_IS_INDICATOR(child_widget)){
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_line_indicator_queue_draw,
 			    child_widget, ags_line_indicator_queue_draw_timeout);
 	g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) child_widget);

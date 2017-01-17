@@ -204,8 +204,12 @@ AgsHIndicator*
 ags_hindicator_new()
 {
   AgsHIndicator *indicator;
+  GtkAdjustment *adjustment;
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   indicator = (AgsHIndicator *) g_object_new(AGS_TYPE_HINDICATOR,
+					     "adjustment\0", adjustment,
 					     NULL);
   
   return(indicator);

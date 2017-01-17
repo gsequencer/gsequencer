@@ -19,8 +19,6 @@
 
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-
 #include <ags/plugin/ags_base_plugin.h>
 
 #include <ags/audio/ags_audio.h>
@@ -169,43 +167,16 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 {
   GtkWidget *child;
 
-  AgsChannel *channel, *start_channel;
-
-  AgsMutexManager *mutex_manager;
-
   GList *list, *list_start;
   GList *port, *port_start;
   
   //  guint input_lines;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
   /* lock gdk threads */
   gdk_threads_enter();
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) effect_bulk->bulk_member);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) effect_bulk->audio);
-      
-  pthread_mutex_unlock(application_mutex);
-
-  /* get start channel */
-  pthread_mutex_lock(audio_mutex);
-
-  start_channel = effect_bulk->audio->input;
-  //  input_lines = effect_bulk->audio->input_lines;
-      
-  pthread_mutex_unlock(audio_mutex);
+    list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   /* check members */
   while(list != NULL){
@@ -218,90 +189,75 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
       gdouble average_peak;
       
       child = GTK_BIN(list->data)->child;
-      channel = start_channel;
       
-      while(channel != NULL){	
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-	
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-	
-	pthread_mutex_unlock(application_mutex);
-
-	/* copy port list */
-	pthread_mutex_lock(channel_mutex);
+      average_peak = 0.0;
       
-	port_start = g_list_copy(recall->port);
+      /* copy port list */
+      port_start = g_list_concat(g_list_copy(AGS_BULK_MEMBER(list->data)->bulk_port),
+				 g_list_copy(AGS_BULK_MEMBER(list->data)->recall_bulk_port));
 
-	pthread_mutex_unlock(channel_mutex);
-
-	/* get display value */
-	port = port_start;
-
-	average_peak = 0.0;
+      /* get display value */
+      port = port_start;
 	
-	while(port != NULL){
-	  gdouble lower, upper;
-	  gdouble range;
-	  gdouble peak;
+      while(port != NULL){
+	AgsPort *current;
+	
+	gdouble lower, upper;
+	gdouble range;
+	gdouble peak;
 	  
-	  GValue value = {0,};
-	  
-	  /* check if output port and specifier matches */
-	  pthread_mutex_lock(AGS_PORT(port->data)->mutex);
+	GValue value = {0,};
 
-	  if((AGS_PORT_IS_OUTPUT & (AGS_PORT(port->data)->flags)) == 0 ||
-	     g_ascii_strcasecmp(AGS_PORT(port->data)->specifier,
-				AGS_BULK_MEMBER(list->data)->specifier)){
-	    pthread_mutex_unlock(AGS_PORT(port->data)->mutex);
+	current = AGS_BULK_PORT(port->data)->port;
+	
+	/* check if output port and specifier matches */
+	pthread_mutex_lock(current->mutex);
+
+	if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
+	   g_ascii_strcasecmp(current->specifier,
+			      AGS_BULK_MEMBER(list->data)->specifier)){
+	  pthread_mutex_unlock(current->mutex);
 	    
-	    port = port->next;
-
-	    continue;
-	  }
-	  
-	  lower = g_value_get_float(AGS_PORT_DESCRIPTOR(AGS_PORT(port->data)->port_descriptor)->lower_value);
-	  upper = g_value_get_float(AGS_PORT_DESCRIPTOR(AGS_PORT(port->data)->port_descriptor)->upper_value);
-	  
-	  pthread_mutex_unlock(AGS_PORT(port->data)->mutex);
-
-	  /*  */
-	  g_value_init(&value, G_TYPE_DOUBLE);
-	  ags_port_safe_read(port->data,
-			     &value);
-	  
-	  peak = g_value_get_double(&value);
-	  g_value_unset(&value);
-
-	  range = upper - lower;
-
-	  if(range == 0.0 ||
-	     AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
-	    if(peak != 0.0){
-	      average_peak = 10.0;
-	      break;
-	    }
-	  }else{
-	    average_peak += ((1.0 / range * peak) * 10.0);
-	  }
-	  
 	  port = port->next;
+
+	  continue;
 	}
-
-	g_list_free(port_start);
 	  
-	/* iterate */
-	pthread_mutex_lock(channel_mutex);
+	lower = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->lower_value);
+	upper = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->upper_value);
+	  
+	pthread_mutex_unlock(current->mutex);
 
-	channel = channel->next;
-	
-	pthread_mutex_unlock(channel_mutex);
+	/*  */
+	g_value_init(&value, G_TYPE_FLOAT);
+	ags_port_safe_read(current,
+			   &value);
+	  
+	peak = g_value_get_float(&value);
+	g_value_unset(&value);
+
+	range = upper - lower;
+
+	if(range == 0.0 ||
+	   current->port_value_type == G_TYPE_BOOLEAN){
+	  if(peak != 0.0){
+	    average_peak = 10.0;
+	    break;
+	  }
+	}else{
+	  average_peak += ((1.0 / (range / peak)) * 10.0);
+	}
+	  
+	port = port->next;
       }
+
+      g_list_free(port_start);
       
       /* apply */
       if(AGS_IS_LED(child)){
-	ags_led_set_active(child);
+	if(average_peak != 0.0){
+	  ags_led_set_active(child);
+	}
       }else{
 	g_object_get(child,
 		     "adjustment\0", &adjustment,

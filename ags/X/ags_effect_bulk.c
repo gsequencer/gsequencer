@@ -417,6 +417,12 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 {
   GtkAlignment *alignment;
   GtkHBox *hbox;
+
+  if(ags_effect_bulk_indicator_queue_draw == NULL){
+    ags_effect_bulk_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								 NULL,
+								 NULL);
+  }
   
   effect_bulk->flags = 0;
 
@@ -1173,6 +1179,11 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	
 	gtk_adjustment_set_value(adjustment,
 				 default_value);
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
+			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -1654,6 +1665,11 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 #ifdef AGS_DEBUG
 	g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
 #endif
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
+			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
       gtk_table_attach(effect_bulk->table,
@@ -2102,6 +2118,11 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
 				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
+			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG

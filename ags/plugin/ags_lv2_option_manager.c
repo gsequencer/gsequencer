@@ -115,8 +115,8 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
   gobject->finalize = ags_lv2_option_manager_finalize;
 
   /* AgsLv2OptionManager  */
-  lv2_option_manager->get_option = ags_lv2_option_manager_get_option;
-  lv2_option_manager->set_option = ags_lv2_option_manager_set_option;
+  lv2_option_manager->get_option = ags_lv2_option_manager_real_get_option;
+  lv2_option_manager->set_option = ags_lv2_option_manager_real_set_option;
 
   /* signals */
   /**

@@ -375,7 +375,8 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   options_interface->set = ags_lv2_option_manager_lv2_options_set;
   options_interface->get = ags_lv2_option_manager_lv2_options_get;
   
-  feature[6]->URI = LV2_OPTIONS__interface;
+  feature[6] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[6]->URI = LV2_OPTIONS_URI;
   feature[6]->data = options_interface;
 
   /* terminate */
