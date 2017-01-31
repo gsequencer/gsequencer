@@ -1,7 +1,7 @@
 ags (0.7.129)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented ags_simple.xsl
+	* implemented ags-simple.xsl
 	* improved mutices in ags_pad_play() and ags_line_channel_done_callback()
 	* fixed missing persisting of machine name
 
