@@ -89,6 +89,9 @@
 
 #include <ags/audio/file/ags_audio_file_xml.h>
 
+#include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_sequencer_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
 #include <ags/audio/thread/ags_record_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
 
@@ -123,7 +126,7 @@ GObject* ags_audio_application_context_get_default_soundcard_thread(AgsSoundProv
 void ags_audio_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
 								GObject *soundcard_thread);
 void ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
-						 GList *soundcar);
+						 GList *soundcard);
 GList* ags_audio_application_context_get_sequencer(AgsSoundProvider *sound_provider);
 void ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						 GList *sequencer);
