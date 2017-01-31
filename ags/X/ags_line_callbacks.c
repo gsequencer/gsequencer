@@ -22,6 +22,8 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/plugin/ags_base_plugin.h>
 
 #include <ags/audio/ags_playback.h>
@@ -235,18 +237,18 @@ ags_line_add_effect_callback(AgsChannel *channel,
 		control_type_name = g_list_prepend(control_type_name,
 						   "AgsLed\0");
 	      }else if(!g_ascii_strncasecmp(controls,
-				      "vertical indicator\0",
-				      19)){
+					    "vertical indicator\0",
+					    19)){
 		control_type_name = g_list_prepend(control_type_name,
 						   "AgsVIndicator\0");
 	      }else if(!g_ascii_strncasecmp(controls,
-				      "horizontal indicator\0",
-				      19)){
+					    "horizontal indicator\0",
+					    19)){
 		control_type_name = g_list_prepend(control_type_name,
 						   "AgsHIndicator\0");
 	      }else if(!g_ascii_strncasecmp(controls,
-				      "spin button\0",
-				      12)){
+					    "spin button\0",
+					    12)){
 		control_type_name = g_list_prepend(control_type_name,
 						   "GtkSpinButton\0");
 	      }else if(!g_ascii_strncasecmp(controls,
@@ -282,8 +284,8 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	  }
 
 	  /* free lists */
-	g_list_free(description_start);
-	g_list_free(port_control_start);
+	  g_list_free(description_start);
+	  g_list_free(port_control_start);
 	}
       }
       
@@ -489,27 +491,63 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
   AgsChannel *channel;
   AgsPlayback *playback;
   AgsChannel *next_pad;
+  AgsRecallID *match_recall_id;
+
+  AgsMutexManager *mutex_manager;
 
   gboolean all_done;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   gdk_threads_enter();
   
+  /* retrieve channel */
   channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
+
+  /* retrieve channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get next pad */
+  pthread_mutex_lock(channel_mutex);
+
   next_pad = channel->next_pad;
+
+  pthread_mutex_unlock(channel_mutex);
 
   all_done = TRUE;
 
   while(channel != next_pad){
+    pthread_mutex_lock(channel_mutex);
+
     playback = AGS_PLAYBACK(channel->playback);
-    
-    if(playback->recall_id[0] != NULL){
+    match_recall_id = playback->recall_id[0];
+		
+    pthread_mutex_unlock(channel_mutex);
+
+    /* check if pending */
+    if(match_recall_id != NULL){
       all_done = FALSE;
       break;
     }
-    
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
   }
 
+  /* toggle play button if all playback done */
   if(all_done){
     AgsPad *pad;
 
