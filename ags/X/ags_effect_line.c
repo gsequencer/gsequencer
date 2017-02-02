@@ -336,6 +336,12 @@ ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_line_init(AgsEffectLine *effect_line)
 {
+  if(ags_effect_line_indicator_queue_draw == NULL){
+    ags_effect_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								 NULL,
+								 NULL);
+  }
+
   effect_line->flags = 0;
 
   effect_line->name = NULL;
