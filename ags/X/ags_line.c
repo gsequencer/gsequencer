@@ -841,7 +841,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
   if(has_output_port){
     AgsRecall *recall_channel_run_dummy;
 
-    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run);
+    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run)->data;
     
     /* alloc handler */
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
@@ -869,7 +869,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
   if(has_output_port){
     AgsRecall *recall_channel_run_dummy;
 
-    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run);
+    recall_channel_run_dummy = ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(recall->data)->container)->recall_channel_run)->data;
     
     /* alloc handler */
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
