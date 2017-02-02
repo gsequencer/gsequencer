@@ -941,7 +941,8 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 void
 ags_line_member_finalize(GObject *gobject)
 {
-  /* empty */
+  /* call parent */
+  G_OBJECT_CLASS(ags_line_member_parent_class)->finalize(gobject);  
 }
 
 GtkWidget*

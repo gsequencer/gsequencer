@@ -726,7 +726,7 @@ ags_effect_bulk_finalize(GObject *gobject)
   }
 
   /* free plugin list */
-  g_list_free_full(effect_bulk,
+  g_list_free_full(effect_bulk->plugin,
 		   ags_effect_bulk_plugin_free);
 
   /* destroy plugin browser */
@@ -2441,6 +2441,16 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
       }
       
       if(i == nth){
+	GtkWidget *child_widget;
+	
+	child_widget = gtk_bin_get_child(list->data);
+
+	if(AGS_IS_LED(child_widget) ||
+	   AGS_IS_INDICATOR(child_widget)){
+	  g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+			      child_widget);
+	}
+
 	gtk_widget_destroy(list->data);
       }
       

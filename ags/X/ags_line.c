@@ -1489,6 +1489,10 @@ ags_line_real_remove_effect(AgsLine *line,
     while(control != NULL){
       if(AGS_IS_LINE_MEMBER(control->data) &&
 	 AGS_LINE_MEMBER(control->data)->port == port->data){
+	GtkWidget *child_widget;
+	
+	child_widget = gtk_bin_get_child(control->data);
+
 	/* collect specifier */
 	if(remove_specifier == NULL){
 	  remove_specifier = (gchar **) malloc(2 * sizeof(gchar *));
@@ -1501,6 +1505,12 @@ ags_line_real_remove_effect(AgsLine *line,
 	i++;
 
 	/* remove widget */
+	if(AGS_IS_LED(child_widget) ||
+	   AGS_IS_INDICATOR(child_widget)){
+	  g_hash_table_remove(ags_line_indicator_queue_draw,
+			      child_widget);
+	}
+	
 	ags_expander_remove(line->expander,
 			    control->data);
 
