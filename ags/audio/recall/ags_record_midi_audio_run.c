@@ -87,7 +87,7 @@ void ags_record_midi_audio_run_read_resolve_dependency(AgsFileLookup *file_looku
  * @section_id:
  * @include: ags/audio/recall/ags_record_midi_audio_run.h
  *
- * The #AgsRecordMidiAudioRun class record midi.
+ * The #AgsRecordMidiAudioRun does record midi.
  */
 
 enum{
@@ -610,7 +610,7 @@ ags_record_midi_audio_run_duplicate(AgsRecall *recall,
 				    AgsRecallID *recall_id,
 				    guint *n_params, GParameter *parameter)
 {
-  AgsRecordMidiAudioRun *copy, *record_midi_audio_run;
+  AgsRecordMidiAudioRun *copy;
 
   copy = AGS_RECORD_MIDI_AUDIO_RUN(AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->duplicate(recall,
 												       recall_id,
@@ -687,8 +687,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   glong division, tempo, bpm;
   guint notation_counter;
+  gboolean reverse_mapping;
   gboolean pattern_mode;
   gboolean playback, record;
+  guint midi_channel;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
   guint input_pads;
@@ -703,22 +705,15 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
-  record_midi_audio = AGS_RECORD_MIDI_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
-
-  delay_audio_run = record_midi_audio_run->delay_audio_run;
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(record_midi_audio_run->count_beats_audio_run);
-  
-  audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
-  sequencer = audio->sequencer;
-
-  if(sequencer == NULL){
-    return;
-  }
-
   /*  */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get defaults */
+  record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
+  record_midi_audio = AGS_RECORD_MIDI_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
+
+  audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -728,10 +723,29 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   pthread_mutex_unlock(application_mutex);
 
+  /*  */
+  pthread_mutex_lock(audio_mutex);
+  
+  delay_audio_run = record_midi_audio_run->delay_audio_run;
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(record_midi_audio_run->count_beats_audio_run);
+  
+  sequencer = audio->sequencer;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  if(sequencer == NULL){
+    return;
+  }
+
   /* get audio fields */
   pthread_mutex_lock(audio_mutex);
 
+  reverse_mapping = ((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0) ? TRUE: FALSE;
+  
   pattern_mode = ((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0) ? TRUE: FALSE;
+
+  midi_channel = audio->midi_channel;
+  
   audio_start_mapping = audio->audio_start_mapping;
 
   midi_start_mapping = audio->midi_start_mapping;
@@ -785,10 +799,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     notation = NULL;
   }
   
-  pthread_mutex_unlock(audio_mutex);
-
   /*  */
   notation_counter = count_beats_audio_run->notation_counter;
+  
+  pthread_mutex_unlock(audio_mutex);
 
   /* get mode */
   g_value_init(&value,
@@ -852,18 +866,20 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	  AgsNote *current_note;
 	  
 	  /* key on - check within mapping */
-	  if(audio->midi_channel == (0x0f & midi_iter[0])){
+	  if(midi_channel == (0x0f & midi_iter[0])){
 	    if(midi_start_mapping <= (0x7f & midi_iter[1]) &&
-	       (((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0 &&
+	       ((reverse_mapping &&
 		 input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1 > 0) ||
-		((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) == 0 &&
+		(!reverse_mapping &&
 		 (0x7f & midi_iter[1]) - midi_start_mapping < midi_end_mapping))){
 	      current_note = NULL;
 	      note = record_midi_audio_run->note;
 
+	      pthread_mutex_lock(audio_mutex);
+	      
 	      while(note != NULL){
 		/* check current notes */
-		if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+		if(reverse_mapping){
 		  if(AGS_NOTE(note->data)->y == input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1){
 		    current_note = note->data;
 
@@ -879,7 +895,9 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    
 		note = note->next;
 	      }
-	    
+
+	      pthread_mutex_unlock(audio_mutex);
+
 	      /* add note */
 	      if(current_note == NULL){
 		if((0x7f & (midi_iter[2])) != 0){
@@ -888,7 +906,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  current_note->x[0] = notation_counter;
 		  current_note->x[1] = notation_counter + 1;
 	      
-		  if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+		  if(reverse_mapping){
 		    current_note->y = input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1;
 		  }else{
 		    current_note->y = (0x7f & midi_iter[1]) - midi_start_mapping;
@@ -946,10 +964,12 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    /* key off - find matching note */
 	    current_note = NULL;
 	    note = record_midi_audio_run->note;
-
+	    
+	    pthread_mutex_lock(audio_mutex);
+	    
 	    while(note != NULL){
 	      /* check current notes */
-	      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	      if(reverse_mapping){
 		if(AGS_NOTE(note->data)->y == input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1){
 		  current_note = note->data;
 
@@ -965,7 +985,9 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    
 	      note = note->next;
 	    }
-	  
+
+	    pthread_mutex_unlock(audio_mutex);
+	    
 	    /* remove current note */
 	    if(current_note != NULL){
 	      pthread_mutex_lock(audio_mutex);
@@ -992,9 +1014,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    current_note = NULL;
 	    note = record_midi_audio_run->note;
 
+	    pthread_mutex_lock(audio_mutex);
+
 	    while(note != NULL){
 	      /* check current notes */
-	      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	      if(reverse_mapping){
 		if(AGS_NOTE(note->data)->y == input_pads - ((0x7f & midi_iter[1]) - midi_start_mapping) - 1){
 		  current_note = note->data;
 
@@ -1010,7 +1034,9 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	    
 	      note = note->next;
 	    }
-	    
+
+	    pthread_mutex_unlock(audio_mutex);
+
 	    /* feed note */
 	    if(current_note != NULL){
 	      current_note->x[1] = notation_counter + 1;
@@ -1116,6 +1142,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     }
   }
 
+  /* call parent */
   AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_pre(recall);
 }
 

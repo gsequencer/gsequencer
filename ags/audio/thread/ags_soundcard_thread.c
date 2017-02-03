@@ -269,6 +269,9 @@ ags_soundcard_thread_set_property(GObject *gobject,
 	if(AGS_IS_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}else if(AGS_IS_JACK_DEVOUT(soundcard)){
+	  g_atomic_int_and(&(AGS_THREAD(soundcard_thread)->flags),
+			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}
       }
 
