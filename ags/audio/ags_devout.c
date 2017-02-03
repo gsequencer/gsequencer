@@ -33,6 +33,7 @@
 #include <ags/thread/ags_poll_fd.h>
 
 #include <ags/audio/task/ags_tic_device.h>
+#include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 
@@ -2210,6 +2211,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   AgsDevout *devout;
 
   AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -2402,9 +2404,6 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     nth_ring_buffer = 1;
   }
 
-  /* clear next buffer */
-  memset(devout->buffer[next_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
 #ifdef AGS_WITH_OSS    
   /* fill ring buffer */
   ags_devout_oss_play_fill_ring_buffer(devout->buffer[nth_buffer],
@@ -2434,6 +2433,11 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
 		       tic_device);
+
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
   
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
@@ -2951,6 +2955,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   AgsDevout *devout;
 
   AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
@@ -3166,9 +3171,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     nth_ring_buffer = 1;
   }
 
-  /* clear next buffer */
-  memset(devout->buffer[next_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
 #ifdef AGS_WITH_ALSA
 
   /* fill ring buffer */
@@ -3227,6 +3229,11 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
 		       tic_device);
+
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
   
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);

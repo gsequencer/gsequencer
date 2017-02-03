@@ -33,6 +33,7 @@
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -325,6 +326,7 @@ void
 ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 { 
   AgsSoundcard *soundcard;
+  AgsAudio *audio;
   AgsChannel *channel, *next_pad;
   AgsRecycling *recycling, *end_recycling;
 
@@ -338,28 +340,10 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio loop and audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) input_pad->channel->audio);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get soundcard */
-  pthread_mutex_lock(audio_mutex);
-  
-  soundcard = AGS_SOUNDCARD(AGS_AUDIO(input_pad->channel->audio)->soundcard);
-  
-  pthread_mutex_unlock(audio_mutex);
-
-  /* get pad children */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) input_pad->expander_set);
 
   /* get channel and its mutex */
   channel = input_pad->channel;
@@ -370,6 +354,31 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 					   (GObject *) channel);
 
   pthread_mutex_unlock(application_mutex);
+
+  /* get audio and its audio mutex */
+  pthread_mutex_lock(channel_mutex);
+
+  audio = AGS_AUDIO(channel->audio);
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) input_pad->channel->audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get soundcard */
+  pthread_mutex_lock(audio_mutex);
+  
+  soundcard = AGS_SOUNDCARD(audio->soundcard);
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get pad children */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) input_pad->expander_set);
 
   /* get next pad */
   pthread_mutex_lock(channel_mutex);
@@ -407,6 +416,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
     
     if(recall != NULL){
       AgsAudioSignal *audio_signal;
+      AgsRecallID *current_recall_id;
       
       g_signal_connect_after(channel, "done\0",
 			     G_CALLBACK(ags_line_channel_done_callback), AGS_LINE(list->data));
@@ -416,13 +426,25 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
       
       recycling = channel->first_recycling;
       end_recycling = channel->last_recycling->next;
+
+      current_recall_id = AGS_RECALL(recall->data)->recall_id;
       
       pthread_mutex_unlock(channel_mutex);
 
       while(recycling != end_recycling){
+	/* get recycling mutex */
+	pthread_mutex_lock(application_mutex);
+  
+	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) recycling);
+	
+	pthread_mutex_unlock(application_mutex);
+
+	/* instantiate audio signal */
 	audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					    (GObject *) recycling,
-					    (GObject *) AGS_RECALL(recall->data)->recall_id);
+					    (GObject *) current_recall_id);
+	
 	/* add audio signal */
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal,
@@ -436,7 +458,13 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 
+
+	/* iterate recycling */
+	pthread_mutex_lock(recycling_mutex);
+
 	recycling = recycling->next;
+
+	pthread_mutex_unlock(recycling_mutex);
       }    
     }
 

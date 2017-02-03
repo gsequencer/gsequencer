@@ -2288,6 +2288,7 @@ ags_thread_real_clock(AgsThread *thread)
 	
 	chaos_tree = ags_thread_chaos_tree(thread);
 
+	//FIXME:JK: it works but I think its wrong
 	/* set tic delay */
 	if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
 	  /* intermediate pre sync */
@@ -2298,10 +2299,12 @@ ags_thread_real_clock(AgsThread *thread)
 	  }
 	}else if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
 	  /* intermediate post sync */
-	  if(chaos_tree->tic_delay < thread->delay){
-	    thread->tic_delay = chaos_tree->tic_delay + 1;
-	  }else{
+	  if(chaos_tree->tic_delay + 1 < thread->delay){
+	    thread->tic_delay = chaos_tree->tic_delay + 2;
+	  }else if(chaos_tree->tic_delay + 1 == thread->delay){
 	    thread->tic_delay = 0;
+	  }else{
+	    thread->tic_delay = 1;
 	  }
 	}else{
 	  /* ordinary sync */

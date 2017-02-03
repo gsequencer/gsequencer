@@ -63,6 +63,9 @@
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/audio/task/ags_cancel_channel.h>
+
 #include <ags/audio/recall/ags_play_audio.h>
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
@@ -634,10 +637,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   */
     
   /* AgsWindow */
-  window = ags_window_new((GObject *) xorg_application_context);
-  g_object_set(window,
-	       "soundcard\0", soundcard,
-	       NULL);
+  window = g_object_new(AGS_TYPE_WINDOW,
+			"soundcard\0", soundcard,
+			"application-context\0", xorg_application_context,
+			NULL);
   AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->window = window;
   g_object_ref(G_OBJECT(window));
 
@@ -982,6 +985,12 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   /*  */
   ags_audio_file_get_type();
   ags_audio_file_link_get_type();
+
+  /* register tasks */
+  ags_cancel_audio_get_type();
+  ags_cancel_channel_get_type();
+  
+  //TODO:JK: extend me
   
   /* register recalls */
   ags_recall_channel_run_dummy_get_type();

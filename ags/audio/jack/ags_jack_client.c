@@ -886,8 +886,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
     
       if(!no_event){
-	memset(jack_devout->buffer[nth_buffer], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
-
 	/* signal finish */
 	pthread_mutex_lock(device_mutex);
 
