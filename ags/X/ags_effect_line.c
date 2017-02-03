@@ -684,9 +684,6 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   recall = g_list_last(recall);
 
   recall_port = AGS_RECALL(recall->data)->port;
-  g_list_free(recall_start);
-
-  pthread_mutex_unlock(channel_mutex);
 
   /* recall handler of output port */
   if(has_output_port){
@@ -703,6 +700,10 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
     ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
   }
+
+  g_list_free(recall_start);
+  
+  pthread_mutex_unlock(channel_mutex);
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -962,8 +963,6 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   recall = g_list_last(recall);
   port = AGS_RECALL(recall->data)->port;
 
-  g_list_free(recall_start);
-
   /* check has output port */
   if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall->data)->flags)) != 0){
     has_output_port = TRUE;
@@ -987,6 +986,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
     ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
   }
 
+  g_list_free(recall_start);
+
   /* recall - find ports */
   recall_start = 
     recall = ags_recall_get_by_effect(effect_line->channel->recall,
@@ -995,9 +996,6 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   recall = g_list_last(recall);
 
   recall_port = AGS_RECALL(recall->data)->port;
-  g_list_free(recall_start);
-
-  pthread_mutex_unlock(channel_mutex);
 
   /* recall handler of output port */
   if(has_output_port){
@@ -1015,6 +1013,10 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
     ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
   }
   
+  g_list_free(recall_start);
+  
+  pthread_mutex_unlock(channel_mutex);
+
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
