@@ -828,8 +828,6 @@ ags_line_add_ladspa_effect(AgsLine *line,
   recall = g_list_last(recall);
   port = AGS_RECALL(recall->data)->port;
 
-  g_list_free(recall_start);
-
   /* check has output port */
   if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall->data)->flags)) != 0){
     has_output_port = TRUE;
@@ -853,6 +851,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
     ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
   }
   
+  g_list_free(recall_start);
+  
   /* recall - find ports */
   recall_start = 
     recall = ags_recall_get_by_effect(line->channel->recall,
@@ -861,9 +861,6 @@ ags_line_add_ladspa_effect(AgsLine *line,
   recall = g_list_last(recall);
 
   recall_port = AGS_RECALL(recall->data)->port;
-  g_list_free(recall_start);
-
-  pthread_mutex_unlock(channel_mutex);
 
   /* recall handler of output port */
   if(has_output_port){
@@ -880,6 +877,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
     ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
   }
+  
+  g_list_free(recall_start);
+  
+  pthread_mutex_unlock(channel_mutex);
   
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -1131,8 +1132,6 @@ ags_line_add_lv2_effect(AgsLine *line,
   recall = g_list_last(recall);
   port = AGS_RECALL(recall->data)->port;
 
-  g_list_free(recall_start);
-
   /* check has output port */
   if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall->data)->flags)) != 0){
     has_output_port = TRUE;
@@ -1155,6 +1154,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 
     ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
   }
+  
+  g_list_free(recall_start);
 
   /* recall - find ports */
   recall_start = 
@@ -1164,9 +1165,6 @@ ags_line_add_lv2_effect(AgsLine *line,
   recall = g_list_last(recall);
 
   recall_port = AGS_RECALL(recall->data)->port;
-  g_list_free(recall_start);
-
-  pthread_mutex_unlock(channel_mutex);  
 
   /* recall handler of output port */
   if(has_output_port){
@@ -1183,6 +1181,10 @@ ags_line_add_lv2_effect(AgsLine *line,
 
     ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
   }
+  
+  g_list_free(recall_start);
+  
+  pthread_mutex_unlock(channel_mutex);
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
