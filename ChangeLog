@@ -1,3 +1,11 @@
+ags (0.7.122.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* back-ported enable output ports to plugins
+	* back-ported disable output ports on automation
+	* back-ported enable built-in effects to do automation
+	* minor fixes
+
 ags (0.7.122.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
