@@ -271,6 +271,9 @@ ags_sequencer_thread_set_property(GObject *gobject,
 	if(AGS_IS_MIDIIN(sequencer)){
 	  g_atomic_int_or(&(AGS_THREAD(sequencer_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	}else if(AGS_IS_JACK_MIDIIN(sequencer)){
+	  g_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),
+			   (~AGS_THREAD_INTERMEDIATE_PRE_SYNC));
 	}
       }
 
