@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2015,2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,18 @@
 
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_port.h>
+
+#include <ags/widget/ags_led.h>
+#include <ags/widget/ags_vindicator.h>
+#include <ags/widget/ags_hindicator.h>
+
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_plugin_browser.h>
 
 void
@@ -148,4 +159,130 @@ ags_effect_bulk_set_pads_callback(AgsAudio *audio,
 				pads,
 				pads_old);    
   }
+}
+
+void
+ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
+					      AgsEffectBulk *effect_bulk)
+{
+  GtkWidget *child;
+
+  GList *list, *list_start;
+  GList *port, *port_start;
+
+  /* lock gdk threads */
+  gdk_threads_enter();
+  
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+
+  /* check members */
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data) &&
+       (AGS_BULK_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR ||
+	AGS_BULK_MEMBER(list->data)->widget_type == AGS_TYPE_HINDICATOR ||
+	AGS_BULK_MEMBER(list->data)->widget_type == AGS_TYPE_LED)){
+      GtkAdjustment *adjustment;
+
+      gdouble average_peak;
+      
+      child = GTK_BIN(list->data)->child;
+      
+      average_peak = 0.0;
+      
+      /* copy port list */
+      port_start = g_list_concat(g_list_copy(AGS_BULK_MEMBER(list->data)->bulk_port),
+				 g_list_copy(AGS_BULK_MEMBER(list->data)->recall_bulk_port));
+
+      /* get display value */
+      port = port_start;
+	
+      while(port != NULL){
+	AgsPort *current;
+	
+	gdouble lower, upper;
+	gdouble range;
+	gdouble peak;
+	  
+	GValue value = {0,};
+
+	current = AGS_BULK_PORT(port->data)->port;
+
+	if(current == NULL){
+	  port = port->next;
+	
+	  continue;
+	}      
+	
+	/* check if output port and specifier matches */
+	pthread_mutex_lock(current->mutex);
+
+	if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
+	   current->port_descriptor == NULL ||
+	   g_ascii_strcasecmp(current->specifier,
+			      AGS_BULK_MEMBER(list->data)->specifier)){
+	  pthread_mutex_unlock(current->mutex);
+	    
+	  port = port->next;
+
+	  continue;
+	}
+
+	/* lower and upper */
+	lower = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->lower_value);
+	upper = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->upper_value);
+	  
+	pthread_mutex_unlock(current->mutex);
+
+	/* get range */
+	range = upper - lower;
+
+	/* port read value */
+	g_value_init(&value, G_TYPE_FLOAT);
+	ags_port_safe_read(current,
+			   &value);
+	  
+	peak = g_value_get_float(&value);
+	g_value_unset(&value);
+
+	/* calculate peak */
+	if(range == 0.0 ||
+	   current->port_value_type == G_TYPE_BOOLEAN){
+	  if(peak != 0.0){
+	    average_peak = 10.0;
+	    break;
+	  }
+	}else{
+	  average_peak += ((1.0 / (range / peak)) * 10.0);
+	}
+
+	/* iterate port */
+	port = port->next;
+      }
+
+      g_list_free(port_start);
+      
+      /* apply */
+      if(AGS_IS_LED(child)){
+	if(average_peak != 0.0){
+	  ags_led_set_active(child);
+	}
+      }else{
+	g_object_get(child,
+		     "adjustment\0", &adjustment,
+		     NULL);
+	
+	gtk_adjustment_set_value(adjustment,
+				 average_peak);
+      }
+    }
+
+    /* iterate bulk member */
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* unlock gdk threads */
+  gdk_threads_leave();
 }

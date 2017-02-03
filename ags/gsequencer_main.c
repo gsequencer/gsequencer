@@ -121,6 +121,7 @@ extern AgsApplicationContext *ags_application_context;
 
 extern volatile gboolean ags_show_start_animation;
 
+#ifndef AGS_USE_TIMER
 void
 ags_signal_handler(int signr)
 {
@@ -136,7 +137,9 @@ ags_signal_handler(int signr)
     //    }
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
 {
@@ -152,6 +155,7 @@ ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
     pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
   //  signal(sig, SIG_IGN);
 }
+#endif
 
 static void
 ags_signal_cleanup()
@@ -267,6 +271,7 @@ ags_start_animation(pthread_t *thread)
 		 ags_start_animation_thread, window);
 }
 
+#ifndef AGS_USE_TIMER
 void
 ags_setup(int argc, char **argv)
 {
@@ -424,6 +429,8 @@ ags_setup(int argc, char **argv)
   ags_application_context->argc = argc;
   ags_application_context->argv = argv;
 
+  ags_application_context_register_types(ags_application_context);
+
   /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
   
@@ -437,7 +444,9 @@ ags_setup(int argc, char **argv)
   g_atomic_int_set(&(ags_show_start_animation),
 		   FALSE);
 }
+#endif
 
+#ifndef AGS_USE_TIMER
 void
 ags_launch(gboolean single_thread)
 {
@@ -578,7 +587,9 @@ ags_launch(gboolean single_thread)
     ags_thread_start((AgsThread *) single_thread);
   }
 }
+#endif
 
+#ifndef AGS_USE_TIMER
 void
 ags_launch_filename(gchar *filename,
 		    gboolean single_thread)
@@ -747,7 +758,9 @@ ags_launch_filename(gchar *filename,
     		 NULL);
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 timer_t*
 ags_timer_setup()
 {
@@ -782,11 +795,13 @@ ags_timer_setup()
   if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, timer_id) == -1){
     perror("timer_create\0");
     exit(EXIT_FAILURE);
-  }
+  }  
 
   return(timer_id);
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_start(timer_t *timer_id)
 {
@@ -807,9 +822,11 @@ ags_timer_start(timer_t *timer_id)
   if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
     perror("sigprocmask\0");
     exit(EXIT_FAILURE);
-  }
+  }  
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_launch(timer_t *timer_id,
 		 gboolean single_thread)
@@ -954,7 +971,9 @@ ags_timer_launch(timer_t *timer_id,
     ags_thread_start((AgsThread *) single_thread);
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 			  gboolean single_thread)
@@ -1128,6 +1147,7 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 		 NULL);
   }
 }
+#endif
 
 void
 ags_show_file_error(gchar *filename,

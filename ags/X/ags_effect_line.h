@@ -63,6 +63,8 @@ struct _AgsEffectLine
   GtkLabel *label;
   
   GtkTable *table;
+
+  GList *queued_drawing;
 };
 
 struct _AgsEffectLineClass
@@ -97,6 +99,8 @@ void ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 void ags_effect_line_map_recall(AgsEffectLine *effect_line,
 				guint output_pad_start);
 GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
+
+gboolean ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);
 

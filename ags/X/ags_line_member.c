@@ -32,6 +32,8 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/widget/ags_led.h>
+#include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>
@@ -553,7 +555,10 @@ ags_line_member_set_property(GObject *gobject,
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
       }else{
-	g_warning("ags_line_member_set_property() - unknown child type %s\0", g_type_name(widget_type));
+	if(!(AGS_IS_INDICATOR(new_child) ||
+	     AGS_IS_LED(new_child))){
+	  g_warning("ags_line_member_set_property() - unknown child type %s\0", g_type_name(widget_type));
+	}
       }
 
       /* add */
