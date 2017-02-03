@@ -172,15 +172,16 @@ ags_start_animation_thread(void *ptr)
 
   cairo_t *gdk_cr, *cr;
   cairo_surface_t *surface;
-  cairo_surface_t *cached_surface;
 
   AgsLog *log;
 
   gchar *filename;
+  unsigned char *bg_data, *image_data;
   
   /* create a buffer suitable to image size */
   GList *list, *start;
 
+  guint image_size;
   gdouble x0, y0;
   guint i, nth;
   
@@ -192,12 +193,19 @@ ags_start_animation_thread(void *ptr)
   rectangle.y = 0;
   rectangle.width = 800;
   rectangle.height = 450;
+
+  image_size = 4 * 800 * 450;
   
   gdk_cr = gdk_cairo_create(window->window);
   
   filename = g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png\0");
 
   surface = cairo_image_surface_create_from_png(filename);
+  image_data = cairo_image_surface_get_data(surface);
+  
+  bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
+  memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
+  
   cr = cairo_create(surface);
   
   cairo_select_font_face(cr, "Georgia\0",
@@ -208,8 +216,6 @@ ags_start_animation_thread(void *ptr)
   
   gdk_threads_leave();
 
-  cached_surface = NULL;
-  
   log = ags_log_get_instance();  
   nth = 0;
   
@@ -220,6 +226,8 @@ ags_start_animation_thread(void *ptr)
     i = g_list_length(start);
 
     if(i > nth){
+      memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
+      
       cairo_set_source_surface(cr, surface, 0, 0);
       cairo_paint(cr);
       cairo_surface_flush(surface);
@@ -255,6 +263,8 @@ ags_start_animation_thread(void *ptr)
     gdk_flush();
   }
 
+  free(bg_data);
+  
   gdk_threads_enter();
 
   gtk_widget_destroy(window);
