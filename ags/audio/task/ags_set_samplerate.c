@@ -366,11 +366,12 @@ ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
 
 void
 ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcard)
-{
+{  
   AgsApplicationContext *application_context;
   
   GList *list;
 
+  gdouble thread_frequency;
   guint channels;
   guint samplerate;
   guint buffer_size;
@@ -379,45 +380,104 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
   /*  */
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			    &channels,
-			    &samplerate,
-			    &buffer_size,
-			    &format);
-  
-  ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-			    channels,
-			    set_samplerate->samplerate,
-			    buffer_size,
-			    format);
-
-  /* reset soundcards */
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  while(list != NULL){
-    if(list->data != soundcard){
-      guint target_channels;
-      guint target_samplerate;
-      guint target_buffer_size;
-      guint target_format;
+  if(soundcard == list->data){
+    AgsThread *thread;
+    
+    /* reset soundcards if applied to first soundcard */
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      &channels,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
+  
+    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+			      channels,
+			      set_samplerate->samplerate,
+			      buffer_size,
+			      format);
+    
+    /* reset thread frequency */
+    thread_frequency = set_samplerate->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-      ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
-				&target_channels,
-				&target_samplerate,
-				&target_buffer_size,
-				&target_format);
-      
+    ags_main_loop_set_frequency();
+    g_object_set(application_context->main_loop,
+		 "frequency\0", thread_frequency,
+		 NULL);
 
-      ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-				target_channels,
-				target_samplerate,
-				buffer_size * (target_samplerate / set_samplerate->samplerate),
-				target_format);
+    /* reset soundcard thread */
+    thread = application_context->main_loop;
+
+    while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
+      g_object_set(thread,
+		   "frequency\0", thread_frequency,
+		   NULL);
+
+      thread = g_atomic_pointer_get(&(thread->next));
     }
 
-    list = list->next;
-  }
+    /* reset sequencer thread */
+    thread = application_context->main_loop;
 
+    while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
+      g_object_set(thread,
+		   "frequency\0", thread_frequency,
+		   NULL);
+
+      thread = g_atomic_pointer_get(&(thread->next));
+    }
+
+    /* reset export thread */
+    thread = application_context->main_loop;
+
+    while(ags_thread_find_type(thread, AGS_TYPE_EXPORT_THREAD) != NULL){
+      g_object_set(thread,
+		   "frequency\0", thread_frequency,
+		   NULL);
+
+      thread = g_atomic_pointer_get(&(thread->next));
+    }
+
+    /* reset depending soundcards */
+    while(list != NULL){
+      if(list->data != soundcard){
+	guint target_channels;
+	guint target_samplerate;
+	guint target_buffer_size;
+	guint target_format;
+
+	ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
+				  &target_channels,
+				  &target_samplerate,
+				  &target_buffer_size,
+				  &target_format);
+      
+
+	ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				  target_channels,
+				  target_samplerate,
+				  buffer_size * (target_samplerate / set_samplerate->samplerate),
+				  target_format);
+      }
+
+      list = list->next;
+    }
+  }else{
+    /* it is not first soundcard */
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      &channels,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
+  
+    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+			      channels,
+			      set_samplerate->samplerate,
+			      buffer_size * (samplerate / set_samplerate->samplerate),
+			      format);
+  }
+  
   /* AgsAudio */
   list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 
