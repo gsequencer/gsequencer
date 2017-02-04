@@ -424,8 +424,8 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
     /* reset thread frequency */
     thread_frequency = samplerate / set_buffer_size->buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-    ags_main_loop_set_frequency(AGS_MAIN_LOOP(application_context->main_loop),
-				thread_frequency);
+    ags_main_loop_change_frequency(AGS_MAIN_LOOP(application_context->main_loop),
+				   thread_frequency);
   }else{
     g_warning("buffer size can only adjusted of your very first soundcard\0");
   }

@@ -425,8 +425,8 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
     /* reset thread frequency */
     thread_frequency = set_samplerate->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-    ags_main_loop_set_frequency(AGS_MAIN_LOOP(application_context->main_loop),
-				thread_frequency);
+    ags_main_loop_change_frequency(AGS_MAIN_LOOP(application_context->main_loop),
+				   thread_frequency);
   }else{
     /* it is not first soundcard */
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),

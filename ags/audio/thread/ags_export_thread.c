@@ -25,6 +25,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/jack/ags_jack_devout.h>
 
 #include <math.h>
 
