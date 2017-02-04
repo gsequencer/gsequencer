@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_set_samplerate.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
@@ -379,65 +380,22 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
-  /*  */
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    &channels,
+			    &samplerate,
+			    &buffer_size,
+			    &format);
+
+  /* reset soundcards */
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   if(soundcard == list->data){
-    AgsThread *thread;
-    
     /* reset soundcards if applied to first soundcard */
-    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			      &channels,
-			      &samplerate,
-			      &buffer_size,
-			      &format);
-  
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			      channels,
 			      set_samplerate->samplerate,
 			      buffer_size,
 			      format);
-    
-    /* reset thread frequency */
-    thread_frequency = set_samplerate->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-
-    ags_main_loop_set_frequency();
-    g_object_set(application_context->main_loop,
-		 "frequency\0", thread_frequency,
-		 NULL);
-
-    /* reset soundcard thread */
-    thread = application_context->main_loop;
-
-    while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
-      g_object_set(thread,
-		   "frequency\0", thread_frequency,
-		   NULL);
-
-      thread = g_atomic_pointer_get(&(thread->next));
-    }
-
-    /* reset sequencer thread */
-    thread = application_context->main_loop;
-
-    while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
-      g_object_set(thread,
-		   "frequency\0", thread_frequency,
-		   NULL);
-
-      thread = g_atomic_pointer_get(&(thread->next));
-    }
-
-    /* reset export thread */
-    thread = application_context->main_loop;
-
-    while(ags_thread_find_type(thread, AGS_TYPE_EXPORT_THREAD) != NULL){
-      g_object_set(thread,
-		   "frequency\0", thread_frequency,
-		   NULL);
-
-      thread = g_atomic_pointer_get(&(thread->next));
-    }
 
     /* reset depending soundcards */
     while(list != NULL){
@@ -463,14 +421,14 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 
       list = list->next;
     }
+    
+    /* reset thread frequency */
+    thread_frequency = set_samplerate->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+    ags_main_loop_set_frequency(AGS_MAIN_LOOP(application_context->main_loop),
+				thread_frequency);
   }else{
     /* it is not first soundcard */
-    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			      &channels,
-			      &samplerate,
-			      &buffer_size,
-			      &format);
-  
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			      channels,
 			      set_samplerate->samplerate,

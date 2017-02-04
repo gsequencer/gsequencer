@@ -68,6 +68,8 @@ void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_audio_loop_get_last_sync(AgsMainLoop *main_loop);
 gboolean ags_audio_loop_monitor(AgsMainLoop *main_loop,
 				guint time_cycle, guint *time_spent);
+void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
+				     gdouble frequency);
 void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_start(AgsThread *thread);
@@ -271,6 +273,7 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
   main_loop->get_last_sync = ags_audio_loop_get_last_sync;
   main_loop->interrupt = NULL;
   main_loop->monitor = ags_audio_loop_monitor;
+  main_loop->change_frequency = ags_audio_loop_change_frequency;
 }
 
 void
@@ -589,6 +592,74 @@ ags_audio_loop_monitor(AgsMainLoop *main_loop,
     return(TRUE);
   }else{
     return(FALSE);
+  }
+}
+
+void
+ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
+				gdouble frequency)
+{
+  AgsThread *audio_loop, *thread;
+
+  audio_loop = AGS_THREAD(main_loop);
+  
+  g_object_set(audio_loop,
+	       "frequency\0", frequency,
+	       NULL);
+
+  /* reset soundcard thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset sequencer thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_SEQUENCER_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset export thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_EXPORT_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset audio thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_AUDIO_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset channel thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_CHANNEL_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
   }
 }
 

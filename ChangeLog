@@ -4,6 +4,7 @@ ags (0.7.122.2)
 	* back-ported enable output ports to plugins
 	* back-ported disable output ports on automation
 	* back-ported enable built-in effects to do automation
+	* fixed configuration in-place to reset frequency of appropriate thread
 	* minor fixes
 
 ags (0.7.122.1)
