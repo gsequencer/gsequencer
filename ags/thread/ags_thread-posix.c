@@ -535,9 +535,9 @@ ags_thread_set_property(GObject *gobject,
       thread->tic_delay = 0;
 
       if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-	thread->tic_delay = 1;
-      }else if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
 	thread->tic_delay = thread->delay;
+      }else if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	thread->tic_delay = 1;
       }else{
 	thread->tic_delay = 0;
       }
