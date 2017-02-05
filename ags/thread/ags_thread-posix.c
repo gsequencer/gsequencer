@@ -2294,29 +2294,33 @@ ags_thread_real_clock(AgsThread *thread)
 	 g_atomic_pointer_get(&(thread->parent)) != NULL){
 	AgsThread *chaos_tree;
 	
-	chaos_tree = ags_thread_chaos_tree(thread);
+	chaos_tree = main_loop;//ags_thread_chaos_tree(thread);
 
-	//FIXME:JK: it works but I think its wrong
-	/* set tic delay */
+	/* ordinary sync */
+	thread->tic_delay = chaos_tree->tic_delay;
+
 	if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-	  /* intermediate pre sync */
-	  if(chaos_tree->tic_delay > 0){
-	    thread->tic_delay = chaos_tree->tic_delay - 1;
-	  }else{
-	    thread->tic_delay = thread->delay;
-	  }
-	}else if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-	  /* intermediate post sync */
-	  if(chaos_tree->tic_delay + 1 < thread->delay){
-	    thread->tic_delay = chaos_tree->tic_delay + 2;
-	  }else if(chaos_tree->tic_delay + 1 == thread->delay){
+	  if(thread->freq >= AGS_THREAD_MAX_PRECISION){
 	    thread->tic_delay = 0;
 	  }else{
-	    thread->tic_delay = 1;
+	    if(thread->tic_delay < thread->delay){
+	      thread->tic_delay++;
+	    }else{
+	      thread->tic_delay = 0;
+	    }
 	  }
-	}else{
-	  /* ordinary sync */
-	  thread->tic_delay = chaos_tree->tic_delay;
+	}
+	
+	if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	  if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	    thread->tic_delay = 0;
+	  }else{
+	    if(thread->tic_delay > 0){
+	      thread->tic_delay--;
+	    }else{
+	      thread->tic_delay = thread->delay;
+	    }
+	  }
 	}
 	
 	g_atomic_int_or(&(thread->flags),
@@ -2853,8 +2857,34 @@ ags_thread_loop(void *ptr)
 
 	pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
+	/* ordinary sync */
 	queued_thread->tic_delay = thread->tic_delay;
 
+	if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(queued_thread->flags)))) != 0){
+	  if(queued_thread->freq >= AGS_THREAD_MAX_PRECISION){
+	    queued_thread->tic_delay = 0;
+	  }else{
+	    if(queued_thread->tic_delay < queued_thread->delay){
+	      queued_thread->tic_delay++;
+	    }else{
+	      queued_thread->tic_delay = 0;
+	    }
+	  }
+	}
+	
+	if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(queued_thread->flags)))) != 0){
+	  if(queued_thread->freq >= AGS_THREAD_MAX_PRECISION){
+	    queued_thread->tic_delay = 0;
+	  }else{
+	    if(queued_thread->tic_delay > 0){
+	      queued_thread->tic_delay--;
+	    }else{
+	      queued_thread->tic_delay = queued_thread->delay;
+	    }
+	  }
+	}
+
+	/*  */
 	pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 	
 	g_atomic_int_set(&(queued_thread->start_wait),
@@ -3105,8 +3135,37 @@ ags_thread_loop(void *ptr)
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0  ||
      (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-    thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));    
+    AgsThread *chaos_tree;
+	
+    chaos_tree = main_loop;//ags_thread_chaos_tree(thread);
 
+    /* ordinary sync */
+    thread->tic_delay = chaos_tree->tic_delay;
+
+    if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	thread->tic_delay = 0;
+      }else{
+	if(thread->tic_delay > 0){
+	  thread->tic_delay--;
+	}else{
+	  thread->tic_delay = thread->delay;
+	}
+      }
+    }
+	
+    if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	thread->tic_delay = 0;
+      }else{
+	if(thread->tic_delay < thread->delay){
+	  thread->tic_delay++;
+	}else{
+	  thread->tic_delay = 0;
+	}
+      }
+    }
+	
     g_atomic_int_and(&(thread->flags),
 		     (~AGS_THREAD_INITIAL_RUN));
 
