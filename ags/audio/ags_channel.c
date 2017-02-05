@@ -3472,7 +3472,6 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   
   /* load */
   ags_recall_lv2_load(recall_lv2);
-  port = ags_recall_lv2_load_ports(recall_lv2);
 
   if(port != NULL){
     port = g_list_concat(port,
