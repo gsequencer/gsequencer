@@ -1784,7 +1784,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     clear_buffer = ags_clear_buffer_new((GObject *) jack_devout);
     task = g_list_append(task,
 			 clear_buffer);
-
+    
     /* reset - switch buffer flags */
     switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_devout);
     task = g_list_append(task,
@@ -1795,10 +1795,43 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
 				 task);
   }else{
     guint nth_buffer;
+    guint word_size;
     
     /* tic */
     ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
 
+    switch(jack_devout->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	word_size = sizeof(signed char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	word_size = sizeof(signed long long);
+      }
+      break;
+    default:
+      g_warning("ags_jack_devout_port_play(): unsupported word size\0");
+      return;
+    }
+        
     /* reset - clear buffer */
     if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
       nth_buffer = 3;

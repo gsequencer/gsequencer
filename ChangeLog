@@ -48,6 +48,20 @@ ags (0.7.123)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
 
+ags (0.7.122.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* back-ported enable output ports to plugins
+	* back-ported disable output ports on automation
+	* back-ported enable built-in effects to do automation
+	* fixed configuration in-place to reset frequency of appropriate thread
+	* minor fixes
+
+ags (0.7.122.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor fixes
+
 ags (0.7.122)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

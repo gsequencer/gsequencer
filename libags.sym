@@ -167,6 +167,7 @@ ags_main_loop_set_last_sync
 ags_main_loop_get_last_sync
 ags_main_loop_interrupt
 ags_main_loop_monitor
+ags_main_loop_change_frequency
 ags_concurrent_tree_get_type
 ags_concurrent_tree_set_parent_locked
 ags_concurrent_tree_get_parent_locked

@@ -2485,6 +2485,11 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
 		       tic_device);
+
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
   
   /* reset - clear buffer */
   clear_buffer = ags_clear_buffer_new((GObject *) devout);

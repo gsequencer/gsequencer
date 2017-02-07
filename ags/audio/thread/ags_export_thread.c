@@ -25,6 +25,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/jack/ags_jack_devout.h>
 
 #include <math.h>
 
@@ -250,6 +251,9 @@ ags_export_thread_set_property(GObject *gobject,
     {
       GObject *soundcard;
 
+      guint samplerate;
+      guint buffer_size;
+
       soundcard = (GObject *) g_value_get_object(value);
 
       if(export_thread->soundcard != NULL){
@@ -259,9 +263,22 @@ ags_export_thread_set_property(GObject *gobject,
       if(soundcard != NULL){
 	g_object_ref(G_OBJECT(soundcard));
 
+	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+				  NULL,
+				  &samplerate,
+				  &buffer_size,
+				  NULL);
+	
+	g_object_set(export_thread,
+		     "frequency\0", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		     NULL);
+
 	if(AGS_IS_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}else if(AGS_IS_JACK_DEVOUT(soundcard)){
+	  g_atomic_int_and(&(AGS_THREAD(export_thread)->flags),
+			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}
       }
 

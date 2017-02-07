@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_set_samplerate.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
@@ -366,11 +367,12 @@ ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
 
 void
 ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcard)
-{
+{  
   AgsApplicationContext *application_context;
   
   GList *list;
 
+  gdouble thread_frequency;
   guint channels;
   guint samplerate;
   guint buffer_size;
@@ -378,46 +380,62 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
-  /*  */
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
 			    &samplerate,
 			    &buffer_size,
 			    &format);
-  
-  ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-			    channels,
-			    set_samplerate->samplerate,
-			    buffer_size,
-			    format);
 
   /* reset soundcards */
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  while(list != NULL){
-    if(list->data != soundcard){
-      guint target_channels;
-      guint target_samplerate;
-      guint target_buffer_size;
-      guint target_format;
+  if(soundcard == list->data){
+    /* reset soundcards if applied to first soundcard */
+    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+			      channels,
+			      set_samplerate->samplerate,
+			      buffer_size,
+			      format);
 
-      ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
-				&target_channels,
-				&target_samplerate,
-				&target_buffer_size,
-				&target_format);
+    /* reset depending soundcards */
+    while(list != NULL){
+      if(list->data != soundcard){
+	guint target_channels;
+	guint target_samplerate;
+	guint target_buffer_size;
+	guint target_format;
+
+	ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
+				  &target_channels,
+				  &target_samplerate,
+				  &target_buffer_size,
+				  &target_format);
       
 
-      ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-				target_channels,
-				target_samplerate,
-				buffer_size * (target_samplerate / set_samplerate->samplerate),
-				target_format);
+	ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				  target_channels,
+				  target_samplerate,
+				  buffer_size * (target_samplerate / set_samplerate->samplerate),
+				  target_format);
+      }
+
+      list = list->next;
     }
+    
+    /* reset thread frequency */
+    thread_frequency = set_samplerate->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-    list = list->next;
+    ags_main_loop_change_frequency(AGS_MAIN_LOOP(application_context->main_loop),
+				   thread_frequency);
+  }else{
+    /* it is not first soundcard */
+    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+			      channels,
+			      set_samplerate->samplerate,
+			      buffer_size * (samplerate / set_samplerate->samplerate),
+			      format);
   }
-
+  
   /* AgsAudio */
   list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 

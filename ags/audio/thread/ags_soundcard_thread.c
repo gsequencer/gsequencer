@@ -246,12 +246,12 @@ ags_soundcard_thread_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      AgsSoundcard *soundcard;
+      GObject *soundcard;
 
       guint samplerate;
       guint buffer_size;
 
-      soundcard = (AgsSoundcard *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
       if(soundcard_thread->soundcard != NULL){
 	g_object_unref(G_OBJECT(soundcard_thread->soundcard));

@@ -1231,6 +1231,8 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   pthread_mutex_t *mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
