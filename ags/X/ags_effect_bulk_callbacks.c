@@ -182,17 +182,19 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
        (AGS_BULK_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR ||
 	AGS_BULK_MEMBER(list->data)->widget_type == AGS_TYPE_HINDICATOR ||
 	AGS_BULK_MEMBER(list->data)->widget_type == AGS_TYPE_LED)){
+      AgsBulkMember *bulk_member;
       GtkAdjustment *adjustment;
 
       gdouble average_peak;
-      
-      child = GTK_BIN(list->data)->child;
+
+      bulk_member = AGS_BULK_MEMBER(list->data);
+      child = GTK_BIN(bulk_member)->child;
       
       average_peak = 0.0;
       
       /* copy port list */
-      port_start = g_list_concat(g_list_copy(AGS_BULK_MEMBER(list->data)->bulk_port),
-				 g_list_copy(AGS_BULK_MEMBER(list->data)->recall_bulk_port));
+      port_start = g_list_concat(g_list_copy(bulk_member->bulk_port),
+				 g_list_copy(bulk_member->recall_bulk_port));
 
       /* get display value */
       port = port_start;
@@ -220,7 +222,7 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
 	   current->port_descriptor == NULL ||
 	   g_ascii_strcasecmp(current->specifier,
-			      AGS_BULK_MEMBER(list->data)->specifier)){
+			      bulk_member->specifier)){
 	  pthread_mutex_unlock(current->mutex);
 	    
 	  port = port->next;
@@ -235,6 +237,16 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	pthread_mutex_unlock(current->mutex);
 
 	/* get range */
+	if(bulk_member->conversion != NULL){
+	  lower = ags_conversion_convert(bulk_member->conversion,
+					 lower,
+					 TRUE);
+	  
+	  upper = ags_conversion_convert(bulk_member->conversion,
+					 upper,
+					 TRUE);
+	}
+
 	range = upper - lower;
 
 	/* port read value */
@@ -245,6 +257,12 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	peak = g_value_get_float(&value);
 	g_value_unset(&value);
 
+	if(bulk_member->conversion != NULL){
+	  peak = ags_conversion_convert(bulk_member->conversion,
+					peak,
+					TRUE);
+	}
+	
 	/* calculate peak */
 	if(range == 0.0 ||
 	   current->port_value_type == G_TYPE_BOOLEAN){
