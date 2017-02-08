@@ -203,7 +203,10 @@ ags_start_animation_thread(void *ptr)
   image_data = cairo_image_surface_get_data(surface);
   
   bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
-  memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
+
+  if(image_data != NULL){
+    memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
+  }
   
   cr = cairo_create(surface);
   
@@ -225,7 +228,9 @@ ags_start_animation_thread(void *ptr)
     i = g_list_length(start);
 
     if(i > nth){
-      memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
+      if(image_data != NULL){
+	memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
+      }
       
       cairo_set_source_surface(cr, surface, 0, 0);
       cairo_paint(cr);
