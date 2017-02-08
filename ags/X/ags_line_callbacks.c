@@ -374,6 +374,7 @@ ags_line_output_port_run_post_callback(AgsRecall *recall,
        (AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR ||
 	AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_HINDICATOR ||
 	AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_LED)){
+      AgsLineMember *line_member;
       GtkAdjustment *adjustment;
 
       AgsPort *current;
@@ -385,12 +386,13 @@ ags_line_output_port_run_post_callback(AgsRecall *recall,
 
       GValue value = {0,};
 
-      child = GTK_BIN(list->data)->child;
+      line_member = AGS_LINE_MEMBER(list->data);
+      child = GTK_BIN(line_member)->child;
       
       average_peak = 0.0;
       
       /* play port */
-      current = AGS_LINE_MEMBER(list->data)->port;
+      current = line_member->port;
 
       if(current == NULL){
 	list = list->next;
@@ -404,7 +406,7 @@ ags_line_output_port_run_post_callback(AgsRecall *recall,
       if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
 	 current->port_descriptor == NULL ||
 	 g_ascii_strcasecmp(current->specifier,
-			    AGS_LINE_MEMBER(list->data)->specifier)){
+			    line_member->specifier)){
 	pthread_mutex_unlock(current->mutex);
 	
 	list = list->next;
@@ -419,8 +421,18 @@ ags_line_output_port_run_post_callback(AgsRecall *recall,
       pthread_mutex_unlock(current->mutex);
 
       /* get range */
-      range = upper - lower;
+      if(line_member->conversion != NULL){
+	lower = ags_conversion_convert(line_member->conversion,
+				       lower,
+				       TRUE);
 
+	upper = ags_conversion_convert(line_member->conversion,
+				       upper,
+				       TRUE);
+      }
+      
+      range = upper - lower;
+      
       /* play port - read value */
       g_value_init(&value, G_TYPE_FLOAT);
       ags_port_safe_read(current,
@@ -429,6 +441,12 @@ ags_line_output_port_run_post_callback(AgsRecall *recall,
       peak = g_value_get_float(&value);
       g_value_unset(&value);
 
+      if(line_member->conversion != NULL){
+	peak = ags_conversion_convert(line_member->conversion,
+				      peak,
+				      TRUE);
+      }
+      
       /* calculate peak */
       if(range == 0.0 ||
 	 current->port_value_type == G_TYPE_BOOLEAN){
@@ -440,7 +458,7 @@ ags_line_output_port_run_post_callback(AgsRecall *recall,
       }
 
       /* recall port */
-      current = AGS_LINE_MEMBER(list->data)->recall_port;
+      current = line_member->recall_port;
 
       /* recall port - read value */
       g_value_init(&value, G_TYPE_FLOAT);
@@ -449,6 +467,12 @@ ags_line_output_port_run_post_callback(AgsRecall *recall,
       
       peak = g_value_get_float(&value);
       g_value_unset(&value);
+
+      if(line_member->conversion != NULL){
+	peak = ags_conversion_convert(line_member->conversion,
+				      peak,
+				      TRUE);
+      }
 
       /* calculate peak */
       if(range == 0.0 ||

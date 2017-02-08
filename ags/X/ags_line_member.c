@@ -1022,9 +1022,17 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 			   ((guint *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_FLOAT){
 	gfloat val;
-	  
-	val = ((gdouble *) port_data)[0];
-	  
+	
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+
 	if(line_member->conversion != NULL){
 	  gfloat upper, lower, range, step;
 	  gfloat c_upper, c_lower, c_range;
@@ -1087,14 +1095,21 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
 	g_value_init(&value,
 		     G_TYPE_FLOAT);
-
 	g_value_set_float(&value,
-			  (gfloat) ((gdouble *) port_data)[0]);
+			  (gfloat) val);
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	gdouble val;
-	  
-	val = ((gdouble *) port_data)[0];
-	  
+
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+	
 	if(line_member->conversion != NULL){
 	  gdouble upper, lower, range, step;
 	  gdouble c_upper, c_lower, c_range;
@@ -1160,7 +1175,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 		     G_TYPE_DOUBLE);
 
 	g_value_set_double(&value,
-			   ((gdouble *) port_data)[0]);
+			   val);
       }
     }else{
       if(port->port_value_type == G_TYPE_OBJECT){
