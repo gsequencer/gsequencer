@@ -350,11 +350,16 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   //FIXME:JK: attack probably needs to be removed
   destination = AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination;
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_init(&value, G_TYPE_FLOAT);
   ags_port_safe_read(buffer_channel->muted,
 		     &value);
 
-  muted = g_value_get_boolean(&value);
+  if(g_value_get_float(&value) == 0.0){
+    muted = FALSE;
+  }else{
+    muted = TRUE;
+  }
+  
   g_value_unset(&value);
 
   if(muted){
