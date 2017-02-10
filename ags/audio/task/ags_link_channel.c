@@ -24,6 +24,14 @@
 void ags_link_channel_class_init(AgsLinkChannelClass *link_channel);
 void ags_link_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_link_channel_init(AgsLinkChannel *link_channel);
+void ags_link_channel_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_link_channel_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_link_channel_connect(AgsConnectable *connectable);
 void ags_link_channel_disconnect(AgsConnectable *connectable);
 void ags_link_channel_finalize(GObject *gobject);
@@ -32,7 +40,7 @@ void ags_link_channel_launch(AgsTask *task);
 
 /**
  * SECTION:ags_link_channel
- * @short_description: link channel object
+ * @short_description: link channel task
  * @title: AgsLinkChannel
  * @section_id:
  * @include: ags/audio/task/ags_link_channel.h
@@ -42,6 +50,13 @@ void ags_link_channel_launch(AgsTask *task);
 
 static gpointer ags_link_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_link_channel_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+  PROP_LINK,
+  PROP_ERROR,
+};
 
 GType
 ags_link_channel_get_type()
@@ -85,13 +100,65 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_link_channel_parent_class = g_type_class_peek_parent(link_channel);
 
   /* GObject */
   gobject = (GObjectClass *) link_channel;
 
+  gobject->set_property = ags_link_channel_set_property;
+  gobject->get_property = ags_link_channel_get_property;
+
   gobject->finalize = ags_link_channel_finalize;
+
+  /* properties */
+  /**
+   * AgsLinkChannel:channel:
+   *
+   * The assigned #AgsChannel
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "channel of link channel\0",
+				   "The channel of link channel task\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsLinkChannel:link:
+   *
+   * The assigned #AgsChannel link
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("link\0",
+				   "link of link channel\0",
+				   "The link of link channel task\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LINK,
+				  param_spec);
+
+  /**
+   * AgsLinkChannel:error:
+   *
+   * The assigned #GError-struct
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_pointer("error\0",
+				    "error of link channel\0",
+				    "The error of link channel task\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ERROR,
+				  param_spec);
 
   /* AgsTask */
   task = (AgsTaskClass *) link_channel;
@@ -115,6 +182,106 @@ ags_link_channel_init(AgsLinkChannel *link_channel)
   link_channel->link = NULL;
 
   link_channel->error = NULL;
+}
+
+void
+ags_link_channel_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsLinkChannel *link_channel;
+
+  link_channel = AGS_LINK_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(link_channel->channel == (GObject *) channel){
+	return;
+      }
+
+      if(link_channel->channel != NULL){
+	g_object_unref(link_channel->channel);
+      }
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      link_channel->channel = (GObject *) channel;
+    }
+    break;
+  case PROP_LINK:
+    {
+      AgsChannel *link;
+
+      link = (AgsChannel *) g_value_get_object(value);
+
+      if(link_channel->link == (GObject *) link){
+	return;
+      }
+
+      if(link_channel->link != NULL){
+	g_object_unref(link_channel->link);
+      }
+
+      if(link != NULL){
+	g_object_ref(link);
+      }
+
+      link_channel->link = (GObject *) link;
+    }
+    break;
+  case PROP_ERROR:
+    {
+      GError *error;
+
+      error = g_value_get_pointer(value);
+
+      link_channel->error = error;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_link_channel_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsLinkChannel *link_channel;
+
+  link_channel = AGS_LINK_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, link_channel->channel);
+    }
+    break;
+  case PROP_LINK:
+    {
+      g_value_set_object(value, link_channel->link);
+    }
+    break;
+  case PROP_ERROR:
+    {
+      g_value_set_pointer(value, link_channel->error);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

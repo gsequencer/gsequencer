@@ -185,7 +185,7 @@ ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
  * @lv2_urid_manager: the #AgsLv2UridManager
  * @uri: the object to remove
  * 
- * Removes a lock associated with @urid.3
+ * Removes an entry associated with @urid.
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
@@ -215,7 +215,7 @@ ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
  *
  * Lookup a id associated with @urid in @lv2_urid_manager
  *
- * Returns: the id on success, else G_MAXUINT32
+ * Returns: the id on success, else the newly created id
  *
  * Since: 0.7.9
  */

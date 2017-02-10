@@ -72,6 +72,8 @@ struct _AgsLine
   AgsExpander *expander;
 
   GtkWidget *indicator;
+
+  GList *queued_drawing;
 };
 
 struct _AgsLineClass

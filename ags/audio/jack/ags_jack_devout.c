@@ -40,6 +40,7 @@
 
 #include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_tic_device.h>
+#include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -1610,11 +1611,14 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   AgsJackClient *jack_client;
   AgsJackDevout *jack_devout;
 
+  AgsNotifySoundcard *notify_soundcard;
+  
   AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
+  guint word_size;
   gboolean jack_client_activated;
   
   pthread_mutex_t *mutex;
@@ -1650,9 +1654,45 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_lock(mutex);
   
   jack_devout->flags &= (~AGS_JACK_DEVOUT_START_PLAY);
-
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard);
+  
   if((AGS_JACK_DEVOUT_INITIALIZED & (jack_devout->flags)) == 0){
     pthread_mutex_unlock(mutex);
+    
+    return;
+  }
+
+  switch(jack_devout->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {      
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(mutex);
+    
+    g_warning("ags_jack_devout_port_play(): unsupported word size\0");
     
     return;
   }
@@ -1715,19 +1755,20 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   }
 
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   if(task_thread != NULL){
     AgsTicDevice *tic_device;
+    AgsClearBuffer *clear_buffer;
     AgsSwitchBufferFlag *switch_buffer_flag;
       
     GList *task;
@@ -1738,7 +1779,12 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     tic_device = ags_tic_device_new((GObject *) jack_devout);
     task = g_list_append(task,
 			 tic_device);
-  
+
+    /* reset - clear buffer */
+    clear_buffer = ags_clear_buffer_new((GObject *) jack_devout);
+    task = g_list_append(task,
+			 clear_buffer);
+    
     /* reset - switch buffer flags */
     switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_devout);
     task = g_list_append(task,
@@ -1748,9 +1794,57 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 				 task);
   }else{
+    guint nth_buffer;
+    guint word_size;
+    
     /* tic */
     ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
-	  
+
+    switch(jack_devout->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	word_size = sizeof(signed char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	word_size = sizeof(signed long long);
+      }
+      break;
+    default:
+      g_warning("ags_jack_devout_port_play(): unsupported word size\0");
+      return;
+    }
+        
+    /* reset - clear buffer */
+    if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+      nth_buffer = 1;
+    }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+      nth_buffer = 2;
+    }
+
+    memset(jack_devout->buffer[nth_buffer], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+
     /* reset - switch buffer flags */
     ags_jack_devout_switch_buffer_flag(jack_devout);
   }
@@ -1761,6 +1855,8 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
 {
   AgsJackDevout *jack_devout;
 
+  AgsNotifySoundcard *notify_soundcard;
+  
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -1786,14 +1882,20 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
   pthread_mutex_unlock(application_context->mutex);
 
   /*  */
+  pthread_mutex_lock(mutex);
+
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard);
+
   if((AGS_JACK_DEVOUT_INITIALIZED & (jack_devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+
     return;
   }
 
+  g_object_ref(notify_soundcard);
+  
   //  g_atomic_int_or(&(AGS_THREAD(application_context->main_loop)->flags),
   //		  AGS_THREAD_TIMING);
-
-  pthread_mutex_lock(mutex);
 
   callback_mutex = jack_devout->callback_mutex;
   callback_finish_mutex = jack_devout->callback_finish_mutex;
@@ -1808,8 +1910,6 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
 		  AGS_JACK_DEVOUT_PASS_THROUGH);
   g_atomic_int_and(&(jack_devout->sync_flags),
 		   (~AGS_JACK_DEVOUT_INITIAL_CALLBACK));
-  
-  pthread_mutex_unlock(mutex);
 
   /* signal callback */
   pthread_mutex_lock(callback_mutex);
@@ -1836,20 +1936,20 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
   pthread_mutex_unlock(callback_finish_mutex);
 
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
+  g_object_unref(notify_soundcard);
+  
   /*  */
-  pthread_mutex_lock(mutex);
-
   jack_devout->note_offset = 0;
   jack_devout->note_offset_absolute = 0;
 

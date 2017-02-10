@@ -1,21 +1,21 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
- *
- * This file is part of GSequencer.
- *
- * GSequencer is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * GSequencer is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
- */
+  * Copyright (C) 2005-2015 Joël Krähemann
+  *
+  * This file is part of GSequencer.
+  *
+  * GSequencer is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  *
+  * GSequencer is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  *
+  * You should have received a copy of the GNU General Public License
+  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+  */
 
 #include <ags/audio/task/ags_remove_note.h>
 
@@ -24,6 +24,14 @@
 void ags_remove_note_class_init(AgsRemoveNoteClass *remove_note);
 void ags_remove_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_note_init(AgsRemoveNote *remove_note);
+void ags_remove_note_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+void ags_remove_note_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
 void ags_remove_note_connect(AgsConnectable *connectable);
 void ags_remove_note_disconnect(AgsConnectable *connectable);
 void ags_remove_note_finalize(GObject *gobject);
@@ -32,16 +40,23 @@ void ags_remove_note_launch(AgsTask *task);
 
 /**
  * SECTION:ags_remove_note
- * @short_description: remove note object to notation
+ * @short_description: remove note object from notation
  * @title: AgsRemoveNote
  * @section_id:
  * @include: ags/audio/task/ags_remove_note.h
  *
- * The #AgsRemoveNote task removes #AgsNote to #AgsNotation.
+ * The #AgsRemoveNote task removes #AgsNote from #AgsNotation.
  */
 
 static gpointer ags_remove_note_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_note_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_NOTATION,
+  PROP_X,
+  PROP_Y,
+};
 
 GType
 ags_remove_note_get_type()
@@ -68,9 +83,9 @@ ags_remove_note_get_type()
     };
 
     ags_type_remove_note = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsRemoveNote\0",
-						   &ags_remove_note_info,
-						   0);
+						  "AgsRemoveNote\0",
+						  &ags_remove_note_info,
+						  0);
 
     g_type_add_interface_static(ags_type_remove_note,
 				AGS_TYPE_CONNECTABLE,
@@ -85,13 +100,70 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_remove_note_parent_class = g_type_class_peek_parent(remove_note);
 
   /* gobject */
   gobject = (GObjectClass *) remove_note;
 
+  gobject->set_property = ags_remove_note_set_property;
+  gobject->get_property = ags_remove_note_get_property;
+
   gobject->finalize = ags_remove_note_finalize;
+
+  /* properties */
+  /**
+   * AgsRemoveNote:notation:
+   *
+   * The assigned #AgsNotation
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("notation\0",
+				   "notation of add note\0",
+				   "The notation of add note task\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
+				  param_spec);
+
+  /**
+   * AgsRemoveNote:x:
+   *
+   * Note offset x.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("x\0",
+				 "offset x\0",
+				 "The x offset\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X,
+				  param_spec);
+
+  /**
+   * AgsRemoveNote:y:
+   *
+   * Note offset y.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("y\0",
+				 "offset y\0",
+				 "The y offset\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) remove_note;
@@ -114,6 +186,86 @@ ags_remove_note_init(AgsRemoveNote *remove_note)
   remove_note->notation = NULL;
   remove_note->x = 0;
   remove_note->y = 0;
+}
+
+void
+ags_remove_note_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsRemoveNote *remove_note;
+
+  remove_note = AGS_REMOVE_NOTE(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(remove_note->notation == (GObject *) notation){
+	return;
+      }
+
+      if(remove_note->notation != NULL){
+	g_object_unref(remove_note->notation);
+      }
+
+      if(notation != NULL){
+	g_object_ref(notation);
+      }
+
+      remove_note->notation = (GObject *) notation;
+    }
+    break;
+  case PROP_X:
+    {
+      remove_note->x = g_value_get_uint(value);
+    }
+    break;
+  case PROP_Y:
+    {
+      remove_note->y = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_remove_note_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsRemoveNote *remove_note;
+
+  remove_note = AGS_REMOVE_NOTE(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, remove_note->notation);
+    }
+    break;
+  case PROP_X:
+    {
+      g_value_set_uint(value, remove_note->x);
+    }
+    break;
+  case PROP_Y:
+    {
+      g_value_set_uint(value, remove_note->y);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

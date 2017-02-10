@@ -245,21 +245,21 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   /* check channel */
   mute_channel = AGS_MUTE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 
-  g_value_init(&channel_value, G_TYPE_BOOLEAN);
+  g_value_init(&channel_value, G_TYPE_FLOAT);
   ags_port_safe_read(mute_channel->muted,
 		     &channel_value);
 
-  channel_muted = g_value_get_boolean(&channel_value);
+  channel_muted = (gboolean) g_value_get_float(&channel_value);
   g_value_unset(&channel_value);
 
   /* check audio */
   mute_audio = AGS_MUTE_AUDIO(AGS_RECALL_CONTAINER(AGS_RECALL(mute_channel)->container)->recall_audio);
 
-  g_value_init(&audio_value, G_TYPE_BOOLEAN);
+  g_value_init(&audio_value, G_TYPE_FLOAT);
   ags_port_safe_read(mute_audio->muted,
 		     &audio_value);
 
-  audio_muted = g_value_get_boolean(&audio_value);
+  audio_muted = (gboolean) g_value_get_float(&audio_value);
   g_value_unset(&audio_value);
 
   /* if not muted return */

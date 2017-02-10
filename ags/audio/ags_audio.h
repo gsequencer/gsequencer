@@ -81,6 +81,8 @@ struct _AgsAudio
   guint midi_start_mapping;
   guint midi_end_mapping;
 
+  guint midi_channel;
+  
   GList *audio_connection;
   
   AgsChannel *output;

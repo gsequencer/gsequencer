@@ -24,6 +24,14 @@
 void ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal);
 void ags_add_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal);
+void ags_add_audio_signal_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_add_audio_signal_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_add_audio_signal_connect(AgsConnectable *connectable);
 void ags_add_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_add_audio_signal_finalize(GObject *gobject);
@@ -32,7 +40,7 @@ void ags_add_audio_signal_launch(AgsTask *task);
 
 /**
  * SECTION:ags_add_audio_signal
- * @short_description: add audio_signal object to recycling
+ * @short_description: add audio signal object to recycling
  * @title: AgsAddAudioSignal
  * @section_id:
  * @include: ags/audio/task/ags_add_audio_signal.h
@@ -42,6 +50,15 @@ void ags_add_audio_signal_launch(AgsTask *task);
 
 static gpointer ags_add_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_add_audio_signal_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_RECYCLING,
+  PROP_AUDIO_SIGNAL,
+  PROP_SOUNDCARD,
+  PROP_RECALL_ID,
+  PROP_AUDIO_SIGNAL_FLAGS,
+};
 
 GType
 ags_add_audio_signal_get_type()
@@ -85,14 +102,101 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
-
+  GParamSpec *param_spec;
+  
   ags_add_audio_signal_parent_class = g_type_class_peek_parent(add_audio_signal);
 
   /* gobject */
   gobject = (GObjectClass *) add_audio_signal;
 
+  gobject->set_property = ags_add_audio_signal_set_property;
+  gobject->get_property = ags_add_audio_signal_get_property;
+
   gobject->finalize = ags_add_audio_signal_finalize;
 
+  /* properties */
+  /**
+   * AgsAddAudioSignal:recycling:
+   *
+   * The assigned #AgsRecycling
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("recycling\0",
+				   "recycling of add audio signal\0",
+				   "The recycling of add audio signal task\0",
+		 		   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING,
+				  param_spec);
+
+  /**
+   * AgsAddAudioSignal:audio-signal:
+   *
+   * The assigned #AgsAudioSignal
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("audio-signal\0",
+				   "audio signal of add audio signal\0",
+				   "The audio signal of add audio signal task\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL,
+				  param_spec);
+
+  /**
+   * AgsAddAudioSignal:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of add audio signal\0",
+				   "The soundcard of add audio signal task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsAddAudioSignal:recall-id:
+   *
+   * The assigned #AgsRecallID
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("recall-id\0",
+				   "audio signal of add audio signal\0",
+				   "The audio signal of add audio signal task\0",
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
+
+  /**
+   * AgsAddAudioSignal:audio-signal-flags:
+   *
+   * The audio signal's flags.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_uint("audio-signal-flags\0",
+				  "audio signal flags of effect\0",
+				  "The audio signal's flags to apply\0",
+				  0,
+				  G_MAXUINT,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL_FLAGS,
+				  param_spec);
+  
   /* task */
   task = (AgsTaskClass *) add_audio_signal;
 
@@ -116,6 +220,153 @@ ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal)
   add_audio_signal->soundcard = NULL;
   add_audio_signal->recall_id = NULL;
   add_audio_signal->audio_signal_flags = 0;
+}
+
+void
+ags_add_audio_signal_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsAddAudioSignal *add_audio_signal;
+
+  add_audio_signal = AGS_ADD_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(add_audio_signal->recycling == (GObject *) recycling){
+	return;
+      }
+
+      if(add_audio_signal->recycling != NULL){
+	g_object_unref(add_audio_signal->recycling);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      add_audio_signal->recycling = (GObject *) recycling;
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      AgsAudioSignal *audio_signal;
+
+      audio_signal = (AgsAudioSignal *) g_value_get_object(value);
+
+      if(add_audio_signal->audio_signal == (GObject *) audio_signal){
+	return;
+      }
+
+      if(add_audio_signal->audio_signal != NULL){
+	g_object_unref(add_audio_signal->audio_signal);
+      }
+
+      if(audio_signal != NULL){
+	g_object_ref(audio_signal);
+      }
+
+      add_audio_signal->audio_signal = (GObject *) audio_signal;
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(add_audio_signal->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(add_audio_signal->soundcard != NULL){
+	g_object_unref(add_audio_signal->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      add_audio_signal->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      AgsRecallID *recall_id;
+
+      recall_id = (AgsRecallID *) g_value_get_object(value);
+
+      if(add_audio_signal->recall_id == (GObject *) recall_id){
+	return;
+      }
+
+      if(add_audio_signal->recall_id != NULL){
+	g_object_unref(add_audio_signal->recall_id);
+      }
+
+      if(recall_id != NULL){
+	g_object_ref(recall_id);
+      }
+
+      add_audio_signal->recall_id = (GObject *) recall_id;
+    }
+    break;
+  case PROP_AUDIO_SIGNAL_FLAGS:
+    {
+      guint audio_signal_flags;
+
+      audio_signal_flags = g_value_get_uint(value);
+
+      add_audio_signal->audio_signal_flags = audio_signal_flags;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_add_audio_signal_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsAddAudioSignal *add_audio_signal;
+
+  add_audio_signal = AGS_ADD_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      g_value_set_object(value, add_audio_signal->recycling);
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      g_value_set_object(value, add_audio_signal->audio_signal);
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, add_audio_signal->soundcard);
+    }
+    break;
+  case PROP_AUDIO_SIGNAL_FLAGS:
+    {
+      g_value_set_uint(value, add_audio_signal->audio_signal_flags);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

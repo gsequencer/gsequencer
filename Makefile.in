@@ -14,11 +14,6 @@
 
 @SET_MAKE@
 
-# Copying and distribution of this file, with or without modification,
-# are permitted in any medium without royalty provided the copyright
-# notice and this notice are preserved.  This file is offered as-is,
-# without any warranty.
-
 
 
 
@@ -249,6 +244,7 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_recall_ladspa_run.lo \
 	ags/audio/libags_audio_la-ags_recall_lv2.lo \
 	ags/audio/libags_audio_la-ags_recall_lv2_run.lo \
+	ags/audio/libags_audio_la-ags_recall_adaptor_run.lo \
 	ags/audio/libags_audio_la-ags_recall_recycling.lo \
 	ags/audio/libags_audio_la-ags_recall_recycling_dummy.lo \
 	ags/audio/libags_audio_la-ags_recycling.lo \
@@ -309,13 +305,11 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_append_recall.lo \
 	ags/audio/task/libags_audio_la-ags_apply_presets.lo \
 	ags/audio/task/libags_audio_la-ags_apply_synth.lo \
-	ags/audio/task/libags_audio_la-ags_apply_wavetable.lo \
-	ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo \
 	ags/audio/task/libags_audio_la-ags_cancel_audio.lo \
 	ags/audio/task/libags_audio_la-ags_cancel_channel.lo \
 	ags/audio/task/libags_audio_la-ags_cancel_recall.lo \
 	ags/audio/task/libags_audio_la-ags_change_soundcard.lo \
-	ags/audio/task/libags_audio_la-ags_channel_set_recycling.lo \
+	ags/audio/task/libags_audio_la-ags_clear_buffer.lo \
 	ags/audio/task/libags_audio_la-ags_export_output.lo \
 	ags/audio/task/libags_audio_la-ags_free_selection.lo \
 	ags/audio/task/libags_audio_la-ags_init_audio.lo \
@@ -429,6 +423,7 @@ am__objects_14 = $(am__objects_1) \
 	ags/plugin/libags_audio_la-ags_lv2_plugin.lo \
 	ags/plugin/libags_audio_la-ags_lv2_log_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_event_manager.lo \
+	ags/plugin/libags_audio_la-ags_lv2_option_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_worker_manager.lo \
@@ -538,6 +533,8 @@ am__objects_21 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_effect_line_callbacks.lo \
 	ags/X/libgsequencer_la-ags_effect_pad.lo \
 	ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo \
+	ags/X/libgsequencer_la-ags_export_soundcard.lo \
+	ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo \
 	ags/X/libgsequencer_la-ags_export_window.lo \
 	ags/X/libgsequencer_la-ags_export_window_callbacks.lo \
 	ags/X/libgsequencer_la-ags_generic_preferences.lo \
@@ -1299,6 +1296,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = . docs/reference/ags
 ACLOCAL_AMFLAGS = -I m4
@@ -1335,18 +1337,19 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 # pkgconfig_DATA += libgsequencer.pc
 
 # extra
-EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 \
-	aclocal.m4 gsequencer.1 README ags_example.xml \
-	gsequencer-documentation midi2xml.1 \
+EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make \
+	gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README \
+	ags_example.xml gsequencer-documentation midi2xml.1 \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags_audio/libags_audio-sections.txt \
 	docs/reference/libags_audio/libags_audio.types \
 	docs/reference/libags_gui/libags_gui-sections.txt \
 	docs/reference/libags_gui/libags_gui.types libags.pc.in \
-	libags_audio.pc.in libags_gui.pc.in gsequencer.desktop.in \
-	libags.sym libags_thread.sym libags_server.sym \
-	libags_audio.sym libags_gui.sym docs/reference/libags/git.mk \
+	libags_audio.pc.in libags_gui.pc.in libgsequencer.pc.in \
+	gsequencer.desktop.in libags.sym libags_thread.sym \
+	libags_server.sym libags_audio.sym libags_gui.sym \
+	docs/reference/libags/git.mk \
 	docs/reference/libags/gtk-doc.make \
 	docs/reference/libags/Makefile.am \
 	docs/reference/libags/Makefile.in \
@@ -1369,13 +1372,19 @@ EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 \
 	docs/reference/libags_gui/libags_gui-overrides.txt \
 	docs/reference/libags_gui/libags_gui-sections.txt \
 	docs/reference/libags_gui/libags_gui.types \
-	docs/reference/libags_gui/libags_gui.xml $(manpages) \
+	docs/reference/libags_gui/libags_gui.xml \
+	docs/reference/libgsequencer/git.mk \
+	docs/reference/libgsequencer/gtk-doc.make \
+	docs/reference/libgsequencer/Makefile.am \
+	docs/reference/libgsequencer/Makefile.in \
+	docs/reference/libgsequencer/libgsequencer-overrides.txt \
+	docs/reference/libgsequencer/libgsequencer.xml $(manpages) \
 	$(userdoc) $(userdocimages) $(devdoc) $(devdocimages) \
 	$(devdoclistings) \
 	$(top_srcdir)/ags/audio/midi/ags_midi_file.dtd \
 	$(top_srcdir)/ags/file/ags_file.dtd \
 	$(top_srcdir)/ags/X/file/ags_simple_file.dtd \
-	$(top_srcdir)/ags.xsl \
+	$(top_srcdir)/ags.xsl $(top_srcdir)/ags-simple.xsl \
 	$(top_srcdir)/ags/object/ags_marshallers.list
 man1_MANS = gsequencer.1 midi2xml.1
 
@@ -1452,12 +1461,14 @@ devdoclistings = \
 	docs/listings/pcm_info.c \
 	docs/listings/pull_thread.c \
 	docs/listings/recycling.c \
-	docs/listings/start_thread.c
+	docs/listings/start_thread.c \
+	docs/listings/thread_application_context.c
 
 devdocimages = \
 	$(top_srcdir)/docs/images/AGS_iterator.png \
 	$(top_srcdir)/docs/images/AGS_recall_lifecycle.png \
-	$(top_srcdir)/docs/images/AGS_super-threaded.png
+	$(top_srcdir)/docs/images/AGS_super-threaded.png \
+	$(top_srcdir)/docs/images/AGS_linking.png
 
 userdocimages = \
 	$(top_srcdir)/docs/images/ags_automation_window_dssi_xsynth.png \
@@ -1833,6 +1844,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_ladspa_run.h \
 	ags/audio/ags_recall_lv2.h \
 	ags/audio/ags_recall_lv2_run.h \
+	ags/audio/ags_recall_adaptor_run.h \
 	ags/audio/ags_recall_recycling_dummy.h \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
@@ -1883,6 +1895,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_ladspa_run.c \
 	ags/audio/ags_recall_lv2.c \
 	ags/audio/ags_recall_lv2_run.c \
+	ags/audio/ags_recall_adaptor_run.c \
 	ags/audio/ags_recall_recycling.c \
 	ags/audio/ags_recall_recycling_dummy.c \
 	ags/audio/ags_recycling.c \
@@ -1954,6 +1967,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
+	ags/plugin/ags_lv2_option_manager.h \
 	ags/plugin/ags_lv2_uri_map_manager.h \
 	ags/plugin/ags_lv2_urid_manager.h \
 	ags/plugin/ags_lv2_worker_manager.h \
@@ -1976,6 +1990,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
+	ags/plugin/ags_lv2_option_manager.c \
 	ags/plugin/ags_lv2_uri_map_manager.c \
 	ags/plugin/ags_lv2_urid_manager.c \
 	ags/plugin/ags_lv2_worker_manager.c \
@@ -2208,13 +2223,11 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_append_recall.h \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_synth.h \
-	ags/audio/task/ags_apply_wavetable.h \
-	ags/audio/task/ags_audio_set_recycling.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
 	ags/audio/task/ags_cancel_recall.h \
 	ags/audio/task/ags_change_soundcard.h \
-	ags/audio/task/ags_channel_set_recycling.h \
+	ags/audio/task/ags_clear_buffer.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
 	ags/audio/task/ags_init_audio.h \
@@ -2271,13 +2284,11 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_append_recall.c \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_synth.c \
-	ags/audio/task/ags_apply_wavetable.c \
-	ags/audio/task/ags_audio_set_recycling.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
 	ags/audio/task/ags_cancel_recall.c \
 	ags/audio/task/ags_change_soundcard.c \
-	ags/audio/task/ags_channel_set_recycling.c \
+	ags/audio/task/ags_clear_buffer.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
 	ags/audio/task/ags_init_audio.c \
@@ -2383,6 +2394,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_effect_line.h \
 	ags/X/ags_effect_pad_callbacks.h \
 	ags/X/ags_effect_pad.h \
+	ags/X/ags_export_soundcard_callbacks.h \
+	ags/X/ags_export_soundcard.h \
 	ags/X/ags_export_window_callbacks.h \
 	ags/X/ags_export_window.h \
 	ags/X/ags_generic_preferences_callbacks.h \
@@ -2474,6 +2487,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_effect_line_callbacks.c \
 	ags/X/ags_effect_pad.c \
 	ags/X/ags_effect_pad_callbacks.c \
+	ags/X/ags_export_soundcard.c \
+	ags/X/ags_export_soundcard_callbacks.c \
 	ags/X/ags_export_window.c \
 	ags/X/ags_export_window_callbacks.c \
 	ags/X/ags_generic_preferences.c \
@@ -3143,6 +3158,8 @@ ags/audio/libags_audio_la-ags_recall_lv2.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_recall_lv2_run.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_recall_adaptor_run.lo:  \
+	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_recall_recycling.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_recall_recycling_dummy.lo:  \
@@ -3334,12 +3351,6 @@ ags/audio/task/libags_audio_la-ags_apply_presets.lo:  \
 ags/audio/task/libags_audio_la-ags_apply_synth.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
-ags/audio/task/libags_audio_la-ags_apply_wavetable.lo:  \
-	ags/audio/task/$(am__dirstamp) \
-	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
-ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo:  \
-	ags/audio/task/$(am__dirstamp) \
-	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_cancel_audio.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
@@ -3352,7 +3363,7 @@ ags/audio/task/libags_audio_la-ags_cancel_recall.lo:  \
 ags/audio/task/libags_audio_la-ags_change_soundcard.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
-ags/audio/task/libags_audio_la-ags_channel_set_recycling.lo:  \
+ags/audio/task/libags_audio_la-ags_clear_buffer.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_export_output.lo:  \
@@ -3706,6 +3717,9 @@ ags/plugin/libags_audio_la-ags_lv2_log_manager.lo:  \
 ags/plugin/libags_audio_la-ags_lv2_event_manager.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
+ags/plugin/libags_audio_la-ags_lv2_option_manager.lo:  \
+	ags/plugin/$(am__dirstamp) \
+	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
@@ -3917,6 +3931,10 @@ ags/X/libgsequencer_la-ags_effect_line_callbacks.lo:  \
 ags/X/libgsequencer_la-ags_effect_pad.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo:  \
+	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_export_soundcard.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_export_window.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
@@ -4673,6 +4691,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_line_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_pad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_pad_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_export_window.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_export_window_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_generic_preferences.Plo@am__quote@
@@ -4865,6 +4885,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_playback_domain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_port.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_adaptor_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_audio_signal.Plo@am__quote@
@@ -4988,13 +5009,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_append_recall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_presets.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_synth.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_recall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_change_soundcard.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_channel_set_recycling.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_export_output.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_free_selection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_init_audio.Plo@am__quote@
@@ -5090,6 +5109,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_event_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_log_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo@am__quote@
@@ -5720,6 +5740,13 @@ ags/audio/libags_audio_la-ags_recall_lv2_run.lo: ags/audio/ags_recall_lv2_run.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_recall_lv2_run.lo `test -f 'ags/audio/ags_recall_lv2_run.c' || echo '$(srcdir)/'`ags/audio/ags_recall_lv2_run.c
 
+ags/audio/libags_audio_la-ags_recall_adaptor_run.lo: ags/audio/ags_recall_adaptor_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_recall_adaptor_run.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_adaptor_run.Tpo -c -o ags/audio/libags_audio_la-ags_recall_adaptor_run.lo `test -f 'ags/audio/ags_recall_adaptor_run.c' || echo '$(srcdir)/'`ags/audio/ags_recall_adaptor_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_adaptor_run.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_adaptor_run.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_recall_adaptor_run.c' object='ags/audio/libags_audio_la-ags_recall_adaptor_run.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_recall_adaptor_run.lo `test -f 'ags/audio/ags_recall_adaptor_run.c' || echo '$(srcdir)/'`ags/audio/ags_recall_adaptor_run.c
+
 ags/audio/libags_audio_la-ags_recall_recycling.lo: ags/audio/ags_recall_recycling.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_recall_recycling.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_recycling.Tpo -c -o ags/audio/libags_audio_la-ags_recall_recycling.lo `test -f 'ags/audio/ags_recall_recycling.c' || echo '$(srcdir)/'`ags/audio/ags_recall_recycling.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_recycling.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_recycling.Plo
@@ -6098,20 +6125,6 @@ ags/audio/task/libags_audio_la-ags_apply_synth.lo: ags/audio/task/ags_apply_synt
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_apply_synth.lo `test -f 'ags/audio/task/ags_apply_synth.c' || echo '$(srcdir)/'`ags/audio/task/ags_apply_synth.c
 
-ags/audio/task/libags_audio_la-ags_apply_wavetable.lo: ags/audio/task/ags_apply_wavetable.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_apply_wavetable.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Tpo -c -o ags/audio/task/libags_audio_la-ags_apply_wavetable.lo `test -f 'ags/audio/task/ags_apply_wavetable.c' || echo '$(srcdir)/'`ags/audio/task/ags_apply_wavetable.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_apply_wavetable.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_apply_wavetable.c' object='ags/audio/task/libags_audio_la-ags_apply_wavetable.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_apply_wavetable.lo `test -f 'ags/audio/task/ags_apply_wavetable.c' || echo '$(srcdir)/'`ags/audio/task/ags_apply_wavetable.c
-
-ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo: ags/audio/task/ags_audio_set_recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Tpo -c -o ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo `test -f 'ags/audio/task/ags_audio_set_recycling.c' || echo '$(srcdir)/'`ags/audio/task/ags_audio_set_recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_audio_set_recycling.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_audio_set_recycling.c' object='ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_audio_set_recycling.lo `test -f 'ags/audio/task/ags_audio_set_recycling.c' || echo '$(srcdir)/'`ags/audio/task/ags_audio_set_recycling.c
-
 ags/audio/task/libags_audio_la-ags_cancel_audio.lo: ags/audio/task/ags_cancel_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_cancel_audio.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_audio.Tpo -c -o ags/audio/task/libags_audio_la-ags_cancel_audio.lo `test -f 'ags/audio/task/ags_cancel_audio.c' || echo '$(srcdir)/'`ags/audio/task/ags_cancel_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_audio.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_audio.Plo
@@ -6140,12 +6153,12 @@ ags/audio/task/libags_audio_la-ags_change_soundcard.lo: ags/audio/task/ags_chang
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_change_soundcard.lo `test -f 'ags/audio/task/ags_change_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_change_soundcard.c
 
-ags/audio/task/libags_audio_la-ags_channel_set_recycling.lo: ags/audio/task/ags_channel_set_recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_channel_set_recycling.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_channel_set_recycling.Tpo -c -o ags/audio/task/libags_audio_la-ags_channel_set_recycling.lo `test -f 'ags/audio/task/ags_channel_set_recycling.c' || echo '$(srcdir)/'`ags/audio/task/ags_channel_set_recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_channel_set_recycling.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_channel_set_recycling.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_channel_set_recycling.c' object='ags/audio/task/libags_audio_la-ags_channel_set_recycling.lo' libtool=yes @AMDEPBACKSLASH@
+ags/audio/task/libags_audio_la-ags_clear_buffer.lo: ags/audio/task/ags_clear_buffer.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_clear_buffer.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Tpo -c -o ags/audio/task/libags_audio_la-ags_clear_buffer.lo `test -f 'ags/audio/task/ags_clear_buffer.c' || echo '$(srcdir)/'`ags/audio/task/ags_clear_buffer.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_clear_buffer.c' object='ags/audio/task/libags_audio_la-ags_clear_buffer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_channel_set_recycling.lo `test -f 'ags/audio/task/ags_channel_set_recycling.c' || echo '$(srcdir)/'`ags/audio/task/ags_channel_set_recycling.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_clear_buffer.lo `test -f 'ags/audio/task/ags_clear_buffer.c' || echo '$(srcdir)/'`ags/audio/task/ags_clear_buffer.c
 
 ags/audio/task/libags_audio_la-ags_export_output.lo: ags/audio/task/ags_export_output.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_export_output.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_export_output.Tpo -c -o ags/audio/task/libags_audio_la-ags_export_output.lo `test -f 'ags/audio/task/ags_export_output.c' || echo '$(srcdir)/'`ags/audio/task/ags_export_output.c
@@ -6924,6 +6937,13 @@ ags/plugin/libags_audio_la-ags_lv2_event_manager.lo: ags/plugin/ags_lv2_event_ma
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_event_manager.lo `test -f 'ags/plugin/ags_lv2_event_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_event_manager.c
 
+ags/plugin/libags_audio_la-ags_lv2_option_manager.lo: ags/plugin/ags_lv2_option_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_option_manager.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_option_manager.lo `test -f 'ags/plugin/ags_lv2_option_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_option_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_option_manager.c' object='ags/plugin/libags_audio_la-ags_lv2_option_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_option_manager.lo `test -f 'ags/plugin/ags_lv2_option_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_option_manager.c
+
 ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo: ags/plugin/ags_lv2_uri_map_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo `test -f 'ags/plugin/ags_lv2_uri_map_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_uri_map_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo
@@ -7406,6 +7426,20 @@ ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo: ags/X/ags_effect_pad_callbac
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_effect_pad_callbacks.c' object='ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo `test -f 'ags/X/ags_effect_pad_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_effect_pad_callbacks.c
+
+ags/X/libgsequencer_la-ags_export_soundcard.lo: ags/X/ags_export_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_export_soundcard.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard.Tpo -c -o ags/X/libgsequencer_la-ags_export_soundcard.lo `test -f 'ags/X/ags_export_soundcard.c' || echo '$(srcdir)/'`ags/X/ags_export_soundcard.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_export_soundcard.c' object='ags/X/libgsequencer_la-ags_export_soundcard.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_export_soundcard.lo `test -f 'ags/X/ags_export_soundcard.c' || echo '$(srcdir)/'`ags/X/ags_export_soundcard.c
+
+ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo: ags/X/ags_export_soundcard_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo `test -f 'ags/X/ags_export_soundcard_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_export_soundcard_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_export_soundcard_callbacks.c' object='ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo `test -f 'ags/X/ags_export_soundcard_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_export_soundcard_callbacks.c
 
 ags/X/libgsequencer_la-ags_export_window.lo: ags/X/ags_export_window.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_export_window.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_export_window.Tpo -c -o ags/X/libgsequencer_la-ags_export_window.lo `test -f 'ags/X/ags_export_window.c' || echo '$(srcdir)/'`ags/X/ags_export_window.c
@@ -9663,33 +9697,34 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/$(PACKAGE_VERSION)/,stylesheet/ags-xsl/midi-xml/}
-	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
-	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
-	cp $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
-	cp $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	cp $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	cp $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	cp $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	cp $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
+	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
 install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
-	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
-	cp $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
-	cp $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
+	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 
 install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	cp -rv $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	cp -rv $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	cp -rv $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
 	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
 	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui

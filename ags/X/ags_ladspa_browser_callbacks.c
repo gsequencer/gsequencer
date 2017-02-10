@@ -180,15 +180,29 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 				  y, y + 1);
 
 	if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
-	  gtk_table_attach_defaults(table,
-				    GTK_WIDGET(ags_ladspa_browser_combo_box_boolean_controls_new()),
-				    1, 2,
-				    y, y + 1);
+	  if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	    gtk_table_attach_defaults(table,
+				      GTK_WIDGET(ags_ladspa_browser_combo_box_output_boolean_controls_new()),
+				      1, 2,
+				      y, y + 1);
+	  }else{
+	    gtk_table_attach_defaults(table,
+				      GTK_WIDGET(ags_ladspa_browser_combo_box_boolean_controls_new()),
+				      1, 2,
+				      y, y + 1);
+	  }
 	}else{
-	  gtk_table_attach_defaults(table,
-				    GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
-				    1, 2,
-				    y, y + 1);
+	  if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	    gtk_table_attach_defaults(table,
+				      GTK_WIDGET(ags_ladspa_browser_combo_box_output_controls_new()),
+				      1, 2,
+				      y, y + 1);
+	  }else{
+	    gtk_table_attach_defaults(table,
+				      GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
+				      1, 2,
+				      y, y + 1);
+	  }
 	}
 	
 	y++;

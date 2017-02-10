@@ -231,10 +231,10 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
     buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->source->buffer_size;
 
-    g_value_init(&value, G_TYPE_DOUBLE);
+    g_value_init(&value, G_TYPE_FLOAT);
     ags_port_safe_read(volume_channel->volume, &value);
 
-    volume = g_value_get_double(&value);
+    volume = g_value_get_float(&value);
 
     for(i = 0; i < buffer_size; i++){
       switch(AGS_RECALL_AUDIO_SIGNAL(recall)->source->format){

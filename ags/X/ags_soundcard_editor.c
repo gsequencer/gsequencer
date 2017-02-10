@@ -858,7 +858,8 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
-
+  AgsThread *export_thread;
+  
   AgsApplicationContext *application_context;
 
   GList *distributed_manager;
@@ -939,6 +940,13 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
 						    (GObject *) soundcard_thread);
   }
+
+  /* export thread */
+  export_thread = (AgsThread *) ags_export_thread_new(jack_devout,
+						      NULL);
+  ags_thread_add_child_extended(main_loop,
+				(AgsThread *) export_thread,
+				TRUE, TRUE);
 
   pthread_mutex_unlock(application_mutex);
 
@@ -1028,7 +1036,7 @@ ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
 
   if(distributed_manager != NULL){
     ags_distributed_manager_unregister_soundcard(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
-						 soundcard);
+						 jack_devout);
   }
 
   /* remove */
@@ -1066,7 +1074,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
-
+  AgsThread *export_thread;
+  
   AgsApplicationContext *application_context;
 
   pthread_mutex_t *application_mutex;
@@ -1140,6 +1149,13 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
     ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
 						    (GObject *) soundcard_thread);
   }
+  
+  /* export thread */
+  export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+						      NULL);
+  ags_thread_add_child_extended(main_loop,
+				(AgsThread *) export_thread,
+				TRUE, TRUE);
 }
 
 void

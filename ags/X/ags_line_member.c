@@ -32,6 +32,8 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/widget/ags_led.h>
+#include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>
@@ -553,7 +555,10 @@ ags_line_member_set_property(GObject *gobject,
 	gtk_toggle_button_set_active((GtkToggleButton *) new_child,
 				     active);
       }else{
-	g_warning("ags_line_member_set_property() - unknown child type %s\0", g_type_name(widget_type));
+	if(!(AGS_IS_INDICATOR(new_child) ||
+	     AGS_IS_LED(new_child))){
+	  g_warning("ags_line_member_set_property() - unknown child type %s\0", g_type_name(widget_type));
+	}
       }
 
       /* add */
@@ -936,7 +941,8 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 void
 ags_line_member_finalize(GObject *gobject)
 {
-  /* empty */
+  /* call parent */
+  G_OBJECT_CLASS(ags_line_member_parent_class)->finalize(gobject);  
 }
 
 GtkWidget*
@@ -1016,9 +1022,17 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 			   ((guint *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_FLOAT){
 	gfloat val;
-	  
-	val = ((gdouble *) port_data)[0];
-	  
+	
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+
 	if(line_member->conversion != NULL){
 	  gfloat upper, lower, range, step;
 	  gfloat c_upper, c_lower, c_range;
@@ -1081,14 +1095,21 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
 	g_value_init(&value,
 		     G_TYPE_FLOAT);
-
 	g_value_set_float(&value,
-			  (gfloat) ((gdouble *) port_data)[0]);
+			  (gfloat) val);
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	gdouble val;
-	  
-	val = ((gdouble *) port_data)[0];
-	  
+
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+	
 	if(line_member->conversion != NULL){
 	  gdouble upper, lower, range, step;
 	  gdouble c_upper, c_lower, c_range;
@@ -1154,7 +1175,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 		     G_TYPE_DOUBLE);
 
 	g_value_set_double(&value,
-			   ((gdouble *) port_data)[0]);
+			   val);
       }
     }else{
       if(port->port_value_type == G_TYPE_OBJECT){

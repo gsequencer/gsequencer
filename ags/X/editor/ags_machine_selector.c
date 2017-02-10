@@ -25,6 +25,7 @@
 #include <ags/audio/ags_notation.h>
 
 #include <ags/X/ags_editor.h>
+#include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_machine_radio_button.h>
 
@@ -225,10 +226,7 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
   
   GList *list, *list_start;
 
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-						 AGS_TYPE_EDITOR);
-
-  /* emit changed */
+  /* get machine radio button */
   machine_radio_button = NULL;
 
   list_start = 
@@ -243,28 +241,106 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
   }
   
   g_list_free(list_start);
+
+  if(machine_radio_button == NULL){
+    return;
+  }
   
-  /* destroy edit widgets */
-  if(machine_radio_button != NULL){
+  /*  */
+  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+						 AGS_TYPE_EDITOR);
+
+  if(editor != NULL){  
+    /* destroy edit widgets */
     if(machine_radio_button->machine != NULL){
+      AgsEditorChild *editor_child;
+
+      editor_child = NULL;
+      
       list = editor->editor_child;
 
       while(list != NULL){
 	if(AGS_EDITOR_CHILD(list->data)->machine == machine_radio_button->machine){
-	  gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->notebook);
-	  gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->meter);
-	  gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->edit_widget);
-	
+	  editor_child = AGS_EDITOR_CHILD(list->data);
+	  
+	  gtk_widget_destroy((GtkWidget *) editor_child->notebook);
+	  gtk_widget_destroy((GtkWidget *) editor_child->meter);
+	  gtk_widget_destroy((GtkWidget *) editor_child->edit_widget);
+
+	  editor->current_notebook = NULL;
+	  editor->current_meter = NULL;
+	  editor->current_edit_widget = NULL;
+	  
 	  break;
 	}
     
 	list = list->next;
       }
+
+      if(editor_child != NULL){
+	editor->editor_child = g_list_remove(editor->editor_child,
+					     editor_child);
+	free(editor_child);
+      }
     }
-  
-    /**/
-    gtk_widget_destroy(GTK_WIDGET(machine_radio_button));
+  }else{
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+									AGS_TYPE_AUTOMATION_EDITOR);
+
+    if(automation_editor != NULL){
+      /* destroy edit widgets */
+      if(machine_radio_button->machine != NULL){
+	AgsAutomationEditorChild *automation_editor_child;
+
+	automation_editor_child = NULL;
+	
+	list = automation_editor->automation_editor_child;
+
+	while(list != NULL){
+	  if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->machine == machine_radio_button->machine){
+	    automation_editor_child = AGS_AUTOMATION_EDITOR_CHILD(list->data);
+	    
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->audio_scale);
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->audio_automation_edit);
+	    
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->output_scale);
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->output_notebook);
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->output_automation_edit);
+
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->input_scale);
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->input_notebook);
+	    gtk_widget_destroy((GtkWidget *) automation_editor_child->input_automation_edit);
+
+	    automation_editor->current_audio_scale = NULL;
+	    automation_editor->current_audio_automation_edit = NULL;
+
+	    automation_editor->current_output_notebook = NULL;
+	    automation_editor->current_output_scale = NULL;
+	    automation_editor->current_output_automation_edit = NULL;
+
+	    automation_editor->current_input_notebook = NULL;
+	    automation_editor->current_input_scale = NULL;
+	    automation_editor->current_input_automation_edit = NULL;
+
+	    break;
+	  }
+    
+	  list = list->next;
+	}
+
+	if(automation_editor_child != NULL){
+	  automation_editor->automation_editor_child = g_list_remove(automation_editor->automation_editor_child,
+								     automation_editor_child);
+	  free(automation_editor_child);
+	}
+      }
+    }
   }
+  
+  /**/
+  gtk_widget_destroy(GTK_WIDGET(machine_radio_button));
 }
 
 void

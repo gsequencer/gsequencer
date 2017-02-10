@@ -38,4 +38,7 @@ void ags_effect_line_remove_effect_callback(AgsChannel *channel,
 					    guint nth,
 					    AgsEffectLine *effect_line);
 
+void ags_effect_line_output_port_run_post_callback(AgsRecall *recall,
+						   AgsEffectLine *effect_line);
+
 #endif /*__AGS_EFFECT_LINE_CALLBACKS_H__*/

@@ -507,7 +507,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   /* set size request if needed */
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
     gtk_adjustment_set_upper(GTK_RANGE(matrix->cell_pattern->vscrollbar)->adjustment,
-			     (double) pads - 1.0);
+			     (double) pads);
 
     
     if(pads < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){

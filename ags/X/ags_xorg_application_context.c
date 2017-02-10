@@ -63,6 +63,9 @@
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/audio/task/ags_cancel_channel.h>
+
 #include <ags/audio/recall/ags_play_audio.h>
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
@@ -334,6 +337,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AgsJackServer *jack_server;
 
   AgsThread *soundcard_thread;
+  AgsThread *export_thread;
   AgsThread *sequencer_thread;
 
   AgsConfig *config;
@@ -633,10 +637,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   */
     
   /* AgsWindow */
-  window = ags_window_new((GObject *) xorg_application_context);
-  g_object_set(window,
-	       "soundcard\0", soundcard,
-	       NULL);
+  window = g_object_new(AGS_TYPE_WINDOW,
+			"soundcard\0", soundcard,
+			"application-context\0", xorg_application_context,
+			NULL);
   AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->window = window;
   g_object_ref(G_OBJECT(window));
 
@@ -677,7 +681,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 		   G_CALLBACK(ags_xorg_application_context_clear_cache), NULL);
 
   
-  /* AgsSoundcardThread */
+  /* AgsSoundcardThread and AgsExportThread */
   xorg_application_context->soundcard_thread = NULL;
   list = xorg_application_context->soundcard;
     
@@ -702,11 +706,24 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				       notify_soundcard);
 
+    /* export thread */
+    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+							NULL);
+    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				  (AgsThread *) export_thread,
+				  TRUE, TRUE);
+
     /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){
       xorg_application_context->soundcard_thread = soundcard_thread;
     }
-    
+
+    /* default export thread */
+    if(export_thread != NULL){
+      xorg_application_context->export_thread = export_thread;
+    }
+
+    /* iterate */
     list = list->next;      
   }
   
@@ -721,13 +738,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
     list = list->next;      
   }
-
-  /* AgsExportThread */
-  xorg_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
-										NULL);
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				(AgsThread *) xorg_application_context->export_thread,
-				TRUE, TRUE);
 
   /* AgsGuiThread */
   //  xorg_application_context->gui_thread = NULL;
@@ -975,6 +985,12 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   /*  */
   ags_audio_file_get_type();
   ags_audio_file_link_get_type();
+
+  /* register tasks */
+  ags_cancel_audio_get_type();
+  ags_cancel_channel_get_type();
+  
+  //TODO:JK: extend me
   
   /* register recalls */
   ags_recall_channel_run_dummy_get_type();
@@ -1033,6 +1049,10 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   
   /* gui */
   //TODO:JK: move me
+  ags_led_get_type();
+  ags_indicator_get_type();
+  ags_vindicator_get_type();
+  ags_hindicator_get_type();
   ags_dial_get_type();
 
   /* register machine */

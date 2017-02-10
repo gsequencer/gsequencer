@@ -32,6 +32,14 @@
 void ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall);
 void ags_remove_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_recall_init(AgsRemoveRecall *remove_recall);
+void ags_remove_recall_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_remove_recall_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_remove_recall_connect(AgsConnectable *connectable);
 void ags_remove_recall_disconnect(AgsConnectable *connectable);
 void ags_remove_recall_finalize(GObject *gobject);
@@ -40,16 +48,24 @@ void ags_remove_recall_launch(AgsTask *task);
 
 /**
  * SECTION:ags_remove_recall
- * @short_description: remove recall object to context
+ * @short_description: remove recall object from context
  * @title: AgsRemoveRecall
  * @section_id:
  * @include: ags/audio/task/ags_remove_recall.h
  *
- * The #AgsRemoveRecall task removes #AgsRecall to context.
+ * The #AgsRemoveRecall task removes #AgsRecall from context.
  */
 
 static gpointer ags_remove_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_recall_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_CONTEXT,
+  PROP_RECALL,
+  PROP_IS_PLAY,
+  PROP_REMOVE_ALL,
+};
 
 GType
 ags_remove_recall_get_type()
@@ -76,9 +92,9 @@ ags_remove_recall_get_type()
     };
 
     ags_type_remove_recall = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsRemoveRecall\0",
-						  &ags_remove_recall_info,
-						  0);
+						    "AgsRemoveRecall\0",
+						    &ags_remove_recall_info,
+						    0);
 
     g_type_add_interface_static(ags_type_remove_recall,
 				AGS_TYPE_CONNECTABLE,
@@ -93,13 +109,81 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_remove_recall_parent_class = g_type_class_peek_parent(remove_recall);
 
   /* GObjectClass */
   gobject = (GObjectClass *) remove_recall;
 
+  gobject->set_property = ags_remove_recall_set_property;
+  gobject->get_property = ags_remove_recall_get_property;
+
   gobject->finalize = ags_remove_recall_finalize;
+
+  /**
+   * AgsRemoveRecall:context:
+   *
+   * The assigned #AgsContext
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("context\0",
+				   "context of remove recall\0",
+				   "The context of remove recall task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsRemoveRecall:recall:
+   *
+   * The assigned #AgsRecall
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("recall\0",
+				   "recall of remove recall\0",
+				   "The recall of remove recall task\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL,
+				  param_spec);
+  
+  /**
+   * AgsRemoveRecall:is-play:
+   *
+   * The recall's context is-play.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("is-play\0",
+				     "is play context\0",
+				     "Remove recall to play context\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IS_PLAY,
+				  param_spec);
+
+  /**
+   * AgsRemoveRecall:remove-all:
+   *
+   * Do remove-all related recalls.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("remove-all\0",
+				     "remove all\0",
+				     "Remove all related recall\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REMOVE_ALL,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) remove_recall;
@@ -123,6 +207,112 @@ ags_remove_recall_init(AgsRemoveRecall *remove_recall)
   remove_recall->recall = NULL;
   remove_recall->is_play = FALSE;
   remove_recall->remove_all = FALSE;
+}
+
+void
+ags_remove_recall_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsRemoveRecall *remove_recall;
+
+  remove_recall = AGS_REMOVE_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_CONTEXT:
+    {
+      GObject *context;
+
+      context = (GObject *) g_value_get_object(value);
+
+      if(remove_recall->context == (GObject *) context){
+	return;
+      }
+
+      if(remove_recall->context != NULL){
+	g_object_unref(remove_recall->context);
+      }
+
+      if(context != NULL){
+	g_object_ref(context);
+      }
+
+      remove_recall->context = (GObject *) context;
+    }
+    break;
+  case PROP_RECALL:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(remove_recall->recall == (GObject *) recall){
+	return;
+      }
+
+      if(remove_recall->recall != NULL){
+	g_object_unref(remove_recall->recall);
+      }
+
+      if(recall != NULL){
+	g_object_ref(recall);
+      }
+
+      remove_recall->recall = (GObject *) recall;
+    }
+    break;
+  case PROP_IS_PLAY:
+    {
+      remove_recall->is_play = g_value_get_boolean(value);
+    }
+    break;
+  case PROP_REMOVE_ALL:
+    {
+      remove_recall->remove_all = g_value_get_boolean(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_remove_recall_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsRemoveRecall *remove_recall;
+
+  remove_recall = AGS_REMOVE_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_CONTEXT:
+    {
+      g_value_set_object(value, remove_recall->context);
+    }
+    break;
+  case PROP_RECALL:
+    {
+      g_value_set_object(value, remove_recall->recall);
+    }
+    break;
+  case PROP_IS_PLAY:
+    {
+      g_value_set_boolean(value, remove_recall->is_play);
+    }
+    break;
+  case PROP_REMOVE_ALL:
+    {
+      g_value_set_boolean(value, remove_recall->remove_all);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

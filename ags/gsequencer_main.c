@@ -21,6 +21,7 @@
 #include <glib-object.h>
 
 #include <gdk/gdk.h>
+#include <pango/pangocairo.h>
 
 #include <X11/Xlib.h>
 
@@ -121,6 +122,7 @@ extern AgsApplicationContext *ags_application_context;
 
 extern volatile gboolean ags_show_start_animation;
 
+#ifndef AGS_USE_TIMER
 void
 ags_signal_handler(int signr)
 {
@@ -136,7 +138,9 @@ ags_signal_handler(int signr)
     //    }
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
 {
@@ -152,6 +156,7 @@ ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
     pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
   //  signal(sig, SIG_IGN);
 }
+#endif
 
 static void
 ags_signal_cleanup()
@@ -164,17 +169,19 @@ ags_start_animation_thread(void *ptr)
 {
   GtkWidget *window;
   GdkRectangle rectangle;
-  
-  cairo_t *cr;
+
+  cairo_t *gdk_cr, *cr;
   cairo_surface_t *surface;
-  
+
   AgsLog *log;
 
   gchar *filename;
+  unsigned char *bg_data, *image_data;
   
   /* create a buffer suitable to image size */
   GList *list, *start;
 
+  guint image_size;
   gdouble x0, y0;
   guint i, nth;
   
@@ -186,22 +193,33 @@ ags_start_animation_thread(void *ptr)
   rectangle.y = 0;
   rectangle.width = 800;
   rectangle.height = 450;
+
+  image_size = 4 * 800 * 450;
   
-  cr = gdk_cairo_create(window->window);
+  gdk_cr = gdk_cairo_create(window->window);
   
   filename = g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png\0");
 
   surface = cairo_image_surface_create_from_png(filename);
+  image_data = cairo_image_surface_get_data(surface);
+  
+  bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
+
+  if(image_data != NULL){
+    memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
+  }
+  
+  cr = cairo_create(surface);
   
   cairo_select_font_face(cr, "Georgia\0",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, (gdouble) 11.0);
-
+  
   gdk_window_show(window->window);
   
   gdk_threads_leave();
 
-  log = ags_log_get_instance();    
+  log = ags_log_get_instance();  
   nth = 0;
   
   while(g_atomic_int_get(&(ags_show_start_animation))){
@@ -211,6 +229,10 @@ ags_start_animation_thread(void *ptr)
     i = g_list_length(start);
 
     if(i > nth){
+      if(image_data != NULL){
+	memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
+      }
+      
       cairo_set_source_surface(cr, surface, 0, 0);
       cairo_paint(cr);
       cairo_surface_flush(surface);
@@ -226,8 +248,9 @@ ags_start_animation_thread(void *ptr)
 	
 	cairo_move_to(cr,
 		      x0, y0);
+
 	cairo_show_text(cr, list->data);
-	
+
 	list = list->next;
 	y0 -= 12.0;
       }
@@ -235,12 +258,18 @@ ags_start_animation_thread(void *ptr)
       cairo_move_to(cr,
 		    x0, 4.0 + (i + 1) * 12.0);
       cairo_show_text(cr, "...\0");
-
-      gdk_flush();
+      
       nth = g_list_length(start);
-    }    
+    }
+
+    cairo_set_source_surface(gdk_cr, surface, 0, 0);
+    cairo_paint(gdk_cr);
+    cairo_surface_flush(surface);
+    gdk_flush();
   }
 
+  free(bg_data);
+  
   gdk_threads_enter();
 
   gtk_widget_destroy(window);
@@ -267,6 +296,7 @@ ags_start_animation(pthread_t *thread)
 		 ags_start_animation_thread, window);
 }
 
+#ifndef AGS_USE_TIMER
 void
 ags_setup(int argc, char **argv)
 {
@@ -424,6 +454,8 @@ ags_setup(int argc, char **argv)
   ags_application_context->argc = argc;
   ags_application_context->argv = argv;
 
+  ags_application_context_register_types(ags_application_context);
+
   /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
   
@@ -437,7 +469,9 @@ ags_setup(int argc, char **argv)
   g_atomic_int_set(&(ags_show_start_animation),
 		   FALSE);
 }
+#endif
 
+#ifndef AGS_USE_TIMER
 void
 ags_launch(gboolean single_thread)
 {
@@ -578,7 +612,9 @@ ags_launch(gboolean single_thread)
     ags_thread_start((AgsThread *) single_thread);
   }
 }
+#endif
 
+#ifndef AGS_USE_TIMER
 void
 ags_launch_filename(gchar *filename,
 		    gboolean single_thread)
@@ -747,7 +783,9 @@ ags_launch_filename(gchar *filename,
     		 NULL);
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 timer_t*
 ags_timer_setup()
 {
@@ -782,11 +820,13 @@ ags_timer_setup()
   if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, timer_id) == -1){
     perror("timer_create\0");
     exit(EXIT_FAILURE);
-  }
+  }  
 
   return(timer_id);
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_start(timer_t *timer_id)
 {
@@ -807,9 +847,11 @@ ags_timer_start(timer_t *timer_id)
   if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
     perror("sigprocmask\0");
     exit(EXIT_FAILURE);
-  }
+  }  
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_launch(timer_t *timer_id,
 		 gboolean single_thread)
@@ -954,7 +996,9 @@ ags_timer_launch(timer_t *timer_id,
     ags_thread_start((AgsThread *) single_thread);
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 			  gboolean single_thread)
@@ -1128,6 +1172,7 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 		 NULL);
   }
 }
+#endif
 
 void
 ags_show_file_error(gchar *filename,

@@ -38,6 +38,7 @@
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
@@ -67,6 +68,8 @@ void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_audio_loop_get_last_sync(AgsMainLoop *main_loop);
 gboolean ags_audio_loop_monitor(AgsMainLoop *main_loop,
 				guint time_cycle, guint *time_spent);
+void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
+				     gdouble frequency);
 void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_start(AgsThread *thread);
@@ -270,6 +273,7 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
   main_loop->get_last_sync = ags_audio_loop_get_last_sync;
   main_loop->interrupt = NULL;
   main_loop->monitor = ags_audio_loop_monitor;
+  main_loop->change_frequency = ags_audio_loop_change_frequency;
 }
 
 void
@@ -292,9 +296,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  //  g_atomic_int_or(&(thread->flags),
-  //		  AGS_THREAD_TIMING);
 
   //  thread->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
   pthread_mutex_lock(application_mutex);
@@ -592,6 +593,74 @@ ags_audio_loop_monitor(AgsMainLoop *main_loop,
 }
 
 void
+ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
+				gdouble frequency)
+{
+  AgsThread *audio_loop, *thread;
+
+  audio_loop = AGS_THREAD(main_loop);
+  
+  g_object_set(audio_loop,
+	       "frequency\0", frequency,
+	       NULL);
+
+  /* reset soundcard thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset sequencer thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_SEQUENCER_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset export thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_EXPORT_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset audio thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_AUDIO_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+
+  /* reset channel thread */
+  thread = audio_loop;
+
+  while(ags_thread_find_type(thread, AGS_TYPE_CHANNEL_THREAD) != NULL){
+    g_object_set(thread,
+		 "frequency\0", frequency,
+		 NULL);
+
+    thread = g_atomic_pointer_get(&(thread->next));
+  }
+}
+
+void
 ags_audio_loop_finalize(GObject *gobject)
 {
   AgsAudioLoop *audio_loop;
@@ -623,8 +692,8 @@ ags_audio_loop_start(AgsThread *thread)
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
 
-    pthread_create(audio_loop->timing_thread, NULL,
-    		   ags_audio_loop_timing_thread, audio_loop);
+    //    pthread_create(audio_loop->timing_thread, NULL,
+    //		   ags_audio_loop_timing_thread, audio_loop);
   }
 }
 
@@ -734,8 +803,10 @@ ags_audio_loop_run(AgsThread *thread)
      audio_loop->play_audio_ref == 0 &&
      audio_loop->play_notation_ref == 0){
     AgsThread *soundcard_thread;
+    AgsThread *sequencer_thread;
     AgsThread *export_thread;
 
+    /* soundcard thread */
     soundcard_thread = thread;
 
     while((soundcard_thread = ags_thread_find_type(soundcard_thread,
@@ -747,13 +818,28 @@ ags_audio_loop_run(AgsThread *thread)
       soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
     }
 
-    /* export thread */
-    export_thread = ags_thread_find_type(thread,
-					 AGS_TYPE_EXPORT_THREAD);
+    /* sequencer thread */
+    sequencer_thread = thread;
 
-    if(export_thread != NULL &&
-       (AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
-      ags_thread_stop(export_thread);
+    while((sequencer_thread = ags_thread_find_type(sequencer_thread,
+						   AGS_TYPE_SEQUENCER_THREAD)) != NULL){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(sequencer_thread->flags)))) != 0){
+	ags_thread_stop(sequencer_thread);
+      }
+
+      sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
+    }
+
+    /* export thread */
+    export_thread = thread;
+
+    while((export_thread = ags_thread_find_type(export_thread,
+						AGS_TYPE_EXPORT_THREAD)) != NULL){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
+	ags_thread_stop(export_thread);
+      }
+
+      export_thread = g_atomic_pointer_get(&(export_thread->next));
     }
   }
 }
@@ -814,9 +900,9 @@ ags_audio_loop_timing_thread(void *ptr)
 
     g_atomic_int_set(&(audio_loop->time_spent),
 		     audio_loop->time_cycle);
-    ags_main_loop_interrupt(AGS_MAIN_LOOP(thread),
-    			    AGS_THREAD_SUSPEND_SIG,
-    			    audio_loop->time_cycle, &time_spent);
+    //    ags_main_loop_interrupt(AGS_MAIN_LOOP(thread),
+    //			    AGS_THREAD_SUSPEND_SIG,
+    //			    audio_loop->time_cycle, &time_spent);
     
     //    g_message("inter\0");    
   }

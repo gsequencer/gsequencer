@@ -364,7 +364,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 						      gdouble delay, guint attack,
 						      AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
-  AgsChannel *output, *source;
+  AgsChannel *source;
   AgsPattern *pattern;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
@@ -380,7 +380,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *pattern_mutex;
-
+  pthread_mutex_t *source_mutex;
+  
   if(delay != 0.0){
     return;
   }
@@ -440,34 +441,66 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   /*  */
   if(current_bit){
+    AgsChannel *link;
     AgsRecycling *recycling;
+    AgsRecycling *end_recycling;
     AgsAudioSignal *audio_signal;
 
     gdouble delay;
     guint attack;
   
+    pthread_mutex_t *link_mutex;
+    
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
     //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
 
     /* get source */
     source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;
-    
-    /* create new audio signals */
-    recycling = source->first_recycling;
-    
-    //TODO:JK: unclear
 
+    pthread_mutex_lock(application_mutex);
+  
+    source_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) source);
+    
+    pthread_mutex_unlock(application_mutex);
+    
+    /* source fields */
+    pthread_mutex_lock(source_mutex);
+
+    link = source->link;
+    
+    recycling = source->first_recycling;
+
+    if(recycling != NULL){
+      end_recycling = source->last_recycling->next;
+    }
+    
+    pthread_mutex_unlock(source_mutex);
+
+    /* link */
+    if(link != NULL){
+      pthread_mutex_lock(application_mutex);
+      
+      link_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) link);
+      
+      pthread_mutex_unlock(application_mutex);
+    }
+
+    /* create audio signals */
     if(recycling != NULL){
       AgsRecallID *child_recall_id;
 
-      while(recycling != source->last_recycling->next){
-	if(source->link == NULL){
+      while(recycling != end_recycling){
+	if(link == NULL){
 	  child_recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
 	}else{
 	  GList *list;
 
-	  list = source->link->recall_id;
+	  pthread_mutex_lock(link_mutex);
+	  
+	  list = link->recall_id;
 
 	  while(list != NULL){
 	    if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_context){
@@ -481,6 +514,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  if(list == NULL){
 	    child_recall_id = NULL;
 	  }
+
+	  pthread_mutex_unlock(link_mutex);
 	}
 
 	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,

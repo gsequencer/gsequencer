@@ -45,8 +45,8 @@ void ags_line_volume_callback(GtkRange *range,
 			      AgsLine *line);
 
 /* AgsRecall - recall */
-void ags_line_peak_run_post_callback(AgsRecall *peak_channel,
-				     AgsLine *line);
+void ags_line_output_port_run_post_callback(AgsRecall *recall,
+					    AgsLine *line);
 
 void ags_line_copy_pattern_done(AgsRecall *recall,
 				AgsLine *line);

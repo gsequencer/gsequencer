@@ -39,7 +39,7 @@ struct _AgsApplySequencerLength
 {
   AgsTask task;
 
-  GObject *gobject;
+  GObject *scope;
 
   gdouble length;
 };
@@ -51,7 +51,7 @@ struct _AgsApplySequencerLengthClass
 
 GType ags_apply_sequencer_length_get_type();
 
-AgsApplySequencerLength* ags_apply_sequencer_length_new(GObject *gobject,
+AgsApplySequencerLength* ags_apply_sequencer_length_new(GObject *scope,
 							gdouble length);
 
 #endif /*__AGS_APPLY_SEQUENCER_LENGTH_H__*/

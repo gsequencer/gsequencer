@@ -1,3 +1,136 @@
+ags (0.7.129)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags-simple.xsl
+	* improved mutices in ags_pad_play() and ags_line_channel_done_callback()
+	* fixed missing persisting of machine name
+
+ags (0.7.128)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsLv2OptionManager
+	* implemented passing options for AgsRecallLv2Run
+	* modified UI to show visualization widgets for plugin output ports
+	* modified ags-peak, ags-volume and ags-mute recalls to use float ports
+	* disabled loading automation of output ports
+	* fixed buggy code in ags_machine_selector_remove_index() by a work-around has a need for refactoring
+
+ags (0.7.127)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented LV2UI related code to do idle and show interface
+	* improved splash picture to refresh frequently
+
+ags (0.7.126)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved mutices for recalls
+	* improved AGS_THREAD_INTERMEDIATE_POST_SYNC
+	* disabled ags_main_loop_interrupt() in ags_jack_client_process_callback()
+
+ags (0.7.125)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash in ags_jack_midiin_port_free() NULL pointer access
+	* improved mutices doing playback
+
+ags (0.7.124)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed asynchronous ALSA output by incrementing ring-buffer size
+	* fixed proper use of ppoll() with AgsDevout prior events wasn't set
+	* implemented wait playback until device is available with AgsDevout
+	* implemented AgsClearBuffer task
+	* refactored AgsDevout and AgsJackDevout to use AgsClearBuffer task
+
+ags (0.7.123)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
+
+ags (0.7.122.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor fixes
+
+ags (0.7.122.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor fixes
+
+ags (0.7.122.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* back-ported enable output ports to plugins
+	* back-ported disable output ports on automation
+	* back-ported enable built-in effects to do automation
+	* fixed configuration in-place to reset frequency of appropriate thread
+	* minor fixes
+
+ags (0.7.122.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor fixes
+
+ags (0.7.122)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented intermediate pre and post sync
+	* refactored interfacing soundcard to do intermediate post sync
+	* refactored interfacing sequencer to do intermediate pre sync
+	* refactored ags_devout.c tightened the code and intermediate post sync
+	* refactored ags_midiin.c intermediate pre sync
+	* improved XPath doing lv2 turtle
+	* fixed stop export and sequencer thread during soundcard stop
+	* fixed ags_start_soundcard_finalize() without configured sequencer crashing
+	* fixed potential dead-lock in ags_midiin_oss_poll() and ags_midiin_alsa_poll()
+	* fixed proper termination of OSS and ALSA poll
+
+ags (0.7.121)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am to use -p and -m 644 parameter
+
+ags (0.7.120)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved Makefile.am use install instead of cp
+
+ags (0.7.119)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_export_window_reload_soundcard_editor()
+	* implemented AgsExportSoundcard UI
+	* refactored AgsExportWindow to allow export multiple soundcards
+	* improved mutices in ags_record_midi_audio_run.c
+	* improved mutices in ags_route_dssi_audio_run.c
+	* improved mutices in ags_route_lv2_audio_run.c
+	* fixed ags-audio.h to remove unused headers
+	* fixed AgsSoundcardEditor and AgsSequencerEditor to remove JACK device
+
+ags (0.7.118)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed API reference removed unused objects
+	* added COPYING.docs
+
+ags (0.7.117)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAudio:midi-channel
+	* implemented midi channel in AgsMidiDialog
+	* implemented using midi channel in ags-record-midi
+	* back-ported properties of tasks of branch 1.0
+	* fixed ags-record-midi recall to proper key-on and key-off
+
+ags (0.7.116)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_midiin_alsa_poll() and ags_midiin_oss_poll()
+	* fixed possible NULL pointer access in ags_midiin_list_cards()
+	* fixed AgsMidiin to always set nth_buffer during record
+	* fixed in ags_midiin_set_device() to duplicate string and handle OSS4
+
 ags (0.7.115)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

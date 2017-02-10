@@ -119,7 +119,7 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context of start sequencer\0",
@@ -231,7 +231,7 @@ void
 ags_start_sequencer_finalize(GObject *gobject)
 {
   AgsAudioLoop *audio_loop;
-  AgsSequencerThread *sequencer_thread;
+  AgsThread *sequencer_thread;
 
   AgsApplicationContext *application_context;
   AgsSequencer *sequencer;
@@ -239,13 +239,18 @@ ags_start_sequencer_finalize(GObject *gobject)
   application_context = AGS_START_SEQUENCER(gobject)->application_context;
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
-  sequencer_thread = (AgsSequencerThread *) ags_thread_find_type((AgsThread *) audio_loop,
-								 AGS_TYPE_SEQUENCER_THREAD);
+  sequencer_thread = ags_thread_find_type((AgsThread *) audio_loop,
+					  AGS_TYPE_SEQUENCER_THREAD);
 
-  if(sequencer_thread->error != NULL){
-    g_error_free(sequencer_thread->error);
+  while((sequencer_thread = ags_thread_find_type(sequencer_thread,
+						 AGS_TYPE_SEQUENCER_THREAD)) != NULL){
+    if(AGS_SEQUENCER_THREAD(sequencer_thread)->error != NULL){
+      g_error_free(AGS_SEQUENCER_THREAD(sequencer_thread)->error);
+      
+      AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
+    }
 
-    sequencer_thread->error = NULL;
+    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
   }
 
   G_OBJECT_CLASS(ags_start_sequencer_parent_class)->finalize(gobject);
@@ -310,7 +315,7 @@ ags_start_sequencer_launch(AgsTask *task)
  *
  * Returns: an new #AgsStartSequencer.
  *
- * Since: 1.0.0
+ * Since: 0.7.117
  */
 AgsStartSequencer*
 ags_start_sequencer_new(AgsApplicationContext *application_context)

@@ -246,7 +246,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
 
-  soundcard = AGS_RECALL(play_audio_signal)->soundcard;
+  soundcard = recall->soundcard;
   source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
 
@@ -281,7 +281,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  buffer0 = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(soundcard)); // ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
+  buffer0 = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard)); // ags_soundcard_get_next_buffer(AGS_SOUNDCARD(soundcard));
   buffer1 = NULL;
   
   if(buffer0 == NULL && 

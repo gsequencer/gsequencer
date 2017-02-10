@@ -355,6 +355,58 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 }
 
 /**
+ * ags_lv2_browser_combo_box_output_boolean_controls_new:
+ *
+ * Creates a #GtkComboBox containing suitable widgets as controls.
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.7.128
+ */
+GtkWidget*
+ags_lv2_browser_combo_box_output_boolean_controls_new()
+{
+  GtkComboBoxText *combo_box;
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(combo_box,
+				 "led\0");
+
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
+			   1);
+
+  return((GtkWidget *) combo_box);
+}
+
+/**
+ * ags_lv2_browser_combo_box_controls_new:
+ *
+ * Creates a #GtkComboBox containing suitable widgets as controls.
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.7.128
+ */
+GtkWidget*
+ags_lv2_browser_combo_box_output_controls_new()
+{
+  GtkComboBoxText *combo_box;
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(combo_box,
+				 "vertical indicator\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "horizontal indicator\0");
+
+  gtk_combo_box_set_active((GtkComboBox *) combo_box,
+			   1);
+
+  return((GtkWidget *) combo_box);
+}
+
+/**
  * ags_lv2_browser_combo_box_boolean_controls_new:
  *
  * Creates a #GtkComboBox containing suitable widgets as controls.

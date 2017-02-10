@@ -206,13 +206,10 @@
 #include <ags/audio/task/ags_append_recall.h>
 #include <ags/audio/task/ags_apply_presets.h>
 #include <ags/audio/task/ags_apply_synth.h>
-#include <ags/audio/task/ags_apply_wavetable.h>
-#include <ags/audio/task/ags_audio_set_recycling.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 #include <ags/audio/task/ags_cancel_recall.h>
 #include <ags/audio/task/ags_change_soundcard.h>
-#include <ags/audio/task/ags_channel_set_recycling.h>
 #include <ags/audio/task/ags_export_output.h>
 #include <ags/audio/task/ags_free_selection.h>
 #include <ags/audio/task/ags_init_audio.h>

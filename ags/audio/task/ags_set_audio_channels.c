@@ -24,6 +24,14 @@
 void ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels);
 void ags_set_audio_channels_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels);
+void ags_set_audio_channels_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+void ags_set_audio_channels_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
 void ags_set_audio_channels_connect(AgsConnectable *connectable);
 void ags_set_audio_channels_disconnect(AgsConnectable *connectable);
 void ags_set_audio_channels_finalize(GObject *gobject);
@@ -42,6 +50,12 @@ void ags_set_audio_channels_launch(AgsTask *task);
 
 static gpointer ags_set_audio_channels_parent_class = NULL;
 static AgsConnectableInterface *ags_set_audio_channels_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_SOUNDCARD,
+  PROP_AUDIO_CHANNELS,
+};
 
 GType
 ags_set_audio_channels_get_type()
@@ -85,13 +99,52 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_set_audio_channels_parent_class = g_type_class_peek_parent(set_audio_channels);
 
   /* gobject */
   gobject = (GObjectClass *) set_audio_channels;
 
+  gobject->set_property = ags_set_audio_channels_set_property;
+  gobject->get_property = ags_set_audio_channels_get_property;
+
   gobject->finalize = ags_set_audio_channels_finalize;
+  
+  /* properties */
+  /**
+   * AgsSetAudioChannels:soundcard:
+   *
+   * The assigned #AgsSoundcard instance.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of set audio channels\0",
+				   "The soundcard of set audio channels\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsSetAudioChannels:audio-channels:
+   *
+   * The count of audio channels to apply to audio.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("audio-channels\0",
+				 "audio channels\0",
+				 "The count of audio channels\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNELS,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) set_audio_channels;
@@ -113,6 +166,76 @@ ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels)
 {
   set_audio_channels->soundcard = NULL;
   set_audio_channels->audio_channels = 0;
+}
+
+void
+ags_set_audio_channels_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec)
+{
+  AgsSetAudioChannels *set_audio_channels;
+
+  set_audio_channels = AGS_SET_AUDIO_CHANNELS(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(set_audio_channels->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(set_audio_channels->soundcard != NULL){
+	g_object_unref(set_audio_channels->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      set_audio_channels->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      set_audio_channels->audio_channels = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_set_audio_channels_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec)
+{
+  AgsSetAudioChannels *set_audio_channels;
+
+  set_audio_channels = AGS_SET_AUDIO_CHANNELS(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, set_audio_channels->soundcard);
+    }
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      g_value_set_uint(value, set_audio_channels->audio_channels);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

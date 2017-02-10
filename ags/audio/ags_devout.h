@@ -45,6 +45,8 @@
 #define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0\0"
 #define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp\0"
 
+#define AGS_DEVOUT_DEFAULT_RING_BUFFER_SIZE (8)
+
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 
@@ -95,6 +97,12 @@ struct _AgsDevout
   guint samplerate; // sample_rate
 
   void** buffer;
+
+  volatile gboolean available;
+  
+  guint ring_buffer_size;
+  guint nth_ring_buffer;
+  
   unsigned char **ring_buffer;
 
   double bpm; // beats per minute

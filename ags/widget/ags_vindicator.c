@@ -131,6 +131,10 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   
   adjustment = AGS_INDICATOR(indicator)->adjustment;
 
+  if(adjustment == NULL){
+    return;
+  }
+  
   //  g_message("draw %f\0", adjustment->value);
 
   cr = gdk_cairo_create(widget->window);

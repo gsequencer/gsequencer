@@ -38,7 +38,7 @@
 
 #define AGS_MIDIIN_DEFAULT_ALSA_DEVICE "hw:0,0\0"
 #define AGS_MIDIIN_DEFAULT_OSS_DEVICE "/dev/midi00\0"
-#define AGS_MIDIIN_DEFAULT_BUFFER_SIZE (256)
+#define AGS_MIDIIN_DEFAULT_BUFFER_SIZE (4096)
 
 typedef struct _AgsMidiin AgsMidiin;
 typedef struct _AgsMidiinClass AgsMidiinClass;
@@ -63,6 +63,16 @@ typedef enum
   AGS_MIDIIN_INITIALIZED                    = 1 << 11,
 }AgsMidiinFlags;
 
+typedef enum{
+  AGS_MIDIIN_PASS_THROUGH                   = 1,
+  AGS_MIDIIN_INITIAL_POLL                   = 1 <<  1,
+  AGS_MIDIIN_POLL_WAIT                      = 1 <<  2,
+  AGS_MIDIIN_POLL_DONE                      = 1 <<  3,
+  AGS_MIDIIN_POLL_FINISH_WAIT               = 1 <<  4,
+  AGS_MIDIIN_POLL_FINISH_DONE               = 1 <<  5,
+  AGS_MIDIIN_POLL_SWITCH_BUFFER             = 1 <<  6,
+}AgsMidiinSyncFlags;
+
 #define AGS_MIDIIN_ERROR (ags_midiin_error_quark())
 
 typedef enum{
@@ -74,7 +84,11 @@ struct _AgsMidiin
   GObject object;
 
   guint flags;
-
+  volatile guint sync_flags;
+  
+  char **ring_buffer;
+  guint ring_buffer_size[2];
+  
   char **buffer;
   guint buffer_size[4];
 
@@ -101,6 +115,14 @@ struct _AgsMidiin
       snd_rawmidi_t *handle;
     }alsa;
   }in;
+
+  pthread_t *poll_thread;
+  
+  pthread_mutex_t *poll_mutex;
+  pthread_cond_t *poll_cond;
+
+  pthread_mutex_t *poll_finish_mutex;
+  pthread_cond_t *poll_finish_cond;
 
   GObject *application_context;
   pthread_mutex_t *application_mutex;

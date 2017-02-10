@@ -39,7 +39,7 @@ struct _AgsApplyTact
 {
   AgsTask task;
 
-  GObject *gobject;
+  GObject *scope;
 
   gdouble tact;
 };
@@ -51,7 +51,7 @@ struct _AgsApplyTactClass
 
 GType ags_apply_tact_get_type();
 
-AgsApplyTact* ags_apply_tact_new(GObject *gobject,
+AgsApplyTact* ags_apply_tact_new(GObject *scope,
 				 gdouble tact);
 
 #endif /*__AGS_APPLY_TACT_H__*/

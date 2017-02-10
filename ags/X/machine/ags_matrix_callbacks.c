@@ -94,7 +94,10 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       gtk_toggle_button_set_active(toggle, FALSE);
 
       matrix->selected = (GtkToggleButton*) widget;
+
       gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern);
+
+      ags_cell_pattern_paint(matrix->cell_pattern);
 
       /*  */
       AGS_MACHINE(matrix)->bank_1 = 

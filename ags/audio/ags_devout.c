@@ -33,6 +33,7 @@
 #include <ags/thread/ags_poll_fd.h>
 
 #include <ags/audio/task/ags_tic_device.h>
+#include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 
@@ -775,6 +776,12 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[1] = NULL;
   devout->buffer[2] = NULL;
   devout->buffer[3] = NULL;
+
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
+  
+  devout->ring_buffer_size = AGS_DEVOUT_DEFAULT_RING_BUFFER_SIZE;
+  devout->nth_ring_buffer = 0;
   
   devout->ring_buffer = NULL;
 
@@ -1830,7 +1837,11 @@ ags_devout_is_available(AgsSoundcard *soundcard)
 #endif
       
       if((POLLOUT & revents) != 0){
-	return(TRUE);
+	g_atomic_int_set(&(devout->available),
+			 TRUE);
+	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
+
+  	return(TRUE);
       }
     }else{
 #ifdef AGS_WITH_OSS
@@ -1840,6 +1851,10 @@ ags_devout_is_available(AgsSoundcard *soundcard)
       FD_SET(AGS_POLL_FD(list->data)->poll_fd->fd, &writefds);
       
       if(FD_ISSET(AGS_POLL_FD(list->data)->poll_fd->fd, &writefds)){
+	g_atomic_int_set(&(devout->available),
+			 TRUE);
+	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
+
 	return(TRUE);
       }
 #endif
@@ -1974,6 +1989,7 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   guint word_size;
   int format;
   int tmp;
+  guint i;
 
   pthread_mutex_t *mutex;
 
@@ -2051,10 +2067,17 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   memset(devout->buffer[3], 0, devout->pcm_channels * devout->buffer_size * word_size);
 
   /* allocate ring buffer */
-  devout->ring_buffer = (unsigned char **) malloc(2 * sizeof(unsigned char *));
-  devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
-  devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * word_size * sizeof(unsigned char));
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
   
+    devout->ring_buffer = (unsigned char **) malloc(devout->ring_buffer_size * sizeof(unsigned char *));
+
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    devout->ring_buffer[i] = (unsigned char *) malloc(devout->pcm_channels *
+						      devout->buffer_size * word_size *
+						      sizeof(unsigned char));
+  }
+
 #ifdef AGS_WITH_OSS
   /* open device fd */
   str = devout->out.oss.device;
@@ -2192,6 +2215,8 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
 
+  devout->nth_ring_buffer = 0;
+  
   ags_soundcard_get_poll_fd(soundcard);
   
   devout->flags |= AGS_DEVOUT_INITIALIZED;
@@ -2209,24 +2234,34 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
   AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
+  AgsPollFd *poll_fd;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
   GList *task;
-  
+  GList *list;
+
   gchar *str;
   
   guint word_size;
+  guint nth_buffer;
 
   int n_write;
   
   pthread_mutex_t *mutex;
 
+  static const struct timespec poll_interval = {
+    0,
+    250,
+  };
+  
   auto void ags_devout_oss_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
 
   void ags_devout_oss_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
@@ -2327,17 +2362,19 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   /* lock */
   pthread_mutex_lock(mutex);
 
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
+  
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   /* retrieve word size */
   switch(devout->format){
@@ -2381,75 +2418,61 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   }
 
   /* check buffer flag */
-#ifdef AGS_WITH_OSS
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-    
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[0],
-					 devout->format,
-					 devout->ring_buffer[0],
-					 devout->pcm_channels,
-					 devout->buffer_size);
-
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[0],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
-
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
-    }
+    nth_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[1],
-					 devout->format,
-					 devout->ring_buffer[1],
-					 devout->pcm_channels,
-					 devout->buffer_size);
-
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[1],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
-
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
-    }
+    nth_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[2],
-					 devout->format,
-					 devout->ring_buffer[0],
-					 devout->pcm_channels,
-					 devout->buffer_size);
-
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[0],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
-
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
-    }
+    nth_buffer = 2;
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_oss_play_fill_ring_buffer(devout->buffer[3],
-					 devout->format,
-					 devout->ring_buffer[1],
-					 devout->pcm_channels,
-					 devout->buffer_size);
+    nth_buffer = 3;
+  }
 
-    n_write = write(devout->out.oss.device_fd,
-		    devout->ring_buffer[1],
-		    devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+#ifdef AGS_WITH_OSS    
+  /* fill ring buffer */
+  ags_devout_oss_play_fill_ring_buffer(devout->buffer[nth_buffer],
+				       devout->format,
+				       devout->ring_buffer[devout->nth_ring_buffer],
+				       devout->pcm_channels,
+				       devout->buffer_size);
 
-    if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
-      g_critical("write() return doesn't match written bytes\0");
+  /* wait until available */
+  list = ags_soundcard_get_poll_fd(soundcard);
+
+  if(!ags_soundcard_is_available(soundcard) &&
+     !g_atomic_int_get(&(devout->available)) &&
+     list != NULL){
+    poll_fd = list->data;
+    poll_fd->poll_fd->events = POLLOUT;
+    
+    while(!ags_soundcard_is_available(soundcard) &&
+	  !g_atomic_int_get(&(devout->available))){
+      ppoll(poll_fd->poll_fd,
+	    1,
+	    &poll_interval,
+	    NULL);
     }
   }
+  
+  /* write ring buffer */
+  n_write = write(devout->out.oss.device_fd,
+		  devout->ring_buffer[devout->nth_ring_buffer],
+		  devout->pcm_channels * devout->buffer_size * word_size * sizeof (char));
+
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
+  
+  if(n_write != devout->pcm_channels * devout->buffer_size * word_size * sizeof (char)){
+    g_critical("write() return doesn't match written bytes\0");
+  }
 #endif
+
+  /* increment nth ring-buffer */
+  if(devout->nth_ring_buffer + 1 >= devout->ring_buffer_size){
+    devout->nth_ring_buffer = 0;
+  }else{
+    devout->nth_ring_buffer += 1;
+  }
   
   pthread_mutex_unlock(mutex);
 
@@ -2462,7 +2485,17 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
 		       tic_device);
+
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
   
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
+
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
   task = g_list_append(task,
@@ -2478,12 +2511,16 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
+  
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
   GList *poll_fd;
 
+  guint i;
+  
   pthread_mutex_t *mutex;
   
   devout = AGS_DEVOUT(soundcard);
@@ -2499,19 +2536,50 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   
   pthread_mutex_unlock(application_context->mutex);
 
+  /*  */
+  pthread_mutex_lock(mutex);
+
+#ifdef AGS_WITH_OSS
+  /* remove poll fd */
+  poll_fd = devout->poll_fd;
+  
+  while(poll_fd != NULL){
+    ags_polling_thread_remove_poll_fd(AGS_POLL_FD(poll_fd->data)->polling_thread,
+				      poll_fd->data);
+    g_object_unref(poll_fd->data);
+    
+    poll_fd = poll_fd->next;
+  }
+
+  g_list_free(poll_fd);
+
+  devout->poll_fd = NULL;
+#endif
+
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
+
   if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
     return;
   }
   
   close(devout->out.oss.device_fd);
   devout->out.oss.device_fd = -1;
 
-  free(devout->ring_buffer[0]);
-  free(devout->ring_buffer[1]);
+  /* free ring-buffer */
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
+  
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    free(devout->ring_buffer[i]);
+  }
+  
   free(devout->ring_buffer);
 
   devout->ring_buffer = NULL;
-  
+
+  /* reset flags */
   devout->flags &= (~(AGS_DEVOUT_BUFFER0 |
 		      AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |
@@ -2520,19 +2588,21 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_INITIALIZED));
 
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   devout->note_offset = 0;
   devout->note_offset_absolute = 0;
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -2570,6 +2640,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 #endif
 
   guint word_size;
+  guint i;
   
   pthread_mutex_t *mutex; 
  
@@ -2656,10 +2727,17 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /* allocate ring buffer */
 #ifdef AGS_WITH_ALSA
-  devout->ring_buffer = (unsigned char **) malloc(2 * sizeof(unsigned char *));
-  devout->ring_buffer[0] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
-  devout->ring_buffer[1] = (unsigned char *) malloc(devout->pcm_channels * devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) * sizeof(unsigned char));
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
   
+  devout->ring_buffer = (unsigned char **) malloc(devout->ring_buffer_size * sizeof(unsigned char *));
+
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    devout->ring_buffer[i] = (unsigned char *) malloc(devout->pcm_channels *
+						      devout->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
+						      sizeof(unsigned char));
+  }
+ 
   /*  */
   period_event = 0;
   
@@ -2961,6 +3039,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
 
+  devout->nth_ring_buffer = 0;
+  
   ags_soundcard_get_poll_fd(soundcard);
   
   devout->flags |= AGS_DEVOUT_INITIALIZED;
@@ -2978,22 +3058,32 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
   AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
   AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
+  AgsPollFd *poll_fd;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
   GList *task;
+  GList *list;
   
   gchar *str;
   
   guint word_size;
+  guint nth_buffer;
   
   pthread_mutex_t *mutex;
 
+  static const struct timespec poll_interval = {
+    0,
+    250,
+  };
+  
 #ifdef AGS_WITH_ALSA
   auto void ags_devout_alsa_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
 
@@ -3114,17 +3204,19 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   /* lock */
   pthread_mutex_lock(mutex);
 
-  /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  /* notify cyclic task */
+  pthread_mutex_lock(notify_soundcard->return_mutex);
+
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   /* retrieve word size */
   switch(devout->format){
@@ -3154,7 +3246,10 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }
     break;
   default:
+    pthread_mutex_unlock(mutex);
+    
     g_warning("ags_devout_alsa_play(): unsupported word size\0");
+
     return;
   }
 
@@ -3173,173 +3268,94 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   //				AGS_DEVOUT_BUFFER3) & (devout->flags)));
 
   /* check buffer flag */
-#ifdef AGS_WITH_ALSA
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    memset(devout->buffer[2], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-    
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[0], devout->format, devout->ring_buffer[0], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->ring_buffer[0],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
-
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	snd_pcm_prepare(devout->out.alsa.handle);
-
-#ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
-#endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
-
-	int err;
-
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
-      }
-    }      
-    //      g_message("ags_devout_play 0\0");
+    nth_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    memset(devout->buffer[3], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[1], devout->format, devout->ring_buffer[1], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->ring_buffer[1],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
-     
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	snd_pcm_prepare(devout->out.alsa.handle);
-
-#ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
-#endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
-
-	int err;	
-
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
-      }
-    }      
-    //      g_message("ags_devout_play 1\0");
+    nth_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    memset(devout->buffer[0], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[2], devout->format, devout->ring_buffer[0], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->buffer[0],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
-
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	snd_pcm_prepare(devout->out.alsa.handle);
-
-#ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
-#endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
-
-	int err;
-
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
-      }
-    }
-    //      g_message("ags_devout_play 2\0");
+    nth_buffer = 2;
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[1], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
-      
-    ags_devout_alsa_play_fill_ring_buffer(devout->buffer[3], devout->format, devout->ring_buffer[1], devout->pcm_channels, devout->buffer_size);
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
-					 devout->ring_buffer[1],
-					 (snd_pcm_uframes_t) (devout->buffer_size));
+    nth_buffer = 3;
+  }
 
-    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-      if(devout->out.alsa.rc == -EPIPE){
-	snd_pcm_prepare(devout->out.alsa.handle);
+#ifdef AGS_WITH_ALSA
+
+  /* fill ring buffer */
+  ags_devout_alsa_play_fill_ring_buffer(devout->buffer[nth_buffer], devout->format,
+					devout->ring_buffer[devout->nth_ring_buffer],
+					devout->pcm_channels, devout->buffer_size);
+
+  /* wait until available */
+  list = ags_soundcard_get_poll_fd(soundcard);
+
+  if(!ags_soundcard_is_available(soundcard) &&
+     !g_atomic_int_get(&(devout->available)) &&
+     list != NULL){
+    poll_fd = list->data;
+    poll_fd->poll_fd->events = POLLOUT;
+    
+    while(!ags_soundcard_is_available(soundcard) &&
+	  !g_atomic_int_get(&(devout->available))){
+      ppoll(poll_fd->poll_fd,
+	    1,
+	    &poll_interval,
+	    NULL);
+    }
+  }
+  
+  /* write ring buffer */
+  devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
+				       devout->ring_buffer[devout->nth_ring_buffer],
+				       (snd_pcm_uframes_t) (devout->buffer_size));
+
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
+  
+  /* check error flag */
+  if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
+    if(devout->out.alsa.rc == -EPIPE){
+      /* EPIPE means underrun */
+      snd_pcm_prepare(devout->out.alsa.handle);
 
 #ifdef AGS_DEBUG
-	g_message("underrun occurred\0");
+      g_message("underrun occurred\0");
 #endif
-      }else if(devout->out.alsa.rc == -ESTRPIPE){
-	static const struct timespec idle = {
-	  0,
-	  4000,
-	};
+    }else if(devout->out.alsa.rc == -ESTRPIPE){
+      static const struct timespec idle = {
+	0,
+	4000,
+      };
 
-	int err;
+      int err;
 
-	while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
-	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
-	}
-	
-	if(err < 0){
-	  err = snd_pcm_prepare(devout->out.alsa.handle);
-	}
-      }else if(devout->out.alsa.rc < 0){
-	str = snd_strerror(devout->out.alsa.rc);
-	g_message("error from writei: %s\0", str);
-
-	//	free(str);
-      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	g_message("short write, write %d frames\0", devout->out.alsa.rc);
+      while((err = snd_pcm_resume(devout->out.alsa.handle)) < 0){ // == -EAGAIN
+	nanosleep(&idle, NULL); /* wait until the suspend flag is released */
       }
+	
+      if(err < 0){
+	err = snd_pcm_prepare(devout->out.alsa.handle);
+      }
+    }else if(devout->out.alsa.rc < 0){
+      str = snd_strerror(devout->out.alsa.rc);
+      
+      g_message("error from writei: %s\0", str);
+    }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
+      g_message("short write, write %d frames\0", devout->out.alsa.rc);
     }
-    //      g_message("ags_devout_play 3\0");
-  }
+  }      
+  
 #endif
 
+  /* increment nth ring-buffer */
+  g_atomic_int_set(&(devout->available),
+		   FALSE);
+  
+  if(devout->nth_ring_buffer + 1 >= devout->ring_buffer_size){
+    devout->nth_ring_buffer = 0;
+  }else{
+    devout->nth_ring_buffer += 1;
+  }
+  
   pthread_mutex_unlock(mutex);
 
   /* update soundcard */
@@ -3351,7 +3367,12 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   tic_device = ags_tic_device_new((GObject *) devout);
   task = g_list_append(task,
 		       tic_device);
-  
+
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) devout);
+  task = g_list_append(task,
+		       clear_buffer);
+
   /* reset - switch buffer flags */
   switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) devout);
   task = g_list_append(task,
@@ -3371,15 +3392,33 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
+  AgsNotifySoundcard *notify_soundcard;
+
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
   GList *poll_fd;
 
+  guint i;
+  
   pthread_mutex_t *mutex;
   
   devout = AGS_DEVOUT(soundcard);
+  
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* lock */
+  pthread_mutex_lock(mutex);
 
 #ifdef AGS_WITH_ALSA
   /* remove poll fd */
@@ -3397,19 +3436,12 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   devout->poll_fd = NULL;
 #endif
-  
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devout);
-  
-  pthread_mutex_unlock(application_context->mutex);
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
 
   if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
     return;
   }
   
@@ -3419,12 +3451,16 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   devout->out.alsa.handle = NULL;
 #endif
 
-  free(devout->ring_buffer[0]);
-  free(devout->ring_buffer[1]);
+  /* free ring-buffer */
+  for(i = 0; i < devout->ring_buffer_size; i++){
+    free(devout->ring_buffer[i]);
+  }
+
   free(devout->ring_buffer);
 
   devout->ring_buffer = NULL;
-  
+
+  /* reset flags */
   devout->flags &= (~(AGS_DEVOUT_BUFFER0 |
 		      AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |
@@ -3433,19 +3469,21 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_INITIALIZED));
 
   /* notify cyclic task */
-  pthread_mutex_lock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  g_atomic_int_or(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags),
+  g_atomic_int_or(&(notify_soundcard->flags),
 		  AGS_NOTIFY_SOUNDCARD_DONE_RETURN);
   
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->flags)))) != 0){
-    pthread_cond_signal(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_cond);
+  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0){
+    pthread_cond_signal(notify_soundcard->return_cond);
   }
   
-  pthread_mutex_unlock(AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard)->return_mutex);
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   devout->note_offset = 0;
   devout->note_offset_absolute = 0;
+
+  pthread_mutex_unlock(mutex);
 }
 
 void

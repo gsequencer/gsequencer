@@ -23,7 +23,8 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+
+#include <ags/plugin/ags_base_plugin.h>
 
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
@@ -41,8 +42,10 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/widget/ags_led.h>
 #include <ags/widget/ags_indicator.h>
 #include <ags/widget/ags_vindicator.h>
+#include <ags/widget/ags_hindicator.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -57,8 +60,6 @@
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
-
-#include <ags/X/task/ags_change_indicator.h>
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -231,8 +232,23 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	      controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
 
 	      if(!g_ascii_strncasecmp(controls,
-				      "spin button\0",
-				      12)){
+				      "led\0",
+				      4)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsLed\0");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "vertical indicator\0",
+					    19)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsVIndicator\0");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "horizontal indicator\0",
+					    19)){
+		control_type_name = g_list_prepend(control_type_name,
+						   "AgsHIndicator\0");
+	      }else if(!g_ascii_strncasecmp(controls,
+					    "spin button\0",
+					    12)){
 		control_type_name = g_list_prepend(control_type_name,
 						   "GtkSpinButton\0");
 	      }else if(!g_ascii_strncasecmp(controls,
@@ -268,8 +284,8 @@ ags_line_add_effect_callback(AgsChannel *channel,
 	  }
 
 	  /* free lists */
-	g_list_free(description_start);
-	g_list_free(port_control_start);
+	  g_list_free(description_start);
+	  g_list_free(port_control_start);
 	}
       }
       
@@ -339,72 +355,148 @@ ags_line_volume_callback(GtkRange *range,
 }
 
 void
-ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
-				AgsLine *line)
+ags_line_output_port_run_post_callback(AgsRecall *recall,
+				       AgsLine *line)
 {
   GtkWidget *child;
 
-  AgsPort *port;
-
-  AgsMutexManager *mutex_manager;
-  AgsTaskThread *task_thread;
-
   GList *list, *list_start;
-
-  gdouble peak;
-
-  GValue value = {0,};
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
+  
   /* lock gdk threads */
   gdk_threads_enter();
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   list_start = 
     list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);
 
+  /* check members */
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data) &&
-       AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
+       (AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR ||
+	AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_HINDICATOR ||
+	AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_LED)){
+      AgsLineMember *line_member;
       GtkAdjustment *adjustment;
 
-      child = GTK_BIN(list->data)->child;
+      AgsPort *current;
+	
+      gdouble average_peak;
+      gdouble lower, upper;
+      gdouble range;
+      gdouble peak;
 
-      /* get port */
-      pthread_mutex_lock(application_mutex);
+      GValue value = {0,};
 
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) line->channel);
+      line_member = AGS_LINE_MEMBER(list->data);
+      child = GTK_BIN(line_member)->child;
       
-      pthread_mutex_unlock(application_mutex);
-
-      pthread_mutex_lock(channel_mutex);
+      average_peak = 0.0;
       
-      port = AGS_PEAK_CHANNEL(AGS_RECALL_CHANNEL_RUN(peak_channel_run)->recall_channel)->peak;
+      /* play port */
+      current = line_member->port;
 
-      pthread_mutex_unlock(channel_mutex);
+      if(current == NULL){
+	list = list->next;
+	
+	continue;
+      }
+	
+      /* check if output port and specifier matches */
+      pthread_mutex_lock(current->mutex);
+      
+      if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
+	 current->port_descriptor == NULL ||
+	 g_ascii_strcasecmp(current->specifier,
+			    line_member->specifier)){
+	pthread_mutex_unlock(current->mutex);
+	
+	list = list->next;
+	
+	continue;
+      }
 
-      /* get peak */
-      g_value_init(&value, G_TYPE_DOUBLE);
-      ags_port_safe_read(port,
+      /* lower and upper */
+      lower = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->lower_value);
+      upper = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->upper_value);
+      
+      pthread_mutex_unlock(current->mutex);
+
+      /* get range */
+      if(line_member->conversion != NULL){
+	lower = ags_conversion_convert(line_member->conversion,
+				       lower,
+				       TRUE);
+
+	upper = ags_conversion_convert(line_member->conversion,
+				       upper,
+				       TRUE);
+      }
+      
+      range = upper - lower;
+      
+      /* play port - read value */
+      g_value_init(&value, G_TYPE_FLOAT);
+      ags_port_safe_read(current,
 			 &value);
-
-      peak = g_value_get_double(&value);
+      
+      peak = g_value_get_float(&value);
       g_value_unset(&value);
 
+      if(line_member->conversion != NULL){
+	peak = ags_conversion_convert(line_member->conversion,
+				      peak,
+				      TRUE);
+      }
+      
+      /* calculate peak */
+      if(range == 0.0 ||
+	 current->port_value_type == G_TYPE_BOOLEAN){
+	if(peak != 0.0){
+	  average_peak = 10.0;
+	}
+      }else{
+	average_peak += ((1.0 / (range / peak)) * 10.0);
+      }
+
+      /* recall port */
+      current = line_member->recall_port;
+
+      /* recall port - read value */
+      g_value_init(&value, G_TYPE_FLOAT);
+      ags_port_safe_read(current,
+			 &value);
+      
+      peak = g_value_get_float(&value);
+      g_value_unset(&value);
+
+      if(line_member->conversion != NULL){
+	peak = ags_conversion_convert(line_member->conversion,
+				      peak,
+				      TRUE);
+      }
+
+      /* calculate peak */
+      if(range == 0.0 ||
+	 current->port_value_type == G_TYPE_BOOLEAN){
+	if(peak != 0.0){
+	  average_peak = 10.0;
+	}
+      }else{
+	average_peak += ((1.0 / (range / peak)) * 10.0);
+      }
+      
       /* apply */
-      g_object_get(child,
-		   "adjustment\0", &adjustment,
-		   NULL);
-
-      gtk_adjustment_set_value(adjustment,
-			       peak);
-
-      break;
+      if(AGS_IS_LED(child)){
+	if(average_peak != 0.0){
+	  ags_led_set_active(child);
+	}
+      }else{
+	g_object_get(child,
+		     "adjustment\0", &adjustment,
+		     NULL);
+	
+	gtk_adjustment_set_value(adjustment,
+				 average_peak);
+      }
     }
     
     list = list->next;
@@ -423,27 +515,63 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
   AgsChannel *channel;
   AgsPlayback *playback;
   AgsChannel *next_pad;
+  AgsRecallID *match_recall_id;
+
+  AgsMutexManager *mutex_manager;
 
   gboolean all_done;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   gdk_threads_enter();
   
+  /* retrieve channel */
   channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
+
+  /* retrieve channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get next pad */
+  pthread_mutex_lock(channel_mutex);
+
   next_pad = channel->next_pad;
+
+  pthread_mutex_unlock(channel_mutex);
 
   all_done = TRUE;
 
   while(channel != next_pad){
+    pthread_mutex_lock(channel_mutex);
+
     playback = AGS_PLAYBACK(channel->playback);
-    
-    if(playback->recall_id[0] != NULL){
+    match_recall_id = playback->recall_id[0];
+		
+    pthread_mutex_unlock(channel_mutex);
+
+    /* check if pending */
+    if(match_recall_id != NULL){
       all_done = FALSE;
       break;
     }
-    
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
   }
 
+  /* toggle play button if all playback done */
   if(all_done){
     AgsPad *pad;
 

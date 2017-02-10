@@ -30,6 +30,14 @@
 void ags_set_format_class_init(AgsSetFormatClass *set_format);
 void ags_set_format_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_format_init(AgsSetFormat *set_format);
+void ags_set_format_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_set_format_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 void ags_set_format_connect(AgsConnectable *connectable);
 void ags_set_format_disconnect(AgsConnectable *connectable);
 void ags_set_format_finalize(GObject *gobject);
@@ -44,16 +52,22 @@ void ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard);
 
 /**
  * SECTION:ags_set_format
- * @short_description: resizes buffer size
- * @title: AgsSetAudioChannels
+ * @short_description: resets format
+ * @title: AgsSetFormat
  * @section_id:
  * @include: ags/audio/task/ags_set_format.h
  *
- * The #AgsSetAudioChannels task resizes buffer size of #AgsSoundcard.
+ * The #AgsSetFormat task resets format of scope.
  */
 
 static gpointer ags_set_format_parent_class = NULL;
 static AgsConnectableInterface *ags_set_format_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_SCOPE,
+  PROP_FORMAT,
+};
 
 GType
 ags_set_format_get_type()
@@ -97,13 +111,52 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_set_format_parent_class = g_type_class_peek_parent(set_format);
 
   /* gobject */
   gobject = (GObjectClass *) set_format;
 
+  gobject->set_property = ags_set_format_set_property;
+  gobject->get_property = ags_set_format_get_property;
+
   gobject->finalize = ags_set_format_finalize;
+
+  /* properties */
+  /**
+   * AgsSetFormat:scope:
+   *
+   * The assigned #GObject as scope.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("scope\0",
+				   "scope of set format\0",
+				   "The scope of set format\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCOPE,
+				  param_spec);
+
+  /**
+   * AgsSetFormat:format:
+   *
+   * The format to apply to scope.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("format\0",
+				 "format\0",
+				 "The format to apply\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
 
   /* task */
   task = (AgsTaskClass *) set_format;
@@ -123,8 +176,78 @@ ags_set_format_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_set_format_init(AgsSetFormat *set_format)
 {
-  set_format->gobject = NULL;
+  set_format->scope = NULL;
   set_format->format = 16;
+}
+
+void
+ags_set_format_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsSetFormat *set_format;
+
+  set_format = AGS_SET_FORMAT(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      GObject *scope;
+
+      scope = (GObject *) g_value_get_object(value);
+
+      if(set_format->scope == (GObject *) scope){
+	return;
+      }
+
+      if(set_format->scope != NULL){
+	g_object_unref(set_format->scope);
+      }
+
+      if(scope != NULL){
+	g_object_ref(scope);
+      }
+
+      set_format->scope = (GObject *) scope;
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      set_format->format = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_set_format_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsSetFormat *set_format;
+
+  set_format = AGS_SET_FORMAT(gobject);
+
+  switch(prop_id){
+  case PROP_SCOPE:
+    {
+      g_value_set_object(value, set_format->scope);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, set_format->format);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -155,22 +278,22 @@ void
 ags_set_format_launch(AgsTask *task)
 {
   AgsSetFormat *set_format;
-  GObject *gobject;
+  GObject *scope;
 
   set_format = AGS_SET_FORMAT(task);
 
-  gobject = set_format->gobject;
+  scope = set_format->scope;
 
-  if(AGS_IS_SOUNDCARD(gobject)){
-    ags_set_format_soundcard(set_format, gobject);
-  }else if(AGS_IS_AUDIO(gobject)){
-    ags_set_format_audio(set_format, AGS_AUDIO(gobject));
-  }else if(AGS_IS_CHANNEL(gobject)){
-    ags_set_format_channel(set_format, AGS_CHANNEL(gobject));
-  }else if(AGS_IS_RECYCLING(gobject)){
-    ags_set_format_recycling(set_format, AGS_RECYCLING(gobject));
-  }else if(AGS_IS_AUDIO_SIGNAL(gobject)){
-    ags_set_format_audio_signal(set_format, AGS_AUDIO_SIGNAL(gobject));
+  if(AGS_IS_SOUNDCARD(scope)){
+    ags_set_format_soundcard(set_format, scope);
+  }else if(AGS_IS_AUDIO(scope)){
+    ags_set_format_audio(set_format, AGS_AUDIO(scope));
+  }else if(AGS_IS_CHANNEL(scope)){
+    ags_set_format_channel(set_format, AGS_CHANNEL(scope));
+  }else if(AGS_IS_RECYCLING(scope)){
+    ags_set_format_recycling(set_format, AGS_RECYCLING(scope));
+  }else if(AGS_IS_AUDIO_SIGNAL(scope)){
+    ags_set_format_audio_signal(set_format, AGS_AUDIO_SIGNAL(scope));
   }
 }
 
@@ -263,17 +386,17 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
 
 /**
  * ags_set_format_new:
- * @gobject: the #AgsSoundcard reset
- * @format: the new count of buffer size
+ * @scope: the #GObject to reset
+ * @format: the new format
  *
- * Creates an #AgsSetAudioChannels.
+ * Creates an #AgsSetFormat.
  *
- * Returns: an new #AgsSetAudioChannels.
+ * Returns: an new #AgsSetFormat.
  *
  * Since: 0.7.65
  */
 AgsSetFormat*
-ags_set_format_new(GObject *gobject,
+ags_set_format_new(GObject *scope,
 		   guint format)
 {
   AgsSetFormat *set_format;
@@ -281,7 +404,7 @@ ags_set_format_new(GObject *gobject,
   set_format = (AgsSetFormat *) g_object_new(AGS_TYPE_SET_FORMAT,
 					     NULL);
 
-  set_format->gobject = gobject;
+  set_format->scope = scope;
   set_format->format = format;
 
   return(set_format);

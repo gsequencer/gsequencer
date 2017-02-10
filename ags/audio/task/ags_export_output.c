@@ -30,6 +30,14 @@
 void ags_export_output_class_init(AgsExportOutputClass *export_output);
 void ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_output_init(AgsExportOutput *export_output);
+void ags_export_output_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_export_output_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_export_output_connect(AgsConnectable *connectable);
 void ags_export_output_disconnect(AgsConnectable *connectable);
 void ags_export_output_finalize(GObject *gobject);
@@ -38,7 +46,7 @@ void ags_export_output_launch(AgsTask *task);
 
 /**
  * SECTION:ags_export_output
- * @short_description: export output object
+ * @short_description: export output task
  * @title: AgsExportOutput
  * @section_id:
  * @include: ags/audio/task/ags_export_output.h
@@ -48,6 +56,16 @@ void ags_export_output_launch(AgsTask *task);
 
 static gpointer ags_export_output_parent_class = NULL;
 static AgsConnectableInterface *ags_export_output_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_EXPORT_THREAD,
+  PROP_SOUNDCARD,
+  PROP_FILENAME,
+  PROP_FORMAT,
+  PROP_TIC,
+  PROP_LIVE_PERFORMANCE,
+};
 
 GType
 ags_export_output_get_type()
@@ -91,14 +109,119 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+  GParamSpec *param_spec;
 
   ags_export_output_parent_class = g_type_class_peek_parent(export_output);
 
   /* gobject */
   gobject = (GObjectClass *) export_output;
 
+  gobject->set_property = ags_export_output_set_property;
+  gobject->get_property = ags_export_output_get_property;
+
   gobject->finalize = ags_export_output_finalize;
 
+  /* properties */
+  /**
+   * AgsExportOutput:export-thread:
+   *
+   * The assigned #AgsExportThread
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("export-thread\0",
+				   "export thread of export output\0",
+				   "The export thread of export output task\0",
+				   AGS_TYPE_EXPORT_THREAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EXPORT_THREAD,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:soundcard:
+   *
+   * The assigned #AgsSoundcard
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of export output\0",
+				   "The soundcard of export output task\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:filename:
+   *
+   * The assigned filename.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "the filename\0",
+				   "The filename containing the output\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:format:
+   *
+   * Format to use.
+   * 
+   * Since: 0.7.119
+   */
+  param_spec = g_param_spec_uint("format\0",
+				 "audio format\0",
+				 "The audio format to use\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:tic:
+   *
+   * Tic offset of output as end tic of it.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("tic\0",
+				 "tic offset\0",
+				 "The tic offset\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIC,
+				  param_spec);
+
+  /**
+   * AgsExportOutput:live-performance:
+   *
+   * Do output the audio export live.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec =  g_param_spec_boolean("live-performance\0",
+				     "export output live\0",
+				     "Do export output live\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LIVE_PERFORMANCE,
+				  param_spec);
+  
   /* task */
   task = (AgsTaskClass *) export_output;
 
@@ -119,9 +242,149 @@ ags_export_output_init(AgsExportOutput *export_output)
 {
   export_output->export_thread = NULL;
   export_output->soundcard = NULL;
+
   export_output->filename = NULL;
+  export_output->format = 0;
+
   export_output->tic = 0;
   export_output->live_performance = TRUE;
+}
+
+void
+ags_export_output_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsExportOutput *export_output;
+
+  export_output = AGS_EXPORT_OUTPUT(gobject);
+
+  switch(prop_id){
+  case PROP_EXPORT_THREAD:
+    {
+      AgsExportThread *export_thread;
+
+      export_thread = (AgsExportThread *) g_value_get_object(value);
+
+      if(export_output->export_thread == (GObject *) export_thread){
+	return;
+      }
+
+      if(export_output->export_thread != NULL){
+	g_object_unref(export_output->export_thread);
+      }
+
+      if(export_thread != NULL){
+	g_object_ref(export_thread);
+      }
+
+      export_output->export_thread = (GObject *) export_thread;
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      if(export_output->soundcard == (GObject *) soundcard){
+	return;
+      }
+
+      if(export_output->soundcard != NULL){
+	g_object_unref(export_output->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      export_output->soundcard = (GObject *) soundcard;
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      if(export_output->filename == filename){
+	return;
+      }
+
+      if(export_output->filename != NULL){
+        g_free(export_output->filename);
+      }
+
+      export_output->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      export_output->format = g_value_get_uint(value);
+    }
+    break;
+  case PROP_TIC:
+    {
+      export_output->tic = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LIVE_PERFORMANCE:
+    {
+      export_output->live_performance = g_value_get_boolean(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_export_output_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsExportOutput *export_output;
+
+  export_output = AGS_EXPORT_OUTPUT(gobject);
+
+  switch(prop_id){
+  case PROP_EXPORT_THREAD:
+    {
+      g_value_set_object(value, export_output->export_thread);
+    }
+    break;
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, export_output->soundcard);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, export_output->filename);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, export_output->format);
+    }
+  case PROP_TIC:
+    {
+      g_value_set_uint(value, export_output->tic);
+    }
+    break;
+  case PROP_LIVE_PERFORMANCE:
+    {
+      g_value_set_boolean(value, export_output->live_performance);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -185,18 +448,15 @@ ags_export_output_launch(AgsTask *task)
   audio_file->channels = pcm_channels;
 
   //TODO:JK: more formats
-  if(g_str_has_suffix(filename,
-		      ".wav\0")){
+  if((AGS_EXPORT_OUTPUT_FORMAT_WAV & (export_output->format)) != 0){
     major_format = SF_FORMAT_WAV;
 
     audio_file->format = major_format | SF_FORMAT_PCM_16;
-  }else if(g_str_has_suffix(filename,
-		      ".flac\0")){    
+  }else if((AGS_EXPORT_OUTPUT_FORMAT_FLAC & (export_output->format)) != 0){    
     major_format = SF_FORMAT_FLAC;
 
     audio_file->format = major_format | SF_FORMAT_PCM_24;
-  }else if(g_str_has_suffix(filename,
-			    ".ogg\0")){
+  }else if((AGS_EXPORT_OUTPUT_FORMAT_OGG & (export_output->format)) != 0){
     major_format = SF_FORMAT_OGG;
 
     audio_file->format = major_format | SF_FORMAT_VORBIS;

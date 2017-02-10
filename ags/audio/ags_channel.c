@@ -3465,12 +3465,14 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 	       "soundcard\0", soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
+  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
   ags_channel_add_recall(channel,
 			 (GObject *) recall_lv2,
 			 FALSE);
   
-  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+  /* load */
   ags_recall_lv2_load(recall_lv2);
+  port = ags_recall_lv2_load_ports(recall_lv2);
 
   if(port != NULL){
     port = g_list_concat(port,
@@ -3491,6 +3493,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 			 (GObject *) recall_channel_run_dummy,
 			 FALSE);  
   
+  /* check if connected or running */
   pthread_mutex_lock(channel_mutex);
 
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
