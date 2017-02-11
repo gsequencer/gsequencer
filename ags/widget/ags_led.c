@@ -24,17 +24,17 @@
 
 void ags_led_class_init(AgsLedClass *led);
 void ags_led_init(AgsLed *led);
-void ags_led_show(GtkWidget *widget);
 
+void ags_led_size_request(AgsLed *led,
+			  GtkRequisition *requisition);
+void ags_led_size_allocate(AgsLed *led,
+			   GtkAllocation *allocation);
 void ags_led_realize(GtkWidget *widget);
 gint ags_led_expose(GtkWidget *widget,
 		     GdkEventExpose *event);
-void ags_led_size_request(GtkWidget *widget,
-			   GtkRequisition   *requisition);
-void ags_led_size_allocate(GtkWidget *widget,
-			    GtkAllocation *allocation);
 gboolean ags_led_expose(GtkWidget *widget,
 			 GdkEventExpose *event);
+void ags_led_show(GtkWidget *widget);
 
 void ags_led_draw(AgsLed *led);
 
@@ -87,6 +87,8 @@ ags_led_class_init(AgsLedClass *led)
 
   widget = (GtkWidgetClass *) led;
 
+  widget->size_request = ags_led_size_request;
+  widget->size_allocate = ags_led_size_allocate;
   widget->realize = ags_led_realize;
   widget->expose_event = ags_led_expose;
   widget->show = ags_led_show;
@@ -103,6 +105,24 @@ ags_led_init(AgsLed *led)
 		       led_style);
 
   led->flags = 0;
+}
+
+void
+ags_led_size_allocate(AgsLed *led,
+		      GtkAllocation *allocation)
+{
+  GTK_WIDGET(led)->allocation = *allocation;  
+
+  allocation->width = AGS_LED_DEFAULT_WIDTH;
+  allocation->height = AGS_LED_DEFAULT_HEIGHT;
+}
+
+void
+ags_led_size_request(AgsLed *led,
+		     GtkRequisition *requisition)
+{
+  requisition->height = AGS_LED_DEFAULT_HEIGHT;
+  requisition->width = AGS_LED_DEFAULT_WIDTH;
 }
 
 void
