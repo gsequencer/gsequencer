@@ -289,7 +289,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   for(i = 0; i < 32; i++){
     led = ags_led_new();
     gtk_widget_set_size_request((GtkWidget *) led,
-				cell_pattern->cell_width, cell_pattern->cell_height);
+				cell_pattern->cell_width, -1);
     gtk_box_pack_start((GtkBox *) cell_pattern->led,
 		       (GtkWidget *) led,
 		       FALSE, FALSE,
@@ -305,7 +305,6 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   g_hash_table_insert(ags_cell_pattern_led_queue_draw,
 		      cell_pattern, ags_cell_pattern_led_queue_draw_timeout);
   g_timeout_add(1000 / 30, (GSourceFunc) ags_cell_pattern_led_queue_draw_timeout, (gpointer) cell_pattern);
-
 }
 
 void
@@ -641,22 +640,26 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 {
   AgsMachine *machine;
   
-  AgsChannel *channel;
+  AgsChannel *start_channel, *channel;
 
   AgsMutexManager *mutex_manager;
 
+  guint input_pads;
   guint gutter;
+  guint current_gutter;
   int i, j;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
+
+  /* get audio mutex */
   pthread_mutex_lock(application_mutex);
   
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -664,52 +667,75 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
   
   pthread_mutex_unlock(application_mutex);
 
+  /* retrieve some audio fields */
   pthread_mutex_lock(audio_mutex);
 
+  start_channel = machine->audio->input;
+  
+  input_pads = machine->audio->input_pads;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if(input_pads == 0){
+    return;
+  }
+  
+  if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+    gutter = AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY;
+  }else{
+    gutter = input_pads;
+  }
+
+  current_gutter = (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
+  
+  /* clear bg */
   gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
 		     GTK_WIDGET(cell_pattern->drawing_area)->style->bg_gc[0],
 		     TRUE,
 		     0, 0,
-		     288, 80);
+		     AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, gutter * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT);
 
-  if(machine->audio->input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) - 1 > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-    channel = ags_channel_nth(machine->audio->input,
-			      machine->audio->input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) - 1);
-  }else if(machine->audio->input_lines > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-    channel = ags_channel_nth(machine->audio->input,
-			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY - 1);
+  if(input_pads - ((guint) current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+    channel = ags_channel_nth(start_channel,
+			      input_pads - (current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY));
+  }else if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+    channel = ags_channel_nth(start_channel,
+			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY);
   }else{
-    channel = ags_channel_nth(machine->audio->input,
-			      machine->audio->input_lines - 1);
+    channel = ags_channel_nth(start_channel,
+			      input_pads - 1);
   }
   
   if(channel == NULL){
-    pthread_mutex_unlock(audio_mutex);
-    
     return;
-  }
-  
-  if(machine->audio->input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
-    gutter = AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY;
-  }else{
-    gutter = machine->audio->input_pads;
   }
 
   for (i = 0; channel != NULL && i < gutter; i++){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+  
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+    
     for (j = 0; j < 32; j++){
       gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
 			 GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
 			 FALSE,
-			 j * 12, i * 10,
-			 12, 10);
+			 j * AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH, i * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT,
+			 AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH, AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT);
 
       ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
     }
 
-    channel = channel->prev;
-  }
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
+    channel = channel->prev_pad;
 
-  pthread_mutex_unlock(audio_mutex);
+    pthread_mutex_unlock(channel_mutex);
+  }
 }
 
 void
@@ -717,22 +743,26 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
 {
   AgsMachine *machine;
 
-  AgsChannel *channel;
+  AgsChannel *start_channel, *channel;
 
   AgsMutexManager *mutex_manager;
 
+  guint input_pads;
   guint gutter;
+  guint current_gutter;
   int i, j;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
+
+  /* get audio mutex */
   pthread_mutex_lock(application_mutex);
   
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -740,30 +770,49 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
   
   pthread_mutex_unlock(application_mutex);
 
+  /* get some audio fields */
   pthread_mutex_lock(audio_mutex);
 
-  if(machine->audio->input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+  start_channel = machine->audio->input;
+
+  input_pads = machine->audio->input_pads;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if(input_pads > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
     gutter = AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY;
   }else{
-    gutter = machine->audio->input_pads;
+    gutter = input_pads;
   }
 
-  channel = ags_channel_nth(machine->audio->input, machine->audio->input_pads - (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value - 1);
+  current_gutter = (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
+
+  channel = ags_channel_nth(start_channel, input_pads - current_gutter - 1);
 
   if(channel == NULL){
-    pthread_mutex_unlock(audio_mutex);
-    
     return;
   }
 
   for (i = 0; channel != NULL && i < gutter; i++){
-    for (j = 0; j < 32; j++)
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+  
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    for(j = 0; j < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY; j++){
       ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
+    }
+    
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
+    channel = channel->prev_pad;
 
-    channel = channel->prev;
+    pthread_mutex_unlock(channel_mutex);
   }
-
-  pthread_mutex_unlock(audio_mutex);
 }
 
 void
@@ -812,7 +861,7 @@ ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, g
 		     GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
 		     TRUE,
 		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height + 1,
-		     11, 9);
+		     AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH - 1, AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT - 1);
 }
 
 void
@@ -822,7 +871,7 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, gui
 		     GTK_WIDGET(cell_pattern->drawing_area)->style->bg_gc[0],
 		     TRUE,
 		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height +1,
-		     11, 9);
+		     AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH - 1, AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT - 1);
 }
 
 void*
