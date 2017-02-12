@@ -684,11 +684,19 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
 {
   AgsMachine *machine;
   AgsLine *selected_line;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_start;
   GList *line, *line_start;
+
   guint index0, index1, offset;
+  gboolean is_active;
   gboolean set_active;
   guint i;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						   AGS_TYPE_MACHINE);
@@ -696,7 +704,10 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   if(machine->selected_input_pad == NULL){
     return;
   }
-    
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   index0 = machine->bank_0;
   index1 = machine->bank_1;
 
@@ -725,7 +736,22 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
     while((line = ags_line_find_next_grouped(line)) != NULL){
       selected_line = AGS_LINE(line->data);
 
-      if(!ags_pattern_get_bit((AgsPattern *) selected_line->channel->pattern->data, index0, index1, offset + i)){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+      
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) selected_line->channel);
+      
+      pthread_mutex_unlock(application_mutex);
+
+      /*  */
+      pthread_mutex_lock(channel_mutex);
+
+      is_active = ags_pattern_get_bit((AgsPattern *) selected_line->channel->pattern->data, index0, index1, offset + i);
+      
+      pthread_mutex_unlock(channel_mutex);
+      
+      if(!is_active){	
 	set_active = FALSE;
 	break;
       }
