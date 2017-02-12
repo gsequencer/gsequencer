@@ -1307,6 +1307,14 @@ main(int argc, char **argv)
   rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
 				pw->pw_dir,
 				AGS_DEFAULT_DIRECTORY);
+
+  if(!g_file_test(rc_filename,
+		  G_FILE_TEST_IS_REGULAR)){
+    rc_filename = g_strdup_printf("%s%s\0",
+				  DESTDIR,
+				  "/gsequencer/styles/ags.rc\0");
+  }
+  
   gtk_rc_parse(rc_filename);
   g_free(rc_filename);
 
