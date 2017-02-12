@@ -311,7 +311,6 @@ ags_setup(int argc, char **argv)
   struct passwd *pw;
 
   gchar *blacklist_filename;
-  gchar *rc_filename;
   gchar *filename;
   
   uid_t uid;
@@ -458,13 +457,6 @@ ags_setup(int argc, char **argv)
 
   /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
-  
-  /* parse rc file */
-  rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
-				pw->pw_dir,
-				AGS_DEFAULT_DIRECTORY);
-  gtk_rc_parse(rc_filename);
-  g_free(rc_filename);
 
   g_atomic_int_set(&(ags_show_start_animation),
 		   FALSE);
@@ -1213,6 +1205,7 @@ main(int argc, char **argv)
   struct passwd *pw;
 
   gchar *wdir, *config_file;
+  gchar *rc_filename;
 
   uid_t uid;
   int result;
@@ -1306,12 +1299,22 @@ main(int argc, char **argv)
   }
 
   XInitThreads();
+  
+  uid = getuid();
+  pw = getpwuid(uid);
+    
+  /* parse rc file */
+  rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
+				pw->pw_dir,
+				AGS_DEFAULT_DIRECTORY);
+  gtk_rc_parse(rc_filename);
+  g_free(rc_filename);
 
   /**/
   LIBXML_TEST_VERSION;
 
   //ao_initialize();
-  
+
   gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
@@ -1327,9 +1330,6 @@ main(int argc, char **argv)
   ags_start_animation(animation_thread);
   
   /* setup */
-  uid = getuid();
-  pw = getpwuid(uid);
-
   wdir = g_strdup_printf("%s/%s\0",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
