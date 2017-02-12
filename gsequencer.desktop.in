@@ -5,5 +5,5 @@ Terminal=false
 Exec=gsequencer
 Icon=@datadir@/gsequencer/icons/ags.xpm
 Name=Advanced Gtk+ Sequencer
-Categories=AudioVideo;Audio;
+Categories=AudioVideo;Audio;GTK;
 Keywords=audio;sequencer;notation;editor;midi;synth;mixing;effects;
