@@ -1,3 +1,11 @@
+ags (0.7.122.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* providing default theme
+	* fixed ags.rc support
+	* fixed cell pattern painting
+	* minor fixes
+
 ags (0.7.122.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
