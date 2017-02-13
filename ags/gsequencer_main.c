@@ -1206,7 +1206,7 @@ main(int argc, char **argv)
 
   gchar *wdir, *config_file;
   gchar *rc_filename;
-
+  
   uid_t uid;
   int result;
 
@@ -1310,14 +1310,14 @@ main(int argc, char **argv)
 
   if(!g_file_test(rc_filename,
 		  G_FILE_TEST_IS_REGULAR)){
+    g_free(rc_filename);
     rc_filename = g_strdup_printf("%s%s\0",
 				  DESTDIR,
 				  "/gsequencer/styles/ags.rc\0");
   }
   
   gtk_rc_parse(rc_filename);
-  g_free(rc_filename);
-
+  
   /**/
   LIBXML_TEST_VERSION;
 
@@ -1326,6 +1326,10 @@ main(int argc, char **argv)
   gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
+  g_object_set(gtk_settings_get_default(),
+	       "gtk-theme-name\0", "Raleigh\0",
+	       NULL);
+  
   ipatch_init();
   //  g_log_set_fatal_mask("GLib-GObject\0", //G_LOG_DOMAIN,
   //		       G_LOG_LEVEL_CRITICAL);
@@ -1376,6 +1380,7 @@ main(int argc, char **argv)
   }
   
   ags_application_context_quit(ags_application_context);
+  g_free(rc_filename);
   
   //  muntrace();
 

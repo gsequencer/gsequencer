@@ -202,6 +202,8 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);
 
   navigation->expander = (GtkToggleButton *) gtk_toggle_button_new();
+  gtk_widget_set_name(navigation->expander,
+		      "ags-navigation-expander\0");
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->expander, FALSE, FALSE, 2);
   gtk_container_add((GtkContainer *) navigation->expander,
 		    (GtkWidget *) gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE));
