@@ -1197,6 +1197,7 @@ main(int argc, char **argv)
   gchar *str;
 
   gboolean single_thread_enabled;
+  gboolean builtin_theme_disabled;
   guint i;
 
   struct sched_param param;
@@ -1220,6 +1221,7 @@ main(int argc, char **argv)
   putenv("LANG=C\0");
 
   single_thread_enabled = FALSE;
+  builtin_theme_disabled = FALSE;
   
   //  mtrace();
   atexit(ags_signal_cleanup);
@@ -1271,10 +1273,11 @@ main(int argc, char **argv)
     if(!strncmp(argv[i], "--help\0", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n\0");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n\0",
 	     "--filename file     open file\0",
-	     "--single-thread     run in single thread mode\0",     
+	     "--single-thread     run in single thread mode\0",
+	     "--no-builtin-theme  disable built-in theme\0",
 	     "--help              display this help and exit\0",
 	     "--version           output version information and exit\0");
       
@@ -1292,6 +1295,8 @@ main(int argc, char **argv)
       exit(0);
     }else if(!strncmp(argv[i], "--single-thread\0", 16)){
       single_thread_enabled = TRUE;
+    }else if(!strncmp(argv[i], "--no-builtin-theme\0", 19)){
+      builtin_theme_disabled = TRUE;
     }else if(!strncmp(argv[i], "--filename\0", 11)){
       filename = argv[i + 1];
       i++;
@@ -1304,19 +1309,22 @@ main(int argc, char **argv)
   pw = getpwuid(uid);
     
   /* parse rc file */
-  rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
-				pw->pw_dir,
-				AGS_DEFAULT_DIRECTORY);
+  if(!builtin_theme_disabled){
+    rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
+				  pw->pw_dir,
+				  AGS_DEFAULT_DIRECTORY);
 
-  if(!g_file_test(rc_filename,
-		  G_FILE_TEST_IS_REGULAR)){
-    g_free(rc_filename);
-    rc_filename = g_strdup_printf("%s%s\0",
-				  DESTDIR,
-				  "/gsequencer/styles/ags.rc\0");
-  }
+    if(!g_file_test(rc_filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(rc_filename);
+      rc_filename = g_strdup_printf("%s%s\0",
+				    DESTDIR,
+				    "/gsequencer/styles/ags.rc\0");
+    }
   
-  gtk_rc_parse(rc_filename);
+    gtk_rc_parse(rc_filename);
+    g_free(rc_filename);
+  }
   
   /**/
   LIBXML_TEST_VERSION;
@@ -1326,9 +1334,12 @@ main(int argc, char **argv)
   gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
-  g_object_set(gtk_settings_get_default(),
-	       "gtk-theme-name\0", "Raleigh\0",
-	       NULL);
+
+  if(!builtin_theme_disabled){
+    g_object_set(gtk_settings_get_default(),
+		 "gtk-theme-name\0", "Raleigh\0",
+		 NULL);
+  }
   
   ipatch_init();
   //  g_log_set_fatal_mask("GLib-GObject\0", //G_LOG_DOMAIN,
@@ -1380,7 +1391,6 @@ main(int argc, char **argv)
   }
   
   ags_application_context_quit(ags_application_context);
-  g_free(rc_filename);
   
   //  muntrace();
 
