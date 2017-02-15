@@ -1286,7 +1286,7 @@ main(int argc, char **argv)
       printf("GSequencer %s\n\n\0", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n\0",
-	     "Copyright (C) 2005-2015 Joël Krähemann\0",
+	     "Copyright (C) 2005-2017 Joël Krähemann\0",
 	     "This is free software; see the source for copying conditions.  There is NO\0",
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\0");
       

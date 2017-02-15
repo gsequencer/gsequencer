@@ -986,7 +986,10 @@ ags_dial_motion_notify(GtkWidget *widget,
 		       GdkEventMotion *event)
 {
   AgsDial *dial;
+
   auto void ags_dial_motion_notify_do_dial();
+  auto void ags_dial_motion_notify_do_seemless_dial();
+  
   void ags_dial_motion_notify_do_dial(){
     GtkAdjustment *adjustment;
 
@@ -1042,10 +1045,90 @@ ags_dial_motion_notify(GtkWidget *widget,
     }
   }
 
+  void ags_dial_motion_notify_do_seemless_dial(){
+    GtkAdjustment *adjustment;
+    
+    gdouble radius;
+    gdouble range;
+    gdouble x0, y0, x1, y1;
+    gdouble c1;
+    gdouble translated_x;
+    gboolean x_toggled, y_toggled;
+    
+    //TODO:JK: optimize me
+    adjustment = dial->adjustment;
+
+    range = (dial->adjustment->upper - dial->adjustment->lower);
+
+    if(range == 0.0){
+      return;
+    }
+    
+    radius = dial->radius;
+    
+    x1 = event->x - (1.0 + dial->button_width + dial->margin_left + radius);
+    y1 = event->y - (radius + dial->outline_strength);
+    y1 *= -1.0;
+    
+    //    g_message(" --- [%f,%f]\0", x1, y1);
+
+    x_toggled = FALSE;
+    y_toggled = FALSE;
+    
+    if(x1 < 0.0){
+      x_toggled = TRUE;
+    }
+
+    if(y1 < 0.0){
+      y_toggled = TRUE;
+    }
+
+    c1 = sqrt((x1 * x1) + (y1 * y1));
+
+    if(c1 == 0.0){
+      return;
+    }
+    
+    x0 = x1 / c1 * radius;
+    y0 = y1 / c1 * radius;
+    /*
+    if(x_toggled && y_toggled){
+      x0 *= -1.0;
+      y0 *= -1.0;
+    }else if(x_toggled){
+      x0 *= -1.0;
+    }else if(y_toggled){
+      y0 *= -1.0;
+      //   y0 += 2.0 * radius;
+    }else{
+      //      x0 *= -1.0;
+      //  y0 *= -1.0;
+    }
+    */
+    // g_message(" === [%f;%f]\0", x, y);
+    //    g_message(" ??? [%f,%f]\0", x0, y0);
+
+    //    translated_x = ((sqrt(y) * sqrt(radius) * sqrt(y * radius + 4 * x)) / (2 * x)) + ((y * radius) / (2 * x));
+
+    //    translated_x = ((y * radius) / (2 * x)) - ((sqrt(y) * sqrt(radius) * sqrt(y * radius + 4 * x)) / (2 * x));
+
+    //    g_message(" ^^^ %f\0", translated_x);
+    //    translated_x = ();
+    //    translated_x = range;
+    translated_x = ((y0 * (2.0 * radius * M_PI)) / (x0 * (2.0 * radius * M_PI)));
+    //    translated_x = -1.0 * ((radius * M_PI) - translated_x);
+    translated_x /= range;
+    translated_x = (2.0 / radius * M_PI) / translated_x;
+    translated_x = adjustment->lower + translated_x;
+  
+    gtk_adjustment_set_value(adjustment,
+    			     translated_x);
+    ags_dial_draw(dial);
+  }
+
   //  GTK_WIDGET_CLASS(ags_dial_parent_class)->motion_notify_event(widget, event);
-
   dial = AGS_DIAL(widget);
-
+  
   if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
     if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
       dial->current_x = event->x;
@@ -1063,6 +1146,8 @@ ags_dial_motion_notify(GtkWidget *widget,
       ags_dial_motion_notify_do_dial();
     }
   }
+
+  ags_dial_motion_notify_do_seemless_dial();
 
   return(FALSE);
 }
