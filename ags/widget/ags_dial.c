@@ -1047,11 +1047,14 @@ ags_dial_motion_notify(GtkWidget *widget,
 
   void ags_dial_motion_notify_do_seemless_dial(){
     GtkAdjustment *adjustment;
+
+    cairo_t *cr;
     
     gdouble radius;
+    gdouble border_left, border_top;
     gdouble range;
+    gdouble a0, quarter;
     gdouble x0, y0, x1, y1;
-    gdouble c1;
     gdouble translated_x;
     gboolean x_toggled, y_toggled;
     
@@ -1065,12 +1068,13 @@ ags_dial_motion_notify(GtkWidget *widget,
     }
     
     radius = dial->radius;
+
+    border_left = 0.0;
+    border_top = 0.0;
     
-    x1 = event->x - (1.0 + dial->button_width + dial->margin_left + radius);
-    y1 = event->y - (radius + dial->outline_strength);
-    y1 *= -1.0;
-    
-    //    g_message(" --- [%f,%f]\0", x1, y1);
+    x1 = event->x - (1.0 + dial->button_width + dial->margin_left + radius + border_left);
+    y1 = event->y - (dial->outline_strength + radius + border_top);
+    y1 *= -1.0;    
 
     x_toggled = FALSE;
     y_toggled = FALSE;
@@ -1083,44 +1087,125 @@ ags_dial_motion_notify(GtkWidget *widget,
       y_toggled = TRUE;
     }
 
-    c1 = sqrt((x1 * x1) + (y1 * y1));
-
-    if(c1 == 0.0){
+    if(radius == 0.0){
       return;
     }
-    
-    x0 = x1 / c1 * radius;
-    y0 = y1 / c1 * radius;
-    /*
-    if(x_toggled && y_toggled){
-      x0 *= -1.0;
-      y0 *= -1.0;
-    }else if(x_toggled){
-      x0 *= -1.0;
-    }else if(y_toggled){
-      y0 *= -1.0;
-      //   y0 += 2.0 * radius;
+
+    //FIXME:JK: ugly hack
+    x1 = round(x1 + 1.0);
+    y1 = round(y1 - 1.0);
+
+    if(x1 == 0.0 &&
+       y1 == 0.0){
+      return;
+    }else if(x1 == 0.0){
+      a0 = 1.0;
+
+#if 0
+      x0 = 0.0;
+      y0 = 1.0 * radius;
+#endif
+    }else if(y1 == 0.0){
+      a0 = 0.0;
+
+#if 0
+      x0 = 1.0 * radius;
+      y0 = 0.0;
+#endif
     }else{
-      //      x0 *= -1.0;
-      //  y0 *= -1.0;
+      a0 = y1 / x1;
+#if 0
+      x0 = cos(a0) * radius;
+      y0 = sin(a0) * radius;
+#endif
     }
-    */
-    // g_message(" === [%f;%f]\0", x, y);
-    //    g_message(" ??? [%f,%f]\0", x0, y0);
 
-    //    translated_x = ((sqrt(y) * sqrt(radius) * sqrt(y * radius + 4 * x)) / (2 * x)) + ((y * radius) / (2 * x));
+    /* origin correction */
+#if 0
+    if(x_toggled && y_toggled){
+      if(x0 > 0.0){
+	x0 *= -1.0;
+      }
+      
+      if(y0 > 0.0){
+	y0 *= -1.0;
+      }
+    }else if(y_toggled){
+      if(x0 < 0.0){
+	x0 *= -1.0;
+      }
+      
+      if(y0 > 0.0){
+	y0 *= -1.0;
+      }
+    }else if(x_toggled){
+      if(y0 < 0.0){
+	y0 *= -1.0;
+      }
 
-    //    translated_x = ((y * radius) / (2 * x)) - ((sqrt(y) * sqrt(radius) * sqrt(y * radius + 4 * x)) / (2 * x));
+      if(x0 > 0.0){
+	x0 *= -1.0;
+      }
+    }else{
+      if(x0 < 0.0){
+	x0 *= -1.0;
+      }
+      
+      if(y0 < 0.0){
+	y0 *= -1.0;
+      }
+    }
+#endif
 
-    //    g_message(" ^^^ %f\0", translated_x);
-    //    translated_x = ();
-    //    translated_x = range;
-    translated_x = ((y0 * (2.0 * radius * M_PI)) / (x0 * (2.0 * radius * M_PI)));
-    //    translated_x = -1.0 * ((radius * M_PI) - translated_x);
-    translated_x /= range;
-    translated_x = (2.0 / radius * M_PI) / translated_x;
-    translated_x = adjustment->lower + translated_x;
-  
+    if(a0 > 2.0 * M_PI / 4.0){
+      a0 = (2.0 * M_PI / 4.0);
+    }else if(a0 < -2.0 * M_PI / 4.0){
+      a0 = (-2.0 * M_PI / 4.0);
+    }
+    
+    /* translated_x */
+    translated_x = a0 * radius;
+    
+    quarter =  (2.0 * M_PI / 4.0) * radius;
+    
+    if(x_toggled && y_toggled){
+      if(translated_x < 0.0){
+	translated_x = quarter + translated_x;
+      }else{
+	translated_x = quarter - translated_x;
+      }
+    }else if(y_toggled){
+      if(translated_x < 0.0){
+	translated_x *= -1.0;
+      }
+      
+      translated_x += 3.0 * quarter;
+    }else if(x_toggled){
+      if(translated_x < 0.0){
+	translated_x *= -1.0;
+      }
+      
+      translated_x += quarter;
+    }else{
+      if(translated_x < 0.0){
+	translated_x = quarter + translated_x;
+      }else{
+	translated_x = quarter - translated_x;
+      }
+      
+      translated_x += 2.0 * quarter;
+    }
+        
+    translated_x = ((4.0 / 3.0) * range) / (4.0 * quarter) * translated_x;
+    translated_x -= (range / 3.0 / 2.0);
+    translated_x = adjustment->lower + translated_x;  
+
+    if(translated_x < adjustment->lower){
+      translated_x = adjustment->lower;
+    }else if(translated_x > adjustment->upper){
+      translated_x = adjustment->upper;
+    }
+    
     gtk_adjustment_set_value(adjustment,
     			     translated_x);
     ags_dial_draw(dial);
@@ -1146,8 +1231,6 @@ ags_dial_motion_notify(GtkWidget *widget,
       ags_dial_motion_notify_do_dial();
     }
   }
-
-  ags_dial_motion_notify_do_seemless_dial();
 
   return(FALSE);
 }
@@ -1209,7 +1292,8 @@ ags_dial_draw(AgsDial *dial)
 
   cairo_rectangle(cr,
 		  0.0, 0.0,
-		  2.0 * (dial->radius + button_width) + outline_strength + margin_left + margin_right, 2.0 * (dial->radius + outline_strength));
+		  2.0 * (dial->radius + button_width) + outline_strength + margin_left + margin_right,
+		  2.0 * (dial->radius + outline_strength));
   cairo_fill(cr);
   
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
@@ -1377,13 +1461,8 @@ ags_dial_draw(AgsDial *dial)
   }
 
   /* this is odd */
-  if(dial->adjustment->lower < 0.0 && dial->adjustment->upper < 0.0){
-    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
-  }else if(dial->adjustment->lower < 0.0){
-    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
-  }else{
-    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
-  }
+  translated_value = (dial->adjustment->value - dial->adjustment->lower);
+  translated_value = (gdouble) scale_precision * (translated_value / range);
 
   //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);
