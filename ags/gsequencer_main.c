@@ -1339,6 +1339,14 @@ main(int argc, char **argv)
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name\0", "Raleigh\0",
 		 NULL);
+    g_signal_handlers_block_matched(gtk_settings_get_default(),
+				    G_SIGNAL_MATCH_DETAIL,
+				    g_signal_lookup("set-property\0",
+						    GTK_TYPE_SETTINGS),
+				    g_quark_from_string("gtk-theme-name\0"),
+				    NULL,
+				    NULL,
+				    NULL);
   }
   
   ipatch_init();
