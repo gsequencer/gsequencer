@@ -9,23 +9,29 @@
 
 <chapter xmlns="http://docbook.org/ns/docbook"
 	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
-  <title>Putting all together</title>
+  <title>Thread-safe audio ports</title>
   <para>
-    So far we have seen the most important objects involved doing an audio processing
-    tree. Now we want to do complete example putting all together. In this example we
-    instantiate AgsAudioThread and AgsChannelThread to play a simple pattern. The sound
-    we use is generated using a sinus wave.
+    The AgsPort object provides you a well defined API to safe read or write
+    data to the AgsPort. Its access is protected by mutices. All actions on
+    ports shall happen through ::safe-read, ::safe-write, ::safe-get-property or
+    ::safe-set-property.
+  </para>
+
+  <para>
+    AgsPort can contain various data types. But of only one type at the time.
+    Automation happens by adjusting ports and perhaps even applying an
+    AgsConversion. Further it contains some meta-information about plugin name
+    and port specifier.
   </para>
   
-  <para>
-    In order that the threads are used we provide an appropriate AgsConfig. Further we
-    define an AgsPattern and add the needed recalls to do playback using the AgsRecallFactory.
-  </para>
-  
-  <example>
-    <title>Simple pattern sequencer with master playback</title>
+  <sect1>
+    <title>Get and set values</title>
+    <para>
+      You can achieve this by using GValue like:
+    </para>
+
     <programlisting language="C">
-<xi:include href="../listings/complete_example.c" parse="text" />
+<xi:include href="../listings/port.c" parse="text" />
     </programlisting>
-  </example>
+  </sect1>
 </chapter>
