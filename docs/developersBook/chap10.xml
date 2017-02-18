@@ -216,5 +216,16 @@
 	</para>
       </listitem>
     </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-record-midi</code>
+      </term>
+      <listitem>
+	<para>
+	  Record MIDI data and convert to notation.
+	</para>
+      </listitem>
+    </varlistentry>
   </variablelist>
 </chapter>

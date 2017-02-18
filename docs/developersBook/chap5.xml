@@ -55,13 +55,75 @@
   </example>
 
   <sect1>
+    <title>AgsNotation and AgsNote</title>
+    <para>
+      The notation object stores your notes as a GList. You can add or remove a note
+      by calling appropriate function:
+    </para>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	ags_notation_add_note()
+      </listitem>
+      <listitem>
+	ags_notation_remove_note_at_position()
+      </listitem>
+    </itemizedlist>
+    
+    <para>
+      The notation object supports selection of notes. There are functions available
+      to select a single point or a region of the notation. You may find specific
+      notes by calling:
+    </para>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	ags_notation_find_point()
+      </listitem>
+      <listitem>
+	ags_notation_find_region()
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>AgsAutomation and AgsAcceleration</title>
+    <para>
+      The automation objects stores your accelerations as a GList. There are analogous
+      to notation functions to add or remove accelerations.
+    </para>
+    
+    <itemizedlist mark="bullet">
+      <listitem>
+	ags_automation_add_acceleration()
+      </listitem>
+      <listitem>
+	ags_automation_remove_acceleration_at_position()
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The automation object provides functions to lookup a specific point or region, too.
+    </para>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	ags_automation_find_point()
+      </listitem>
+      <listitem>
+	ags_automation_find_region()
+      </listitem>
+    </itemizedlist>
+  </sect1>
+  
+  <sect1>
     <title>AgsRecallID and AgsRecyclingContext</title>
     <para>
       As mentioned previously in this chapter AgsAudio organizes your recall ids and
       recycling contices. The following functions are here to add and remove them.
     </para>
     
-    <itemizedlist mark='bullet'>
+    <itemizedlist mark="bullet">
       <listitem>
 	ags_audio_add_recall_id()
       </listitem>
