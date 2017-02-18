@@ -58,7 +58,7 @@ style "inverse_widget" = "default"
 
 style "scale_widget" = "inverse_widget"
 {
-	fg[NORMAL] = { 0.75, 0.75, 1.0 }	
+	fg[NORMAL] = { 0.75, 0.75, 1.0 }
 	fg[ACTIVE] = { 0.66, 0.87, 1.0 }
 }
 
