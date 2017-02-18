@@ -123,7 +123,7 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
    */
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
-				   "The channel which this pad editor is assigned with\0",
+				   "The channel which this line editor is assigned with\0",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -196,7 +196,9 @@ ags_line_editor_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_CHANNEL:
-    g_value_set_object(value, line_editor->channel);
+    {
+      g_value_set_object(value, line_editor->channel);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

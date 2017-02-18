@@ -38,8 +38,6 @@ void ags_listing_editor_disconnect(AgsConnectable *connectable);
 void ags_listing_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_listing_editor_apply(AgsApplicable *applicable);
 void ags_listing_editor_reset(AgsApplicable *applicable);
-void ags_listing_editor_destroy(GtkObject *object);
-void ags_listing_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_listing_editor
@@ -272,18 +270,6 @@ ags_listing_editor_reset(AgsApplicable *applicable)
   }
 
   g_list_free(pad_editor_start);
-}
-
-void
-ags_listing_editor_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
-void
-ags_listing_editor_show(GtkWidget *widget)
-{
-  /* empty */
 }
 
 /**
