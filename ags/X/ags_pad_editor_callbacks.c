@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_channel.h>
 
 #include <ags/X/ags_machine.h>
@@ -40,13 +42,56 @@ ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
 {
   if(audio_channels > audio_channels_old){
     AgsLineEditor *line_editor;
+
     AgsChannel *channel, *next_pad;
 
-    channel = ags_channel_nth(pad_editor->pad, audio_channels_old);
+    AgsMutexManager *mutex_manager;
+
+    guint i;
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *channel_mutex;
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     pad_editor->pad);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some channel fields */
+    pthread_mutex_lock(channel_mutex);
+
     next_pad = pad_editor->pad->next_pad;
 
+    pthread_mutex_unlock(channel_mutex);
+
+    /* get current last of pad */
+    channel = ags_channel_nth(pad_editor->pad,
+			      audio_channels_old);
+
     while(channel != next_pad){
+      /* lookup channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       pad_editor->pad);
+    
+      pthread_mutex_unlock(application_mutex);
+
+      /* instantiate line editor */
       line_editor = ags_line_editor_new(channel);
+      line_editor->editor_type_count = pad_editor->editor_type_count;
+      line_editor->editor_type = (GType *) malloc(line_editor->editor_type_count * sizeof(GType));
+
+      for(i = 0; i < line_editor->editor_type_count; i++){
+	line_editor->editor_type[i] = pad_editor->editor_type[i];
+      }
+      
       gtk_box_pack_start(GTK_BOX(pad_editor->line_editor),
 			 GTK_WIDGET(line_editor),
 			 FALSE, FALSE,
@@ -54,14 +99,21 @@ ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
       ags_connectable_connect(AGS_CONNECTABLE(line_editor));
       gtk_widget_show_all(GTK_WIDGET(line_editor));
 
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+      
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
   }else{
     GList *list, *list_next, *list_start;
 
     list_start = 
       list = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
-    list = g_list_nth(list, audio_channels);
+
+    list = g_list_nth(list,
+		      audio_channels);
 
     while(list != NULL){
       list_next = list->next;

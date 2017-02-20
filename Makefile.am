@@ -1112,8 +1112,6 @@ deprecated_libgsequencer_h_sources =
 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
-	ags/X/ags_audio_connection_collection_editor_callbacks.h \
-	ags/X/ags_audio_connection_collection_editor.h \
 	ags/X/ags_automation_editor_callbacks.h \
 	ags/X/ags_automation_editor.h \
 	ags/X/ags_automation_window_callbacks.h \
@@ -1174,6 +1172,12 @@ libgsequencer_h_sources = \
 	ags/X/ags_midi_preferences_callbacks.h \
 	ags/X/ags_navigation_callbacks.h \
 	ags/X/ags_navigation.h \
+	ags/X/ags_output_collection_editor_callbacks.h \
+	ags/X/ags_output_collection_editor.h \
+	ags/X/ags_output_editor_callbacks.h \
+	ags/X/ags_output_editor.h \
+	ags/X/ags_output_listing_editor_callbacks.h \
+	ags/X/ags_output_listing_editor.h \
 	ags/X/ags_pad_callbacks.h \
 	ags/X/ags_pad_editor_callbacks.h \
 	ags/X/ags_pad_editor.h \
@@ -1206,8 +1210,6 @@ deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
-	ags/X/ags_audio_connection_collection_editor_callbacks.c \
-	ags/X/ags_audio_connection_collection_editor.c \
 	ags/X/ags_automation_editor.c \
 	ags/X/ags_automation_editor_callbacks.c \
 	ags/X/ags_automation_window.c \
@@ -1268,6 +1270,12 @@ libgsequencer_c_sources = \
 	ags/X/ags_midi_preferences_callbacks.c \
 	ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c \
+	ags/X/ags_output_collection_editor_callbacks.c \
+	ags/X/ags_output_collection_editor.c \
+	ags/X/ags_output_editor_callbacks.c \
+	ags/X/ags_output_editor.c \
+	ags/X/ags_output_listing_editor_callbacks.c \
+	ags/X/ags_output_listing_editor.c \
 	ags/X/ags_pad.c \
 	ags/X/ags_pad_callbacks.c \
 	ags/X/ags_pad_editor.c \

@@ -19,6 +19,11 @@
 
 #include <ags/X/ags_listing_editor_callbacks.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_machine_editor.h>
+
 int
 ags_listing_editor_parent_set_callback(GtkWidget *widget,
 				       GtkObject *old_parent,
@@ -32,11 +37,12 @@ ags_listing_editor_parent_set_callback(GtkWidget *widget,
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget,
 								AGS_TYPE_MACHINE_EDITOR);
 
-  if(machine_editor->machine != NULL)
+  if(machine_editor->machine != NULL){
     ags_listing_editor_add_children(listing_editor,
 				    machine_editor->machine->audio, 0,
 				    FALSE);
-
+  }
+  
   return(0);
 }
 
@@ -49,9 +55,34 @@ ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
     return;
 
   if(pads_old < pads){
+    AgsMutexManager *mutex_manager;
+
+    guint audio_channels;
     guint nth_channel;
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* lookup audio mutex */
+    pthread_mutex_lock(application_mutex);
   
-    nth_channel = pads_old * audio->audio_channels;
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some audio fields */
+    pthread_mutex_lock(audio_mutex);
+
+    audio_channels = audio->audio_channels;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    /* add children */
+    nth_channel = pads_old * audio_channels;
     
     ags_listing_editor_add_children(listing_editor,
 				    audio, nth_channel,

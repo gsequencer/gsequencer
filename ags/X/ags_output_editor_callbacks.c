@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,23 +17,10 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_LISTING_EDITOR_CALLBACKS_H__
-#define __AGS_LISTING_EDITOR_CALLBACKS_H__
+#include <ags/X/ags_output_editor_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
-
-#include <ags/audio/ags_audio.h>
-
-#include <ags/X/ags_listing_editor.h>
-
-int ags_listing_editor_parent_set_callback(GtkWidget *widget,
-					   GtkObject *old_parent,
-					   AgsListingEditor *listing_editor);
-
-void ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-					  guint pads, guint pads_old,
-					  AgsListingEditor *listing_editor);
-
-#endif /*__AGS_LISTING_EDITOR_CALLBACKS_H__*/
+int
+ags_output_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsOutputEditor *output_editor)
+{
+  return(0);
+}

@@ -51,11 +51,6 @@ void ags_output_editor_reset(AgsApplicable *applicable);
  * #AgsOutputEditor is a composite widget to edit #AgsChannel.
  */
 
-enum{
-  PROP_0,
-  PROP_CHANNEL,
-};
-
 GType
 ags_output_editor_get_type(void)
 {
@@ -105,29 +100,6 @@ ags_output_editor_get_type(void)
 void
 ags_output_editor_class_init(AgsOutputEditorClass *output_editor)
 {
-  GObjectClass *gobject;
-  GParamSpec *param_spec;
-
-  gobject = (GObjectClass *) output_editor;
-
-  gobject->set_property = ags_output_editor_set_property;
-  gobject->get_property = ags_output_editor_get_property;
-
-  /**
-   * AgsOutputEditor:channel:
-   *
-   * The assigned #AgsChannel to edit.
-   * 
-   * Since: 0.7.131
-   */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel to modify the output\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
-				  param_spec);
 }
 
 void
@@ -154,54 +126,6 @@ ags_output_editor_init(AgsOutputEditor *output_editor)
   output_editor->build_id = AGS_OUTPUT_EDITOR_DEFAULT_BUILD_ID;
 
   //TODO:JK: implement me
-}
-
-void
-ags_output_editor_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsOutputEditor *output_editor;
-
-  output_editor = AGS_OUTPUT_EDITOR(gobject);
-
-  switch(prop_id){
-  case PROP_CHANNEL:
-    {
-      AgsChannel *channel;
-
-      channel = (AgsChannel *) g_value_get_object(value);
-
-      ags_output_editor_set_channel(output_editor, channel);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_output_editor_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsOutputEditor *output_editor;
-
-  output_editor = AGS_OUTPUT_EDITOR(gobject);
-
-  switch(prop_id){
-  case PROP_CHANNEL:
-    {
-      g_value_set_object(value, output_editor->channel);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void
@@ -255,24 +179,7 @@ ags_output_editor_reset(AgsApplicable *applicable)
 }
 
 /**
- * ags_output_editor_set_channel:
- * @output_editor: an #AgsOutputEditor
- * @channel: the new #AgsChannel
- *
- * Is called as channel gets modified.
- *
- * Since: 0.7.131
- */
-void
-ags_output_editor_set_channel(AgsOutputEditor *output_editor,
-			      AgsChannel *channel)
-{
-  //TODO:JK: implement me
-}
-
-/**
  * ags_output_editor_new:
- * @channel: the channel to edit
  *
  * Creates an #AgsOutputEditor
  *
@@ -281,12 +188,11 @@ ags_output_editor_set_channel(AgsOutputEditor *output_editor,
  * Since: 0.7.131
  */
 AgsOutputEditor*
-ags_output_editor_new(AgsChannel *channel)
+ags_output_editor_new()
 {
   AgsOutputEditor *output_editor;
 
   output_editor = (AgsOutputEditor *) g_object_new(AGS_TYPE_OUTPUT_EDITOR,
-						   "channel\0", channel,
 						   NULL);
 
   return(output_editor);
