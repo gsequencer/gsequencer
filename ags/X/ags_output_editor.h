@@ -46,10 +46,15 @@ struct _AgsOutputEditor
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   gchar *version;
   gchar *build_id;
 
   AgsChannel *channel;
+
+  GtkComboBoxText *soundcard;
+  GtkSpinButton *soundcard_audio_channel;
 };
 
 struct _AgsOutputEditorClass

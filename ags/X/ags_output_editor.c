@@ -150,10 +150,23 @@ ags_output_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_output_editor_init(AgsOutputEditor *output_editor)
 {
+  output_editor->flags = 0;
+
   output_editor->version = AGS_OUTPUT_EDITOR_DEFAULT_VERSION;
   output_editor->build_id = AGS_OUTPUT_EDITOR_DEFAULT_BUILD_ID;
 
-  //TODO:JK: implement me
+  /* connecting soundcard */
+  output_editor->soundcard = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start(GTK_BOX(output_editor),
+		     GTK_WIDGET(output_editor->soundcard),
+		     FALSE, FALSE,
+		     0);
+
+  /* connect with line */
+  output_editor->spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  gtk_box_pack_start(GTK_BOX(output_editor),
+		     GTK_WIDGET(output_editor->spin_button),
+		     FALSE, FALSE, 0);
 }
 
 void
@@ -217,7 +230,8 @@ ags_output_editor_connect(AgsConnectable *connectable)
 
   output_editor->flags |= AGS_OUTPUT_EDITOR_CONNECTED;
 
-  //TODO:JK: implement me
+  g_signal_connect(G_OBJECT(output_editor->soundcard), "changed\0",
+		   G_CALLBACK(ags_output_editor_soundcard_callback), output_editor);
 }
 
 void
@@ -233,7 +247,11 @@ ags_output_editor_disconnect(AgsConnectable *connectable)
 
   output_editor->flags &= (~AGS_OUTPUT_EDITOR_CONNECTED);
 
-  //TODO:JK: implement me
+  g_object_disconnect(G_OBJECT(output_editor->soundcard),
+		      "changed\0",
+		      G_CALLBACK(ags_output_editor_combo_callback),
+		      output_editor,
+		      NULL);
 }
 
 void
