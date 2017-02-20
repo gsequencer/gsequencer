@@ -23,6 +23,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/X/ags_line_editor.h>
 
 void ags_pad_editor_class_init(AgsPadEditorClass *pad_editor);
@@ -321,7 +323,7 @@ void
 ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 {
   GtkVBox *vbox;
-
+  
   if(pad_editor->line_editor != NULL){
     vbox = pad_editor->line_editor;
     pad_editor->line_editor = NULL;
@@ -332,25 +334,73 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
   
   if(channel != NULL){
     AgsLineEditor *line_editor;
+    
     AgsChannel *next_pad;
 
+    AgsMutexManager *mutex_manager;
+
+    guint pad;
+    guint i;
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *channel_mutex;
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     channel);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some channel fields */
+    pthread_mutex_lock(channel_mutex);
+    
+    next_pad = channel->next_pad;
+    pad = channel->pad;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* set label */
     gtk_expander_set_label(pad_editor->line_editor_expander,
-			   g_strdup_printf("pad: %u\0", channel->pad));
+			   g_strdup_printf("pad: %u\0", pad));
 
     pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
 		      GTK_WIDGET(pad_editor->line_editor));
 
-    next_pad = channel->next_pad;
-
     while(channel != next_pad){
+      /* lookup channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       channel);
+    
+      pthread_mutex_unlock(application_mutex);
+      
+      /* instantiate line editor */
       line_editor = ags_line_editor_new(channel);
+      line_editor->editor_type_count = pad_editor->editor_type_count;
+      line_editor->editor_type = (GType *) malloc(line_editor->editor_type_count * sizeof(GType));
+
+      for(i = 0; i < line_editor->editor_type_count; i++){
+	line_editor->editor_type[i] = pad_editor->editor_type[i];
+      }
+      
       gtk_box_pack_start(GTK_BOX(pad_editor->line_editor),
 			 GTK_WIDGET(line_editor),
 			 FALSE, FALSE,
 			 0);
 
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+      
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
   }else{
     gtk_expander_set_label(pad_editor->line_editor_expander,

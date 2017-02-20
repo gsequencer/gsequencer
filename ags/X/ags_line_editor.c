@@ -311,19 +311,36 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
   line_editor->channel = channel;
 
   if(channel != NULL){
-    /* link */
-    line_editor->link_editor = ags_link_editor_new();
-    gtk_box_pack_start(GTK_BOX(line_editor),
-		       GTK_WIDGET(line_editor->link_editor),
-		       FALSE, FALSE,
-		       0);
+    guint i;
 
-    /* recall */
-    line_editor->member_editor = ags_line_member_editor_new();
-    gtk_box_pack_start(GTK_BOX(line_editor),
-		       GTK_WIDGET(line_editor->member_editor),
-		       FALSE, FALSE,
-		       0);
+    for(i = 0; i < line_editor->editor_type_count; i++){
+      /* link */
+      if(line_editor->editor_type[i] == AGS_TYPE_LINK_EDITOR){
+	line_editor->link_editor = ags_link_editor_new();
+	gtk_box_pack_start(GTK_BOX(line_editor),
+			   GTK_WIDGET(line_editor->link_editor),
+			   FALSE, FALSE,
+			   0);
+      }
+
+      /* recall */
+      if(line_editor->editor_type[i] == AGS_TYPE_OUTPUT_EDITOR){
+	line_editor->output_editor = ags_output_editor_new();
+	gtk_box_pack_start(GTK_BOX(line_editor),
+			   GTK_WIDGET(line_editor->output_editor),
+			   FALSE, FALSE,
+			   0);
+      }
+      
+      /* recall */
+      if(line_editor->editor_type[i] == AGS_TYPE_LINE_MEMBER_EDITOR){
+	line_editor->member_editor = ags_line_member_editor_new();
+	gtk_box_pack_start(GTK_BOX(line_editor),
+			   GTK_WIDGET(line_editor->member_editor),
+			   FALSE, FALSE,
+			   0);
+      }
+    }
   }
 }
 

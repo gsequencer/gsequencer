@@ -39,7 +39,7 @@ typedef struct _AgsOutputEditor AgsOutputEditor;
 typedef struct _AgsOutputEditorClass AgsOutputEditorClass;
 
 typedef enum{
-  AGS_OUTPUT_EDITOR_CLOSING                    = 1,
+  AGS_OUTPUT_EDITOR_CONNECTED    = 1,
 }AgsOutputEditorFlags;
 
 struct _AgsOutputEditor
@@ -51,10 +51,8 @@ struct _AgsOutputEditor
   gchar *version;
   gchar *build_id;
 
-  AgsChannel *channel;
-
   GtkComboBoxText *soundcard;
-  GtkSpinButton *soundcard_audio_channel;
+  GtkSpinButton *audio_channel;
 };
 
 struct _AgsOutputEditorClass
@@ -64,8 +62,8 @@ struct _AgsOutputEditorClass
 
 GType ags_output_editor_get_type(void);
 
-void ags_output_editor_set_channel(AgsOutputEditor *output_editor, AgsChannel *channel);
+void ags_output_editor_check(AgsOutputEditor *output_editor);
 
-AgsOutputEditor* ags_output_editor_new(AgsChannel *channel);
+AgsOutputEditor* ags_output_editor_new();
 
 #endif /*__AGS_OUTPUT_EDITOR_H__*/

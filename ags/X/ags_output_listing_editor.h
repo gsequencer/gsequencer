@@ -29,12 +29,12 @@
 
 #include <ags/audio/ags_audio.h>
 
-#define AGS_TYPE_LISTING_EDITOR                (ags_output_listing_editor_get_type())
-#define AGS_OUTPUT_LISTING_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LISTING_EDITOR, AgsOutputListingEditor))
-#define AGS_OUTPUT_LISTING_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LISTING_EDITOR, AgsOutputListingEditorClass))
-#define AGS_IS_LISTING_EDITOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_LISTING_EDITOR))
-#define AGS_IS_LISTING_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LISTING_EDITOR))
-#define AGS_OUTPUT_LISTING_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_LISTING_EDITOR, AgsOutputListingEditorClass))
+#define AGS_TYPE_OUTPUT_LISTING_EDITOR                (ags_output_listing_editor_get_type())
+#define AGS_OUTPUT_LISTING_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OUTPUT_LISTING_EDITOR, AgsOutputListingEditor))
+#define AGS_OUTPUT_LISTING_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OUTPUT_LISTING_EDITOR, AgsOutputListingEditorClass))
+#define AGS_IS_OUTPUT_LISTING_EDITOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_OUTPUT_LISTING_EDITOR))
+#define AGS_IS_OUTPUT_LISTING_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OUTPUT_LISTING_EDITOR))
+#define AGS_OUTPUT_LISTING_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OUTPUT_LISTING_EDITOR, AgsOutputListingEditorClass))
 
   typedef struct _AgsOutputListingEditor AgsOutputListingEditor;
 typedef struct _AgsOutputListingEditorClass AgsOutputListingEditorClass;

@@ -84,7 +84,7 @@ ags_output_listing_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_output_listing_editor = g_type_register_static(AGS_TYPE_PROPERTY_OUTPUT_LISTING_EDITOR,
+    ags_type_output_listing_editor = g_type_register_static(AGS_TYPE_PROPERTY_LISTING_EDITOR,
 							    "AgsOutputListingEditor\0",
 							    &ags_output_listing_editor_info,
 							    0);

@@ -26,7 +26,8 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
-#include <ags/X/ags_audio_connection_collection_editor.h>
+#include <ags/X/ags_output_collection_editor.h>
+#include <ags/X/ags_output_listing_editor.h>
 
 void ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor);
 void ags_connection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -358,7 +359,7 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   g_value_set_gtype(&(output_connection_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
 
   /* AgsOutput connection editor */
-  connection_editor->output_connection_editor = ags_property_collection_editor_new(AGS_TYPE_AUDIO_CONNECTION_COLLECTION_EDITOR,
+  connection_editor->output_connection_editor = ags_property_collection_editor_new(AGS_TYPE_OUTPUT_COLLECTION_EDITOR,
 										   1,
 										   output_connection_editor_child_parameter);
   gtk_scrolled_window_add_with_viewport(connection_editor->output_connection_editor_scrolled_window,
