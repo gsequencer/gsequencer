@@ -402,7 +402,9 @@ void
 ags_link_editor_reset(AgsApplicable *applicable)
 {
   AgsLinkEditor *link_editor;
+
   GtkTreeModel *model;
+
   GtkTreeIter iter;
 
   link_editor = AGS_LINK_EDITOR(applicable);

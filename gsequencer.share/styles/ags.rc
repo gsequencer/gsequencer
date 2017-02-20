@@ -104,5 +104,6 @@ widget_class "*AgsLed*" style "inverse_widget"
 widget_class "*AgsDial*" style "inverse_widget"
 widget_class "*Ags*Indicator*" style "inverse_widget"
 widget_class "*GtkArrow" style "default_widget"
+widget_class "*GtkComboBox*" style "inverse_widget"
 
 widget "*.ags-navigation-expander" style "default_widget"

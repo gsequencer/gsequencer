@@ -221,9 +221,18 @@ ags_line_editor_connect(AgsConnectable *connectable)
   
   g_signal_connect(G_OBJECT(line_editor), "show\0",
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
-
-  ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(line_editor->member_editor));
+  
+  if(line_editor->link_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
+  }
+  
+  if(line_editor->output_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->output_editor));
+  }
+  
+  if(line_editor->member_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->member_editor));
+  }
 }
 
 void
@@ -245,8 +254,17 @@ ags_line_editor_disconnect(AgsConnectable *connectable)
 		      (gpointer) line_editor,
 		      NULL);
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->link_editor));
-  ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->member_editor));
+  if(line_editor->link_editor != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->link_editor));
+  }
+  
+  if(line_editor->output_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->output_editor));
+  }
+  
+  if(line_editor->member_editor != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->member_editor));
+  }
 }
 
 void
@@ -271,6 +289,10 @@ ags_line_editor_apply(AgsApplicable *applicable)
   if(line_editor->link_editor != NULL){
     ags_applicable_apply(AGS_APPLICABLE(line_editor->link_editor));
   }
+
+  if(line_editor->output_editor != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(line_editor->output_editor));
+  }
 }
 
 void
@@ -282,6 +304,10 @@ ags_line_editor_reset(AgsApplicable *applicable)
 
   if(line_editor->link_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->link_editor));
+  }
+
+  if(line_editor->output_editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(line_editor->output_editor));
   }
 
   if(line_editor->member_editor != NULL){
@@ -305,6 +331,7 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
   if(line_editor->link_editor != NULL){
     line_editor->link_editor = NULL;
     gtk_widget_destroy(GTK_WIDGET(line_editor->link_editor));
+    gtk_widget_destroy(GTK_WIDGET(line_editor->output_editor));
     gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));
   }
 

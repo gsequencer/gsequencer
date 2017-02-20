@@ -23,11 +23,15 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 
-#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_pad_editor.h>
+#include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_output_editor.h>
 
 void ags_output_listing_editor_class_init(AgsOutputListingEditorClass *output_listing_editor);
 void ags_output_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -128,37 +132,157 @@ ags_output_listing_editor_applicable_interface_init(AgsApplicableInterface *appl
 void
 ags_output_listing_editor_init(AgsOutputListingEditor *output_listing_editor)
 {
-  //TODO:JK: implement me
+  g_signal_connect_after(G_OBJECT(output_listing_editor), "parent_set\0",
+			 G_CALLBACK(ags_output_listing_editor_parent_set_callback), output_listing_editor);
+
+  output_listing_editor->channel_type = G_TYPE_NONE;
+
+  output_listing_editor->child = NULL;
 }
 
 void
 ags_output_listing_editor_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsConnectionEditor *connection_editor;
+  AgsOutputListingEditor *output_listing_editor;
+
+  GList *pad_editor, *pad_editor_start;
+
+  ags_output_listing_editor_parent_connectable_interface->connect(connectable);
+
+  output_listing_editor = AGS_OUTPUT_LISTING_EDITOR(connectable);
+
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(output_listing_editor),
+								      AGS_TYPE_CONNECTION_EDITOR);
+
+  if(connection_editor != NULL &&
+     connection_editor->machine != NULL){
+    AgsAudio *audio;
+
+    /* AgsAudio */
+    audio = connection_editor->machine->audio;
+
+    output_listing_editor->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
+								     G_CALLBACK(ags_output_listing_editor_set_pads_callback), output_listing_editor);
+  }
+
+  /* AgsPadEditor */
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(output_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(pad_editor->data));
+
+    pad_editor = pad_editor->next;
+  }
+  
+  g_list_free(pad_editor_start);
 }
 
 void
 ags_output_listing_editor_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsConnectionEditor *connection_editor;
+  AgsOutputListingEditor *output_listing_editor;
+
+  GList *pad_editor, *pad_editor_start;
+
+  ags_output_listing_editor_parent_connectable_interface->connect(connectable);
+
+  output_listing_editor = AGS_OUTPUT_LISTING_EDITOR(connectable);
+
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(output_listing_editor),
+								      AGS_TYPE_CONNECTION_EDITOR);
+
+  if(connection_editor != NULL &&
+     connection_editor->machine != NULL){
+    AgsAudio *audio;
+
+    /* AgsAudio */
+    audio = connection_editor->machine->audio;
+
+    g_signal_handler_disconnect(audio,
+				output_listing_editor->set_pads_handler);
+  }
+
+  /* AgsPadEditor */
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(output_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(pad_editor->data));
+
+    pad_editor = pad_editor->next;
+  }
+  
+  g_list_free(pad_editor_start);
 }
 
 void
 ags_output_listing_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
-  //TODO:JK: implement me
+  AgsOutputListingEditor *output_listing_editor;
+
+  GList *pad_editor, *pad_editor_start;
+
+  output_listing_editor = AGS_OUTPUT_LISTING_EDITOR(applicable);
+
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(output_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(pad_editor->data), update);
+
+    pad_editor = pad_editor->next;
+  }
+
+  g_list_free(pad_editor_start);
 }
 
 void
 ags_output_listing_editor_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsOutputListingEditor *output_listing_editor;
+
+  GList *pad_editor, *pad_editor_start;
+
+  output_listing_editor = AGS_OUTPUT_LISTING_EDITOR(applicable);
+
+  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(output_listing_editor)->flags)) == 0){
+    return;
+  }
+
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(output_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(pad_editor->data));
+
+    pad_editor = pad_editor->next;
+  }
+  
+  g_list_free(pad_editor_start);
 }
 
 void
 ags_output_listing_editor_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsOutputListingEditor *output_listing_editor;
+
+  GList *pad_editor, *pad_editor_start;
+
+  output_listing_editor = AGS_OUTPUT_LISTING_EDITOR(applicable);
+
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(output_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(pad_editor->data));
+
+    pad_editor = pad_editor->next;
+  }
+
+  g_list_free(pad_editor_start);
 }
 
 /**
@@ -177,7 +301,106 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
 				       AgsAudio *audio, guint nth_channel,
 				       gboolean connect)
 {
-  //TODO:JK: implement me
+  AgsPadEditor *pad_editor;
+  GtkVBox *vbox;
+
+  AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  if(nth_channel == 0 &&
+     output_listing_editor->child != NULL){
+    vbox = output_listing_editor->child;
+    output_listing_editor->child = NULL;
+    gtk_widget_destroy(GTK_WIDGET(vbox));
+  }
+
+  if(audio == NULL){
+    return;
+  }
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* instantiate pad editor vbox */
+  if(nth_channel == 0){
+    output_listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(output_listing_editor),
+		       GTK_WIDGET(output_listing_editor->child),
+		       FALSE, FALSE,
+		       0);
+  }
+
+  /* get current channel */
+  if(output_listing_editor->channel_type == AGS_TYPE_OUTPUT){
+    pthread_mutex_lock(audio_mutex);
+
+    channel = audio->output;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    channel = ags_channel_nth(channel,
+			      nth_channel);
+  }else{
+    pthread_mutex_lock(audio_mutex);
+
+    channel = audio->input;
+
+    pthread_mutex_unlock(audio_mutex);
+    
+    channel = ags_channel_nth(channel,
+			      nth_channel);
+  }
+  
+  while(channel != NULL){
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     channel);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* instantiate pad editor */
+    pad_editor = ags_pad_editor_new(NULL);
+
+    pad_editor->editor_type_count = 1;
+      pad_editor->editor_type = (GType *) malloc(pad_editor->editor_type_count * sizeof(GType));
+    pad_editor->editor_type[0] = AGS_TYPE_OUTPUT_EDITOR;
+
+    g_object_set(pad_editor,
+		 "channel\0", channel,
+		 NULL);
+    
+    gtk_box_pack_start(GTK_BOX(output_listing_editor->child),
+		       GTK_WIDGET(pad_editor),
+		       FALSE, FALSE,
+		       0);
+
+    if(connect){
+      ags_connectable_connect(AGS_CONNECTABLE(pad_editor));
+      gtk_widget_show_all(GTK_WIDGET(pad_editor));
+    }
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+      
+    channel = channel->next_pad;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
 }
 
 /**

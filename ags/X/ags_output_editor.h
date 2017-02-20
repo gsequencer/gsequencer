@@ -44,7 +44,7 @@ typedef enum{
 
 struct _AgsOutputEditor
 {
-  GtkVBox vbox;
+  GtkHBox hbox;
 
   guint flags;
   
@@ -57,7 +57,7 @@ struct _AgsOutputEditor
 
 struct _AgsOutputEditorClass
 {
-  GtkVBoxClass vbox;
+  GtkHBoxClass hbox;
 };
 
 GType ags_output_editor_get_type(void);

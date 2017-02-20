@@ -79,7 +79,7 @@ ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
       pthread_mutex_lock(application_mutex);
 
       channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       pad_editor->pad);
+					       channel);
     
       pthread_mutex_unlock(application_mutex);
 

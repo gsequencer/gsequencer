@@ -51,8 +51,9 @@ ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
 				     guint pads, guint pads_old,
 				     AgsListingEditor *listing_editor)
 {
-  if(channel_type != listing_editor->channel_type)
+  if(channel_type != listing_editor->channel_type){
     return;
+  }
 
   if(pads_old < pads){
     AgsMutexManager *mutex_manager;

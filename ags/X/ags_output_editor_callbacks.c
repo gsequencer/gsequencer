@@ -19,28 +19,48 @@
 
 #include <ags/X/ags_output_editor_callbacks.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
+#include <ags/X/ags_line_editor.h>
 
 int
 ags_output_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsOutputEditor *output_editor)
 {
-  AgsConnectionEditor *connection_editor;
+  AgsMachine *machine;
+  AgsLineEditor *line_editor;
+
+  AgsAudio *audio;
+  AgsChannel *channel;
 
   if(old_parent != NULL){
     return(0);
   }
 
-  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(widget, 
-								      AGS_TYPE_CONNECTION_EDITOR);
+  //TODO:JK: missing mutex
+  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_LINE_EDITOR);
 
-  if(connection_editor != NULL &&
-     connection_editor->machine != NULL){
-    gtk_combo_box_set_model(GTK_COMBO_BOX(output_editor->soundcard),
-			    GTK_TREE_MODEL(ags_machine_get_possible_audio_output_connections(connection_editor->machine)));
+  if(line_editor != NULL){
+    channel = line_editor->channel;
+  
+    if(channel != NULL){
+      GtkTreeIter iter;
 
-    ags_output_editor_check(output_editor);
+      audio = AGS_AUDIO(channel->audio);
+
+      if(audio != NULL){
+	machine = AGS_MACHINE(audio->machine);
+	
+	gtk_combo_box_set_model(GTK_COMBO_BOX(output_editor->soundcard),
+				GTK_TREE_MODEL(ags_machine_get_possible_audio_output_connections(machine)));
+	
+	ags_output_editor_check(output_editor);
+      }
+    }
   }
-
+  
   return(0);
 }
 

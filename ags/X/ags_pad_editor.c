@@ -382,13 +382,17 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
       pthread_mutex_unlock(application_mutex);
       
       /* instantiate line editor */
-      line_editor = ags_line_editor_new(channel);
+      line_editor = ags_line_editor_new(NULL);
       line_editor->editor_type_count = pad_editor->editor_type_count;
       line_editor->editor_type = (GType *) malloc(line_editor->editor_type_count * sizeof(GType));
-
+      
       for(i = 0; i < line_editor->editor_type_count; i++){
 	line_editor->editor_type[i] = pad_editor->editor_type[i];
       }
+
+      g_object_set(line_editor,
+		   "channel\0", channel,
+		   NULL);
       
       gtk_box_pack_start(GTK_BOX(pad_editor->line_editor),
 			 GTK_WIDGET(line_editor),

@@ -1,3 +1,9 @@
+ags (0.7.131)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented output listing editor to assign soundcard
+	* improved theme and disable option
+
 ags (0.7.130)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

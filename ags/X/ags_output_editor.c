@@ -27,6 +27,7 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_input.h>
 
 #include <ags/audio/task/ags_reset_audio_connection.h>
@@ -58,6 +59,8 @@ void ags_output_editor_reset(AgsApplicable *applicable);
  * #AgsOutputEditor is a composite widget to edit #AgsChannel.
  */
 
+static gpointer ags_output_editor_parent_class = NULL;
+
 GType
 ags_output_editor_get_type(void)
 {
@@ -88,7 +91,7 @@ ags_output_editor_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_output_editor = g_type_register_static(GTK_TYPE_VBOX,
+    ags_type_output_editor = g_type_register_static(GTK_TYPE_HBOX,
 						    "AgsOutputEditor\0", &ags_output_editor_info,
 						    0);
 
@@ -107,6 +110,7 @@ ags_output_editor_get_type(void)
 void
 ags_output_editor_class_init(AgsOutputEditorClass *output_editor)
 {
+  ags_output_editor_parent_class = g_type_class_peek_parent(output_editor);
 }
 
 void
@@ -129,6 +133,9 @@ ags_output_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_output_editor_init(AgsOutputEditor *output_editor)
 {
+  g_signal_connect_after((GObject *) output_editor, "parent_set\0",
+			 G_CALLBACK(ags_output_editor_parent_set_callback), (gpointer) output_editor);
+
   output_editor->flags = 0;
 
   output_editor->version = AGS_OUTPUT_EDITOR_DEFAULT_VERSION;
@@ -294,7 +301,105 @@ ags_output_editor_apply(AgsApplicable *applicable)
 void
 ags_output_editor_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsOutputEditor *output_editor;
+
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+
+  output_editor = AGS_OUTPUT_EDITOR(applicable);
+
+  model = gtk_combo_box_get_model(output_editor->soundcard);
+
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    AgsLineEditor *line_editor;
+    
+    AgsAudio *audio;
+    AgsAudioConnection *audio_connection;
+    AgsChannel *channel;
+    
+    GObject *soundcard, *current;
+
+    GList *list;
+    
+    gint i;
+    gboolean found;
+
+    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
+							  AGS_TYPE_LINE_EDITOR));
+
+    soundcard = NULL;
+    audio = NULL;
+    channel = line_editor->channel;
+    
+    if(channel != NULL){
+      soundcard = channel->soundcard;
+      audio = AGS_AUDIO(channel->audio);
+    }
+    
+    i = 0;
+    found = FALSE;
+
+    if(soundcard != NULL){
+      do{
+	gtk_tree_model_get(model,
+			   &iter,
+			   1, &current,
+			   -1);
+
+	if(soundcard == current){
+	  found = TRUE;
+	  break;
+	}
+
+	i++;
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+
+    if(found &&
+       audio != NULL){      
+      /* set channel link */
+      gtk_combo_box_set_active(output_editor->soundcard,
+			       i);
+
+      /*  */
+      audio_connection = NULL;
+      
+      list = audio->audio_connection;
+	  
+      while((list = ags_audio_connection_find(list,
+					      AGS_TYPE_INPUT,
+					      channel->pad,
+					      channel->audio_channel)) != NULL){
+	GObject *data_object;
+
+	g_object_get(G_OBJECT(list->data),
+		     "data-object\0", &data_object,
+		     NULL);
+	
+	if(AGS_IS_SOUNDCARD(data_object)){
+	  audio_connection = list->data;
+	  
+	  break;
+	}
+
+	list = list->next;
+      }
+
+      if(audio_connection != NULL){
+	gtk_spin_button_set_value(output_editor->audio_channel,
+				  audio_connection->mapped_line);
+      }else{
+	gtk_spin_button_set_value(output_editor->audio_channel,
+				  0);
+      }
+    }else{
+      gtk_combo_box_set_active(output_editor->soundcard,
+			       0);
+    }
+  }
 }
 
 /**
