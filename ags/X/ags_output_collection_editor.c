@@ -528,7 +528,7 @@ ags_output_collection_editor_check(AgsOutputCollectionEditor *output_collection_
 			    count - 1.0);
   gtk_spin_button_set_range(output_collection_editor->count,
 			    0.0,
-			    count - 1.0);
+			    count);
 
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(output_collection_editor->soundcard),
 				   &iter)){    
@@ -554,6 +554,12 @@ ags_output_collection_editor_check(AgsOutputCollectionEditor *output_collection_
     gtk_spin_button_set_range(output_collection_editor->audio_channel,
 			      0.0,
 			      audio_channels - 1.0);
+
+    if(audio_channels < count){
+      gtk_spin_button_set_range(output_collection_editor->count,
+				0.0,
+				audio_channels);
+    }
   }else{
     gtk_spin_button_set_range(output_collection_editor->audio_channel,
 			      -1.0, -1.0);

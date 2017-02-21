@@ -2,6 +2,7 @@ ags (0.7.133)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing reset of connection editor field of machine
+	* fixed wrong subtract one of audio channels in bulk connection
 
 ags (0.7.132)
 
