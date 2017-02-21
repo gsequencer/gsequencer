@@ -1288,20 +1288,30 @@ ags_dial_draw(AgsDial *dial)
 
   button_width = dial->button_width;
   button_height = dial->button_height;
-  
+
   /* clear bg */
   cairo_set_source_rgb(cr,
-		       dial_style->bg[0].red / white_gc,
-		       dial_style->bg[0].green / white_gc,
-		       dial_style->bg[0].blue / white_gc);
+		       dial_style->fg[0].red / white_gc,
+		       dial_style->fg[0].green / white_gc,
+		       dial_style->fg[0].blue / white_gc);
 
   cairo_rectangle(cr,
 		  0.0, 0.0,
-		  2.0 * (dial->radius + button_width) + outline_strength + margin_left + margin_right,
-		  2.0 * (dial->radius + outline_strength));
+		  widget->allocation.width, widget->allocation.height);
   cairo_fill(cr);
-  
+
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    /* bg */
+    cairo_set_source_rgb(cr,
+			 dial_style->bg[0].red / white_gc,
+			 dial_style->bg[0].green / white_gc,
+			 dial_style->bg[0].blue / white_gc);
+
+    cairo_rectangle(cr,
+		    0.0, (2.0 * radius) - button_height + outline_strength - 1.0,
+		    button_width + 2.0, button_height + 2.0);
+    cairo_fill(cr);
+    
     /* draw controller button down */
     cairo_set_source_rgb(cr,
 			 dial_style->fg[0].red / white_gc,
@@ -1313,6 +1323,7 @@ ags_dial_draw(AgsDial *dial)
     cairo_rectangle(cr,
 		    1.0, (2.0 * radius) - button_height + outline_strength,
 		    button_width, button_height);
+    cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
     cairo_stroke(cr);
 
     cairo_move_to (cr,
@@ -1323,6 +1334,18 @@ ags_dial_draw(AgsDial *dial)
 
   
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    /* bg */
+    cairo_set_source_rgb(cr,
+			 dial_style->bg[0].red / white_gc,
+			 dial_style->bg[0].green / white_gc,
+			 dial_style->bg[0].blue / white_gc);
+
+    cairo_rectangle(cr,
+		    (2.0 * radius) + button_width + margin_left + margin_right,
+		    (2.0 * radius) - button_height + outline_strength - 1.0,
+		    button_width + 2.0, button_height + 2.0);
+    cairo_fill(cr);
+
     /* draw controller button up */
     cairo_set_source_rgb(cr,
 			 dial_style->fg[0].red / white_gc,
@@ -1356,6 +1379,20 @@ ags_dial_draw(AgsDial *dial)
 	    1.0 * M_PI);
   cairo_stroke(cr);
   */
+
+  /* bg */
+  cairo_set_source_rgb(cr,
+		       dial_style->bg[0].red / white_gc,
+		       dial_style->bg[0].green / white_gc,
+		       dial_style->bg[0].blue / white_gc);
+  
+  cairo_arc(cr,
+	    1.0 + button_width + margin_left + radius,
+	    radius + outline_strength,
+	    radius + outline_strength - 1.25,
+	    -1.0 * M_PI,
+	    1.0 * M_PI);
+  cairo_fill(cr);
   
   /* background */
   cairo_set_source_rgb(cr,
@@ -1388,12 +1425,12 @@ ags_dial_draw(AgsDial *dial)
 		-1 * cos((0.35 * M_PI) / (0.65 * M_PI)) + radius + 2.0 * outline_strength - 1.0);
   cairo_close_path(cr);
 
-  cairo_arc (cr,
-	     1.0 + button_width + margin_left + radius,
-	     radius + outline_strength,
-	     radius,
-	     0.35 * M_PI,
-	     0.65 * M_PI);
+  cairo_arc(cr,
+	    1.0 + button_width + margin_left + radius,
+	    radius + outline_strength,
+	    radius,
+	    0.35 * M_PI,
+	    0.65 * M_PI);
   cairo_fill(cr);
 
   cairo_line_to(cr,
@@ -1407,12 +1444,12 @@ ags_dial_draw(AgsDial *dial)
 		radius + 2.0 * outline_strength - 1.0);
   cairo_close_path(cr);
 
-  cairo_arc (cr,
-	     1.0 + button_width + margin_left + radius,
-	     radius + outline_strength,
-	     radius,
-	     -0.65 * M_PI,
-	     -0.35 * M_PI);
+  cairo_arc(cr,
+	    1.0 + button_width + margin_left + radius,
+	    radius + outline_strength,
+	    radius,
+	    -0.65 * M_PI,
+	    -0.35 * M_PI);
   cairo_fill(cr);
 
   /* outline */
@@ -1422,12 +1459,12 @@ ags_dial_draw(AgsDial *dial)
 		       dial_style->fg[0].blue / white_gc);
   //  cairo_set_line_width(cr, 1.0 - (2.0 / M_PI));
   cairo_set_line_width(cr, 1.0);
-  cairo_arc (cr,
-	     1.0 + button_width + margin_left + radius,
-	     radius + outline_strength,
-	     radius,
-	     -1.0 * M_PI,
-	     1.0 * M_PI);
+  cairo_arc(cr,
+	    1.0 + button_width + margin_left + radius,
+	    radius + outline_strength,
+	    radius,
+	    -1.0 * M_PI,
+	    1.0 * M_PI);
   cairo_stroke(cr);
 
   /* scale */
@@ -1448,12 +1485,12 @@ ags_dial_draw(AgsDial *dial)
   scale_width /= (radius + outline_strength);
 
   for(i = 0; i <= scale_precision; i++){
-    cairo_arc (cr,
-	       1.0 + button_width + margin_left + radius,
-	       radius + outline_strength,
-	       radius + outline_strength / M_PI,
-	       starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width),
-	       starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width) + scale_width);
+    cairo_arc(cr,
+	      1.0 + button_width + margin_left + radius,
+	      radius + outline_strength,
+	      radius + outline_strength / M_PI,
+	      starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width),
+	      starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width) + scale_width);
     cairo_stroke(cr);
   }
 
@@ -1476,12 +1513,12 @@ ags_dial_draw(AgsDial *dial)
 		       dial_style->fg[0].green / white_gc,
 		       dial_style->fg[0].blue / white_gc);
 
-  cairo_arc (cr,
-	     1.0 + button_width + margin_left + radius,
-	     radius + outline_strength,
-	     radius - (outline_strength + 4.0) / M_PI,
-	     starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width),
-	     starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width) + scale_width);
+  cairo_arc(cr,
+	    1.0 + button_width + margin_left + radius,
+	    radius + outline_strength,
+	    radius - (outline_strength + 4.0) / M_PI,
+	    starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width),
+	    starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width) + scale_width);
   cairo_stroke(cr);
 
   cairo_destroy(cr);
