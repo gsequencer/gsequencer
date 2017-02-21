@@ -1,3 +1,8 @@
+ags (0.7.133)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing reset of connection editor field of machine
+
 ags (0.7.132)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
