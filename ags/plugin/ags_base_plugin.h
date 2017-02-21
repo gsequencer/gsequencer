@@ -118,7 +118,7 @@ struct _AgsPortDescriptor
   gchar *port_name;
   gchar *port_symbol;
 
-  guint scale_steps;
+  gint scale_steps;
   gchar **scale_points;
   float *scale_value;
   

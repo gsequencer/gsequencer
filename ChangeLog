@@ -2,7 +2,7 @@ ags (0.7.132)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented seperator within AgsLine and AgsEffectLine
-	* TODO:JK: implemented seemless mode
+	* implemented seemless mode of AgsDial
 	* improved theme, dial style to have dark background
 
 ags (0.7.131)

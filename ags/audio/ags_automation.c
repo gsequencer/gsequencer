@@ -520,6 +520,10 @@ ags_automation_set_property(GObject *gobject,
 
       if(port != NULL){
 	g_object_ref(port);
+
+	if((AGS_PORT_INFINITE_RANGE & (port->flags)) != 0){
+	  automation->steps = AGS_AUTOMATION_MAXIMUM_STEPS;
+	}
       }
 
       automation->port = (GObject *) port;

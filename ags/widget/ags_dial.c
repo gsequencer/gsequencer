@@ -331,7 +331,8 @@ ags_dial_init(AgsDial *dial)
   gtk_widget_set_style((GtkWidget *) dial,
 		       dial_style);
 
-  dial->flags = AGS_DIAL_WITH_BUTTONS;
+  dial->flags = (AGS_DIAL_WITH_BUTTONS |
+		 AGS_DIAL_SEEMLESS_MODE);
 
   dial->adjustment = NULL;
 
@@ -742,22 +743,22 @@ ags_dial_size_request(GtkWidget *widget,
   requisition->height = AGS_DIAL_DEFAULT_HEIGHT;
   requisition->width = AGS_DIAL_DEFAULT_WIDTH;
 
-  GTK_WIDGET_CLASS(ags_dial_parent_class)->size_request(widget,
-							requisition);
   //TODO:JK: improve me
 }
 
 void
 ags_dial_size_allocate(GtkWidget *widget,
 		       GtkAllocation *allocation)
-{
+{  
   allocation->height = AGS_DIAL_DEFAULT_HEIGHT;
   allocation->width = AGS_DIAL_DEFAULT_WIDTH;
+  
+  widget->allocation = *allocation;
+
+  //TODO:JK: improve me
 
   GTK_WIDGET_CLASS(ags_dial_parent_class)->size_allocate(widget,
 							 allocation);
-
-  //TODO:JK: improve me
 }
 
 gboolean
@@ -1210,7 +1211,7 @@ ags_dial_motion_notify(GtkWidget *widget,
     }else if(translated_x > adjustment->upper){
       translated_x = adjustment->upper;
     }
-    
+
     gtk_adjustment_set_value(adjustment,
     			     translated_x);
     ags_dial_draw(dial);
@@ -1220,23 +1221,37 @@ ags_dial_motion_notify(GtkWidget *widget,
   dial = AGS_DIAL(widget);
   
   if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
-    if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
-      dial->current_x = event->x;
-      dial->current_y = event->y;
+    if((AGS_DIAL_SEEMLESS_MODE & (dial->flags)) != 0){
+      if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+	dial->current_x = event->x;
+	dial->current_y = event->y;
+      }else{
+	dial->gravity_x = dial->current_x;
+	dial->gravity_y = dial->current_y;
+	dial->current_x = event->x;
+	dial->current_y = event->y;
+      }
 
-      dial->flags &= (~AGS_DIAL_MOTION_CAPTURING_INIT);
-
-      ags_dial_motion_notify_do_dial();
+      ags_dial_motion_notify_do_seemless_dial();
     }else{
-      dial->gravity_x = dial->current_x;
-      dial->gravity_y = dial->current_y;
-      dial->current_x = event->x;
-      dial->current_y = event->y;
+      if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+	dial->current_x = event->x;
+	dial->current_y = event->y;
 
-      ags_dial_motion_notify_do_dial();
+	dial->flags &= (~AGS_DIAL_MOTION_CAPTURING_INIT);
+
+	ags_dial_motion_notify_do_dial();
+      }else{
+	dial->gravity_x = dial->current_x;
+	dial->gravity_y = dial->current_y;
+	dial->current_x = event->x;
+	dial->current_y = event->y;
+
+	ags_dial_motion_notify_do_dial();
+      }
     }
   }
-
+  
   return(FALSE);
 }
 

@@ -916,8 +916,13 @@ ags_line_add_ladspa_effect(AgsLine *line,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	disable_seemless = TRUE;
+	
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  widget_type = AGS_TYPE_LED;
 	}else{
@@ -941,6 +946,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+	disable_seemless = TRUE;
       }
       
       /* add line member */
@@ -1014,6 +1020,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	
 	dial = (AgsDial *) child_widget;
 
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+	
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
@@ -1244,9 +1254,14 @@ ags_line_add_lv2_effect(AgsLine *line,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	disable_seemless = TRUE;
+	
+      	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  widget_type = AGS_TYPE_LED;
 	}else{
 	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
@@ -1269,6 +1284,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;
       }
 
       /* add line member */
@@ -1317,6 +1334,10 @@ ags_line_add_lv2_effect(AgsLine *line,
 	
 	dial = (AgsDial *) child_widget;
 
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+	
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
