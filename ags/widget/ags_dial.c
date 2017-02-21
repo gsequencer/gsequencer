@@ -335,16 +335,16 @@ ags_dial_init(AgsDial *dial)
 
   dial->adjustment = NULL;
 
-  dial->radius = 8;
+  dial->radius = AGS_DIAL_DEFAULT_RADIUS;
   dial->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
   dial->scale_max_precision = AGS_DIAL_DEFAULT_PRECISION;
-  dial->outline_strength = 4;
+  dial->outline_strength = AGS_DIAL_DEFAULT_OUTLINE_STRENGTH;
 
   dial->font_size = 6;
-  dial->button_width = 10;
+  dial->button_width = AGS_DIAL_DEFAULT_BUTTON_WIDTH;
   dial->button_height = 0;
-  dial->margin_left = 4.0;
-  dial->margin_right = 4.0;
+  dial->margin_left = AGS_DIAL_DEFAULT_MARGIN;
+  dial->margin_right = AGS_DIAL_DEFAULT_MARGIN;
 
   dial->tolerance = 0.9;
   dial->negated_tolerance = 1.1;
@@ -739,20 +739,25 @@ void
 ags_dial_size_request(GtkWidget *widget,
 		      GtkRequisition *requisition)
 {
-  GTK_WIDGET_CLASS(ags_dial_parent_class)->size_request(widget, requisition);
+  requisition->height = AGS_DIAL_DEFAULT_HEIGHT;
+  requisition->width = AGS_DIAL_DEFAULT_WIDTH;
 
-  /* implement me */
-  //TODO:JK:
+  GTK_WIDGET_CLASS(ags_dial_parent_class)->size_request(widget,
+							requisition);
+  //TODO:JK: improve me
 }
 
 void
 ags_dial_size_allocate(GtkWidget *widget,
 		       GtkAllocation *allocation)
 {
-  GTK_WIDGET_CLASS(ags_dial_parent_class)->size_allocate(widget, allocation);
+  allocation->height = AGS_DIAL_DEFAULT_HEIGHT;
+  allocation->width = AGS_DIAL_DEFAULT_WIDTH;
 
-  /* implement me */
-  //TODO:JK:
+  GTK_WIDGET_CLASS(ags_dial_parent_class)->size_allocate(widget,
+							 allocation);
+
+  //TODO:JK: improve me
 }
 
 gboolean

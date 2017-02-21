@@ -580,8 +580,10 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 				  gchar *effect)
 {
   AgsLineMember *line_member;
-  AgsAddLineMember *add_line_member;
+  GtkSeparator *separator;
   GtkAdjustment *adjustment;
+  
+  AgsAddLineMember *add_line_member;
 
   AgsRecallHandler *recall_handler;
 
@@ -704,6 +706,26 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   g_list_free(recall_start);
   
   pthread_mutex_unlock(channel_mutex);
+
+  /* add separator */
+  separator = gtk_hseparator_new();
+  gtk_widget_set_size_request(separator,
+			      120, -1);
+  g_object_set_data(separator,
+		    AGS_EFFECT_LINE_SEPARATOR_FILENAME,
+		    filename);
+  g_object_set_data(separator,
+		    AGS_EFFECT_LINE_SEPARATOR_EFFECT,
+		    effect);
+  gtk_table_attach(effect_line->table,
+		   (GtkWidget *) separator,
+		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
+		   y, y + 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  gtk_widget_show(separator);
+
+  y++;
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -865,7 +887,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 	  
       gtk_table_attach(effect_line->table,
 		       (GtkWidget *) line_member,
-		       x, x + 1,
+		       (x % AGS_EFFECT_LINE_COLUMNS_COUNT), (x % AGS_EFFECT_LINE_COLUMNS_COUNT) + 1,
 		       y, y + 1,
 		       GTK_FILL, GTK_FILL,
 		       0, 0);
@@ -875,6 +897,10 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
       
       port = port->next;
       x++;
+
+      if(x % AGS_EFFECT_LINE_COLUMNS_COUNT == 0){
+	y++;
+      }
     }
     
     port_descriptor = port_descriptor->next;
@@ -892,8 +918,10 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 			       gchar *effect)
 {
   AgsLineMember *line_member;
-  AgsAddLineMember *add_line_member;
+  GtkSeparator *separator;
   GtkAdjustment *adjustment;
+
+  AgsAddLineMember *add_line_member;
 
   AgsRecallHandler *recall_handler;
 
@@ -1016,6 +1044,26 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   g_list_free(recall_start);
   
   pthread_mutex_unlock(channel_mutex);
+
+  /* add separator */
+  separator = gtk_hseparator_new();
+  gtk_widget_set_size_request(separator,
+			      120, -1);
+  g_object_set_data(separator,
+		    AGS_EFFECT_LINE_SEPARATOR_FILENAME,
+		    filename);
+  g_object_set_data(separator,
+		    AGS_EFFECT_LINE_SEPARATOR_EFFECT,
+		    effect);
+  gtk_table_attach(effect_line->table,
+		   (GtkWidget *) separator,
+		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
+		   y, y + 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  gtk_widget_show(separator);
+
+  y++;
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
@@ -1153,7 +1201,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 	  
       gtk_table_attach(effect_line->table,
 		       (GtkWidget *) line_member,
-		       x, x + 1,
+		       (x % AGS_EFFECT_LINE_COLUMNS_COUNT), (x % AGS_EFFECT_LINE_COLUMNS_COUNT) + 1,
 		       y, y + 1,
 		       GTK_FILL, GTK_FILL,
 		       0, 0);
@@ -1163,6 +1211,10 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
       port = port->next;
       x++;
+
+      if(x % AGS_EFFECT_LINE_COLUMNS_COUNT == 0){
+	y++;
+      }
     }
 
     port_descriptor = port_descriptor->next;
@@ -1260,10 +1312,11 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 
   AgsMutexManager *mutex_manager;
 
-  GList *control;
+  GList *control, *control_start;
   GList *recall;
   GList *port;
 
+  gchar *filename, *effect;
   gchar **remove_specifier;
 
   guint nth_effect, n_bulk;
@@ -1321,6 +1374,39 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   }
 
   nth_effect--;
+
+  /* destroy separator */
+  filename = NULL;
+  effect = NULL;
+  
+  if(AGS_IS_RECALL_LV2(recall->data)){
+    filename = AGS_RECALL_LV2(recall->data)->filename;
+    effect = AGS_RECALL_LV2(recall->data)->effect;
+  }else if(AGS_IS_RECALL_LADSPA(recall->data)){
+    filename = AGS_RECALL_LADSPA(recall->data)->filename;
+    effect = AGS_RECALL_LADSPA(recall->data)->effect;
+  }
+
+  control_start =
+    control = gtk_container_get_children((GtkContainer *) effect_line->table);
+
+  while(control != NULL){
+    if(GTK_IS_SEPARATOR(control->data) &&
+       !strcmp(filename,
+	       g_object_get_data(control->data,
+				 AGS_EFFECT_LINE_SEPARATOR_FILENAME)) &&
+       !strcmp(effect,
+	       g_object_get_data(control->data,
+				 AGS_EFFECT_LINE_SEPARATOR_EFFECT))){
+      gtk_widget_destroy(control->data);
+      
+      break;
+    }
+
+    control->next;
+  }
+  
+  g_list_free(control_start);
   
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
@@ -1328,8 +1414,9 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   i = 0;
   
   while(port != NULL){
-    control = gtk_container_get_children((GtkContainer *) effect_line->table);
-      
+    control_start = 
+      control = gtk_container_get_children((GtkContainer *) effect_line->table);
+    
     while(control != NULL){
       if(AGS_IS_LINE_MEMBER(control->data) &&
 	 AGS_LINE_MEMBER(control->data)->port == port->data){
@@ -1362,7 +1449,9 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 	
       control = control->next;
     }
-      
+
+    g_list_free(control_start);
+    
     port = port->next;
   }
 

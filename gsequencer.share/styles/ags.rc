@@ -77,6 +77,7 @@ widget_class "AgsMachineEditor*" style "main_window"
 widget_class "AgsMidiDialog*" style "main_window"
 widget_class "AgsConnectionEditor*" style "main_window"
 widget_class "AgsMachineSelection*" style "main_window"
+widget_class "AgsPluginBrowser*" style "main_window"
 widget_class "Gtk*Dialog*" style "main_window"
 
 widget_class "*GtkLabel*" style "default_widget"
