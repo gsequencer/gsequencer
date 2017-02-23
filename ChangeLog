@@ -3,6 +3,8 @@ ags (0.7.133)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing reset of connection editor field of machine
 	* fixed wrong subtract one of audio channels in bulk connection
+	* fixed configuration to clear old config
+	* fixed soundcard editor pcm info fails if soundcard busy, use default values
 
 ags (0.7.132)
 

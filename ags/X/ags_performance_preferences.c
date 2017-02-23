@@ -184,6 +184,27 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
   config = ags_config_get_instance();
 
+  /* restore thread config */
+  ags_config_set_value(config,
+		       AGS_CONFIG_THREAD,
+		       "model\0",
+		       "super-threaded\0");
+  
+  ags_config_set_value(config,
+		       AGS_CONFIG_THREAD,
+		       "super-threaded-scope\0",
+		       "channel\0");
+
+  ags_config_set_value(config,
+		       AGS_CONFIG_THREAD,
+		       "lock-global\0",
+		       "ags-thread\0");
+  
+  ags_config_set_value(config,
+		       AGS_CONFIG_THREAD,
+		       "lock-parent\0",
+		       "ags-recycling-thread\0");
+
   /* auto-sense */
   str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
   ags_config_set_value(config,
