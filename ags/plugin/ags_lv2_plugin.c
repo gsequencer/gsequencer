@@ -76,6 +76,7 @@ void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
 enum{
   PROP_0,
   PROP_URI,
+  PROP_UI_URI,
   PROP_MANIFEST,
   PROP_TURTLE,
 };
@@ -145,11 +146,27 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 				  param_spec);
 
   /**
+   * AgsLv2Plugin:ui-uri:
+   *
+   * The assigned ui-uri.
+   * 
+   * Since: 0.7.127
+   */
+  param_spec = g_param_spec_string("ui-uri\0",
+				   "ui-uri of the plugin\0",
+				   "The ui-uri this plugin has\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UI_URI,
+				  param_spec);
+
+  /**
    * AgsLv2Plugin:manifest:
    *
    * The assigned manifest.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.127
    */
   param_spec = g_param_spec_object("manifest\0",
 				   "manifest of the plugin\0",
@@ -197,9 +214,15 @@ ags_lv2_plugin_init(AgsLv2Plugin *lv2_plugin)
   lv2_plugin->flags = 0;
 
   lv2_plugin->uri = NULL;
+  lv2_plugin->ui_uri = NULL;
 
   lv2_plugin->manifest = NULL;
   lv2_plugin->turtle = NULL;
+
+  lv2_plugin->doap_name = NULL;
+  lv2_plugin->foaf_name = NULL;
+  lv2_plugin->foaf_homepage = NULL;
+  lv2_plugin->foaf_mbox = NULL;
 }
 
 void
@@ -228,6 +251,23 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->uri = g_strdup(uri);
+    }
+    break;
+  case PROP_UI_URI:
+    {
+      gchar *ui_uri;
+
+      ui_uri = (gchar *) g_value_get_string(value);
+
+      if(lv2_plugin->ui_uri == ui_uri){
+	return;
+      }
+      
+      if(lv2_plugin->ui_uri != NULL){
+	g_free(lv2_plugin->ui_uri);
+      }
+
+      lv2_plugin->ui_uri = g_strdup(ui_uri);
     }
     break;
   case PROP_MANIFEST:
@@ -294,6 +334,11 @@ ags_lv2_plugin_get_property(GObject *gobject,
       g_value_set_string(value, lv2_plugin->uri);
     }
     break;
+  case PROP_UI_URI:
+    {
+      g_value_set_string(value, lv2_plugin->ui_uri);
+    }
+    break;
   case PROP_MANIFEST:
     {
       g_value_set_object(value, lv2_plugin->manifest);
@@ -318,6 +363,7 @@ ags_lv2_plugin_finalize(GObject *gobject)
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
   g_free(lv2_plugin->uri);
+  g_free(lv2_plugin->ui_uri);
 
   if(lv2_plugin->manifest != NULL){
     g_object_unref(lv2_plugin->manifest);
@@ -399,6 +445,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   GList *metadata_list;
   GList *instrument_list;
+  GList *ui_list;
   GList *port_list;
   GList *port_descriptor_list;
   
@@ -517,7 +564,33 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       g_list_free(instrument_list);
     }
-    
+
+    /* check UI */
+    xpath = ".//rdf-pname-ln[text()='uiext:ui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
+
+    ui_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+						      xpath,
+						      triple_node);
+
+    if(ui_list != NULL){
+      gchar *ui_uri;
+
+      ui_uri = xmlNodeGetContent(ui_list->data);
+
+      if(strlen(ui_uri) > 2){
+	ui_uri = g_strndup(ui_uri + 1,
+			   strlen(ui_uri) - 2);
+      }
+
+      g_object_set(lv2_plugin,
+		   "ui-uri\0", ui_uri,
+		   NULL);
+      
+      g_message("*** found UI <%s> ***\0", ui_uri);
+
+      g_list_free(ui_list);
+    }
+
     /* load ports */
     xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object[.//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']]\0";
     port_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,

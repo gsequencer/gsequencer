@@ -758,6 +758,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 			   gchar *effect)
 {
   AgsLineMember *line_member;
+  GtkSeparator *separator;
   GtkAdjustment *adjustment;
 
   AgsRecallHandler *recall_handler;
@@ -881,6 +882,24 @@ ags_line_add_ladspa_effect(AgsLine *line,
   g_list_free(recall_start);
   
   pthread_mutex_unlock(channel_mutex);
+
+  /* add separator */
+  separator = gtk_hseparator_new();
+  gtk_widget_set_size_request(separator,
+			      120, -1);
+  g_object_set_data(separator,
+		    AGS_LINE_SEPARATOR_FILENAME,
+		    filename);
+  g_object_set_data(separator,
+		    AGS_LINE_SEPARATOR_EFFECT,
+		    effect);
+  ags_expander_add(line->expander,
+		   (GtkWidget *) separator,
+		   0, y,
+		   AGS_LINE_COLUMNS_COUNT, 1);
+  gtk_widget_show(separator);
+
+  y++;
   
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -897,8 +916,13 @@ ags_line_add_ladspa_effect(AgsLine *line,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	disable_seemless = TRUE;
+	
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  widget_type = AGS_TYPE_LED;
 	}else{
@@ -922,6 +946,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+	disable_seemless = TRUE;
       }
       
       /* add line member */
@@ -995,6 +1020,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	
 	dial = (AgsDial *) child_widget;
 
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+	
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
@@ -1035,13 +1064,17 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	  
       ags_expander_add(line->expander,
 		       (GtkWidget *) line_member,
-		       x, y,
+		       x % AGS_LINE_COLUMNS_COUNT, y,
 		       1, 1);
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
       
       port = port->next;
       x++;
+
+      if(x % AGS_LINE_COLUMNS_COUNT == 0){
+	y++;
+      }
     }
 
     port_descriptor = port_descriptor->next;
@@ -1059,6 +1092,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 			gchar *effect)
 {
   AgsLineMember *line_member;
+  GtkSeparator *separator;
   GtkAdjustment *adjustment;
 
   AgsRecallHandler *recall_handler;
@@ -1186,6 +1220,24 @@ ags_line_add_lv2_effect(AgsLine *line,
   
   pthread_mutex_unlock(channel_mutex);
 
+  /* add separator */
+  separator = gtk_hseparator_new();
+  gtk_widget_set_size_request(separator,
+			      120, -1);
+  g_object_set_data(separator,
+		    AGS_LINE_SEPARATOR_FILENAME,
+		    filename);
+  g_object_set_data(separator,
+		    AGS_LINE_SEPARATOR_EFFECT,
+		    effect);
+  ags_expander_add(line->expander,
+		   (GtkWidget *) separator,
+		   0, y,
+		   AGS_LINE_COLUMNS_COUNT, 1);
+  gtk_widget_show(separator);
+
+  y++;
+  
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
@@ -1202,9 +1254,14 @@ ags_line_add_lv2_effect(AgsLine *line,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	disable_seemless = TRUE;
+	
+      	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  widget_type = AGS_TYPE_LED;
 	}else{
 	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
@@ -1227,6 +1284,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;
       }
 
       /* add line member */
@@ -1275,6 +1334,10 @@ ags_line_add_lv2_effect(AgsLine *line,
 	
 	dial = (AgsDial *) child_widget;
 
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+	
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
@@ -1314,13 +1377,17 @@ ags_line_add_lv2_effect(AgsLine *line,
 
       ags_expander_add(line->expander,
 		       (GtkWidget *) line_member,
-		       x, y,
+		       x % AGS_LINE_COLUMNS_COUNT, y,
 		       1, 1);      
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
 
       port = port->next;
       x++;
+
+      if(x % AGS_LINE_COLUMNS_COUNT == 0){
+	y++;
+      }
     }
 
     port_descriptor = port_descriptor->next;
@@ -1418,11 +1485,12 @@ ags_line_real_remove_effect(AgsLine *line,
   
   AgsMutexManager *mutex_manager;
 
-  GList *control;
+  GList *control, *control_start;
   GList *recall;
   GList *port;
 
   gchar **remove_specifier;
+  gchar *filename, *effect;
   
   guint nth_effect, n_bulk;
   guint i;
@@ -1479,6 +1547,39 @@ ags_line_real_remove_effect(AgsLine *line,
   }
   
   nth_effect--;
+
+  /* destroy separator */
+  filename = NULL;
+  effect = NULL;
+  
+  if(AGS_IS_RECALL_LV2(recall->data)){
+    filename = AGS_RECALL_LV2(recall->data)->filename;
+    effect = AGS_RECALL_LV2(recall->data)->effect;
+  }else if(AGS_IS_RECALL_LADSPA(recall->data)){
+    filename = AGS_RECALL_LADSPA(recall->data)->filename;
+    effect = AGS_RECALL_LADSPA(recall->data)->effect;
+  }
+  
+  control_start =
+    control = gtk_container_get_children((GtkContainer *) line->expander->table);
+
+  while(control != NULL){
+    if(GTK_IS_SEPARATOR(control->data) &&
+       !strcmp(filename,
+	       g_object_get_data(control->data,
+				 AGS_LINE_SEPARATOR_FILENAME)) &&
+       !strcmp(effect,
+	       g_object_get_data(control->data,
+				 AGS_LINE_SEPARATOR_EFFECT))){
+      gtk_widget_destroy(control->data);
+      
+      break;
+    }
+
+    control->next;
+  }
+  
+  g_list_free(control_start);
   
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
@@ -1486,7 +1587,8 @@ ags_line_real_remove_effect(AgsLine *line,
   i = 0;
   
   while(port != NULL){
-    control = gtk_container_get_children((GtkContainer *) line->expander->table);
+    control_start =
+      control = gtk_container_get_children((GtkContainer *) line->expander->table);
       
     while(control != NULL){
       if(AGS_IS_LINE_MEMBER(control->data) &&
@@ -1521,7 +1623,9 @@ ags_line_real_remove_effect(AgsLine *line,
 	
       control = control->next;
     }
-      
+
+    g_list_free(control_start);
+    
     port = port->next;
   }
 

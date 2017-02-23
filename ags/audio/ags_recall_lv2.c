@@ -773,6 +773,12 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
 	  
 	  current->flags |= AGS_PORT_IS_OUTPUT;
+	}else{
+	  if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
+	     (AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
+	     AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps == -1){
+	    current->flags |= AGS_PORT_INFINITE_RANGE;
+	  }
 	}
 	
 	current->port_descriptor = port_descriptor->data;

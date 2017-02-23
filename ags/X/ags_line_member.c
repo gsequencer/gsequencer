@@ -425,9 +425,6 @@ ags_line_member_init(AgsLineMember *line_member)
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
 				  "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
-  gtk_widget_set_size_request((GtkWidget *) dial,
-			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
-			      2 * (dial->radius + dial->outline_strength + 1));
   
   gtk_container_add(GTK_CONTAINER(line_member),
 		    (GtkWidget *) dial);
@@ -697,6 +694,18 @@ ags_line_member_set_property(GObject *gobject,
 
       if(port != NULL){
 	g_object_ref(port);
+
+	if((AGS_PORT_INFINITE_RANGE & (port->flags)) != 0){
+	  GtkWidget *child;
+
+	  child = gtk_bin_get_child(GTK_BIN(line_member));
+
+	  //TODO:JK: add more types
+
+	  if(AGS_IS_DIAL(child)){
+	    AGS_DIAL(child)->flags |= AGS_DIAL_SEEMLESS_MODE;
+	  }
+	}
       }
 
       line_member->port = port;
@@ -941,7 +950,8 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 void
 ags_line_member_finalize(GObject *gobject)
 {
-  /* empty */
+  /* call parent */
+  G_OBJECT_CLASS(ags_line_member_parent_class)->finalize(gobject);  
 }
 
 GtkWidget*

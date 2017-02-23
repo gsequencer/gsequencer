@@ -1123,6 +1123,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -1132,6 +1135,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	disable_seemless = TRUE;
+	
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  widget_type = AGS_TYPE_LED;
 	}else{
@@ -1149,6 +1154,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;	
       }
 
       /* add bulk member */
@@ -1223,6 +1230,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	LADSPA_Data lower_bound, upper_bound;
 	
 	dial = (AgsDial *) child_widget;
+
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
@@ -1607,6 +1618,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -1633,6 +1647,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;	
       }
 
       /* add bulk member */
@@ -1708,6 +1724,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	LADSPA_Data default_value;
 	
 	dial = (AgsDial *) child_widget;
+
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
@@ -2103,7 +2123,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       GType widget_type;
 
       guint step_count;
-      
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
+            
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
@@ -2112,6 +2135,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       }
 
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	disable_seemless = TRUE;
+	
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  widget_type = AGS_TYPE_LED;
 	}else{
@@ -2129,6 +2154,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;	
       }
 
       /* add bulk member */
@@ -2176,6 +2203,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	float lower_bound, upper_bound;
 	
 	dial = (AgsDial *) child_widget;
+
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);

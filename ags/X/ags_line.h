@@ -37,7 +37,10 @@
 
 #define AGS_LINE_DEFAULT_VERSION "0.7.0\0"
 #define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49\0"
+
 #define AGS_LINE_COLUMNS_COUNT (2)
+#define AGS_LINE_SEPARATOR_FILENAME "ags-line-separator-filename\0"
+#define AGS_LINE_SEPARATOR_EFFECT "ags-line-separator-effect\0"
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;

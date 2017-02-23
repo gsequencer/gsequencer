@@ -34,6 +34,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <stdio.h>
+
 #include <ags/config.h>
 
 void ags_lv2ui_manager_class_init(AgsLv2uiManagerClass *lv2ui_manager);
@@ -149,23 +151,23 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
   for(i = 0; lv2ui_plugin != NULL;){
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
-      filenames[i] = AGS_BASE_PLUGIN(lv2ui_plugin->data)->filename;
+      filenames[i] = AGS_BASE_PLUGIN(lv2ui_plugin->data)->ui_filename;
       filenames[i + 1] = NULL;
 
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
       contains_filename = g_strv_contains(filenames,
-					  AGS_BASE_PLUGIN(lv2ui_plugin->data)->filename);
+					  AGS_BASE_PLUGIN(lv2ui_plugin->data)->ui_filename);
 #else
       contains_filename = ags_strv_contains(filenames,
-					    AGS_BASE_PLUGIN(lv2ui_plugin->data)->filename);
+					    AGS_BASE_PLUGIN(lv2ui_plugin->data)->ui_filename);
 #endif
       
       if(!contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
-	filenames[i] = AGS_BASE_PLUGIN(lv2ui_plugin->data)->filename;
+	filenames[i] = AGS_BASE_PLUGIN(lv2ui_plugin->data)->ui_filename;
 	filenames[i + 1] = NULL;
 	
 	i++;
@@ -181,10 +183,10 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
 /**
  * ags_lv2ui_manager_find_lv2ui_plugin:
  * @lv2ui_manager: the #AgsLv2uiManager
- * @filename: the filename of the plugin
- * @effect: the effect's name
+ * @ui_filename: the UI filename of the plugin
+ * @ui_effect: the UI effect's name
  *
- * Lookup filename in loaded plugins.
+ * Lookup UI filename in loaded plugins.
  *
  * Returns: the #AgsLv2uiPlugin-struct
  *
@@ -192,14 +194,14 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
  */
 AgsLv2uiPlugin*
 ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
-				    gchar *filename, gchar *effect)
+				    gchar *ui_filename, gchar *ui_effect)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
   
   GList *list;
 
-  if(filename == NULL ||
-     effect == NULL){
+  if(ui_filename == NULL ||
+     ui_effect == NULL){
     return(NULL);
   }
   
@@ -208,10 +210,52 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
   while(list != NULL){
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
     
-    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2ui_plugin)->filename,
-			   filename) &&
-       !g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2ui_plugin)->effect,
-			   effect)){
+    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
+			   ui_filename) &&
+       !g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect,
+			   ui_effect)){
+      return(lv2ui_plugin);
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
+}
+
+/**
+ * ags_lv2ui_manager_find_lv2ui_plugin_with_index:
+ * @lv2ui_manager: the #AgsLv2uiManager
+ * @ui_filename: the UI filename of the plugin
+ * @ui_effect_index: the UI index
+ *
+ * Lookup @ui_filename with @ui_effect_index in loaded plugins.
+ *
+ * Returns: the #AgsLv2uiPlugin-struct
+ *
+ * Since: 0.7.127
+ */
+AgsLv2uiPlugin*
+ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
+					       gchar *ui_filename,
+					       guint ui_effect_index)
+{
+  AgsLv2uiPlugin *lv2ui_plugin;
+  
+  GList *list;
+
+  if(ui_filename == NULL){
+    return(NULL);
+  }
+  
+  list = lv2ui_manager->lv2ui_plugin;
+  
+  while(list != NULL){
+    lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
+    
+    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
+			   ui_filename) &&
+       AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect_index == ui_effect_index){
       return(lv2ui_plugin);
     }
 
@@ -282,12 +326,6 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
   
   GError *error;
 
-  void *plugin_so;
-  LV2_Descriptor_Function lv2_descriptor;
-  LV2_Descriptor *plugin_descriptor;
-
-  uint32_t i;
-
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   auto void ags_lv2ui_manager_load_file_ui_plugin(GList *list);
@@ -296,13 +334,21 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
     GList *uri_list;
     GList *binary_list;
 
-    gchar *gui_filename;
+    gchar *ui_filename;
     gchar *str;
     gchar *path;
-    gchar *gui_path;
+    gchar *ui_path;
     gchar *xpath;
-    gchar *uri;
+    gchar *gui_uri;
+
+    guint ui_effect_index;
     
+    void *ui_plugin_so;
+    LV2UI_DescriptorFunction lv2ui_descriptor;
+    LV2UI_Descriptor *ui_plugin_descriptor;
+    
+    uint32_t i;
+
     if(list == NULL){
       return;
     }
@@ -314,7 +360,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 							 xpath,
 							 list->data);
       
-      uri = NULL;
+      gui_uri = NULL;
   
       if(uri_list != NULL){
 	xmlNode *child;
@@ -326,11 +372,11 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 	    if(!g_ascii_strncasecmp(child->name,
 				    "rdf-iriref\0",
 				    11)){
-	      uri = xmlNodeGetContent(child);
+	      gui_uri = xmlNodeGetContent(child);
 
-	      if(strlen(uri) > 2){
-		uri = g_strndup(uri + 1,
-				strlen(uri) - 2);
+	      if(strlen(gui_uri) > 2){
+		gui_uri = g_strndup(gui_uri + 1,
+				    strlen(gui_uri) - 2);
 	      }
 	      break;
 	    }else if(!g_ascii_strncasecmp(child->name,
@@ -357,7 +403,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 		pname_node = pname_node->next;
 	      }
 
-	      uri = pname;
+	      gui_uri = pname;
 	    
 	      if(pname != NULL){
 		gchar *suffix, *prefix;
@@ -391,9 +437,9 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 		    
 			tmp = g_strndup(iriref + 1,
 					strlen(iriref) - 2);
-			uri = g_strdup_printf("%s%s\0",
-					      tmp,
-					      suffix);
+			gui_uri = g_strdup_printf("%s%s\0",
+						  tmp,
+						  suffix);
 			free(tmp);
 		      }
 		  
@@ -412,7 +458,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
       }
 
       /* load plugin */
-      if(uri == NULL){
+      if(gui_uri == NULL){
 	list = list->next;
 
 	continue;
@@ -446,9 +492,9 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 	  continue;
 	}
 	
-	gui_filename = g_strdup_printf("%s/%s\0",
-				       tmp,
-				       str);
+	ui_filename = g_strdup_printf("%s/%s\0",
+				      tmp,
+				      str);
 	free(str);
 
 	break;
@@ -458,11 +504,70 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 			     lv2ui_path,
 			     filename);
       
-      gui_path = g_strdup_printf("%s/%s\0",
-				 lv2ui_path,
-				 gui_filename);
+      ui_path = g_strdup_printf("%s/%s\0",
+				lv2ui_path,
+				ui_filename);
       
-      g_message("lv2ui check - %s\0", gui_path);
+      g_message("lv2ui check - %s\0", ui_path);
+
+      /* get gui_uri index and append plugin */
+      ui_plugin_so = dlopen(ui_path,
+			    RTLD_NOW);
+  
+      if(ui_plugin_so == NULL){
+	g_warning("ags_lv2ui_manager.c - failed to load static object file\0");
+    
+	dlerror();
+
+	list = list->next;
+      
+	continue;
+      }
+
+      lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(ui_plugin_so,
+							  "lv2ui_descriptor\0");
+  
+      if(dlerror() == NULL && lv2ui_descriptor){
+	for(i = 0; (ui_plugin_descriptor = lv2ui_descriptor(i)) != NULL; i++){
+	  if(ui_path != NULL &&
+	     gui_uri != NULL &&
+	     !g_ascii_strcasecmp(ui_plugin_descriptor->URI,
+				 gui_uri)){
+	    ui_effect_index = i;
+	    
+	    /* check if already added */
+	    lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin_with_index(lv2ui_manager,
+									  ui_path,
+									  ui_effect_index);
+
+	    if(lv2ui_plugin != NULL){
+	      break;
+	    }
+
+	    if(ags_base_plugin_find_ui_effect_index(lv2ui_manager->lv2ui_plugin,
+						    ui_path,
+						    ui_effect_index) == NULL){
+	      g_message("ags_lv2ui_manager.c loading - %s %s with ui-effect-index %u\0",
+			ui_path,
+			turtle->filename,
+			ui_effect_index);
+
+	      lv2ui_plugin = g_object_new(AGS_TYPE_LV2UI_PLUGIN,
+					  "gui-uri\0", gui_uri,
+					  "manifest\0", manifest,
+					  "gui-turtle\0", turtle,
+					  "ui-filename\0", ui_path,
+					  "ui-effect-index\0", ui_effect_index,
+					  NULL);
+	      ags_base_plugin_load_plugin((AgsBasePlugin *) lv2ui_plugin);
+	      lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
+							   lv2ui_plugin);
+	    }
+	  
+	    break;
+	  }
+	}  
+      }
       
       list = list->next;
     }    

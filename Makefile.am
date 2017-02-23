@@ -182,7 +182,7 @@ EXTRA_DIST += \
 	$(top_srcdir)/ags/audio/midi/ags_midi_file.dtd \
 	$(top_srcdir)/ags/file/ags_file.dtd \
 	$(top_srcdir)/ags/X/file/ags_simple_file.dtd \
-	$(top_srcdir)/ags.xsl $(top_srcdir)/ags/object/ags_marshallers.list
+	$(top_srcdir)/ags.xsl $(top_srcdir)/ags-simple.xsl $(top_srcdir)/ags/object/ags_marshallers.list
 
 # libraries and gsequencer
 libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
@@ -1108,8 +1108,6 @@ deprecated_libgsequencer_h_sources =
 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
-	ags/X/ags_audio_connection_collection_editor_callbacks.h \
-	ags/X/ags_audio_connection_collection_editor.h \
 	ags/X/ags_automation_editor_callbacks.h \
 	ags/X/ags_automation_editor.h \
 	ags/X/ags_automation_window_callbacks.h \
@@ -1170,6 +1168,12 @@ libgsequencer_h_sources = \
 	ags/X/ags_midi_preferences_callbacks.h \
 	ags/X/ags_navigation_callbacks.h \
 	ags/X/ags_navigation.h \
+	ags/X/ags_output_collection_editor_callbacks.h \
+	ags/X/ags_output_collection_editor.h \
+	ags/X/ags_output_editor.h \
+	ags/X/ags_output_editor_callbacks.h \
+	ags/X/ags_output_listing_editor.h \
+	ags/X/ags_output_listing_editor_callbacks.h \
 	ags/X/ags_pad_callbacks.h \
 	ags/X/ags_pad_editor_callbacks.h \
 	ags/X/ags_pad_editor.h \
@@ -1202,8 +1206,6 @@ deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
-	ags/X/ags_audio_connection_collection_editor_callbacks.c \
-	ags/X/ags_audio_connection_collection_editor.c \
 	ags/X/ags_automation_editor.c \
 	ags/X/ags_automation_editor_callbacks.c \
 	ags/X/ags_automation_window.c \
@@ -1264,6 +1266,12 @@ libgsequencer_c_sources = \
 	ags/X/ags_midi_preferences_callbacks.c \
 	ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c \
+	ags/X/ags_output_collection_editor_callbacks.c \
+	ags/X/ags_output_collection_editor.c \
+	ags/X/ags_output_editor.c \
+	ags/X/ags_output_editor_callbacks.c \
+	ags/X/ags_output_listing_editor.c \
+	ags/X/ags_output_listing_editor_callbacks.c \
 	ags/X/ags_pad.c \
 	ags/X/ags_pad_callbacks.c \
 	ags/X/ags_pad_editor.c \
@@ -1624,6 +1632,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz

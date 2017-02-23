@@ -17,23 +17,20 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_LISTING_EDITOR_CALLBACKS_H__
-#define __AGS_LISTING_EDITOR_CALLBACKS_H__
+#ifndef __AGS_OUTPUT_COLLECTION_EDITOR_CALLBACKS_H__
+#define __AGS_OUTPUT_COLLECTION_EDITOR_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
+#include <ags/X/ags_output_collection_editor.h>
 
-#include <ags/X/ags_listing_editor.h>
+int ags_output_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
+						     AgsOutputCollectionEditor *output_collection_editor);
 
-int ags_listing_editor_parent_set_callback(GtkWidget *widget,
-					   GtkObject *old_parent,
-					   AgsListingEditor *listing_editor);
+void ags_output_collection_editor_soundcard_callback(GtkWidget *combo_box,
+						     AgsOutputCollectionEditor *output_collection_editor);
 
-void ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-					  guint pads, guint pads_old,
-					  AgsListingEditor *listing_editor);
-
-#endif /*__AGS_LISTING_EDITOR_CALLBACKS_H__*/
+#endif /*__AGS_OUTPUT_COLLECTION_EDITOR_CALLBACKS_H__*/

@@ -37,6 +37,8 @@
 #define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 #define AGS_EFFECT_LINE_COLUMNS_COUNT (2)
+#define AGS_EFFECT_LINE_SEPARATOR_FILENAME "ags-effect-line-separator-filename\0"
+#define AGS_EFFECT_LINE_SEPARATOR_EFFECT "ags-effect-line-separator-effect\0"
 
 typedef struct _AgsEffectLine AgsEffectLine;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
