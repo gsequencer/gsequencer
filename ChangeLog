@@ -74,6 +74,15 @@ ags (0.7.123)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
 
+ags (0.7.122.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* back-ported seemless mode of AgsDial
+	* back-ported Lv2ui support
+	* improved default theme
+	* fixed configuration to use default values as soundcard busy
+	* fixed clear configuration and provide default values as applying
+
 ags (0.7.122.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
