@@ -34,6 +34,7 @@ void ags_xml_authentication_authentication_interface_init(AgsAuthenticationInter
 void ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication);
 void ags_xml_authentication_finalize(GObject *gobject);
 
+gchar** ags_xml_authenticaiton_get_authentication_module(AgsAuthentication *authentication);
 gboolean ags_xml_authentication_login(AgsAuthentication *authentication,
 				      gchar *login, gchar *password,
 				      gchar **user_uuid, gchar **security_token,
@@ -129,6 +130,8 @@ ags_xml_authentication_class_init(AgsXmlAuthenticationClass *xml_authentication)
 void
 ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface *authentication)
 {
+  authentication->get_authentication_module = ags_xml_authenticaiton_get_authentication_module;
+  
   authentication->login = ags_xml_authentication_login;
   
   authentication->logout = ags_xml_authentication_logout;
@@ -161,6 +164,22 @@ ags_xml_authentication_finalize(GObject *gobject)
   xml_authentication = AGS_XML_AUTHENTICATION(gobject);
 
   G_OBJECT_CLASS(ags_xml_authentication_parent_class)->finalize(gobject);
+}
+
+gchar**
+ags_xml_authenticaiton_get_authentication_module(AgsAuthentication *authentication)
+{
+  static gchar **authentication_module = NULL;
+
+  if(authentication_module == NULL){
+    authentication_module = (gchar **) malloc(3 * sizeof(gchar *));
+
+    authentication_module[0] = "ags-base-authentication\0";
+    authentication_module[1] = "ags-xml-authentication\0";
+    authentication_module[2] = NULL;
+  }
+  
+  return(authentication_module);
 }
 
 gboolean
