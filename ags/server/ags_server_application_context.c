@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,26 @@
 
 #include <ags/server/ags_server_application_context.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
+#include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_generic_main_loop.h>
+#include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/server/ags_service_provider.h>
+
 void ags_server_application_context_class_init(AgsServerApplicationContextClass *server_application_context);
+void ags_server_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
+void ags_server_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider);
 void ags_server_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_application_context_init(AgsServerApplicationContext *server_application_context);
 void ags_server_application_context_set_property(GObject *gobject,
@@ -37,10 +53,30 @@ void ags_server_application_context_connect(AgsConnectable *connectable);
 void ags_server_application_context_disconnect(AgsConnectable *connectable);
 void ags_server_application_context_finalize(GObject *gobject);
 
+AgsThread* ags_server_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+AgsThread* ags_server_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
+AgsThreadPool* ags_server_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+
+gboolean ags_server_application_context_is_operating(AgsServiceProvider *service_provider);
+AgsServerStatus* ags_server_application_context_server_status(AgsServiceProvider *service_provider);
+void ags_server_application_context_set_registry(AgsServiceProvider *service_provider,
+						 GObject *registry);
+GObject* ags_server_application_context_get_registry(AgsServiceProvider *service_provider);
+void ags_server_application_context_set_server(AgsServiceProvider *service_provider,
+					       GList *server);
+GList* ags_server_application_context_get_server(AgsServiceProvider *service_provider);
+void ags_server_application_context_set_certificate_manager(AgsServiceProvider *service_provider,
+							    AgsCertificateManager *certificate_manager);
+AgsCertificateManager* ags_server_application_context_get_certificate_manager(AgsServiceProvider *service_provider);
+void ags_server_application_context_set_password_store_manager(AgsServiceProvider *service_provider,
+							       AgsPasswordStoreManager *password_store_manager);
+AgsPasswordStoreManager* ags_server_application_context_get_password_store_manager(AgsServiceProvider *service_provider);
+void ags_server_application_context_set_authentication_manager(AgsServiceProvider *service_provider,
+							       AgsAuthenticationManager *authentication_manager);
+AgsAuthenticationManager* ags_server_application_context_get_authentication_manager(AgsServiceProvider *service_provider);
+
 static gpointer ags_server_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_server_application_context_parent_connectable_interface;
-
-AgsServerApplicationContext *ags_server_application_context = NULL;
 
 GType
 ags_server_application_context_get_type()
@@ -66,6 +102,18 @@ ags_server_application_context_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_concurrency_provider_interface_info = {
+      (GInterfaceInitFunc) ags_server_application_context_concurrency_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_service_provider_interface_info = {
+      (GInterfaceInitFunc) ags_server_application_context_service_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_server_application_context = g_type_register_static(AGS_TYPE_APPLICATION_CONTEXT,
 								 "AgsServerApplicationContext\0",
 								 &ags_server_application_context_info,
@@ -74,6 +122,14 @@ ags_server_application_context_get_type()
     g_type_add_interface_static(ags_type_server_application_context,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_server_application_context,
+				AGS_TYPE_CONCURRENCY_PROVIDER,
+				&ags_concurrency_provider_interface_info);
+
+    g_type_add_interface_static(ags_type_server_application_context,
+				AGS_TYPE_SERVICE_PROVIDER,
+				&ags_service_provider_interface_info);
   }
 
   return (ags_type_server_application_context);
@@ -103,6 +159,36 @@ ags_server_application_context_class_init(AgsServerApplicationContextClass *serv
 }
 
 void
+ags_server_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider)
+{
+  concurrency_provider->get_main_loop = ags_server_application_context_get_main_loop;
+  concurrency_provider->get_task_thread = ags_server_application_context_get_task_thread;
+  concurrency_provider->get_thread_pool = ags_server_application_context_get_thread_pool;
+}
+
+void
+ags_server_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider)
+{
+  service_provider->is_operating = ags_server_application_context_is_operating;
+  service_provider->server_status = ags_server_application_context_server_status;
+
+  service_provider->set_registry = ags_server_application_context_set_registry;
+  service_provider->get_registry = ags_server_application_context_get_registry;
+
+  service_provider->set_server = ags_server_application_context_set_server;
+  service_provider->get_server = ags_server_application_context_get_server;
+
+  service_provider->set_certificate_manager = ags_server_application_context_set_certificate_manager;
+  service_provider->get_certificate_manager = ags_server_application_context_get_certificate_manager;
+
+  service_provider-> = ags_server_application_context_;
+  service_provider-> = ags_server_application_context_;
+
+  service_provider-> = ags_server_application_context_;
+  service_provider-> = ags_server_application_context_;
+}
+
+void
 ags_server_application_context_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_server_application_context_parent_connectable_interface = g_type_interface_peek_parent(connectable);
@@ -115,6 +201,56 @@ void
 ags_server_application_context_init(AgsServerApplicationContext *server_application_context)
 {
   server_application_context->flags = 0;
+
+  server_application_context->version = AGS_SERVER_DEFAULT_VERSION;
+  server_application_context->build_id = AGS_SERVER_BUILD_ID;
+
+#ifdef AGS_WITH_XMLRPC_C
+  server_application_context->env = (xmlrpc_env *) malloc(sizeof(xmlrpc_env));
+#else
+  server_application_context->env = NULL;
+#endif
+  
+  /**/
+  AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
+
+  /* set config */
+  config = ags_config_get_instance();
+  AGS_APPLICATION_CONTEXT(audio_application_context)->config = config;
+  g_object_set(config,
+	       "application-context\0", server_application_context,
+	       NULL);
+
+  /* registry */
+  server_application_context->registry = ags_registry_new();
+
+  /* server */
+  server_application_context->server = NULL;
+
+  /* manager */
+  server_application_context->certificate_manager = ags_certificate_manager_get_instance();
+  server_application_context->password_store_manager = ags_password_store_manager_get_instance();
+  server_application_context->authentication_manager = ags_authentication_manager_get_instance();
+  
+  /* AgsGenericMainLoop */
+  generic_main_loop = ags_generic_main_loop_new((GObject *) server_application_context);
+  g_object_set(server_application_context,
+	       "main-loop\0", generic_main_loop,
+	       NULL);
+
+  g_object_ref(generic_main_loop);
+  ags_connectable_connect(AGS_CONNECTABLE(generic_main_loop));
+
+  /* AgsTaskThread */
+  AGS_APPLICATION_CONTEXT(server_application_context)->task_thread = (GObject *) ags_task_thread_new();
+  ags_main_loop_set_async_queue(AGS_MAIN_LOOP(generic_main_loop),
+				AGS_APPLICATION_CONTEXT(server_application_context)->task_thread);
+  ags_thread_add_child_extended(AGS_THREAD(generic_main_loop),
+				AGS_THREAD(AGS_APPLICATION_CONTEXT(server_application_context)->task_thread),
+				TRUE, TRUE);
+
+  /* AgsThreadPool */
+  server_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(server_application_context)->task_thread)->thread_pool;
 }
 
 void
@@ -189,15 +325,107 @@ ags_server_application_context_finalize(GObject *gobject)
   server_application_context = AGS_SERVER_APPLICATION_CONTEXT(gobject);
 }
 
+AgsThread*
+ags_server_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
+{
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+}
+
+AgsThread*
+ags_server_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
+{
+  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+}
+
+AgsThreadPool*
+ags_server_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_SERVER_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+}
+
+gboolean
+ags_server_application_context_is_operating(AgsServiceProvider *service_provider)
+{
+  //TODO:JK: implement me
+}
+
+AgsServerStatus*
+ags_server_application_context_server_status(AgsServiceProvider *service_provider)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_server_application_context_set_registry(AgsServiceProvider *service_provider,
+					    GObject *registry)
+{
+  //TODO:JK: implement me
+}
+
+GObject*
+ags_server_application_context_get_registry(AgsServiceProvider *service_provider)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_server_application_context_set_server(AgsServiceProvider *service_provider,
+					  GList *server)
+{
+  //TODO:JK: implement me
+}
+
+GList*
+ags_server_application_context_get_server(AgsServiceProvider *service_provider)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_server_application_context_set_certificate_manager(AgsServiceProvider *service_provider,
+						       AgsCertificateManager *certificate_manager)
+{
+  //TODO:JK: implement me
+}
+
+AgsCertificateManager*
+ags_server_application_context_get_certificate_manager(AgsServiceProvider *service_provider)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_server_application_context_set_password_store_manager(AgsServiceProvider *service_provider,
+							  AgsPasswordStoreManager *password_store_manager)
+{
+  //TODO:JK: implement me
+}
+
+AgsPasswordStoreManager*
+ags_server_application_context_get_password_store_manager(AgsServiceProvider *service_provider)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_server_application_context_set_authentication_manager(AgsServiceProvider *service_provider,
+							  AgsAuthenticationManager *authentication_manager)
+{
+  //TODO:JK: implement me
+}
+
+AgsAuthenticationManager*
+ags_server_application_context_get_authentication_manager(AgsServiceProvider *service_provider)
+{
+  //TODO:JK: implement me
+}
+
 AgsServerApplicationContext*
-ags_server_application_context_new(GObject *main_loop,
-				   AgsConfig *config)
+ags_server_application_context_new()
 {
   AgsServerApplicationContext *server_application_context;
 
   server_application_context = (AgsServerApplicationContext *) g_object_new(AGS_TYPE_SERVER_APPLICATION_CONTEXT,
-									    "main-loop\0", main_loop,
-									    "config\0", config,
 									    NULL);
 
   return(server_application_context);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,14 +21,6 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
@@ -36,10 +28,17 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
 #include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_single_thread.h>
+#include <ags/thread/ags_autosave_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
@@ -89,6 +88,7 @@
 
 #include <ags/audio/file/ags_audio_file_xml.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
@@ -118,9 +118,12 @@ void ags_audio_application_context_get_property(GObject *gobject,
 						GParamSpec *param_spec);
 void ags_audio_application_context_connect(AgsConnectable *connectable);
 void ags_audio_application_context_disconnect(AgsConnectable *connectable);
+void ags_audio_application_context_finalize(GObject *gobject);
+
 AgsThread* ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_audio_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+
 GList* ags_audio_application_context_get_soundcard(AgsSoundProvider *sound_provider);
 GObject* ags_audio_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
 void ags_audio_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
@@ -131,7 +134,6 @@ GList* ags_audio_application_context_get_sequencer(AgsSoundProvider *sound_provi
 void ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						 GList *sequencer);
 GList* ags_audio_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_finalize(GObject *gobject);
 
 void ags_audio_application_context_register_types(AgsApplicationContext *application_context);
 void ags_audio_application_context_load_config(AgsApplicationContext *application_context);
@@ -315,7 +317,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
 
-  /**/
+  /* set config */
   config = ags_config_get_instance();
   AGS_APPLICATION_CONTEXT(audio_application_context)->config = config;
   g_object_set(config,
@@ -804,6 +806,48 @@ ags_audio_application_context_disconnect(AgsConnectable *connectable)
   ags_audio_application_context_parent_connectable_interface->disconnect(connectable);
 }
 
+void
+ags_audio_application_context_finalize(GObject *gobject)
+{
+  AgsAudioApplicationContext *audio_application_context;
+
+  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(gobject);
+
+  if(audio_application_context->thread_pool != NULL){
+    g_object_unref(audio_application_context->thread_pool);
+  }
+
+  if(audio_application_context->soundcard_thread != NULL){
+    g_object_unref(audio_application_context->soundcard_thread);
+  }
+
+  if(audio_application_context->export_thread != NULL){
+    g_object_unref(audio_application_context->export_thread);
+  }
+
+  if(audio_application_context->server != NULL){
+    g_object_unref(audio_application_context->server);
+  }
+
+  if(audio_application_context->soundcard != NULL){
+    g_list_free_full(audio_application_context->soundcard,
+		     g_object_unref);
+  }
+
+  if(audio_application_context->sequencer != NULL){
+    g_list_free_full(audio_application_context->sequencer,
+		     g_object_unref);
+  }
+  
+  if(audio_application_context->distributed_manager != NULL){
+    g_list_free_full(audio_application_context->distributed_manager,
+		     g_object_unref);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_application_context_parent_class)->finalize(gobject);
+}
+
 AgsThread*
 ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
@@ -865,48 +909,6 @@ GList*
 ags_audio_application_context_get_distributed_manager(AgsSoundProvider *sound_provider)
 {
   return(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->distributed_manager);
-}
-
-void
-ags_audio_application_context_finalize(GObject *gobject)
-{
-  AgsAudioApplicationContext *audio_application_context;
-
-  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(gobject);
-
-  if(audio_application_context->thread_pool != NULL){
-    g_object_unref(audio_application_context->thread_pool);
-  }
-
-  if(audio_application_context->soundcard_thread != NULL){
-    g_object_unref(audio_application_context->soundcard_thread);
-  }
-
-  if(audio_application_context->export_thread != NULL){
-    g_object_unref(audio_application_context->export_thread);
-  }
-
-  if(audio_application_context->server != NULL){
-    g_object_unref(audio_application_context->server);
-  }
-
-  if(audio_application_context->soundcard != NULL){
-    g_list_free_full(audio_application_context->soundcard,
-		     g_object_unref);
-  }
-
-  if(audio_application_context->sequencer != NULL){
-    g_list_free_full(audio_application_context->sequencer,
-		     g_object_unref);
-  }
-  
-  if(audio_application_context->distributed_manager != NULL){
-    g_list_free_full(audio_application_context->distributed_manager,
-		     g_object_unref);
-  }
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_audio_application_context_parent_class)->finalize(gobject);
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,6 +45,7 @@ struct _AgsFrontControllerClass
   AgsControllerClass controller;
   
   gpointer (*authenticate)(AgsFrontController *front_controller,
+			   gchar *authentication_module,
 			   gchar *login,
 			   gchar *password,
 			   gchar *certs);
@@ -54,13 +55,13 @@ struct _AgsFrontControllerClass
 			 gchar *context_path,
 			 gchar *user,
 			 gchar *security_token,
-			 gchar *certs,
 			 GParameter *params);
 };
 
 GType ags_front_controller_get_type();
 
 gpointer ags_front_controller_authenticate(AgsFrontController *front_controller,
+					   gchar *authentication_module,
 					   gchar *login,
 					   gchar *password,
 					   gchar *certs);
@@ -70,7 +71,6 @@ gpointer ags_front_controller_do_request(AgsFrontController *front_controller,
 					 gchar *context_path,
 					 gchar *user,
 					 gchar *security_token,
-					 gchar *certs,
 					 GParameter *params);
 
 AgsFrontController* ags_front_controller_new();

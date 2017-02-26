@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,11 +19,14 @@
 
 #include <ags/server/ags_server.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_application_context.h>
 
-#include <ags/server/ags_server_application_context.h>
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/server/ags_service_provider.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -82,7 +85,7 @@ ags_server_get_type()
   static GType ags_type_server = 0;
 
   if(!ags_type_server){
-    static const GTypeInfo ags_server_info = {
+    static const GTypeInfo ags_server = {
       sizeof (AgsServerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
@@ -102,7 +105,7 @@ ags_server_get_type()
     
     ags_type_server = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsServer\0",
-					     &ags_server_info,
+					     &ags_server,
 					     0);
 
     g_type_add_interface_static(ags_type_server,
@@ -174,13 +177,28 @@ ags_server_init(AgsServer *server)
 {
   server->flags = 0;
 
-  memset(&(server->address), 0, sizeof(struct sockaddr_in));
-  server->address.sin_port = 8080;
-  server->address.sin_family = AF_INET;
-  inet_aton("127.0.0.1\0", &(server->address.sin_addr.s_addr));
+  server->server_info = ags_server_info_alloc("localhost\0");
 
-  server->server_info = NULL;
 
+#ifdef AGS_WITH_XMLRPC_C
+  server->abyss_server = (TServer *) malloc(sizeof(TServer));
+  server->socket = NULL;
+#else
+  server->abyss_server = NULL;
+  server->socket = NULL;
+#endif
+
+  
+  server->address = (struct sockaddr_in *) malloc(sizeof(sockaddr_in));
+  memset(server->address, 0, sizeof(struct sockaddr_in));
+  
+  server->address->sin_port = 8080;
+  server->address->sin_family = AF_INET;
+
+  inet_aton("127.0.0.1\0", &(server->address->sin_addr.s_addr));
+
+  server->controller = NULL;
+  
   server->application_context = NULL;
   server->application_mutex = NULL;
 }
@@ -319,6 +337,29 @@ ags_server_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_server_info_alloc:
+ * @server_name: the server name
+ * 
+ * Allocate server info.
+ * 
+ * Returns: the allocated #AgsServerInfo-struct
+ * 
+ * Since: 1.0.0
+ */
+AgsServerInfo*
+ags_server_info_alloc(gchar *server_name)
+{
+  AgsServerInfo *server_info;
+
+  server_info = (AgsServerInfo *) malloc(sizeof(AgsServerInfo));
+
+  server_info->uuid = ags_id_generator_create_uuid();
+  server_info->server_name = server_name;
+
+  return(server_info);
+}
+
 void
 ags_server_real_start(AgsServer *server)
 {
@@ -335,19 +376,19 @@ ags_server_real_start(AgsServer *server)
   //  xmlrpc_registry_set_shutdown(registry,
   //			       &requestShutdown, &terminationRequested);
   server->socket_fd = socket(AF_INET, SOCK_RDM, PF_INET);
-  bind(server->socket_fd, &(server->address), sizeof(struct sockaddr_in));
+  bind(server->socket_fd, server->address, sizeof(struct sockaddr_in));
 
 #ifdef AGS_WITH_XMLRPC_C
   SocketUnixCreateFd(server->socket_fd, &(server->socket));
 
-  ServerCreateSocket2(&(server->abyss_server), server->socket, &error);
-  xmlrpc_server_abyss_set_handlers2(&(server->abyss_server), "/RPC2", registry->registry);
-  ServerInit(&(server->abyss_server));
+  ServerCreateSocket2(server->abyss_server, server->socket, &error);
+  xmlrpc_server_abyss_set_handlers2(server->abyss_server, "/RPC2", registry->registry);
+  ServerInit(server->abyss_server);
   //  setupSignalHandlers();
 
   while((AGS_SERVER_RUNNING & (server->flags)) != 0){
     printf("Waiting for next RPC...\n");
-    ServerRunOnce(&(server->abyss_server));
+    ServerRunOnce(server->abyss_server);
     /* This waits for the next connection, accepts it, reads the
        HTTP POST request, executes the indicated RPC, and closes
        the connection.
@@ -368,14 +409,22 @@ ags_server_start(AgsServer *server)
 }
 
 AgsServer*
-ags_server_lookup(void *server_info)
+ags_server_lookup(AgsServerInfo *server_info)
 {
   GList *current;
 
+  if(server_info == NULL){
+    return(NULL);
+  }
+  
   current = ags_server_list;
 
   while(current != NULL){
-    if(server_info == AGS_SERVER(current)->server_info){
+    if(AGS_SERVER(current->data)->server_info != NULL &&
+       !g_ascii_strcasecmp(server_info->uuid,
+			   AGS_SERVER(current->data)->server_info->uuid) &&
+       !g_strcmp0(server_info->server_name,
+		  AGS_SERVER(current->data)->server_info->server_name)){
       return(AGS_SERVER(current->data));
     }
 

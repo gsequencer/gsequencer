@@ -89,6 +89,10 @@ ags_security_context_class_init(AgsSecurityContextClass *security_context)
 void
 ags_security_context_init(AgsSecurityContext *security_context)
 {
+  security_context->certs = NULL;
+
+  security_context->permitted_context = NULL;
+  security_context->server_context = NULL;
 }
 
 void
@@ -105,12 +109,14 @@ void
 ags_security_context_add_server_context(AgsSecurityContext *security_context,
 					gchar *server_context)
 {
+  //TODO:JK: implement me
 }
 
 gboolean
 ags_security_context_remove_server_context(AgsSecurityContext *security_context,
 					   gchar *server_context)
 {
+  //TODO:JK: implement me
 
   return(TRUE);
 }

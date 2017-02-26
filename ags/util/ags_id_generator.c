@@ -32,7 +32,7 @@
  * Functions related to UUID.
  */
 
-#define AGS_ID_GENERATOR_DEFAULT_UUID_LENGTH 36
+#define AGS_ID_GENERATOR_DEFAULT_UUID_LENGTH (36)
 
 /**
  * ags_id_generator_create_uuid:

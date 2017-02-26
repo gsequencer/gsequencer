@@ -37,6 +37,9 @@ struct _AgsSecurityContext
 {
   GObject object;
 
+  gchar *certs;
+
+  gchar **permitted_context;
   gchar **server_context;
 };
 

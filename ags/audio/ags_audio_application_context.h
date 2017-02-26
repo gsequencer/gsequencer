@@ -32,16 +32,10 @@
 #else
 #include <ags/thread/ags_thread-posix.h>
 #endif
-#include <ags/thread/ags_single_thread.h>
-#include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_task_thread.h>
+
 #include <ags/thread/ags_thread_pool.h>
 
 #include <ags/server/ags_server.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-#include <ags/audio/thread/ags_export_thread.h>
 
 #define AGS_TYPE_AUDIO_APPLICATION_CONTEXT                (ags_audio_application_context_get_type())
 #define AGS_AUDIO_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_APPLICATION_CONTEXT, AgsAudioApplicationContext))

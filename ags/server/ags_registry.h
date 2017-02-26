@@ -38,16 +38,17 @@
 #define AGS_IS_REGISTRY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_REGISTRY))
 #define AGS_REGISTRY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_REGISTRY, AgsRegistryClass))
 
-#define AGS_REGISTRY_DEFAULT_ID_LENGTH 16
+#define AGS_REGISTRY_DEFAULT_ID_LENGTH (36)
 
 typedef struct _AgsRegistry AgsRegistry;
 typedef struct _AgsRegistryClass AgsRegistryClass;
 typedef struct _AgsRegistryEntry AgsRegistryEntry;
 
 typedef enum{
-  AGS_REGISTRY_XML_DOCUMENT  = 1,
-  AGS_REGISTRY_XML_RPC       = 1 << 1,
-  AGS_REGISTRY_DIRTY         = 1 << 2,
+  AGS_REGISTRY_CONNECTED     = 1,
+  AGS_REGISTRY_XML_DOCUMENT  = 1 <<  1,
+  AGS_REGISTRY_XML_RPC       = 1 <<  2,
+  AGS_REGISTRY_DIRTY         = 1 <<  3,
 }AgsRegistryFlags;
 
 struct _AgsRegistry
@@ -56,7 +57,7 @@ struct _AgsRegistry
 
   guint flags;
 
-  pthread_mutex_t mutex;
+  pthread_mutex_t *mutex;
 
   AgsFile *previous;
   AgsFile *current;

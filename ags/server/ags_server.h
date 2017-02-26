@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,6 +48,7 @@
 
 typedef struct _AgsServer AgsServer;
 typedef struct _AgsServerClass AgsServerClass;
+typedef struct _AgsServerInfo AgsServerInfo;
 
 typedef enum{
   AGS_SERVER_CONNECTED      = 1,
@@ -61,14 +62,20 @@ struct _AgsServer
 
   guint flags;
 
-#ifdef AGS_WITH_XMLRPC_C
-  TServer abyss_server;
-  TSocket *socket;
-#endif
-  int socket_fd;
-  struct sockaddr_in address;
+  AgsServerInfo *server_info;
 
-  void *server_info;
+#ifdef AGS_WITH_XMLRPC_C
+  TServer *abyss_server;
+  TSocket *socket;
+#else
+  void *abyss_server;
+  void *socket;  
+#endif
+
+  int socket_fd;
+  struct sockaddr_in *address;
+
+  GList *controller;
   
   GObject *application_context;
   pthread_mutex_t  *application_mutex;
@@ -81,7 +88,15 @@ struct _AgsServerClass
   void (*start)(AgsServer *server);
 };
 
+struct _AgsServerInfo
+{
+  gchar *uuid;
+  gchar *server_name;
+};
+
 GType ags_server_get_type();
+
+AgsServerInfo* ags_server_info_alloc(gchar *server_name);
 
 void ags_server_start(AgsServer *server);
 

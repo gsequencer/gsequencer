@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,7 @@ xmlrpc_value* ags_front_controller_xmlrpc_request(xmlrpc_env *env,
 #endif
 
 gpointer ags_front_controller_real_authenticate(AgsFrontController *front_controller,
+						gchar *authentication_module,
 						gchar *login,
 						gchar *password,
 						gchar *certs);
@@ -51,7 +52,6 @@ gpointer ags_front_controller_real_do_request(AgsFrontController *front_controll
 					      gchar *context_path,
 					      gchar *user_uuid,
 					      gchar *security_token,
-					      gchar *certs,
 					      GParameter *params);
 
 /**
@@ -124,8 +124,9 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, authenticate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING_STRING,
-		 G_TYPE_POINTER, 3,
+		 g_cclosure_user_marshal_POINTER__STRING_STRING_STRING_STRING,
+		 G_TYPE_POINTER, 4,
+		 G_TYPE_STRING,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
@@ -136,10 +137,9 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, do_request),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER,
-		 G_TYPE_POINTER, 6,
+		 g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER,
+		 G_TYPE_POINTER, 5,
 		 G_TYPE_OBJECT,
-		 G_TYPE_STRING,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
@@ -168,15 +168,18 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
 				    xmlrpc_value *param_array,
 				    void *server_info)
 {
+  //TODO:JK: implement me
 }
 #endif
 
 gpointer
 ags_front_controller_real_authenticate(AgsFrontController *front_controller,
+				       gchar *authentication_module,
 				       gchar *login,
 				       gchar *password,
 				       gchar *certs)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -195,6 +198,7 @@ ags_front_controller_real_authenticate(AgsFrontController *front_controller,
  */
 gpointer
 ags_front_controller_authenticate(AgsFrontController *front_controller,
+				  gchar *authentication_module,
 				  gchar *login,
 				  gchar *password,
 				  gchar *certs)
@@ -207,6 +211,7 @@ ags_front_controller_authenticate(AgsFrontController *front_controller,
   g_object_ref((GObject *) front_controller);
   g_signal_emit(G_OBJECT(front_controller),
 		front_controller_signals[AUTHENTICATE], 0,
+		authentication_module,
 		login,
 		password,
 		certs,
@@ -222,7 +227,6 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 				     gchar *context_path,
 				     gchar *login,
 				     gchar *security_token,
-				     gchar *certs,
 				     GParameter *params)
 {
   AgsAuthenticationManager *authentication_manager;
@@ -235,6 +239,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
   }
   
   //TODO:JK: use certs
+  //TODO:JK: implement me
 }
 
 /**
@@ -259,7 +264,6 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 				gchar *context_path,
 				gchar *login,
 				gchar *security_token,
-				gchar *certs,
 				GParameter *params)
 {
   gpointer retval;
@@ -273,7 +277,6 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 		context_path,
 		login,
 		security_token,
-		certs,
 		params,
 		&retval);
   g_object_unref((GObject *) front_controller);

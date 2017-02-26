@@ -32,6 +32,9 @@
 
 #include <ags/object/ags_application_context.h>
 
+#include <ags/thread/ags_thread_pool.h>
+
+#include <ags/server/ags_registry.h>
 #include <ags/server/ags_server.h>
 
 #define AGS_TYPE_SERVER_APPLICATION_CONTEXT                (ags_server_application_context_get_type())
@@ -41,8 +44,8 @@
 #define AGS_IS_SERVER_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER_APPLICATION_CONTEXT))
 #define AGS_SERVER_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContextClass))
 
-#define AGS_SERVER_BUILD_ID "Thu Apr  2 13:04:21 GMT 2015\0"
-#define AGS_SERVER_DEFAULT_VERSION "0.4.3\0"
+#define AGS_SERVER_BUILD_ID "Sun Feb 26 23:03:41 CET 2017\0"
+#define AGS_SERVER_DEFAULT_VERSION "1.0.0\0"
 
 typedef struct _AgsServerApplicationContext AgsServerApplicationContext;
 typedef struct _AgsServerApplicationContextClass AgsServerApplicationContextClass;
@@ -60,11 +63,20 @@ struct _AgsServerApplicationContext
   gchar *version;
   gchar *build_id;
 
+  AgsThreadPool *thread_pool;
+
 #ifdef AGS_WITH_XMLRPC_C
-  xmlrpc_env env;
+  xmlrpc_env *env;
+#else
+  void *env;
 #endif
 
+  AgsRegistry *registry;
   AgsServer *server;
+
+  AgsCertificateManager *certificate_manager;
+  AgsPasswordStoreManager *password_store_manager;
+  AgsAuthenticationManager *authentication_manager;
 };
 
 struct _AgsServerApplicationContextClass
@@ -74,7 +86,6 @@ struct _AgsServerApplicationContextClass
 
 GType ags_server_application_context_get_type();
 
-AgsServerApplicationContext* ags_server_application_context_new(GObject *main_loop,
-								AgsConfig *config);
+AgsServerApplicationContext* ags_server_application_context_new();
 
 #endif /*__AGS_SERVER_APPLICATION_CONTEXT_H__*/
