@@ -593,10 +593,26 @@ ags_bulk_member_set_property(GObject *gobject,
       
       port = (AgsPort *) g_value_get_object(value);
 
+      if(port == NULL){
+	return;
+      }
+      
       if(ags_bulk_port_find(bulk_member->bulk_port, port) != NULL){
 	return;
       }
 
+      if((AGS_PORT_INFINITE_RANGE & (port->flags)) != 0){
+	GtkWidget *child;
+
+	child = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+	//TODO:JK: add more types
+
+	if(AGS_IS_DIAL(child)){
+	  AGS_DIAL(child)->flags |= AGS_DIAL_SEEMLESS_MODE;
+	}
+      }
+      
       g_object_ref(port);
       bulk_port = ags_bulk_port_alloc(port);
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
@@ -610,6 +626,10 @@ ags_bulk_member_set_property(GObject *gobject,
       
       port = (AgsPort *) g_value_get_object(value);
 
+      if(port == NULL){
+	return;
+      }
+      
       if(ags_bulk_port_find(bulk_member->recall_bulk_port, port) != NULL){
 	return;
       }

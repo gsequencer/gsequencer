@@ -572,8 +572,14 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
 			       cairo_t *cr,
 			       gdouble x_offset, gdouble y_offset)
 {
+  GtkStyle *automation_area_style;
+  
   gdouble y;
   gdouble width, height;
+
+  static const gdouble white_gc = 65535.0;
+
+  automation_area_style = gtk_widget_get_style(GTK_WIDGET(automation_area->drawing_area));
 
   y = (gdouble) automation_area->y - y_offset;
   
@@ -581,11 +587,18 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
   height = (gdouble) automation_area->height;
 
   /* background */
-  cairo_set_source_rgb(cr, 0.5, 0.4, 0.0);
+  cairo_set_source_rgb(cr,
+		       automation_area_style->bg[0].red / white_gc,
+		       automation_area_style->bg[0].red / white_gc,
+		       automation_area_style->bg[0].red / white_gc);
   cairo_rectangle(cr, 0.0, y, width, height);
   cairo_fill(cr);
 
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  /* background border */
+  cairo_set_source_rgb(cr,
+		       automation_area_style->base[0].red / white_gc,
+		       automation_area_style->base[0].green / white_gc,
+		       automation_area_style->base[0].blue / white_gc);
   cairo_set_line_width(cr, 1.0);
   cairo_rectangle(cr, 0.0, y, width, height);
   cairo_stroke(cr);
@@ -614,6 +627,8 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
   AgsAutomationEdit *automation_edit;
   GtkWidget *widget;
   
+  GtkStyle *automation_area_style;
+
   double tact;
   gdouble y;
   gdouble height;
@@ -621,7 +636,11 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
   guint i, j;
   guint j_set;
   
+  static const gdouble white_gc = 65535.0;
+
   widget = (GtkWidget *) automation_area->drawing_area;
+  
+  automation_area_style = gtk_widget_get_style(widget);
 
   automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor(GTK_WIDGET(automation_area->drawing_area),
 								  AGS_TYPE_AUTOMATION_EDIT);
@@ -644,7 +663,10 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
      tact > 1.0 ){
     j_set = ((guint) x_offset / control_width + 1) % ((guint) tact);
 
-    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+    cairo_set_source_rgb(cr,
+			 automation_area_style->mid[0].red / white_gc,
+			 automation_area_style->mid[0].green / white_gc,
+			 automation_area_style->mid[0].blue / white_gc);
 
     if(j_set != 0){
       j = j_set;
@@ -653,7 +675,10 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
   }
 
   for(; i < widget->allocation.width; ){
-    cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
+    cairo_set_source_rgb(cr,
+			 automation_area_style->fg[0].red / white_gc,
+			 automation_area_style->fg[0].blue / white_gc,
+			 automation_area_style->fg[0].green / white_gc);
     
     cairo_move_to(cr, (double) i, y);
     cairo_line_to(cr, (double) i, y + height);
@@ -661,7 +686,10 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
     
     i += control_width;
     
-    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+    cairo_set_source_rgb(cr,
+			 automation_area_style->mid[0].red / white_gc,
+			 automation_area_style->mid[0].green / white_gc,
+			 automation_area_style->mid[0].blue / white_gc);
     
     for(j = 1; i < widget->allocation.width && j < tact; j++){
     ags_automation_area_draw_segment0:
@@ -690,6 +718,8 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
 			       cairo_t *cr,
 			       gdouble x_offset, gdouble y_offset)
 {
+  GtkStyle *automation_area_style;
+
   gdouble y;
   gdouble width, height;
   gdouble translated_ground;
@@ -698,6 +728,10 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
     0.25,
   };
 
+  static const gdouble white_gc = 65535.0;
+
+  automation_area_style = gtk_widget_get_style(GTK_WIDGET(automation_area->drawing_area));
+
   y = (gdouble) automation_area->y - y_offset;
   
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
@@ -705,7 +739,10 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
 
   cairo_save(cr);
 
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb(cr,
+		       automation_area_style->bg[0].red / white_gc,
+		       automation_area_style->bg[0].green / white_gc,
+		       automation_area_style->bg[0].blue / white_gc);
 
   /* middle */
   cairo_move_to(cr,
@@ -715,7 +752,10 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
   cairo_stroke(cr);
 
   /* set dash */
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb(cr,
+		       automation_area_style->bg[0].red / white_gc,
+		       automation_area_style->bg[0].green / white_gc,
+		       automation_area_style->bg[0].blue / white_gc);
   cairo_set_dash(cr,
 		 &dashes,
 		 1,
@@ -783,6 +823,8 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+
+  static const gdouble white_gc = 65535.0;
 
   auto gboolean ags_automation_area_draw_automation_find_tab(gdouble x, gdouble y, gdouble prev_x, gdouble prev_y);
 
@@ -1120,6 +1162,8 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   AgsAutomationEditor *automation_editor;
   AgsAutomationEdit *automation_edit;
 
+  GtkStyle *automation_area_style;
+
   GList *list;
 
   double tact_factor, zoom_factor;
@@ -1127,11 +1171,15 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   gdouble width, height;
   gdouble pos_x, pos_y;
   
+  static const gdouble white_gc = 65535.0;
+
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_area->drawing_area,
 								      AGS_TYPE_AUTOMATION_EDITOR);
   automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor((GtkWidget *) automation_area->drawing_area,
 								  AGS_TYPE_AUTOMATION_EDIT);
   
+  automation_area_style = gtk_widget_get_style(GTK_WIDGET(automation_area->drawing_area));
+
   zoom_factor = 1.0 / 4.0;
 
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
@@ -1173,7 +1221,11 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   }
   
   /*  */
-  cairo_set_source_rgba(cr, 1.0, 1.0, 0.0, 0.2);
+  cairo_set_source_rgba(cr,
+			automation_area_style->light[0].red / white_gc,
+			automation_area_style->light[0].green / white_gc,
+			automation_area_style->light[0].blue / white_gc,
+			0.4);
 
   /* area */
   cairo_rectangle(cr,

@@ -20,6 +20,9 @@
 #include <ags/X/ags_link_editor_callbacks.h>
 
 #include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
@@ -28,6 +31,7 @@
 #include <ags/audio/recall/ags_play_audio_file.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
@@ -45,52 +49,58 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
   AgsMachine *machine;
   AgsLineEditor *line_editor;
 
+  AgsAudio *audio;
   AgsChannel *channel;
 
   GtkTreeModel *model;
 
-  if(old_parent != NULL)
+  if(old_parent != NULL){
     return(0);
-
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_LINE_EDITOR);
-  channel = line_editor->channel;
-  
-  machine = AGS_MACHINE(AGS_AUDIO(channel->audio)->machine);
-
-  model = GTK_TREE_MODEL(ags_machine_get_possible_links(machine));
-    
-  if(line_editor != NULL &&
-     channel != NULL &&
-     AGS_IS_INPUT(channel) &&
-     channel->audio != NULL &&
-     AGS_AUDIO(channel->audio)->machine != NULL){
-    GtkTreeIter iter;
-
-    if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
-       ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
-	((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0))){
-      gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-
-      if(AGS_INPUT(channel)->file_link != NULL){
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			   0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
-			   1, NULL,
-			   -1);
-	gtk_combo_box_set_active_iter(link_editor->combo,
-				      &iter);
-      }else{
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			   0, "file://\0",
-			   1, NULL,
-			   -1);
-      }
-    }
-
   }
 
-  gtk_combo_box_set_model(link_editor->combo,
-			  model);
+  //TODO:JK: missing mutex
+  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_LINE_EDITOR);
 
+  if(line_editor != NULL){
+    channel = line_editor->channel;
+  
+    if(channel != NULL){
+      GtkTreeIter iter;
+      
+      audio = AGS_AUDIO(channel->audio);
+
+      if(audio != NULL){
+	machine = AGS_MACHINE(audio->machine);
+    
+	model = GTK_TREE_MODEL(ags_machine_get_possible_links(machine));
+  
+	if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
+	   ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
+	    ((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0))){
+	  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
+
+	  if(AGS_INPUT(channel)->file_link != NULL){
+	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+			       0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
+			       1, NULL,
+			       -1);
+	    gtk_combo_box_set_active_iter(link_editor->combo,
+					  &iter);
+	  }else{
+	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+			       0, "file://\0",
+			       1, NULL,
+			       -1);
+	  }
+
+	}
+
+	gtk_combo_box_set_model(link_editor->combo,
+				model);
+      }
+    }
+  }
+  
   return(0);
 }
 

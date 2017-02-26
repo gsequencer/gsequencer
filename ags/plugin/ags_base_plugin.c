@@ -593,7 +593,7 @@ ags_port_descriptor_alloc()
   port_descriptor->port_name = NULL;
   port_descriptor->port_symbol = NULL;
 
-  port_descriptor->scale_steps = 8;
+  port_descriptor->scale_steps = -1;
   port_descriptor->scale_points = NULL;
   port_descriptor->scale_value = NULL;
   

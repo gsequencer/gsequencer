@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,41 +17,43 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/ags_listing_editor_callbacks.h>
+#include <ags/X/ags_output_listing_editor_callbacks.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_connection_editor.h>
 
 int
-ags_listing_editor_parent_set_callback(GtkWidget *widget,
-				       GtkObject *old_parent,
-				       AgsListingEditor *listing_editor)
+ags_output_listing_editor_parent_set_callback(GtkWidget *widget,
+					      GtkObject *old_parent,
+					      AgsOutputListingEditor *output_listing_editor)
 {
-  AgsMachineEditor *machine_editor;
+  AgsConnectionEditor *connection_editor;
 
-  if(old_parent != NULL)
+  if(old_parent != NULL){
     return(0);
+  }
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget,
-								AGS_TYPE_MACHINE_EDITOR);
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(widget,
+								      AGS_TYPE_CONNECTION_EDITOR);
 
-  if(machine_editor->machine != NULL){
-    ags_listing_editor_add_children(listing_editor,
-				    machine_editor->machine->audio, 0,
-				    FALSE);
+  if(connection_editor != NULL &&
+     connection_editor->machine != NULL){
+    ags_output_listing_editor_add_children(output_listing_editor,
+					   connection_editor->machine->audio, 0,
+					   FALSE);
   }
   
   return(0);
 }
 
 void
-ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-				     guint pads, guint pads_old,
-				     AgsListingEditor *listing_editor)
+ags_output_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
+					    guint pads, guint pads_old,
+					    AgsOutputListingEditor *output_listing_editor)
 {
-  if(channel_type != listing_editor->channel_type){
+  if(channel_type != output_listing_editor->channel_type){
     return;
   }
 
@@ -85,14 +87,14 @@ ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
     /* add children */
     nth_channel = pads_old * audio_channels;
     
-    ags_listing_editor_add_children(listing_editor,
-				    audio, nth_channel,
-				    TRUE);
+    ags_output_listing_editor_add_children(output_listing_editor,
+					   audio, nth_channel,
+					   TRUE);
   }else{
     GList *list, *list_next, *list_start;
 
     list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+      list = gtk_container_get_children(GTK_CONTAINER(output_listing_editor->child));
     list = g_list_nth(list, pads);
     
     while(list != NULL){

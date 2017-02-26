@@ -1,3 +1,29 @@
+ags (0.7.133)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing reset of connection editor field of machine
+	* fixed wrong subtract one of audio channels in bulk connection
+	* fixed configuration to clear old config
+	* fixed soundcard editor pcm info fails if soundcard busy, use default values
+
+ags (0.7.132)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented seperator within AgsLine and AgsEffectLine
+	* implemented seemless mode of AgsDial
+	* improved theme, dial style to have dark background
+
+ags (0.7.131)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented output listing editor to assign soundcard
+	* improved theme and disable option
+
+ags (0.7.130)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved stability
+
 ags (0.7.129)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -47,6 +73,23 @@ ags (0.7.123)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
+
+ags (0.7.122.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* back-ported seemless mode of AgsDial
+	* back-ported Lv2ui support
+	* improved default theme
+	* fixed configuration to use default values as soundcard busy
+	* fixed clear configuration and provide default values as applying
+
+ags (0.7.122.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* providing default theme
+	* fixed ags.rc support
+	* fixed cell pattern painting
+	* minor fixes
 
 ags (0.7.122.4)
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,7 @@
 #include <ags/audio/ags_channel.h>
 
 #include <ags/X/ags_link_editor.h>
+#include <ags/X/ags_output_editor.h>
 #include <ags/X/ags_line_member_editor.h>
 
 #define AGS_TYPE_LINE_EDITOR                (ags_line_editor_get_type())
@@ -57,7 +58,11 @@ struct _AgsLineEditor
 
   AgsChannel *channel;
 
+  guint editor_type_count;
+  GType *editor_type;
+
   AgsLinkEditor *link_editor;
+  AgsOutputEditor *output_editor;
   AgsLineMemberEditor *member_editor;
 };
 

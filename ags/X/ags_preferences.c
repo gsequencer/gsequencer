@@ -280,6 +280,8 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   config = ags_config_get_instance();
 
+  ags_config_clear(config);
+
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->midi_preferences));

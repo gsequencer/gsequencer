@@ -123,7 +123,7 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
    */
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
-				   "The channel which this pad editor is assigned with\0",
+				   "The channel which this line editor is assigned with\0",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -196,7 +196,9 @@ ags_line_editor_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_CHANNEL:
-    g_value_set_object(value, line_editor->channel);
+    {
+      g_value_set_object(value, line_editor->channel);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -219,9 +221,18 @@ ags_line_editor_connect(AgsConnectable *connectable)
   
   g_signal_connect(G_OBJECT(line_editor), "show\0",
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
-
-  ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(line_editor->member_editor));
+  
+  if(line_editor->link_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
+  }
+  
+  if(line_editor->output_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->output_editor));
+  }
+  
+  if(line_editor->member_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->member_editor));
+  }
 }
 
 void
@@ -243,8 +254,17 @@ ags_line_editor_disconnect(AgsConnectable *connectable)
 		      (gpointer) line_editor,
 		      NULL);
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->link_editor));
-  ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->member_editor));
+  if(line_editor->link_editor != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->link_editor));
+  }
+  
+  if(line_editor->output_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->output_editor));
+  }
+  
+  if(line_editor->member_editor != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->member_editor));
+  }
 }
 
 void
@@ -269,6 +289,10 @@ ags_line_editor_apply(AgsApplicable *applicable)
   if(line_editor->link_editor != NULL){
     ags_applicable_apply(AGS_APPLICABLE(line_editor->link_editor));
   }
+
+  if(line_editor->output_editor != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(line_editor->output_editor));
+  }
 }
 
 void
@@ -280,6 +304,10 @@ ags_line_editor_reset(AgsApplicable *applicable)
 
   if(line_editor->link_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->link_editor));
+  }
+
+  if(line_editor->output_editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(line_editor->output_editor));
   }
 
   if(line_editor->member_editor != NULL){
@@ -303,25 +331,43 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
   if(line_editor->link_editor != NULL){
     line_editor->link_editor = NULL;
     gtk_widget_destroy(GTK_WIDGET(line_editor->link_editor));
+    gtk_widget_destroy(GTK_WIDGET(line_editor->output_editor));
     gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));
   }
 
   line_editor->channel = channel;
 
   if(channel != NULL){
-    /* link */
-    line_editor->link_editor = ags_link_editor_new();
-    gtk_box_pack_start(GTK_BOX(line_editor),
-		       GTK_WIDGET(line_editor->link_editor),
-		       FALSE, FALSE,
-		       0);
+    guint i;
 
-    /* recall */
-    line_editor->member_editor = ags_line_member_editor_new();
-    gtk_box_pack_start(GTK_BOX(line_editor),
-		       GTK_WIDGET(line_editor->member_editor),
-		       FALSE, FALSE,
-		       0);
+    for(i = 0; i < line_editor->editor_type_count; i++){
+      /* link */
+      if(line_editor->editor_type[i] == AGS_TYPE_LINK_EDITOR){
+	line_editor->link_editor = ags_link_editor_new();
+	gtk_box_pack_start(GTK_BOX(line_editor),
+			   GTK_WIDGET(line_editor->link_editor),
+			   FALSE, FALSE,
+			   0);
+      }
+
+      /* recall */
+      if(line_editor->editor_type[i] == AGS_TYPE_OUTPUT_EDITOR){
+	line_editor->output_editor = ags_output_editor_new();
+	gtk_box_pack_start(GTK_BOX(line_editor),
+			   GTK_WIDGET(line_editor->output_editor),
+			   FALSE, FALSE,
+			   0);
+      }
+      
+      /* recall */
+      if(line_editor->editor_type[i] == AGS_TYPE_LINE_MEMBER_EDITOR){
+	line_editor->member_editor = ags_line_member_editor_new();
+	gtk_box_pack_start(GTK_BOX(line_editor),
+			   GTK_WIDGET(line_editor->member_editor),
+			   FALSE, FALSE,
+			   0);
+      }
+    }
   }
 }
 

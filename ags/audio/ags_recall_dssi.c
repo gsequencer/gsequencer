@@ -645,6 +645,11 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
 
 	  current->flags |= AGS_PORT_IS_OUTPUT;
+	}else{
+	  if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
+	     (AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
+	    current->flags |= AGS_PORT_INFINITE_RANGE;
+	  }
 	}
 	
 	current->port_descriptor = port_descriptor->data;

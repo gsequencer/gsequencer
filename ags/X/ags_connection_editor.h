@@ -58,6 +58,9 @@ struct _AgsConnectionEditor
 
   GtkNotebook *notebook;
 
+  GtkScrolledWindow *output_listing_editor_scrolled_window;
+  AgsPropertyCollectionEditor *output_listing_editor;
+
   GtkScrolledWindow *output_connection_editor_scrolled_window;
   AgsPropertyCollectionEditor *output_connection_editor;
 
