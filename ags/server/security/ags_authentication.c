@@ -58,6 +58,28 @@ ags_authentication_base_init(AgsAuthenticationInterface *interface)
 }
 
 /**
+ * ags_authentication_get_authentication_module:
+ * @authentication: the #AgsAuthentication
+ * 
+ * Available authentication modules.
+ *
+ * Returns: a %NULL terminated array of strings of available authentication modules
+ *
+ * Since: 1.0.0
+ */
+gchar**
+ags_authentication_get_authentication_module(AgsAuthentication *authentication)
+{
+  AgsAuthenticationInterface *authentication_interface;
+
+  g_return_val_if_fail(AGS_IS_AUTHENTICATION(authentication), NULL);
+  authentication_interface = AGS_AUTHENTICATION_GET_INTERFACE(authentication);
+  g_return_val_if_fail(authentication_interface->get_authentication_module, NULL);
+
+  return(authentication_interface->get_authentication_module(authentication));
+}
+
+/**
  * ags_authentication_login:
  * @authentication: the #AgsAuthentication
  * @login: the login

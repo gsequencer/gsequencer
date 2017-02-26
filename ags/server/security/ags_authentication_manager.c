@@ -135,6 +135,7 @@ ags_authentication_manager_remove_authentication(AgsAuthenticationManager *authe
 
 gboolean
 ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,
+				 gchar *authentication_module,
 				 gchar *login,
 				 gchar *password,
 				 gchar **user_uuid,
@@ -154,7 +155,9 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
 
     error = NULL;
     
-    if(ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
+    if(g_strv_contains(ags_authentication_get_authentication_module(AGS_AUTHENTICATION(authentication->data)),
+		       authentication_module) &&
+       ags_authentication_login(AGS_AUTHENTICATION(authentication->data),
 				login, password,
 				&current_uuid, &current_token,
 				&error)){

@@ -58,6 +58,7 @@ void ags_authentication_manager_remove_authentication(AgsAuthenticationManager *
 
 /*  */
 gboolean ags_authentication_manager_login(AgsAuthenticationManager *authentication_manager,
+					  gchar *authentication_module,
 					  gchar *login,
 					  gchar *password,
 					  gchar **user_uuid,
