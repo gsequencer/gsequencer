@@ -1446,38 +1446,87 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   }else{      
     if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
       AgsAudio *audio;
+
+      AgsMutexManager *mutex_manager;
+
       GList *playback;
 
+      pthread_mutex_t *application_mutex;
+      pthread_mutex_t *audio_mutex;
+      
+      audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
+
+      mutex_manager = ags_mutex_manager_get_instance();
+      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+      /* lookup audio mutex */
+      pthread_mutex_lock(application_mutex);
+  
+      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     audio);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* reset sequencer counter */
       count_beats_audio_run->sequencer_counter = 0;
 
-      audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
+      /* get playback */
+      pthread_mutex_lock(audio_mutex);
+      
       playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
+      pthread_mutex_unlock(audio_mutex);
+      
       /* emit stop signals */
       ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 					       FALSE);
 
       /* set done flag in soundcard play */
       while(playback != NULL){
-	if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
-	   AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
-	  AgsChannel *channel;
+	AgsChannel *channel;
+	AgsRecyclingContext *recycling_context;
+	
+	pthread_mutex_lock(audio_mutex);
+
+	channel = audio->output;
+	
+	if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
+	  recycling_context = AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context;
+	}else{
+	  recycling_context = NULL;
+	}
+
+	pthread_mutex_unlock(audio_mutex);
+
+	if(recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
 	  AgsStreamChannelRun *stream_channel_run;
+	  
 	  GList *list;
 	  GList *recall_recycling_list, *recall_audio_signal_list;
+	  
 	  gboolean found;
+
+	  pthread_mutex_t *channel_mutex;
 
 	  //	    AGS_PLAYBACK(playback->data)->flags |= AGS_PLAYBACK_DONE;
 
+	  /* lookup channel mutex */
+	  pthread_mutex_lock(application_mutex);
+	  
+	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   channel);
+	  
+	  pthread_mutex_unlock(application_mutex);
+
 	  /* check if to stop audio processing */
-	  channel = audio->output;
 	  found = FALSE;
 
+	  pthread_mutex_lock(channel_mutex);
+	  
 	  list = channel->play;
-
 	  list = ags_recall_find_type_with_recycling_context(list,
 							     AGS_TYPE_STREAM_CHANNEL_RUN,
-							     (GObject *) AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context);
+							     (GObject *) recycling_context);
 
 	  if(list != NULL){
 	    stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
@@ -1500,6 +1549,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	    }
 	  }
 
+	  pthread_mutex_unlock(channel_mutex);
+
 	  /* stop audio processing*/
 	  if(!found){
 	    ags_count_beats_audio_run_stop(count_beats_audio_run,
@@ -1509,7 +1560,12 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	  break;
 	}
 
-	playback = playback->next;
+	/* iterate playback */
+	pthread_mutex_lock(audio_mutex);
+	
+      	playback = playback->next;
+
+	pthread_mutex_unlock(audio_mutex);
       }
 
       return;

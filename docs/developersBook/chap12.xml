@@ -9,8 +9,23 @@
 
 <chapter xmlns="http://docbook.org/ns/docbook"
 	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
-  <title>Example doing XML IO</title>
+  <title>Putting all together</title>
   <para>
-    Add content.
+    So far we have seen the most important objects involved doing an audio processing
+    tree. Now we want to do complete example putting all together. In this example we
+    instantiate AgsAudioThread and AgsChannelThread to play a simple pattern. The sound
+    we use is generated using a sinus wave.
   </para>
+  
+  <para>
+    In order that the threads are used we provide an appropriate AgsConfig. Further we
+    define an AgsPattern and add the needed recalls to do playback using the AgsRecallFactory.
+  </para>
+  
+  <example>
+    <title>Simple pattern sequencer with master playback</title>
+    <programlisting language="C">
+<xi:include href="../listings/complete_example.c" parse="text" />
+    </programlisting>
+  </example>
 </chapter>

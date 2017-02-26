@@ -46,6 +46,10 @@ ags_connection_editor_ok_callback(GtkWidget *widget, AgsConnectionEditor *connec
   ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor));
   ags_applicable_apply(AGS_APPLICABLE(connection_editor));
 
+  if(connection_editor->machine != NULL){
+    connection_editor->machine->connection_editor = NULL;
+  }
+  
   gtk_widget_destroy((GtkWidget *) connection_editor);
 
   return(0);
@@ -54,6 +58,10 @@ ags_connection_editor_ok_callback(GtkWidget *widget, AgsConnectionEditor *connec
 int
 ags_connection_editor_cancel_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor)
 {
+  if(connection_editor->machine != NULL){
+    connection_editor->machine->connection_editor = NULL;
+  }
+  
   gtk_widget_destroy((GtkWidget *) connection_editor);
 
   return(0);

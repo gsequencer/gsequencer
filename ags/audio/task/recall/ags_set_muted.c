@@ -129,7 +129,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope\0",
 				   "scope of set buffer size\0",
@@ -145,7 +145,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    *
    * The muted to set to scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_boolean("muted\0",
 				    "muted\0",

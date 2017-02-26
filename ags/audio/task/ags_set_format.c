@@ -129,7 +129,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope\0",
 				   "scope of set format\0",
@@ -145,7 +145,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    *
    * The format to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("format\0",
 				 "format\0",

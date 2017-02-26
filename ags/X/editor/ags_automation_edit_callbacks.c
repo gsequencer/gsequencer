@@ -440,7 +440,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       is_input = TRUE;
     }
 
-    n_attempts = 3;
+    n_attempts = 5;
     
     /* find automation area */
     list =

@@ -412,7 +412,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 void
 ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPattern *cell_pattern)
 {
-  ags_cell_pattern_draw_matrix(cell_pattern);
+  ags_cell_pattern_paint(cell_pattern);
 }
 
 void

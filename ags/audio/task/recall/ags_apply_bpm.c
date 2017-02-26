@@ -130,7 +130,7 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope\0",
 				   "scope of set buffer size\0",
@@ -146,7 +146,7 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
    *
    * The bpm to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_double("bpm\0",
 				   "bpm\0",

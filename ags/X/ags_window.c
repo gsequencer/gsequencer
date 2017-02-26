@@ -222,7 +222,9 @@ ags_window_init(AgsWindow *window)
 
   window->automation_window = ags_automation_window_new((GtkWidget *) window);
 
-  window->export_window = ags_export_window_new();
+  window->export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
+							   "main-window\0", window,
+							   NULL);
   window->import_window = NULL;
   
   window->preferences = NULL;
@@ -267,10 +269,6 @@ ags_window_set_property(GObject *gobject,
       g_object_set(G_OBJECT(window->navigation),
 		   "soundcard\0", soundcard,
 		   NULL);
-
-      g_object_set(G_OBJECT(window->export_window),
-		   "soundcard\0", soundcard,
-		   NULL);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
@@ -279,8 +277,9 @@ ags_window_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if((AgsApplicationContext *) window->application_context == application_context)
+      if((AgsApplicationContext *) window->application_context == application_context){
 	return;
+      }
 
       if(window->application_context != NULL){
 	window->application_mutex = NULL;
@@ -298,6 +297,7 @@ ags_window_set_property(GObject *gobject,
       g_object_set(G_OBJECT(window->export_window),
 		   "application-context\0", application_context,
 		   NULL);
+      ags_export_window_reload_soundcard_editor(window->export_window);
     }
     break;
   default:
@@ -588,7 +588,7 @@ ags_window_new(GObject *application_context)
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
-				      "application-context", application_context,
+				      "application-context\0", application_context,
 				      NULL);
 
   return(window);

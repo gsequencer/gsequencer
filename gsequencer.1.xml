@@ -31,6 +31,7 @@
       <arg>--help</arg>
       <arg>--version</arg>
       <arg>--single-thread</arg>
+      <arg>--no-builtin-theme</arg>
       <arg rep='repeat'>--filename <replaceable>file</replaceable></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -65,6 +66,12 @@
         <term><option>--single-thread</option></term>
         <listitem>
           <para>Run in single thread mode.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--no-builtin-theme</option></term>
+        <listitem>
+          <para>Disable built-in theme in order to display default theme.</para>
         </listitem>
       </varlistentry>
       <varlistentry>

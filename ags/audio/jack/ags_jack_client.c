@@ -722,9 +722,9 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
     pthread_mutex_unlock(audio_loop->timing_mutex);
   
-    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
-			    AGS_THREAD_SUSPEND_SIG,
-			    0, &time_spent);
+    //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+    //			    AGS_THREAD_SUSPEND_SIG,
+    //			    0, &time_spent);
   }
 
   if(task_thread != NULL){
@@ -811,13 +811,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       
       /* get buffer */
       if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
-	nth_buffer = 0;
-      }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
-	nth_buffer = 1;
-      }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
-	nth_buffer = 2;
-      }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
 	nth_buffer = 3;
+      }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+	nth_buffer = 0;
+      }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+	nth_buffer = 1;
+      }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+	nth_buffer = 2;
       }else{
 	/* iterate */
 	device = device->next;
@@ -886,14 +886,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       }
     
       if(!no_event){
-	memset(jack_devout->buffer[nth_buffer], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
-
 	/* signal finish */
-	pthread_mutex_lock(device_mutex);
-
 	callback_finish_mutex = jack_devout->callback_finish_mutex;
-
-	pthread_mutex_unlock(device_mutex);
 	
 	pthread_mutex_lock(callback_finish_mutex);
 
@@ -1021,11 +1015,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	}
 
 	/* signal finish */
-	pthread_mutex_lock(device_mutex);
-
 	callback_finish_mutex = jack_midiin->callback_finish_mutex;
-
-	pthread_mutex_unlock(device_mutex);
 	
 	pthread_mutex_lock(callback_finish_mutex);
 

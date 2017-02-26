@@ -122,7 +122,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of seek soundcard\0",
@@ -138,7 +138,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The amount of steps to seek.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("steps\0",
 				 "steps\0",
@@ -156,7 +156,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The notation's move-forward.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_boolean("move-forward\0",
 				    "move forward\0",

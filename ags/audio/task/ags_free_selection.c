@@ -116,7 +116,7 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("notation\0",
 				   "notation of free selection\0",

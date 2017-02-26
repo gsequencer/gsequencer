@@ -37,6 +37,8 @@
 #define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 #define AGS_EFFECT_LINE_COLUMNS_COUNT (2)
+#define AGS_EFFECT_LINE_SEPARATOR_FILENAME "ags-effect-line-separator-filename\0"
+#define AGS_EFFECT_LINE_SEPARATOR_EFFECT "ags-effect-line-separator-effect\0"
 
 typedef struct _AgsEffectLine AgsEffectLine;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
@@ -63,6 +65,8 @@ struct _AgsEffectLine
   GtkLabel *label;
   
   GtkTable *table;
+
+  GList *queued_drawing;
 };
 
 struct _AgsEffectLineClass
@@ -97,6 +101,8 @@ void ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 void ags_effect_line_map_recall(AgsEffectLine *effect_line,
 				guint output_pad_start);
 GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
+
+gboolean ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);
 

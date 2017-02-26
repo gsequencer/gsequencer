@@ -130,7 +130,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope\0",
 				   "scope of set buffer size\0",
@@ -146,7 +146,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    *
    * The tact to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_double("tact\0",
 				   "tact\0",

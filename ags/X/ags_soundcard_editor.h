@@ -48,8 +48,7 @@ struct _AgsSoundcardEditor
   GObject *soundcard;
   GObject *soundcard_thread;
   
-  GtkComboBoxText *backend;
-  
+  GtkComboBoxText *backend;  
   GtkComboBoxText *card;
   
   GtkHBox *jack_hbox;

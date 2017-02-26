@@ -118,7 +118,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("notation\0",
 				   "notation of add note\0",
@@ -134,7 +134,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("note\0",
 				   "note of add note\0",
@@ -150,7 +150,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The notation's use-selection-list.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("use-selection-list\0",
 				     "use selection list\0",

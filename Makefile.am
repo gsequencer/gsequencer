@@ -2,7 +2,6 @@
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
-
 AUTOMAKE_OPTIONS = foreign
 # SUBDIRS = . docs/reference/ags
 
@@ -31,7 +30,7 @@ bin_PROGRAMS = gsequencer midi2xml
 libgsequencerdir = $(libdir)/gsequencer
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
-EXTRA_DIST = config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1
+EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1
 
 EXTRA_DIST += \
 	docs/reference/libags/libags-sections.txt \
@@ -50,7 +49,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libags.pc libags_audio.pc libags_gui.pc
 # pkgconfig_DATA += libgsequencer.pc
 
-EXTRA_DIST += libags.pc.in libags_audio.pc.in libags_gui.pc.in
+EXTRA_DIST += libags.pc.in libags_audio.pc.in libags_gui.pc.in libgsequencer.pc.in
 # EXTRA_DIST += libgsequencer.pc.in
 
 # desktop file
@@ -78,6 +77,9 @@ EXTRA_DIST += docs/reference/libags_audio/libags_audio-overrides.txt  docs/refer
 
 EXTRA_DIST += docs/reference/libags_gui/git.mk docs/reference/libags_gui/gtk-doc.make docs/reference/libags_gui/Makefile.am docs/reference/libags_gui/Makefile.in
 EXTRA_DIST += docs/reference/libags_gui/libags_gui-overrides.txt docs/reference/libags_gui/libags_gui-sections.txt docs/reference/libags_gui/libags_gui.types docs/reference/libags_gui/libags_gui.xml
+
+EXTRA_DIST += docs/reference/libgsequencer/git.mk docs/reference/libgsequencer/gtk-doc.make docs/reference/libgsequencer/Makefile.am docs/reference/libgsequencer/Makefile.in
+EXTRA_DIST += docs/reference/libgsequencer/libgsequencer-overrides.txt docs/reference/libgsequencer/libgsequencer.xml
 
 # EXTRA_DIST += docs/reference/libgsequencer
 
@@ -144,12 +146,14 @@ devdoclistings = \
 	docs/listings/pcm_info.c \
 	docs/listings/pull_thread.c \
 	docs/listings/recycling.c \
-	docs/listings/start_thread.c
+	docs/listings/start_thread.c \
+	docs/listings/thread_application_context.c
 
 devdocimages = \
 	$(top_srcdir)/docs/images/AGS_iterator.png \
 	$(top_srcdir)/docs/images/AGS_recall_lifecycle.png \
-	$(top_srcdir)/docs/images/AGS_super-threaded.png
+	$(top_srcdir)/docs/images/AGS_super-threaded.png \
+	$(top_srcdir)/docs/images/AGS_linking.png
 
 userdocimages = \
 	$(top_srcdir)/docs/images/ags_automation_window_dssi_xsynth.png \
@@ -178,7 +182,7 @@ EXTRA_DIST += \
 	$(top_srcdir)/ags/audio/midi/ags_midi_file.dtd \
 	$(top_srcdir)/ags/file/ags_file.dtd \
 	$(top_srcdir)/ags/X/file/ags_simple_file.dtd \
-	$(top_srcdir)/ags.xsl $(top_srcdir)/ags/object/ags_marshallers.list
+	$(top_srcdir)/ags.xsl $(top_srcdir)/ags-simple.xsl $(top_srcdir)/ags/object/ags_marshallers.list
 
 # libraries and gsequencer
 libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
@@ -641,6 +645,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_ladspa_run.h \
 	ags/audio/ags_recall_lv2.h \
 	ags/audio/ags_recall_lv2_run.h \
+	ags/audio/ags_recall_adaptor_run.h \
 	ags/audio/ags_recall_recycling_dummy.h \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
@@ -692,6 +697,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_ladspa_run.c \
 	ags/audio/ags_recall_lv2.c \
 	ags/audio/ags_recall_lv2_run.c \
+	ags/audio/ags_recall_adaptor_run.c \
 	ags/audio/ags_recall_recycling.c \
 	ags/audio/ags_recall_recycling_dummy.c \
 	ags/audio/ags_recycling.c \
@@ -765,6 +771,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
+	ags/plugin/ags_lv2_option_manager.h \
 	ags/plugin/ags_lv2_uri_map_manager.h \
 	ags/plugin/ags_lv2_urid_manager.h \
 	ags/plugin/ags_lv2_worker_manager.h \
@@ -788,6 +795,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
+	ags/plugin/ags_lv2_option_manager.c \
 	ags/plugin/ags_lv2_uri_map_manager.c \
 	ags/plugin/ags_lv2_urid_manager.c \
 	ags/plugin/ags_lv2_worker_manager.c \
@@ -1024,6 +1032,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_cancel_channel.h \
 	ags/audio/task/ags_cancel_recall.h \
 	ags/audio/task/ags_change_soundcard.h \
+	ags/audio/task/ags_clear_buffer.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
 	ags/audio/task/ags_init_audio.h \
@@ -1085,6 +1094,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_cancel_channel.c \
 	ags/audio/task/ags_cancel_recall.c \
 	ags/audio/task/ags_change_soundcard.c \
+	ags/audio/task/ags_clear_buffer.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
 	ags/audio/task/ags_init_audio.c \
@@ -1167,8 +1177,6 @@ deprecated_libgsequencer_h_sources =
 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
-	ags/X/ags_audio_connection_collection_editor_callbacks.h \
-	ags/X/ags_audio_connection_collection_editor.h \
 	ags/X/ags_automation_editor_callbacks.h \
 	ags/X/ags_automation_editor.h \
 	ags/X/ags_automation_window_callbacks.h \
@@ -1191,6 +1199,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_effect_line.h \
 	ags/X/ags_effect_pad_callbacks.h \
 	ags/X/ags_effect_pad.h \
+	ags/X/ags_export_soundcard_callbacks.h \
+	ags/X/ags_export_soundcard.h \
 	ags/X/ags_export_window_callbacks.h \
 	ags/X/ags_export_window.h \
 	ags/X/ags_generic_preferences_callbacks.h \
@@ -1227,6 +1237,12 @@ libgsequencer_h_sources = \
 	ags/X/ags_midi_preferences_callbacks.h \
 	ags/X/ags_navigation_callbacks.h \
 	ags/X/ags_navigation.h \
+	ags/X/ags_output_collection_editor_callbacks.h \
+	ags/X/ags_output_collection_editor.h \
+	ags/X/ags_output_editor_callbacks.h \
+	ags/X/ags_output_editor.h \
+	ags/X/ags_output_listing_editor_callbacks.h \
+	ags/X/ags_output_listing_editor.h \
 	ags/X/ags_pad_callbacks.h \
 	ags/X/ags_pad_editor_callbacks.h \
 	ags/X/ags_pad_editor.h \
@@ -1259,8 +1275,6 @@ deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
-	ags/X/ags_audio_connection_collection_editor_callbacks.c \
-	ags/X/ags_audio_connection_collection_editor.c \
 	ags/X/ags_automation_editor.c \
 	ags/X/ags_automation_editor_callbacks.c \
 	ags/X/ags_automation_window.c \
@@ -1283,6 +1297,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_effect_line_callbacks.c \
 	ags/X/ags_effect_pad.c \
 	ags/X/ags_effect_pad_callbacks.c \
+	ags/X/ags_export_soundcard.c \
+	ags/X/ags_export_soundcard_callbacks.c \
 	ags/X/ags_export_window.c \
 	ags/X/ags_export_window_callbacks.c \
 	ags/X/ags_generic_preferences.c \
@@ -1319,6 +1335,12 @@ libgsequencer_c_sources = \
 	ags/X/ags_midi_preferences_callbacks.c \
 	ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c \
+	ags/X/ags_output_collection_editor_callbacks.c \
+	ags/X/ags_output_collection_editor.c \
+	ags/X/ags_output_editor_callbacks.c \
+	ags/X/ags_output_editor.c \
+	ags/X/ags_output_listing_editor_callbacks.c \
+	ags/X/ags_output_listing_editor.c \
 	ags/X/ags_pad.c \
 	ags/X/ags_pad_callbacks.c \
 	ags/X/ags_pad_editor.c \
@@ -1669,34 +1691,37 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
+	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/styles
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/$(PACKAGE_VERSION)/,stylesheet/ags-xsl/midi-xml/}
-	cp $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
-	cp $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
-	cp $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
-	cp $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	cp $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	cp $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
-	cp $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	cp $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.rc $(DESTDIR)/$(datadir)/gsequencer/styles/ags.rc
+	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
+	install -c -p -m 644 $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
 install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
-	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
-	cp $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
-	cp $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
+	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 
 install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	cp -rv $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	cp -rv $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	cp -rv $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
 	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
 	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui

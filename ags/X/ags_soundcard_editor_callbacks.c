@@ -355,7 +355,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = window->soundcard;
+  soundcard = soundcard_editor->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -400,7 +400,7 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = window->soundcard;
+  soundcard = soundcard_editor->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -447,7 +447,7 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
-  soundcard = window->soundcard;
+  soundcard = soundcard_editor->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 

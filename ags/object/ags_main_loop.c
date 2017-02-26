@@ -39,6 +39,7 @@ void ags_main_loop_class_init(AgsMainLoopInterface *interface);
 enum {
   INTERRUPT,
   MONITOR,
+  CHANGE_FREQUENCY,
   LAST_SIGNAL,
 };
 
@@ -105,6 +106,25 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
 		 g_cclosure_user_marshal_BOOLEAN__UINT_POINTER,
 		 G_TYPE_BOOLEAN, 2,
 		 G_TYPE_UINT, G_TYPE_POINTER);
+
+  /**
+   * AgsMainLoop::change-frequency:
+   * @main_loop: the #AgsMainLoop
+   * @frequency: the new frequency
+   *
+   * Change frequency.
+   * 
+   * Since: 0.7.122.2
+   */
+  main_loop_signals[CHANGE_FREQUENCY] =
+    g_signal_new("change-frequency\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMainLoopInterface, change_frequency),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__DOUBLE,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_DOUBLE);
 }
 
 /**
@@ -348,3 +368,21 @@ ags_main_loop_monitor(AgsMainLoop *main_loop,
   return(has_monitor);
 }
 
+/**
+ * ags_main_loop_change_frequency:
+ * @main_loop: the #AgsMainLoop
+ * @frequency: the new frequency
+ *
+ * Change frequency.
+ *
+ * Since: 0.7.122.2
+ */
+void
+ags_main_loop_change_frequency(AgsMainLoop *main_loop,
+			       gdouble frequency)
+{
+  g_signal_emit(main_loop,
+		main_loop_signals[CHANGE_FREQUENCY],
+		0,
+		frequency);
+}

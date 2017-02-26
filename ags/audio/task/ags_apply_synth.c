@@ -137,7 +137,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("start-channel\0",
 				   "start channel of apply synth\0",
@@ -153,7 +153,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The count of channels to apply.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("count\0",
 				 "count of channels\0",
@@ -171,7 +171,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The attack of audio data.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("attack\0",
 				 "attack of audio data\0",
@@ -189,7 +189,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The frame count of audio data.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("frame-count\0",
 				 "frame count of audio data\0",
@@ -207,7 +207,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The frequency of wave.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("frequency\0",
 				 "frequency of wave\0",
@@ -225,7 +225,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The phase of wave.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("phase\0",
 				 "phase of wave\0",
@@ -243,7 +243,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The start frequency as base of wave.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("start-frequency\0",
 				 "start frequency\0",
@@ -261,7 +261,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The volume of wave.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("volume\0",
 				 "volume of wave\0",
@@ -279,7 +279,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The loop start of audio data.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("loop-start\0",
 				 "loop start of audio data\0",
@@ -297,7 +297,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The loop end of audio data.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("loop-end\0",
 				 "loop end of audio data\0",

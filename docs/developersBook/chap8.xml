@@ -24,7 +24,7 @@
       ags_audio_signal_stream_safe_resize()
     </listitem>
     <listitem>
-      ags_audio_signal_stream_add()
+      ags_audio_signal_add_stream()
     </listitem>
   </itemizedlist>
 

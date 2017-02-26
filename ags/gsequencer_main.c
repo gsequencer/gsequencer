@@ -21,6 +21,7 @@
 #include <glib-object.h>
 
 #include <gdk/gdk.h>
+#include <pango/pangocairo.h>
 
 #include <X11/Xlib.h>
 
@@ -121,6 +122,7 @@ extern AgsApplicationContext *ags_application_context;
 
 extern volatile gboolean ags_show_start_animation;
 
+#ifndef AGS_USE_TIMER
 void
 ags_signal_handler(int signr)
 {
@@ -136,7 +138,9 @@ ags_signal_handler(int signr)
     //    }
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
 {
@@ -152,6 +156,7 @@ ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
     pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
   //  signal(sig, SIG_IGN);
 }
+#endif
 
 static void
 ags_signal_cleanup()
@@ -164,17 +169,19 @@ ags_start_animation_thread(void *ptr)
 {
   GtkWidget *window;
   GdkRectangle rectangle;
-  
-  cairo_t *cr;
+
+  cairo_t *gdk_cr, *cr;
   cairo_surface_t *surface;
-  
+
   AgsLog *log;
 
   gchar *filename;
+  unsigned char *bg_data, *image_data;
   
   /* create a buffer suitable to image size */
   GList *list, *start;
 
+  guint image_size;
   gdouble x0, y0;
   guint i, nth;
   
@@ -186,22 +193,33 @@ ags_start_animation_thread(void *ptr)
   rectangle.y = 0;
   rectangle.width = 800;
   rectangle.height = 450;
+
+  image_size = 4 * 800 * 450;
   
-  cr = gdk_cairo_create(window->window);
+  gdk_cr = gdk_cairo_create(window->window);
   
   filename = g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png\0");
 
   surface = cairo_image_surface_create_from_png(filename);
+  image_data = cairo_image_surface_get_data(surface);
+  
+  bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
+
+  if(image_data != NULL){
+    memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
+  }
+  
+  cr = cairo_create(surface);
   
   cairo_select_font_face(cr, "Georgia\0",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, (gdouble) 11.0);
-
+  
   gdk_window_show(window->window);
   
   gdk_threads_leave();
 
-  log = ags_log_get_instance();    
+  log = ags_log_get_instance();  
   nth = 0;
   
   while(g_atomic_int_get(&(ags_show_start_animation))){
@@ -211,6 +229,10 @@ ags_start_animation_thread(void *ptr)
     i = g_list_length(start);
 
     if(i > nth){
+      if(image_data != NULL){
+	memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
+      }
+      
       cairo_set_source_surface(cr, surface, 0, 0);
       cairo_paint(cr);
       cairo_surface_flush(surface);
@@ -226,8 +248,9 @@ ags_start_animation_thread(void *ptr)
 	
 	cairo_move_to(cr,
 		      x0, y0);
+
 	cairo_show_text(cr, list->data);
-	
+
 	list = list->next;
 	y0 -= 12.0;
       }
@@ -235,12 +258,18 @@ ags_start_animation_thread(void *ptr)
       cairo_move_to(cr,
 		    x0, 4.0 + (i + 1) * 12.0);
       cairo_show_text(cr, "...\0");
-
-      gdk_flush();
+      
       nth = g_list_length(start);
-    }    
+    }
+
+    cairo_set_source_surface(gdk_cr, surface, 0, 0);
+    cairo_paint(gdk_cr);
+    cairo_surface_flush(surface);
+    gdk_flush();
   }
 
+  free(bg_data);
+  
   gdk_threads_enter();
 
   gtk_widget_destroy(window);
@@ -267,6 +296,7 @@ ags_start_animation(pthread_t *thread)
 		 ags_start_animation_thread, window);
 }
 
+#ifndef AGS_USE_TIMER
 void
 ags_setup(int argc, char **argv)
 {
@@ -281,7 +311,6 @@ ags_setup(int argc, char **argv)
   struct passwd *pw;
 
   gchar *blacklist_filename;
-  gchar *rc_filename;
   gchar *filename;
   
   uid_t uid;
@@ -424,20 +453,17 @@ ags_setup(int argc, char **argv)
   ags_application_context->argc = argc;
   ags_application_context->argv = argv;
 
+  ags_application_context_register_types(ags_application_context);
+
   /* fix cross-references in managers */
   lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
-  
-  /* parse rc file */
-  rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
-				pw->pw_dir,
-				AGS_DEFAULT_DIRECTORY);
-  gtk_rc_parse(rc_filename);
-  g_free(rc_filename);
 
   g_atomic_int_set(&(ags_show_start_animation),
 		   FALSE);
 }
+#endif
 
+#ifndef AGS_USE_TIMER
 void
 ags_launch(gboolean single_thread)
 {
@@ -578,7 +604,9 @@ ags_launch(gboolean single_thread)
     ags_thread_start((AgsThread *) single_thread);
   }
 }
+#endif
 
+#ifndef AGS_USE_TIMER
 void
 ags_launch_filename(gchar *filename,
 		    gboolean single_thread)
@@ -747,7 +775,9 @@ ags_launch_filename(gchar *filename,
     		 NULL);
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 timer_t*
 ags_timer_setup()
 {
@@ -782,11 +812,13 @@ ags_timer_setup()
   if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, timer_id) == -1){
     perror("timer_create\0");
     exit(EXIT_FAILURE);
-  }
+  }  
 
   return(timer_id);
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_start(timer_t *timer_id)
 {
@@ -807,9 +839,11 @@ ags_timer_start(timer_t *timer_id)
   if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
     perror("sigprocmask\0");
     exit(EXIT_FAILURE);
-  }
+  }  
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_launch(timer_t *timer_id,
 		 gboolean single_thread)
@@ -954,7 +988,9 @@ ags_timer_launch(timer_t *timer_id,
     ags_thread_start((AgsThread *) single_thread);
   }
 }
+#endif
 
+#ifdef AGS_USE_TIMER
 void
 ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 			  gboolean single_thread)
@@ -1128,6 +1164,7 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 		 NULL);
   }
 }
+#endif
 
 void
 ags_show_file_error(gchar *filename,
@@ -1160,6 +1197,7 @@ main(int argc, char **argv)
   gchar *str;
 
   gboolean single_thread_enabled;
+  gboolean builtin_theme_disabled;
   guint i;
 
   struct sched_param param;
@@ -1168,7 +1206,8 @@ main(int argc, char **argv)
   struct passwd *pw;
 
   gchar *wdir, *config_file;
-
+  gchar *rc_filename;
+  
   uid_t uid;
   int result;
 
@@ -1182,6 +1221,7 @@ main(int argc, char **argv)
   putenv("LANG=C\0");
 
   single_thread_enabled = FALSE;
+  builtin_theme_disabled = FALSE;
   
   //  mtrace();
   atexit(ags_signal_cleanup);
@@ -1233,10 +1273,11 @@ main(int argc, char **argv)
     if(!strncmp(argv[i], "--help\0", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n\0");
 
-      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
 	     "Report bugs to <jkraehemann@gmail.com>\n\0",
 	     "--filename file     open file\0",
-	     "--single-thread     run in single thread mode\0",     
+	     "--single-thread     run in single thread mode\0",
+	     "--no-builtin-theme  disable built-in theme\0",
 	     "--help              display this help and exit\0",
 	     "--version           output version information and exit\0");
       
@@ -1245,7 +1286,7 @@ main(int argc, char **argv)
       printf("GSequencer %s\n\n\0", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n\0",
-	     "Copyright (C) 2005-2015 Joël Krähemann\0",
+	     "Copyright (C) 2005-2017 Joël Krähemann\0",
 	     "This is free software; see the source for copying conditions.  There is NO\0",
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\0");
       
@@ -1254,6 +1295,8 @@ main(int argc, char **argv)
       exit(0);
     }else if(!strncmp(argv[i], "--single-thread\0", 16)){
       single_thread_enabled = TRUE;
+    }else if(!strncmp(argv[i], "--no-builtin-theme\0", 19)){
+      builtin_theme_disabled = TRUE;
     }else if(!strncmp(argv[i], "--filename\0", 11)){
       filename = argv[i + 1];
       i++;
@@ -1261,15 +1304,51 @@ main(int argc, char **argv)
   }
 
   XInitThreads();
+  
+  uid = getuid();
+  pw = getpwuid(uid);
+    
+  /* parse rc file */
+  if(!builtin_theme_disabled){
+    rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
+				  pw->pw_dir,
+				  AGS_DEFAULT_DIRECTORY);
 
+    if(!g_file_test(rc_filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(rc_filename);
+      rc_filename = g_strdup_printf("%s%s\0",
+				    DESTDIR,
+				    "/gsequencer/styles/ags.rc\0");
+    }
+  
+    gtk_rc_parse(rc_filename);
+    g_free(rc_filename);
+  }
+  
   /**/
   LIBXML_TEST_VERSION;
 
   //ao_initialize();
-  
+
   gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
+
+  if(!builtin_theme_disabled){
+    g_object_set(gtk_settings_get_default(),
+		 "gtk-theme-name\0", "Raleigh\0",
+		 NULL);
+    g_signal_handlers_block_matched(gtk_settings_get_default(),
+				    G_SIGNAL_MATCH_DETAIL,
+				    g_signal_lookup("set-property\0",
+						    GTK_TYPE_SETTINGS),
+				    g_quark_from_string("gtk-theme-name\0"),
+				    NULL,
+				    NULL,
+				    NULL);
+  }
+  
   ipatch_init();
   //  g_log_set_fatal_mask("GLib-GObject\0", //G_LOG_DOMAIN,
   //		       G_LOG_LEVEL_CRITICAL);
@@ -1282,9 +1361,6 @@ main(int argc, char **argv)
   ags_start_animation(animation_thread);
   
   /* setup */
-  uid = getuid();
-  pw = getpwuid(uid);
-
   wdir = g_strdup_printf("%s/%s\0",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
@@ -1323,6 +1399,7 @@ main(int argc, char **argv)
   }
   
   ags_application_context_quit(ags_application_context);
+  g_free(rc_filename);
   
   //  muntrace();
 

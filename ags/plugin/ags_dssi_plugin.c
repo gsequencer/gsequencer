@@ -469,6 +469,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  /* integer */
 	  if(LADSPA_IS_HINT_INTEGER(hint_descriptor)){
 	    port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
+	    port->scale_steps = range_hint->UpperBound - range_hint->LowerBound;
 	  }
 
 	  /* logarithmic */

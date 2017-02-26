@@ -116,7 +116,11 @@ ags_save_file_class_init(AgsSaveFileClass *save_file)
    *
    * The assigned #AgsFile
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_object("file\0",
 				   "file of save file\0",

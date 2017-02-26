@@ -118,7 +118,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel\0",
 				   "channel of add effect\0",
@@ -134,7 +134,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_string("filename\0",
 				   "the filename\0",
@@ -150,7 +150,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned effect.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_string("effect\0",
 				   "the effect\0",

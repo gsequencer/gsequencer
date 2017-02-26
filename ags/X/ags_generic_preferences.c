@@ -191,7 +191,12 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
 
   config = ags_config_get_instance();
-  
+
+  ags_config_set_value(config,
+		       AGS_CONFIG_GENERIC,
+		       "disable-feature\0",
+		       "experimental\0");
+
   if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
     ags_config_set_value(config,
 			 AGS_CONFIG_GENERIC,

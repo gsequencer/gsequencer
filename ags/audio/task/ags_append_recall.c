@@ -122,7 +122,7 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
    *
    * The assigned #AgsAudioLoop
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-loop\0",
 				   "audio loop of append recall\0",
@@ -138,7 +138,7 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
    *
    * The assigned #AgsPlayback
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("playback\0",
 				   "playback of append recall\0",

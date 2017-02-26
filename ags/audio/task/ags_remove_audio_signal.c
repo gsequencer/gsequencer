@@ -119,7 +119,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsRecycling
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recycling\0",
 				   "recycling of remove audio signal\0",
@@ -135,7 +135,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-signal\0",
 				   "audio signal of remove audio signal\0",

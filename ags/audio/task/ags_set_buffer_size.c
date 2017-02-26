@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_set_buffer_size.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
@@ -131,7 +132,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope\0",
 				   "scope of set buffer size\0",
@@ -147,7 +148,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The buffer size to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("buffer-size\0",
 				 "buffer size\0",
@@ -371,6 +372,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   
   GList *list;
 
+  gdouble thread_frequency;
   guint channels;
   guint samplerate;
   guint buffer_size;
@@ -378,46 +380,56 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
   
-  /*  */
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
 			    &samplerate,
 			    &buffer_size,
 			    &format);
-
-  ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-			    channels,
-			    samplerate,
-			    set_buffer_size->buffer_size,
-			    format);
-
+    
   /* reset soundcards */
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  while(list != NULL){
-    if(list->data != soundcard){
-      guint target_channels;
-      guint target_samplerate;
-      guint target_buffer_size;
-      guint target_format;
+  if(soundcard == list->data){
+    /* reset soundcards if applied to first soundcard */
+    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+			      channels,
+			      samplerate,
+			      set_buffer_size->buffer_size,
+			      format);
 
-      ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
-				&target_channels,
-				&target_samplerate,
-				&target_buffer_size,
-				&target_format);
+    while(list != NULL){
+      if(list->data != soundcard){
+	guint target_channels;
+	guint target_samplerate;
+	guint target_buffer_size;
+	guint target_format;
+
+	ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
+				  &target_channels,
+				  &target_samplerate,
+				  &target_buffer_size,
+				  &target_format);
       
 
-      ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-				target_channels,
-				target_samplerate,
-				set_buffer_size->buffer_size * (target_samplerate / samplerate),
-				target_format);
+	ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				  target_channels,
+				  target_samplerate,
+				  set_buffer_size->buffer_size * (target_samplerate / samplerate),
+				  target_format);
+      }
+
+      list = list->next;
     }
+    
+    /* reset thread frequency */
+    thread_frequency = samplerate / set_buffer_size->buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-    list = list->next;
+    ags_main_loop_change_frequency(AGS_MAIN_LOOP(application_context->main_loop),
+				   thread_frequency);
+  }else{
+    g_warning("buffer size can only adjusted of your very first soundcard\0");
   }
-
+  
   /* AgsAudio */
   list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 

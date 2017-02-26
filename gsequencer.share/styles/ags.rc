@@ -1,0 +1,110 @@
+# GTK theme
+pixmap_path "/usr/share/icons/hicolor"
+
+gtk-icon-theme-name = "gnome"
+gtk_color_scheme = "fg_color:#c0ddff\nbg_color:#203f4c"
+gtk_color_scheme = "base_color:#000000"
+gtk_color_scheme = "text_color:#ddfcff"
+gtk_color_scheme = "selected_fg_color:#220200\nselected_bg_color:#000020"
+gtk_color_scheme = "tooltip_bg_color:#000000\ntooltip_fg_color: #c0ddff"
+
+style "default"
+{	
+	GtkScrollbar::has-backward-stepper = 1
+	GtkScrollbar::has-forward-stepper = 1
+	GtkScrollbar::stepper-size = 14
+
+	GtkScale::slider-length = 31
+	GtkScale::slider-width = 14
+
+	engine "clearlooks" {}
+}
+
+style "default_widget" = "default"
+{
+	bg[PRELIGHT] = { 0.25, 0.25, 1.0 }
+	fg[PRELIGHT] = { 0.125, 0.5, 1.0 }
+	bg[ACTIVE] = { 0.0, 0.0, 0.125 }
+	fg[ACTIVE] = { 0.25, 0.875, 1.0 }
+	bg[NORMAL] = { 0.125, 0.25, 0.3 }
+	fg[NORMAL] = { 0.66, 0.87, 1.0 }
+	bg[INSENSITIVE] = { 0.25, 0.25, 0.25 }
+	fg[INSENSITIVE] = { 0.0, 0.0, 1.0 }
+
+	base[NORMAL] = { 0.0, 0.0, 0.0 }
+	base[ACTIVE] = { 0.0, 0.0, 0.0 }
+
+	text[NORMAL] = { 0.87, 0.99, 1.0 }
+	text[ACTIVE] = { 0.13, 0.01, 0.0 }
+}
+
+style "inverse_widget" = "default"
+{
+	bg[PRELIGHT] = { 0.125, 0.5, 1.0 }
+	fg[PRELIGHT] = { 0.0, 0.0, 1.0 }
+	bg[ACTIVE] = { 0.25, 0.875, 1.0 }
+	fg[ACTIVE] = { 0.0, 0.0, 0.125 }
+	bg[NORMAL] = { 0.66, 0.87, 1.0 }
+	fg[NORMAL] = { 0.125, 0.25, 0.3 }
+	bg[INSENSITIVE] = { 0.0, 0.0, 1.0 }
+	fg[INSENSITIVE] = { 0.25, 0.25, 0.25 }
+
+	base[NORMAL] = { 1.0, 1.0, 1.0 }
+	base[ACTIVE] = { 1.0, 1.0, 1.0 }
+
+	text[NORMAL] = { 0.13, 0.01, 0.0 }
+	text[ACTIVE] = { 0.87, 0.99, 1.0 }
+}
+
+style "scale_widget" = "inverse_widget"
+{
+	fg[NORMAL] = { 0.75, 0.75, 1.0 }
+	fg[ACTIVE] = { 0.66, 0.87, 1.0 }
+}
+
+style "main_window" = "default_widget"
+{
+	bg[NORMAL] = { 0.125, 0.25, 0.3 }
+	fg[NORMAL] = { 0.87, 0.99, 1.0 }
+}
+
+widget_class "AgsWindow*" style "main_window"
+widget_class "AgsAutomationWindow*" style "main_window"
+widget_class "GtkWindow*" style "main_window"
+widget_class "AgsPreferences*" style "main_window"
+widget_class "AgsExportWindow*" style "main_window"
+widget_class "AgsMachineEditor*" style "main_window"
+widget_class "AgsMidiDialog*" style "main_window"
+widget_class "AgsConnectionEditor*" style "main_window"
+widget_class "AgsMachineSelection*" style "main_window"
+widget_class "AgsPluginBrowser*" style "main_window"
+widget_class "Gtk*Dialog*" style "main_window"
+
+widget_class "*GtkLabel*" style "default_widget"
+
+widget_class "*GtkMenuShell*" style "inverse_widget"
+widget_class "*GtkHandleBox*" style "default_widget"
+
+widget_class "*AgsToolbar*" style "inverse_widget"
+widget_class "*AgsAutomationToolbar*" style "inverse_widget"
+widget_class "*AgsMenuBar*" style "inverse_widget"
+widget_class "*AgsNotebook*" style "default_widget"
+widget_class "*AgsNaviation*" style "inverse_widget"
+
+widget_class "*GtkMenu*" style "inverse_widget"
+widget_class "*Gtk*Scale*" style "scale_widget"
+widget_class "*Gtk*Scrollbar*" style "inverse_widget"
+widget_class "*GtkButton*" style "inverse_widget"
+widget_class "*GtkToggleButton*" style "inverse_widget"
+widget_class "*GtkRadioButton*" style "default_widget"
+widget_class "*GtkCheckButton*" style "default_widget"
+widget_class "*GtkMenuToolButton*" style "default_widget"
+widget_class "*GtkEntry*" style "default_widget"
+widget_class "*GtkTextView*" style "default_widget"
+widget_class "*AgsLed*" style "inverse_widget"
+widget_class "*AgsDial*" style "inverse_widget"
+widget_class "*Ags*Indicator*" style "inverse_widget"
+widget_class "*GtkArrow" style "default_widget"
+widget_class "*GtkComboBox*" style "inverse_widget"
+
+widget "*.ags-navigation-expander" style "default_widget"

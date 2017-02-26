@@ -120,7 +120,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsRecycling
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recycling\0",
 				   "recycling of add audio signal\0",
@@ -136,7 +136,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-signal\0",
 				   "audio signal of add audio signal\0",
@@ -152,7 +152,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of add audio signal\0",
@@ -168,7 +168,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsRecallID
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recall-id\0",
 				   "audio signal of add audio signal\0",
@@ -184,7 +184,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The audio signal's flags.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec =  g_param_spec_uint("audio-signal-flags\0",
 				  "audio signal flags of effect\0",

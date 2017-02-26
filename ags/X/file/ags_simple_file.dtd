@@ -46,6 +46,7 @@
 <!ATTLIST ags-sf-machine
 	  id                      CDATA     #REQUIRED
 	  type                    CDATA     #REQUIRED
+	  name                    CDATA     #REQUIRED
 	  filename                CDATA     #IMPLIED
 	  preset                  CDATA     #IMPLIED
 	  instrument              CDATA     #IMPLIED

@@ -740,7 +740,7 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
 
   if(distributed_manager != NULL){
     ags_distributed_manager_unregister_sequencer(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
-						 sequencer);
+						 jack_midiin);
   }
 
   /* remove */

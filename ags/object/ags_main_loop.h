@@ -60,6 +60,9 @@ struct _AgsMainLoopInterface
 		    guint time_cycle, guint *time_spent);
   gboolean (*monitor)(AgsMainLoop *main_loop,
 		      guint time_cycle, guint *time_spent);
+
+  void (*change_frequency)(AgsMainLoop *main_loop,
+			   gdouble frequency);
 };
 
 GType ags_main_loop_get_type();
@@ -83,5 +86,8 @@ void ags_main_loop_interrupt(AgsMainLoop *main_loop,
 			     guint time_cycle, guint *time_spent);
 gboolean ags_main_loop_monitor(AgsMainLoop *main_loop,
 			       guint time_cycle, guint *time_spent);
+
+void ags_main_loop_change_frequency(AgsMainLoop *main_loop,
+				    gdouble frequency);
 
 #endif /*__AGS_MAIN_LOOP_H__*/

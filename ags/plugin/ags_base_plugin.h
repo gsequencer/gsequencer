@@ -57,6 +57,7 @@ typedef enum{
   AGS_PORT_DESCRIPTOR_SAMPLERATE      = 1 << 11,
   AGS_PORT_DESCRIPTOR_BOUNDED_BELOW   = 1 << 12,
   AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE   = 1 << 13,
+  AGS_PORT_DESCRIPTOR_UI_NOTIFICATION = 1 << 14,
 }AgsPortDescriptorFlags;
 
 struct _AgsBasePlugin
@@ -77,6 +78,14 @@ struct _AgsBasePlugin
   void *plugin_descriptor;
   void *plugin_handle;
 
+  gchar *ui_filename;
+  gchar *ui_effect;
+  
+  guint ui_effect_index;
+  void *ui_plugin_so;
+  void *ui_plugin_descriptor;
+  void *ui_plugin_handle;
+  
   GObject *ui_plugin;
 };
 
@@ -109,7 +118,7 @@ struct _AgsPortDescriptor
   gchar *port_name;
   gchar *port_symbol;
 
-  guint scale_steps;
+  gint scale_steps;
   gchar **scale_points;
   float *scale_value;
   
@@ -128,6 +137,8 @@ void ags_port_descriptor_free(AgsPortDescriptor *port_descriptor);
 
 GList* ags_base_plugin_find_filename(GList *base_plugin, gchar *filename);
 GList* ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect);
+
+GList* ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, guint ui_effect_index);
 
 GList* ags_base_plugin_sort(GList *base_plugin);
 

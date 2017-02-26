@@ -26,7 +26,8 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
-#include <ags/X/ags_audio_connection_collection_editor.h>
+#include <ags/X/ags_output_collection_editor.h>
+#include <ags/X/ags_output_listing_editor.h>
 
 void ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor);
 void ags_connection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -205,6 +206,13 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
     notebook = (GtkNotebook *) gtk_notebook_new();
   gtk_box_pack_start((GtkBox *) connection_editor->dialog.vbox, (GtkWidget*) notebook, TRUE, TRUE, 0);
 
+  /* output listing editor */
+  connection_editor->output_listing_editor_scrolled_window =
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_notebook_append_page(notebook,
+			   (GtkWidget *) scrolled_window,
+			   (GtkWidget *) gtk_label_new(g_strdup("output\0")));
+
   /* audio connection editor */
   connection_editor->output_connection_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
@@ -212,15 +220,15 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
 			   (GtkWidget *) scrolled_window,
 			   (GtkWidget *) gtk_label_new(g_strdup("connect output\0")));
 
-/* GtkButton's in GtkDialog->action_area  */
-connection_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->apply, FALSE, FALSE, 0);
+  /* GtkButton's in GtkDialog->action_area  */
+  connection_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->apply, FALSE, FALSE, 0);
 
-connection_editor->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->ok, FALSE, FALSE, 0);
+  connection_editor->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
+  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->ok, FALSE, FALSE, 0);
 
-connection_editor->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->cancel, FALSE, FALSE, 0);
+  connection_editor->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+  gtk_box_pack_start((GtkBox *) connection_editor->dialog.action_area, (GtkWidget *) connection_editor->cancel, FALSE, FALSE, 0);
 }
 
 void
@@ -281,8 +289,8 @@ ags_connection_editor_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_connection_editor_switch_page_callback), (gpointer) connection_editor);
 
   /* AgsConnectionEditor tabs */
+  ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_listing_editor));
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_connection_editor));
-
 
   /* AgsConnectionEditor buttons */
   g_signal_connect((GObject *) connection_editor->apply, "clicked\0",
@@ -303,6 +311,7 @@ ags_connection_editor_disconnect(AgsConnectable *connectable)
   connection_editor = AGS_CONNECTION_EDITOR(connectable);
 
   /* AgsConnectionEditor tabs */
+  ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->output_listing_editor));
   ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->output_connection_editor));
 }
 
@@ -313,6 +322,7 @@ ags_connection_editor_set_update(AgsApplicable *applicable, gboolean update)
 
   connection_editor = AGS_CONNECTION_EDITOR(applicable);
 
+  ags_applicable_set_update(AGS_APPLICABLE(connection_editor->output_listing_editor), update);
   ags_applicable_set_update(AGS_APPLICABLE(connection_editor->output_connection_editor), update);
 }
 
@@ -323,6 +333,7 @@ ags_connection_editor_apply(AgsApplicable *applicable)
 
   connection_editor = AGS_CONNECTION_EDITOR(applicable);
 
+  ags_applicable_apply(AGS_APPLICABLE(connection_editor->output_listing_editor));
   ags_applicable_apply(AGS_APPLICABLE(connection_editor->output_connection_editor));
 }
 
@@ -333,6 +344,7 @@ ags_connection_editor_reset(AgsApplicable *applicable)
 
   connection_editor = AGS_CONNECTION_EDITOR(applicable);
 
+  ags_applicable_reset(AGS_APPLICABLE(connection_editor->output_listing_editor));
   ags_applicable_reset(AGS_APPLICABLE(connection_editor->output_connection_editor));
 }
 
@@ -357,8 +369,13 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   g_value_init(&(output_connection_editor_child_parameter[0].value), G_TYPE_GTYPE);
   g_value_set_gtype(&(output_connection_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
 
+  /* AgsOutput listing editor */
+  connection_editor->output_listing_editor = ags_output_listing_editor_new(AGS_TYPE_OUTPUT);
+  gtk_scrolled_window_add_with_viewport(connection_editor->output_listing_editor_scrolled_window,
+					(GtkWidget *) connection_editor->output_listing_editor);
+
   /* AgsOutput connection editor */
-  connection_editor->output_connection_editor = ags_property_collection_editor_new(AGS_TYPE_AUDIO_CONNECTION_COLLECTION_EDITOR,
+  connection_editor->output_connection_editor = ags_property_collection_editor_new(AGS_TYPE_OUTPUT_COLLECTION_EDITOR,
 										   1,
 										   output_connection_editor_child_parameter);
   gtk_scrolled_window_add_with_viewport(connection_editor->output_connection_editor_scrolled_window,
@@ -369,6 +386,7 @@ void
 ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, AgsMachine *machine)
 {
   if(connection_editor->machine != NULL){
+    gtk_widget_destroy(GTK_WIDGET(connection_editor->output_listing_editor));
     gtk_widget_destroy(GTK_WIDGET(connection_editor->output_connection_editor));
   }
   

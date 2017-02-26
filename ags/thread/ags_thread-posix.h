@@ -73,6 +73,8 @@ typedef enum{
   AGS_THREAD_RECOVER_INTERRUPTED     = 1 << 14,
   AGS_THREAD_RESUME_INTERRUPTED      = 1 << 15,
   AGS_THREAD_TIMING                  = 1 << 16,
+  AGS_THREAD_INTERMEDIATE_PRE_SYNC   = 1 << 17,
+  AGS_THREAD_INTERMEDIATE_POST_SYNC  = 1 << 18,
 }AgsThreadFlags;
 
 typedef enum{

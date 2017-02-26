@@ -129,7 +129,7 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel\0",
 				   "channel of init channel\0",
@@ -145,7 +145,7 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    *
    * Do play pad.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("play-pad\0",
 				     "play pad\0",
@@ -161,7 +161,7 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    *
    * The effects do-playback.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-playback\0",
 				     "do playback\0",
@@ -177,7 +177,7 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    *
    * The effects do-sequencer.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-sequencer\0",
 				     "do sequencer\0",
@@ -193,7 +193,7 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    *
    * The effects do-notation.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-notation\0",
 				     "do notation\0",

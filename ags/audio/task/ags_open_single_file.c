@@ -127,7 +127,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel\0",
 				   "channel of open file\0",
@@ -143,7 +143,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of open file\0",
@@ -159,7 +159,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_string("filename\0",
 				   "the filename\0",
@@ -175,7 +175,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The start channel of within pad @channel.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("start-channel\0",
 				 "start channel\0",
@@ -193,7 +193,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    *
    * The audio channels count to read.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("audio-channels\0",
 				 "audio channels\0",

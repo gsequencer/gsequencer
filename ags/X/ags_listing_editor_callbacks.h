@@ -24,10 +24,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_listing_editor.h>
+#include <ags/audio/ags_audio.h>
 
-#include <ags/X/ags_machine.h>
-#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_listing_editor.h>
 
 int ags_listing_editor_parent_set_callback(GtkWidget *widget,
 					   GtkObject *old_parent,

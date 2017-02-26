@@ -160,15 +160,29 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 				y, y + 1);
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	gtk_table_attach_defaults(table,
-				  GTK_WIDGET(ags_lv2_browser_combo_box_boolean_controls_new()),
-				  1, 2,
-				  y, y + 1);
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_lv2_browser_combo_box_output_boolean_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}else{
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_lv2_browser_combo_box_boolean_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}
       }else{
-	gtk_table_attach_defaults(table,
-				  GTK_WIDGET(ags_lv2_browser_combo_box_controls_new()),
-				  1, 2,
-				  y, y + 1);
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_lv2_browser_combo_box_output_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}else{
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_lv2_browser_combo_box_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}
       }
 	
       y++;

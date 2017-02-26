@@ -533,6 +533,14 @@ ags_thread_set_property(GObject *gobject,
       thread->freq = freq;
       thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION));
       thread->tic_delay = 0;
+
+      if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	thread->tic_delay = thread->delay;
+      }else if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	thread->tic_delay = 1;
+      }else{
+	thread->tic_delay = 0;
+      }
     }
     break;
   default:
@@ -2286,9 +2294,35 @@ ags_thread_real_clock(AgsThread *thread)
 	 g_atomic_pointer_get(&(thread->parent)) != NULL){
 	AgsThread *chaos_tree;
 	
-	chaos_tree = ags_thread_chaos_tree(thread);
+	chaos_tree = main_loop;//ags_thread_chaos_tree(thread);
+
+	/* ordinary sync */
 	thread->tic_delay = chaos_tree->tic_delay;
 
+	if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	  if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	    thread->tic_delay = 0;
+	  }else{
+	    if(thread->tic_delay < thread->delay){
+	      thread->tic_delay++;
+	    }else{
+	      thread->tic_delay = 0;
+	    }
+	  }
+	}
+	
+	if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	  if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	    thread->tic_delay = 0;
+	  }else{
+	    if(thread->tic_delay > 0){
+	      thread->tic_delay--;
+	    }else{
+	      thread->tic_delay = thread->delay;
+	    }
+	  }
+	}
+	
 	g_atomic_int_or(&(thread->flags),
 			AGS_THREAD_SYNCED_FREQ);
       }
@@ -2504,48 +2538,46 @@ ags_thread_real_clock(AgsThread *thread)
     pthread_mutex_unlock(thread->timer_mutex);
   }
 #else
-  if(g_atomic_pointer_get(&(thread->parent)) == NULL){
+  if(thread->tic_delay == thread->delay &&
+     (AGS_THREAD_TIMING & (g_atomic_int_get(&(thread->flags)))) != 0){
     gdouble time_spent, relative_time_spent;
     gdouble time_cycle;
 
     static const gdouble nsec_per_jiffie = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
     
-    if(thread->tic_delay == thread->delay &&
-       (AGS_THREAD_TIMING & (g_atomic_int_get(&(thread->flags)))) != 0){
-      struct timespec timed_sleep = {
-	0,
-	0,
-      };
+    struct timespec timed_sleep = {
+      0,
+      0,
+    };
 
-      clock_gettime(CLOCK_MONOTONIC, &time_now);
+    clock_gettime(CLOCK_MONOTONIC, &time_now);
       
-      if(time_now.tv_sec == thread->computing_time->tv_sec + 1){
-	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
-      }else if(time_now.tv_sec > thread->computing_time->tv_sec + 1){
-	time_spent = (time_now.tv_sec - thread->computing_time->tv_sec) * NSEC_PER_SEC;
-	time_spent += (time_now.tv_nsec - thread->computing_time->tv_nsec);
-      }else{
-	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
-      }
-
-      time_cycle = NSEC_PER_SEC / thread->freq;
-      
-      relative_time_spent = time_cycle - time_spent - g_atomic_int_get(&(thread->time_late)) - AGS_THREAD_TOLERANCE;
-
-      if(relative_time_spent < 0.0){
-	g_atomic_int_set(&(thread->time_late),
-			 (guint) ceil(-1.25 * relative_time_spent));
-      }else if(relative_time_spent > 0.0 &&
-	       relative_time_spent < time_cycle){
-	g_atomic_int_set(&(thread->time_late),
-			 0);
-	timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
-      
-	nanosleep(&timed_sleep, NULL);
-      }
-
-      clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
+    if(time_now.tv_sec == thread->computing_time->tv_sec + 1){
+      time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
+    }else if(time_now.tv_sec > thread->computing_time->tv_sec + 1){
+      time_spent = (time_now.tv_sec - thread->computing_time->tv_sec) * NSEC_PER_SEC;
+      time_spent += (time_now.tv_nsec - thread->computing_time->tv_nsec);
+    }else{
+      time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
     }
+
+    time_cycle = NSEC_PER_SEC / thread->freq;
+      
+    relative_time_spent = time_cycle - time_spent - g_atomic_int_get(&(thread->time_late)) - AGS_THREAD_TOLERANCE;
+
+    if(relative_time_spent < 0.0){
+      g_atomic_int_set(&(thread->time_late),
+		       (guint) ceil(-1.25 * relative_time_spent));
+    }else if(relative_time_spent > 0.0 &&
+	     relative_time_spent < time_cycle){
+      g_atomic_int_set(&(thread->time_late),
+		       0);
+      timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
+      
+      nanosleep(&timed_sleep, NULL);
+    }
+
+    clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
   }
 #endif
   
@@ -2823,8 +2855,34 @@ ags_thread_loop(void *ptr)
 
 	pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
+	/* ordinary sync */
 	queued_thread->tic_delay = thread->tic_delay;
 
+	if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(queued_thread->flags)))) != 0){
+	  if(queued_thread->freq >= AGS_THREAD_MAX_PRECISION){
+	    queued_thread->tic_delay = 0;
+	  }else{
+	    if(queued_thread->tic_delay < queued_thread->delay){
+	      queued_thread->tic_delay++;
+	    }else{
+	      queued_thread->tic_delay = 0;
+	    }
+	  }
+	}
+	
+	if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(queued_thread->flags)))) != 0){
+	  if(queued_thread->freq >= AGS_THREAD_MAX_PRECISION){
+	    queued_thread->tic_delay = 0;
+	  }else{
+	    if(queued_thread->tic_delay > 0){
+	      queued_thread->tic_delay--;
+	    }else{
+	      queued_thread->tic_delay = queued_thread->delay;
+	    }
+	  }
+	}
+
+	/*  */
 	pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 	
 	g_atomic_int_set(&(queued_thread->start_wait),
@@ -3075,8 +3133,37 @@ ags_thread_loop(void *ptr)
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0  ||
      (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-    thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));    
+    AgsThread *chaos_tree;
+	
+    chaos_tree = main_loop;//ags_thread_chaos_tree(thread);
 
+    /* ordinary sync */
+    thread->tic_delay = chaos_tree->tic_delay;
+
+    if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	thread->tic_delay = 0;
+      }else{
+	if(thread->tic_delay > 0){
+	  thread->tic_delay--;
+	}else{
+	  thread->tic_delay = thread->delay;
+	}
+      }
+    }
+	
+    if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	thread->tic_delay = 0;
+      }else{
+	if(thread->tic_delay < thread->delay){
+	  thread->tic_delay++;
+	}else{
+	  thread->tic_delay = 0;
+	}
+      }
+    }
+	
     g_atomic_int_and(&(thread->flags),
 		     (~AGS_THREAD_INITIAL_RUN));
 

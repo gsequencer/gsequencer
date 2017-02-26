@@ -117,7 +117,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    *
    * The assigned #AgsSoundcard instance.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of set audio channels\0",
@@ -133,7 +133,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    *
    * The count of audio channels to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("audio-channels\0",
 				 "audio channels\0",

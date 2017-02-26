@@ -122,7 +122,7 @@ ags_remove_recall_container_class_init(AgsRemoveRecallContainerClass *remove_rec
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio\0",
 				   "audio of remove recall container\0",
@@ -138,7 +138,7 @@ ags_remove_recall_container_class_init(AgsRemoveRecallContainerClass *remove_rec
    *
    * The assigned #AgsRecall_Container
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recall-container\0",
 				   "recall container of remove recall container\0",

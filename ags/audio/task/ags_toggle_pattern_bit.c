@@ -126,7 +126,11 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The assigned #AgsPattern
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_object("pattern\0",
 				   "pattern of toggle pattern bit\0",
@@ -142,7 +146,11 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The line.
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_uint("line\0",
 				 "line\0",
@@ -160,7 +168,11 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The index-i.
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_uint("index-i\0",
 				 "index-i\0",
@@ -178,7 +190,11 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The index-j.
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_uint("index-j\0",
 				 "index-j\0",
@@ -196,7 +212,11 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    *
    * The bit.
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_uint("bit\0",
 				 "bit\0",

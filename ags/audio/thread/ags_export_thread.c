@@ -24,6 +24,9 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/jack/ags_jack_devout.h>
+
 #include <math.h>
 
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
@@ -180,7 +183,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
   thread = (AgsThread *) export_thread;
 
   g_atomic_int_or(&(thread->flags),
-		  (AGS_THREAD_START_SYNCED_FREQ));  
+		  (AGS_THREAD_START_SYNCED_FREQ));
   
   config = ags_config_get_instance();
   
@@ -248,6 +251,9 @@ ags_export_thread_set_property(GObject *gobject,
     {
       GObject *soundcard;
 
+      guint samplerate;
+      guint buffer_size;
+
       soundcard = (GObject *) g_value_get_object(value);
 
       if(export_thread->soundcard != NULL){
@@ -256,6 +262,24 @@ ags_export_thread_set_property(GObject *gobject,
 
       if(soundcard != NULL){
 	g_object_ref(G_OBJECT(soundcard));
+
+	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+				  NULL,
+				  &samplerate,
+				  &buffer_size,
+				  NULL);
+	
+	g_object_set(export_thread,
+		     "frequency\0", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		     NULL);
+
+	if(AGS_IS_DEVOUT(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}else if(AGS_IS_JACK_DEVOUT(soundcard)){
+	  g_atomic_int_and(&(AGS_THREAD(export_thread)->flags),
+			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}
       }
 
       export_thread->soundcard = G_OBJECT(soundcard);
@@ -358,9 +382,9 @@ void
 ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
-  AgsSoundcard *soundcard;
 
   AgsMutexManager *mutex_manager;
+  AgsSoundcard *soundcard;
 
   void *soundcard_buffer;
 
@@ -421,6 +445,37 @@ ags_export_thread_stop(AgsThread *thread)
 
   ags_audio_file_flush(export_thread->audio_file);
   ags_audio_file_close(export_thread->audio_file);
+}
+
+/**
+ * ags_export_thread_find_soundcard:
+ * @export_thread: the #AgsExportThread
+ * @soundcard: the #AgsSoundcard to find
+ * 
+ * Returns: the matching #AgsExportThread, if not
+ * found %NULL.
+ * 
+ * Since: 0.7.119
+ */
+AgsExportThread*
+ags_export_thread_find_soundcard(AgsExportThread *export_thread,
+				 GObject *soundcard)
+{
+  if(export_thread == NULL ||
+     !AGS_IS_EXPORT_THREAD(export_thread)){
+    return(NULL);
+  }
+  
+  while(export_thread != NULL){
+    if(AGS_IS_EXPORT_THREAD(export_thread) &&
+       export_thread->soundcard == soundcard){
+      return(export_thread);
+    }
+    
+    export_thread = g_atomic_pointer_get(&(((AgsThread *) export_thread)->next));
+  }
+  
+  return(NULL);
 }
 
 /**

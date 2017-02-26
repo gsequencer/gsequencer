@@ -37,13 +37,22 @@
 typedef struct _AgsExportOutput AgsExportOutput;
 typedef struct _AgsExportOutputClass AgsExportOutputClass;
 
+typedef enum{
+  AGS_EXPORT_OUTPUT_FORMAT_WAV    =  1,
+  AGS_EXPORT_OUTPUT_FORMAT_OGG    =  1 <<  1,
+  AGS_EXPORT_OUTPUT_FORMAT_FLAC   =  1 <<  2,
+}AgsExportOutputFormat;
+
 struct _AgsExportOutput
 {
   AgsTask task;
 
   AgsExportThread *export_thread;
   GObject *soundcard;
+
   gchar *filename;
+  guint format;
+  
   guint tic;
   gboolean live_performance;
 };

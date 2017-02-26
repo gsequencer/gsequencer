@@ -118,7 +118,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel\0",
 				   "channel of link channel\0",
@@ -134,7 +134,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #AgsChannel link
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("link\0",
 				   "link of link channel\0",
@@ -150,7 +150,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #GError-struct
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_pointer("error\0",
 				    "error of link channel\0",

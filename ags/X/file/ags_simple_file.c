@@ -1692,6 +1692,14 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 					  "reference\0", gobject,
 					  NULL));
 
+  /* set name if available */
+  str = xmlGetProp(node,
+		   AGS_FILE_NAME_PROP);
+
+  if(str != NULL){
+    gobject->name = g_strdup(str);
+  }
+  
   /* retrieve window */  
   window = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->window;
 
@@ -5016,7 +5024,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   xmlNewProp(node,
 	     (xmlChar *) AGS_FILE_TYPE_PROP,
 	     (xmlChar *) G_OBJECT_TYPE_NAME(machine));
-  
+
+  xmlNewProp(node,
+	     (xmlChar *) AGS_FILE_NAME_PROP,
+	     (xmlChar *) machine->name);
+
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,
 					  "application-context\0", simple_file->application_context,

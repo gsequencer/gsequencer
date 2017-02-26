@@ -48,6 +48,9 @@ struct _AgsPadEditor
   
   AgsChannel *pad;
 
+  guint editor_type_count;
+  GType *editor_type;
+  
   GtkExpander *line_editor_expander;
   GtkVBox *line_editor;
 

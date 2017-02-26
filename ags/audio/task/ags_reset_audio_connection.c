@@ -128,7 +128,7 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of reset audio connection\0",
@@ -144,7 +144,7 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio\0",
 				   "audio of reset audio connection\0",
@@ -160,7 +160,7 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    *
    * The connection's channel type.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_gtype("channel-type\0",
 				  "channel type\0",
@@ -177,7 +177,7 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    *
    * The nth pad of audio.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("pad\0",
 				 "nth pad\0",
@@ -196,7 +196,7 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    *
    * The nth audio channel of audio.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("audio-channel\0",
 				 "nth audio channel\0",
@@ -214,7 +214,7 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    *
    * The nth mapped line of connection.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("mapped-line\0",
 				 "nth mapped line\0",

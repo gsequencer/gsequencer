@@ -45,6 +45,8 @@ typedef enum{
   AGS_PORT_CONNECTED          = 1 <<  1,
   AGS_PORT_CONVERT_ALWAYS     = 1 <<  2,
   AGS_PORT_USE_LADSPA_FLOAT   = 1 <<  3,
+  AGS_PORT_IS_OUTPUT          = 1 <<  4,
+  AGS_PORT_INFINITE_RANGE     = 1 <<  5,
 }AgsPortFlags;
 
 struct _AgsPort

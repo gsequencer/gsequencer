@@ -124,7 +124,11 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
    *
    * The assigned #AgsContext
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_object("context\0",
 				   "context of add recall\0",
@@ -140,7 +144,11 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
    *
    * The assigned #AgsRecall
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_object("recall\0",
 				   "recall of add recall\0",
@@ -156,7 +164,11 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
    *
    * The recall's context is-play.
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec =  g_param_spec_boolean("is-play\0",
 				     "is play context\0",

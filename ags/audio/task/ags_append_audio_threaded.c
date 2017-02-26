@@ -125,7 +125,7 @@ ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_t
    *
    * The assigned #AgsAudioLoop
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-loop\0",
 				   "audio loop of append audio\0",
@@ -141,7 +141,7 @@ ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_t
    *
    * The assigned #AgsPlayback
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("playback\0",
 				   "playback of append recall\0",

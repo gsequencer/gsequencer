@@ -120,7 +120,7 @@ ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device)
    *
    * The assigned #AgsSoundcard instance.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of set audio channels\0",
@@ -136,7 +136,7 @@ ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device)
    *
    * The soundcard indentifier
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_string("device\0",
 				   "device identifier\0",

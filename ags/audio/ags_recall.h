@@ -52,7 +52,6 @@ typedef enum{
   AGS_RECALL_SEQUENCER             = 1 <<  5,
   AGS_RECALL_NOTATION              = 1 <<  6,
   AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  7,
-  //TODO:JK: remove because it's useless
   AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  8,
   AGS_RECALL_INPUT_ORIENTATED      = 1 <<  9,
   AGS_RECALL_OUTPUT_ORIENTATED     = 1 << 10,
@@ -68,6 +67,7 @@ typedef enum{
   AGS_RECALL_PERSISTENT_NOTATION   = 1 << 20,
   AGS_RECALL_SKIP_DEPENDENCIES     = 1 << 21,
   AGS_RECALL_BULK_MODE             = 1 << 22,
+  AGS_RECALL_HAS_OUTPUT_PORT       = 1 << 23,
 }AgsRecallFlags;
 
 typedef enum{

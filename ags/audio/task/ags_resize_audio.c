@@ -123,7 +123,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio\0",
 				   "audio of resize audio\0",
@@ -139,7 +139,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The count of output pads to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("output-pads\0",
 				 "output pads\0",
@@ -157,7 +157,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The count of input pads to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("input-pads\0",
 				 "input pads\0",
@@ -175,7 +175,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The count of audio channels to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("audio-channels\0",
 				 "audio channels\0",

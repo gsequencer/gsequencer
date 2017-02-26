@@ -645,7 +645,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
  */
 void
 ags_pad_resize_lines(AgsPad *pad, GType line_type,
-			  guint audio_channels, guint audio_channels_old)
+		     guint audio_channels, guint audio_channels_old)
 {
   g_return_if_fail(AGS_IS_PAD(pad));
 

@@ -23,6 +23,8 @@
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+
 void ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel);
 void ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable);
@@ -42,6 +44,8 @@ void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_buffer_channel_finalize(GObject *gobject);
 
 void ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted);
+
+static AgsPortDescriptor* ags_buffer_channel_get_muted_port_descriptor();
 
 /**
  * SECTION:ags_buffer_channel
@@ -198,12 +202,16 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
 				     "specifier\0", ags_buffer_channel_plugin_specifier[0],
 				     "control-port\0", ags_buffer_channel_plugin_control_port[0],
 				     "port-value-is-pointer\0", FALSE,
-				     "port-value-type\0", G_TYPE_BOOLEAN,
-				     "port-value-size\0", sizeof(gboolean),
+				     "port-value-type\0", G_TYPE_FLOAT,
+				     "port-value-size\0", sizeof(gfloat),
 				     "port-value-length\0", 1,
 				     NULL);
-  buffer_channel->muted->port_value.ags_port_boolean = FALSE;
+  buffer_channel->muted->port_value.ags_port_float = (float) FALSE;
 
+  /* port descriptor */
+  buffer_channel->muted->port_descriptor = ags_buffer_channel_get_muted_port_descriptor();
+
+  /* add to port */
   port = g_list_prepend(port, buffer_channel->muted);
 
   /* set port */
@@ -290,9 +298,20 @@ ags_buffer_channel_finalize(GObject *gobject)
 void
 ags_buffer_channel_connect(AgsConnectable *connectable)
 {
-  ags_buffer_channel_parent_connectable_interface->connect(connectable);
+  AgsRecall *recall;
+  
+  recall = AGS_RECALL(connectable);
+  
+  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+    return;
+  }
 
-  /* empty */
+  /* load automation */
+  ags_recall_load_automation(recall,
+			     g_list_copy(recall->port));
+
+  /* call parent */
+  ags_buffer_channel_parent_connectable_interface->connect(connectable);
 }
 
 void
@@ -324,10 +343,43 @@ ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted)
 {
   GValue value = {0,};
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
-  g_value_set_boolean(&value, muted);
+  g_value_init(&value, G_TYPE_FLOAT);
+  g_value_set_float(&value, (float) muted);
 
   ags_port_safe_write(AGS_BUFFER_CHANNEL(mutable)->muted, &value);
+}
+
+static AgsPortDescriptor*
+ags_buffer_channel_get_muted_port_descriptor()
+{
+  static AgsPortDescriptor *port_descriptor = NULL;
+
+  if(port_descriptor == NULL){
+    port_descriptor = ags_port_descriptor_alloc();
+
+    port_descriptor->flags |= (AGS_PORT_DESCRIPTOR_INPUT |
+			       AGS_PORT_DESCRIPTOR_CONTROL |
+			       AGS_PORT_DESCRIPTOR_TOGGLED);
+
+    port_descriptor->port_index = 0;
+
+    /* range */
+    g_value_init(port_descriptor->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(port_descriptor->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(port_descriptor->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(port_descriptor->default_value,
+		      0.0);
+    g_value_set_float(port_descriptor->lower_value,
+		      0.0);
+    g_value_set_float(port_descriptor->upper_value,
+		      1.0);
+  }
+  
+  return(port_descriptor);
 }
 
 /**

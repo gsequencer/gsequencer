@@ -69,6 +69,9 @@ struct _AgsExportThreadClass
 
 GType ags_export_thread_get_type();
 
+AgsExportThread* ags_export_thread_find_soundcard(AgsExportThread *export_thread,
+						  GObject *soundcard);
+
 AgsExportThread* ags_export_thread_new(GObject *soundcard, AgsAudioFile *audio_file);
 
 #endif /*__AGS_EXPORT_THREAD_H__*/

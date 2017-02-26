@@ -120,7 +120,7 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context of start soundcard\0",
@@ -316,7 +316,7 @@ ags_start_soundcard_launch(AgsTask *task)
  *
  * Returns: an new #AgsStartSoundcard.
  *
- * Since: 1.0.0
+ * Since: 0.7.117
  */
 AgsStartSoundcard*
 ags_start_soundcard_new(AgsApplicationContext *application_context)

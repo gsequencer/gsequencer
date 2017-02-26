@@ -122,7 +122,11 @@ ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_conta
    *
    * The assigned #AgsAudio
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_object("audio\0",
 				   "audio of add recall container\0",
@@ -138,7 +142,11 @@ ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_conta
    *
    * The assigned #AgsRecall_Container
    * 
+<<<<<<< HEAD
    * Since: 1.0.0
+=======
+   * Since: 0.7.117
+>>>>>>> master
    */
   param_spec = g_param_spec_object("recall-container\0",
 				   "recall container of add recall container\0",

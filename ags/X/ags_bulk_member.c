@@ -593,10 +593,26 @@ ags_bulk_member_set_property(GObject *gobject,
       
       port = (AgsPort *) g_value_get_object(value);
 
+      if(port == NULL){
+	return;
+      }
+      
       if(ags_bulk_port_find(bulk_member->bulk_port, port) != NULL){
 	return;
       }
 
+      if((AGS_PORT_INFINITE_RANGE & (port->flags)) != 0){
+	GtkWidget *child;
+
+	child = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+	//TODO:JK: add more types
+
+	if(AGS_IS_DIAL(child)){
+	  AGS_DIAL(child)->flags |= AGS_DIAL_SEEMLESS_MODE;
+	}
+      }
+      
       g_object_ref(port);
       bulk_port = ags_bulk_port_alloc(port);
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
@@ -610,6 +626,10 @@ ags_bulk_member_set_property(GObject *gobject,
       
       port = (AgsPort *) g_value_get_object(value);
 
+      if(port == NULL){
+	return;
+      }
+      
       if(ags_bulk_port_find(bulk_member->recall_bulk_port, port) != NULL){
 	return;
       }
@@ -916,7 +936,15 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	}else if(port->port_value_type == G_TYPE_FLOAT){
 	  gfloat val;
 	  
-	  val = ((gdouble *) port_data)[0];
+	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	    if(((gboolean *) port_data)[0]){
+	      val = 1.0;
+	    }else{
+	      val = 0.0;
+	    }
+	  }else{
+	    val = ((gdouble *) port_data)[0];
+	  }
 	  
 	  if(bulk_member->conversion != NULL){
 	    gfloat upper, lower, range, step;
@@ -964,11 +992,19 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 		       G_TYPE_FLOAT);
 
 	  g_value_set_float(&value,
-			     val);
+			    val);
 	}else if(port->port_value_type == G_TYPE_DOUBLE){
 	  gdouble val;
 	  
-	  val = ((gdouble *) port_data)[0];
+	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	    if(((gboolean *) port_data)[0]){
+	      val = 1.0;
+	    }else{
+	      val = 0.0;
+	    }
+	  }else{
+	    val = ((gdouble *) port_data)[0];
+	  }
 	  
 	  if(bulk_member->conversion != NULL){
 	    gdouble upper, lower, range, step;

@@ -65,6 +65,8 @@
 #include <ags/audio/task/ags_add_recall_container.h>
 #include <ags/audio/task/ags_add_recall.h>
 
+#include <ags/widget/ags_led.h>
+#include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>
@@ -105,6 +107,7 @@ gchar* ags_effect_bulk_get_version(AgsPlugin *plugin);
 void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
+void ags_effect_bulk_finalize(GObject *gobject);
 void ags_effect_bulk_show(GtkWidget *widget);
 
 GList* ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
@@ -164,6 +167,8 @@ enum{
 
 static gpointer ags_effect_bulk_parent_class = NULL;
 static guint effect_bulk_signals[LAST_SIGNAL];
+
+GHashTable *ags_effect_bulk_indicator_queue_draw = NULL;
 
 GType
 ags_effect_bulk_get_type(void)
@@ -226,6 +231,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   gobject->set_property = ags_effect_bulk_set_property;
   gobject->get_property = ags_effect_bulk_get_property;
 
+  gobject->finalize = ags_effect_bulk_finalize;
   
   /* properties */
   /**
@@ -413,6 +419,12 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 {
   GtkAlignment *alignment;
   GtkHBox *hbox;
+
+  if(ags_effect_bulk_indicator_queue_draw == NULL){
+    ags_effect_bulk_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								 NULL,
+								 NULL);
+  }
   
   effect_bulk->flags = 0;
 
@@ -478,6 +490,8 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
 		     0);
 
   effect_bulk->plugin_browser = (GtkDialog *) ags_plugin_browser_new((GtkWidget *) effect_bulk);
+
+  effect_bulk->queued_drawing = NULL;
 }
 
 void
@@ -698,6 +712,41 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
 }
 
 void
+ags_effect_bulk_finalize(GObject *gobject)
+{
+  AgsEffectBulk *effect_bulk;
+
+  GList *list;
+  
+  effect_bulk = (AgsEffectBulk *) gobject;
+
+  /* unref audio */
+  if(effect_bulk->audio != NULL){
+    g_object_unref(effect_bulk->audio);
+  }
+
+  /* free plugin list */
+  g_list_free_full(effect_bulk->plugin,
+		   ags_effect_bulk_plugin_free);
+
+  /* destroy plugin browser */
+  gtk_widget_destroy(effect_bulk->plugin_browser);
+
+  /* remove of the queued drawing hash */
+  list = effect_bulk->queued_drawing;
+
+  while(list != NULL){
+    g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+			list->data);
+
+    list = list->next;
+  }
+  
+  /* call parent */  
+  G_OBJECT_CLASS(ags_effect_bulk_parent_class)->finalize(gobject);
+}
+
+void
 ags_effect_bulk_show(GtkWidget *widget)
 {
   AgsEffectBulk *effect_bulk;
@@ -715,6 +764,17 @@ ags_effect_bulk_show(GtkWidget *widget)
   }
 }
 
+/**
+ * ags_effect_bulk_plugin_alloc:
+ * @filename: the filename as string
+ * @effect: the effect as string
+ * 
+ * Allocate #AgsEffectBulkPlugin-struct.
+ * 
+ * Returns: the newly allocated #AgsEffectBulkPlugin-struct
+ * 
+ * Since: 0.7.128
+ */
 AgsEffectBulkPlugin*
 ags_effect_bulk_plugin_alloc(gchar *filename,
 			     gchar *effect)
@@ -729,6 +789,36 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
   effect_plugin->control_type_name = NULL;
   
   return(effect_plugin);
+}
+
+/**
+ * ags_effect_bulk_plugin_free:
+ * @effect_bulk_plugin: the #AgsEffectBulkPlugin-struct
+ * 
+ * Free @effect_bulk_plugin.
+ * 
+ * Since: 0.7.128
+ */
+void
+ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin)
+{
+  if(effect_bulk_plugin == NULL){
+    return;
+  }
+
+  if(effect_bulk_plugin->filename != NULL){
+    free(effect_bulk_plugin->filename);
+  }
+
+  if(effect_bulk_plugin->effect != NULL){
+    free(effect_bulk_plugin->effect);
+  }
+
+  if(effect_bulk_plugin->control_type_name != NULL){
+    g_list_free(effect_bulk_plugin->control_type_name);
+  }
+  
+  free(effect_bulk_plugin);
 }
 
 GList*
@@ -748,6 +838,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLadspa *recall_ladspa;
+  AgsRecallHandler *recall_handler;
 
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
@@ -769,6 +860,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
+  gboolean has_output_port;
+  
   guint x, y;
   guint i, j;
   guint k;
@@ -838,6 +931,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
   task = NULL;
   retport = NULL;
+
+  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -858,6 +953,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					    filename,
 					    effect,
 					    AGS_BASE_PLUGIN(ladspa_plugin)->effect_index);
+
       g_object_set(G_OBJECT(recall_ladspa),
 		   "soundcard\0", soundcard,
 		   "recall-container\0", recall_container,
@@ -872,6 +968,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
       port = ags_recall_ladspa_load_ports(recall_ladspa);
 
+      if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall_ladspa)->flags)) != 0){
+	has_output_port = TRUE;
+      }
+      
       if(retport == NULL){
 	retport = port;
       }else{
@@ -905,6 +1005,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+      
       /* ladspa recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
@@ -961,6 +1072,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+      
       /* iterate */
       pthread_mutex_lock(channel_mutex);
       
@@ -1001,6 +1123,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -1010,15 +1135,27 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }
       
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	disable_seemless = TRUE;
+	
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
       
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;	
       }
 
       /* add bulk member */
@@ -1094,6 +1231,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	
 	dial = (AgsDial *) child_widget;
 
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
@@ -1129,6 +1270,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	
 	gtk_adjustment_set_value(adjustment,
 				 default_value);
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
+			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+						     child_widget);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -1176,6 +1324,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallDssi *recall_dssi;
+  AgsRecallHandler *recall_handler;
 
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
@@ -1197,6 +1346,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
+  gboolean has_output_port;
+  
   guint x, y;
   guint i, j;
   guint k;
@@ -1266,6 +1417,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   task = NULL;
   retport = NULL;
+
+  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1313,6 +1466,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 				port);
       }
 
+      if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall_dssi)->flags)) != 0){
+	has_output_port = TRUE;
+      }
+
       ags_channel_add_recall(current,
 			     (GObject *) recall_dssi,
 			     TRUE);
@@ -1338,7 +1495,18 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+      
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+      
       /* dssi recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
@@ -1401,6 +1569,17 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
       
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+
       /* iterate */
       pthread_mutex_lock(channel_mutex);
       
@@ -1439,6 +1618,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       GType widget_type;
 
       guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -1448,15 +1630,25 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       }
 
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
 
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;	
       }
 
       /* add bulk member */
@@ -1533,6 +1725,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	
 	dial = (AgsDial *) child_widget;
 
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
@@ -1571,6 +1767,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 #ifdef AGS_DEBUG
 	g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
 #endif
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
+			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+						     child_widget);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
       gtk_table_attach(effect_bulk->table,
@@ -1614,6 +1817,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLv2 *recall_lv2;
+  AgsRecallHandler *recall_handler;
 
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
@@ -1641,6 +1845,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   gdouble step;
   guint pads, audio_channels;
   guint port_count;
+  gboolean has_output_port;
+
   guint x, y;
   guint i, j;
   guint k;
@@ -1712,6 +1918,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   task = NULL;
   retport = NULL;
+
+  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1761,6 +1969,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				port);
       }
 
+      if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall_lv2)->flags)) != 0){
+	has_output_port = TRUE;
+      }
+      
       ags_channel_add_recall(current,
 			     (GObject *) recall_lv2,
 			     TRUE);
@@ -1786,6 +1998,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
 
       /* lv2 recall */
       recall_container = ags_recall_container_new();
@@ -1850,7 +2073,18 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-      
+
+      /* recall handler of output port */
+      if(has_output_port){
+	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+	recall_handler->signal_name = "run-post\0";
+	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
+	recall_handler->data = (gpointer) effect_bulk;
+
+	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
+      }
+
       /* iterate */
       pthread_mutex_lock(channel_mutex);
       
@@ -1889,7 +2123,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       GType widget_type;
 
       guint step_count;
-      
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
+            
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
@@ -1898,15 +2135,27 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       }
 
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	disable_seemless = TRUE;
+	
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
       }else{
-	widget_type = AGS_TYPE_DIAL;
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
       }
 
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+
+	disable_seemless = TRUE;	
       }
 
       /* add bulk member */
@@ -1955,6 +2204,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	
 	dial = (AgsDial *) child_widget;
 
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
@@ -1980,6 +2233,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
 				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
+			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+						     child_widget);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -2212,6 +2472,16 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
       }
       
       if(i == nth){
+	GtkWidget *child_widget;
+	
+	child_widget = gtk_bin_get_child(list->data);
+
+	if(AGS_IS_LED(child_widget) ||
+	   AGS_IS_INDICATOR(child_widget)){
+	  g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+			      child_widget);
+	}
+
 	gtk_widget_destroy(list->data);
       }
       
@@ -2649,6 +2919,29 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
   g_object_unref((GObject *) effect_bulk);
 
   return(list);
+}
+
+/**
+ * ags_effect_bulk_indicator_queue_draw_timeout:
+ * @widget: the indicator widgt
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 0.7.128
+ */
+gboolean
+ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
+{
+  if(g_hash_table_lookup(ags_effect_bulk_indicator_queue_draw,
+			 widget) != NULL){
+    gtk_widget_queue_draw(widget);
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

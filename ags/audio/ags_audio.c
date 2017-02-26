@@ -126,6 +126,7 @@ enum{
   PROP_AUDIO_END_MAPPING,
   PROP_MIDI_START_MAPPING,
   PROP_MIDI_END_MAPPING,
+  PROP_MIDI_CHANNEL,
   PROP_AUDIO_CONNECTION,
   PROP_OUTPUT,
   PROP_INPUT,
@@ -476,6 +477,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MIDI_END_MAPPING,
+				  param_spec);
+
+  /**
+   * AgsAudio:midi-channel:
+   *
+   * The midi channel.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_uint("midi-channel\0",
+				 "midi channel\0",
+				 "The midi channel\0",
+				 0,
+				 16,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI_CHANNEL,
 				  param_spec);
 
   /**
@@ -927,6 +946,8 @@ ags_audio_init(AgsAudio *audio)
   audio->midi_start_mapping = 0;
   audio->midi_end_mapping = 0;
 
+  audio->midi_channel = 0;
+
   /* mapping */
   audio->audio_connection = NULL;
   
@@ -1178,6 +1199,15 @@ ags_audio_set_property(GObject *gobject,
       audio->midi_end_mapping = midi_end_mapping;
     }
     break;
+  case PROP_MIDI_CHANNEL:
+    {
+      guint midi_channel;
+
+      midi_channel = g_value_get_uint(value);
+
+      audio->midi_channel = midi_channel;
+    }
+    break;
   case PROP_AUDIO_CONNECTION:
     {
       AgsAudioConnection *audio_connection;
@@ -1415,6 +1445,11 @@ ags_audio_get_property(GObject *gobject,
   case PROP_MIDI_END_MAPPING:
     {
       g_value_set_uint(value, audio->midi_end_mapping);
+    }
+    break;
+  case PROP_MIDI_CHANNEL:
+    {
+      g_value_set_uint(value, audio->midi_channel);
     }
     break;
   case PROP_OUTPUT:
@@ -1910,12 +1945,9 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 
     return(parameter);
   }
+
   void ags_audio_set_flags_add_recycling_task(GParameter *parameter){
     //TODO:JK: implement me
-    
-    /* create set recycling task */
-
-    /* append AgsAudioSetRecycling */
   }
 
   if(audio == NULL || !AGS_IS_AUDIO(audio)){
@@ -2000,12 +2032,9 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 
     return(parameter);
   }
+
   void ags_audio_unset_flags_add_recycling_task(GParameter *parameter){
     //TODO:JK: implement me
-    
-    /* create set recycling task */
-
-    /* append AgsAudioSetRecycling */
   }
 
   if(audio == NULL || !AGS_IS_AUDIO(audio)){

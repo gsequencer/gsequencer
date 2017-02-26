@@ -120,7 +120,7 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context of remove soundcard\0",
@@ -136,7 +136,7 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of remove soundcard\0",

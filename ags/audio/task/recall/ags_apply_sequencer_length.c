@@ -129,7 +129,7 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope\0",
 				   "scope of set buffer size\0",
@@ -145,7 +145,7 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    *
    * The sequencer length to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_double("sequencer-length\0",
 				   "sequencer length\0",

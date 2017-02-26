@@ -25,6 +25,8 @@
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -48,6 +50,8 @@ void ags_peak_channel_connect(AgsConnectable *connectable);
 void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
+
+static AgsPortDescriptor* ags_peak_channel_get_peak_port_descriptor();
 
 /**
  * SECTION:ags_peak_channel
@@ -171,6 +175,8 @@ void
 ags_peak_channel_init(AgsPeakChannel *peak_channel)
 {
   GList *port;
+  
+  AGS_RECALL(peak_channel)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
 
   AGS_RECALL(peak_channel)->name = "ags-peak\0";
   AGS_RECALL(peak_channel)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -179,17 +185,25 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
 
   port = NULL;
 
+  /* peak */
   peak_channel->peak = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", ags_peak_channel_plugin_name,
-				     "specifier\0", ags_peak_channel_plugin_specifier[0],
-				     "control-port\0", ags_peak_channel_plugin_control_port[0],
-				     "port-value-is-pointer\0", FALSE,
-				     "port-value-type\0", G_TYPE_DOUBLE,
-				     "port-value-size\0", sizeof(gdouble),
-				     "port-value-length\0", 1,
-				     NULL);
-  peak_channel->peak->port_value.ags_port_double = FALSE;
+				    "plugin-name\0", ags_peak_channel_plugin_name,
+				    "specifier\0", ags_peak_channel_plugin_specifier[0],
+				    "control-port\0", ags_peak_channel_plugin_control_port[0],
+				    "port-value-is-pointer\0", FALSE,
+				    "port-value-type\0", G_TYPE_FLOAT,
+				    "port-value-size\0", sizeof(gfloat),
+				    "port-value-length\0", 1,
+				    NULL);
 
+  peak_channel->peak->flags |= AGS_PORT_IS_OUTPUT;
+  
+  peak_channel->peak->port_value.ags_port_float = FALSE;
+  
+  /* port descriptor */
+  peak_channel->peak->port_descriptor = ags_peak_channel_get_peak_port_descriptor();
+
+  /* add to port */  
   port = g_list_prepend(port, peak_channel->peak);
 
   /* set port */
@@ -452,14 +466,14 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
     current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 22000.0));
   }
   
-  g_value_init(&value, G_TYPE_DOUBLE);
+  g_value_init(&value, G_TYPE_FLOAT);
 
   if(current_value < 0.0){
     current_value *= -1.0;
   }
 
-  g_value_set_double(&value,
-		     current_value);
+  g_value_set_float(&value,
+		    current_value);
 
   ags_port_safe_write(peak_channel->peak,
 		      &value);
@@ -467,6 +481,38 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
   /* free buffer */
   free(buffer);
+}
+
+static AgsPortDescriptor*
+ags_peak_channel_get_peak_port_descriptor()
+{
+  static AgsPortDescriptor *port_descriptor = NULL;
+
+  if(port_descriptor == NULL){
+    port_descriptor = ags_port_descriptor_alloc();
+
+    port_descriptor->flags |= (AGS_PORT_DESCRIPTOR_INPUT |
+			       AGS_PORT_DESCRIPTOR_CONTROL);
+
+    port_descriptor->port_index = 0;
+
+    /* range */
+    g_value_init(port_descriptor->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(port_descriptor->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(port_descriptor->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(port_descriptor->default_value,
+		      0.0);
+    g_value_set_float(port_descriptor->lower_value,
+		      0.0);
+    g_value_set_float(port_descriptor->upper_value,
+		      10.0);
+  }
+  
+  return(port_descriptor);
 }
 
 /**

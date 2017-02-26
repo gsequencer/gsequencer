@@ -123,7 +123,7 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context of change soundcard\0",
@@ -139,7 +139,7 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("new-soundcard\0",
 				   "new soundcard of change soundcard\0",
@@ -155,7 +155,7 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("old-soundcard\0",
 				   "old soundcard of change soundcard\0",

@@ -76,6 +76,7 @@ void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
 enum{
   PROP_0,
   PROP_URI,
+  PROP_UI_URI,
   PROP_MANIFEST,
   PROP_TURTLE,
 };
@@ -145,11 +146,27 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 				  param_spec);
 
   /**
+   * AgsLv2Plugin:ui-uri:
+   *
+   * The assigned ui-uri.
+   * 
+   * Since: 0.7.127
+   */
+  param_spec = g_param_spec_string("ui-uri\0",
+				   "ui-uri of the plugin\0",
+				   "The ui-uri this plugin has\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UI_URI,
+				  param_spec);
+
+  /**
    * AgsLv2Plugin:manifest:
    *
    * The assigned manifest.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.127
    */
   param_spec = g_param_spec_object("manifest\0",
 				   "manifest of the plugin\0",
@@ -197,9 +214,15 @@ ags_lv2_plugin_init(AgsLv2Plugin *lv2_plugin)
   lv2_plugin->flags = 0;
 
   lv2_plugin->uri = NULL;
+  lv2_plugin->ui_uri = NULL;
 
   lv2_plugin->manifest = NULL;
   lv2_plugin->turtle = NULL;
+
+  lv2_plugin->doap_name = NULL;
+  lv2_plugin->foaf_name = NULL;
+  lv2_plugin->foaf_homepage = NULL;
+  lv2_plugin->foaf_mbox = NULL;
 }
 
 void
@@ -228,6 +251,23 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->uri = g_strdup(uri);
+    }
+    break;
+  case PROP_UI_URI:
+    {
+      gchar *ui_uri;
+
+      ui_uri = (gchar *) g_value_get_string(value);
+
+      if(lv2_plugin->ui_uri == ui_uri){
+	return;
+      }
+      
+      if(lv2_plugin->ui_uri != NULL){
+	g_free(lv2_plugin->ui_uri);
+      }
+
+      lv2_plugin->ui_uri = g_strdup(ui_uri);
     }
     break;
   case PROP_MANIFEST:
@@ -294,6 +334,11 @@ ags_lv2_plugin_get_property(GObject *gobject,
       g_value_set_string(value, lv2_plugin->uri);
     }
     break;
+  case PROP_UI_URI:
+    {
+      g_value_set_string(value, lv2_plugin->ui_uri);
+    }
+    break;
   case PROP_MANIFEST:
     {
       g_value_set_object(value, lv2_plugin->manifest);
@@ -318,6 +363,7 @@ ags_lv2_plugin_finalize(GObject *gobject)
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
   g_free(lv2_plugin->uri);
+  g_free(lv2_plugin->ui_uri);
 
   if(lv2_plugin->manifest != NULL){
     g_object_unref(lv2_plugin->manifest);
@@ -399,6 +445,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   GList *metadata_list;
   GList *instrument_list;
+  GList *ui_list;
   GList *port_list;
   GList *port_descriptor_list;
   
@@ -431,6 +478,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 						   "lv2_descriptor\0");
   
   if(dlerror() == NULL && lv2_descriptor){
+    xmlNode *triple_node;
     xmlNode *port_node;
     xmlNode *current;
 
@@ -438,14 +486,30 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     escaped_effect = ags_string_util_escape_single_quote(base_plugin->effect);
 
-    /* name metadata */
-    xpath = g_strdup_printf("(/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-pname-ln[text()='doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0",
+    /* retrieve name node as context node */
+    xpath = g_strdup_printf("(//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]\0",
 			    escaped_effect);
     
-    metadata_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-					  xpath);
+    list = ags_turtle_find_xpath(lv2_plugin->turtle,
+				 xpath);
 
     free(xpath);
+
+    if(list != NULL){
+      triple_node = (xmlNode *) list->data;
+
+      g_list_free(list);
+    }else{
+      g_warning("rdf-triple not found\0");
+      
+      return;
+    }
+    
+    /* name metadata */
+    xpath = ".//rdf-pname-ln[text()='doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0";    
+    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							    xpath,
+							    triple_node);
 
     if(metadata_list != NULL){
       lv2_plugin->doap_name = xmlNodeGetContent((xmlNode *) metadata_list->data);
@@ -454,13 +518,10 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     }
 
     /* author metadata */
-    xpath = g_strdup_printf("(/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-pname-ln[text()='foaf:name']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0",
-			    escaped_effect);
-    
-    metadata_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-					  xpath);
-
-    free(xpath);
+    xpath = ".//rdf-pname-ln[text()='foaf:name']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0";
+    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							    xpath,
+							    triple_node);
 
     if(metadata_list != NULL){
       lv2_plugin->foaf_name = xmlNodeGetContent((xmlNode *) metadata_list->data);
@@ -469,13 +530,10 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     }
 
     /* homepage metadata */
-    xpath = g_strdup_printf("(/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-pname-ln[text()='foaf:homepage']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0",
-			    escaped_effect);
-    
-    metadata_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-					  xpath);
-
-    free(xpath);
+    xpath = ".//rdf-pname-ln[text()='foaf:homepage']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0";
+    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							    xpath,
+							    triple_node);
 
     if(metadata_list != NULL){
       lv2_plugin->foaf_homepage = xmlNodeGetContent((xmlNode *) metadata_list->data);
@@ -484,13 +542,10 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     }
 
     /* mbox metadata */
-    xpath = g_strdup_printf("(/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-pname-ln[text()='foaf:mbox']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0",
-			    escaped_effect);
-    
-    metadata_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-					  xpath);
-
-    free(xpath);
+    xpath = ".//rdf-pname-ln[text()='foaf:mbox']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0";
+    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							    xpath,
+							    triple_node);
 
     if(metadata_list != NULL){
       lv2_plugin->foaf_mbox = xmlNodeGetContent((xmlNode *) metadata_list->data);
@@ -499,27 +554,48 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     }
 
     /* check if is synthesizer */
-    xpath = g_strdup_printf("(/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':instrumentplugin') + 1) = ':instrumentplugin']\0",
-			    escaped_effect);
-    
-    instrument_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    xpath);
-
-    free(xpath);
+    xpath = ".//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':instrumentplugin') + 1) = ':instrumentplugin']\0";
+    instrument_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							      xpath,
+							      triple_node);
 
     if(instrument_list != NULL){
       lv2_plugin->flags |= AGS_LV2_PLUGIN_IS_SYNTHESIZER;
 
       g_list_free(instrument_list);
     }
-    
+
+    /* check UI */
+    xpath = ".//rdf-pname-ln[text()='uiext:ui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
+
+    ui_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+						      xpath,
+						      triple_node);
+
+    if(ui_list != NULL){
+      gchar *ui_uri;
+
+      ui_uri = xmlNodeGetContent(ui_list->data);
+
+      if(strlen(ui_uri) > 2){
+	ui_uri = g_strndup(ui_uri + 1,
+			   strlen(ui_uri) - 2);
+      }
+
+      g_object_set(lv2_plugin,
+		   "ui-uri\0", ui_uri,
+		   NULL);
+      
+      g_message("*** found UI <%s> ***\0", ui_uri);
+
+      g_list_free(ui_list);
+    }
+
     /* load ports */
-    xpath = "(/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object[.//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']]\0";
-    xpath = g_strdup_printf(xpath,
-			    escaped_effect);
-    port_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				      xpath);
-    free(xpath);
+    xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object[.//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']]\0";
+    port_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							xpath,
+							triple_node);
 
     /*  */
     port_descriptor_list = NULL;

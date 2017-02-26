@@ -134,7 +134,7 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    *
    * The assigned #AgsAudioLoop
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-loop\0",
 				   "audio loop of append channel\0",
@@ -150,7 +150,7 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel\0",
 				   "channel of append channel\0",

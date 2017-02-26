@@ -440,10 +440,11 @@ ags_recall_lv2_connect(AgsConnectable *connectable)
     return;
   }
 
-  //  g_message("load automation %x\0", recall);
+  /* load automation */
   ags_recall_load_automation(recall,
 			     g_list_copy(recall->port));
 
+  /* call parent */
   ags_recall_lv2_parent_connectable_interface->connect(connectable);
 }
 
@@ -767,7 +768,19 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 			       "port-value-is-pointer\0", FALSE,
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
-
+	
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
+	  
+	  current->flags |= AGS_PORT_IS_OUTPUT;
+	}else{
+	  if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
+	     (AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
+	     AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps == -1){
+	    current->flags |= AGS_PORT_INFINITE_RANGE;
+	  }
+	}
+	
 	current->port_descriptor = port_descriptor->data;
 	ags_recall_lv2_load_conversion(recall_lv2,
 				       (GObject *) current,

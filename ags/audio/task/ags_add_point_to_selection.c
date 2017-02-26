@@ -119,7 +119,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    *
    * The assigned #AgsNotation
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("notation\0",
 				   "notation of add point to selection\0",
@@ -135,7 +135,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    *
    * Note offset x.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("x\0",
 				 "offset x\0",
@@ -153,7 +153,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    *
    * Note offset y.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("y\0",
 				 "offset y\0",
@@ -171,7 +171,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    *
    * The notation's replace-current-selection.
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("replace-current-selection\0",
 				     "replace current selection\0",

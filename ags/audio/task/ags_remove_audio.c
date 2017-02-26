@@ -118,7 +118,7 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "soundcard of remove audio\0",
@@ -134,7 +134,7 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio\0",
 				   "audio of remove audio\0",

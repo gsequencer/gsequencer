@@ -27,6 +27,8 @@
 
 #include <ags/thread/ags_timestamp_thread.h>
 
+#include <ags/audio/ags_midiin.h>
+
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
@@ -134,11 +136,11 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
   gobject->finalize = ags_sequencer_thread_finalize;
 
   /**
-   * AgsThread:sequencer:
+   * AgsSequencerThread:sequencer:
    *
    * The assigned #AgsSequencer.
    * 
-   * Since: 0.4
+   * Since: 0.7.121
    */
   param_spec = g_param_spec_object("sequencer\0",
 				   "sequencer assigned to\0",
@@ -265,6 +267,14 @@ ags_sequencer_thread_set_property(GObject *gobject,
 
       if(sequencer != NULL){
 	g_object_ref(G_OBJECT(sequencer));
+
+	if(AGS_IS_MIDIIN(sequencer)){
+	  g_atomic_int_or(&(AGS_THREAD(sequencer_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	}else if(AGS_IS_JACK_MIDIIN(sequencer)){
+	  g_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),
+			   (~AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	}
       }
 
       sequencer_thread->sequencer = G_OBJECT(sequencer);
@@ -442,6 +452,16 @@ ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread)
   g_object_unref((GObject *) sequencer_thread);
 }
 
+/**
+ * ags_sequencer_thread_find_sequencer:
+ * @sequencer_thread: the #AgsSequencerThread
+ * @sequencer: the #AgsSequencer to find
+ * 
+ * Returns: the matching #AgsSequencerThread, if not
+ * found %NULL.
+ * 
+ * Since: 0.7.119
+ */
 AgsSequencerThread*
 ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
 				    GObject *sequencer)
@@ -452,7 +472,8 @@ ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
   }
   
   while(sequencer_thread != NULL){
-    if(sequencer_thread->sequencer == sequencer){
+    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread) &&
+       sequencer_thread->sequencer == sequencer){
       return(sequencer_thread);
     }
     

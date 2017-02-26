@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include "ags_indicator.h"
@@ -43,7 +44,7 @@ struct _AgsHIndicator
 
 struct _AgsHIndicatorClass
 {
-  GtkWidgetClass indicator;
+  AgsIndicatorClass indicator;
 };
 
 GType ags_hindicator_get_type(void);
