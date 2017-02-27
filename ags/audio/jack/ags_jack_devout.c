@@ -75,6 +75,7 @@ void ags_jack_devout_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_jack_devout_disconnect(AgsConnectable *connectable);
 void ags_jack_devout_connect(AgsConnectable *connectable);
+void ags_jack_devout_dispose(GObject *gobject);
 void ags_jack_devout_finalize(GObject *gobject);
 
 void ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
@@ -248,6 +249,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
   gobject->set_property = ags_jack_devout_set_property;
   gobject->get_property = ags_jack_devout_get_property;
 
+  gobject->dispose = ags_jack_devout_dispose;
   gobject->finalize = ags_jack_devout_finalize;
 
   /* properties */
@@ -1073,6 +1075,52 @@ ags_jack_devout_get_property(GObject *gobject,
 }
 
 void
+ags_jack_devout_dispose(GObject *gobject)
+{
+  AgsJackDevout *jack_devout;
+
+  GList *list;
+
+  jack_devout = AGS_JACK_DEVOUT(gobject);
+
+  /* application context */
+  if(jack_devout->application_context != NULL){
+    if(AGS_IS_SOUND_PROVIDER(jack_devout->application_context)){
+      GList *soundcard;
+
+      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context));
+
+      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context),
+				       g_list_remove(soundcard,
+						     jack_devout));
+    }
+    
+    g_object_unref(jack_devout->application_context);
+
+    jack_devout->application_context = NULL;
+  }
+
+  /* unref audio */
+  if(jack_devout->audio != NULL){
+    list = jack_devout->audio;
+
+    while(list != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard\0", NULL,
+		   NULL);
+      
+      list = list->next;
+    }
+
+    g_list_free_full(jack_devout->audio,
+		     g_object_unref);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
+}
+
+void
 ags_jack_devout_finalize(GObject *gobject)
 {
   AgsJackDevout *jack_devout;
@@ -1105,14 +1153,43 @@ ags_jack_devout_finalize(GObject *gobject)
   /* free AgsAttack */
   free(jack_devout->attack);
 
+  /* unref notify soundcard */
   if(jack_devout->notify_soundcard != NULL){
-    ags_task_thread_remove_cyclic_task(ags_application_context_get_instance()->task_thread,
-				       jack_devout->notify_soundcard);
+    if(jack_devout->application_context != NULL){
+      ags_task_thread_remove_cyclic_task(AGS_APPLICATION_CONTEXT(jack_devout->application_context)->task_thread,
+					 jack_devout->notify_soundcard);
+    }
     
     g_object_unref(jack_devout->notify_soundcard);
   }
+
+  /* application context */
+  if(jack_devout->application_context != NULL){
+    if(AGS_IS_SOUND_PROVIDER(jack_devout->application_context)){
+      GList *soundcard;
+
+      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context));
+
+      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context),
+				       g_list_remove(soundcard,
+						     jack_devout));
+    }
+
+    g_object_unref(jack_devout->application_context);
+  }
   
+  /* unref audio */
   if(jack_devout->audio != NULL){
+    list = jack_devout->audio;
+
+    while(list != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard\0", NULL,
+		   NULL);
+      
+      list = list->next;
+    }
+
     g_list_free_full(jack_devout->audio,
 		     g_object_unref);
   }

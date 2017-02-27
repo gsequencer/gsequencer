@@ -52,6 +52,7 @@ void ags_config_remove_from_registry(AgsConnectable *connectable);
 gboolean ags_config_is_connected(AgsConnectable *connectable);
 void ags_config_connect(AgsConnectable *connectable);
 void ags_config_disconnect(AgsConnectable *connectable);
+void ags_config_dispose(GObject *gobject);
 void ags_config_finalize(GObject *gobject);
 gchar* ags_config_get_version(AgsConfig *config);
 void ags_config_set_version(AgsConfig *config, gchar *version);
@@ -141,6 +142,7 @@ ags_config_class_init(AgsConfigClass *config)
   gobject->set_property = ags_config_set_property;
   gobject->get_property = ags_config_get_property;
 
+  gobject->dispose = ags_config_dispose;
   gobject->finalize = ags_config_finalize;
 
   /* properties */
@@ -338,11 +340,52 @@ ags_config_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_config_dispose(GObject *gobject)
+{
+  AgsConfig *config;
+
+  config = (AgsConfig *) gobject;
+
+  if(config->application_context != NULL){
+    g_object_set(config->application_context,
+		 "config\0", NULL,
+		 NULL);
+    
+    g_object_unref(config->application_context);
+
+    config->application_context = NULL;
+  }
+
+  if(config->key_file != NULL){
+    g_object_unref(config->key_file);
+
+    config->key_file = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_config_parent_class)->dispose(gobject);
+}
+
+void
 ags_config_finalize(GObject *gobject)
 {
+  AgsConfig *config;
 
-  //TODO:JK: implement me
+  config = (AgsConfig *) gobject;
 
+  if(config->application_context != NULL){
+    g_object_set(config->application_context,
+		 "config\0", NULL,
+		 NULL);
+    
+    g_object_unref(config->application_context);
+  }
+
+  if(config->key_file != NULL){
+    g_object_unref(config->key_file);
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_config_parent_class)->finalize(gobject);
 }
 

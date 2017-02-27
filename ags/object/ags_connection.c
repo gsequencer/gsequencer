@@ -29,6 +29,7 @@ void ags_connection_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
+void ags_connection_dispose(GObject *gobject);
 void ags_connection_finalize(GObject *gobject);
 
 /**
@@ -91,6 +92,7 @@ ags_connection_class_init(AgsConnectionClass *connection)
   gobject->set_property = ags_connection_set_property;
   gobject->get_property = ags_connection_get_property;
 
+  gobject->dispose = ags_connection_dispose;
   gobject->finalize = ags_connection_finalize;
 
   /* properties */
@@ -177,6 +179,23 @@ ags_connection_get_property(GObject *gobject,
 }
 
 void
+ags_connection_dispose(GObject *gobject)
+{
+  AgsConnection *connection;
+
+  connection = AGS_CONNECTION(gobject);
+
+  if(connection->data_object != NULL){
+    g_object_unref(connection->data_object);
+
+    connection->data_object = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_connection_parent_class)->dispose(gobject);
+}
+
+void
 ags_connection_finalize(GObject *gobject)
 {
   AgsConnection *connection;
@@ -186,6 +205,9 @@ ags_connection_finalize(GObject *gobject)
   if(connection->data_object != NULL){
     g_object_unref(connection->data_object);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_connection_parent_class)->finalize(gobject);
 }
 
 /**

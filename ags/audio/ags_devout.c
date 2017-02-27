@@ -22,11 +22,13 @@
 #include <ags/lib/ags_time.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_concurrent_tree.h>
+
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
@@ -83,6 +85,7 @@ void ags_devout_disconnect(AgsConnectable *connectable);
 void ags_devout_connect(AgsConnectable *connectable);
 pthread_mutex_t* ags_devout_get_lock(AgsConcurrentTree *concurrent_tree);
 pthread_mutex_t* ags_devout_get_parent_lock(AgsConcurrentTree *concurrent_tree);
+void ags_devout_dispose(GObject *gobject);
 void ags_devout_finalize(GObject *gobject);
 
 void ags_devout_set_application_context(AgsSoundcard *soundcard,
@@ -282,6 +285,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   gobject->set_property = ags_devout_set_property;
   gobject->get_property = ags_devout_get_property;
 
+  gobject->dispose = ags_devout_dispose;
   gobject->finalize = ags_devout_finalize;
 
   /* properties */
@@ -1125,13 +1129,59 @@ ags_devout_get_parent_lock(AgsConcurrentTree *concurrent_tree)
 }
 
 void
+ags_devout_dispose(GObject *gobject)
+{
+  AgsDevout *devout;
+
+  GList *list;
+
+  devout = AGS_DEVOUT(gobject);
+
+  /* application context */
+  if(devout->application_context != NULL){
+    if(AGS_IS_SOUND_PROVIDER(devout->application_context)){
+      GList *soundcard;
+
+      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(devout->application_context));
+
+      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(devout->application_context),
+				       g_list_remove(soundcard,
+						     devout));
+    }
+
+    g_object_unref(devout->application_context);
+  }
+
+  /* unref audio */  
+  if(devout->audio != NULL){
+    list = devout->audio;
+
+    while(list != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard\0", NULL,
+		   NULL);
+      
+      list = list->next;
+    }
+    
+    g_list_free_full(devout->audio,
+		     g_object_unref);
+
+    devout->audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_devout_parent_class)->dispose(gobject);
+}
+
+void
 ags_devout_finalize(GObject *gobject)
 {
   AgsDevout *devout;
 
   AgsMutexManager *mutex_manager;
   
-  GList *list, *list_next;
+  GList *list;
 
   devout = AGS_DEVOUT(gobject);
 
@@ -1157,14 +1207,43 @@ ags_devout_finalize(GObject *gobject)
   /* free AgsAttack */
   free(devout->attack);
 
+  /* notify soundcard */
   if(devout->notify_soundcard != NULL){
-    ags_task_thread_remove_cyclic_task(ags_application_context_get_instance()->task_thread,
-				       devout->notify_soundcard);
+    if(devout->application_context != NULL){
+      ags_task_thread_remove_cyclic_task(AGS_APPLICATION_CONTEXT(devout->application_context)->task_thread,
+					 devout->notify_soundcard);
+    }
 
     g_object_unref(devout->notify_soundcard);
   }
+
+  /* application context */
+  if(devout->application_context != NULL){
+    if(AGS_IS_SOUND_PROVIDER(devout->application_context)){
+      GList *soundcard;
+
+      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(devout->application_context));
+
+      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(devout->application_context),
+				       g_list_remove(soundcard,
+						     devout));
+    }
+
+    g_object_unref(devout->application_context);
+  }
   
+  /* unref audio */  
   if(devout->audio != NULL){
+    list = devout->audio;
+
+    while(list != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard\0", NULL,
+		   NULL);
+      
+      list = list->next;
+    }
+
     g_list_free_full(devout->audio,
 		     g_object_unref);
   }

@@ -342,6 +342,9 @@ ags_function_finalize(GObject *gobject)
 
     free(function->pivot_table);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_function_parent_class)->finalize(gobject);
 }
 
 /**

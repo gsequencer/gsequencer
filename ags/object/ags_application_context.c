@@ -43,6 +43,7 @@ void ags_application_context_get_property(GObject *gobject,
 					  GParamSpec *param_spec);
 void ags_application_context_connect(AgsConnectable *connectable);
 void ags_application_context_disconnect(AgsConnectable *connectable);
+void ags_application_context_dispose(GObject *gobject);
 void ags_application_context_finalize(GObject *gobject);
 
 void ags_application_context_real_load_config(AgsApplicationContext *application_context);
@@ -133,6 +134,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
   gobject->set_property = ags_application_context_set_property;
   gobject->get_property = ags_application_context_get_property;
 
+  gobject->dispose = ags_application_context_dispose;
   gobject->finalize = ags_application_context_finalize;
 
   /* properties */
@@ -436,6 +438,79 @@ ags_application_context_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_application_context_dispose(GObject *gobject)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = AGS_APPLICATION_CONTEXT(gobject);
+  
+  /* log */
+  if(application_context->log != NULL){
+    g_object_unref(application_context->log);
+
+    application_context->log = NULL;
+  }
+
+  /* config */
+  if(application_context->config != NULL){
+    g_object_set(application_context->config,
+		 "application-context\0", NULL,
+		 NULL);
+    
+    g_object_unref(application_context->config);
+
+    application_context->config = NULL;
+  }
+  
+  /* main loop */
+  if(application_context->main_loop != NULL){
+    g_object_set(application_context->main_loop,
+		 "application-context\0", NULL,
+		 NULL);
+
+    g_object_unref(application_context->main_loop);
+
+    application_context->main_loop = NULL;
+  }
+
+  /* autosave thread */
+  if(application_context->autosave_thread != NULL){
+    g_object_set(application_context->autosave_thread,
+		 "application-context\0", NULL,
+		 NULL);
+
+    g_object_unref(application_context->autosave_thread);
+
+    application_context->autosave_thread = NULL;
+  }
+
+  /* task thread */
+  if(application_context->task_thread != NULL){
+    g_object_set(application_context->task_thread,
+		 "application-context\0", NULL,
+		 NULL);
+
+    g_object_unref(application_context->task_thread);
+
+    application_context->task_thread = NULL;
+  }
+
+  /* file */
+  if(application_context->file != NULL){
+    g_object_set(application_context->file,
+		 "application-context\0", NULL,
+		 NULL);
+
+    g_object_unref(application_context->file);
+
+    application_context->file = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_application_context_parent_class)->dispose(gobject);
+}
+
+void
 ags_application_context_finalize(GObject *gobject)
 {
   AgsApplicationContext *application_context;
@@ -449,16 +524,47 @@ ags_application_context_finalize(GObject *gobject)
   pthread_mutex_destroy(application_context->mutex);
   free(application_context->mutex);
 
+  /* log */
+  if(application_context->log != NULL){
+    g_object_unref(application_context->log);
+  }
+
   /* config */
   if(application_context->config != NULL){
+    g_object_set(application_context->config,
+		 "application-context\0", NULL,
+		 NULL);
+
     g_object_unref(application_context->config);
   }
   
   /* main loop */
   if(application_context->main_loop != NULL){
+    g_object_set(application_context->main_loop,
+		 "application-context\0", NULL,
+		 NULL);
+
     g_object_unref(application_context->main_loop);
   }
-  
+
+  /* autosave thread */
+  if(application_context->autosave_thread != NULL){
+    g_object_set(application_context->autosave_thread,
+		 "application-context\0", NULL,
+		 NULL);
+
+    g_object_unref(application_context->autosave_thread);
+  }
+
+  /* task thread */
+  if(application_context->task_thread != NULL){
+    g_object_set(application_context->task_thread,
+		 "application-context\0", NULL,
+		 NULL);
+
+    g_object_unref(application_context->task_thread);
+  }
+
   /* file */
   if(application_context->file != NULL){
     g_object_unref(application_context->file);

@@ -39,6 +39,7 @@
 
 void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
 void ags_ladspa_manager_init (AgsLadspaManager *ladspa_manager);
+void ags_ladspa_manager_dispose(GObject *gobject);
 void ags_ladspa_manager_finalize(GObject *gobject);
 
 /**
@@ -99,6 +100,7 @@ ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager)
   /* GObjectClass */
   gobject = (GObjectClass *) ladspa_manager;
 
+  gobject->dispose = ags_ladspa_manager_dispose;
   gobject->finalize = ags_ladspa_manager_finalize;
 }
 
@@ -117,9 +119,28 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
 }
 
 void
+ags_ladspa_manager_dispose(GObject *gobject)
+{
+  AgsLadspaManager *ladspa_manager;
+
+  ladspa_manager = AGS_LADSPA_MANAGER(gobject);
+
+  if(ladspa_manager->ladspa_plugin != NULL){
+    g_list_free_full(ladspa_manager->ladspa_plugin,
+		     (GDestroyNotify) g_object_unref);
+
+    ladspa_manager->ladspa_plugin = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_ladspa_manager_parent_class)->dispose(gobject);
+}
+
+void
 ags_ladspa_manager_finalize(GObject *gobject)
 {
   AgsLadspaManager *ladspa_manager;
+  
   GList *ladspa_plugin;
 
   ladspa_manager = AGS_LADSPA_MANAGER(gobject);
@@ -128,6 +149,9 @@ ags_ladspa_manager_finalize(GObject *gobject)
 
   g_list_free_full(ladspa_plugin,
 		   (GDestroyNotify) g_object_unref);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_ladspa_manager_parent_class)->finalize(gobject);
 }
 
 /**
