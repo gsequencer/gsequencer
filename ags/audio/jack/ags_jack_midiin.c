@@ -73,6 +73,7 @@ void ags_jack_midiin_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_jack_midiin_disconnect(AgsConnectable *connectable);
 void ags_jack_midiin_connect(AgsConnectable *connectable);
+void ags_jack_midiin_dispose(GObject *gobject);
 void ags_jack_midiin_finalize(GObject *gobject);
 
 void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
@@ -206,6 +207,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
   gobject->set_property = ags_jack_midiin_set_property;
   gobject->get_property = ags_jack_midiin_get_property;
 
+  gobject->dispose = ags_jack_midiin_dispose;
   gobject->finalize = ags_jack_midiin_finalize;
 
   /* properties */
@@ -664,13 +666,44 @@ ags_jack_midiin_get_property(GObject *gobject,
 }
 
 void
+ags_jack_midiin_dispose(GObject *gobject)
+{
+  AgsJackMidiin *jack_midiin;
+
+  GList *list;
+
+  jack_midiin = AGS_JACK_MIDIIN(gobject);
+
+  /* audio */
+  if(jack_midiin->audio != NULL){
+    list = jack_midiin->audio;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "sequencer\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(jack_midiin->audio,
+		     g_object_unref);
+
+    jack_midiin->audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_jack_midiin_parent_class)->dispose(gobject);
+}
+
+void
 ags_jack_midiin_finalize(GObject *gobject)
 {
   AgsJackMidiin *jack_midiin;
 
   AgsMutexManager *mutex_manager;
   
-  GList *list, *list_next;
+  GList *list;
 
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
@@ -704,7 +737,18 @@ ags_jack_midiin_finalize(GObject *gobject)
   /* free buffer array */
   free(jack_midiin->buffer);
 
+  /* audio */
   if(jack_midiin->audio != NULL){
+    list = jack_midiin->audio;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "sequencer\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
     g_list_free_full(jack_midiin->audio,
 		     g_object_unref);
   }
