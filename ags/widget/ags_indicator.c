@@ -128,6 +128,7 @@ ags_indicator_init(AgsIndicator *indicator)
 		       indicator_style);
 
   indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+  g_object_ref(indicator->adjustment);
 }
 
 void

@@ -752,6 +752,8 @@ gboolean
 ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 {
   AgsNavigation *navigation;
+
+  gchar *str;
   
   gdk_threads_enter();
 
@@ -762,10 +764,13 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
     
     return(TRUE);
   }
-  
+
+  str = ags_soundcard_get_uptime(AGS_SOUNDCARD(navigation->soundcard));
   g_object_set(navigation->duration_time,
-	       "label\0", ags_soundcard_get_uptime(AGS_SOUNDCARD(navigation->soundcard)),
+	       "label\0", str,
 	       NULL);
+  g_free(str);
+  
   gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
 
   gdk_threads_leave();

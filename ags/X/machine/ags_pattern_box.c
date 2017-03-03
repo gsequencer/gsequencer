@@ -796,7 +796,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     AgsMutexManager *mutex_manager;
 
-    GList *list, *active;
+    GList *list, *list_start, *active;
     guint active_led_new;
     guint i;
 
@@ -874,7 +874,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     pthread_mutex_unlock(audio_mutex);
     
     /* offset */
-    list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
+    list_start =
+      list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
     
     for(i = 0; list != NULL; i++){
       if(gtk_toggle_button_get_active(list->data)){
@@ -884,10 +885,11 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
       list = list->next;
     }
 
-    g_list_free(list);
+    g_list_free(list_start);
 
     /* led */
-    list = gtk_container_get_children((GtkContainer *) pattern_box->led);
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) pattern_box->led);
     active = NULL;
     
     for(i = 0; list != NULL; i++){
@@ -907,7 +909,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
       ags_led_set_active(AGS_LED(active->data));
     }
     
-    g_list_free(list);
+    g_list_free(list_start);
         
     gdk_threads_leave();
     

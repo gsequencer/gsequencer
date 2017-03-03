@@ -957,7 +957,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     AgsMutexManager *mutex_manager;
 
-    GList *list, *active;
+    GList *list, *list_start, *active;
     guint offset;
     guint active_led_new;
     guint i;
@@ -1036,7 +1036,8 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     pthread_mutex_unlock(audio_mutex);
 
     /* led */
-    list = gtk_container_get_children((GtkContainer *) cell_pattern->led);
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) cell_pattern->led);
     active = NULL;
     
     for(i = 0; list != NULL; i++){
@@ -1056,7 +1057,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
       ags_led_set_active(AGS_LED(active->data));
     }
     
-    g_list_free(list);
+    g_list_free(list_start);
     
     gdk_threads_leave();
     

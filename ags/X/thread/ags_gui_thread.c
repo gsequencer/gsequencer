@@ -143,7 +143,7 @@ ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread)
   thread->resume = ags_gui_thread_resume;
   thread->stop = ags_gui_thread_stop;
 
-  thread->interrupted = ags_gui_thread_interrupted;
+  //  thread->interrupted = ags_gui_thread_interrupted;
 }
 
 void
@@ -395,11 +395,16 @@ ags_gui_thread_run(AgsThread *thread)
   ags_gui_thread_complete_task();  
   
   g_main_context_release(main_context);
-  
-  //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-  //  pango_cairo_font_map_set_default(NULL);
+
+  gdk_threads_enter();
+
+  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  pango_cairo_font_map_set_default(NULL);
+
   //  cairo_debug_reset_static_data();
   //  FcFini();
+  
+  gdk_threads_leave();
 }
 
 guint

@@ -343,7 +343,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   guint i;
   guint copy_mode;
   
-  GValue value = {0,};
+  GValue *value;
 
   if(peak_channel == NULL){
     return;
@@ -465,20 +465,23 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   if(current_value != 0.0){
     current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 22000.0));
   }
-  
-  g_value_init(&value, G_TYPE_FLOAT);
+
+  value = g_new0(GValue,
+		 1);
+  g_value_init(value, G_TYPE_FLOAT);
 
   if(current_value < 0.0){
     current_value *= -1.0;
   }
 
-  g_value_set_float(&value,
+  g_value_set_float(value,
 		    current_value);
 
   ags_port_safe_write(peak_channel->peak,
-		      &value);
-  g_value_unset(&value);
-
+		      value);
+  g_value_unset(value);
+  g_free(value);
+  
   /* free buffer */
   free(buffer);
 }
