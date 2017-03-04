@@ -42,6 +42,8 @@
 #include <ags/audio/thread/ags_export_thread.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
 
 #include <fontconfig/fontconfig.h>
 
@@ -1304,18 +1306,18 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 
 	  /* super threaded recycling level */
 	  if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0){
-	    playback->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(playback->iterator_thread[0]->tic_cond);
+	    AGS_ITERATOR_THREAD(playback->iterator_thread[0])->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(AGS_ITERATOR_THREAD(playback->iterator_thread[0])->tic_cond);
 	  }
 
 	  if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0){
-	    playback->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(playback->iterator_thread[1]->tic_cond);
+	    AGS_ITERATOR_THREAD(playback->iterator_thread[1])->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(AGS_ITERATOR_THREAD(playback->iterator_thread[1])->tic_cond);
 	  }
 
 	  if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) != 0){
-	    playback->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(playback->iterator_thread[2]->tic_cond);
+	    AGS_ITERATOR_THREAD(playback->iterator_thread[2])->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(AGS_ITERATOR_THREAD(playback->iterator_thread[2])->tic_cond);
 	  }
 	}else{
 	  gboolean remove_domain;

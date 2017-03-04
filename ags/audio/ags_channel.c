@@ -755,67 +755,10 @@ ags_channel_init(AgsChannel *channel)
 
   /* playback */
   channel->playback = (GObject *) ags_playback_new();
-  AGS_PLAYBACK(channel->playback)->source = (GObject *) channel;
+  g_object_set(channel->playback,
+	       "source\0", channel,
+	       NULL);
 
-  /* thread model */
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "model\0");
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope\0");
-
-  if(str0 != NULL && str1 != NULL){
-    if(!g_ascii_strncasecmp(str0,
-			    "super-threaded\0",
-			    15)){
-      if(!g_ascii_strncasecmp(str1,
-			      "channel\0",
-			      8) ||
-	 !g_ascii_strncasecmp(str1,
-			      "recycling\0",
-			      10)){
-	gdouble freq;
-	
-	freq = ceil((gdouble) channel->samplerate / (gdouble) channel->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-
-	g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
-			AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
-
-	AGS_PLAYBACK(channel->playback)->channel_thread[0] = (AgsThread *) ags_channel_thread_new(NULL,
-												  (GObject *) channel);
-	AGS_PLAYBACK(channel->playback)->channel_thread[0]->freq = freq;
-	
-	AGS_PLAYBACK(channel->playback)->channel_thread[1] = (AgsThread *) ags_channel_thread_new(NULL,
-												  (GObject *) channel);
-	AGS_PLAYBACK(channel->playback)->channel_thread[1]->freq = freq;
-
-	AGS_PLAYBACK(channel->playback)->channel_thread[2] = (AgsThread *) ags_channel_thread_new(NULL,
-												  (GObject *) channel);
-	AGS_PLAYBACK(channel->playback)->channel_thread[2]->freq = freq;
-	
-	if(!g_ascii_strncasecmp(str1,
-				"recycling\0",
-				10)){
-	  AGS_PLAYBACK(channel->playback)->recycling_thread[0] = (AgsThread *) ags_recycling_thread_new(NULL,
-													NULL);
-	  AGS_PLAYBACK(channel->playback)->recycling_thread[1] = (AgsThread *) ags_recycling_thread_new(NULL,
-													NULL);
-	  AGS_PLAYBACK(channel->playback)->recycling_thread[2] = (AgsThread *) ags_recycling_thread_new(NULL,
-													NULL);
-	}
-      }
-    }
-  } 
-
-  if(str0 != NULL){
-    free(str0);
-  }
-
-  if(str1 != NULL){
-    free(str1);
-  }
-  
   channel->recall_id = NULL;
   channel->container = NULL;
 

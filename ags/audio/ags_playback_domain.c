@@ -56,7 +56,6 @@ void ags_playback_domain_finalize(GObject *gobject);
 
 static gpointer ags_playback_domain_parent_class = NULL;
 
-
 enum{
   PROP_0,
   PROP_DOMAIN,
@@ -214,7 +213,10 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
     g_atomic_int_set(&(playback_domain->flags),
 		     0);
   }
-  
+
+  /* domain */
+  playback_domain->domain = NULL;
+
   /* super threaded audio */
   playback_domain->audio_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
 
@@ -285,8 +287,8 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 									  NULL);
     playback_domain->audio_thread[2]->freq = freq;
   }
-	
-  playback_domain->domain = NULL;
+
+  /* playback */
   playback_domain->playback = NULL;
 }
 
@@ -492,7 +494,7 @@ ags_playback_domain_disconnect(AgsConnectable *connectable)
  * ags_playback_domain_set_audio_thread:
  * @playback_domain: the #AgsPlaybackDomain
  * @thread: the #AgsThread
- * @thread_scope: the thread's scope
+ * @scope: the thread's scope
  * 
  * Set audio thread to specified scope.
  * 
@@ -501,28 +503,28 @@ ags_playback_domain_disconnect(AgsConnectable *connectable)
 void
 ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 				     AgsThread *thread,
-				     guint thread_scope)
+				     guint scope)
 {
   if(playback_domain == NULL ||
-     thread_scope > 2){
+     scope > 2){
     return;
   }
 
-  if(playback_domain->audio_thread[thread_scope] != NULL){
-    g_object_unref(playback_domain->audio_thread[thread_scope]);
+  if(playback_domain->audio_thread[scope] != NULL){
+    g_object_unref(playback_domain->audio_thread[scope]);
   }
 
   if(thread != NULL){
     g_object_ref(thread);
   }
   
-  playback_domain->audio_thread[thread_scope] = thread;
+  playback_domain->audio_thread[scope] = thread;
 }
 
 /**
  * ags_playback_domain_set_audio_thread:
  * @playback_domain: the #AgsPlaybackDomain
- * @thread_scope: the thread's scope
+ * @scope: the thread's scope
  * 
  * Get audio thread of specified scope.
  * 
@@ -532,15 +534,15 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
  */
 AgsThread*
 ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
-				     guint thread_scope)
+				     guint scope)
 {
   if(playback_domain == NULL ||
      playback_domain->audio_thread == NULL ||
-     thread_scope > 2){
+     scope > 2){
     return(NULL);
   }
 
-  return(playback_domain->audio_thread[thread_scope]);
+  return(playback_domain->audio_thread[scope]);
 }
 
 
@@ -566,6 +568,29 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
   g_object_ref(playback);
   playback_domain->playback = g_list_append(playback_domain->playback,
 					    playback);
+}
+
+/**
+ * ags_playback_domain_remove_playback:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @playback: the #AgsPlayback
+ * 
+ * Remove @playback of @playback_domain.
+ * 
+ * Since: 0.7.122.7
+ */
+void
+ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
+				    GObject *playback)
+{
+  if(playback_domain == NULL ||
+     playback == NULL){
+    return;
+  }
+
+  playback_domain->playback = g_list_remove(playback_domain->playback,
+					    playback);
+  g_object_unref(playback);
 }
 
 /**
