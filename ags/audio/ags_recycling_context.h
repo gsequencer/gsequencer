@@ -37,12 +37,13 @@ struct _AgsRecyclingContext
 {
   GObject object;
 
+  AgsRecyclingContext *parent;
+
   GObject *recall_id;
 
   AgsRecycling **recycling;
   guint64 length;
 
-  AgsRecyclingContext *parent;
   GList *children;
 };
 
@@ -53,6 +54,7 @@ struct _AgsRecyclingContextClass
 
 GType ags_recycling_context_get_type();
 
+/* replace, add, remove and insert */
 void ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
 				   AgsRecycling *recycling,
 				   gint position);
@@ -65,6 +67,7 @@ AgsRecyclingContext* ags_recycling_context_insert(AgsRecyclingContext *recycling
 						  AgsRecycling *recycling,
 						  gint position);
 
+/* tolevel, find, find child and find parent */
 AgsRecyclingContext* ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context);
 
 gint ags_recycling_context_find(AgsRecyclingContext *recycling_context,
@@ -74,17 +77,21 @@ gint ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
 gint ags_recycling_context_find_parent(AgsRecyclingContext *recycling_context,
 				       AgsRecycling *recycling);
 
+/* add and remove child */
 void ags_recycling_context_add_child(AgsRecyclingContext *parent,
 				     AgsRecyclingContext *child);
 void ags_recycling_context_remove_child(AgsRecyclingContext *parent,
 					AgsRecyclingContext *child);
 
+/* child recall id */
 GList* ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context);
 
+/* instantiate - reset recycling */
 AgsRecyclingContext* ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 							   AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
 							   AgsRecycling *new_first_recycling, AgsRecycling *new_last_recycling);
 
+/* instantiate */
 AgsRecyclingContext* ags_recycling_context_new(guint64 length);
 
 #endif /*__AGS_RECYCLING_CONTEXT_H__*/

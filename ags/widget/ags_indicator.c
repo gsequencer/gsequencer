@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -107,6 +107,13 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   widget->show = ags_indicator_show;
 
   /* properties */
+  /**
+   * AgsIndicator:adjustment:
+   *
+   * The adjustment giving indicator value.
+   * 
+   * Since: 0.7.21
+   */
   param_spec = g_param_spec_object("adjustment\0",
 				   "assigned adjustment\0",
 				   "The adjustment it is assigned with\0",
@@ -180,7 +187,9 @@ ags_indicator_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_ADJUSTMENT:
-    g_value_set_object(value, indicator->adjustment);
+    {
+      g_value_set_object(value, indicator->adjustment);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

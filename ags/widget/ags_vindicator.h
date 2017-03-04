@@ -28,11 +28,11 @@
 #include "ags_indicator.h"
 
 #define AGS_TYPE_VINDICATOR                (ags_vindicator_get_type())
-#define AGS_VINDICATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INDICATOR, AgsVIndicator))
-#define AGS_VINDICATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_INDICATOR, AgsVIndicatorClass))
-#define AGS_IS_VINDICATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_INDICATOR))
-#define AGS_IS_VINDICATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_INDICATOR))
-#define AGS_VINDICATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_INDICATOR, AgsVIndicatorClass))
+#define AGS_VINDICATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VINDICATOR, AgsVIndicator))
+#define AGS_VINDICATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_VINDICATOR, AgsVIndicatorClass))
+#define AGS_IS_VINDICATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_VINDICATOR))
+#define AGS_IS_VINDICATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_VINDICATOR))
+#define AGS_VINDICATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_VINDICATOR, AgsVIndicatorClass))
 
 typedef struct _AgsVIndicator AgsVIndicator;
 typedef struct _AgsVIndicatorClass AgsVIndicatorClass;

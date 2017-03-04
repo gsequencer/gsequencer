@@ -34,6 +34,7 @@ void ags_recycling_context_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
+void ags_recycling_context_dispose(GObject *gobject);
 void ags_recycling_context_finalize(GObject *gobject);
 
 /**
@@ -96,6 +97,7 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
   gobject->set_property = ags_recycling_context_set_property;
   gobject->get_property = ags_recycling_context_get_property;
 
+  gobject->dispose = ags_recycling_context_dispose;
   gobject->finalize = ags_recycling_context_finalize;
 
   /* properties */
@@ -270,8 +272,88 @@ ags_recycling_context_get_property(GObject *gobject,
 }
 
 void
+ags_recycling_context_dispose(GObject *gobject)
+{
+  AgsRecyclingContext *recycling_context;
+
+  GList *list, *list_next;
+
+  guint i;
+  
+  recycling_context = AGS_RECYCLING_CONTEXT(gobject);
+
+  /* parent */
+  if(recycling_context->parent != NULL){
+    g_object_unref(recycling_context->parent);
+  }
+  
+  /* recall id */
+  if(recycling_context->recall_id != NULL){
+    g_object_unref(recycling_context->recall_id);
+  }
+
+  /* recycling */
+  if(recycling_context->recycling != NULL){
+    for(i = 0; i < recycling_context->length; i++){
+      g_object_unref(recycling_context->recycling[i]);
+    }
+
+    free(recycling_context->recycling);
+    
+    recycling_context->recycling = NULL;
+    recycling_context->length = 0;
+  }
+  
+  /* children */
+  list = recycling_context->children;
+
+  while(list != NULL){
+    list_next = list->next;
+    
+    ags_recycling_context_remove_child(recycling_context,
+				       list->data);
+    
+    list = list_next;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_recycling_context_parent_class)->dispose(gobject);
+}
+
+void
 ags_recycling_context_finalize(GObject *gobject)
 {
+  AgsRecyclingContext *recycling_context;
+
+  GList *list;
+
+  guint i;
+    
+  recycling_context = AGS_RECYCLING_CONTEXT(gobject);
+
+  /* parent */
+  if(recycling_context->parent != NULL){
+    g_object_unref(recycling_context->parent);
+  }
+  
+  /* recall id */
+  if(recycling_context->recall_id != NULL){
+    g_object_unref(recycling_context->recall_id);
+  }
+
+  /* recycling */
+  if(recycling_context->recycling != NULL){
+    for(i = 0; i < recycling_context->length; i++){
+      g_object_unref(recycling_context->recycling[i]);
+    }
+  
+    free(recycling_context->recycling);
+  }
+  
+  /* children */
+  g_list_free(recycling_context->children);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_recycling_context_parent_class)->finalize(gobject);
 }
 
@@ -314,8 +396,10 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
 			  AgsRecycling *recycling)
 {
   AgsRecyclingContext *new_recycling_context;
-  gint new_length;
 
+  gint new_length;
+  guint i;
+  
   if(recycling_context == NULL){
     return(NULL);
   }
@@ -327,6 +411,11 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
 
   memcpy(new_recycling_context->recycling, recycling_context->recycling, new_length * sizeof(AgsRecycling *));
   new_recycling_context->recycling[new_length] = recycling;
+
+  /* ref count */
+  for(i = 0; i < new_recycling_context->length; i++){
+    g_object_ref(new_recycling_context->recycling[i]);
+  }
 
   return(new_recycling_context);
 }
@@ -347,9 +436,11 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
 			     AgsRecycling *recycling)
 {
   AgsRecyclingContext *new_recycling_context;
+
   gint new_length;
   gint position;
-
+  guint i;
+  
   new_recycling_context = (AgsRecyclingContext *) g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
 							       NULL);
 
@@ -361,6 +452,11 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
 
   memcpy(new_recycling_context->recycling, recycling_context->recycling, (new_length - position) * sizeof(AgsRecycling *));
   memcpy(&(new_recycling_context->recycling[position + 1]), recycling_context->recycling, (-1 * (position - new_length)) * sizeof(AgsRecycling *));
+
+  /* ref count */
+  for(i = 0; i < new_recycling_context->length; i++){
+    g_object_ref(new_recycling_context->recycling[i]);
+  }
 
   return(new_recycling_context);
 }
@@ -383,7 +479,9 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
 			     gint position)
 {
   AgsRecyclingContext *new_recycling_context;
+
   gint new_length;
+  guint i;
 
   new_recycling_context = (AgsRecyclingContext *) g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
 							       NULL);
@@ -395,6 +493,11 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
   memcpy(new_recycling_context->recycling, recycling_context->recycling, (new_length - position) * sizeof(AgsRecycling *));
   new_recycling_context->recycling[position] = recycling;
   memcpy(&(new_recycling_context->recycling[position + 1]), recycling_context->recycling, (-1 * (position - new_length)) * sizeof(AgsRecycling *));
+  
+  /* ref count */
+  for(i = 0; i < new_recycling_context->length; i++){
+    g_object_ref(new_recycling_context->recycling[i]);
+  }
 
   return(new_recycling_context);
 }
@@ -613,6 +716,7 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 {
   AgsRecyclingContext *new_recycling_context;
   AgsRecycling *recycling;
+
   gint new_length;
   gint first_index, last_index;
   guint i;
@@ -724,6 +828,11 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 	     &(recycling_context->recycling[first_index]),
 	     (new_recycling_context->length - first_index - new_length) * sizeof(AgsRecycling *));
     }
+  }
+
+  /* ref count */
+  for(i = 0; i < new_recycling_context->length; i++){
+    g_object_ref(new_recycling_context->recycling[i]);
   }
 
   return(new_recycling_context);

@@ -66,9 +66,6 @@
 /* GLib 2.6 available */
 #undef HAVE_GLIB_2_6
 
-/* Define to 1 if you have the <gmp.h> header file. */
-#undef HAVE_GMP_H
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
