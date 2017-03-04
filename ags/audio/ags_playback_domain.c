@@ -320,7 +320,8 @@ ags_playback_domain_set_property(GObject *gobject,
       if(domain != NULL){
 	g_object_ref(G_OBJECT(domain));
 
-	if(AGS_IS_AUDIO(domain)){
+	if(AGS_IS_AUDIO(domain) &&
+	   (AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
 	  gdouble freq;
 	  
 	  /* thread frequency */
@@ -442,7 +443,9 @@ ags_playback_domain_finalize(GObject *gobject)
   /* audio thread */
   if(playback_domain->audio_thread != NULL){
     for(i = 0; i < 3; i++){
-      g_object_unref(playback_domain->audio_thread[i]);
+      if(playback_domain->audio_thread[i] != NULL){
+	g_object_unref(playback_domain->audio_thread[i]);
+      }
     }
     
     free(playback_domain->audio_thread);

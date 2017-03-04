@@ -285,6 +285,14 @@ ags_playback_init(AgsPlayback *playback)
     free(str);
   }
 
+  /* playback domain */
+  playback->playback_domain = NULL;
+
+  /* source and audio channel */
+  playback->source = NULL;
+
+  playback->audio_channel = 0;
+  
   /* thread frequency */
   freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
@@ -401,7 +409,9 @@ ags_playback_set_property(GObject *gobject,
       if(source != NULL){
 	g_object_ref(G_OBJECT(source));
 
-	if(AGS_IS_CHANNEL(source)){
+	if(AGS_IS_CHANNEL(source) &&
+	   ((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0 ||
+	    (AGS_PLAYBACK_SUPER_THREADED_RECYCLING & (g_atomic_int_get(&(playback->flags)))) != 0)){
 	  gdouble freq;
 	  
 	  /* thread frequency */
@@ -423,31 +433,33 @@ ags_playback_set_property(GObject *gobject,
 		       "channel\0", source,
 		       NULL);
 
-	  /* recycling thread */
-	  g_object_set(playback->recycling_thread[0],
-		       "frequency\0", freq,
-		       NULL);
+	  if((AGS_PLAYBACK_SUPER_THREADED_RECYCLING & (g_atomic_int_get(&(playback->flags)))) != 0){
+	    /* recycling thread */
+	    g_object_set(playback->recycling_thread[0],
+			 "frequency\0", freq,
+			 NULL);
 
-	  g_object_set(playback->recycling_thread[1],
-		       "frequency\0", freq,
-		       NULL);
+	    g_object_set(playback->recycling_thread[1],
+			 "frequency\0", freq,
+			 NULL);
 
-	  g_object_set(playback->recycling_thread[2],
-		       "frequency\0", freq,
-		       NULL);
+	    g_object_set(playback->recycling_thread[2],
+			 "frequency\0", freq,
+			 NULL);
 
-	  /* iterator thread */
-	  g_object_set(playback->iterator_thread[0],
-		       "frequency\0", freq,
-		       NULL);
+	    /* iterator thread */
+	    g_object_set(playback->iterator_thread[0],
+			 "frequency\0", freq,
+			 NULL);
 
-	  g_object_set(playback->iterator_thread[1],
-		       "frequency\0", freq,
-		       NULL);
+	    g_object_set(playback->iterator_thread[1],
+			 "frequency\0", freq,
+			 NULL);
 
-	  g_object_set(playback->iterator_thread[2],
-		       "frequency\0", freq,
-		       NULL);
+	    g_object_set(playback->iterator_thread[2],
+			 "frequency\0", freq,
+			 NULL);
+	  }
 	}
       }
 
@@ -503,6 +515,72 @@ ags_playback_get_property(GObject *gobject,
 void
 ags_playback_dispose(GObject *gobject)
 {
+  AgsPlayback *playback;
+
+  guint i;
+  
+  playback = AGS_PLAYBACK(gobject);
+
+  /* playback domain */
+  if(playback->playback_domain != NULL){
+    g_object_unref(playback->playback_domain);
+
+    playback->playback_domain = NULL;
+  }
+
+  /* source */
+  if(playback->source != NULL){
+    g_object_unref(playback->source);
+
+    playback->source = NULL;
+  }
+  
+  /* channel thread */
+  if(playback->channel_thread != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->channel_thread[i] != NULL){
+	g_object_unref(playback->channel_thread[i]);
+
+	playback->channel_thread[i] = NULL;
+      }
+    }
+  }
+  
+  /* recycling thread */
+  if(playback->recycling_thread != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->recycling_thread[i] != NULL){
+	g_object_unref(playback->recycling_thread[i]);
+
+	playback->recycling_thread[i] = NULL;
+      }
+    }
+    
+  }
+  
+  /* iterator thread */
+  if(playback->iterator_thread != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->iterator_thread[i] != NULL){
+	g_object_unref(playback->iterator_thread[i]);
+
+	playback->iterator_thread[i] = NULL;
+      }
+    }
+    
+  }
+  
+  /* recall id */
+  if(playback->recall_id != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->recall_id[i] != NULL){
+	g_object_unref(playback->recall_id[i]);
+
+	playback->recall_id[i] = NULL;
+      }
+    }
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_playback_parent_class)->dispose(gobject);
 }
@@ -512,13 +590,63 @@ ags_playback_finalize(GObject *gobject)
 {
   AgsPlayback *playback;
 
+  guint i;
+  
   playback = AGS_PLAYBACK(gobject);
 
-  g_object_unref(G_OBJECT(playback->iterator_thread[0]));
-  g_object_unref(G_OBJECT(playback->iterator_thread[1]));
-  g_object_unref(G_OBJECT(playback->iterator_thread[2]));
+  /* playback domain */
+  if(playback->playback_domain != NULL){
+    g_object_unref(playback->playback_domain);
+  }
 
-  free(playback->iterator_thread);
+  /* source */
+  if(playback->source != NULL){
+    g_object_unref(playback->source);
+  }
+  
+  /* channel thread */
+  if(playback->channel_thread != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->channel_thread[i] != NULL){
+	g_object_unref(playback->channel_thread[i]);
+      }
+    }
+    
+    free(playback->channel_thread);
+  }
+  
+  /* recycling thread */
+  if(playback->recycling_thread != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->recycling_thread[i] != NULL){
+	g_object_unref(playback->recycling_thread[i]);
+      }
+    }
+    
+    free(playback->recycling_thread);
+  }
+  
+  /* iterator thread */
+  if(playback->iterator_thread != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->iterator_thread[i] != NULL){
+	g_object_unref(playback->iterator_thread[i]);
+      }
+    }
+    
+    free(playback->iterator_thread);
+  }
+  
+  /* recall id */
+  if(playback->recall_id != NULL){
+    for(i = 0; i < 3; i++){
+      if(playback->recall_id[i] != NULL){
+	g_object_unref(playback->recall_id[i]);
+      }
+    }
+    
+    free(playback->recall_id);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_playback_parent_class)->finalize(gobject);
@@ -527,13 +655,30 @@ ags_playback_finalize(GObject *gobject)
 void
 ags_playback_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPlayback *playback;
+
+  playback = AGS_PLAYBACK(connectable);
+
+  if((AGS_PLAYBACK_CONNECTED & (playback->flags)) != 0){
+    return;
+  }
+
+  playback->flags |= AGS_PLAYBACK_CONNECTED;
 }
 
 void
 ags_playback_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPlayback *playback;
+
+  playback = AGS_PLAYBACK(connectable);
+
+
+  if((AGS_PLAYBACK_CONNECTED & (playback->flags)) == 0){
+    return;
+  }
+
+  playback->flags &= (~AGS_PLAYBACK_CONNECTED);
 }
 
 /**
