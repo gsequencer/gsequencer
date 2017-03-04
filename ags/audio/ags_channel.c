@@ -1224,6 +1224,11 @@ ags_channel_connect(AgsConnectable *connectable)
   GList *list;
   
   channel = AGS_CHANNEL(connectable);
+
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    return;
+  }
+
   channel->flags |= AGS_CHANNEL_CONNECTED;
   
 #ifdef AGS_DEBUG
@@ -1291,8 +1296,79 @@ ags_channel_connect(AgsConnectable *connectable)
 void
 ags_channel_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
-  /* empty */
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+
+  GList *list;
+  
+  channel = AGS_CHANNEL(connectable);
+
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) == 0){
+    return;
+  }
+  
+  channel->flags &= (~AGS_CHANNEL_CONNECTED);
+  
+#ifdef AGS_DEBUG
+  g_message("disconnecting channel\0");
+#endif
+
+  //  ags_connectable_add_to_registry(connectable);
+
+  /* connect recall ids */
+  list = channel->recall_id;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recall containers */
+  list = channel->container;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recalls */
+  list = channel->recall;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = channel->play;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recycling */
+  recycling = channel->first_recycling;
+
+  if(recycling != NULL){
+    while(recycling != channel->last_recycling->next){
+      ags_connectable_disconnect(AGS_CONNECTABLE(recycling));
+      
+      recycling = recycling->next;
+    }
+  }
+
+  /* connect pattern and notation */
+  list = channel->pattern;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void

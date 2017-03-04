@@ -19,7 +19,12 @@
 
 #include <ags/audio/ags_playback_domain.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_audio_thread.h>
 
@@ -36,11 +41,27 @@
 void ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain);
 void ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_playback_domain_init(AgsPlaybackDomain *playback_domain);
+void ags_playback_domain_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_playback_domain_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
 void ags_playback_domain_disconnect(AgsConnectable *connectable);
 void ags_playback_domain_connect(AgsConnectable *connectable);
+void ags_playback_domain_dispose(GObject *gobject);
 void ags_playback_domain_finalize(GObject *gobject);
 
 static gpointer ags_playback_domain_parent_class = NULL;
+
+
+enum{
+  PROP_0,
+  PROP_DOMAIN,
+  PROP_PLAYBACK,
+};
 
 GType
 ags_playback_domain_get_type (void)
@@ -90,7 +111,44 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
   /* GObjectClass */
   gobject = (GObjectClass *) playback_domain;
 
+  gobject->set_property = ags_playback_domain_set_property;
+  gobject->get_property = ags_playback_domain_get_property;
+
+  gobject->dispose = ags_playback_domain_dispose;
   gobject->finalize = ags_playback_domain_finalize;
+
+  /* properties */
+  /**
+   * AgsPlaybackDomain:domain:
+   *
+   * The assigned domain.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("domain\0",
+				   "assigned domain\0",
+				   "The domain it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DOMAIN,
+				  param_spec);
+
+  /**
+   * AgsPlaybackDomain:playback:
+   *
+   * The assigned playback.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("playback\0",
+				   "assigned playback\0",
+				   "The playback it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAYBACK,
+				  param_spec);
 }
 
 void
@@ -105,19 +163,269 @@ ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
-  /* default flags */
-  g_atomic_int_set(&(playback_domain->flags),
-		   AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
+  AgsConfig *config;
 
+  gchar str, *str0, *str1;
+
+  gboolean super_threaded_audio;
+  
+  /* config */
+  config = ags_config_get_instance();
+
+  /* thread model */
+  str0 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "model\0");
+  str1 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "super-threaded-scope\0");
+
+  if(str0 != NULL && str1 != NULL){
+    if(!g_ascii_strncasecmp(str0,
+			    "super-threaded\0",
+			    15)){
+      if(!g_ascii_strncasecmp(str1,
+			      "audio\0",
+			      6) ||
+	 !g_ascii_strncasecmp(str1,
+			      "channel\0",
+			      8) ||
+	 !g_ascii_strncasecmp(str1,
+			      "recycling\0",
+			      10)){
+	super_threaded_audio = TRUE;
+      }
+    }
+  }
+  
+  if(str0 != NULL){
+    free(str0);
+  }
+
+  if(str1 != NULL){
+    free(str1);
+  }
+  
+  /* default flags */
+  if(super_threaded_audio){
+    g_atomic_int_set(&(playback_domain->flags),
+		     AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
+  }else{
+    g_atomic_int_set(&(playback_domain->flags),
+		     0);
+  }
+  
   /* super threaded audio */
   playback_domain->audio_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
 
   playback_domain->audio_thread[0] = NULL;
   playback_domain->audio_thread[1] = NULL;
   playback_domain->audio_thread[2] = NULL;
+  
+  if(super_threaded_audio){
+    guint samplerate, buffer_size;
+    gdouble freq;
+    
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
+    /* samplerate */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "samplerate\0");
+
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "samplerate\0");
+    }
+  
+    if(str != NULL){
+      samplerate = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+
+      free(str);
+    }
+
+    /* buffer size */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "buffer-size\0");
+
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "buffer-size\0");
+    }
+  
+    if(str != NULL){
+      buffer_size = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+
+      free(str);
+    }
+
+    /* thread frequency */
+    freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+    /* playback audio thread */
+    playback_domain->audio_thread[0] = (AgsThread *) ags_audio_thread_new(NULL,
+									  NULL);
+    playback_domain->audio_thread[0]->freq = freq;
+
+    /* sequencer audio thread */
+    playback_domain->audio_thread[1] = (AgsThread *) ags_audio_thread_new(NULL,
+									  NULL);
+    playback_domain->audio_thread[1]->freq = freq;
+
+    /* notation audio thread */
+    playback_domain->audio_thread[2] = (AgsThread *) ags_audio_thread_new(NULL,
+									  NULL);
+    playback_domain->audio_thread[2]->freq = freq;
+  }
+	
   playback_domain->domain = NULL;
   playback_domain->playback = NULL;
+}
+
+void
+ags_playback_domain_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsPlaybackDomain *playback_domain;
+  
+  playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
+
+  switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      GObject *domain;
+
+      domain = (GObject *) g_value_get_object(value);
+
+      if((GObject *) playback_domain->domain == domain){
+	return;
+      }
+
+      if(playback_domain->domain != NULL){
+	g_object_unref(G_OBJECT(playback_domain->domain));
+      }
+
+      if(domain != NULL){
+	g_object_ref(G_OBJECT(domain));
+
+	if(AGS_IS_AUDIO(domain)){
+	  gdouble freq;
+	  
+	  /* thread frequency */
+	  freq = ceil((gdouble) AGS_AUDIO(domain)->samplerate / (gdouble) AGS_AUDIO(domain)->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+	  g_object_set(playback_domain->audio_thread[0],
+		       "frequency\0", freq,
+		       "audio\0", domain,
+		       NULL);
+
+	  g_object_set(playback_domain->audio_thread[1],
+		       "frequency\0", freq,
+		       "audio\0", domain,
+		       NULL);
+
+	  g_object_set(playback_domain->audio_thread[2],
+		       "frequency\0", freq,
+		       "audio\0", domain,
+		       NULL);
+	}
+      }
+
+      playback_domain->domain = (GObject *) domain;
+    }
+    break;
+  case PROP_PLAYBACK:
+    {
+      AgsPlayback *playback;
+
+      playback = (AgsPlayback *) g_value_get_object(value);
+
+      if(playback == NULL ||
+	 g_list_find(playback_domain->playback, playback) != NULL){
+	return;
+      }
+
+      ags_playback_domain_add_playback(playback_domain,
+				       (GObject *) playback);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_playback_domain_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsPlaybackDomain *playback_domain;
+
+  playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
+
+  switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      g_value_set_object(value,
+			 playback_domain->domain);
+    }
+    break;
+  case PROP_PLAYBACK:
+    {
+      g_value_set_pointer(value,
+			  g_list_copy(playback_domain->playback));
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_playback_domain_dispose(GObject *gobject)
+{
+  AgsPlaybackDomain *playback_domain;
+
+  guint i;
+  
+  playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
+  
+  if(playback_domain->audio_thread != NULL){
+    for(i = 0; i < 3; i++){
+      g_object_unref(playback_domain->audio_thread[i]);
+
+      playback_domain->audio_thread[i] = NULL;
+    }    
+  }
+
+  /* domain */
+  if(playback_domain->domain != NULL){
+    g_object_unref(playback_domain->domain);
+
+    playback_domain->domain = NULL;
+  }
+
+  /* playback */
+  g_list_free_full(playback_domain->playback,
+		   g_object_unref);
+
+  playback_domain->playback = NULL;
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_playback_domain_parent_class)->dispose(gobject);
 }
 
 void
@@ -125,10 +433,25 @@ ags_playback_domain_finalize(GObject *gobject)
 {
   AgsPlaybackDomain *playback_domain;
 
+  guint i;
+  
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
-  free(playback_domain->audio_thread);
+  /* audio thread */
+  if(playback_domain->audio_thread != NULL){
+    for(i = 0; i < 3; i++){
+      g_object_unref(playback_domain->audio_thread[i]);
+    }
+    
+    free(playback_domain->audio_thread);
+  }
+
+  /* domain */
+  if(playback_domain->domain != NULL){
+    g_object_unref(playback_domain->domain);
+  }
   
+  /* playback */
   g_list_free_full(playback_domain->playback,
 		   g_object_unref);
 
@@ -139,13 +462,110 @@ ags_playback_domain_finalize(GObject *gobject)
 void
 ags_playback_domain_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPlaybackDomain *playback_domain;
+
+  playback_domain = AGS_PLAYBACK_DOMAIN(connectable);
+
+  if((AGS_PLAYBACK_DOMAIN_CONNECTED & (playback_domain->flags)) != 0){
+    return;
+  }
+
+  playback_domain->flags |= AGS_PLAYBACK_DOMAIN_CONNECTED;
 }
 
 void
 ags_playback_domain_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPlaybackDomain *playback_domain;
+
+  playback_domain = AGS_PLAYBACK_DOMAIN(connectable);
+
+
+  if((AGS_PLAYBACK_DOMAIN_CONNECTED & (playback_domain->flags)) == 0){
+    return;
+  }
+
+  playback_domain->flags &= (~AGS_PLAYBACK_DOMAIN_CONNECTED);
+}
+
+/**
+ * ags_playback_domain_set_audio_thread:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @thread: the #AgsThread
+ * @thread_scope: the thread's scope
+ * 
+ * Set audio thread to specified scope.
+ * 
+ * Since: 0.7.122.7
+ */
+void
+ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
+				     AgsThread *thread,
+				     guint thread_scope)
+{
+  if(playback_domain == NULL ||
+     thread_scope > 2){
+    return;
+  }
+
+  if(playback_domain->audio_thread[thread_scope] != NULL){
+    g_object_unref(playback_domain->audio_thread[thread_scope]);
+  }
+
+  if(thread != NULL){
+    g_object_ref(thread);
+  }
+  
+  playback_domain->audio_thread[thread_scope] = thread;
+}
+
+/**
+ * ags_playback_domain_set_audio_thread:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @thread_scope: the thread's scope
+ * 
+ * Get audio thread of specified scope.
+ * 
+ * Returns: the matching #AgsThread or %NULL
+ * 
+ * Since: 0.7.122.7
+ */
+AgsThread*
+ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
+				     guint thread_scope)
+{
+  if(playback_domain == NULL ||
+     playback_domain->audio_thread == NULL ||
+     thread_scope > 2){
+    return(NULL);
+  }
+
+  return(playback_domain->audio_thread[thread_scope]);
+}
+
+
+/**
+ * ags_playback_domain_add_playback:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @playback: the #AgsPlayback
+ * 
+ * Add @playback to @playback_domain.
+ * 
+ * Since: 0.7.122.7
+ */
+void
+ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
+				 GObject *playback)
+{
+  if(playback_domain == NULL ||
+     playback == NULL){
+    return;
+  }
+
+  //TODO:JK: rather use prepend but needs refactoring
+  g_object_ref(playback);
+  playback_domain->playback = g_list_append(playback_domain->playback,
+					    playback);
 }
 
 /**

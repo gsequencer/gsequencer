@@ -1,3 +1,11 @@
+ags (0.7.122.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented GObject::dispose()
+	* TODO:JK: implemented missing properties of AgsPlaybackDomain, AgsPlayback and AgsRecallID
+	* TODO:JK: fixed reference counting of libags, libags_audio
+	* fixed division by zero cause by AgsOscillator
+
 ags (0.7.122.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
