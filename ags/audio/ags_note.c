@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,7 +38,7 @@ void ags_note_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_note_connect(AgsConnectable *connectable);
 void ags_note_disconnect(AgsConnectable *connectable);
-void ags_note_finalize(GObject *object);
+void ags_note_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_note
@@ -327,13 +327,29 @@ ags_note_init(AgsNote *note)
 void
 ags_note_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsNote *note;
+
+  note = AGS_NOTE(connectable);
+
+  if((AGS_NOTE_CONNECTED & (note->flags)) != 0){
+    return;
+  }
+
+  note->flags |= AGS_NOTE_CONNECTED;
 }
 
 void
 ags_note_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsNote *note;
+
+  note = AGS_NOTE(connectable);
+
+  if((AGS_NOTE_CONNECTED & (note->flags)) == 0){
+    return;
+  }
+
+  note->flags &= (~AGS_NOTE_CONNECTED);
 }
 
 void
@@ -478,8 +494,16 @@ ags_note_get_property(GObject *gobject,
 void
 ags_note_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsNote *note;
 
+  note = AGS_NOTE(gobject);
+
+  /* name */
+  if(note->name != NULL){
+    free(note->name);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_note_parent_class)->finalize(gobject);
 }
 

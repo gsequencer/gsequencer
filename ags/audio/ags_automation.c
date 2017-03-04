@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -434,13 +434,51 @@ ags_automation_init(AgsAutomation *automation)
 void
 ags_automation_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAutomation *automation;
+
+  GList *list;
+  
+  automation = AGS_AUTOMATION(connectable);
+
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) != 0){
+    return;
+  }
+
+  automation->flags |= AGS_AUTOMATION_CONNECTED;
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_automation_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAutomation *automation;
+
+  GList *list;
+
+  automation = AGS_AUTOMATION(connectable);
+
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) == 0){
+    return;
+  }
+
+  automation->flags &= (~AGS_AUTOMATION_CONNECTED);
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void

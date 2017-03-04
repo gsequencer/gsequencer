@@ -45,6 +45,8 @@ typedef enum{
 struct _AgsSynthGenerator
 {
   AgsFunction function;
+
+  guint flags;
   
   guint samplerate;
   guint buffer_size;

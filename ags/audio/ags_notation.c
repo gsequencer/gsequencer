@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -337,13 +337,51 @@ ags_notation_init(AgsNotation *notation)
 void
 ags_notation_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsNotation *notation;
+
+  GList *list;
+  
+  notation = AGS_NOTATION(connectable);
+
+  if((AGS_NOTATION_CONNECTED & (notation->flags)) != 0){
+    return;
+  }
+
+  notation->flags |= AGS_NOTATION_CONNECTED;
+
+  /* note */
+  list = notation->notes;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_notation_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsNotation *notation;
+
+  GList *list;
+
+  notation = AGS_NOTATION(connectable);
+
+  if((AGS_NOTATION_CONNECTED & (notation->flags)) == 0){
+    return;
+  }
+
+  notation->flags &= (~AGS_NOTATION_CONNECTED);
+
+  /* note */
+  list = notation->notes;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
