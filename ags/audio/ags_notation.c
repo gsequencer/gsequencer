@@ -46,7 +46,8 @@ void ags_notation_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_notation_connect(AgsConnectable *connectable);
 void ags_notation_disconnect(AgsConnectable *connectable);
-void ags_notation_finalize(GObject *object);
+void ags_notation_dispose(GObject *gobject);
+void ags_notation_finalize(GObject *gobject);
 
 void ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
@@ -156,6 +157,7 @@ ags_notation_class_init(AgsNotationClass *notation)
   gobject->set_property = ags_notation_set_property;
   gobject->get_property = ags_notation_get_property;
 
+  gobject->dispose = ags_notation_dispose;
   gobject->finalize = ags_notation_finalize;
 
   /* properties */
@@ -608,16 +610,107 @@ ags_notation_get_property(GObject *gobject,
 }
 
 void
-ags_notation_finalize(GObject *gobject)
+ags_notation_dispose(GObject *gobject)
 {
   AgsNotation *notation;
-  GList *list, *list_next;
 
+  GList *list;
+  
   notation = AGS_NOTATION(gobject);
 
+  /* timestamp */
+  if(notation->timestamp != NULL){
+    g_object_unref(notation->timestamp);
+
+    notation->timestamp = NULL;
+  }
+
+  /* audio */
+  if(notation->audio != NULL){
+    g_object_unref(notation->audio);
+
+    notation->audio = NULL;
+  }
+
+  /* key and base note */
+  if(notation->key != NULL){
+    free(notation->key);
+
+    notation->key = NULL;
+  }
+
+  if(notation->base_note != NULL){
+    free(notation->base_note);
+
+    notation->base_note = NULL;
+  }
+    
+  /* note and selection */
+  list = notation->notes;
+
+  while(list != NULL){
+    g_object_run_dispose(G_OBJECT(list->data));
+    
+    list = list->next;
+  }
+  
   g_list_free_full(notation->notes,
 		   g_object_unref);
 
+  g_list_free(notation->selection);
+
+  notation->notes = NULL;
+  notation->selection = NULL;
+  
+  /* port */
+  if(notation->port != NULL){
+    g_object_unref(notation->port);
+
+    notation->port = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_notation_parent_class)->dispose(gobject);
+}
+
+void
+ags_notation_finalize(GObject *gobject)
+{
+  AgsNotation *notation;
+
+  notation = AGS_NOTATION(gobject);
+
+  /* timestamp */
+  if(notation->timestamp != NULL){
+    g_object_unref(notation->timestamp);
+  }
+
+  /* audio */
+  if(notation->audio != NULL){
+    g_object_unref(notation->audio);
+  }
+
+  /* key and base note */
+  if(notation->key != NULL){
+    free(notation->key);
+  }
+
+  if(notation->base_note != NULL){
+    free(notation->base_note);
+  }
+    
+  /* note and selection */
+  g_list_free_full(notation->notes,
+		   g_object_unref);
+
+  g_list_free(notation->selection);
+
+  /* port */
+  if(notation->port != NULL){
+    g_object_unref(notation->port);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
 }
 
