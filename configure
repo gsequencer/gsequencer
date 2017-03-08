@@ -15849,10 +15849,8 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile docs/reference/libags/Makefile docs/reference/libags_audio/Makefile docs/reference/libags_gui/Makefile libags.pc libags_audio.pc libags_gui.pc"
+ac_config_files="$ac_config_files Makefile docs/reference/libags/Makefile docs/reference/libags_audio/Makefile docs/reference/libags_gui/Makefile docs/reference/libgsequencer/Makefile libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
 
-# docs/reference/libgsequencer/Makefile
-# libgsequencer.pc
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -16893,9 +16891,11 @@ do
     "docs/reference/libags/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags/Makefile" ;;
     "docs/reference/libags_audio/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags_audio/Makefile" ;;
     "docs/reference/libags_gui/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags_gui/Makefile" ;;
+    "docs/reference/libgsequencer/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libgsequencer/Makefile" ;;
     "libags.pc") CONFIG_FILES="$CONFIG_FILES libags.pc" ;;
     "libags_audio.pc") CONFIG_FILES="$CONFIG_FILES libags_audio.pc" ;;
     "libags_gui.pc") CONFIG_FILES="$CONFIG_FILES libags_gui.pc" ;;
+    "libgsequencer.pc") CONFIG_FILES="$CONFIG_FILES libgsequencer.pc" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

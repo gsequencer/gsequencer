@@ -890,9 +890,20 @@ ags_automation_get_port(AgsPortlet *portlet)
 GList*
 ags_automation_list_safe_properties(AgsPortlet *portlet)
 {
-  //TODO:JK: implement me
+  static GList *list = NULL;
 
-  return(NULL);
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
+  if(list == NULL){
+    list = g_list_prepend(list, "current-accelerations\0");
+    list = g_list_prepend(list, "next-accelerations\0");
+  }
+
+  pthread_mutex_unlock(&mutex);
+
+  return(list);
 }
 
 void

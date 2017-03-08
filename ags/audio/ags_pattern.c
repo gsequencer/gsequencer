@@ -46,6 +46,7 @@ void ags_pattern_get_property(GObject *gobject,
 			      GParamSpec *param_spec);
 void ags_pattern_connect(AgsConnectable *connectable);
 void ags_pattern_disconnect(AgsConnectable *connectable);
+void ags_pattern_dispose(GObject *gobject);
 void ags_pattern_finalize(GObject *gobject);
 
 void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
@@ -148,6 +149,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   gobject->set_property = ags_pattern_set_property;
   gobject->get_property = ags_pattern_get_property;
 
+  gobject->dispose = ags_pattern_dispose;
   gobject->finalize = ags_pattern_finalize;
 
   /* properties */
@@ -307,32 +309,26 @@ ags_pattern_init(AgsPattern *pattern)
   
   pthread_mutex_unlock(application_mutex);
 
-  /*  */
+  /* base initialization */
+  pattern->flags = 0;
+
+  /* timestamp */
   pattern->timestamp = NULL;
 
+  /* dimension and pattern */
   pattern->dim[0] = 0;
   pattern->dim[1] = 0;
   pattern->dim[2] = 0;
 
   pattern->pattern = NULL;
 
+  /* port */
   pattern->port = NULL;
 
+  /* indices */
   pattern->i = 0;
   pattern->j = 0;
   pattern->bit = 0;
-}
-
-void
-ags_pattern_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_pattern_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -521,13 +517,71 @@ ags_pattern_get_property(GObject *gobject,
 }
 
 void
+ags_pattern_connect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(connectable);
+
+  if((AGS_PATTERN_CONNECTED & (pattern->flags)) != 0){
+    return;
+  }
+
+  pattern->flags |= AGS_PATTERN_CONNECTED;
+}
+
+void
+ags_pattern_disconnect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(connectable);
+
+  if((AGS_PATTERN_CONNECTED & (pattern->flags)) == 0){
+    return;
+  }
+
+  pattern->flags &= (~AGS_PATTERN_CONNECTED);
+}
+
+void
+ags_pattern_dispose(GObject *gobject)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(gobject);
+
+  /* timestamp */
+  if(pattern->timestamp != NULL){
+    g_object_run_dispose(G_OBJECT(pattern->timestamp));
+    
+    g_object_unref(G_OBJECT(pattern->timestamp));
+  }
+
+  /* port */
+  if(pattern->port != NULL){
+    g_object_unref(G_OBJECT(pattern->port));
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_pattern_parent_class)->dispose(gobject);
+}
+
+void
 ags_pattern_finalize(GObject *gobject)
 {
   AgsPattern *pattern;
+  
   guint i, j;
 
   pattern = AGS_PATTERN(gobject);
 
+  /* timestamp */
+  if(pattern->timestamp != NULL){
+    g_object_unref(G_OBJECT(pattern->timestamp));
+  }
+
+  /* pattern */
   for(i = 0; i < pattern->dim[0]; i++){
     for(j = 0; i < pattern->dim[1]; i++){
       free(pattern->pattern[i][j]);
@@ -538,6 +592,12 @@ ags_pattern_finalize(GObject *gobject)
 
   free(pattern->pattern);
 
+  /* port */
+  if(pattern->port != NULL){
+    g_object_unref(G_OBJECT(pattern->port));
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
 }
 
@@ -570,9 +630,10 @@ ags_pattern_get_port(AgsPortlet *portlet)
 GList*
 ags_pattern_list_safe_properties(AgsPortlet *portlet)
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   static GList *list = NULL;
 
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  
   pthread_mutex_lock(&mutex);
 
   if(list == NULL){

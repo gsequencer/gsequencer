@@ -781,8 +781,9 @@ ags_notation_get_port(AgsPortlet *portlet)
 GList*
 ags_notation_list_safe_properties(AgsPortlet *portlet)
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   static GList *list = NULL;
+
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   pthread_mutex_lock(&mutex);
 

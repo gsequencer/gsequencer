@@ -96,7 +96,8 @@ void ags_recall_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 GList* ags_recall_get_ports(AgsPlugin *plugin);
 void ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-void ags_recall_finalize(GObject *recall);
+void ags_recall_dispose(GObject *gobject);
+void ags_recall_finalize(GObject *gobject);
 
 void ags_recall_real_load_automation(AgsRecall *recall,
 				     GList *automation_port);
@@ -250,6 +251,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->set_property = ags_recall_set_property;
   gobject->get_property = ags_recall_get_property;
 
+  gobject->dispose = ags_recall_dispose;
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
@@ -1297,6 +1299,79 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
+ags_recall_dispose(GObject *gobject)
+{
+  AgsRecall *recall;
+
+  GList *list;
+
+  recall = AGS_RECALL(gobject);
+
+  /* soundcard */
+  if(recall->soundcard != NULL){
+    g_object_unref(recall->soundcard);
+
+    recall->soundcard = NULL;
+  }
+
+  /* dependency */
+  if(recall->dependencies != NULL){
+    g_list_free_full(recall->dependencies,
+		     g_object_unref);
+
+    recall->dependencies = NULL;
+  }
+  
+  /* recall id */
+  if(recall->recall_id != NULL){
+    g_object_unref(recall->recall_id);
+
+    recall->recall_id = NULL;
+  }
+  
+  /* children */
+  if(recall->children != NULL){
+    list = recall->children;
+
+    while(list != NULL){
+      g_object_run_dispose(G_OBJECT(list->data));
+
+      list = list->next;
+    }
+    
+    g_list_free_full(recall->children,
+		     g_object_unref);
+
+    recall->children = NULL;
+  }
+  
+  if(recall->container != NULL){
+    ags_packable_unpack(AGS_PACKABLE(recall));
+
+    recall->container = NULL;
+  }
+
+  /* port */
+  if(recall->port != NULL){
+    g_list_free_full(recall->port,
+		     g_object_unref);
+
+    recall->port = NULL;
+  }
+  
+  /* parent */
+  if(recall->parent != NULL){
+    ags_recall_remove_child(recall->parent,
+			    recall);
+
+    recall->parent = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_parent_class)->dispose(gobject);
+}
+
+void
 ags_recall_finalize(GObject *gobject)
 {
   AgsRecall *recall;
@@ -1324,7 +1399,8 @@ ags_recall_finalize(GObject *gobject)
   }
 
   g_free(ids);
-  
+
+  /* soundcard */
   if(recall->soundcard != NULL){
     g_object_unref(recall->soundcard);
   }
@@ -1333,9 +1409,16 @@ ags_recall_finalize(GObject *gobject)
     //    g_free(recall->name);
   //  }
 
+  /* dependency */
   g_list_free_full(recall->dependencies,
 		   g_object_unref);
 
+  /* recall id */
+  if(recall->recall_id != NULL){
+    g_object_unref(recall->recall_id);
+  }
+  
+  /* children */
   g_list_free_full(recall->children,
 		   g_object_unref);
   
@@ -1348,9 +1431,11 @@ ags_recall_finalize(GObject *gobject)
     g_free(recall->child_parameters);
   }
 
+  /* port */
   g_list_free_full(recall->port,
 		   g_object_unref);
 
+  /* parent */
   if(recall->parent != NULL){
     ags_recall_remove_child(recall->parent,
 			    recall);

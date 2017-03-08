@@ -189,10 +189,10 @@ Makefile
 docs/reference/libags/Makefile
 docs/reference/libags_audio/Makefile
 docs/reference/libags_gui/Makefile
+docs/reference/libgsequencer/Makefile
 libags.pc
 libags_audio.pc
-libags_gui.pc])
-# docs/reference/libgsequencer/Makefile
-# libgsequencer.pc
+libags_gui.pc
+libgsequencer.pc])
 
 AC_OUTPUT

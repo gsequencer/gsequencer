@@ -115,7 +115,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/ags/config.h
-CONFIG_CLEAN_FILES = libags.pc libags_audio.pc libags_gui.pc
+CONFIG_CLEAN_FILES = libags.pc libags_audio.pc libags_gui.pc \
+	libgsequencer.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -1109,9 +1110,10 @@ TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(srcdir)/libags_audio.pc.in $(srcdir)/libags_gui.pc.in \
-	$(top_srcdir)/ags/config.h.in AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README TODO compile config.guess config.rpath \
-	config.sub depcomp install-sh ltmain.sh missing test-driver
+	$(srcdir)/libgsequencer.pc.in $(top_srcdir)/ags/config.h.in \
+	AUTHORS COPYING ChangeLog INSTALL NEWS README TODO compile \
+	config.guess config.rpath config.sub depcomp install-sh \
+	ltmain.sh missing test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -2906,6 +2908,8 @@ libags.pc: $(top_builddir)/config.status $(srcdir)/libags.pc.in
 libags_audio.pc: $(top_builddir)/config.status $(srcdir)/libags_audio.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 libags_gui.pc: $(top_builddir)/config.status $(srcdir)/libags_gui.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+libgsequencer.pc: $(top_builddir)/config.status $(srcdir)/libgsequencer.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
@@ -9736,6 +9740,8 @@ ags-docs-local:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags_audio
 	cd $(top_srcdir)
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags_gui
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
 	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)

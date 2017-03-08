@@ -1605,6 +1605,8 @@ ags-docs-local:
 	cd $(top_srcdir)
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags_gui
 	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
+	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
