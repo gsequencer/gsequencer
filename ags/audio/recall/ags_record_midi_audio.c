@@ -32,6 +32,7 @@ void ags_record_midi_audio_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
+void ags_record_midi_audio_dispose(GObject *gobject);
 void ags_record_midi_audio_finalize(GObject *gobject);
 void ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port);
 
@@ -127,9 +128,17 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
   gobject->set_property = ags_record_midi_audio_set_property;
   gobject->get_property = ags_record_midi_audio_get_property;
 
+  gobject->dispose = ags_record_midi_audio_dispose;
   gobject->finalize = ags_record_midi_audio_finalize;
 
   /* properties */
+  /**
+   * AgsRecordMidiAudio:playback:
+   * 
+   * The playback port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("playback\0",
 				   "if do playback\0",
 				   "If playback should be performed\0",
@@ -139,6 +148,13 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
 				  PROP_PLAYBACK,
 				  param_spec);
 
+  /**
+   * AgsRecordMidiAudio:record:
+   * 
+   * The record port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("record\0",
 				   "if do record\0",
 				   "If record data for later use should be done\0",
@@ -148,6 +164,13 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
 				  PROP_RECORD,
 				  param_spec);
 
+  /**
+   * AgsRecordMidiAudio:filename:
+   * 
+   * The filename port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("filename\0",
 				   "filename of record\0",
 				   "The filename of record\0",
@@ -157,6 +180,13 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
 				  PROP_FILENAME,
 				  param_spec);
 
+  /**
+   * AgsRecordMidiAudio:division:
+   * 
+   * The division port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("division\0",
 				   "division of record\0",
 				   "The division of record\0",
@@ -166,6 +196,13 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
 				  PROP_DIVISION,
 				  param_spec);
 
+  /**
+   * AgsRecordMidiAudio:tempo:
+   * 
+   * The tempo port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("tempo\0",
 				   "tempo of record\0",
 				   "The tempo of record\0",
@@ -175,6 +212,13 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
 				  PROP_TEMPO,
 				  param_spec);
 
+  /**
+   * AgsRecordMidiAudio:bpm:
+   * 
+   * The bpm port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("bpm\0",
 				   "bpm of record\0",
 				   "The bpm of record\0",
@@ -213,11 +257,14 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					     "port-value-is-pointer\0", FALSE,
 					     "port-value-type\0", G_TYPE_BOOLEAN,
 					     NULL);
-
+  g_object_ref(record_midi_audio->playback);
+  
   record_midi_audio->playback->port_value.ags_port_boolean = TRUE;
 
+  /* add to port */
   port = g_list_prepend(port, record_midi_audio->playback);
-
+  g_object_ref(record_midi_audio->playback);
+  
   /* record */
   record_midi_audio->record = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name\0", ags_record_midi_audio_plugin_name,
@@ -226,10 +273,13 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					   "port-value-is-pointer\0", FALSE,
 					   "port-value-type\0", G_TYPE_BOOLEAN,
 					   NULL);
-
+  g_object_ref(record_midi_audio->record);
+  
   record_midi_audio->record->port_value.ags_port_boolean = FALSE;
 
+  /* add to port */
   port = g_list_prepend(port, record_midi_audio->record);
+  g_object_ref(record_midi_audio->record);
 
   /* filename */
   record_midi_audio->filename = g_object_new(AGS_TYPE_PORT,
@@ -239,10 +289,13 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					     "port-value-is-pointer\0", FALSE,
 					     "port-value-type\0", G_TYPE_BOOLEAN,
 					     NULL);
+  g_object_ref(record_midi_audio->filename);
 
   record_midi_audio->filename->port_value.ags_port_boolean = TRUE;
 
+  /* add to port */
   port = g_list_prepend(port, record_midi_audio->filename);
+  g_object_ref(record_midi_audio->filename);
 
   /* division */
   record_midi_audio->division = g_object_new(AGS_TYPE_PORT,
@@ -252,10 +305,13 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					     "port-value-is-pointer\0", FALSE,
 					     "port-value-type\0", G_TYPE_INT64,
 					     NULL);
+  g_object_ref(record_midi_audio->division);
 
   record_midi_audio->division->port_value.ags_port_int = 0;
 
+  /* add to port */
   port = g_list_prepend(port, record_midi_audio->division);
+  g_object_ref(record_midi_audio->division);
 
   /* tempo */
   record_midi_audio->tempo = g_object_new(AGS_TYPE_PORT,
@@ -265,10 +321,13 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					  "port-value-is-pointer\0", FALSE,
 					  "port-value-type\0", G_TYPE_INT64,
 					  NULL);
+  g_object_ref(record_midi_audio->tempo);
 
   record_midi_audio->tempo->port_value.ags_port_int = 0;
 
+  /* add to port */
   port = g_list_prepend(port, record_midi_audio->tempo);
+  g_object_ref(record_midi_audio->tempo);
 
   /* bpm */
   record_midi_audio->bpm = g_object_new(AGS_TYPE_PORT,
@@ -278,10 +337,13 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					"port-value-is-pointer\0", FALSE,
 					"port-value-type\0", G_TYPE_INT64,
 					NULL);
+  g_object_ref(record_midi_audio->bpm);
 
   record_midi_audio->bpm->port_value.ags_port_int = 120;
 
+  /* add to port */
   port = g_list_prepend(port, record_midi_audio->bpm);
+  g_object_ref(record_midi_audio->bpm);
 
   /* set port */
   AGS_RECALL(record_midi_audio)->port = port;
@@ -478,11 +540,94 @@ ags_record_midi_audio_get_property(GObject *gobject,
 }
 
 void
+ags_record_midi_audio_dispose(GObject *gobject)
+{
+  AgsRecordMidiAudio *record_midi_audio;
+
+  record_midi_audio = AGS_RECORD_MIDI_AUDIO(gobject);
+
+  /* playback */
+  if(record_midi_audio->playback != NULL){
+    g_object_unref(record_midi_audio->playback);
+
+    record_midi_audio->playback = NULL;
+  }
+
+  /* record */
+  if(record_midi_audio->record != NULL){
+    g_object_unref(record_midi_audio->record);
+
+    record_midi_audio->record = NULL;
+  }
+
+  /* filename */
+  if(record_midi_audio->filename != NULL){
+    g_object_unref(record_midi_audio->filename);
+
+    record_midi_audio->filename = NULL;
+  }
+
+  /* division */
+  if(record_midi_audio->division != NULL){
+    g_object_unref(record_midi_audio->division);
+
+    record_midi_audio->division = NULL;
+  }
+
+  /* tempo */
+  if(record_midi_audio->tempo != NULL){
+    g_object_unref(record_midi_audio->tempo);
+
+    record_midi_audio->tempo = NULL;
+  }
+
+  /* bpm */
+  if(record_midi_audio->bpm != NULL){
+    g_object_unref(record_midi_audio->bpm);
+
+    record_midi_audio->bpm = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_record_midi_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_record_midi_audio_finalize(GObject *gobject)
 {
   AgsRecordMidiAudio *record_midi_audio;
 
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(gobject);
+
+  /* playback */
+  if(record_midi_audio->playback != NULL){
+    g_object_unref(record_midi_audio->playback);
+  }
+
+  /* record */
+  if(record_midi_audio->record != NULL){
+    g_object_unref(record_midi_audio->record);
+  }
+
+  /* filename */
+  if(record_midi_audio->filename != NULL){
+    g_object_unref(record_midi_audio->filename);
+  }
+
+  /* division */
+  if(record_midi_audio->division != NULL){
+    g_object_unref(record_midi_audio->division);
+  }
+
+  /* tempo */
+  if(record_midi_audio->tempo != NULL){
+    g_object_unref(record_midi_audio->tempo);
+  }
+
+  /* bpm */
+  if(record_midi_audio->bpm != NULL){
+    g_object_unref(record_midi_audio->bpm);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_record_midi_audio_parent_class)->finalize(gobject);

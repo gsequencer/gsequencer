@@ -63,6 +63,7 @@ void ags_route_dssi_audio_run_get_property(GObject *gobject,
 					   guint prop_id,
 					   GValue *value,
 					   GParamSpec *param_spec);
+void ags_route_dssi_audio_run_dispose(GObject *gobject);
 void ags_route_dssi_audio_run_finalize(GObject *gobject);
 void ags_route_dssi_audio_run_connect(AgsConnectable *connectable);
 void ags_route_dssi_audio_run_disconnect(AgsConnectable *connectable);
@@ -211,9 +212,17 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
   gobject->set_property = ags_route_dssi_audio_run_set_property;
   gobject->get_property = ags_route_dssi_audio_run_get_property;
 
+  gobject->dispose = ags_route_dssi_audio_run_dispose;
   gobject->finalize = ags_route_dssi_audio_run_finalize;
 
   /* properties */
+  /**
+   * AgsRouteDssiAudioRun:delay-audio-run:
+   * 
+   * The delay audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("delay-audio-run\0",
 				   "assigned AgsDelayAudioRun\0",
 				   "the AgsDelayAudioRun which emits notation_alloc_input signal\0",
@@ -223,6 +232,13 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
+  /**
+   * AgsRouteDssiAudioRun:count-beats-audio-run:
+   * 
+   * The count beats audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
 				   "the AgsCountBeatsAudioRun which just counts\0",
@@ -392,20 +408,48 @@ ags_route_dssi_audio_run_get_property(GObject *gobject,
 }
 
 void
+ags_route_dssi_audio_run_dispose(GObject *gobject)
+{
+  AgsRouteDssiAudioRun *route_dssi_audio_run;
+
+  route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(gobject);
+
+  /* delay audio run */
+  if(route_dssi_audio_run->delay_audio_run != NULL){
+    g_object_unref(G_OBJECT(route_dssi_audio_run->delay_audio_run));
+
+    route_dssi_audio_run->delay_audio_run = NULL;
+  }
+
+  /* count beats audio run */
+  if(route_dssi_audio_run->count_beats_audio_run != NULL){
+    g_object_unref(G_OBJECT(route_dssi_audio_run->count_beats_audio_run));
+
+    route_dssi_audio_run->count_beats_audio_run = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->finalize(gobject);
+}
+
+void
 ags_route_dssi_audio_run_finalize(GObject *gobject)
 {
   AgsRouteDssiAudioRun *route_dssi_audio_run;
 
   route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(gobject);
 
+  /* delay audio run */
   if(route_dssi_audio_run->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(route_dssi_audio_run->delay_audio_run));
   }
 
+  /* count beats audio run */
   if(route_dssi_audio_run->count_beats_audio_run != NULL){
     g_object_unref(G_OBJECT(route_dssi_audio_run->count_beats_audio_run));
   }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->finalize(gobject);
 }
 

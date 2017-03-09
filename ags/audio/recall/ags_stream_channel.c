@@ -38,6 +38,7 @@ void ags_stream_channel_get_property(GObject *gobject,
 void ags_stream_channel_connect(AgsConnectable *connectable);
 void ags_stream_channel_disconnect(AgsConnectable *connectable);
 void ags_stream_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_stream_channel_dispose(GObject *gobject);
 void ags_stream_channel_finalize(GObject *gobject);
 
 /**
@@ -129,9 +130,17 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
   gobject->set_property = ags_stream_channel_set_property;
   gobject->get_property = ags_stream_channel_get_property;
 
+  gobject->dispose = ags_stream_channel_dispose;
   gobject->finalize = ags_stream_channel_finalize;
 
   /* properties */
+  /**
+   * AgsStreamChannel:auto-sense:
+   * 
+   * The auto-sense port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("auto-sense\0",
 				   "mute channel\0",
 				   "Mute the channel\0",
@@ -174,8 +183,10 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
   AGS_RECALL(stream_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(stream_channel)->xml_type = "ags-stream-channel\0";
 
+  /* initialize port */
   port = NULL;
 
+  /* auto-sense */
   stream_channel->auto_sense = g_object_new(AGS_TYPE_PORT,
 				     "plugin-name\0", ags_stream_channel_plugin_name,
 				     "specifier\0", ags_stream_channel_plugin_specifier[0],
@@ -185,7 +196,8 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
-
+  g_object_ref(stream_channel->auto_sense);
+  
   config = ags_config_get_instance();
   
   str = ags_config_get_value(config,
@@ -194,9 +206,11 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
   stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(str, "true\0")
 							      ) ? TRUE: FALSE);
   free(str);
-  
-  port = g_list_prepend(port, stream_channel->auto_sense);
 
+  /* add to port */
+  port = g_list_prepend(port, stream_channel->auto_sense);
+  g_object_ref(stream_channel->auto_sense);
+  
   /* set port */
   AGS_RECALL(stream_channel)->port = port;
 
@@ -264,12 +278,31 @@ ags_stream_channel_get_property(GObject *gobject,
 }
 
 void
+ags_stream_channel_dispose(GObject *gobject)
+{
+  AgsStreamChannel *stream_channel;
+
+  stream_channel = AGS_STREAM_CHANNEL(gobject);
+
+  /* auto-sense */
+  if(stream_channel->auto_sense != NULL){
+    g_object_unref(G_OBJECT(stream_channel->auto_sense));
+
+    stream_channel->auto_sense = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_stream_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_stream_channel_finalize(GObject *gobject)
 {
   AgsStreamChannel *stream_channel;
 
   stream_channel = AGS_STREAM_CHANNEL(gobject);
 
+  /* auto-sense */
   if(stream_channel->auto_sense != NULL){
     g_object_unref(G_OBJECT(stream_channel->auto_sense));
   }
