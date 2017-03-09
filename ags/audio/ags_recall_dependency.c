@@ -144,6 +144,8 @@ ags_recall_dependency_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_recall_dependency_init(AgsRecallDependency *recall_dependency)
 {
+  recall_dependency->flags = 0;
+  
   recall_dependency->dependency = NULL;
 }
 
@@ -210,13 +212,29 @@ ags_recall_dependency_get_property(GObject *gobject,
 void
 ags_recall_dependency_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(connectable);
+
+  if((AGS_RECALL_DEPENDENCY_CONNECTED & (recall_dependency->flags)) != 0){
+    return;
+  }
+
+  recall_dependency->flags |= AGS_RECALL_DEPENDENCY_CONNECTED;
 }
 
 void
 ags_recall_dependency_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(connectable);
+
+  if((AGS_RECALL_DEPENDENCY_CONNECTED & (recall_dependency->flags)) == 0){
+    return;
+  }
+
+  recall_dependency->flags &= (~AGS_RECALL_DEPENDENCY_CONNECTED);
 }
 
 void
