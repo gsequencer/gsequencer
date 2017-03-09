@@ -44,6 +44,7 @@ void ags_recall_audio_connect(AgsConnectable *connectable);
 void ags_recall_audio_disconnect(AgsConnectable *connectable);
 gboolean ags_recall_audio_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_audio_unpack(AgsPackable *packable);
+void ags_recall_audio_dispose(GObject *gobject);
 void ags_recall_audio_finalize(GObject *gobject);
 
 void ags_recall_audio_load_automation(AgsRecall *recall,
@@ -132,6 +133,7 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
   /* GObjectClass */
   gobject = (GObjectClass *) recall_audio;
 
+  gobject->dispose = ags_recall_audio_dispose;
   gobject->finalize = ags_recall_audio_finalize;
 
   gobject->set_property = ags_recall_audio_set_property;
@@ -337,15 +339,39 @@ ags_recall_audio_unpack(AgsPackable *packable)
 }
 
 void
+ags_recall_audio_dispose(GObject *gobject)
+{
+  AgsRecallAudio *recall_audio;
+
+  recall_audio = AGS_RECALL_AUDIO(gobject);
+
+  /* unpack */
+  ags_packable_unpack(AGS_PACKABLE(recall_audio));
+  
+  /* audio */
+  if(recall_audio->audio != NULL){
+    g_object_unref(G_OBJECT(recall_audio->audio));
+
+    recall_audio->audio = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_recall_audio_finalize(GObject *gobject)
 {
   AgsRecallAudio *recall_audio;
 
   recall_audio = AGS_RECALL_AUDIO(gobject);
 
-  if(recall_audio->audio != NULL)
+  /* audio */
+  if(recall_audio->audio != NULL){
     g_object_unref(G_OBJECT(recall_audio->audio));
+  }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_recall_audio_parent_class)->finalize(gobject);
 }
 
