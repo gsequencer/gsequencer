@@ -380,8 +380,9 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
 
-      if(recall_channel_run->recall_audio_run == recall_audio_run)
+      if(recall_channel_run->recall_audio_run == recall_audio_run){
 	return;
+      }
 
       if(recall_channel_run->recall_audio_run != NULL){
 	g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
@@ -400,8 +401,9 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_channel = (AgsRecallChannel *) g_value_get_object(value);
 
-      if(recall_channel_run->recall_channel == recall_channel)
+      if(recall_channel_run->recall_channel == recall_channel){
 	return;
+      }
 
       if(recall_channel_run->recall_channel != NULL){
 	g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
@@ -462,11 +464,13 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_channel_run->source = source;
 
-      if(source == recall_channel_run->destination)
+      if(source == recall_channel_run->destination){
 	g_warning("destination == recall_channel_run->source\0");
-
-      if(old_source != NULL)
+      }
+      
+      if(old_source != NULL){
 	g_object_unref(G_OBJECT(old_source));
+      }
     }
     break;
   default:
