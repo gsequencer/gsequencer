@@ -505,6 +505,8 @@ ags_jack_server_dispose(GObject *gobject)
 {
   AgsJackServer *jack_server;
 
+  GList *list;
+  
   jack_server = AGS_JACK_SERVER(gobject);
 
   /* application context */
@@ -530,6 +532,14 @@ ags_jack_server_dispose(GObject *gobject)
   
   /* client */
   if(jack_server->client != NULL){
+    list = jack_server->client;
+
+    while(list != NULL){
+      g_object_run_dispose(G_OBJECT(list->data));
+
+      list = list->next;
+    }
+    
     g_list_free_full(jack_server->client,
 		     g_object_unref);
 
