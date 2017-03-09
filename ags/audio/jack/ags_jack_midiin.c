@@ -137,6 +137,7 @@ enum{
   PROP_DELAY_FACTOR,
   PROP_ATTACK,
   PROP_JACK_CLIENT,
+  PROP_JACK_PORT,
 };
 
 enum{
@@ -339,6 +340,22 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_JACK_CLIENT,
+				  param_spec);
+
+  /**
+   * AgsJackMidiin:jack-port:
+   *
+   * The assigned #AgsJackPort
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("jack-port\0",
+				   "jack port object\0",
+				   "The jack port object\0",
+				   AGS_TYPE_JACK_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_JACK_PORT,
 				  param_spec);
 
   /* AgsJackMidiinClass */
@@ -604,7 +621,28 @@ ags_jack_midiin_set_property(GObject *gobject,
 	g_object_unref(G_OBJECT(jack_midiin->jack_client));
       }
 
+      if(jack_client != NULL){
+	g_object_ref(G_OBJECT(jack_client));
+      }
+
       jack_midiin->jack_client = (GObject *) jack_client;
+    }
+    break;
+  case PROP_JACK_PORT:
+    {
+      AgsJackPort *jack_port;
+
+      jack_port = (AgsJackPort *) g_value_get_object(value);
+
+      if(g_list_find(jack_midiin->jack_port, jack_port) != NULL){
+	return;
+      }
+
+      if(jack_port != NULL){
+	g_object_ref(jack_port);
+	jack_midiin->jack_port = g_list_append(jack_midiin->jack_port,
+					       jack_port);
+      }
     }
     break;
   default:
@@ -657,6 +695,12 @@ ags_jack_midiin_get_property(GObject *gobject,
   case PROP_JACK_CLIENT:
     {
       g_value_set_object(value, jack_midiin->jack_client);
+    }
+    break;
+  case PROP_JACK_PORT:
+    {
+      g_value_set_pointer(value,
+			  g_list_copy(jack_midiin->jack_port));
     }
     break;
   default:
