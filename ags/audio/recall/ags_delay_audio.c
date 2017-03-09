@@ -40,6 +40,7 @@ void ags_delay_audio_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec);
 void ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port);
+void ags_delay_audio_dispose(GObject *gobject);
 void ags_delay_audio_finalize(GObject *gobject);
 
 void ags_delay_audio_notify_audio_callback(GObject *gobject,
@@ -176,6 +177,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   gobject->set_property = ags_delay_audio_set_property;
   gobject->get_property = ags_delay_audio_get_property;
 
+  gobject->dispose = ags_delay_audio_dispose;
   gobject->finalize = ags_delay_audio_finalize;
 
   /* properties */
@@ -568,6 +570,56 @@ ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port)
 
     port = port->next;
   }
+}
+
+void
+ags_delay_audio_dispose(GObject *gobject)
+{
+  AgsDelayAudio *delay_audio;
+
+  delay_audio = AGS_DELAY_AUDIO(gobject);
+
+  /* bpm and tact */
+  if(delay_audio->bpm != NULL){
+    g_object_unref(G_OBJECT(delay_audio->bpm));
+
+    delay_audio->bpm = NULL;
+  }
+
+  if(delay_audio->tact != NULL){
+    g_object_unref(G_OBJECT(delay_audio->tact));
+
+    delay_audio->tact = NULL;
+  }
+
+  /* delay */
+  if(delay_audio->notation_delay != NULL){
+    g_object_unref(G_OBJECT(delay_audio->notation_delay));
+
+    delay_audio->notation_delay = NULL;
+  }
+
+  if(delay_audio->sequencer_delay != NULL){
+    g_object_unref(G_OBJECT(delay_audio->sequencer_delay));
+
+    delay_audio->sequencer_delay = NULL;
+  }
+
+  /* duration */
+  if(delay_audio->notation_duration != NULL){
+    g_object_unref(G_OBJECT(delay_audio->notation_duration));
+
+    delay_audio->notation_duration = NULL;
+  }
+
+  if(delay_audio->sequencer_duration != NULL){
+    g_object_unref(G_OBJECT(delay_audio->sequencer_duration));
+
+    delay_audio->sequencer_duration = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_delay_audio_parent_class)->dispose(gobject);
 }
 
 void

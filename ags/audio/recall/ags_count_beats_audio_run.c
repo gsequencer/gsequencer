@@ -65,6 +65,7 @@ void ags_count_beats_audio_run_get_property(GObject *gobject,
 					    guint prop_id,
 					    GValue *value,
 					    GParamSpec *param_spec);
+void ags_count_beats_audio_run_dispose(GObject *gobject);
 void ags_count_beats_audio_run_finalize(GObject *gobject);
 void ags_count_beats_audio_run_connect(AgsConnectable *connectable);
 void ags_count_beats_audio_run_disconnect(AgsConnectable *connectable);
@@ -311,6 +312,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   gobject->set_property = ags_count_beats_audio_run_set_property;
   gobject->get_property = ags_count_beats_audio_run_get_property;
 
+  gobject->dispose = ags_count_beats_audio_run_dispose;
   gobject->finalize = ags_count_beats_audio_run_finalize;
 
   /* properties */
@@ -648,12 +650,31 @@ ags_count_beats_audio_run_get_property(GObject *gobject,
 }
 
 void
+ags_count_beats_audio_run_dispose(GObject *gobject)
+{
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(gobject);
+
+  /* delay audio run */
+  if(count_beats_audio_run->delay_audio_run != NULL){
+    g_object_unref(count_beats_audio_run->delay_audio_run);
+
+    count_beats_audio_run->delay_audio_run = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_count_beats_audio_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_count_beats_audio_run_finalize(GObject *gobject)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(gobject);
 
+  /* delay audio run */
   if(count_beats_audio_run->delay_audio_run != NULL){
     g_object_unref(count_beats_audio_run->delay_audio_run);
   }
