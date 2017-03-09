@@ -49,6 +49,7 @@ void ags_peak_channel_get_property(GObject *gobject,
 void ags_peak_channel_connect(AgsConnectable *connectable);
 void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_peak_channel_dispose(GObject *gobject);
 void ags_peak_channel_finalize(GObject *gobject);
 
 static AgsPortDescriptor* ags_peak_channel_get_peak_port_descriptor();
@@ -158,9 +159,17 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
   gobject->set_property = ags_peak_channel_set_property;
   gobject->get_property = ags_peak_channel_get_property;
 
+  gobject->dispose = ags_peak_channel_dispose;
   gobject->finalize = ags_peak_channel_finalize;
 
   /* properties */
+  /**
+   * AgsPeakChannel:peak:
+   * 
+   * The peak of the channel.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("peak\0",
 				   "peak of channel\0",
 				   "The peak of channel\0",
@@ -195,9 +204,9 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
 				    "port-value-size\0", sizeof(gfloat),
 				    "port-value-length\0", 1,
 				    NULL);
-
-  peak_channel->peak->flags |= AGS_PORT_IS_OUTPUT;
+  g_object_ref(peak_channel->peak);
   
+  peak_channel->peak->flags |= AGS_PORT_IS_OUTPUT;
   peak_channel->peak->port_value.ags_port_float = FALSE;
   
   /* port descriptor */
@@ -205,6 +214,7 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
 
   /* add to port */  
   port = g_list_prepend(port, peak_channel->peak);
+  g_object_ref(peak_channel->peak);
 
   /* set port */
   AGS_RECALL(peak_channel)->port = port;
@@ -271,12 +281,31 @@ ags_peak_channel_get_property(GObject *gobject,
 }
 
 void
+ags_peak_channel_dispose(GObject *gobject)
+{
+  AgsPeakChannel *peak_channel;
+
+  peak_channel = AGS_PEAK_CHANNEL(gobject);
+
+  /* peak */
+  if(peak_channel->peak != NULL){
+    g_object_unref(G_OBJECT(peak_channel->peak));
+
+    peak_channel->peak = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_peak_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_peak_channel_finalize(GObject *gobject)
 {
   AgsPeakChannel *peak_channel;
 
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
+  /* peak */
   if(peak_channel->peak != NULL){
     g_object_unref(G_OBJECT(peak_channel->peak));
   }

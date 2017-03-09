@@ -94,6 +94,13 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
   gobject->finalize = ags_copy_notation_audio_finalize;
 
   /* properties */
+  /**
+   * AgsCopyNotationAudio:notation:
+   *
+   * The notation.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("notation\0",
 				   "the assigned notation\0",
 				   "The AgsNotation it is assigned to\0",
@@ -103,6 +110,13 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
 				  PROP_NOTATION,
 				  param_spec);
 
+  /**
+   * AgsCopyNotationAudio:audio-channel:
+   *
+   * The audio channel.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_uint("audio_channel\0",
 				 "the audio channel to play\0",
 				 "The audio channel to play of audio object\0",

@@ -57,6 +57,7 @@ void ags_play_notation_audio_run_get_property(GObject *gobject,
 					      guint prop_id,
 					      GValue *value,
 					      GParamSpec *param_spec);
+void ags_play_notation_audio_run_dispose(GObject *gobject);
 void ags_play_notation_audio_run_finalize(GObject *gobject);
 void ags_play_notation_audio_run_connect(AgsConnectable *connectable);
 void ags_play_notation_audio_run_disconnect(AgsConnectable *connectable);
@@ -174,6 +175,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
   gobject->set_property = ags_play_notation_audio_run_set_property;
   gobject->get_property = ags_play_notation_audio_run_get_property;
 
+  gobject->dispose = ags_play_notation_audio_run_dispose;
   gobject->finalize = ags_play_notation_audio_run_finalize;
 
   /* properties */

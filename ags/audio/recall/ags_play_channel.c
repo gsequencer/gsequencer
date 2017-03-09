@@ -45,6 +45,7 @@ void ags_play_channel_get_property(GObject *gobject,
 void ags_play_channel_connect(AgsConnectable *connectable);
 void ags_play_channel_disconnect(AgsConnectable *connectable);
 void ags_play_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_play_channel_dispose(GObject *gobject);
 void ags_play_channel_finalize(GObject *gobject);
 
 void ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted);
@@ -152,9 +153,17 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
   gobject->set_property = ags_play_channel_set_property;
   gobject->get_property = ags_play_channel_get_property;
 
+  gobject->dispose = ags_play_channel_dispose;
   gobject->finalize = ags_play_channel_finalize;
 
   /* properties */
+  /**
+   * AgsPlayChannel:audio-channel:
+   * 
+   * The audio channel port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("audio-channel\0",
 				   "assigned audio channel\0",
 				   "The audio channel this recall does output to\0",
@@ -164,6 +173,13 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
+  /**
+   * AgsPlayChannel:muted:
+   * 
+   * The muted port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("muted\0",
 				   "mute channel\0",
 				   "Mute the channel\0",
@@ -211,6 +227,7 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 
   port = NULL;
 
+  /* audio channel */
   play_channel->audio_channel = g_object_new(AGS_TYPE_PORT,
 					     "plugin-name\0", ags_play_channel_plugin_name,
 					     "specifier\0", ags_play_channel_specifier[0],
@@ -220,10 +237,15 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 					     "port-value-size\0", sizeof(guint64),
 					     "port-value-length\0", 1,
 					     NULL);
+  g_object_ref(play_channel->audio_channel);
+
   play_channel->audio_channel->port_value.ags_port_uint = 0;
 
+  /* add to port */
   port = g_list_prepend(port, play_channel->audio_channel);
+  g_object_ref(play_channel->audio_channel);
 
+  /* muted */
   play_channel->muted = g_object_new(AGS_TYPE_PORT,
 				     "plugin-name\0", ags_play_channel_plugin_name,
 				     "specifier\0", ags_play_channel_specifier[1],
@@ -233,9 +255,13 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
+  g_object_ref(play_channel->muted);
+
   play_channel->muted->port_value.ags_port_boolean = FALSE;
 
+  /* add to port */
   port = g_list_prepend(port, play_channel->muted);
+  g_object_ref(play_channel->muted);
 
   /* set port */
   AGS_RECALL(play_channel)->port = port;
@@ -328,16 +354,43 @@ ags_play_channel_get_property(GObject *gobject,
 }
 
 void
+ags_play_channel_dispose(GObject *gobject)
+{
+  AgsPlayChannel *play_channel;
+
+  play_channel = AGS_PLAY_CHANNEL(gobject);
+
+  /* audio channel */
+  if(play_channel->audio_channel != NULL){
+    g_object_unref(G_OBJECT(play_channel->audio_channel));
+
+    play_channel->audio_channel = NULL;
+  }
+
+  /* muted */
+  if(play_channel->muted != NULL){
+    g_object_unref(G_OBJECT(play_channel->muted));
+
+    play_channel->muted = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_play_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_play_channel_finalize(GObject *gobject)
 {
   AgsPlayChannel *play_channel;
 
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
+  /* audio channel */
   if(play_channel->audio_channel != NULL){
     g_object_unref(G_OBJECT(play_channel->audio_channel));
   }
 
+  /* muted */
   if(play_channel->muted != NULL){
     g_object_unref(G_OBJECT(play_channel->muted));
   }

@@ -54,6 +54,7 @@ void ags_play_channel_run_master_connect(AgsConnectable *connectable);
 void ags_play_channel_run_master_disconnect(AgsConnectable *connectable);
 void ags_play_channel_run_master_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_play_channel_run_master_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_play_channel_run_master_dispose(GObject *gobject);
 void ags_play_channel_run_master_finalize(GObject *gobject);
 
 void ags_play_channel_run_master_run_init_pre(AgsRecall *recall);
@@ -173,9 +174,17 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
   gobject->set_property = ags_play_channel_run_master_set_property;
   gobject->get_property = ags_play_channel_run_master_get_property;
 
+  gobject->dispose = ags_play_channel_run_master_dispose;
   gobject->finalize = ags_play_channel_run_master_finalize;
 
   /* properties */
+  /**
+   * AgsPlayChannelRunMaster:stream-channel-run:
+   * 
+   * The assigned stream channel run.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("stream-channel-run\0",
 				   "assigned AgsStreamChannelRun\0",
 				   "an assigned AgsStreamChannelRun\0",
@@ -324,10 +333,37 @@ ags_play_channel_run_master_get_property(GObject *gobject,
 }
 
 void
+ags_play_channel_run_master_dispose(GObject *gobject)
+{
+  AgsPlayChannelRunMaster *play_channel_run_master;
+
+  play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(gobject);
+
+  /* streamer */
+  if(play_channel_run_master->streamer != NULL){
+    g_list_free_full(play_channel_run_master->streamer,
+		     ags_play_channel_run_master_streamer_free);
+
+    play_channel_run_master->streamer = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_play_channel_run_master_parent_class)->dispose(gobject);
+}
+
+void
 ags_play_channel_run_master_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsPlayChannelRunMaster *play_channel_run_master;
 
+  play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(gobject);
+  
+  /* streamer */
+  if(play_channel_run_master->streamer != NULL){
+    g_list_free_full(play_channel_run_master->streamer,
+		     ags_play_channel_run_master_streamer_free);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_play_channel_run_master_parent_class)->finalize(gobject);
 }
@@ -657,6 +693,13 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 void
 ags_play_channel_run_master_streamer_free(AgsPlayChannelRunMasterStreamer *streamer)
 {
+  if(streamer == NULL){
+    return;
+  }
+  
+  g_object_unref(streamer->play_channel_run_master);
+  g_object_unref(streamer->stream_channel_run);
+  
   free(streamer);
 }
 
@@ -666,11 +709,19 @@ ags_play_channel_run_master_streamer_alloc(AgsPlayChannelRunMaster *play_channel
 {
   AgsPlayChannelRunMasterStreamer *streamer;
 
+  if(play_channel_run_master == NULL ||
+     stream_channel_run == NULL){
+    return;
+  }
+  
   streamer = (AgsPlayChannelRunMasterStreamer *) malloc(sizeof(AgsPlayChannelRunMasterStreamer));
 
   streamer->play_channel_run_master = play_channel_run_master;
+  g_object_ref(play_channel_run_master);
+  
   streamer->stream_channel_run = stream_channel_run;
-
+  g_object_ref(stream_channel_run);
+  
   return(streamer);
 }
 

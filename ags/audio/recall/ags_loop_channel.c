@@ -44,6 +44,7 @@ void ags_loop_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_loop_channel_connect(AgsConnectable *connectable);
 void ags_loop_channel_disconnect(AgsConnectable *connectable);
+void ags_loop_channel_dispose(GObject *gobject);
 void ags_loop_channel_finalize(GObject *gobject);
 
 void ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
@@ -130,12 +131,20 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
   gobject->set_property = ags_loop_channel_set_property;
   gobject->get_property = ags_loop_channel_get_property;
 
+  gobject->dispose = ags_loop_channel_dispose;
   gobject->finalize = ags_loop_channel_finalize;
 
   /* properties */
+  /**
+   * AgsLoopChannel:delay-audio:
+   *
+   * The assigned #AgsDelayAudio.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("delay-audio\0",
-				   "assigned delay-audio\0",
-				   "The delay-audio it is assigned with\0",
+				   "assigned delay audio\0",
+				   "The delay audio it is assigned with\0",
 				   AGS_TYPE_DELAY_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,8 +196,9 @@ ags_loop_channel_set_property(GObject *gobject,
 
       delay_audio = (AgsDelayAudio *) g_value_get_object(value);
 
-      if(loop_channel->delay_audio == delay_audio)
+      if(loop_channel->delay_audio == delay_audio){
 	return;
+      }
 
       if(loop_channel->delay_audio != NULL){
 	g_object_disconnect(G_OBJECT(loop_channel->delay_audio),
@@ -225,15 +235,35 @@ ags_loop_channel_get_property(GObject *gobject,
   AgsLoopChannel *loop_channel;
 
   loop_channel = AGS_LOOP_CHANNEL(gobject);
-
+  
   switch(prop_id){
   case PROP_DELAY_AUDIO:
-    g_value_set_object(value, loop_channel->delay_audio);
+    {
+      g_value_set_object(value, loop_channel->delay_audio);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_loop_channel_dispose(GObject *gobject)
+{
+  AgsLoopChannel *loop_channel;
+
+  loop_channel = AGS_LOOP_CHANNEL(gobject);
+
+  /* delay audio */
+  if(loop_channel->delay_audio != NULL){
+    g_object_unref(G_OBJECT(loop_channel->delay_audio));
+
+    loop_channel->delay_audio = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_loop_channel_parent_class)->dispose(gobject);
 }
 
 void
@@ -243,6 +273,7 @@ ags_loop_channel_finalize(GObject *gobject)
 
   loop_channel = AGS_LOOP_CHANNEL(gobject);
 
+  /* delay audio */
   if(loop_channel->delay_audio != NULL){
     g_object_unref(G_OBJECT(loop_channel->delay_audio));
   }
