@@ -1467,12 +1467,7 @@ ags_audio_dispose(GObject *gobject)
   audio = AGS_AUDIO(gobject);
 
   /* soundcard */
-  if(audio->soundcard != NULL){
-    list = ags_soundcard_get_audio(AGS_SOUNDCARD(audio->soundcard));
-    ags_soundcard_set_audio(AGS_SOUNDCARD(audio->soundcard),
-			    g_list_remove(list,
-					  audio));
-    
+  if(audio->soundcard != NULL){    
     g_object_unref(audio->soundcard);
 
     audio->soundcard = NULL;
@@ -1480,11 +1475,6 @@ ags_audio_dispose(GObject *gobject)
 
   /* sequencer */
   if(audio->sequencer != NULL){
-    list = ags_sequencer_get_audio(AGS_SEQUENCER(audio->sequencer));
-    ags_sequencer_set_audio(AGS_SEQUENCER(audio->sequencer),
-			    g_list_remove(list,
-					  audio));
-
     g_object_unref(audio->sequencer);
 
     audio->sequencer = NULL;
@@ -1668,20 +1658,10 @@ ags_audio_finalize(GObject *gobject)
   audio = AGS_AUDIO(gobject);
 
   if(audio->soundcard != NULL){
-    list = ags_soundcard_get_audio(AGS_SOUNDCARD(audio->soundcard));
-    ags_soundcard_set_audio(AGS_SOUNDCARD(audio->soundcard),
-			    g_list_remove(list,
-					  audio));
-
     g_object_unref(audio->soundcard);
   }
 
   if(audio->sequencer != NULL){
-    list = ags_sequencer_get_audio(AGS_SEQUENCER(audio->sequencer));
-    ags_sequencer_set_audio(AGS_SEQUENCER(audio->sequencer),
-			    g_list_remove(list,
-					  audio));
-
     g_object_unref(audio->sequencer);
   }
 

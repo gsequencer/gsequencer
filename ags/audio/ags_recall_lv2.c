@@ -60,6 +60,7 @@ void ags_recall_lv2_get_property(GObject *gobject,
 void ags_recall_lv2_connect(AgsConnectable *connectable);
 void ags_recall_lv2_disconnect(AgsConnectable *connectable);
 void ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port);
+void ags_recall_lv2_dispose(GObject *gobject);
 void ags_recall_lv2_finalize(GObject *gobject);
 
 void ags_recall_lv2_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
@@ -149,6 +150,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
   gobject->set_property = ags_recall_lv2_set_property;
   gobject->get_property = ags_recall_lv2_get_property;
 
+  gobject->dispose = ags_recall_lv2_dispose;
   gobject->finalize = ags_recall_lv2_finalize;
 
   /* properties */
@@ -551,16 +553,36 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
+ags_recall_lv2_dispose(GObject *gobject)
+{
+  AgsRecallLv2 *recall_lv2;
+  
+  recall_lv2 = AGS_RECALL_LV2(gobject);
+
+  /* turtle */
+  if(recall_lv2->turtle != NULL){
+    g_object_unref(recall_lv2->turtle);
+
+    recall_lv2->turtle = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_lv2_parent_class)->dispose(gobject);
+}
+
+void
 ags_recall_lv2_finalize(GObject *gobject)
 {
   AgsRecallLv2 *recall_lv2;
   
   recall_lv2 = AGS_RECALL_LV2(gobject);
 
+  /* turtle */
   if(recall_lv2->turtle != NULL){
     g_object_unref(recall_lv2->turtle);
   }
 
+  /* filename, effect and uri */
   g_free(recall_lv2->filename);
   g_free(recall_lv2->effect);
   g_free(recall_lv2->uri);

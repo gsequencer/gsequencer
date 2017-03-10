@@ -1128,16 +1128,6 @@ ags_jack_devout_dispose(GObject *gobject)
 
   /* application context */
   if(jack_devout->application_context != NULL){
-    if(AGS_IS_SOUND_PROVIDER(jack_devout->application_context)){
-      GList *soundcard;
-
-      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context));
-
-      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context),
-				       g_list_remove(soundcard,
-						     jack_devout));
-    }
-    
     g_object_unref(jack_devout->application_context);
 
     jack_devout->application_context = NULL;
@@ -1208,16 +1198,6 @@ ags_jack_devout_finalize(GObject *gobject)
 
   /* application context */
   if(jack_devout->application_context != NULL){
-    if(AGS_IS_SOUND_PROVIDER(jack_devout->application_context)){
-      GList *soundcard;
-
-      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context));
-
-      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(jack_devout->application_context),
-				       g_list_remove(soundcard,
-						     jack_devout));
-    }
-
     g_object_unref(jack_devout->application_context);
   }
   

@@ -1139,17 +1139,9 @@ ags_devout_dispose(GObject *gobject)
 
   /* application context */
   if(devout->application_context != NULL){
-    if(AGS_IS_SOUND_PROVIDER(devout->application_context)){
-      GList *soundcard;
-
-      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(devout->application_context));
-
-      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(devout->application_context),
-				       g_list_remove(soundcard,
-						     devout));
-    }
-
     g_object_unref(devout->application_context);
+
+    devout->application_context = NULL;
   }
 
   /* unref audio */  
@@ -1219,16 +1211,6 @@ ags_devout_finalize(GObject *gobject)
 
   /* application context */
   if(devout->application_context != NULL){
-    if(AGS_IS_SOUND_PROVIDER(devout->application_context)){
-      GList *soundcard;
-
-      soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(devout->application_context));
-
-      ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(devout->application_context),
-				       g_list_remove(soundcard,
-						     devout));
-    }
-
     g_object_unref(devout->application_context);
   }
   
