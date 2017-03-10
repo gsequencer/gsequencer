@@ -347,19 +347,9 @@ ags_config_dispose(GObject *gobject)
   config = (AgsConfig *) gobject;
 
   if(config->application_context != NULL){
-    g_object_set(config->application_context,
-		 "config\0", NULL,
-		 NULL);
-    
     g_object_unref(config->application_context);
 
     config->application_context = NULL;
-  }
-
-  if(config->key_file != NULL){
-    g_object_unref(config->key_file);
-
-    config->key_file = NULL;
   }
 
   /* call parent */
@@ -374,15 +364,11 @@ ags_config_finalize(GObject *gobject)
   config = (AgsConfig *) gobject;
 
   if(config->application_context != NULL){
-    g_object_set(config->application_context,
-		 "config\0", NULL,
-		 NULL);
-    
     g_object_unref(config->application_context);
   }
 
   if(config->key_file != NULL){
-    g_object_unref(config->key_file);
+    g_key_file_unref(config->key_file);
   }
 
   /* call parent */

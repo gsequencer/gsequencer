@@ -486,10 +486,6 @@ ags_application_context_dispose(GObject *gobject)
 
   /* task thread */
   if(application_context->task_thread != NULL){
-    g_object_set(application_context->task_thread,
-		 "application-context\0", NULL,
-		 NULL);
-
     g_object_unref(application_context->task_thread);
 
     application_context->task_thread = NULL;
@@ -558,10 +554,6 @@ ags_application_context_finalize(GObject *gobject)
 
   /* task thread */
   if(application_context->task_thread != NULL){
-    g_object_set(application_context->task_thread,
-		 "application-context\0", NULL,
-		 NULL);
-
     g_object_unref(application_context->task_thread);
   }
 

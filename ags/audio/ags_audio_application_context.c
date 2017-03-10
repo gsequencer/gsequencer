@@ -128,6 +128,7 @@ GList* ags_audio_application_context_get_sequencer(AgsSoundProvider *sound_provi
 void ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						 GList *sequencer);
 GList* ags_audio_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
+void ags_audio_application_context_dispose(GObject *gobject);
 void ags_audio_application_context_finalize(GObject *gobject);
 
 void ags_audio_application_context_register_types(AgsApplicationContext *application_context);
@@ -228,6 +229,7 @@ ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_
   gobject->set_property = ags_audio_application_context_set_property;
   gobject->get_property = ags_audio_application_context_get_property;
 
+  gobject->dispose = ags_audio_application_context_dispose;
   gobject->finalize = ags_audio_application_context_finalize;
   
   /**
@@ -315,6 +317,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   /**/
   config = ags_config_get_instance();
   AGS_APPLICATION_CONTEXT(audio_application_context)->config = config;
+  g_object_ref(config);
   g_object_set(config,
 	       "application-context\0", audio_application_context,
 	       NULL);
@@ -862,6 +865,103 @@ GList*
 ags_audio_application_context_get_distributed_manager(AgsSoundProvider *sound_provider)
 {
   return(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->distributed_manager);
+}
+
+void
+ags_audio_application_context_dispose(GObject *gobject)
+{
+  AgsAudioApplicationContext *audio_application_context;
+
+  GList *list;
+  
+  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(gobject);
+
+  /* thread pool */
+  if(audio_application_context->thread_pool != NULL){
+    g_object_unref(audio_application_context->thread_pool);
+    
+    audio_application_context->thread_pool = NULL;
+  }
+
+  /* soundcard and export thread */
+  if(audio_application_context->soundcard_thread != NULL){
+    g_object_unref(audio_application_context->soundcard_thread);
+
+    audio_application_context->soundcard_thread = NULL;
+  }
+
+  if(audio_application_context->export_thread != NULL){
+    g_object_unref(audio_application_context->export_thread);
+
+    audio_application_context->export_thread = NULL;
+  }
+
+  /* server */
+  if(audio_application_context->server != NULL){
+    g_object_set(audio_application_context->server,
+		 "application-context\0", NULL,
+		 NULL);
+    
+    g_object_unref(audio_application_context->server);
+
+    audio_application_context->server = NULL;
+  }
+
+  /* soundcard and sequencer */
+  if(audio_application_context->soundcard != NULL){
+    list = audio_application_context->soundcard;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+    
+    g_list_free_full(audio_application_context->soundcard,
+		     g_object_unref);
+
+    audio_application_context->soundcard = NULL;
+  }
+
+  if(audio_application_context->sequencer != NULL){
+    list = audio_application_context->sequencer;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio_application_context->sequencer,
+		     g_object_unref);
+
+    audio_application_context->sequencer = NULL;
+  }
+
+  /* distributed manager */
+  if(audio_application_context->distributed_manager != NULL){
+    list = audio_application_context->distributed_manager;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio_application_context->distributed_manager,
+		     g_object_unref);
+
+    audio_application_context->distributed_manager = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_application_context_parent_class)->dispose(gobject);
 }
 
 void

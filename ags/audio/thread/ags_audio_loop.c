@@ -107,6 +107,7 @@ void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop,
 
 enum{
   PROP_0,
+  PROP_APPLICATION_CONTEXT,
   PROP_SOUNDCARD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
@@ -181,6 +182,22 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   gobject->finalize = ags_audio_loop_finalize;
 
   /* properties */
+  /**
+   * AgsDevout:application-context:
+   *
+   * The assigned #AgsApplicationContext
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "the application context object\0",
+				   "The application context object\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
   /**
    * AgsAudioLoop:soundcard:
    *
@@ -414,6 +431,27 @@ ags_audio_loop_set_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(audio_loop->application_context == (GObject *) application_context){
+	return;
+      }
+
+      if(audio_loop->application_context != NULL){
+	g_object_unref(G_OBJECT(audio_loop->application_context));
+      }
+
+      if(application_context != NULL){
+	g_object_ref(G_OBJECT(application_context));
+      }
+      
+      audio_loop->application_context = (GObject *) application_context;
+    }
+    break;
   case PROP_SOUNDCARD:
     {
       GObject *soundcard;
@@ -484,6 +522,11 @@ ags_audio_loop_get_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, audio_loop->application_context);
+    }
+    break;
   case PROP_SOUNDCARD:
     {
       g_value_set_object(value, audio_loop->soundcard);

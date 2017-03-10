@@ -28,11 +28,15 @@
 
 #define AGS_DEVOUT_TEST_DISPOSE_AUDIO_COUNT (8)
 
+#define AGS_DEVOUT_TEST_FINALIZE_AUDIO_COUNT (8)
+
 int ags_devout_test_init_suite();
 int ags_devout_test_clean_suite();
 
-void ags_devout_test_audio_application_context();
 void ags_devout_test_dispose();
+void ags_devout_test_finalize();
+
+void ags_devout_test_finalize_stub(GObject *gobject);
 
 #define AGS_DEVOUT_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -50,7 +54,9 @@ void ags_devout_test_dispose();
   "auto-sense=true\n"				       \
   "\n"
 
+
 AgsAudioApplicationContext *audio_application_context;
+gboolean devout_test_finalized;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -164,6 +170,56 @@ ags_devout_test_dispose()
   CU_ASSERT(success == TRUE);
 }
 
+void
+ags_devout_test_finalize()
+{
+  AgsDevout *devout;
+  AgsAudio *audio;
+    
+  guint i;
+  
+  devout = g_object_new(AGS_TYPE_DEVOUT,
+			"application-context\0", audio_application_context,
+			NULL);
+
+  /* audio list */  
+  for(i = 0; i < AGS_DEVOUT_TEST_FINALIZE_AUDIO_COUNT; i++){
+    /* instantiate audio */
+    audio = g_object_new(AGS_TYPE_AUDIO,
+			 NULL);
+    g_object_ref(audio);    
+
+    /* audio list of soundcard */
+    ags_soundcard_set_audio(AGS_SOUNDCARD(devout),
+			    g_list_prepend(ags_soundcard_get_audio(AGS_SOUNDCARD(devout)),
+					   audio));
+    g_object_ref(audio);
+
+    /* soundcard property of audio */
+    g_object_set(audio,
+		 "soundcard\0", devout,
+		 NULL);
+  }
+
+  /* run dispose */
+  g_object_run_dispose(devout);
+
+  /* stub finalize */
+  devout_test_finalized = FALSE;
+  G_OBJECT_GET_CLASS(devout)->finalize = ags_devout_test_finalize_stub;
+
+  /* unref and assert */
+  g_object_unref(devout);
+  
+  CU_ASSERT(devout_test_finalized == TRUE);
+}
+
+void
+ags_devout_test_finalize_stub(GObject *gobject)
+{
+  devout_test_finalized = TRUE;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -187,7 +243,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsDevout doing dispose\0", ags_devout_test_dispose) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsDevout doing dispose\0", ags_devout_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsDevout doing finalize\0", ags_devout_test_finalize) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();

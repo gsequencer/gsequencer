@@ -357,6 +357,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /**/
   config = ags_config_get_instance();
   AGS_APPLICATION_CONTEXT(xorg_application_context)->config = config;
+  g_object_ref(config);
   g_object_set(config,
 	       "application-context\0", xorg_application_context,
 	       NULL);
