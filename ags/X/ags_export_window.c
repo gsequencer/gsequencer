@@ -598,6 +598,10 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   main_window = export_window->main_window;
 
   application_context = export_window->application_context;
+
+  if(application_context == NULL){
+    return;
+  }
   
   /* retrieve soundcard */
   pthread_mutex_lock(application_mutex);

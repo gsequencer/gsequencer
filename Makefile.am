@@ -253,7 +253,8 @@ check_PROGRAMS = \
 	ags_notation_test \
 	ags_automation_test \
 	ags_midi_buffer_util_test \
-	ags_functional_audio_test
+	ags_functional_audio_test \
+	ags_xorg_application_context_test
 
 TESTS = $(check_PROGRAMS)
 
@@ -326,6 +327,11 @@ ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_tes
 ags_midi_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_midi_buffer_util_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
+ags_xorg_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_xorg_application_context_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_xorg_application_context_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
 deprecated_libags_h_sources =

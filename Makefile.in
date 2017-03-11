@@ -100,7 +100,8 @@ check_PROGRAMS = ags_thread_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_pattern_test$(EXEEXT) ags_notation_test$(EXEEXT) \
 	ags_automation_test$(EXEEXT) \
 	ags_midi_buffer_util_test$(EXEEXT) \
-	ags_functional_audio_test$(EXEEXT)
+	ags_functional_audio_test$(EXEEXT) \
+	ags_xorg_application_context_test$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gtk-doc.m4 \
@@ -849,6 +850,16 @@ ags_turtle_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_turtle_test_CFLAGS) $(CFLAGS) $(ags_turtle_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_ags_xorg_application_context_test_OBJECTS = ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.$(OBJEXT)
+ags_xorg_application_context_test_OBJECTS =  \
+	$(am_ags_xorg_application_context_test_OBJECTS)
+ags_xorg_application_context_test_DEPENDENCIES = libgsequencer.la \
+	libags_audio.la libags_server.la libags_gui.la \
+	libags_thread.la libags.la
+ags_xorg_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) \
+	$(ags_xorg_application_context_test_LDFLAGS) $(LDFLAGS) -o $@
 am__objects_28 = ags/gsequencer-gsequencer_main.$(OBJEXT)
 am_gsequencer_OBJECTS = $(am__objects_28) $(am__objects_1)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
@@ -910,6 +921,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_thread_test_SOURCES) $(ags_turtle_test_SOURCES) \
+	$(ags_xorg_application_context_test_SOURCES) \
 	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
 DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(libags_gui_la_SOURCES) $(libags_server_la_SOURCES) \
@@ -923,6 +935,7 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_thread_test_SOURCES) $(ags_turtle_test_SOURCES) \
+	$(ags_xorg_application_context_test_SOURCES) \
 	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -1628,6 +1641,10 @@ ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_tes
 ags_midi_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_midi_buffer_util_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
+ags_xorg_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_xorg_application_context_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_xorg_application_context_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
 deprecated_libags_h_sources = 
@@ -4659,6 +4676,19 @@ ags/test/lib/ags_turtle_test-ags_turtle_test.$(OBJEXT):  \
 ags_turtle_test$(EXEEXT): $(ags_turtle_test_OBJECTS) $(ags_turtle_test_DEPENDENCIES) $(EXTRA_ags_turtle_test_DEPENDENCIES) 
 	@rm -f ags_turtle_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_turtle_test_LINK) $(ags_turtle_test_OBJECTS) $(ags_turtle_test_LDADD) $(LIBS)
+ags/test/X/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/X
+	@: > ags/test/X/$(am__dirstamp)
+ags/test/X/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/X/$(DEPDIR)
+	@: > ags/test/X/$(DEPDIR)/$(am__dirstamp)
+ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_xorg_application_context_test$(EXEEXT): $(ags_xorg_application_context_test_OBJECTS) $(ags_xorg_application_context_test_DEPENDENCIES) $(EXTRA_ags_xorg_application_context_test_DEPENDENCIES) 
+	@rm -f ags_xorg_application_context_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_xorg_application_context_test_LINK) $(ags_xorg_application_context_test_OBJECTS) $(ags_xorg_application_context_test_LDADD) $(LIBS)
 ags/$(am__dirstamp):
 	@$(MKDIR_P) ags
 	@: > ags/$(am__dirstamp)
@@ -4723,6 +4753,7 @@ mostlyclean-compile:
 	-rm -f ags/plugin/*.lo
 	-rm -f ags/server/*.$(OBJEXT)
 	-rm -f ags/server/*.lo
+	-rm -f ags/test/X/*.$(OBJEXT)
 	-rm -f ags/test/audio/*.$(OBJEXT)
 	-rm -f ags/test/audio/midi/*.$(OBJEXT)
 	-rm -f ags/test/lib/*.$(OBJEXT)
@@ -5199,6 +5230,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_application_context_test-ags_audio_application_context_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_signal_test-ags_audio_signal_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_test-ags_audio_test.Po@am__quote@
@@ -8936,6 +8968,20 @@ ags/test/lib/ags_turtle_test-ags_turtle_test.obj: ags/test/lib/ags_turtle_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_turtle_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/ags_turtle_test-ags_turtle_test.obj `if test -f 'ags/test/lib/ags_turtle_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_turtle_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_turtle_test.c'; fi`
 
+ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.o: ags/test/X/ags_xorg_application_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Tpo -c -o ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.o `test -f 'ags/test/X/ags_xorg_application_context_test.c' || echo '$(srcdir)/'`ags/test/X/ags_xorg_application_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Tpo ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_xorg_application_context_test.c' object='ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.o `test -f 'ags/test/X/ags_xorg_application_context_test.c' || echo '$(srcdir)/'`ags/test/X/ags_xorg_application_context_test.c
+
+ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.obj: ags/test/X/ags_xorg_application_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Tpo -c -o ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.obj `if test -f 'ags/test/X/ags_xorg_application_context_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_xorg_application_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_xorg_application_context_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Tpo ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_xorg_application_context_test.c' object='ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.obj `if test -f 'ags/test/X/ags_xorg_application_context_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_xorg_application_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_xorg_application_context_test.c'; fi`
+
 ags/gsequencer-gsequencer_main.o: ags/gsequencer_main.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT ags/gsequencer-gsequencer_main.o -MD -MP -MF ags/$(DEPDIR)/gsequencer-gsequencer_main.Tpo -c -o ags/gsequencer-gsequencer_main.o `test -f 'ags/gsequencer_main.c' || echo '$(srcdir)/'`ags/gsequencer_main.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/$(DEPDIR)/gsequencer-gsequencer_main.Tpo ags/$(DEPDIR)/gsequencer-gsequencer_main.Po
@@ -9425,6 +9471,13 @@ ags_functional_audio_test.log: ags_functional_audio_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_xorg_application_context_test.log: ags_xorg_application_context_test$(EXEEXT)
+	@p='ags_xorg_application_context_test$(EXEEXT)'; \
+	b='ags_xorg_application_context_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -9688,6 +9741,8 @@ distclean-generic:
 	-rm -f ags/plugin/$(am__dirstamp)
 	-rm -f ags/server/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/server/$(am__dirstamp)
+	-rm -f ags/test/X/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ags/test/X/$(am__dirstamp)
 	-rm -f ags/test/audio/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/audio/$(am__dirstamp)
 	-rm -f ags/test/audio/midi/$(DEPDIR)/$(am__dirstamp)
@@ -9720,7 +9775,7 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -9766,7 +9821,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

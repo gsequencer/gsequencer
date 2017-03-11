@@ -167,6 +167,7 @@ GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provid
 void ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						GList *sequencer);
 GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_dispose(GObject *gobject);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
@@ -264,6 +265,7 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
   gobject->set_property = ags_xorg_application_context_set_property;
   gobject->get_property = ags_xorg_application_context_get_property;
 
+  gobject->dispose = ags_xorg_application_context_dispose;
   gobject->finalize = ags_xorg_application_context_finalize;
   
   /**
@@ -950,14 +952,164 @@ ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *sound_pro
 }
 
 void
+ags_xorg_application_context_dispose(GObject *gobject)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  GList *list;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
+
+  /* thread pool */
+  if(xorg_application_context->thread_pool != NULL){
+    g_object_unref(xorg_application_context->thread_pool);
+    
+    xorg_application_context->thread_pool = NULL;
+  }
+
+  /* polling thread */
+  if(xorg_application_context->polling_thread != NULL){
+    g_object_unref(xorg_application_context->polling_thread);
+
+    xorg_application_context->polling_thread = NULL;
+  }
+
+  /* soundcard and export thread */
+  if(xorg_application_context->soundcard_thread != NULL){
+    g_object_unref(xorg_application_context->soundcard_thread);
+
+    xorg_application_context->soundcard_thread = NULL;
+  }
+
+  if(xorg_application_context->export_thread != NULL){
+    g_object_unref(xorg_application_context->export_thread);
+
+    xorg_application_context->export_thread = NULL;
+  }
+
+  /* server */
+  if(xorg_application_context->server != NULL){
+    g_object_set(xorg_application_context->server,
+		 "application-context\0", NULL,
+		 NULL);
+    
+    g_object_unref(xorg_application_context->server);
+
+    xorg_application_context->server = NULL;
+  }
+
+  /* soundcard and sequencer */
+  if(xorg_application_context->soundcard != NULL){
+    list = xorg_application_context->soundcard;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+    
+    g_list_free_full(xorg_application_context->soundcard,
+		     g_object_unref);
+
+    xorg_application_context->soundcard = NULL;
+  }
+
+  if(xorg_application_context->sequencer != NULL){
+    list = xorg_application_context->sequencer;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(xorg_application_context->sequencer,
+		     g_object_unref);
+
+    xorg_application_context->sequencer = NULL;
+  }
+
+  /* distributed manager */
+  if(xorg_application_context->distributed_manager != NULL){
+    list = xorg_application_context->distributed_manager;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(xorg_application_context->distributed_manager,
+		     g_object_unref);
+
+    xorg_application_context->distributed_manager = NULL;
+  }
+
+  /* window */
+  if(xorg_application_context->window != NULL){
+    g_object_set(xorg_application_context->window,
+		 "application-context\0", NULL,
+		 NULL);
+    
+    gtk_widget_destroy(xorg_application_context->window);
+
+    xorg_application_context->window = NULL;
+  }  
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->dispose(gobject);
+}
+
+void
 ags_xorg_application_context_finalize(GObject *gobject)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
 
+  if(xorg_application_context->thread_pool != NULL){
+    g_object_unref(xorg_application_context->thread_pool);
+  }
+
+  if(xorg_application_context->polling_thread != NULL){
+    g_object_unref(xorg_application_context->polling_thread);
+  }
+
+  if(xorg_application_context->soundcard_thread != NULL){
+    g_object_unref(xorg_application_context->soundcard_thread);
+  }
+
+  if(xorg_application_context->export_thread != NULL){
+    g_object_unref(xorg_application_context->export_thread);
+  }
+
+  if(xorg_application_context->server != NULL){
+    g_object_unref(xorg_application_context->server);
+  }
+
+  if(xorg_application_context->soundcard != NULL){
+    g_list_free_full(xorg_application_context->soundcard,
+		     g_object_unref);
+  }
+
+  if(xorg_application_context->sequencer != NULL){
+    g_list_free_full(xorg_application_context->sequencer,
+		     g_object_unref);
+  }
+  
+  if(xorg_application_context->distributed_manager != NULL){
+    g_list_free_full(xorg_application_context->distributed_manager,
+		     g_object_unref);
+  }
+  
   if(xorg_application_context->window != NULL){
-    g_object_unref(xorg_application_context->window);
+    gtk_widget_destroy(xorg_application_context->window);
   }
   
   /* call parent */
