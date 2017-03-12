@@ -408,10 +408,12 @@ ags_playback_domain_dispose(GObject *gobject)
   
   if(playback_domain->audio_thread != NULL){
     for(i = 0; i < 3; i++){
-      g_object_unref(playback_domain->audio_thread[i]);
+      if(playback_domain->audio_thread[i] != NULL){
+	g_object_unref(playback_domain->audio_thread[i]);
 
-      playback_domain->audio_thread[i] = NULL;
-    }    
+	playback_domain->audio_thread[i] = NULL;
+      }
+    }
   }
 
   /* domain */
@@ -422,10 +424,12 @@ ags_playback_domain_dispose(GObject *gobject)
   }
 
   /* playback */
-  g_list_free_full(playback_domain->playback,
-		   g_object_unref);
-
-  playback_domain->playback = NULL;
+  if(playback_domain->playback != NULL){
+    g_list_free_full(playback_domain->playback,
+		     g_object_unref);
+    
+    playback_domain->playback = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_playback_domain_parent_class)->dispose(gobject);

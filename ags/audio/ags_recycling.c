@@ -649,13 +649,13 @@ ags_recycling_dispose(GObject *gobject)
 
   /* next and prev */
   if(recycling->next != NULL){
-    g_object_unref(recycling->next);
+    //    g_object_unref(recycling->next);
 
     recycling->next = NULL;
   }
 
   if(recycling->prev != NULL){
-    g_object_unref(recycling->prev);
+    //    g_object_unref(recycling->prev);
 
     recycling->prev = NULL;
   }

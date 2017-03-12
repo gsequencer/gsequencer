@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,25 +23,14 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_channel_run.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_recycling_context.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 int ags_audio_test_init_suite();
 int ags_audio_test_clean_suite();
 
+void ags_audio_test_dispose();
+void ags_audio_test_finalize();
 void ags_audio_test_set_pads();
 void ags_audio_test_set_audio_channels();
 void ags_audio_test_link_channel();
@@ -54,6 +43,7 @@ void ags_audio_test_duplicate_recall();
 void ags_audio_test_init_recall();
 void ags_audio_test_resolve_recall();
 
+void ags_audio_test_finalize_stub(GObject *gobject);
 void ags_audio_test_set_link_callback(AgsChannel *channel, AgsChannel *link,
 				      GError **error,
 				      AgsAudio *audio);
@@ -61,6 +51,14 @@ void ags_audio_test_init_recall_callback(AgsRecall *recall,
 					 gpointer data);
 void ags_audio_test_resolve_recall_callback(AgsRecall *recall,
 					    gpointer data);
+
+#define AGS_AUDIO_TEST_DISPOSE_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_DISPOSE_INPUT_PADS (12)
+#define AGS_AUDIO_TEST_DISPOSE_OUTPUT_PADS (5)
+
+#define AGS_AUDIO_TEST_FINALIZE_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_FINALIZE_INPUT_PADS (12)
+#define AGS_AUDIO_TEST_FINALIZE_OUTPUT_PADS (5)
 
 #define AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS (2)
 #define AGS_AUDIO_TEST_SET_PADS_INPUT_PADS (12)
@@ -103,6 +101,7 @@ void ags_audio_test_resolve_recall_callback(AgsRecall *recall,
 #define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_OUTPUT_PADS (1)
 
 AgsDevout *devout;
+gboolean audio_test_finalized;
 
 struct{
   AgsAudio *master;
@@ -143,7 +142,8 @@ int
 ags_audio_test_init_suite()
 {
   devout = ags_devout_new(NULL);
-
+  g_object_ref(devout);
+  
   return(0);
 }
 
@@ -160,6 +160,86 @@ ags_audio_test_clean_suite()
 }
 
 void
+ags_audio_test_dispose()
+{
+  AgsAudio *audio;
+
+  /* instantiate audio */
+  audio = ags_audio_new(devout);
+
+  /* set audio channels */
+  audio->audio_channels = AGS_AUDIO_TEST_DISPOSE_AUDIO_CHANNELS;
+
+  /* set input pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_DISPOSE_INPUT_PADS);
+
+  /* set output pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_DISPOSE_OUTPUT_PADS);
+
+  /* run dispose and assert */
+  g_object_run_dispose(audio);
+
+  CU_ASSERT(audio->soundcard == NULL);
+  CU_ASSERT(audio->sequencer == NULL);
+
+  CU_ASSERT(audio->midi_file == NULL);
+  CU_ASSERT(audio->audio_connection == NULL);
+
+  CU_ASSERT(audio->output == NULL);
+  CU_ASSERT(audio->input == NULL);
+
+  CU_ASSERT(audio->playback_domain == NULL);
+
+  CU_ASSERT(audio->notation == NULL);
+  CU_ASSERT(audio->automation == NULL);
+
+  CU_ASSERT(audio->recall_id == NULL);
+  CU_ASSERT(audio->recycling_context == NULL);
+
+  CU_ASSERT(audio->container == NULL);
+  CU_ASSERT(audio->recall == NULL);
+  CU_ASSERT(audio->play == NULL);
+}
+
+void
+ags_audio_test_finalize()
+{
+  AgsAudio *audio;
+
+  /* instantiate audio */
+  audio = ags_audio_new(devout);
+
+  /* set audio channels */
+  audio->audio_channels = AGS_AUDIO_TEST_FINALIZE_AUDIO_CHANNELS;
+
+  /* set input pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_FINALIZE_INPUT_PADS);
+
+  /* set output pads */
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_FINALIZE_OUTPUT_PADS);
+
+  /* run dispose */
+  g_object_run_dispose(audio);
+
+  /* stub */
+  audio_test_finalized = FALSE;
+  G_OBJECT_GET_CLASS(audio)->finalize = ags_audio_test_finalize_stub;
+  
+  /* unref and assert */
+  g_object_unref(audio);
+  
+  CU_ASSERT(audio_test_finalized == TRUE);
+}
+
+void
 ags_audio_test_set_pads()
 {
   AgsAudio *audio;
@@ -168,7 +248,7 @@ ags_audio_test_set_pads()
   guint i, j;
   
   /* instantiate */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   CU_ASSERT(audio != NULL);
 
@@ -410,7 +490,7 @@ ags_audio_test_set_audio_channels()
   guint i, j;
   
   /* instantiate */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   CU_ASSERT(audio != NULL);
 
@@ -488,7 +568,7 @@ ags_audio_test_link_channel()
   GError *error;
   
   /* audio - master */
-  test_link_channel.master = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.master = ags_audio_new(devout);
   test_link_channel.master->flags |= AGS_AUDIO_ASYNC;
   
   ags_audio_set_audio_channels(test_link_channel.master,
@@ -502,7 +582,7 @@ ags_audio_test_link_channel()
 		     AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_OUTPUT_PADS);
 
   /* audio - slave 0 */
-  test_link_channel.slave_0 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.slave_0 = ags_audio_new(devout);
   test_link_channel.slave_0->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				       AGS_AUDIO_ASYNC);
   
@@ -517,7 +597,7 @@ ags_audio_test_link_channel()
 		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_OUTPUT_PADS);
 
   /* audio - slave 1 */
-  test_link_channel.slave_1 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.slave_1 = ags_audio_new(devout);
   test_link_channel.slave_1->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				       AGS_AUDIO_ASYNC);
   
@@ -532,7 +612,7 @@ ags_audio_test_link_channel()
 		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_OUTPUT_PADS);
 
   /* audio - slave 2 */
-  test_link_channel.slave_2 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.slave_2 = ags_audio_new(devout);
   test_link_channel.slave_2->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				       AGS_AUDIO_ASYNC);
   
@@ -753,7 +833,7 @@ ags_audio_test_finalize_linked_channel()
   GError *error;
   
   /* audio - master */
-  test_finalize_linked_channel.master = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.master = ags_audio_new(devout);
   test_finalize_linked_channel.master->flags |= AGS_AUDIO_ASYNC;
   
   ags_audio_set_audio_channels(test_finalize_linked_channel.master,
@@ -767,7 +847,7 @@ ags_audio_test_finalize_linked_channel()
 		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_OUTPUT_PADS);
 
   /* audio - slave 0 */
-  test_finalize_linked_channel.slave_0 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.slave_0 = ags_audio_new(devout);
   test_finalize_linked_channel.slave_0->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 						  AGS_AUDIO_ASYNC);
   
@@ -782,7 +862,7 @@ ags_audio_test_finalize_linked_channel()
 		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_OUTPUT_PADS);
 
   /* audio - slave 1 */
-  test_finalize_linked_channel.slave_1 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.slave_1 = ags_audio_new(devout);
   test_finalize_linked_channel.slave_1->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 						  AGS_AUDIO_ASYNC);
   
@@ -797,7 +877,7 @@ ags_audio_test_finalize_linked_channel()
 		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_OUTPUT_PADS);
 
   /* audio - slave 2 */
-  test_finalize_linked_channel.slave_2 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.slave_2 = ags_audio_new(devout);
   test_finalize_linked_channel.slave_2->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 						  AGS_AUDIO_ASYNC);
   
@@ -1007,7 +1087,7 @@ ags_audio_test_add_recall()
   AgsRecall *recall;
 
   /* instantiate audio */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   /* instantiate recall */
   recall = ags_recall_new();
@@ -1041,7 +1121,7 @@ ags_audio_test_add_recall_container()
   AgsRecallContainer *recall_container;
   
   /* instantiate audio */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   /* instantiate recall */
   recall_container = ags_recall_container_new();
@@ -1062,7 +1142,7 @@ ags_audio_test_add_recall_id()
   AgsRecallID *recall_id;
   
   /* instantiate audio */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   /* instantiate recall */
   recall_id = ags_recall_id_new(NULL);
@@ -1083,7 +1163,7 @@ ags_audio_test_add_recycling_context()
   AgsRecyclingContext *recycling_context;
   
   /* instantiate audio */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   /* instantiate recall */
   recycling_context = ags_recycling_context_new(0);
@@ -1107,7 +1187,7 @@ ags_audio_test_duplicate_recall()
   AgsRecallID *recall_id;
   
   /* instantiate audio */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   /* case 1: playback recall */
   recall = ags_recall_new();
@@ -1185,7 +1265,7 @@ ags_audio_test_init_recall()
   AgsRecallID *recall_id;
     
   /* instantiate audio */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   /* instantiate recalls */
   recall = ags_recall_new();
@@ -1193,7 +1273,7 @@ ags_audio_test_init_recall()
 		       recall,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(recall), "init-pre\0",
+  g_signal_connect(G_OBJECT(recall), "run-init-pre\0",
 		   G_CALLBACK(ags_audio_test_init_recall_callback), NULL);
   
   recall_audio_run = ags_recall_audio_run_new();
@@ -1201,7 +1281,7 @@ ags_audio_test_init_recall()
 		       recall_audio_run,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(recall_audio_run), "init-pre\0",
+  g_signal_connect(G_OBJECT(recall_audio_run), "run-init-pre\0",
 		   G_CALLBACK(ags_audio_test_init_recall_callback), NULL);
   
   /* instantiate recycling context and recall id */
@@ -1238,7 +1318,7 @@ ags_audio_test_resolve_recall()
   AgsRecallID *recall_id;
   
   /* instantiate audio */
-  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+  audio = ags_audio_new(devout);
 
   /* instantiate recalls */
   slave_recall_audio_run = ags_recall_audio_run_new();
@@ -1246,7 +1326,7 @@ ags_audio_test_resolve_recall()
 		       slave_recall_audio_run,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve\0",
+  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve-dependencies\0",
 		   G_CALLBACK(ags_audio_test_resolve_recall_callback), NULL);
   
   /* instantiate recycling context and recall id */
@@ -1267,6 +1347,12 @@ ags_audio_test_resolve_recall()
 			   recall_id);
   
   CU_ASSERT(test_resolve_recall_callback_hits_count == 1);
+}
+
+void
+ags_audio_test_finalize_stub(GObject *gobject)
+{
+  audio_test_finalized = TRUE;
 }
 
 void
@@ -1298,7 +1384,7 @@ main(int argc, char **argv)
 
   putenv("LC_ALL=C\0");
   putenv("LANG=C\0");
-  
+
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -1313,8 +1399,13 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
+  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN,
+  		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
+
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAudio set pads\0", ags_audio_test_set_pads) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsAudio dispose\0", ags_audio_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio finalize\0", ags_audio_test_finalize) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio set pads\0", ags_audio_test_set_pads) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio set audio channels\0", ags_audio_test_set_audio_channels) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio link channel\0", ags_audio_test_link_channel) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio finalize linked channel\0", ags_audio_test_finalize_linked_channel) == NULL) ||
@@ -1325,10 +1416,10 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAudio duplicate recall\0", ags_audio_test_duplicate_recall) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio initialize recall\0", ags_audio_test_init_recall) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio resolve recall\0", ags_audio_test_resolve_recall) == NULL)){
-      CU_cleanup_registry();
-      
-      return CU_get_error();
-    }
+    CU_cleanup_registry();
+    
+    return CU_get_error();
+  }
   
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);

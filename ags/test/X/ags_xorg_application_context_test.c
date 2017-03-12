@@ -177,8 +177,8 @@ main(int argc, char **argv)
 
   gtk_init(NULL,
 	   NULL);
-  g_log_set_fatal_mask(G_LOG_DOMAIN, // "GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN,
-  		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
+  //  g_log_set_fatal_mask(G_LOG_DOMAIN, // "GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN,
+  //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsXorgApplicationContext doing dispose\0", ags_xorg_application_context_test_dispose) == NULL) ||
