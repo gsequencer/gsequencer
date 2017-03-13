@@ -372,8 +372,9 @@ ags_recall_channel_pack(AgsPackable *packable, GObject *container)
   AgsRecallChannel *recall_channel;
   GList *list;
 
-  if(ags_recall_channel_parent_packable_interface->pack(packable, container))
+  if(ags_recall_channel_parent_packable_interface->pack(packable, container)){
     return(TRUE);
+  }
 
   recall_container = AGS_RECALL_CONTAINER(container);
   recall_channel = AGS_RECALL_CHANNEL(packable);

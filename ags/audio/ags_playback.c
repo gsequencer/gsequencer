@@ -539,6 +539,7 @@ ags_playback_dispose(GObject *gobject)
   if(playback->channel_thread != NULL){
     for(i = 0; i < 3; i++){
       if(playback->channel_thread[i] != NULL){
+	g_object_run_dispose(playback->channel_thread[i]);
 	g_object_unref(playback->channel_thread[i]);
 
 	playback->channel_thread[i] = NULL;
@@ -550,6 +551,7 @@ ags_playback_dispose(GObject *gobject)
   if(playback->recycling_thread != NULL){
     for(i = 0; i < 3; i++){
       if(playback->recycling_thread[i] != NULL){
+	g_object_run_dispose(playback->recycling_thread[i]);
 	g_object_unref(playback->recycling_thread[i]);
 
 	playback->recycling_thread[i] = NULL;
@@ -562,6 +564,7 @@ ags_playback_dispose(GObject *gobject)
   if(playback->iterator_thread != NULL){
     for(i = 0; i < 3; i++){
       if(playback->iterator_thread[i] != NULL){
+	g_object_run_dispose(playback->iterator_thread[i]);
 	g_object_unref(playback->iterator_thread[i]);
 
 	playback->iterator_thread[i] = NULL;
