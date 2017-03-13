@@ -328,7 +328,17 @@ ags_recall_audio_run_dispose(GObject *gobject)
 
   /* unpack */
   ags_packable_unpack(AGS_PACKABLE(recall_audio_run));
-  
+
+  if(AGS_RECALL(gobject)->container != NULL){
+    AgsRecallContainer *recall_container;
+
+    recall_container = AGS_RECALL(gobject)->container;
+
+    recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
+						       gobject);
+    g_object_unref(gobject);
+  }
+
   /* audio */
   if(recall_audio_run->audio != NULL){
     g_object_unref(G_OBJECT(recall_audio_run->audio));

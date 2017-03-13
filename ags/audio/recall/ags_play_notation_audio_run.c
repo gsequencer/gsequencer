@@ -1010,7 +1010,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
-	g_object_unref(audio_signal);
+	//	g_object_unref(audio_signal);
 
 	/* iterate */
 	recycling = recycling->next;

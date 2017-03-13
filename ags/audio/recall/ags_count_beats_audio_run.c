@@ -1052,11 +1052,13 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 void
 ags_count_beats_audio_run_done(AgsRecall *recall)
 {
-  GObject *soundcard;
-
+  AgsAudio *audio;
+  AgsRecallID *recall_id;
+  
   AgsCountBeatsAudio *count_beats_audio;
   AgsCountBeatsAudioRun *count_beats_audio_run;
-
+  AgsDelayAudioRun *delay_audio_run;
+  
   AgsCancelAudio *cancel_audio;
 
   AgsMutexManager *mutex_manager;
@@ -1064,22 +1066,27 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   AgsThread *async_queue;
 
   AgsApplicationContext *application_context;
+
+  GObject *soundcard;
   
   gboolean sequencer, notation;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
   
-  AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
-
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
-  soundcard = AGS_RECALL_AUDIO(count_beats_audio)->audio->soundcard;
-
+  delay_audio_run = count_beats_audio_run->delay_audio_run;
+  
+  audio = AGS_RECALL_AUDIO(count_beats_audio)->audio;
+  recall_id = AGS_RECALL(count_beats_audio_run)->recall_id;
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
+  soundcard = AGS_RECALL_AUDIO(count_beats_audio)->audio->soundcard;
+
   /* lookup soundcard mutex */
   pthread_mutex_lock(application_mutex);
   
@@ -1106,11 +1113,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   async_queue = (AgsThread *) ags_thread_find_type(main_loop,
 						   AGS_TYPE_TASK_THREAD);
 
-  ags_recall_done((AgsRecall *) count_beats_audio_run->delay_audio_run);
-  ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
-		 AGS_RECALL(count_beats_audio_run)->recall_id);
-
-  if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
+  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0){
     sequencer = TRUE;
   }else{
     sequencer = FALSE;
@@ -1129,6 +1132,14 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   /* append AgsCancelAudio */
   ags_task_thread_append_task((AgsTaskThread *) async_queue,
 			      (AgsTask *) cancel_audio);  
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
+
+  ags_recall_done((AgsRecall *) delay_audio_run);
+  ags_audio_done(audio,
+		 recall_id);
+
 }
 
 /**

@@ -1975,22 +1975,22 @@ void
 ags_recall_real_remove(AgsRecall *recall)
 {
   AgsRecall *parent;
-
-  if(recall == NULL){
-    return;
-  }
   
   g_object_ref(recall);
 
   if(recall->parent == NULL){
-    parent = NULL;
+    g_object_run_dispose(recall);
     g_object_unref(recall);
+    
     return;
   }else{
     parent = AGS_RECALL(recall->parent);
 
     ags_recall_remove_child(parent,
 			    recall);
+
+    g_object_run_dispose(recall);
+    g_object_unref(recall);
   }
 
   /* propagate done */

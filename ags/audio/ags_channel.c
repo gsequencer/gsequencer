@@ -128,6 +128,8 @@ GList* ags_channel_real_add_effect(AgsChannel *channel,
 				   gchar *effect);
 void ags_channel_real_remove_effect(AgsChannel *channel,
 				    guint nth);
+void ags_channel_real_done(AgsChannel *channel,
+			   AgsRecallID *recall_id);
 
 enum{
   ADD_EFFECT,
@@ -523,7 +525,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 
   channel->recycling_changed = NULL;
 
-  channel->done = NULL;
+  channel->done = ags_channel_real_done;
 
   /* signals */
     /**
@@ -4505,9 +4507,10 @@ ags_channel_play(AgsChannel *channel,
 		 gint stage)
 {
   AgsRecall *recall;
-  GList *list, *list_next;
 
   AgsMutexManager *mutex_manager;
+
+  GList *list, *list_next;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -4617,6 +4620,65 @@ ags_channel_play(AgsChannel *channel,
   }
 }
 
+void
+ags_channel_real_done(AgsChannel *channel,
+		      AgsRecallID *recall_id)
+{
+  AgsRecall *recall;
+  
+  AgsMutexManager *mutex_manager;
+
+  GList *list, *list_next;
+
+  gboolean is_toplevel;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get context */
+  pthread_mutex_lock(mutex);
+
+  if(recall_id->recycling_context->parent == NULL){
+    list = channel->play;
+
+    is_toplevel = TRUE;
+  }else{
+    list = channel->recall;
+
+    is_toplevel = FALSE;
+  }
+
+  /* remove recall, run dispose and unref */
+  while(list != NULL){
+    list_next = list->next;
+
+    recall = AGS_RECALL(list->data);
+    if(recall->recall_id != NULL &&
+       recall->recall_id->recycling_context == recall_id->recycling_context){
+      g_object_run_dispose(recall);
+      ags_channel_remove_recall(channel,
+				recall,
+				is_toplevel);
+      g_object_unref(recall);
+    }
+
+    list = list_next;
+  }
+  
+  pthread_mutex_unlock(mutex);
+}
+
 /**
  * ags_channel_done:
  * @channel: an #AgsChannel
@@ -4635,7 +4697,9 @@ ags_channel_done(AgsChannel *channel,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(channel == NULL ||
+     recall_id == NULL ||
+     recall_id->recycling_context == NULL){
     return;
   }
 
@@ -4653,7 +4717,8 @@ ags_channel_done(AgsChannel *channel,
   /* verify type */
   pthread_mutex_lock(mutex);
 
-  if(!(AGS_IS_CHANNEL(channel))){
+  if(!(AGS_IS_CHANNEL(channel) ||
+       AGS_IS_RECALL_ID(recall_id))){
     pthread_mutex_unlock(mutex);
 
     return;
@@ -4724,6 +4789,7 @@ ags_channel_cancel(AgsChannel *channel,
     recall = AGS_RECALL(list->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
+       recall->recall_id == NULL ||
        recall->recall_id->recycling_context != recall_id->recycling_context){
       list = list_next;
       continue;

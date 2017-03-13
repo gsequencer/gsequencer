@@ -315,8 +315,6 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
-  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done(recall);
-
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
   /* get AgsCopyPatternAudioRun */
@@ -325,6 +323,9 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
   /* denotify dependency */
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
  			       AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done(recall);
 }
 
 void
@@ -543,7 +544,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	 * unref AgsAudioSignal because AgsCopyPatternChannelRun has no need for it
 	 * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
 	 */
-	g_object_unref(audio_signal);
+	//	g_object_unref(audio_signal);
 		
 	recycling = recycling->next;
       }

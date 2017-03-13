@@ -439,6 +439,7 @@ ags_recall_audio_signal_duplicate(AgsRecall *recall,
 {
   AgsRecallAudioSignal *recall_audio_signal, *copy;
 
+#if 0
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall);
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
@@ -451,8 +452,9 @@ ags_recall_audio_signal_duplicate(AgsRecall *recall,
   copy = (AgsRecallAudioSignal *) AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->duplicate(recall,
 												    recall_id,
 												    n_params, parameter);
-
-  return((AgsRecall *) copy);
+#endif
+  
+  return((AgsRecall *) NULL);
 }
 
 void

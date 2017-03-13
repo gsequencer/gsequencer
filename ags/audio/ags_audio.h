@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_AUDIO                (ags_audio_get_type ())
 #define AGS_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO, AgsAudio))

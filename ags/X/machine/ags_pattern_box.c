@@ -240,8 +240,8 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   pattern_box->active_led = 0;
   pattern_box->hled_array = (GtkHBox *) ags_hled_array_new();
   g_object_set(pattern_box->hled_array,
-	       "led-height\0", 10,
-	       "led-width\0", 10,
+	       "led-width\0", AGS_PATTERN_BOX_LED_DEFAULT_WIDTH,
+	       "led-height\0", AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT,
 	       "led-count\0", pattern_box->n_controls,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,

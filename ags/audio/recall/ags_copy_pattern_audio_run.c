@@ -301,8 +301,9 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
 
       count_beats_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
 
-      if(copy_pattern_audio_run->count_beats_audio_run == count_beats_audio_run)
+      if(copy_pattern_audio_run->count_beats_audio_run == count_beats_audio_run){
 	return;
+      }
 
       if(count_beats_audio_run != NULL &&
 	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){

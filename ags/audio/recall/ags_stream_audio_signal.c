@@ -37,6 +37,7 @@ void ags_stream_audio_signal_connect(AgsConnectable *connectable);
 void ags_stream_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_stream_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_stream_audio_signal_dispose(GObject *gobject);
 void ags_stream_audio_signal_finalize(GObject *gobject);
 
 void ags_stream_audio_signal_run_init_pre(AgsRecall *recall);
@@ -118,6 +119,7 @@ ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signa
   /* GObjectClass */
   gobject = (GObjectClass *) stream_audio_signal;
 
+  gobject->dispose = ags_stream_audio_signal_dispose;
   gobject->finalize = ags_stream_audio_signal_finalize;
 
   /* AgsRecallClass */
@@ -156,15 +158,33 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
   AGS_RECALL(stream_audio_signal)->port = NULL;
 
   AGS_RECALL(stream_audio_signal)->child_type = G_TYPE_NONE;
+
+  stream_audio_signal->dispose_source = NULL;
+}
+
+void
+ags_stream_audio_signal_dispose(GObject *gobject)
+{
+  AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source = AGS_RECALL_AUDIO_SIGNAL(gobject)->source;
+  /* call parent */
+  G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->dispose(gobject); 
 }
 
 void
 ags_stream_audio_signal_finalize(GObject *gobject)
 {
-  if(AGS_RECALL_AUDIO_SIGNAL(gobject)->source != NULL &&
-     AGS_RECALL_AUDIO_SIGNAL(gobject)->source->recycling != NULL){
-    ags_recycling_remove_audio_signal((AgsRecycling *) AGS_RECALL_AUDIO_SIGNAL(gobject)->source->recycling,
-				      AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
+  if(AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source != NULL &&
+     AGS_AUDIO_SIGNAL(AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source)->recycling != NULL){
+    AgsRecycling *recycling;
+    AgsAudioSignal *audio_signal;
+
+    recycling = AGS_AUDIO_SIGNAL(AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source)->recycling;
+    audio_signal = AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source;
+    
+    ags_recycling_remove_audio_signal(recycling,
+				      audio_signal);
+    g_object_run_dispose(audio_signal);
+    g_object_unref(audio_signal);
   }
 
   /* call parent */

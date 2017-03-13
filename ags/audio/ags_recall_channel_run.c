@@ -531,6 +531,16 @@ ags_recall_channel_run_dispose(GObject *gobject)
   /* unpack */
   ags_packable_unpack(AGS_PACKABLE(recall_channel_run));
 
+  if(AGS_RECALL(gobject)->container != NULL){
+    AgsRecallContainer *recall_container;
+
+    recall_container = AGS_RECALL(gobject)->container;
+
+    recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
+							 gobject);
+    g_object_unref(gobject);
+  }
+  
   /* recall audio run */
   if(recall_channel_run->recall_audio_run != NULL){
     g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
@@ -738,13 +748,15 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
 
   recall = AGS_RECALL(packable);
 
-  if(recall == NULL)
+  if(recall == NULL){
     return(TRUE);
+  }
 
   recall_container = AGS_RECALL_CONTAINER(recall->container);
 
-  if(recall_container == NULL)
+  if(recall_container == NULL){
     return(TRUE);
+  }
 
   /* ref */
   g_object_ref(recall);

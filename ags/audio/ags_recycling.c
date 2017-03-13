@@ -820,21 +820,27 @@ void
 ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal)
 {
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
-    AgsAudioSignal *old_template;
+  if(g_list_find(recycling->audio_signal,
+		 audio_signal) == NULL){
+    if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
+      AgsAudioSignal *old_template;
 
-    /* old template */
-    old_template = ags_audio_signal_get_template(recycling->audio_signal);
+      /* old template */
+      old_template = ags_audio_signal_get_template(recycling->audio_signal);
     
-    /* remove old template */
-    ags_recycling_remove_audio_signal(recycling,
-				      old_template);
+      /* remove old template */
+      ags_recycling_remove_audio_signal(recycling,
+					old_template);
+    }
+
+    recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
+    g_object_ref(audio_signal);
   }
   
-  recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
-  audio_signal->recycling = (GObject *) recycling;
-  g_object_ref(recycling);
-  g_object_ref(audio_signal);
+  if(audio_signal->recycling != recycling){
+    audio_signal->recycling = (GObject *) recycling;
+    g_object_ref(recycling);
+  }
 }
 
 /**

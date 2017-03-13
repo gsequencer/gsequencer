@@ -101,6 +101,8 @@ void ags_audio_real_set_audio_channels(AgsAudio *audio,
 void ags_audio_real_set_pads(AgsAudio *audio,
 			     GType type,
 			     guint channels, guint channels_old);
+void ags_audio_real_done(AgsAudio *audio,
+			 AgsRecallID *recall_id);
 
 enum{
   CHECK_CONNECTION,
@@ -687,7 +689,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   audio->init_run = NULL;
   audio->tact = NULL;
-  audio->done = NULL;
+  audio->done = ags_audio_real_done;
 
   /* signals */
   /**
@@ -4835,6 +4837,76 @@ ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
   pthread_mutex_unlock(mutex);
 }
 
+void
+ags_audio_real_done(AgsAudio *audio,
+		    AgsRecallID *recall_id)
+{
+  AgsRecall *recall;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *list, *list_next;
+
+  gboolean is_toplevel;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get context */
+  pthread_mutex_lock(mutex);
+
+  if(recall_id->recycling_context->parent == NULL){
+    list = audio->play;
+    
+    is_toplevel = TRUE;
+  }else{
+    list = audio->recall;
+
+    is_toplevel = FALSE;
+  }
+
+  /* remove recall, run dispose and unref */
+ ags_audio_real_done_RECALL0:
+  
+  while(list != NULL){
+    list_next = list->next;
+
+    recall = AGS_RECALL(list->data);
+    
+    if(recall->recall_id != NULL &&
+       recall->recall_id->recycling_context == recall_id->recycling_context){
+      g_object_run_dispose(recall);
+      ags_audio_remove_recall(audio,
+			      recall,
+			      is_toplevel);
+      g_object_unref(recall);
+    }
+
+    list = list_next;
+  }
+
+  if(is_toplevel &&
+     (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+    list = audio->recall;
+    is_toplevel = FALSE;
+    
+    goto ags_audio_real_done_RECALL0;
+  }
+  
+  pthread_mutex_unlock(mutex);
+}
+
 /**
  * ags_audio_done:
  * @audio: the #AgsAudio
@@ -4852,6 +4924,12 @@ ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
+  if(audio == NULL ||
+     recall_id == NULL ||
+     recall_id->recycling_context == NULL){
+    return;
+  }
+  
   /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -4865,7 +4943,8 @@ ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
 
   pthread_mutex_lock(mutex);
 
-  if(!AGS_IS_AUDIO(audio)){
+  if(!(AGS_IS_AUDIO(audio) ||
+       AGS_IS_RECALL_ID(recall_id))){
     pthread_mutex_unlock(mutex);
     return;
   }
