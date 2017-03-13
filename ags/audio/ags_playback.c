@@ -183,7 +183,7 @@ ags_playback_init(AgsPlayback *playback)
 {
   AgsConfig *config;
 
-  gchar str, *str0, *str1;
+  gchar *str, *str0, *str1;
 
   gdouble freq;
   guint samplerate, buffer_size;

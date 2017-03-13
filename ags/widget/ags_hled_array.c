@@ -52,7 +52,7 @@ ags_hled_array_get_type(void)
       (GInstanceInitFunc) ags_hled_array_init,
     };
 
-    ags_type_hled_array = g_type_register_static(AGS_TYPE_HLED_ARRAY,
+    ags_type_hled_array = g_type_register_static(AGS_TYPE_LED_ARRAY,
 						 "AgsHLedArray\0",
 						 &ags_hled_array_info,
 						 0);
@@ -72,6 +72,9 @@ ags_hled_array_init(AgsHLedArray *hled_array)
 {
   AGS_LED_ARRAY(hled_array)->box = gtk_hbox_new(FALSE,
 						0);
+  gtk_container_add(hled_array,
+		    AGS_LED_ARRAY(hled_array)->box);
+  gtk_widget_show(AGS_LED_ARRAY(hled_array)->box);
 }
 
 /**

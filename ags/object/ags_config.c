@@ -269,15 +269,18 @@ ags_config_set_property(GObject *gobject,
       
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(application_context == ((AgsApplicationContext *) config->application_context))
+      if(application_context == ((AgsApplicationContext *) config->application_context)){
 	return;
+      }
 
-      if(config->application_context != NULL)
+      if(config->application_context != NULL){
 	g_object_unref(config->application_context);
-
-      if(application_context != NULL)
+      }
+      
+      if(application_context != NULL){
 	g_object_ref(G_OBJECT(application_context));
-
+      }
+      
       config->application_context = (GObject *) application_context;
     }
     break;

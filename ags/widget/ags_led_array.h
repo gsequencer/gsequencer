@@ -43,11 +43,14 @@ typedef enum{
 
 struct _AgsLedArray
 {
-  GtkBin bin;
+  GtkAlignment alignment;
 
   guint flags;
 
   GtkBox *box;
+
+  guint led_width;
+  guint led_height;
   
   AgsLed **led;
   guint led_count;
@@ -55,7 +58,7 @@ struct _AgsLedArray
 
 struct _AgsLedArrayClass
 {
-  GtkBinClass bin;
+  GtkAlignmentClass alignment;
 };
 
 GType ags_led_array_get_type(void);

@@ -3,9 +3,10 @@ ags (0.7.122.7)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsHLedArray and AgsVLedArray
 	* implemented missing properties of AgsPlaybackDomain and AgsPlayback
-	* TODO:JK: implemented GObject::dispose()
-	* TODO:JK: fixed reference counting of libags, libags_audio
-	* fixed division by zero cause by AgsOscillator
+	* implemented GObject::dispose()
+	* fixed reference counting of libags, libags_audio
+	* fixed division by zero caused by AgsOscillator
+	* extended unit tests
 
 ags (0.7.122.6)
 

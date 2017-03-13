@@ -42,6 +42,8 @@ void ags_led_array_get_property(GObject *gobject,
 
 enum{
   PROP_0,
+  PROP_LED_WIDTH,
+  PROP_LED_HEIGHT,
   PROP_LED_COUNT,
 };
 
@@ -67,7 +69,7 @@ ags_led_array_get_type(void)
       (GInstanceInitFunc) ags_led_array_init,
     };
 
-    ags_type_led_array = g_type_register_static(GTK_TYPE_BIN,
+    ags_type_led_array = g_type_register_static(GTK_TYPE_ALIGNMENT,
 						"AgsLedArray\0",
 						&ags_led_array_info,
 						0);
@@ -91,6 +93,42 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
   gobject->get_property = ags_led_array_get_property;
 
   /* properties */
+  /**
+   * AgsLedArray:led-width:
+   *
+   * The width of one led.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_uint("led-width\0",
+				 "width of led\0",
+				 "The width of one led\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LED_WIDTH,
+				  param_spec);
+
+  /**
+   * AgsLedArray:led-height:
+   *
+   * The height of one led.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_uint("led-height\0",
+				 "height of led\0",
+				 "The height of one led\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LED_HEIGHT,
+				  param_spec);
+
   /**
    * AgsLedArray:led-count:
    *
@@ -116,6 +154,9 @@ ags_led_array_init(AgsLedArray *led_array)
   gtk_widget_set_style((GtkWidget *) led_array,
 		       led_array_style);
 
+  led_array->led_width = 12;
+  led_array->led_height = 10;
+  
   led_array->led = NULL;
   led_array->led_count = 0;
 }
@@ -141,6 +182,20 @@ ags_led_array_set_property(GObject *gobject,
 				  led_count);
     }
     break;
+  case PROP_LED_WIDTH:
+    {
+      guint led_width;
+      
+      led_array->led_width = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LED_HEIGHT:
+    {
+      guint led_height;
+      
+      led_array->led_height = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -161,6 +216,16 @@ ags_led_array_get_property(GObject *gobject,
   case PROP_LED_COUNT:
     {
       g_value_set_uint(value, led_array->led_count);
+    }
+    break;
+  case PROP_LED_WIDTH:
+    {
+      g_value_set_uint(value, led_array->led_width);
+    }
+    break;
+  case PROP_LED_HEIGHT:
+    {
+      g_value_set_uint(value, led_array->led_height);
     }
     break;
   default:
@@ -186,19 +251,30 @@ ags_led_array_set_led_count(AgsLedArray *led_array,
       gtk_widget_destroy(led_array->led[i]);
     }
 
-    led_array->led = (AgsLed **) realloc(led_array->led,
-					 led_count);
+    if(led_array->led == NULL){
+      led_array->led = (AgsLed **) malloc(led_count * sizeof(AgsLed *));
+    }else{
+      led_array->led = (AgsLed **) realloc(led_array->led,
+					   led_count * sizeof(AgsLed *));
+    }
   }else{
     /* grow */
-    led_array->led = (AgsLed **) realloc(led_array->led,
-					 led_count);
-
+    if(led_array->led == NULL){
+      led_array->led = (AgsLed **) malloc(led_count * sizeof(AgsLed *));
+    }else{
+      led_array->led = (AgsLed **) realloc(led_array->led,
+					   led_count * sizeof(AgsLed *));
+    }
+    
     for(i = led_array->led_count; i < led_count; i++){
       led_array->led[i] = ags_led_new();
+      gtk_widget_set_size_request((GtkWidget *) led_array->led[i],
+				  led_array->led_width, led_array->led_height);
       gtk_box_pack_start(led_array->box,
 			 led_array->led[i],
-			 FALSE, FALSE,
+			 TRUE, FALSE,
 			 0);
+      gtk_widget_show(led_array->led[i]);
     }
   }
 

@@ -164,7 +164,7 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
   AgsConfig *config;
 
-  gchar str, *str0, *str1;
+  gchar *str, *str0, *str1;
 
   gboolean super_threaded_audio;
   

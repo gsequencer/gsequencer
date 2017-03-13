@@ -52,7 +52,7 @@ ags_vled_array_get_type(void)
       (GInstanceInitFunc) ags_vled_array_init,
     };
 
-    ags_type_vled_array = g_type_register_static(AGS_TYPE_VLED_ARRAY,
+    ags_type_vled_array = g_type_register_static(AGS_TYPE_LED_ARRAY,
 						 "AgsVLedArray\0",
 						 &ags_vled_array_info,
 						 0);
@@ -72,6 +72,9 @@ ags_vled_array_init(AgsVLedArray *vled_array)
 {
   AGS_LED_ARRAY(vled_array)->box = gtk_vbox_new(FALSE,
 						0);
+  gtk_container_add(vled_array,
+		    AGS_LED_ARRAY(vled_array)->box);
+  gtk_widget_show(AGS_LED_ARRAY(vled_array)->box);
 }
 
 /**

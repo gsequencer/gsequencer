@@ -36,8 +36,6 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
-#include <ags/widget/ags_led.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
@@ -240,15 +238,22 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   
   /* led */
   pattern_box->active_led = 0;
-
-  pattern_box->led = (GtkHBox *) gtk_hbox_new(FALSE, 16);
+  pattern_box->hled_array = (GtkHBox *) ags_hled_array_new();
+  g_object_set(pattern_box->hled_array,
+	       "led-height\0", 10,
+	       "led-width\0", 10,
+	       "led-count\0", pattern_box->n_controls,
+	       NULL);
+  gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,
+			      pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, 10);
   gtk_table_attach((GtkTable *) pattern_box,
-		   (GtkWidget *) pattern_box->led,
+		   (GtkWidget *) pattern_box->hled_array,
 		   0, 1,
 		   0, 1,
 		   0, 0,
 		   0, 0);
-
+  gtk_widget_show_all(pattern_box->hled_array);
+  
   if(ags_pattern_box_led_queue_draw == NULL){
     ags_pattern_box_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 							   NULL,
@@ -258,16 +263,6 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   g_hash_table_insert(ags_pattern_box_led_queue_draw,
 		      pattern_box, ags_pattern_box_led_queue_draw_timeout);
   g_timeout_add(1000 / 30, (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
-
-  for(i = 0; i < pattern_box->n_controls; i++){
-    led = (AgsLed *) ags_led_new();
-    gtk_widget_set_size_request((GtkWidget *) led,
-				AGS_PATTERN_BOX_LED_DEFAULT_WIDTH, AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT);
-    gtk_box_pack_start((GtkBox *) pattern_box->led,
-		       (GtkWidget *) led,
-		       FALSE, FALSE,
-		       0);
-  }
 
   /* pattern */
   pattern_box->pattern = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -796,9 +791,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     AgsMutexManager *mutex_manager;
 
-    GList *list, *list_start, *active;
+    GList *list;
     guint active_led_new;
-    guint i;
 
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
@@ -868,48 +862,16 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     }
 
     /* active led */
-    active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;
-    pattern_box->active_led = (guint) active_led_new;
-      
+    active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;      
+
     pthread_mutex_unlock(audio_mutex);
-    
-    /* offset */
-    list_start =
-      list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
-    
-    for(i = 0; list != NULL; i++){
-      if(gtk_toggle_button_get_active(list->data)){
-	break;
-      }
 
-      list = list->next;
-    }
+    pattern_box->active_led = (guint) active_led_new;
 
-    g_list_free(list_start);
-
-    /* led */
-    list_start = 
-      list = gtk_container_get_children((GtkContainer *) pattern_box->led);
-    active = NULL;
-    
-    for(i = 0; list != NULL; i++){
-      if(i == active_led_new){
-	active = list;
-	list = list->next;
-	
-	continue;
-      }
-
-      ags_led_unset_active(AGS_LED(list->data));
-      
-      list = list->next;
-    }
-
-    if(active != NULL){
-      ags_led_set_active(AGS_LED(active->data));
-    }
-    
-    g_list_free(list_start);
+    pattern_box->active_led = (guint) active_led_new;
+    ags_led_array_unset_all(pattern_box->hled_array);
+    ags_led_array_set_nth(pattern_box->hled_array,
+			  active_led_new);
         
     gdk_threads_leave();
     
