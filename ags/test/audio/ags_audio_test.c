@@ -1191,11 +1191,15 @@ ags_audio_test_duplicate_recall()
 
   /* case 1: playback recall */
   recall = ags_recall_new();
+  recall->flags |= (AGS_RECALL_TEMPLATE |
+		    AGS_RECALL_PLAYBACK);
   ags_audio_add_recall(audio,
 		       recall,
 		       TRUE);
   
   recall_audio_run = ags_recall_audio_run_new();
+  recall_audio_run->flags |= (AGS_RECALL_TEMPLATE |
+			      AGS_RECALL_PLAYBACK);
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       TRUE);
@@ -1208,6 +1212,7 @@ ags_audio_test_duplicate_recall()
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
@@ -1221,11 +1226,15 @@ ags_audio_test_duplicate_recall()
   
   /* case 2: true recall */
   recall = ags_recall_new();
+  recall->flags |= (AGS_RECALL_TEMPLATE |
+		    AGS_RECALL_PLAYBACK);
   ags_audio_add_recall(audio,
 		       recall,
 		       FALSE);
   
   recall_audio_run = ags_recall_audio_run_new();
+  recall_audio_run->flags |= (AGS_RECALL_TEMPLATE |
+			      AGS_RECALL_PLAYBACK);
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       FALSE);
@@ -1243,6 +1252,7 @@ ags_audio_test_duplicate_recall()
 	       NULL);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);

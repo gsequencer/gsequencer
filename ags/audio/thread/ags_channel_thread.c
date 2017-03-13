@@ -43,6 +43,7 @@ void ags_channel_thread_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_channel_thread_connect(AgsConnectable *connectable);
 void ags_channel_thread_disconnect(AgsConnectable *connectable);
+void ags_channel_thread_dispose(GObject *gobject);
 void ags_channel_thread_finalize(GObject *gobject);
 
 void ags_channel_thread_start(AgsThread *thread);
@@ -120,6 +121,7 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
   gobject->set_property = ags_channel_thread_set_property;
   gobject->get_property = ags_channel_thread_get_property;
 
+  gobject->dispose = ags_channel_thread_dispose;
   gobject->finalize = ags_channel_thread_finalize;
 
   /* properties */
@@ -360,11 +362,63 @@ ags_channel_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_channel_thread_dispose(GObject *gobject)
+{
+  AgsChannelThread *channel_thread;
+
+  channel_thread = AGS_CHANNEL_THREAD(gobject);
+
+  /* soundcard */
+  if(channel_thread->soundcard != NULL){
+    g_object_unref(channel_thread->soundcard);
+
+    channel_thread->soundcard = NULL;
+  }
+
+  /* channel */
+  if(channel_thread->channel != NULL){
+    g_object_unref(channel_thread->channel);
+
+    channel_thread->channel = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_channel_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_channel_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_channel_thread_parent_class)->finalize(gobject);
+  AgsChannelThread *channel_thread;
 
-  /* empty */
+  channel_thread = AGS_CHANNEL_THREAD(gobject);
+
+  /* soundcard */
+  if(channel_thread->soundcard != NULL){
+    g_object_unref(channel_thread->soundcard);
+  }
+
+  /* wakeup mutex and cond */
+  pthread_mutex_destroy(channel_thread->wakeup_mutex);
+  free(channel_thread->wakeup_mutex);
+  
+  pthread_mutex_destroy(channel_thread->wakeup_cond);
+  free(channel_thread->wakeup_cond);
+
+  /* sync mutex and cond */
+  pthread_mutex_destroy(channel_thread->done_mutex);
+  free(channel_thread->done_mutex);
+  
+  pthread_mutex_destroy(channel_thread->done_cond);
+  free(channel_thread->done_cond);
+
+  /* channel */
+  if(channel_thread->channel != NULL){
+    g_object_unref(channel_thread->channel);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_channel_thread_parent_class)->finalize(gobject);
 }
 
 void

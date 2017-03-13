@@ -1320,6 +1320,7 @@ ags_channel_dispose(GObject *gobject)
 {
   AgsChannel *channel;
   AgsRecycling *recycling, *recycling_next;
+  AgsRecycling *end_region;
 
   GList *list;
   
@@ -1355,14 +1356,15 @@ ags_channel_dispose(GObject *gobject)
   recycling = channel->first_recycling;
 
   if(recycling != NULL){
-    while(recycling != channel->last_recycling->next){
+    end_region = channel->last_recycling->next;
+    
+    while(recycling != end_region){
       recycling_next = recycling->next;
 
       if(dispose_recycling){
 	g_object_run_dispose(recycling);
+	g_object_unref((GObject *) recycling);
       }
-      
-      g_object_unref((GObject *) recycling);
       
       recycling = recycling_next;
     }

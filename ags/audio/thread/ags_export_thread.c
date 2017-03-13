@@ -42,6 +42,7 @@ void ags_export_thread_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_export_thread_connect(AgsConnectable *connectable);
 void ags_export_thread_disconnect(AgsConnectable *connectable);
+void ags_export_thread_dispose(GObject *gobject);
 void ags_export_thread_finalize(GObject *gobject);
 
 void ags_export_thread_start(AgsThread *thread);
@@ -119,6 +120,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
   gobject->get_property = ags_export_thread_get_property;
   gobject->set_property = ags_export_thread_set_property;
 
+  gobject->dispose = ags_export_thread_dispose;
   gobject->finalize = ags_export_thread_finalize;
 
   /* properties */
@@ -356,11 +358,49 @@ ags_export_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_export_thread_dispose(GObject *gobject)
+{
+  AgsExportThread *export_thread;
+
+  export_thread = AGS_EXPORT_THREAD(gobject);
+
+  /* soundcard */
+  if(export_thread->soundcard != NULL){
+    g_object_unref(export_thread->soundcard);
+
+    export_thread->soundcard = NULL;
+  }
+  
+  /* audio file */
+  if(export_thread->audio_file != NULL){
+    g_object_unref(export_thread->audio_file);
+
+    export_thread->audio_file = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_export_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_export_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_export_thread_parent_class)->finalize(gobject);
+  AgsExportThread *export_thread;
 
-  /* empty */
+  export_thread = AGS_EXPORT_THREAD(gobject);
+
+  /* soundcard */
+  if(export_thread->soundcard != NULL){
+    g_object_unref(export_thread->soundcard);
+  }
+  
+  /* audio file */  
+  if(export_thread->audio_file != NULL){
+    g_object_unref(export_thread->audio_file);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_export_thread_parent_class)->finalize(gobject);
 }
 
 void

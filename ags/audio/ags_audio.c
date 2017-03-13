@@ -3348,6 +3348,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       guint i;
       
+      channel = audio->output;
+
       ags_audio_set_pads_shrink_automation();      
       ags_audio_set_pads_remove_notes();
 

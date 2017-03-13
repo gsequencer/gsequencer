@@ -72,6 +72,7 @@ gboolean ags_audio_loop_monitor(AgsMainLoop *main_loop,
 				guint time_cycle, guint *time_spent);
 void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 				     gdouble frequency);
+void ags_audio_loop_dispose(GObject *gobject);
 void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_start(AgsThread *thread);
@@ -179,6 +180,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   gobject->set_property = ags_audio_loop_set_property;
   gobject->get_property = ags_audio_loop_get_property;
 
+  gobject->dispose = ags_audio_loop_dispose;
   gobject->finalize = ags_audio_loop_finalize;
 
   /* properties */
@@ -709,12 +711,97 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 }
 
 void
+ags_audio_loop_dispose(GObject *gobject)
+{
+  AgsAudioLoop *audio_loop;
+
+  audio_loop = AGS_AUDIO_LOOP(gobject);
+
+  /* application context */
+  if(audio_loop->application_context != NULL){
+    g_object_unref(audio_loop->application_context);
+
+    audio_loop->application_context = NULL;
+  }
+
+  /* soundcard */
+  if(audio_loop->soundcard != NULL){
+    g_object_unref(audio_loop->soundcard);
+
+    audio_loop->soundcard = NULL;
+  }
+
+  /* async queue */
+  if(audio_loop->async_queue != NULL){
+    g_object_unref(audio_loop->async_queue);
+
+    audio_loop->async_queue = NULL;
+  }
+
+  /* unref AgsPlayback lists */
+  if(audio_loop->play_recall != NULL){
+    g_list_free_full(audio_loop->play_recall,
+		     g_object_unref);
+    
+    audio_loop->play_recall = NULL;
+  }
+
+  if(audio_loop->play_channel != NULL){
+    g_list_free_full(audio_loop->play_channel,
+		     g_object_unref);
+    
+    audio_loop->play_channel = NULL;
+  }
+
+  if(audio_loop->play_audio != NULL){
+    g_list_free_full(audio_loop->play_audio,
+		     g_object_unref);
+    
+    audio_loop->play_audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_loop_parent_class)->dispose(gobject);
+}
+
+void
 ags_audio_loop_finalize(GObject *gobject)
 {
   AgsAudioLoop *audio_loop;
 
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
+  /* application context */
+  if(audio_loop->application_context != NULL){
+    g_object_unref(audio_loop->application_context);
+  }
+
+  /* soundcard */
+  if(audio_loop->soundcard != NULL){
+    g_object_unref(audio_loop->soundcard);
+  }
+
+  /* async queue */
+  if(audio_loop->async_queue != NULL){
+    g_object_unref(audio_loop->async_queue);
+  }
+
+  /* tree lock and recall mutex */
+  pthread_mutex_destroy(audio_loop->tree_lock);
+  free(audio_loop->tree_lock);
+
+  pthread_mutex_destroy(audio_loop->recall_mutex);
+  free(audio_loop->recall_mutex);
+
+  /* timing mutex and cond */
+  pthread_mutex_destroy(audio_loop->timing_mutex);
+  free(audio_loop->timing_mutex);
+
+  pthread_cond_destroy(audio_loop->timing_cond);
+  free(audio_loop->timing_cond);
+
+  //FIXME:JK: destroy timing thread
+  
   /* unref AgsPlayback lists */
   g_list_free_full(audio_loop->play_recall,
 		   g_object_unref);

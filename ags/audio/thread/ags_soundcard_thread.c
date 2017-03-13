@@ -48,6 +48,7 @@ void ags_soundcard_thread_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_soundcard_thread_connect(AgsConnectable *connectable);
 void ags_soundcard_thread_disconnect(AgsConnectable *connectable);
+void ags_soundcard_thread_dispose(GObject *gobject);
 void ags_soundcard_thread_finalize(GObject *gobject);
 
 void ags_soundcard_thread_start(AgsThread *thread);
@@ -129,6 +130,7 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
   gobject->set_property = ags_soundcard_thread_set_property;
   gobject->get_property = ags_soundcard_thread_get_property;
 
+  gobject->dispose = ags_soundcard_thread_dispose;
   gobject->finalize = ags_soundcard_thread_finalize;
 
   /**
@@ -223,7 +225,8 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   /*  */
   soundcard_thread->soundcard = NULL;
 
-  soundcard_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
+  soundcard_thread->timestamp_thread = NULL;
+  //  soundcard_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   //  ags_thread_add_child(thread, soundcard_thread->timestamp_thread);
 
   soundcard_thread->error = NULL;
@@ -333,11 +336,37 @@ ags_soundcard_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_soundcard_thread_dispose(GObject *gobject)
+{
+  AgsSoundcardThread *soundcard_thread;
+
+  soundcard_thread = AGS_SOUNDCARD_THREAD(gobject);
+
+  /* soundcard */
+  if(soundcard_thread->soundcard != NULL){
+    g_object_unref(soundcard_thread->soundcard);
+
+    soundcard_thread->soundcard = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_soundcard_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_soundcard_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_soundcard_thread_parent_class)->finalize(gobject);
+  AgsSoundcardThread *soundcard_thread;
 
-  /* empty */
+  soundcard_thread = AGS_SOUNDCARD_THREAD(gobject);
+
+  /* soundcard */
+  if(soundcard_thread->soundcard != NULL){
+    g_object_unref(soundcard_thread->soundcard);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_soundcard_thread_parent_class)->finalize(gobject);
 }
 
 void

@@ -275,16 +275,19 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
     /* playback audio thread */
     playback_domain->audio_thread[0] = (AgsThread *) ags_audio_thread_new(NULL,
 									  NULL);
+    g_object_ref(playback_domain->audio_thread[0]);
     playback_domain->audio_thread[0]->freq = freq;
 
     /* sequencer audio thread */
     playback_domain->audio_thread[1] = (AgsThread *) ags_audio_thread_new(NULL,
 									  NULL);
+    g_object_ref(playback_domain->audio_thread[1]);
     playback_domain->audio_thread[1]->freq = freq;
 
     /* notation audio thread */
     playback_domain->audio_thread[2] = (AgsThread *) ags_audio_thread_new(NULL,
 									  NULL);
+    g_object_ref(playback_domain->audio_thread[2]);
     playback_domain->audio_thread[2]->freq = freq;
   }
 
@@ -409,6 +412,7 @@ ags_playback_domain_dispose(GObject *gobject)
   if(playback_domain->audio_thread != NULL){
     for(i = 0; i < 3; i++){
       if(playback_domain->audio_thread[i] != NULL){
+	g_object_run_dispose(playback_domain->audio_thread[i]);
 	g_object_unref(playback_domain->audio_thread[i]);
 
 	playback_domain->audio_thread[i] = NULL;
