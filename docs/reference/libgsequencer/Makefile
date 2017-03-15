@@ -346,7 +346,7 @@ AR = ar
 AUTOCONF = ${SHELL} /home/joelkraehemann/nongnu/gsequencer/missing autoconf
 AUTOHEADER = ${SHELL} /home/joelkraehemann/nongnu/gsequencer/missing autoheader
 AUTOMAKE = ${SHELL} /home/joelkraehemann/nongnu/gsequencer/missing automake-1.15
-AWK = gawk
+AWK = mawk
 CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16
 CAIRO_LIBS = -lcairo
 CC = gcc
@@ -377,12 +377,12 @@ GOBJECT_LIBS = -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthre
 GREP = /bin/grep
 GSEQUENCER_CFLAGS = 
 GSEQUENCER_LDFLAGS = 
-GTKDOC_CHECK = 
-GTKDOC_CHECK_PATH = 
+GTKDOC_CHECK = gtkdoc-check.test
+GTKDOC_CHECK_PATH = /usr/bin/gtkdoc-check
 GTKDOC_DEPS_CFLAGS = -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 GTKDOC_DEPS_LIBS = -lgobject-2.0 -lglib-2.0
-GTKDOC_MKPDF = 
-GTKDOC_REBASE = true
+GTKDOC_MKPDF = /usr/bin/gtkdoc-mkpdf
+GTKDOC_REBASE = /usr/bin/gtkdoc-rebase
 GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng16 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2
 GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype
 HTML_DIR = ${datadir}/gtk-doc/html
@@ -1241,12 +1241,12 @@ uninstall-local:
 #
 # Require gtk-doc when making dist
 #
-#dist-check-gtkdoc: docs
-dist-check-gtkdoc:
-	@echo "*** gtk-doc is needed to run 'make dist'.         ***"
-	@echo "*** gtk-doc was not found when 'configure' ran.   ***"
-	@echo "*** please install gtk-doc and rerun 'configure'. ***"
-	@false
+dist-check-gtkdoc: docs
+#dist-check-gtkdoc:
+#	@echo "*** gtk-doc is needed to run 'make dist'.         ***"
+#	@echo "*** gtk-doc was not found when 'configure' ran.   ***"
+#	@echo "*** please install gtk-doc and rerun 'configure'. ***"
+#	@false
 
 dist-hook: dist-check-gtkdoc all-gtk-doc dist-hook-local
 	@mkdir $(distdir)/tmpl

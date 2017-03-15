@@ -97,10 +97,13 @@ struct _AgsAudio
   GList *recall_id;
   GList *recycling_context;
 
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *play_mutex;
+
   GList *container;
   GList *recall;
   GList *play;
-
+  
   GList *recall_remove; //TODO:JK: verify deprecation
   GList *play_remove; //TODO:JK: verify deprecation
 

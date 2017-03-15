@@ -752,11 +752,32 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
   
   AgsSoundcardThread *soundcard_thread;
 
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+
   gdk_threads_enter();
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get soundcard thread */
+  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
 								 AGS_TYPE_SOUNDCARD_THREAD);
 
   if(soundcard_thread->error != NULL){

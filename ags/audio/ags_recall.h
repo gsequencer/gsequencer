@@ -100,6 +100,8 @@ struct _AgsRecall
 
   AgsRecallID *recall_id;
 
+  pthread_mutex_t *children_mutex;
+
   AgsRecall *parent;
   GList *children;
 

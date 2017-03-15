@@ -539,6 +539,9 @@ ags_recall_channel_run_dispose(GObject *gobject)
     recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
 							 gobject);
     g_object_unref(gobject);
+    g_object_unref(AGS_RECALL(gobject)->container);
+
+    AGS_RECALL(gobject)->container = NULL;
   }
   
   /* recall audio run */
@@ -579,6 +582,16 @@ ags_recall_channel_run_finalize(GObject *gobject)
   AgsRecallChannelRun *recall_channel_run;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
+
+  if(AGS_RECALL(gobject)->container != NULL){
+    AgsRecallContainer *recall_container;
+
+    recall_container = AGS_RECALL(gobject)->container;
+
+    recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
+							 gobject);
+    g_object_unref(AGS_RECALL(gobject)->container);
+  }
 
   /* recall audio run */
   if(recall_channel_run->recall_audio_run != NULL){

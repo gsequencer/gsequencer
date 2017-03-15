@@ -951,7 +951,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     AgsMutexManager *mutex_manager;
 
-    GList *list;
+    GList *list_start, *list;
     
     guint offset;
     guint active_led_new;
@@ -988,36 +988,44 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     recall_id = ags_recall_id_find_parent_recycling_context(audio->recall_id,
 							    NULL);
 
+    pthread_mutex_unlock(audio_mutex);
+    
     if(recall_id == NULL){
-      pthread_mutex_unlock(audio_mutex);
-      
       gdk_threads_leave();
       
       return(TRUE);
     }
+
+    g_object_get(audio,
+		 "play\0", &list_start,
+		 NULL);
     
     play_count_beats_audio = NULL;
     play_count_beats_audio_run = NULL;
 
-    list = ags_recall_find_type(audio->play,
+    pthread_mutex_lock(audio->play_mutex);
+    
+    list = ags_recall_find_type(list_start,
 				AGS_TYPE_COUNT_BEATS_AUDIO);
     
     if(list != NULL){
       play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
     }
     
-    list = ags_recall_find_type_with_recycling_context(audio->play,
+    list = ags_recall_find_type_with_recycling_context(list_start,
 						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 						       (GObject *) recall_id->recycling_context);
     
     if(list != NULL){
       play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
     }
+
+    pthread_mutex_unlock(audio->play_mutex);
+
+    g_list_free(list_start);  
     
     if(play_count_beats_audio == NULL ||
        play_count_beats_audio_run == NULL){
-      pthread_mutex_unlock(audio_mutex);
-      
       gdk_threads_leave();
       
       return(TRUE);
@@ -1025,8 +1033,6 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     /* active led */
     active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;
-      
-    pthread_mutex_unlock(audio_mutex);
 
     cell_pattern->active_led = (guint) active_led_new;
     ags_led_array_unset_all(cell_pattern->hled_array);

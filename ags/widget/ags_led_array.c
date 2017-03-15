@@ -299,7 +299,8 @@ void
 ags_led_array_set_nth(AgsLedArray *led_array,
 		      guint nth)
 {
-  if(led_array == NULL){
+  if(led_array == NULL ||
+     nth >= led_array->led_count){
     return;
   }
   

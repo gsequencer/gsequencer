@@ -1575,12 +1575,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       AgsGuiThread *gui_thread;
       AgsTaskCompletion *task_completion;
 
-      pthread_mutex_lock(audio_loop_mutex);
-      
       gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
 							 AGS_TYPE_GUI_THREAD);
-
-      pthread_mutex_unlock(audio_loop_mutex);
 
       /* start soundcard */
       start_soundcard = ags_start_soundcard_new(window->application_context);

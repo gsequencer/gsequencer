@@ -2263,7 +2263,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_ffplayer_open_filename(ffplayer,
 			       str);
 
-    if(ffplayer->ipatch->base == NULL){
+    if(ffplayer->ipatch == NULL ||
+       ffplayer->ipatch->base == NULL){
       return;
     }
     

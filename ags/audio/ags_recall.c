@@ -755,20 +755,33 @@ ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
 
+  /* soundcard */
   recall->soundcard = NULL;
+
+  /* container */
   recall->container = NULL;
 
+  /* version and build id */
   recall->version = NULL;
   recall->build_id = NULL;
 
+  /* effect and name */
   recall->effect = NULL;
   recall->name = NULL;
 
+  /* xml type  */
   recall->xml_type = NULL;
 
+  /* dependency */
   recall->dependencies = NULL;
 
+  /* recall id */
   recall->recall_id = NULL;
+
+  /* nested recall */
+  recall->children_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(recall->children_mutex,
+		     NULL);
 
   recall->parent = NULL;
   recall->children = NULL;
@@ -777,9 +790,11 @@ ags_recall_init(AgsRecall *recall)
   recall->child_parameters = NULL;
   recall->n_params = 0;
 
+  /* port */
   recall->port = NULL;
   recall->automation_port = NULL;
 
+  /* handlers */
   recall->handlers = NULL;
 }
 
@@ -887,8 +902,9 @@ ags_recall_set_property(GObject *gobject,
 
       recall_id = (AgsRecallID *) g_value_get_object(value);
 
-      if(recall->recall_id == recall_id)
+      if(recall->recall_id == recall_id){
 	return;
+      }
 
       if(recall->recall_id != NULL){
 	g_object_unref(G_OBJECT(recall->recall_id));
@@ -904,18 +920,43 @@ ags_recall_set_property(GObject *gobject,
   case PROP_PARENT:
     {
       AgsRecall *parent;
-
+      
       parent = (AgsRecall *) g_value_get_object(value);
 
-      ags_recall_add_child(parent, recall);
+      if(recall->parent == parent){
+	return;
+      }
+
+      if(recall->parent != NULL){
+	g_object_unref(recall->parent);
+      }
+
+      if(parent != NULL){
+	g_object_ref(parent);
+      }
+      
+      recall->parent = parent;
     }
     break;
   case PROP_CHILD:
     {
       AgsRecall *child;
 
+      gboolean child_added;
+      
       child = (AgsRecall *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall->children_mutex);
+
+      child_added = (g_list_find(recall->children, child) != NULL) ? TRUE: FALSE;
+      
+      pthread_mutex_unlock(recall->children_mutex);
+
+      if(child == NULL ||
+	 child_added){
+	return;
+      }
+      
       ags_recall_add_child(recall, child);
     }
     break;
@@ -2291,8 +2332,13 @@ ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
     ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(child));
   }
   
+  pthread_mutex_lock(recall->children_mutex);
+
   recall->children = g_list_remove(recall->children,
 				   child);
+
+  pthread_mutex_unlock(recall->children_mutex);
+  
   child->parent = NULL;
 
   g_object_unref(recall);
@@ -2312,10 +2358,12 @@ void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 {
   guint inheritated_flags_mask;
-
+  
   if(child == NULL ||
-     child->parent == parent)
+     parent == NULL ||
+     child->parent == parent){
     return;
+  }
 
   inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
 			    AGS_RECALL_SEQUENCER |
@@ -2334,9 +2382,13 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   if(child->parent != NULL){
     child->flags &= (~inheritated_flags_mask);
 
+    pthread_mutex_lock(child->parent->children_mutex);
+    
     child->parent->children = g_list_remove(child->parent->children, child);
+
+    pthread_mutex_unlock(child->parent->children_mutex);
+
     g_object_unref(child->parent);
-    g_object_unref(child);
     g_object_set(G_OBJECT(child),
 		 "recall_id\0", NULL,
 		 NULL);
@@ -2349,8 +2401,12 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 
     child->flags |= (inheritated_flags_mask & (parent->flags));
 
+    pthread_mutex_lock(parent->children_mutex);
+    
     parent->children = g_list_prepend(parent->children,
 				      child);
+
+    pthread_mutex_unlock(parent->children_mutex);
 
     g_object_set(G_OBJECT(child),
 		 "soundcard\0", parent->soundcard,
@@ -2358,6 +2414,10 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 		 NULL);
     g_signal_connect(G_OBJECT(child), "done\0",
     		     G_CALLBACK(ags_recall_child_done), parent);
+  }
+
+  if(child->parent != NULL){
+    g_object_unref(child);
   }
   
   child->parent = parent;
