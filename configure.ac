@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.133],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.7.134],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -57,7 +57,7 @@ AC_CHECK_LIB([rt], [main])
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h gmp.h ladspa.h dssi.h lv2.h])
+AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -187,12 +187,12 @@ AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
 docs/reference/libags/Makefile
-docs/reference/libags_audio/Makefile
-docs/reference/libags_gui/Makefile
+docs/reference/libags-audio/Makefile
+docs/reference/libags-gui/Makefile
+docs/reference/libgsequencer/Makefile
 libags.pc
 libags_audio.pc
-libags_gui.pc])
-# docs/reference/libgsequencer/Makefile
-# libgsequencer.pc
+libags_gui.pc
+libgsequencer.pc])
 
 AC_OUTPUT

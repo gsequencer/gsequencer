@@ -46,7 +46,7 @@ typedef struct _AgsMidiBuilderTrack AgsMidiBuilderTrack;
 
 typedef enum{
   AGS_MIDI_BUILDER_EOF            = 1,
-  AGS_MIDI_PARSER_EOT             = 1 << 1,
+  AGS_MIDI_BUILDER_EOT            = 1 << 1,
 }AgsMidiBuilderFlags;
 
 struct _AgsMidiBuilder

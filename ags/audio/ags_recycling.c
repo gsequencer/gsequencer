@@ -49,6 +49,7 @@ void ags_recycling_connect(AgsConnectable *connectable);
 void ags_recycling_disconnect(AgsConnectable *connectable);
 pthread_mutex_t* ags_recycling_get_lock(AgsConcurrentTree *concurrent_tree);
 pthread_mutex_t* ags_recycling_get_parent_lock(AgsConcurrentTree *concurrent_tree);
+void ags_recycling_dispose(GObject *gobject);
 void ags_recycling_finalize(GObject *gobject);
 
 void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
@@ -147,6 +148,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
   gobject->set_property = ags_recycling_set_property;
   gobject->get_property = ags_recycling_get_property;
 
+  gobject->dispose = ags_recycling_dispose;
   gobject->finalize = ags_recycling_finalize;
 
   /* properties */
@@ -481,10 +483,14 @@ ags_recycling_get_property(GObject *gobject,
   
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, recycling->soundcard);
+    {
+      g_value_set_object(value, recycling->soundcard);
+    }
     break;
   case PROP_CHANNEL:
-    g_value_set_object(value, recycling->channel);
+    {
+      g_value_set_object(value, recycling->channel);
+    }
     break;
   case PROP_PARENT:
     {
@@ -515,13 +521,51 @@ ags_recycling_get_property(GObject *gobject,
 void
 ags_recycling_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecycling *recycling;
+
+  GList *list;
+  
+  recycling = AGS_RECYCLING(connectable);
+
+  if((AGS_RECYCLING_CONNECTED & (recycling->flags)) != 0){
+    return;
+  }
+
+  recycling->flags |= AGS_RECYCLING_CONNECTED;
+
+  /* audio signal */
+  list = recycling->audio_signal;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
 }
 
 void
 ags_recycling_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecycling *recycling;
+
+  GList *list;
+  
+  recycling = AGS_RECYCLING(connectable);
+
+  if((AGS_RECYCLING_CONNECTED & (recycling->flags)) == 0){
+    return;
+  }
+
+  recycling->flags &= (~AGS_RECYCLING_CONNECTED);
+
+  /* audio signal */
+  list = recycling->audio_signal;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
 }
 
 pthread_mutex_t*
@@ -574,14 +618,70 @@ ags_recycling_get_parent_lock(AgsConcurrentTree *concurrent_tree)
 }
 
 void
+ags_recycling_dispose(GObject *gobject)
+{
+  AgsRecycling *recycling;  
+
+  GList *list;
+
+  recycling = AGS_RECYCLING(gobject);
+
+  /* channel */
+  if(recycling->channel != NULL){
+    g_object_unref(recycling->channel);
+
+    recycling->channel = NULL;
+  }
+
+  /* soundcard */
+  if(recycling->soundcard != NULL){
+    g_object_unref(recycling->soundcard);
+
+    recycling->soundcard = NULL;
+  }
+
+  /* parent */
+  if(recycling->parent != NULL){
+    g_object_unref(recycling->parent);
+
+    recycling->parent = NULL;
+  }
+
+  /* next and prev */
+  if(recycling->next != NULL){
+    //    g_object_unref(recycling->next);
+
+    recycling->next = NULL;
+  }
+
+  if(recycling->prev != NULL){
+    //    g_object_unref(recycling->prev);
+
+    recycling->prev = NULL;
+  }
+
+  /* AgsAudioSignal */
+  list = recycling->audio_signal;
+
+  while(list != NULL){
+    g_object_run_dispose(list->data);
+    
+    list = list->next;
+  }
+  
+  g_list_free_full(recycling->audio_signal,
+		   g_object_unref);
+
+  recycling->audio_signal = NULL;
+}
+
+void
 ags_recycling_finalize(GObject *gobject)
 {
   AgsRecycling *recycling;  
 
   AgsMutexManager *mutex_manager;
   
-  GList *list, *list_next;
-
   pthread_mutex_t *application_mutex;
   
   //  g_warning("ags_recycling_finalize\0");
@@ -597,6 +697,30 @@ ags_recycling_finalize(GObject *gobject)
   pthread_mutex_unlock(application_mutex);
 
   recycling = AGS_RECYCLING(gobject);
+
+  /* channel */
+  if(recycling->channel != NULL){
+    g_object_unref(recycling->channel);
+  }
+
+  /* soundcard */
+  if(recycling->soundcard != NULL){
+    g_object_unref(recycling->soundcard);
+  }
+
+  /* parent */
+  if(recycling->parent != NULL){
+    g_object_unref(recycling->parent);
+  }
+
+  /* next and prev */
+  if(recycling->next != NULL){
+    g_object_unref(recycling->next);
+  }
+
+  if(recycling->prev != NULL){
+    g_object_unref(recycling->prev);
+  }
 
   /* AgsAudioSignal */
   g_list_free_full(recycling->audio_signal,
@@ -619,15 +743,18 @@ void
 ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard)
 {
   /* recycling */
-  if(recycling->soundcard == soundcard)
+  if(recycling->soundcard == soundcard){
     return;
+  }
 
-  if(recycling->soundcard != NULL)
+  if(recycling->soundcard != NULL){
     g_object_unref(recycling->soundcard);
-
-  if(soundcard != NULL)
+  }
+  
+  if(soundcard != NULL){
     g_object_ref(soundcard);
-
+  }
+  
   recycling->soundcard = (GObject *) soundcard;
 }
 
@@ -693,21 +820,27 @@ void
 ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal)
 {
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
-    AgsAudioSignal *old_template;
+  if(g_list_find(recycling->audio_signal,
+		 audio_signal) == NULL){
+    if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
+      AgsAudioSignal *old_template;
 
-    /* old template */
-    old_template = ags_audio_signal_get_template(recycling->audio_signal);
+      /* old template */
+      old_template = ags_audio_signal_get_template(recycling->audio_signal);
     
-    /* remove old template */
-    ags_recycling_remove_audio_signal(recycling,
-				      old_template);
+      /* remove old template */
+      ags_recycling_remove_audio_signal(recycling,
+					old_template);
+    }
+
+    recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
+    g_object_ref(audio_signal);
   }
   
-  recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
-  audio_signal->recycling = (GObject *) recycling;
-  g_object_ref(recycling);
-  g_object_ref(audio_signal);
+  if(audio_signal->recycling != recycling){
+    audio_signal->recycling = (GObject *) recycling;
+    g_object_ref(recycling);
+  }
 }
 
 /**

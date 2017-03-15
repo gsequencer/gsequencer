@@ -45,6 +45,7 @@ void ags_lv2_plugin_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
+void ags_lv2_plugin_dispose(GObject *gobject);
 void ags_lv2_plugin_finalize(GObject *gobject);
 
 gpointer ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
@@ -126,6 +127,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
   gobject->set_property = ags_lv2_plugin_set_property;
   gobject->get_property = ags_lv2_plugin_get_property;
 
+  gobject->dispose = ags_lv2_plugin_dispose;
   gobject->finalize = ags_lv2_plugin_finalize;
 
   /* properties */
@@ -356,6 +358,29 @@ ags_lv2_plugin_get_property(GObject *gobject,
 }
 
 void
+ags_lv2_plugin_dispose(GObject *gobject)
+{
+  AgsLv2Plugin *lv2_plugin;
+
+  lv2_plugin = AGS_LV2_PLUGIN(gobject);
+
+  if(lv2_plugin->manifest != NULL){
+    g_object_unref(lv2_plugin->manifest);
+
+    lv2_plugin->manifest = NULL;
+  }
+  
+  if(lv2_plugin->turtle != NULL){
+    g_object_unref(lv2_plugin->turtle);
+
+    lv2_plugin->turtle = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_plugin_parent_class)->dispose(gobject);
+}
+
+void
 ags_lv2_plugin_finalize(GObject *gobject)
 {
   AgsLv2Plugin *lv2_plugin;
@@ -372,6 +397,9 @@ ags_lv2_plugin_finalize(GObject *gobject)
   if(lv2_plugin->turtle != NULL){
     g_object_unref(lv2_plugin->turtle);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_plugin_parent_class)->finalize(gobject);
 }
 
 gpointer

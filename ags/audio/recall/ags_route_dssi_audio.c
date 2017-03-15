@@ -34,6 +34,7 @@ void ags_route_dssi_audio_get_property(GObject *gobject,
 				       GValue *value,
 				       GParamSpec *param_spec);
 void ags_route_dssi_audio_set_ports(AgsPlugin *plugin, GList *port);
+void ags_route_dssi_audio_dispose(GObject *gobject);
 void ags_route_dssi_audio_finalize(GObject *gobject);
 
 /**
@@ -120,6 +121,7 @@ ags_route_dssi_audio_class_init(AgsRouteDssiAudioClass *route_dssi_audio)
   gobject->set_property = ags_route_dssi_audio_set_property;
   gobject->get_property = ags_route_dssi_audio_get_property;
 
+  gobject->dispose = ags_route_dssi_audio_dispose;
   gobject->finalize = ags_route_dssi_audio_finalize;
 
   /* properties */
@@ -178,10 +180,13 @@ ags_route_dssi_audio_init(AgsRouteDssiAudio *route_dssi_audio)
 						  "port-value-size\0", sizeof(gboolean),
 						  "port-value-length", 1,
 						  NULL);
-
+  g_object_ref(route_dssi_audio->notation_input);
+  
   route_dssi_audio->notation_input->port_value.ags_port_boolean = FALSE;
 
+  /* add to port */
   port = g_list_prepend(port, route_dssi_audio->notation_input);
+  g_object_ref(route_dssi_audio->notation_input);
 
   /* sequencer input */
   route_dssi_audio->sequencer_input = g_object_new(AGS_TYPE_PORT,
@@ -193,10 +198,13 @@ ags_route_dssi_audio_init(AgsRouteDssiAudio *route_dssi_audio)
 						  "port-value-size\0", sizeof(gboolean),
 						  "port-value-length", 1,
 						  NULL);
+  g_object_ref(route_dssi_audio->sequencer_input);
 
   route_dssi_audio->sequencer_input->port_value.ags_port_boolean = FALSE;
 
+  /* add to port */
   port = g_list_prepend(port, route_dssi_audio->sequencer_input);
+  g_object_ref(route_dssi_audio->sequencer_input);
 
   /* port */
   AGS_RECALL(route_dssi_audio)->port = port;
@@ -308,6 +316,31 @@ ags_route_dssi_audio_set_ports(AgsPlugin *plugin, GList *port)
     
     port = port->next;
   }
+}
+
+void
+ags_route_dssi_audio_dispose(GObject *gobject)
+{
+  AgsRouteDssiAudio *route_dssi_audio;
+
+  route_dssi_audio = AGS_ROUTE_DSSI_AUDIO(gobject);
+
+  /* notation input */
+  if(route_dssi_audio->notation_input != NULL){
+    g_object_unref(G_OBJECT(route_dssi_audio->notation_input));
+
+    route_dssi_audio->notation_input = NULL;
+  }
+
+  /* sequencer input */
+  if(route_dssi_audio->sequencer_input != NULL){
+    g_object_unref(G_OBJECT(route_dssi_audio->sequencer_input));
+
+    route_dssi_audio->sequencer_input = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_route_dssi_audio_parent_class)->dispose(gobject);
 }
 
 void

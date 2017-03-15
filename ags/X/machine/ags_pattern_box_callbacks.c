@@ -36,7 +36,6 @@
 
 #include <gdk/gdkkeysyms.h>
 
-void ags_pattern_box_init_channel_launch_callback(AgsTask *task, AgsPatternBox *pattern_box);
 void ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 					  AgsPatternBox *pattern_box);
 

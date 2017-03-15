@@ -24,23 +24,14 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_channel_run.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_recycling_context.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 int ags_channel_test_init_suite();
 int ags_channel_test_clean_suite();
 
+void ags_channel_test_dispose();
+void ags_channel_test_finalize();
 void ags_channel_test_add_recall();
 void ags_channel_test_add_recall_container();
 void ags_channel_test_add_recall_id();
@@ -48,10 +39,20 @@ void ags_channel_test_duplicate_recall();
 void ags_channel_test_init_recall();
 void ags_channel_test_resolve_recall();
 
+void ags_channel_test_finalize_stub(GObject *gobject);
 void ags_channel_test_run_init_pre_recall_callback(AgsRecall *recall,
 						   gpointer data);
 void ags_channel_test_resolve_recall_callback(AgsRecall *recall,
 					      gpointer data);
+
+#define AGS_CHANNEL_TEST_DISPOSE_PLAY_COUNT (8)
+#define AGS_CHANNEL_TEST_DISPOSE_RECALL_COUNT (8)
+
+#define AGS_CHANNEL_TEST_FINALIZE_PLAY_COUNT (8)
+#define AGS_CHANNEL_TEST_FINALIZE_RECALL_COUNT (8)
+
+AgsAudio *audio;
+gboolean channel_test_finalized;
 
 guint test_init_recall_callback_hits_count = 0;
 guint test_resolve_recall_callback_hits_count = 0;
@@ -63,7 +64,12 @@ guint test_resolve_recall_callback_hits_count = 0;
 int
 ags_channel_test_init_suite()
 {
-  /* empty */
+  audio = g_object_new(AGS_TYPE_AUDIO,
+		       NULL);
+  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING);
+  
+  g_object_ref(audio);
   
   return(0);
 }
@@ -75,9 +81,124 @@ ags_channel_test_init_suite()
 int
 ags_channel_test_clean_suite()
 {
-  /* empty */
+  g_object_unref(audio);
   
   return(0);
+}
+
+void
+ags_channel_test_dispose()
+{
+  AgsChannel *channel;
+  AgsRecall *recall;
+
+  guint i;
+  
+  channel = ags_output_new(audio);
+  
+  channel->first_recycling =
+    channel->last_recycling = ags_recycling_new(NULL);
+  g_object_ref(channel->first_recycling);
+  
+  /* add recall to play context */
+  for(i = 0; i < AGS_CHANNEL_TEST_DISPOSE_PLAY_COUNT; i++){
+    /* instantiate play */
+    recall = ags_recall_new();
+
+    /* add play to audio */
+    ags_audio_add_recall(audio,
+			 recall,
+			 TRUE);
+  }
+  
+  /* add recall to recall context */
+  for(i = 0; i < AGS_CHANNEL_TEST_DISPOSE_RECALL_COUNT; i++){
+    /* instantiate recall */
+    recall = ags_recall_new();
+
+    /* add recall to audio */
+    ags_audio_add_recall(audio,
+			 recall,
+			 FALSE);
+  }
+
+  /* run dispose and assert */
+  g_object_run_dispose(channel);
+  g_object_run_dispose(channel->playback);
+
+  channel->playback = NULL;
+  
+  CU_ASSERT(channel->audio == NULL);
+  CU_ASSERT(channel->soundcard == NULL);
+
+  CU_ASSERT(channel->recall_id == NULL);
+  CU_ASSERT(channel->container == NULL);
+
+  CU_ASSERT(channel->recall == NULL);
+  CU_ASSERT(channel->play == NULL);
+
+  CU_ASSERT(channel->first_recycling == NULL);
+  CU_ASSERT(channel->last_recycling == NULL);
+
+  CU_ASSERT(channel->pattern == NULL);
+}
+
+void
+ags_channel_test_finalize()
+{
+  AgsChannel *channel;
+  AgsRecall *recall;
+
+  guint i;
+  
+  channel = ags_output_new(audio);
+  
+  channel->first_recycling =
+    channel->last_recycling = ags_recycling_new(NULL);
+  g_object_ref(channel->first_recycling);
+  
+  /* add recall to play context */
+  for(i = 0; i < AGS_CHANNEL_TEST_FINALIZE_PLAY_COUNT; i++){
+    /* instantiate play */
+    recall = ags_recall_channel_new();
+    g_object_set(recall,
+		 "source\0", channel,
+		 NULL);
+
+    /* add play to channel */
+    ags_channel_add_recall(channel,
+			   recall,
+			   TRUE);
+  }
+  
+  /* add recall to recall context */
+  for(i = 0; i < AGS_CHANNEL_TEST_FINALIZE_RECALL_COUNT; i++){
+    /* instantiate recall */
+    recall = ags_recall_channel_new();
+    g_object_set(recall,
+		 "source\0", channel,
+		 NULL);
+
+    /* add recall to channel */
+    ags_channel_add_recall(channel,
+			   recall,
+			   FALSE);
+  }
+
+  /* run dispose */
+  g_object_run_dispose(channel);
+  g_object_run_dispose(channel->playback);
+
+  channel->playback = NULL;
+  
+  /* stub */
+  channel_test_finalized = FALSE;
+  G_OBJECT_GET_CLASS(channel)->finalize = ags_channel_test_finalize_stub;
+
+  /* unref and assert */
+  g_object_unref(channel);
+  
+  CU_ASSERT(channel_test_finalized == TRUE);
 }
 
 void
@@ -387,6 +508,12 @@ ags_channel_test_resolve_recall()
 }
 
 void
+ags_channel_test_finalize_stub(GObject *gobject)
+{
+  channel_test_finalized = TRUE;
+}
+
+void
 ags_channel_test_run_init_pre_recall_callback(AgsRecall *recall,
 					      gpointer data)
 {
@@ -423,7 +550,9 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsChannel add recall\0", ags_channel_test_add_recall) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsChannel dispose\0", ags_channel_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel finalize\0", ags_channel_test_finalize) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add recall\0", ags_channel_test_add_recall) == NULL) ||
      (CU_add_test(pSuite, "test of AgsChannel add recall container\0", ags_channel_test_add_recall_container) == NULL) ||
      (CU_add_test(pSuite, "test of AgsChannel add recall id\0", ags_channel_test_add_recall_id) == NULL) ||
      (CU_add_test(pSuite, "test of AgsChannel add duplicate recall\0", ags_channel_test_duplicate_recall) == NULL) ||

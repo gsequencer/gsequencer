@@ -39,6 +39,7 @@ void ags_copy_channel_get_property(GObject *gobject,
 void ags_copy_channel_connect(AgsConnectable *connectable);
 void ags_copy_channel_disconnect(AgsConnectable *connectable);
 void ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_copy_channel_dispose(GObject *gobject);
 void ags_copy_channel_finalize(GObject *gobject);
 
 void ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted);
@@ -167,9 +168,17 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
   gobject->set_property = ags_copy_channel_set_property;
   gobject->get_property = ags_copy_channel_get_property;
 
+  gobject->dispose = ags_copy_channel_dispose;
   gobject->finalize = ags_copy_channel_finalize;
 
   /* properties */
+  /**
+   * AgsCopyChannel:muted:
+   *
+   * The mute port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("muted\0",
 				   "mute channel\0",
 				   "Mute the channel\0",
@@ -201,9 +210,12 @@ ags_copy_channel_init(AgsCopyChannel *copy_channel)
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
+  g_object_ref(copy_channel->muted);
   copy_channel->muted->port_value.ags_port_boolean = FALSE;
 
+  /* add to port */
   port = g_list_prepend(port, copy_channel->muted);
+  g_object_ref(copy_channel->muted);
 
   /* set port */
   AGS_RECALL(copy_channel)->port = port;
@@ -267,6 +279,23 @@ ags_copy_channel_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_copy_channel_dispose(GObject *gobject)
+{
+  AgsCopyChannel *copy_channel;
+
+  copy_channel = AGS_COPY_CHANNEL(gobject);
+
+  if(copy_channel->muted != NULL){
+    g_object_unref(G_OBJECT(copy_channel->muted));
+
+    copy_channel->muted = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_copy_channel_parent_class)->dispose(gobject);
 }
 
 void

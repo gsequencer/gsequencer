@@ -57,6 +57,7 @@ void ags_play_notation_audio_run_get_property(GObject *gobject,
 					      guint prop_id,
 					      GValue *value,
 					      GParamSpec *param_spec);
+void ags_play_notation_audio_run_dispose(GObject *gobject);
 void ags_play_notation_audio_run_finalize(GObject *gobject);
 void ags_play_notation_audio_run_connect(AgsConnectable *connectable);
 void ags_play_notation_audio_run_disconnect(AgsConnectable *connectable);
@@ -94,6 +95,7 @@ enum{
   PROP_0,
   PROP_DELAY_AUDIO_RUN,
   PROP_COUNT_BEATS_AUDIO_RUN,
+  PROP_NOTATION,
 };
 
 static gpointer ags_play_notation_audio_run_parent_class = NULL;
@@ -173,9 +175,17 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
   gobject->set_property = ags_play_notation_audio_run_set_property;
   gobject->get_property = ags_play_notation_audio_run_get_property;
 
+  gobject->dispose = ags_play_notation_audio_run_dispose;
   gobject->finalize = ags_play_notation_audio_run_finalize;
 
   /* properties */
+  /**
+   * AgsPlayNotationAudioRun:delay-audio-run:
+   *
+   * The delay audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("delay-audio-run\0",
 				   "assigned AgsDelayAudioRun\0",
 				   "the AgsDelayAudioRun which emits notation_alloc_input signal\0",
@@ -185,6 +195,13 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
+  /**
+   * AgsPlayNotationAudioRun:count-beats-audio-run:
+   *
+   * The count beats audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
 				   "the AgsCountBeatsAudioRun which just counts\0",
@@ -192,6 +209,22 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_COUNT_BEATS_AUDIO_RUN,
+				  param_spec);
+
+  /**
+   * AgsPlayNotationAudioRun:notation:
+   *
+   * The notation containing the notes.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("notation\0",
+				   "assigned AgsNotation\0",
+				   "The AgsNotation containing notes\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -346,6 +379,27 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       play_notation_audio_run->count_beats_audio_run = count_beats_audio_run;
     }
     break;
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(play_notation_audio_run->notation == notation){
+	return;
+      }
+
+      if(play_notation_audio_run->notation != NULL){
+	g_object_unref(play_notation_audio_run->notation);
+      }
+
+      if(notation != NULL){
+	g_object_ref(notation);
+      }
+
+      play_notation_audio_run->notation = notation;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -373,10 +427,47 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
       g_value_set_object(value, G_OBJECT(play_notation_audio_run->count_beats_audio_run));
     }
     break;
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, play_notation_audio_run->notation);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   };
+}
+
+void
+ags_play_notation_audio_run_dispose(GObject *gobject)
+{
+  AgsPlayNotationAudioRun *play_notation_audio_run;
+
+  play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
+
+  /* delay audio run */
+  if(play_notation_audio_run->delay_audio_run != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->delay_audio_run));
+
+    play_notation_audio_run->delay_audio_run = NULL;
+  }
+
+  /* count beats audio run */
+  if(play_notation_audio_run->count_beats_audio_run != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->count_beats_audio_run));
+
+    play_notation_audio_run->count_beats_audio_run = NULL;
+  }
+
+  /* notation */
+  if(play_notation_audio_run->notation != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->notation));
+
+    play_notation_audio_run->notation = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_play_notation_audio_run_parent_class)->dispose(gobject);
 }
 
 void
@@ -386,14 +477,22 @@ ags_play_notation_audio_run_finalize(GObject *gobject)
 
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
+  /* delay audio run */
   if(play_notation_audio_run->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(play_notation_audio_run->delay_audio_run));
   }
 
+  /* count beats audio run */
   if(play_notation_audio_run->count_beats_audio_run != NULL){
     g_object_unref(G_OBJECT(play_notation_audio_run->count_beats_audio_run));
   }
 
+  /* notation */
+  if(play_notation_audio_run->notation != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->notation));
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_play_notation_audio_run_parent_class)->finalize(gobject);
 }
 
@@ -911,7 +1010,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
-	g_object_unref(audio_signal);
+	//	g_object_unref(audio_signal);
 
 	/* iterate */
 	recycling = recycling->next;

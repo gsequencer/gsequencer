@@ -57,9 +57,10 @@ void ags_audio_signal_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
-void ags_audio_signal_finalize(GObject *gobject);
 void ags_audio_signal_connect(AgsConnectable *connectable);
 void ags_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_audio_signal_dispose(GObject *gobject);
+void ags_audio_signal_finalize(GObject *gobject);
 
 void ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
 
@@ -145,6 +146,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   gobject->set_property = ags_audio_signal_set_property;
   gobject->get_property = ags_audio_signal_get_property;
 
+  gobject->dispose = ags_audio_signal_dispose;
   gobject->finalize = ags_audio_signal_finalize;
 
   /* properties */
@@ -946,6 +948,70 @@ ags_audio_signal_get_property(GObject *gobject,
 }
 
 void
+ags_audio_signal_connect(AgsConnectable *connectable)
+{
+  AgsAudioSignal *audio_signal;
+
+  audio_signal = AGS_AUDIO_SIGNAL(connectable);
+
+  if((AGS_AUDIO_SIGNAL_CONNECTED & (audio_signal->flags)) != 0){
+    return;
+  }
+
+  audio_signal->flags |= AGS_AUDIO_SIGNAL_CONNECTED;
+}
+
+void
+ags_audio_signal_disconnect(AgsConnectable *connectable)
+{
+  AgsAudioSignal *audio_signal;
+
+  audio_signal = AGS_AUDIO_SIGNAL(connectable);
+
+  if((AGS_AUDIO_SIGNAL_CONNECTED & (audio_signal->flags)) == 0){
+    return;
+  }
+
+  audio_signal->flags &= (~AGS_AUDIO_SIGNAL_CONNECTED);
+}
+
+void
+ags_audio_signal_dispose(GObject *gobject)
+{
+  AgsAudioSignal *audio_signal;
+
+  audio_signal = AGS_AUDIO_SIGNAL(gobject);
+
+  /* soundcard */
+  if(audio_signal->soundcard != NULL){
+    g_object_unref(audio_signal->soundcard);
+
+    audio_signal->soundcard = NULL;
+  }
+
+  /* recycling */
+  if(audio_signal->recycling != NULL){
+    g_object_unref(audio_signal->recycling);
+    
+    audio_signal->recycling = NULL;  
+  }
+
+  /* recall id */
+  if(audio_signal->recall_id != NULL){
+    g_object_unref(audio_signal->recall_id);
+
+    audio_signal->recall_id = NULL;
+  }
+
+  /* note */
+  if(audio_signal->note != NULL){
+    g_object_unref(audio_signal->note);
+
+    audio_signal->note = NULL;
+  }
+}
+
+void
 ags_audio_signal_finalize(GObject *gobject)
 {
   AgsAudioSignal *audio_signal;
@@ -962,7 +1028,8 @@ ags_audio_signal_finalize(GObject *gobject)
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
     g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
   }
-  
+
+  /* disconnect */
   ids = g_signal_list_ids(AGS_TYPE_AUDIO_SIGNAL,
 			  &n_ids);
   
@@ -977,42 +1044,35 @@ ags_audio_signal_finalize(GObject *gobject)
   }
 
   g_free(ids);
-  
+
+  /* soundcard */
   if(audio_signal->soundcard != NULL){
     g_object_unref(audio_signal->soundcard);
   }
-  
+
+  /* recycling */
   if(audio_signal->recycling != NULL){
     g_object_unref(audio_signal->recycling);
   }
-  
+
+  /* recall id */
   if(audio_signal->recall_id != NULL){
     g_object_unref(audio_signal->recall_id);
   }
-  
+
+  /* audio data */
   if(audio_signal->stream_beginning != NULL){
     g_list_free_full(audio_signal->stream_beginning,
 		     (GDestroyNotify) ags_stream_free);
   }
 
+  /* note */
   if(audio_signal->note != NULL){
     g_object_unref(audio_signal->note);
   }
   
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
-}
-
-void
-ags_audio_signal_connect(AgsConnectable *connectable)
-{
-  // empty
-}
-
-void
-ags_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  // empty
 }
 
 /**

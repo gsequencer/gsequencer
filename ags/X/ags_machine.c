@@ -1575,12 +1575,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       AgsGuiThread *gui_thread;
       AgsTaskCompletion *task_completion;
 
-      pthread_mutex_lock(audio_loop_mutex);
-      
       gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
 							 AGS_TYPE_GUI_THREAD);
-
-      pthread_mutex_unlock(audio_loop_mutex);
 
       /* start soundcard */
       start_soundcard = ags_start_soundcard_new(window->application_context);
@@ -2130,6 +2126,8 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
 
     gtk_widget_show((GtkWidget *) item);
   }
+
+  gtk_widget_show_all(machine->popup);
 }
 
 /**
@@ -2178,4 +2176,6 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
 
     gtk_widget_show((GtkWidget *) item);
   }
+
+  gtk_widget_show_all(machine->popup);
 }

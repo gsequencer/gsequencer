@@ -72,6 +72,7 @@ void ags_midiin_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_midiin_disconnect(AgsConnectable *connectable);
 void ags_midiin_connect(AgsConnectable *connectable);
+void ags_midiin_dispose(GObject *gobject);
 void ags_midiin_finalize(GObject *gobject);
 
 void ags_midiin_switch_buffer_flag(AgsMidiin *midiin);
@@ -219,6 +220,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
   gobject->set_property = ags_midiin_set_property;
   gobject->get_property = ags_midiin_get_property;
 
+  gobject->dispose = ags_midiin_dispose;
   gobject->finalize = ags_midiin_finalize;
 
   /* properties */
@@ -702,13 +704,44 @@ ags_midiin_get_property(GObject *gobject,
 }
 
 void
+ags_midiin_dispose(GObject *gobject)
+{
+  AgsMidiin *midiin;
+
+  GList *list;
+
+  midiin = AGS_MIDIIN(gobject);
+
+  /* audio */  
+  if(midiin->audio != NULL){
+    list = midiin->audio;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "sequencer\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+    
+    g_list_free_full(midiin->audio,
+		     g_object_unref);
+
+    midiin->audio = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_midiin_parent_class)->dispose(gobject);
+}
+
+void
 ags_midiin_finalize(GObject *gobject)
 {
   AgsMidiin *midiin;
 
   AgsMutexManager *mutex_manager;
   
-  GList *list, *list_next;
+  GList *list;
 
   midiin = AGS_MIDIIN(gobject);
 
@@ -742,7 +775,18 @@ ags_midiin_finalize(GObject *gobject)
   /* free buffer array */
   free(midiin->buffer);
 
+  /* audio */
   if(midiin->audio != NULL){
+    list = midiin->audio;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "sequencer\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+    
     g_list_free_full(midiin->audio,
 		     g_object_unref);
   }

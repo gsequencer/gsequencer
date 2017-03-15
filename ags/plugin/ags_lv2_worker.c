@@ -121,21 +121,20 @@ void
 ags_lv2_worker_connect(AgsConnectable *connectable)
 {
   /* empty */
-
-  ags_lv2_worker_parent_connectable_interface->connect(connectable);
 }
 
 void
 ags_lv2_worker_disconnect(AgsConnectable *connectable)
 {
   /* empty */
-
-  ags_lv2_worker_parent_connectable_interface->disconnect(connectable);
 }
 
 void
 ags_lv2_worker_finalize(GObject *gobject)
 {
+  /* empty */
+
+  /* call parent */
   G_OBJECT_CLASS(ags_lv2_worker_parent_class)->finalize(gobject);
 }
 

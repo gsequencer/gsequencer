@@ -122,6 +122,9 @@ void
 ags_lv2_log_manager_finalize(GObject *gobject)
 {
   /* empty */
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_log_manager_parent_class)->finalize(gobject);
 }
 
 /**

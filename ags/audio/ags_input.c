@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_synth_generator.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
@@ -42,7 +43,8 @@ void ags_input_get_property(GObject *gobject,
 			    GValue *value,
 			    GParamSpec *param_spec);
 void ags_input_init (AgsInput *input);
-void ags_input_finalize (GObject *gobject);
+void ags_input_dispose(GObject *gobject);
+void ags_input_finalize(GObject *gobject);
 void ags_input_connect(AgsConnectable *connectable);
 void ags_input_disconnect(AgsConnectable *connectable);
 
@@ -62,6 +64,7 @@ static AgsConnectableInterface *ags_input_parent_connectable_interface;
 enum{
   PROP_0,
   PROP_FILE_LINK,
+  PROP_SYNTH_GENERATOR,
 };
 
 GType
@@ -114,6 +117,7 @@ ags_input_class_init(AgsInputClass *input)
   gobject->set_property = ags_input_set_property;
   gobject->get_property = ags_input_get_property;
 
+  gobject->dispose = ags_input_dispose;
   gobject->finalize = ags_input_finalize;
   
   /* properties */
@@ -131,6 +135,22 @@ ags_input_class_init(AgsInputClass *input)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILE_LINK,
+				  param_spec);
+
+  /**
+   * AgsInput:synth-generator:
+   *
+   * An optional synth generator that might be used.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("synth-generator\0",
+				   "the synth generator\0",
+				   "The synth generator to be used\0",
+				   AGS_TYPE_SYNTH_GENERATOR,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_GENERATOR,
 				  param_spec);
 }
 
@@ -165,7 +185,6 @@ ags_input_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE_LINK:
     {
-      AgsAudioFile *audio_file;
       AgsFileLink *file_link;
 
       file_link = (AgsFileLink *) g_value_get_object(value);
@@ -183,6 +202,27 @@ ags_input_set_property(GObject *gobject,
       }
 
       input->file_link = (GObject *) file_link;
+    }
+    break;
+  case PROP_SYNTH_GENERATOR:
+    {
+      AgsFileLink *synth_generator;
+
+      synth_generator = (AgsFileLink *) g_value_get_object(value);
+
+      if(input->synth_generator == (GObject *) synth_generator){
+	return;
+      }
+      
+      if(input->synth_generator != NULL){
+	g_object_unref(G_OBJECT(input->synth_generator));
+      }
+
+      if(synth_generator != NULL){
+	g_object_ref(G_OBJECT(synth_generator));
+      }
+
+      input->synth_generator = (GObject *) synth_generator;
     }
     break;
   default:
@@ -203,12 +243,48 @@ ags_input_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILE_LINK:
-    g_value_set_object(value, input->file_link);
+    {
+      g_value_set_object(value, input->file_link);
+    }
+    break;
+  case PROP_SYNTH_GENERATOR:
+    {
+      g_value_set_object(value, input->synth_generator);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_input_dispose(GObject *gobject)
+{
+  AgsInput *input;
+
+  input = AGS_INPUT(gobject);
+
+  /* file link */
+  if(input->file_link != NULL){
+    g_object_run_dispose(G_OBJECT(input->file_link));
+
+    g_object_unref(G_OBJECT(input->file_link));
+    
+    input->file_link = NULL;
+  }
+
+  /* synth generator */
+  if(input->synth_generator != NULL){
+    g_object_run_dispose(G_OBJECT(input->synth_generator));
+
+    g_object_unref(G_OBJECT(input->synth_generator));
+    
+    input->synth_generator = NULL;
+  }
+
+  /* finalize */
+  G_OBJECT_CLASS(ags_input_parent_class)->dispose(gobject);
 }
 
 void
@@ -218,10 +294,17 @@ ags_input_finalize(GObject *gobject)
 
   input = AGS_INPUT(gobject);
 
+  /* file link */
   if(input->file_link != NULL){
     g_object_unref(G_OBJECT(input->file_link));
   }
 
+  /* synth generator */
+  if(input->synth_generator != NULL){
+    g_object_unref(G_OBJECT(input->synth_generator));
+  }
+
+  /* finalize */
   G_OBJECT_CLASS(ags_input_parent_class)->finalize(gobject);
 }
 

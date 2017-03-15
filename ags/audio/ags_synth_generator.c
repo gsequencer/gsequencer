@@ -21,7 +21,9 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_timestamp.h>
 
@@ -310,6 +312,87 @@ ags_synth_generator_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_synth_generator_init(AgsSynthGenerator *synth_generator)
 {
+  AgsConfig *config;
+  
+  gchar *str;
+  
+  /* config */
+  config = ags_config_get_instance();
+
+  /* base init */
+  synth_generator->flags = 0;
+
+  synth_generator->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  synth_generator->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  synth_generator->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  /* samplerate */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate\0");
+  }
+  
+  if(str != NULL){
+    synth_generator->samplerate = g_ascii_strtoull(str,
+						   NULL,
+						   10);
+
+    free(str);
+  }
+
+  /* buffer size */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size\0");
+  }
+  
+  if(str != NULL){
+    synth_generator->buffer_size = g_ascii_strtoull(str,
+						    NULL,
+						    10);
+
+    free(str);
+  }
+
+  /* format */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "format\0");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "format\0");
+  }
+  
+  if(str != NULL){
+    synth_generator->format = g_ascii_strtoull(str,
+					       NULL,
+					       10);
+
+    free(str);
+  }
+
+  /* more base init */
+  synth_generator->n_frames = 0;
+
+  synth_generator->oscillator = 0;
+  
+  synth_generator->frequency = 0.0;
+  synth_generator->phase = 0.0;
+  synth_generator->volume = 1.0;
+  
+  /* timestamp */
   synth_generator->timestamp = NULL;
 }
 

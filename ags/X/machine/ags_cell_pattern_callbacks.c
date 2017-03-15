@@ -479,7 +479,9 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
+#ifdef AGS_DEBUG
   g_message("launch\0");
+#endif
   
   if(AGS_PLAYBACK(channel->playback) == NULL ||
      AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){    

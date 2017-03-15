@@ -261,6 +261,9 @@ ags_conversion_finalize(GObject *gobject)
   if(conversion->description != NULL){
     g_free(conversion->description);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_conversion_parent_class)->finalize(gobject);
 }
 
 gdouble

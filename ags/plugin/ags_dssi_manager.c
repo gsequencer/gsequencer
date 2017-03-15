@@ -39,6 +39,7 @@
 
 void ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager);
 void ags_dssi_manager_init (AgsDssiManager *dssi_manager);
+void ags_dssi_manager_dispose(GObject *gobject);
 void ags_dssi_manager_finalize(GObject *gobject);
 
 /**
@@ -99,6 +100,7 @@ ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager)
   /* GObjectClass */
   gobject = (GObjectClass *) dssi_manager;
 
+  gobject->dispose = ags_dssi_manager_dispose;
   gobject->finalize = ags_dssi_manager_finalize;
 }
 
@@ -117,6 +119,24 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
 }
 
 void
+ags_dssi_manager_dispose(GObject *gobject)
+{
+  AgsDssiManager *dssi_manager;
+
+  dssi_manager = AGS_DSSI_MANAGER(gobject);
+
+  if(dssi_manager->dssi_plugin != NULL){
+    g_list_free_full(dssi_manager->dssi_plugin,
+		     (GDestroyNotify) g_object_unref);
+
+    dssi_manager->dssi_plugin = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_dssi_manager_parent_class)->dispose(gobject);
+}
+
+void
 ags_dssi_manager_finalize(GObject *gobject)
 {
   AgsDssiManager *dssi_manager;
@@ -129,6 +149,9 @@ ags_dssi_manager_finalize(GObject *gobject)
 
   g_list_free_full(dssi_plugin,
 		   (GDestroyNotify) g_object_unref);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_dssi_manager_parent_class)->finalize(gobject);
 }
 
 /**

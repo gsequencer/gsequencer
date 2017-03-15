@@ -1350,8 +1350,8 @@ main(int argc, char **argv)
   }
   
   ipatch_init();
-  //  g_log_set_fatal_mask("GLib-GObject\0", //G_LOG_DOMAIN,
-  //		       G_LOG_LEVEL_CRITICAL);
+  //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
+  //		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 
   /* animate */
   animation_thread = (pthread_t *) malloc(sizeof(pthread_t));

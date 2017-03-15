@@ -35,10 +35,16 @@
 typedef struct _AgsRecallDependency AgsRecallDependency;
 typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
 
+typedef enum{
+  AGS_RECALL_DEPENDENCY_CONNECTED      = 1,
+}AgsRecallDependencyFlags;
+
 struct _AgsRecallDependency
 {
   GObject object;
 
+  guint flags;
+  
   GObject *dependency;
 };
 

@@ -143,7 +143,7 @@ ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread)
   thread->resume = ags_gui_thread_resume;
   thread->stop = ags_gui_thread_stop;
 
-  thread->interrupted = ags_gui_thread_interrupted;
+  //  thread->interrupted = ags_gui_thread_interrupted;
 }
 
 void
@@ -395,11 +395,16 @@ ags_gui_thread_run(AgsThread *thread)
   ags_gui_thread_complete_task();  
   
   g_main_context_release(main_context);
-  
+
+  gdk_threads_enter();
+
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);
+
   //  cairo_debug_reset_static_data();
   //  FcFini();
+  
+  gdk_threads_leave();
 }
 
 guint
@@ -420,9 +425,9 @@ ags_gui_thread_interrupted(AgsThread *thread,
 		   SIGIO);
 
 #ifdef AGS_PTHREAD_SUSPEND
-    pthread_suspend(thread->thread);
+      //    pthread_suspend(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+      //    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
     }
   }
@@ -487,9 +492,9 @@ ags_gui_thread_dispatch_callback(AgsPollFd *poll_fd,
 		     (~AGS_THREAD_INTERRUPTED));
 
 #ifdef AGS_PTHREAD_RESUME
-    pthread_resume(thread->thread);
+    //    pthread_resume(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
+    //    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
 #endif
   }
 }

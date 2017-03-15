@@ -1790,6 +1790,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 				AGS_AUDIO_NOTATION_DEFAULT);
       gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 			 AGS_MACHINE_REVERSE_NOTATION);
+
+      ags_machine_popup_add_connection_options((AgsMachine *) gobject,
+					       (AGS_MACHINE_POPUP_MIDI_DIALOG));
     }
 
     g_object_set(gobject,
@@ -2263,7 +2266,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_ffplayer_open_filename(ffplayer,
 			       str);
 
-    if(ffplayer->ipatch->base == NULL){
+    if(ffplayer->ipatch == NULL ||
+       ffplayer->ipatch->base == NULL){
       return;
     }
     

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,7 @@ void ags_acceleration_connectable_interface_init(AgsConnectableInterface *connec
 void ags_acceleration_init(AgsAcceleration *acceleration);
 void ags_acceleration_connect(AgsConnectable *connectable);
 void ags_acceleration_disconnect(AgsConnectable *connectable);
-void ags_acceleration_finalize(GObject *object);
+void ags_acceleration_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_acceleration
@@ -112,20 +112,43 @@ ags_acceleration_init(AgsAcceleration *acceleration)
 void
 ags_acceleration_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAcceleration *acceleration;
+
+  acceleration = AGS_ACCELERATION(connectable);
+
+  if((AGS_ACCELERATION_CONNECTED & (acceleration->flags)) != 0){
+    return;
+  }
+
+  acceleration->flags |= AGS_ACCELERATION_CONNECTED;
 }
 
 void
 ags_acceleration_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAcceleration *acceleration;
+
+  acceleration = AGS_ACCELERATION(connectable);
+
+  if((AGS_ACCELERATION_CONNECTED & (acceleration->flags)) == 0){
+    return;
+  }
+
+  acceleration->flags &= (~AGS_ACCELERATION_CONNECTED);
 }
 
 void
 ags_acceleration_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsAcceleration *acceleration;
 
+  acceleration = AGS_ACCELERATION(gobject);
+  
+  if(acceleration->name != NULL){
+    free(acceleration->name);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_acceleration_parent_class)->finalize(gobject);
 }
 

@@ -124,6 +124,9 @@ void
 ags_lv2_event_manager_finalize(GObject *gobject)
 {
   /* empty */
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_event_manager_parent_class)->finalize(gobject);
 }
 
 uint32_t

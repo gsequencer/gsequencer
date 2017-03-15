@@ -48,6 +48,7 @@ void ags_lv2_manager_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_lv2_manager_dispose(GObject *gobject);
 void ags_lv2_manager_finalize(GObject *gobject);
 
 /**
@@ -111,6 +112,7 @@ ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
   gobject->set_property = ags_lv2_manager_set_property;
   gobject->get_property = ags_lv2_manager_get_property;
 
+  gobject->dispose = ags_lv2_manager_dispose;
   gobject->finalize = ags_lv2_manager_finalize;
 
   /* properties */
@@ -207,9 +209,28 @@ ags_lv2_manager_get_property(GObject *gobject,
 }
 
 void
+ags_lv2_manager_dispose(GObject *gobject)
+{
+  AgsLv2Manager *lv2_manager;
+
+  lv2_manager = AGS_LV2_MANAGER(gobject);
+
+  if(lv2_manager->lv2_plugin != NULL){
+    g_list_free_full(lv2_manager->lv2_plugin,
+		     g_object_unref);
+
+    lv2_manager->lv2_plugin = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_manager_parent_class)->dispose(gobject);
+}
+
+void
 ags_lv2_manager_finalize(GObject *gobject)
 {
   AgsLv2Manager *lv2_manager;
+
   GList *lv2_plugin;
 
   lv2_manager = AGS_LV2_MANAGER(gobject);
@@ -218,6 +239,9 @@ ags_lv2_manager_finalize(GObject *gobject)
 
   g_list_free_full(lv2_plugin,
 		   g_object_unref);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_manager_parent_class)->finalize(gobject);
 }
 
 /**

@@ -42,6 +42,7 @@ void ags_copy_notation_audio_run_connect(AgsConnectable *connectable);
 void ags_copy_notation_audio_run_disconnect(AgsConnectable *connectable);
 void ags_copy_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_copy_notation_audio_run_dispose(GObject *gobject);
 void ags_copy_notation_audio_run_finalize(GObject *gobject);
 
 void ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall);
@@ -135,6 +136,7 @@ ags_copy_notation_audio_run_class_init(AgsCopyNotationAudioRunClass *copy_notati
   gobject->set_property = ags_copy_notation_audio_run_set_property;
   gobject->get_property = ags_copy_notation_audio_run_get_property;
 
+  gobject->dispose = ags_copy_notation_audio_run_dispose;
   gobject->finalize = ags_copy_notation_audio_run_finalize;
 
   /* properties */
@@ -259,15 +261,35 @@ ags_copy_notation_audio_run_get_property(GObject *gobject,
 }
 
 void
+ags_copy_notation_audio_run_dispose(GObject *gobject)
+{
+  AgsCopyNotationAudioRun *copy_notation_audio_run;
+
+  copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(gobject);
+
+  /* count beats audio run */
+  if(copy_notation_audio_run->count_beats_audio_run != NULL){
+    g_object_unref(copy_notation_audio_run->count_beats_audio_run);
+
+    copy_notation_audio_run->count_beats_audio_run = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_copy_notation_audio_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_copy_notation_audio_run_finalize(GObject *gobject)
 {
   AgsCopyNotationAudioRun *copy_notation_audio_run;
 
   copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(gobject);
 
-  if(copy_notation_audio_run->count_beats_audio_run != NULL)
+  /* count beats audio run */
+  if(copy_notation_audio_run->count_beats_audio_run != NULL){
     g_object_unref(copy_notation_audio_run->count_beats_audio_run);
-
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_notation_audio_run_parent_class)->finalize(gobject);
 }
@@ -434,12 +456,12 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
 
 	while(recycling != last_recycling->next){
 	  if((AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL & (copy_notation_audio->flags)) != 0){
-	    audio_signal = ags_audio_signal_new_with_length((GObject *) copy_notation_audio->soundcard,
+	    audio_signal = ags_audio_signal_new_with_length((GObject *) AGS_RECALL(copy_notation_audio)->soundcard,
 							    (GObject *) recycling,
 							    (GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id,
 							    length);
 	  }else{
-	    audio_signal = ags_audio_signal_new((GObject *) copy_notation_audio->soundcard,
+	    audio_signal = ags_audio_signal_new((GObject *) AGS_RECALL(copy_notation_audio)->soundcard,
 						(GObject *) recycling,
 						(GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id);
 	  }

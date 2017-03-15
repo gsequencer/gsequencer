@@ -47,6 +47,7 @@ void ags_sequencer_thread_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_sequencer_thread_connect(AgsConnectable *connectable);
 void ags_sequencer_thread_disconnect(AgsConnectable *connectable);
+void ags_sequencer_thread_dispose(GObject *gobject);
 void ags_sequencer_thread_finalize(GObject *gobject);
 
 void ags_sequencer_thread_start(AgsThread *thread);
@@ -133,6 +134,7 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
   gobject->set_property = ags_sequencer_thread_set_property;
   gobject->get_property = ags_sequencer_thread_get_property;
 
+  gobject->dispose = ags_sequencer_thread_dispose;
   gobject->finalize = ags_sequencer_thread_finalize;
 
   /**
@@ -238,6 +240,7 @@ ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread)
 
   sequencer_thread->sequencer = NULL;
 
+  sequencer_thread->timestamp_thread = NULL;
   //  sequencer_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   //  ags_thread_add_child(thread, sequencer_thread->timestamp_thread);
 
@@ -332,11 +335,37 @@ ags_sequencer_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_sequencer_thread_dispose(GObject *gobject)
+{
+  AgsSequencerThread *sequencer_thread;
+
+  sequencer_thread = AGS_SEQUENCER_THREAD(gobject);
+
+  /* sequencer */
+  if(sequencer_thread->sequencer != NULL){
+    g_object_unref(sequencer_thread->sequencer);
+
+    sequencer_thread->sequencer = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_sequencer_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_sequencer_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_sequencer_thread_parent_class)->finalize(gobject);
+  AgsSequencerThread *sequencer_thread;
 
-  /* empty */
+  sequencer_thread = AGS_SEQUENCER_THREAD(gobject);
+
+  /* sequencer */
+  if(sequencer_thread->sequencer != NULL){
+    g_object_unref(sequencer_thread->sequencer);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_sequencer_thread_parent_class)->finalize(gobject);
 }
 
 void

@@ -63,6 +63,7 @@ gboolean ags_recall_channel_run_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_channel_run_unpack(AgsPackable *packable);
 void ags_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_recall_channel_run_dispose(GObject *gobject);
 void ags_recall_channel_run_finalize(GObject *gobject);
 
 void ags_recall_channel_run_remove(AgsRecall *recall);
@@ -198,6 +199,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   gobject->set_property = ags_recall_channel_run_set_property;
   gobject->get_property = ags_recall_channel_run_get_property;
 
+  gobject->dispose = ags_recall_channel_run_dispose;
   gobject->finalize = ags_recall_channel_run_finalize;
 
   /* properties */
@@ -378,8 +380,9 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
 
-      if(recall_channel_run->recall_audio_run == recall_audio_run)
+      if(recall_channel_run->recall_audio_run == recall_audio_run){
 	return;
+      }
 
       if(recall_channel_run->recall_audio_run != NULL){
 	g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
@@ -398,8 +401,9 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_channel = (AgsRecallChannel *) g_value_get_object(value);
 
-      if(recall_channel_run->recall_channel == recall_channel)
+      if(recall_channel_run->recall_channel == recall_channel){
 	return;
+      }
 
       if(recall_channel_run->recall_channel != NULL){
 	g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
@@ -460,11 +464,13 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_channel_run->source = source;
 
-      if(source == recall_channel_run->destination)
+      if(source == recall_channel_run->destination){
 	g_warning("destination == recall_channel_run->source\0");
-
-      if(old_source != NULL)
+      }
+      
+      if(old_source != NULL){
 	g_object_unref(G_OBJECT(old_source));
+      }
     }
     break;
   default:
@@ -516,28 +522,98 @@ ags_recall_channel_run_get_property(GObject *gobject,
 }
 
 void
+ags_recall_channel_run_dispose(GObject *gobject)
+{
+  AgsRecallChannelRun *recall_channel_run;
+
+  recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
+
+  /* unpack */
+  ags_packable_unpack(AGS_PACKABLE(recall_channel_run));
+
+  if(AGS_RECALL(gobject)->container != NULL){
+    AgsRecallContainer *recall_container;
+
+    recall_container = AGS_RECALL(gobject)->container;
+
+    recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
+							 gobject);
+    g_object_unref(gobject);
+    g_object_unref(AGS_RECALL(gobject)->container);
+
+    AGS_RECALL(gobject)->container = NULL;
+  }
+  
+  /* recall audio run */
+  if(recall_channel_run->recall_audio_run != NULL){
+    g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
+
+    recall_channel_run->recall_audio_run = NULL;
+  }
+  
+  /* recall channel */
+  if(recall_channel_run->recall_channel != NULL){
+    g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
+
+    recall_channel_run->recall_channel = NULL;
+  }
+
+  /* destination */
+  if(recall_channel_run->destination != NULL){
+    g_object_unref(recall_channel_run->destination);
+
+    recall_channel_run->destination = NULL;
+  }
+
+  /* source */
+  if(recall_channel_run->source != NULL){
+    g_object_unref(recall_channel_run->source);
+
+    recall_channel_run->source = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_channel_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_recall_channel_run_finalize(GObject *gobject)
 {
   AgsRecallChannelRun *recall_channel_run;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
+  if(AGS_RECALL(gobject)->container != NULL){
+    AgsRecallContainer *recall_container;
+
+    recall_container = AGS_RECALL(gobject)->container;
+
+    recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
+							 gobject);
+    g_object_unref(AGS_RECALL(gobject)->container);
+  }
+
+  /* recall audio run */
   if(recall_channel_run->recall_audio_run != NULL){
     g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
   }
   
+  /* recall channel */
   if(recall_channel_run->recall_channel != NULL){
     g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
   }
-  
+
+  /* destination */
   if(recall_channel_run->destination != NULL){
     g_object_unref(recall_channel_run->destination);
   }
-  
+
+  /* source */
   if(recall_channel_run->source != NULL){
     g_object_unref(recall_channel_run->source);
   }
-  
+
+  /* call parent */
   G_OBJECT_CLASS(ags_recall_channel_run_parent_class)->finalize(gobject);
 }
 
@@ -685,13 +761,15 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
 
   recall = AGS_RECALL(packable);
 
-  if(recall == NULL)
+  if(recall == NULL){
     return(TRUE);
+  }
 
   recall_container = AGS_RECALL_CONTAINER(recall->container);
 
-  if(recall_container == NULL)
+  if(recall_container == NULL){
     return(TRUE);
+  }
 
   /* ref */
   g_object_ref(recall);

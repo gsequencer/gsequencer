@@ -35,7 +35,8 @@ typedef struct _AgsRecycling AgsRecycling;
 typedef struct _AgsRecyclingClass AgsRecyclingClass;
 
 typedef enum{
-  AGS_RECYCLING_MUTED           =  1,
+  AGS_RECYCLING_CONNECTED       = 1,
+  AGS_RECYCLING_MUTED           = 1 <<  1,
 }AgsRecyclingFlags;
 
 struct _AgsRecycling

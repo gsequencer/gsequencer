@@ -41,6 +41,7 @@ void ags_mute_audio_get_property(GObject *gobject,
 void ags_mute_audio_connect(AgsConnectable *connectable);
 void ags_mute_audio_disconnect(AgsConnectable *connectable);
 void ags_mute_audio_set_ports(AgsPlugin *plugin, GList *port);
+void ags_mute_audio_dispose(GObject *gobject);
 void ags_mute_audio_finalize(GObject *gobject);
 
 void ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted);
@@ -137,9 +138,17 @@ ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio)
   gobject->set_property = ags_mute_audio_set_property;
   gobject->get_property = ags_mute_audio_get_property;
 
+  gobject->dispose = ags_mute_audio_dispose;
   gobject->finalize = ags_mute_audio_finalize;
 
   /* properties */
+  /**
+   * AgsMuteAudio:muted:
+   *
+   * The mute port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("muted\0",
 				   "mute audio\0",
 				   "Mute the audio\0",
@@ -195,7 +204,8 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
 				   "port-value-size\0", sizeof(gfloat),
 				   "port-value-length\0", 1,
 				   NULL);
-  
+  g_object_ref(mute_audio->muted);
+
   mute_audio->muted->port_value.ags_port_float = (float) FALSE;
 
   /* port descriptor */
@@ -203,6 +213,7 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
 
   /* add to port */
   port = g_list_prepend(port, mute_audio->muted);
+  g_object_ref(mute_audio->muted);
 
   /* set port */
   AGS_RECALL(mute_audio)->port = port;
@@ -313,12 +324,31 @@ ags_mute_audio_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
+ags_mute_audio_dispose(GObject *gobject)
+{
+  AgsMuteAudio *mute_audio;
+
+  mute_audio = AGS_MUTE_AUDIO(gobject);
+
+  /* muted */
+  if(mute_audio->muted != NULL){
+    g_object_unref(G_OBJECT(mute_audio->muted));
+
+    mute_audio->muted = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_mute_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_mute_audio_finalize(GObject *gobject)
 {
   AgsMuteAudio *mute_audio;
 
   mute_audio = AGS_MUTE_AUDIO(gobject);
 
+  /* muted */
   if(mute_audio->muted != NULL){
     g_object_unref(G_OBJECT(mute_audio->muted));
   }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,7 +54,8 @@ void ags_automation_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_automation_connect(AgsConnectable *connectable);
 void ags_automation_disconnect(AgsConnectable *connectable);
-void ags_automation_finalize(GObject *object);
+void ags_automation_dispose(GObject *gobject);
+void ags_automation_finalize(GObject *gobject);
 
 void ags_automation_set_port(AgsPortlet *portlet, GObject *port);
 GObject* ags_automation_get_port(AgsPortlet *portlet);
@@ -155,6 +156,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
   gobject->set_property = ags_automation_set_property;
   gobject->get_property = ags_automation_get_property;
 
+  gobject->dispose = ags_automation_dispose;
   gobject->finalize = ags_automation_finalize;
 
   /* properties */
@@ -432,13 +434,51 @@ ags_automation_init(AgsAutomation *automation)
 void
 ags_automation_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAutomation *automation;
+
+  GList *list;
+  
+  automation = AGS_AUTOMATION(connectable);
+
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) != 0){
+    return;
+  }
+
+  automation->flags |= AGS_AUTOMATION_CONNECTED;
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_automation_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAutomation *automation;
+
+  GList *list;
+
+  automation = AGS_AUTOMATION(connectable);
+
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) == 0){
+    return;
+  }
+
+  automation->flags &= (~AGS_AUTOMATION_CONNECTED);
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
@@ -727,19 +767,103 @@ ags_automation_get_property(GObject *gobject,
 }
 
 void
+ags_automation_dispose(GObject *gobject)
+{
+  AgsAutomation *automation;
+
+  GList *list;
+  
+  automation = AGS_AUTOMATION(gobject);
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
+
+    automation->timestamp = NULL;
+  }
+
+  /* audio */
+  if(automation->audio != NULL){
+    g_object_unref(automation->audio);
+
+    automation->audio = NULL;
+  }
+
+  /* source function */
+  if(automation->source_function != NULL){
+    g_object_run_dispose(automation->source_function);
+    
+    g_object_unref(automation->source_function);
+
+    automation->source_function = NULL;
+  }
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    g_object_run_dispose(G_OBJECT(list->data));
+
+    list = list->next;
+  }
+  
+  g_list_free_full(automation->acceleration,
+		   g_object_unref);
+  g_list_free(automation->selection);
+
+  automation->acceleration = NULL;
+  automation->selection = NULL;
+
+  /* port */
+  if(automation->port != NULL){
+    g_object_unref(automation->port);
+
+    automation->port = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_automation_parent_class)->dispose(gobject);
+}
+
+void
 ags_automation_finalize(GObject *gobject)
 {
   AgsAutomation *automation;
 
   automation = AGS_AUTOMATION(gobject);
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
+  }
   
+  /* audio */
   if(automation->audio != NULL){
     g_object_unref(automation->audio);
   }
+
+  /* control name */
+  if(automation->control_name != NULL){
+    free(automation->control_name);
+  }
+
+  /* source function */
+  if(automation->source_function != NULL){
+    g_object_unref(automation->source_function);
+  }
   
+  /* acceleration */
   g_list_free_full(automation->acceleration,
 		   g_object_unref);
 
+  g_list_free(automation->selection);
+
+  /* port */
+  if(automation->port != NULL){
+    g_object_unref(automation->port);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
 }
 
@@ -766,9 +890,20 @@ ags_automation_get_port(AgsPortlet *portlet)
 GList*
 ags_automation_list_safe_properties(AgsPortlet *portlet)
 {
-  //TODO:JK: implement me
+  static GList *list = NULL;
 
-  return(NULL);
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
+  if(list == NULL){
+    list = g_list_prepend(list, "current-accelerations\0");
+    list = g_list_prepend(list, "next-accelerations\0");
+  }
+
+  pthread_mutex_unlock(&mutex);
+
+  return(list);
 }
 
 void

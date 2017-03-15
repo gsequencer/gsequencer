@@ -33,6 +33,7 @@ void ags_base_plugin_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_base_plugin_dispose(GObject *gobject);
 void ags_base_plugin_finalize(GObject *gobject);
 
 /**
@@ -110,6 +111,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   gobject->set_property = ags_base_plugin_set_property;
   gobject->get_property = ags_base_plugin_get_property;
 
+  gobject->dispose = ags_base_plugin_dispose;
   gobject->finalize = ags_base_plugin_finalize;
 
   /* properties */
@@ -550,6 +552,23 @@ ags_base_plugin_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_base_plugin_dispose(GObject *gobject)
+{
+  AgsBasePlugin *base_plugin;
+
+  base_plugin = AGS_BASE_PLUGIN(gobject);
+
+  if(base_plugin->ui_plugin != NULL){
+    g_object_unref(base_plugin->ui_plugin);
+
+    base_plugin->ui_plugin = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_base_plugin_parent_class)->dispose(gobject);
 }
 
 void
