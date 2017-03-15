@@ -28,6 +28,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 
+#include <pthread.h>
+
 #include <stdlib.h>
 #include <errno.h>
 
