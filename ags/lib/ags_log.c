@@ -97,6 +97,7 @@ ags_log_finalize(GObject *gobject)
   g_list_free_full(g_atomic_pointer_get(&(log->messages)),
 		   g_free);
 
+  /* call parent */
   G_OBJECT_CLASS(ags_log_parent_class)->finalize(gobject);
 }
 

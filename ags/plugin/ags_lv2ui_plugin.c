@@ -42,6 +42,7 @@ void ags_lv2ui_plugin_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
+void ags_lv2ui_plugin_dispose(GObject *gobject);
 void ags_lv2ui_plugin_finalize(GObject *gobject);
 
 gpointer ags_lv2ui_plugin_instantiate(AgsBasePlugin *base_plugin,
@@ -124,6 +125,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
   gobject->set_property = ags_lv2ui_plugin_set_property;
   gobject->get_property = ags_lv2ui_plugin_get_property;
 
+  gobject->dispose = ags_lv2ui_plugin_dispose;
   gobject->finalize = ags_lv2ui_plugin_finalize;
 
   /* properties */
@@ -345,6 +347,35 @@ ags_lv2ui_plugin_get_property(GObject *gobject,
 }
 
 void
+ags_lv2ui_plugin_dispose(GObject *gobject)
+{
+  AgsLv2uiPlugin *lv2ui_plugin;
+
+  lv2ui_plugin = AGS_LV2UI_PLUGIN(gobject);
+
+  if(lv2ui_plugin->manifest != NULL){
+    g_object_unref(lv2ui_plugin->manifest);
+
+    lv2ui_plugin->manifest = NULL;
+  }
+
+  if(lv2ui_plugin->gui_turtle != NULL){
+    g_object_unref(lv2ui_plugin->gui_turtle);
+
+    lv2ui_plugin->gui_turtle = NULL;
+  }
+
+  if(lv2ui_plugin->lv2_plugin != NULL){
+    g_object_unref(lv2ui_plugin->lv2_plugin);
+
+    lv2ui_plugin->lv2_plugin = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2ui_plugin_parent_class)->dispose(gobject);
+}
+
+void
 ags_lv2ui_plugin_finalize(GObject *gobject)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
@@ -364,6 +395,9 @@ ags_lv2ui_plugin_finalize(GObject *gobject)
   if(lv2ui_plugin->lv2_plugin != NULL){
     g_object_unref(lv2ui_plugin->lv2_plugin);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2ui_plugin_parent_class)->finalize(gobject);
 }
 
 void

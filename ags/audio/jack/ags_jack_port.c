@@ -49,6 +49,7 @@ void ags_jack_port_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_jack_port_connect(AgsConnectable *connectable);
 void ags_jack_port_disconnect(AgsConnectable *connectable);
+void ags_jack_port_dispose(GObject *gobject);
 void ags_jack_port_finalize(GObject *gobject);
 
 /**
@@ -121,6 +122,7 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
   gobject->set_property = ags_jack_port_set_property;
   gobject->get_property = ags_jack_port_get_property;
 
+  gobject->dispose = ags_jack_port_dispose;
   gobject->finalize = ags_jack_port_finalize;
 
   /* properties */
@@ -269,13 +271,50 @@ ags_jack_port_get_property(GObject *gobject,
 void
 ags_jack_port_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsJackPort *jack_port;
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  if((AGS_JACK_PORT_CONNECTED & (jack_port->flags)) != 0){
+    return;
+  }
+
+  jack_port->flags |= AGS_JACK_PORT_CONNECTED;
 }
 
 void
 ags_jack_port_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsJackPort *jack_port;
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  if((AGS_JACK_PORT_CONNECTED & (jack_port->flags)) == 0){
+    return;
+  }
+
+  jack_port->flags &= (~AGS_JACK_PORT_CONNECTED);
+}
+
+void
+ags_jack_port_dispose(GObject *gobject)
+{
+  AgsJackPort *jack_port;
+
+  jack_port = AGS_JACK_PORT(gobject);
+
+  /* jack client */
+  if(jack_port->jack_client != NULL){
+    g_object_unref(jack_port->jack_client);
+
+    jack_port->jack_client = NULL;
+  }
+
+  /* name */
+  g_free(jack_port->name);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_jack_port_parent_class)->dispose(gobject);
 }
 
 void
@@ -285,12 +324,15 @@ ags_jack_port_finalize(GObject *gobject)
 
   jack_port = AGS_JACK_PORT(gobject);
 
+  /* jack client */
   if(jack_port->jack_client != NULL){
     g_object_unref(jack_port->jack_client);
   }
-  
+
+  /* name */
   g_free(jack_port->name);
-  
+
+  /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->finalize(gobject);
 }
 

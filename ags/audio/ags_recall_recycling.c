@@ -60,6 +60,7 @@ void ags_recall_recycling_connect(AgsConnectable *connectable);
 void ags_recall_recycling_disconnect(AgsConnectable *connectable);
 void ags_recall_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_recall_recycling_dispose(GObject *gobject);
 void ags_recall_recycling_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_recycling_duplicate(AgsRecall *recall,
@@ -164,6 +165,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
   gobject->set_property = ags_recall_recycling_set_property;
   gobject->get_property = ags_recall_recycling_get_property;
 
+  gobject->dispose = ags_recall_recycling_dispose;
   gobject->finalize = ags_recall_recycling_finalize;
 
   /* properties */
@@ -280,7 +282,6 @@ ags_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
 {
-  recall_recycling->flags = 0;
   recall_recycling->flags = (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION  |
 			     AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 
@@ -315,8 +316,9 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       destination = (AgsRecycling *) g_value_get_object(value);
 
-      if(recall_recycling->destination == destination)
+      if(recall_recycling->destination == destination){
 	return;
+      }
 
       if(recall_recycling->destination != NULL){
 	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
@@ -359,8 +361,9 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       source = (AgsRecycling *) g_value_get_object(value);
 
-      if(recall_recycling->source == source)
+      if(recall_recycling->source == source){
 	return;
+      }
 
       if(recall_recycling->source != NULL){
 	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
@@ -405,8 +408,9 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       child_destination = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(recall_recycling->child_destination == child_destination)
+      if(recall_recycling->child_destination == child_destination){
 	return;
+      }
 
       if(recall_recycling->child_destination != NULL){
 	g_object_unref(G_OBJECT(recall_recycling->child_destination));
@@ -425,8 +429,9 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       child_source = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(g_list_find(recall_recycling->child_source, child_source) != NULL)
+      if(g_list_find(recall_recycling->child_source, child_source) != NULL){
 	return;
+      }
 
       if(child_source != NULL){
 	g_object_ref(G_OBJECT(child_source));
@@ -477,24 +482,68 @@ ags_recall_recycling_get_property(GObject *gobject,
 }
 
 void
+ags_recall_recycling_dispose(GObject *gobject)
+{
+  AgsRecallRecycling *recall_recycling;
+
+  recall_recycling = AGS_RECALL_RECYCLING(gobject);
+
+  /* destination */
+  if(recall_recycling->destination != NULL){
+    g_object_unref(G_OBJECT(recall_recycling->destination));
+
+    recall_recycling->destination = NULL;
+  }
+
+  /* source */
+  if(recall_recycling->source != NULL){
+    g_object_unref(G_OBJECT(recall_recycling->source));
+
+    recall_recycling->source = NULL;
+  }
+
+  /* child destination */
+  if(recall_recycling->child_destination != NULL){
+    g_object_unref(G_OBJECT(recall_recycling->child_destination));
+
+    recall_recycling->child_destination = NULL;
+  }
+
+  /* child source */
+  if(recall_recycling->child_source != NULL){
+    g_list_free_full(recall_recycling->child_source,
+		     g_object_unref);
+
+    recall_recycling->child_source = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_recycling_parent_class)->dispose(gobject);
+}
+
+void
 ags_recall_recycling_finalize(GObject *gobject)
 {
   AgsRecallRecycling *recall_recycling;
 
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
+  /* destination */
   if(recall_recycling->destination != NULL){
     g_object_unref(G_OBJECT(recall_recycling->destination));
   }
-  
+
+  /* source */
   if(recall_recycling->source != NULL){
     g_object_unref(G_OBJECT(recall_recycling->source));
   }
-  
+
+  /* child destination */
   if(recall_recycling->child_destination != NULL){
     g_object_unref(G_OBJECT(recall_recycling->child_destination));
   }
-  
+
+  /* child source */
   if(recall_recycling->child_source != NULL){
     g_list_free_full(recall_recycling->child_source,
 		     g_object_unref);

@@ -98,7 +98,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = docs/reference/libags_gui
+subdir = docs/reference/libags-audio
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gtk-doc.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -507,7 +507,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # The name of the module, e.g. 'glib'.
-DOC_MODULE = libags_gui
+DOC_MODULE = libags_audio
 
 # Uncomment for versioned docs and specify the version of the module, e.g. '2'.
 #DOC_MODULE_VERSION=2
@@ -519,10 +519,10 @@ DOC_MAIN_SGML_FILE = $(DOC_MODULE).xml
 # gtk-doc will search all .c and .h files beneath these paths
 # for inline comments documenting functions and macros.
 # e.g. DOC_SOURCE_DIR=$(top_srcdir)/gtk $(top_srcdir)/gdk
-DOC_SOURCE_DIR = $(top_srcdir)/ags/widget
+DOC_SOURCE_DIR = $(top_srcdir)/ags/plugin $(top_srcdir)/ags/audio
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
-SCANGOBJ_OPTIONS = --cflags="$(CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) -L$(top_builddir) $(top_builddir)/libags_gui.la"
+SCANGOBJ_OPTIONS = --cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(OPENSSL_CFLAGS) $(GOBJECT_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JACK_CFLAGS)" --ldflags="-static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(GOBJECT_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JACK_LIBS) -L$(top_builddir) $(top_builddir)/libags.la $(top_builddir)/libags_thread.la $(top_builddir)/libags_server.la $(top_builddir)/libags_audio.la"
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
@@ -530,14 +530,14 @@ SCANGOBJ_OPTIONS = --cflags="$(CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS = --xml-mode --output-format=xml --name-space="libags_gui" --module="libags_gui"
+MKDB_OPTIONS = --xml-mode --output-format=xml --name-space="libags_audio" --module="libags_audio"
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS = 
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS = 
+FIXXREF_OPTIONS = --extra-dir=../libags/html
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
@@ -576,7 +576,10 @@ AM_CPPFLAGS = \
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS = $(gsequencer_CFLAGS) -DGTK_IS_WIDGET_CLASS=1
 GTKDOC_LIBS = \
-	$(top_builddir)/libags_gui.la
+	$(top_builddir)/libags.la \
+	$(top_builddir)/libags_thread.la \
+	$(top_builddir)/libags_server.la \
+	$(top_builddir)/libags_audio.la
 
 @GTK_DOC_USE_LIBTOOL_FALSE@GTKDOC_CC = $(CC) $(INCLUDES) $(GTKDOC_DEPS_CFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 @GTK_DOC_USE_LIBTOOL_TRUE@GTKDOC_CC = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(INCLUDES) $(GTKDOC_DEPS_CFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -683,9 +686,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/gtk-doc.make $(am__c
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags_gui/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags-audio/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu docs/reference/libags_gui/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libags-audio/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

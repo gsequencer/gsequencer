@@ -785,6 +785,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
   filename = xmlGetProp(node,
 			"filename\0");
 
+  if(filename == NULL){
+    return;
+  }
+
   if(g_str_has_suffix(filename, ".sf2\0")){
     AgsIpatch *ipatch;
     AgsPlayable *playable;
@@ -1341,6 +1345,10 @@ void
 ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 			   gchar *filename)
 {
+  if(filename == NULL){
+    return;
+  }
+  
   if(g_str_has_suffix(filename, ".sf2\0")){
     AgsWindow *window;
     

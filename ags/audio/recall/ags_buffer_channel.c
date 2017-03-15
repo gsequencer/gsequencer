@@ -41,6 +41,7 @@ void ags_buffer_channel_get_property(GObject *gobject,
 void ags_buffer_channel_connect(AgsConnectable *connectable);
 void ags_buffer_channel_disconnect(AgsConnectable *connectable);
 void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_buffer_channel_dispose(GObject *gobject);
 void ags_buffer_channel_finalize(GObject *gobject);
 
 void ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted);
@@ -172,9 +173,17 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
   gobject->set_property = ags_buffer_channel_set_property;
   gobject->get_property = ags_buffer_channel_get_property;
 
+  gobject->dispose = ags_buffer_channel_dispose;
   gobject->finalize = ags_buffer_channel_finalize;
 
   /* properties */
+  /**
+   * AgsBufferChannel:muted:
+   *
+   * The mute port.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("muted\0",
 				   "mute channel\0",
 				   "Mute the channel\0",
@@ -206,6 +215,7 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
 				     "port-value-size\0", sizeof(gfloat),
 				     "port-value-length\0", 1,
 				     NULL);
+  g_object_ref(buffer_channel->muted);
   buffer_channel->muted->port_value.ags_port_float = (float) FALSE;
 
   /* port descriptor */
@@ -213,6 +223,7 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
 
   /* add to port */
   port = g_list_prepend(port, buffer_channel->muted);
+  g_object_ref(buffer_channel->muted);
 
   /* set port */
   AGS_RECALL(buffer_channel)->port = port;
@@ -278,6 +289,23 @@ ags_buffer_channel_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_buffer_channel_dispose(GObject *gobject)
+{
+  AgsBufferChannel *buffer_channel;
+
+  buffer_channel = AGS_BUFFER_CHANNEL(gobject);
+
+  if(buffer_channel->muted != NULL){
+    g_object_unref(G_OBJECT(buffer_channel->muted));
+
+    buffer_channel->muted = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_buffer_channel_parent_class)->dispose(gobject);
 }
 
 void

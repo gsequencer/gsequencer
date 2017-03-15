@@ -133,6 +133,9 @@ ags_lv2_uri_map_manager_finalize(GObject *gobject)
   lv2_uri_map_manager = AGS_LV2_URI_MAP_MANAGER(gobject);
 
   g_hash_table_destroy(lv2_uri_map_manager->uri_map);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_uri_map_manager_parent_class)->finalize(gobject);
 }
 
 void

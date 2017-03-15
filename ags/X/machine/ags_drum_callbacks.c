@@ -412,8 +412,6 @@ ags_drum_done_callback(AgsAudio *audio,
   GList *playback;
   gboolean all_done;
 
-  gdk_threads_enter();
-  
   playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   /* check unset */
@@ -427,21 +425,11 @@ ags_drum_done_callback(AgsAudio *audio,
 
     playback = playback->next;
   }
+  
+  gdk_threads_enter();  
 
   if(all_done){
-    GList *list, *list_start;
-
-    /* unset led */
-    list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led));
-
-    while(list != NULL){
-      ags_led_unset_active(AGS_LED(list->data));
-	
-      list = list->next;
-    }
-
-    g_list_free(list_start);
+    ags_led_array_unset_all(drum->pattern_box->hled_array);
   }
   
   gdk_threads_leave();

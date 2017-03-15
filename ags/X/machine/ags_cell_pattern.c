@@ -36,8 +36,6 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
-#include <ags/widget/ags_led.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -278,23 +276,19 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   /* led */
   cell_pattern->active_led = 0;
 
-  cell_pattern->led = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  cell_pattern->hled_array = (GtkHBox *) ags_hled_array_new();
+  g_object_set(cell_pattern->hled_array,
+	       "led-width\0", cell_pattern->cell_width,
+	       "led-height\0", AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT,
+	       "led-count\0", cell_pattern->n_cols,
+	       NULL);
   gtk_table_attach((GtkTable *) cell_pattern,
-		   (GtkWidget *) cell_pattern->led,
+		   (GtkWidget *) cell_pattern->hled_array,
 		   0, 1,
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  
-  for(i = 0; i < 32; i++){
-    led = ags_led_new();
-    gtk_widget_set_size_request((GtkWidget *) led,
-				cell_pattern->cell_width, -1);
-    gtk_box_pack_start((GtkBox *) cell_pattern->led,
-		       (GtkWidget *) led,
-		       FALSE, FALSE,
-		       0);
-  }
+  gtk_widget_show_all(cell_pattern->hled_array);
 
   if(ags_cell_pattern_led_queue_draw == NULL){
     ags_cell_pattern_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -957,10 +951,10 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     AgsMutexManager *mutex_manager;
 
-    GList *list, *active;
+    GList *list_start, *list;
+    
     guint offset;
     guint active_led_new;
-    guint i;
     
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
@@ -994,36 +988,44 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     recall_id = ags_recall_id_find_parent_recycling_context(audio->recall_id,
 							    NULL);
 
+    pthread_mutex_unlock(audio_mutex);
+    
     if(recall_id == NULL){
-      pthread_mutex_unlock(audio_mutex);
-      
       gdk_threads_leave();
       
       return(TRUE);
     }
+
+    g_object_get(audio,
+		 "play\0", &list_start,
+		 NULL);
     
     play_count_beats_audio = NULL;
     play_count_beats_audio_run = NULL;
 
-    list = ags_recall_find_type(audio->play,
+    pthread_mutex_lock(audio->play_mutex);
+    
+    list = ags_recall_find_type(list_start,
 				AGS_TYPE_COUNT_BEATS_AUDIO);
     
     if(list != NULL){
       play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
     }
     
-    list = ags_recall_find_type_with_recycling_context(audio->play,
+    list = ags_recall_find_type_with_recycling_context(list_start,
 						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 						       (GObject *) recall_id->recycling_context);
     
     if(list != NULL){
       play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
     }
+
+    pthread_mutex_unlock(audio->play_mutex);
+
+    g_list_free(list_start);  
     
     if(play_count_beats_audio == NULL ||
        play_count_beats_audio_run == NULL){
-      pthread_mutex_unlock(audio_mutex);
-      
       gdk_threads_leave();
       
       return(TRUE);
@@ -1031,32 +1033,11 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     /* active led */
     active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;
+
     cell_pattern->active_led = (guint) active_led_new;
-      
-    pthread_mutex_unlock(audio_mutex);
-
-    /* led */
-    list = gtk_container_get_children((GtkContainer *) cell_pattern->led);
-    active = NULL;
-    
-    for(i = 0; list != NULL; i++){
-      if(i == active_led_new){
-	active = list;
-	list = list->next;
-	
-	continue;
-      }
-      
-      ags_led_unset_active(AGS_LED(list->data));
-      
-      list = list->next;
-    }
-
-    if(active != NULL){
-      ags_led_set_active(AGS_LED(active->data));
-    }
-    
-    g_list_free(list);
+    ags_led_array_unset_all(cell_pattern->hled_array);
+    ags_led_array_set_nth(cell_pattern->hled_array,
+			  active_led_new);
     
     gdk_threads_leave();
     

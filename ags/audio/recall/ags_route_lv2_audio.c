@@ -34,6 +34,7 @@ void ags_route_lv2_audio_get_property(GObject *gobject,
 				      GValue *value,
 				      GParamSpec *param_spec);
 void ags_route_lv2_audio_set_ports(AgsPlugin *plugin, GList *port);
+void ags_route_lv2_audio_dispose(GObject *gobject);
 void ags_route_lv2_audio_finalize(GObject *gobject);
 
 /**
@@ -120,6 +121,7 @@ ags_route_lv2_audio_class_init(AgsRouteLv2AudioClass *route_lv2_audio)
   gobject->set_property = ags_route_lv2_audio_set_property;
   gobject->get_property = ags_route_lv2_audio_get_property;
 
+  gobject->dispose = ags_route_lv2_audio_dispose;
   gobject->finalize = ags_route_lv2_audio_finalize;
 
   /* properties */
@@ -178,10 +180,13 @@ ags_route_lv2_audio_init(AgsRouteLv2Audio *route_lv2_audio)
 						 "port-value-size\0", sizeof(gboolean),
 						 "port-value-length", 1,
 						 NULL);
-
+  g_object_ref(route_lv2_audio->notation_input);
+  
   route_lv2_audio->notation_input->port_value.ags_port_boolean = FALSE;
 
+  /* add to port */
   port = g_list_prepend(port, route_lv2_audio->notation_input);
+  g_object_ref(route_lv2_audio->notation_input);
 
   /* sequencer input */
   route_lv2_audio->sequencer_input = g_object_new(AGS_TYPE_PORT,
@@ -193,12 +198,15 @@ ags_route_lv2_audio_init(AgsRouteLv2Audio *route_lv2_audio)
 						  "port-value-size\0", sizeof(gboolean),
 						  "port-value-length", 1,
 						  NULL);
+  g_object_ref(route_lv2_audio->sequencer_input);
 
   route_lv2_audio->sequencer_input->port_value.ags_port_boolean = FALSE;
 
+  /* add to port */
   port = g_list_prepend(port, route_lv2_audio->sequencer_input);
+  g_object_ref(route_lv2_audio->sequencer_input);
 
-  /* port */
+  /* set port */
   AGS_RECALL(route_lv2_audio)->port = port;
 }
 
@@ -311,16 +319,43 @@ ags_route_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
+ags_route_lv2_audio_dispose(GObject *gobject)
+{
+  AgsRouteLv2Audio *route_lv2_audio;
+
+  route_lv2_audio = AGS_ROUTE_LV2_AUDIO(gobject);
+
+  /* notation input */
+  if(route_lv2_audio->notation_input != NULL){
+    g_object_unref(G_OBJECT(route_lv2_audio->notation_input));
+
+    route_lv2_audio->notation_input = NULL;
+  }
+
+  /* sequencer input */
+  if(route_lv2_audio->sequencer_input != NULL){
+    g_object_unref(G_OBJECT(route_lv2_audio->sequencer_input));
+
+    route_lv2_audio->sequencer_input = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_route_lv2_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_route_lv2_audio_finalize(GObject *gobject)
 {
   AgsRouteLv2Audio *route_lv2_audio;
 
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(gobject);
 
+  /* notation input */
   if(route_lv2_audio->notation_input != NULL){
     g_object_unref(G_OBJECT(route_lv2_audio->notation_input));
   }
 
+  /* sequencer input */
   if(route_lv2_audio->sequencer_input != NULL){
     g_object_unref(G_OBJECT(route_lv2_audio->sequencer_input));
   }

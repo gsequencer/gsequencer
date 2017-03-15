@@ -51,6 +51,7 @@ gboolean ags_recall_audio_run_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_audio_run_unpack(AgsPackable *packable);
 void ags_recall_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_recall_audio_run_dispose(GObject *gobject);
 void ags_recall_audio_run_finalize(GObject *gobject);
 
 void ags_recall_audio_run_remove(AgsRecall *recall);
@@ -71,6 +72,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_RECALL_AUDIO,
 };
 
@@ -152,9 +154,26 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   gobject->set_property = ags_recall_audio_run_set_property;
   gobject->get_property = ags_recall_audio_run_get_property;
 
+  gobject->dispose = ags_recall_audio_run_dispose;
   gobject->finalize = ags_recall_audio_run_finalize;
 
   /* properties */
+  /**
+   * AgsRecallAudioRun:audio:
+   *
+   * The assigned audio.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio object it is assigned to\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsRecallAudioRun:recall-audio:
    *
@@ -210,9 +229,9 @@ ags_recall_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run)
 {
+  recall_audio_run->audio = NULL;
   recall_audio_run->recall_audio = NULL;
 }
-
 
 void
 ags_recall_audio_run_set_property(GObject *gobject,
@@ -225,14 +244,36 @@ ags_recall_audio_run_set_property(GObject *gobject,
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsRecallAudio *audio;
+
+      audio = (AgsRecallAudio *) g_value_get_object(value);
+
+      if(recall_audio_run->audio == audio){
+	return;
+      }
+
+      if(recall_audio_run->audio != NULL){
+	g_object_unref(G_OBJECT(recall_audio_run->audio));
+      }
+
+      if(audio != NULL){
+	g_object_ref(G_OBJECT(audio));
+      }
+
+      recall_audio_run->audio = audio;
+    }
+    break;
   case PROP_RECALL_AUDIO:
     {
       AgsRecallAudio *recall_audio;
 
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
 
-      if(recall_audio_run->recall_audio == recall_audio)
+      if(recall_audio_run->recall_audio == recall_audio){
 	return;
+      }
 
       if(recall_audio_run->recall_audio != NULL){
 	g_object_unref(G_OBJECT(recall_audio_run->recall_audio));
@@ -262,6 +303,11 @@ ags_recall_audio_run_get_property(GObject *gobject,
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, recall_audio_run->audio);
+    }
+    break;
   case PROP_RECALL_AUDIO:
     {
       g_value_set_object(value, recall_audio_run->recall_audio);
@@ -274,15 +320,74 @@ ags_recall_audio_run_get_property(GObject *gobject,
 }
 
 void
+ags_recall_audio_run_dispose(GObject *gobject)
+{
+  AgsRecallAudioRun *recall_audio_run;
+
+  recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
+
+  /* unpack */
+  ags_packable_unpack(AGS_PACKABLE(recall_audio_run));
+
+  if(AGS_RECALL(gobject)->container != NULL){
+    AgsRecallContainer *recall_container;
+
+    recall_container = AGS_RECALL(gobject)->container;
+
+    recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
+						       gobject);
+    g_object_unref(gobject);
+    g_object_unref(AGS_RECALL(gobject)->container);
+
+    AGS_RECALL(gobject)->container = NULL;
+  }
+
+  /* audio */
+  if(recall_audio_run->audio != NULL){
+    g_object_unref(G_OBJECT(recall_audio_run->audio));
+
+    recall_audio_run->audio = NULL;
+  }
+
+  /* recall audio */
+  if(recall_audio_run->recall_audio != NULL){
+    g_object_unref(G_OBJECT(recall_audio_run->recall_audio));
+
+    recall_audio_run->recall_audio = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_audio_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_recall_audio_run_finalize(GObject *gobject)
 {
   AgsRecallAudioRun *recall_audio_run;
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
-  if(recall_audio_run->recall_audio != NULL)
-    g_object_unref(G_OBJECT(recall_audio_run->recall_audio));
+  if(AGS_RECALL(gobject)->container != NULL){
+    AgsRecallContainer *recall_container;
 
+    recall_container = AGS_RECALL(gobject)->container;
+
+    recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
+						       gobject);
+    g_object_unref(AGS_RECALL(gobject)->container);
+  }
+  
+  /* audio */
+  if(recall_audio_run->audio != NULL){
+    g_object_unref(G_OBJECT(recall_audio_run->audio));
+  }
+
+  /* recall audio */
+  if(recall_audio_run->recall_audio != NULL){
+    g_object_unref(G_OBJECT(recall_audio_run->recall_audio));
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_recall_audio_run_parent_class)->finalize(gobject);
 }
 

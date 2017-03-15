@@ -134,6 +134,9 @@ ags_lv2_urid_manager_finalize(GObject *gobject)
   lv2_urid_manager = AGS_LV2_URID_MANAGER(gobject);
 
   g_hash_table_destroy(lv2_urid_manager->urid);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_urid_manager_parent_class)->finalize(gobject);
 }
 
 void

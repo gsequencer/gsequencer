@@ -20,6 +20,10 @@ ags_vindicator_get_type
 ags_vindicator_new
 ags_hindicator_get_type
 ags_hindicator_new
+ags_hled_array_get_type
+ags_hled_array_new
+ags_vled_array_get_type
+ags_vled_array_new
 ags_container_add_all
 ags_table_get_type
 ags_table_new
@@ -45,6 +49,11 @@ ags_cartesian_linear_y_label_func
 ags_cartesian_reallocate_label
 ags_cartesian_fill_label
 ags_cartesian_new
+ags_led_array_get_type
+ags_led_array_set_led_count
+ags_led_array_unset_all
+ags_led_array_set_nth
+ags_led_array_new
 ags_dial_get_type
 ags_dial_draw
 ags_dial_value_changed

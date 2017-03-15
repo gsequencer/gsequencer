@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,7 @@ typedef struct _AgsAccelerationClass AgsAccelerationClass;
 
 /**
  * AgsAccelerationFlags:
+ * @AGS_ACCELERATION_CONNECTED: if this object is already connected
  * @AGS_ACCELERATION_DEFAULT_START: if start is default start point
  * @AGS_ACCELERATION_DEFAULT_END: if end is default end point
  * @AGS_ACCELERATION_GUI: interpret x and y as GUI format
@@ -44,13 +45,14 @@ typedef struct _AgsAccelerationClass AgsAccelerationClass;
  * @AGS_ACCELERATION_IS_SELECTED: if the acceleration is selected
  */
 typedef enum{
-  AGS_ACCELERATION_DEFAULT_START   = 1,
-  AGS_ACCELERATION_DEFAULT_END     = 1 <<  1,
-  AGS_ACCELERATION_GUI             = 1 <<  2,
-  AGS_ACCELERATION_RUNTIME         = 1 <<  3,
-  AGS_ACCELERATION_HUMAN_READABLE  = 1 <<  4,
-  AGS_ACCELERATION_DEFAULT_LENGTH  = 1 <<  5,
-  AGS_ACCELERATION_IS_SELECTED     = 1 <<  6,
+  AGS_ACCELERATION_CONNECTED       = 1,
+  AGS_ACCELERATION_DEFAULT_START   = 1 <<  1,
+  AGS_ACCELERATION_DEFAULT_END     = 1 <<  2,
+  AGS_ACCELERATION_GUI             = 1 <<  3,
+  AGS_ACCELERATION_RUNTIME         = 1 <<  4,
+  AGS_ACCELERATION_HUMAN_READABLE  = 1 <<  5,
+  AGS_ACCELERATION_DEFAULT_LENGTH  = 1 <<  6,
+  AGS_ACCELERATION_IS_SELECTED     = 1 <<  7,
 }AgsAccelerationFlags;
 
 struct _AgsAcceleration

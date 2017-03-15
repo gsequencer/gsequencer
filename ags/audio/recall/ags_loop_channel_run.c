@@ -52,6 +52,7 @@ void ags_loop_channel_run_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
+void ags_loop_channel_run_dispose(GObject *gobject);
 void ags_loop_channel_run_finalize(GObject *gobject);
 void ags_loop_channel_run_connect(AgsConnectable *connectable);
 void ags_loop_channel_run_disconnect(AgsConnectable *connectable);
@@ -171,9 +172,17 @@ ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run)
   gobject->set_property = ags_loop_channel_run_set_property;
   gobject->get_property = ags_loop_channel_run_get_property;
 
+  gobject->dispose = ags_loop_channel_run_dispose;
   gobject->finalize = ags_loop_channel_run_finalize;
 
   /* properties */
+  /**
+   * AgsLoopChannelRun:count-beats-audio-run:
+   *
+   * The count beats audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
 				   "The pointer to a counter object which indicates when looping should happen\0",
@@ -335,12 +344,31 @@ ags_loop_channel_run_get_property(GObject *gobject,
 }
 
 void
+ags_loop_channel_run_dispose(GObject *gobject)
+{
+  AgsLoopChannelRun *loop_channel_run;
+
+  loop_channel_run = AGS_LOOP_CHANNEL_RUN(gobject);
+
+  /* count beats audio run */
+  if(loop_channel_run->count_beats_audio_run != NULL){
+    g_object_unref(G_OBJECT(loop_channel_run->count_beats_audio_run));
+
+    loop_channel_run->count_beats_audio_run = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_loop_channel_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_loop_channel_run_finalize(GObject *gobject)
 {
   AgsLoopChannelRun *loop_channel_run;
 
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(gobject);
 
+  /* count beats audio run */
   if(loop_channel_run->count_beats_audio_run != NULL){
     g_object_unref(G_OBJECT(loop_channel_run->count_beats_audio_run));
   }

@@ -26,6 +26,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/widget/ags_hled_array.h>
+
 #define AGS_TYPE_CELL_PATTERN                (ags_cell_pattern_get_type())
 #define AGS_CELL_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CELL_PATTERN, AgsCellPattern))
 #define AGS_CELL_PATTERN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CELL_PATTERN, AgsCellPatternClass))
@@ -87,7 +89,7 @@ struct _AgsCellPattern
   GtkHScrollbar *hscrollbar;
 
   guint active_led;
-  GtkHBox *led;
+  AgsHLedArray *hled_array;
 };
 
 struct _AgsCellPatternClass

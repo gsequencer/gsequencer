@@ -46,10 +46,16 @@
 typedef struct _AgsPattern AgsPattern;
 typedef struct _AgsPatternClass AgsPatternClass;
 
+typedef enum{
+  AGS_PATTERN_CONNECTED   = 1,
+}AgsPatternFlags;
+
 struct _AgsPattern
 {
-  GObject object;
+  GObject gobject;
 
+  guint flags;
+  
   GObject *timestamp;
 
   guint dim[3];
@@ -64,7 +70,7 @@ struct _AgsPattern
 
 struct _AgsPatternClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_pattern_get_type();

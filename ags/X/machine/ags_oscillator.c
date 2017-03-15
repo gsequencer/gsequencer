@@ -190,7 +190,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("frequency\0"),
 			    2, 3, 1, 2);
-  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(8.0, 100000.0, 1.0);
   gtk_spin_button_set_digits(oscillator->frequency,
 			     3);
   oscillator->frequency->adjustment->value = 27.5;

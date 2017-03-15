@@ -60,6 +60,7 @@ void ags_record_midi_audio_run_get_property(GObject *gobject,
 					    guint prop_id,
 					    GValue *value,
 					    GParamSpec *param_spec);
+void ags_record_midi_audio_run_dispose(GObject *gobject);
 void ags_record_midi_audio_run_finalize(GObject *gobject);
 void ags_record_midi_audio_run_connect(AgsConnectable *connectable);
 void ags_record_midi_audio_run_disconnect(AgsConnectable *connectable);
@@ -173,9 +174,17 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
   gobject->set_property = ags_record_midi_audio_run_set_property;
   gobject->get_property = ags_record_midi_audio_run_get_property;
 
+  gobject->dispose = ags_record_midi_audio_run_dispose;
   gobject->finalize = ags_record_midi_audio_run_finalize;
 
   /* properties */
+  /**
+   * AgsRecordMidiAudioRun:delay-audio-run:
+   * 
+   * The delay audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("delay-audio-run\0",
 				   "assigned AgsDelayAudioRun\0",
 				   "the AgsDelayAudioRun which emits midi_alloc_input signal\0",
@@ -185,6 +194,13 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
+  /**
+   * AgsRecordMidiAudioRun:count-beats-audio-run:
+   * 
+   * The count beats audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
 				   "the AgsCountBeatsAudioRun which just counts\0",
@@ -370,20 +386,48 @@ ags_record_midi_audio_run_get_property(GObject *gobject,
 }
 
 void
+ags_record_midi_audio_run_dispose(GObject *gobject)
+{
+  AgsRecordMidiAudioRun *record_midi_audio_run;
+
+  record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(gobject);
+
+  /* delay audio run */
+  if(record_midi_audio_run->delay_audio_run != NULL){
+    g_object_unref(G_OBJECT(record_midi_audio_run->delay_audio_run));
+
+    record_midi_audio_run->delay_audio_run = NULL;
+  }
+
+  /* count beats audio run */
+  if(record_midi_audio_run->count_beats_audio_run != NULL){
+    g_object_unref(G_OBJECT(record_midi_audio_run->count_beats_audio_run));
+
+    record_midi_audio_run->count_beats_audio_run = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_record_midi_audio_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_record_midi_audio_run_finalize(GObject *gobject)
 {
   AgsRecordMidiAudioRun *record_midi_audio_run;
 
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(gobject);
 
+  /* delay audio run */
   if(record_midi_audio_run->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(record_midi_audio_run->delay_audio_run));
   }
 
+  /* count beats audio run */
   if(record_midi_audio_run->count_beats_audio_run != NULL){
     g_object_unref(G_OBJECT(record_midi_audio_run->count_beats_audio_run));
   }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_record_midi_audio_run_parent_class)->finalize(gobject);
 }
 

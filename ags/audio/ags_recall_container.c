@@ -324,14 +324,16 @@ ags_recall_container_set_property(GObject *gobject,
       recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
 
       if(recall_audio_run == NULL ||
-	 g_list_find(recall_container->recall_audio_run, recall_audio_run) != NULL)
+	 g_list_find(recall_container->recall_audio_run, recall_audio_run) != NULL){
 	return;
+      }
 
       if(recall_audio_run != NULL){
 	g_object_ref(G_OBJECT(recall_audio_run));
       }
 
-      recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run, recall_audio_run);
+      recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run,
+							  recall_audio_run);
     }
     break;
   case PROP_RECALL_CHANNEL_TYPE:
@@ -350,12 +352,14 @@ ags_recall_container_set_property(GObject *gobject,
       recall_channel = (AgsRecallChannel *) g_value_get_object(value);
 
       if(recall_channel == NULL ||
-	 g_list_find(recall_container->recall_channel, recall_channel) != NULL)
+	 g_list_find(recall_container->recall_channel, recall_channel) != NULL){
 	return;
+      }
 
-	g_object_ref(G_OBJECT(recall_channel));
-
-	recall_container->recall_channel = g_list_prepend(recall_container->recall_channel, recall_channel);
+      g_object_ref(G_OBJECT(recall_channel));
+      
+      recall_container->recall_channel = g_list_prepend(recall_container->recall_channel,
+							recall_channel);
     }
     break;
   case PROP_RECALL_CHANNEL_RUN_TYPE:
@@ -374,12 +378,14 @@ ags_recall_container_set_property(GObject *gobject,
       recall_channel_run = (AgsRecallChannelRun *) g_value_get_object(value);
 
       if(recall_channel_run == NULL ||
-	 g_list_find(recall_container->recall_channel_run, recall_channel_run) != NULL)
+	 g_list_find(recall_container->recall_channel_run, recall_channel_run) != NULL){
 	return;
+      }
 
       g_object_ref(G_OBJECT(recall_channel_run));
 
-      recall_container->recall_channel_run = g_list_prepend(recall_container->recall_channel_run, recall_channel_run);
+      recall_container->recall_channel_run = g_list_prepend(recall_container->recall_channel_run,
+							    recall_channel_run);
     }
     break;
   default:

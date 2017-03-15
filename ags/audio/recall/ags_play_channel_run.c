@@ -65,6 +65,7 @@ void ags_play_channel_run_connect(AgsConnectable *connectable);
 void ags_play_channel_run_disconnect(AgsConnectable *connectable);
 void ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_play_channel_run_dispose(GObject *gobject);
 void ags_play_channel_run_finalize(GObject *gobject);
 
 void ags_play_channel_run_run_init_inter(AgsRecall *recall);
@@ -176,9 +177,17 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   gobject->set_property = ags_play_channel_run_set_property;
   gobject->get_property = ags_play_channel_run_get_property;
 
+  gobject->dispose = ags_play_channel_run_dispose;
   gobject->finalize = ags_play_channel_run_finalize;
 
   /* properties */
+  /**
+   * AgsPlayChannelRun:stream-channel-run:
+   * 
+   * The stream channel run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("stream-channel-run\0",
 				   "assigned AgsStreamChannelRun\0",
 				   "the assigned AgsStreamChannelRun\0",
@@ -319,12 +328,31 @@ ags_play_channel_run_get_property(GObject *gobject,
 }
 
 void
+ags_play_channel_run_dispose(GObject *gobject)
+{
+  AgsPlayChannelRun *play_channel_run;
+
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
+
+  /* stream channel run */
+  if(play_channel_run->stream_channel_run != NULL){
+    g_object_unref(G_OBJECT(play_channel_run->stream_channel_run));
+
+    play_channel_run->stream_channel_run = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_play_channel_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_play_channel_run_finalize(GObject *gobject)
 {
   AgsPlayChannelRun *play_channel_run;
 
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
 
+  /* stream channel run */
   if(play_channel_run->stream_channel_run != NULL){
     g_object_unref(G_OBJECT(play_channel_run->stream_channel_run));
   }

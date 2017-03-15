@@ -608,6 +608,7 @@ ags_thread_finalize(GObject *gobject)
   AgsMutexManager *mutex_manager;
 
   gboolean running;
+  gboolean do_exit;
   
   pthread_t *thread_ptr;
   pthread_attr_t *thread_attr;
@@ -618,6 +619,12 @@ ags_thread_finalize(GObject *gobject)
 
   thread = AGS_THREAD(gobject);
 
+  if(thread == ags_thread_self()){
+    do_exit = TRUE;
+  }else{
+    do_exit = FALSE;
+  }
+  
   thread_attr = thread->thread_attr;
   thread_ptr = thread->thread;
 
@@ -649,7 +656,7 @@ ags_thread_finalize(GObject *gobject)
   ags_mutex_manager_remove(mutex_manager,
 			   (GObject *) thread);
   
-  /*  */
+  /*  */  
   free(thread->computing_time);
 
   /*  */
@@ -657,7 +664,7 @@ ags_thread_finalize(GObject *gobject)
   free(thread->barrier[1]);
 
   free(thread->barrier);
-  
+    
   /*  */
   pthread_attr_getstack(thread_attr,
 			&stackaddr, &stacksize);
@@ -668,7 +675,7 @@ ags_thread_finalize(GObject *gobject)
 
   pthread_cond_destroy(thread->cond);
   free(thread->cond);
-
+  
   /*  */
   pthread_mutex_lock(thread->start_mutex);
 
@@ -702,6 +709,7 @@ ags_thread_finalize(GObject *gobject)
   pthread_cond_destroy(thread->timer_cond);
   free(thread->timer_cond);
   
+  
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
 
@@ -721,7 +729,9 @@ ags_thread_finalize(GObject *gobject)
     free(stackaddr);
   }
   
-  pthread_exit(NULL);
+  if(do_exit){
+    pthread_exit(NULL);
+  }
 }
 
 void

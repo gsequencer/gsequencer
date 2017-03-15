@@ -39,6 +39,7 @@ void ags_volume_channel_get_property(GObject *gobject,
 void ags_volume_channel_connect(AgsConnectable *connectable);
 void ags_volume_channel_disconnect(AgsConnectable *connectable);
 void ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_volume_channel_dispose(GObject *gobject);
 void ags_volume_channel_finalize(GObject *gobject);
 
 static AgsPortDescriptor* ags_volume_channel_get_volume_port_descriptor();
@@ -146,9 +147,17 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
   gobject->set_property = ags_volume_channel_set_property;
   gobject->get_property = ags_volume_channel_get_property;
 
+  gobject->dispose = ags_volume_channel_dispose;
   gobject->finalize = ags_volume_channel_finalize;
 
   /* properties */
+  /**
+   * AgsVolumeChannel:volume:
+   * 
+   * The volume port.
+   * 
+   * Since: 0.7.122.7 
+   */
   param_spec = g_param_spec_object("volume\0",
 				   "volume to apply\0",
 				   "The volume to apply on the channel\0",
@@ -169,6 +178,7 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
   AGS_RECALL(volume_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(volume_channel)->xml_type = "ags-volume-channel\0";
 
+  /* initialize the port */
   port = NULL;
 
   /* volume */
@@ -181,7 +191,8 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 					"port-value-size\0", sizeof(gfloat),
 					"port-value-length", 1,
 					NULL);
-
+  g_object_ref(volume_channel->volume);
+  
   volume_channel->volume->port_value.ags_port_float = 1.0;
 
   /* port descriptor */
@@ -189,7 +200,8 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 
   /* add to port */  
   port = g_list_prepend(port, volume_channel->volume);
-
+  g_object_ref(volume_channel->volume);
+  
   /* set port */
   AGS_RECALL(volume_channel)->port = port;
 }
@@ -298,12 +310,29 @@ ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
+ags_volume_channel_dispose(GObject *gobject)
+{
+  AgsVolumeChannel *volume_channel;
+
+  volume_channel = AGS_VOLUME_CHANNEL(gobject);
+
+  /* volume */
+  if(volume_channel->volume != NULL){
+    g_object_unref(G_OBJECT(volume_channel->volume));
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_volume_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_volume_channel_finalize(GObject *gobject)
 {
   AgsVolumeChannel *volume_channel;
 
   volume_channel = AGS_VOLUME_CHANNEL(gobject);
 
+  /* volume */
   if(volume_channel->volume != NULL){
     g_object_unref(G_OBJECT(volume_channel->volume));
   }

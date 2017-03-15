@@ -37,6 +37,7 @@ void ags_envelope_channel_get_property(GObject *gobject,
 void ags_envelope_channel_connect(AgsConnectable *connectable);
 void ags_envelope_channel_disconnect(AgsConnectable *connectable);
 void ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_envelope_channel_dispose(GObject *gobject);
 void ags_envelope_channel_finalize(GObject *gobject);
 
 /**
@@ -137,9 +138,17 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
   gobject->set_property = ags_envelope_channel_set_property;
   gobject->get_property = ags_envelope_channel_get_property;
 
+  gobject->dispose = ags_envelope_channel_dispose;
   gobject->finalize = ags_envelope_channel_finalize;
 
   /* properties */
+  /**
+   * AgsEnvelopeChannel:attack:
+   *
+   * The attack of envelope.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("attack\0",
 				   "attack channel\0",
 				   "Attack of the channel\0",
@@ -149,6 +158,13 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
 				  PROP_ATTACK,
 				  param_spec);
 
+  /**
+   * AgsEnvelopeChannel:decay:
+   *
+   * The decay of envelope.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("decay\0",
 				   "decay channel\0",
 				   "Decay of the channel\0",
@@ -158,6 +174,13 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
 				  PROP_DECAY,
 				  param_spec);
 
+  /**
+   * AgsEnvelopeChannel:sustain:
+   *
+   * The sustain of envelope.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("sustain\0",
 				   "sustain channel\0",
 				   "Sustain of the channel\0",
@@ -167,6 +190,13 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
 				  PROP_SUSTAIN,
 				  param_spec);
 
+  /**
+   * AgsEnvelopeChannel:release:
+   *
+   * The release of envelope.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("release\0",
 				   "release channel\0",
 				   "Release of the channel\0",
@@ -176,6 +206,13 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
 				  PROP_RELEASE,
 				  param_spec);
 
+  /**
+   * AgsEnvelopeChannel:ratio:
+   *
+   * The ratio of envelope.
+   * 
+   * Since: 0.7.122.7
+   */
   param_spec = g_param_spec_object("ratio\0",
 				   "envelope ratio\0",
 				   "The ratio of the envelope\0",
@@ -199,6 +236,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
   /* ports */
   port = NULL;
 
+  /* attack */
   envelope_channel->attack = g_object_new(AGS_TYPE_PORT,
 					  "plugin-name\0", g_strdup("ags-envelope\0"),
 					  "specifier\0", "./attack[0]\0",
@@ -208,10 +246,15 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 					  "port-value-size\0", sizeof(gdouble),
 					  "port-value-length\0", 1,
 					  NULL);
+  g_object_ref(envelope_channel->attack);
+  
   envelope_channel->attack->port_value.ags_port_double = 1.0;
 
+  /* add to port */
   port = g_list_prepend(port, envelope_channel->attack);
+  g_object_ref(envelope_channel->attack);
 
+  /* decay */
   envelope_channel->decay = g_object_new(AGS_TYPE_PORT,
 					 "plugin-name\0", g_strdup("ags-envelope\0"),
 					 "specifier\0", "./decay[0]\0",
@@ -221,10 +264,15 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 					 "port-value-size\0", sizeof(gdouble),
 					 "port-value-length\0", 1,
 					 NULL);
+  g_object_ref(envelope_channel->decay);
+
   envelope_channel->decay->port_value.ags_port_double = 1.0;
 
+  /* add to port */
   port = g_list_prepend(port, envelope_channel->decay);
+  g_object_ref(envelope_channel->decay);
 
+  /* sustain */
   envelope_channel->sustain = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name\0", g_strdup("ags-envelope\0"),
 					   "specifier\0", "./sustain[0]\0",
@@ -234,10 +282,15 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 					   "port-value-size\0", sizeof(gdouble),
 					   "port-value-length\0", 1,
 					   NULL);
+  g_object_ref(envelope_channel->sustain);
+
   envelope_channel->sustain->port_value.ags_port_double = 1.0;
-
+  
+  /* add to port */
   port = g_list_prepend(port, envelope_channel->sustain);
+  g_object_ref(envelope_channel->sustain);
 
+  /* release */
   envelope_channel->release = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name\0", g_strdup("ags-envelope\0"),
 					   "specifier\0", "./release[0]\0",
@@ -247,10 +300,15 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 					   "port-value-size\0", sizeof(gdouble),
 					   "port-value-length\0", 1,
 					   NULL);
+  g_object_ref(envelope_channel->release);
+  
   envelope_channel->release->port_value.ags_port_boolean = 1.0;
-
+  
+  /* add to port */
   port = g_list_prepend(port, envelope_channel->release);
+  g_object_ref(envelope_channel->release);
 
+  /* ratio */  
   envelope_channel->ratio = g_object_new(AGS_TYPE_PORT,
 					 "plugin-name\0", g_strdup("ags-envelope\0"),
 					 "specifier\0", "./ratio[0]\0",
@@ -260,9 +318,13 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 					 "port-value-size\0", sizeof(gdouble),
 					 "port-value-length\0", 1,
 					 NULL);
+  g_object_ref(envelope_channel->ratio);
+  
   envelope_channel->ratio->port_value.ags_port_boolean = 1.0;
 
+  /* add to port */
   port = g_list_prepend(port, envelope_channel->ratio);
+  g_object_ref(envelope_channel->ratio);
 
   /* set ports */
   AGS_RECALL(envelope_channel)->port = port;
@@ -487,6 +549,47 @@ ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port)
 
     port = port->next;
   }
+}
+
+void
+ags_envelope_channel_dispose(GObject *gobject)
+{
+  AgsEnvelopeChannel *envelope_channel;
+
+  envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
+
+  if(envelope_channel->attack != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->attack));
+
+    envelope_channel->attack = NULL;
+  }
+
+  if(envelope_channel->decay != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->decay));
+
+    envelope_channel->decay = NULL;
+  }
+
+  if(envelope_channel->sustain != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->sustain));
+
+    envelope_channel->sustain = NULL;
+  }
+
+  if(envelope_channel->release != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->release));
+
+    envelope_channel->release = NULL;
+  }
+
+  if(envelope_channel->ratio != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->ratio));
+
+    envelope_channel->ratio = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_envelope_channel_parent_class)->dispose(gobject);
 }
 
 void

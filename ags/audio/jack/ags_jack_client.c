@@ -59,6 +59,7 @@ void ags_jack_client_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_jack_client_connect(AgsConnectable *connectable);
 void ags_jack_client_disconnect(AgsConnectable *connectable);
+void ags_jack_client_dispose(GObject *gobject);
 void ags_jack_client_finalize(GObject *gobject);
 
 void ags_jack_client_shutdown(void *arg);
@@ -78,6 +79,8 @@ int ags_jack_client_xrun_callback(void *ptr);
 enum{
   PROP_0,
   PROP_JACK_SERVER,
+  PROP_DEVICE,
+  PROP_PORT,
 };
 
 static gpointer ags_jack_client_parent_class = NULL;
@@ -133,6 +136,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
   gobject->set_property = ags_jack_client_set_property;
   gobject->get_property = ags_jack_client_get_property;
 
+  gobject->dispose = ags_jack_client_dispose;
   gobject->finalize = ags_jack_client_finalize;
 
   /* properties */
@@ -150,6 +154,38 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_JACK_SERVER,
+				  param_spec);
+
+  /**
+   * AgsJackClient:device:
+   *
+   * The assigned devices.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("device\0",
+				   "assigned device\0",
+				   "The assigned device.\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVICE,
+				  param_spec);
+
+  /**
+   * AgsJackClient:port:
+   *
+   * The assigned ports.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("port\0",
+				   "assigned port\0",
+				   "The assigned port.\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
 				  param_spec);
 }
 
@@ -242,6 +278,44 @@ ags_jack_client_set_property(GObject *gobject,
       jack_client->jack_server = (GObject *) jack_server;
     }
     break;
+  case PROP_DEVICE:
+    {
+      GObject *device;
+
+      device = (GObject *) g_value_get_object(value);
+
+      if(g_list_find(jack_client->device,
+		     device) != NULL){
+	return;
+      }
+
+      if(device != NULL){
+	g_object_ref(device);
+	
+	jack_client->device = g_list_prepend(jack_client->device,
+					     device);
+      }
+    }
+    break;
+  case PROP_PORT:
+    {
+      GObject *port;
+
+      port = (GObject *) g_value_get_object(value);
+
+      if(g_list_find(jack_client->port,
+		     port) != NULL){
+	return;
+      }
+
+      if(port != NULL){
+	g_object_ref(port);
+	
+	jack_client->port = g_list_prepend(jack_client->port,
+					   port);
+      }
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -264,6 +338,18 @@ ags_jack_client_get_property(GObject *gobject,
       g_value_set_object(value, jack_client->jack_server);
     }
     break;
+  case PROP_DEVICE:
+    {
+      g_value_set_pointer(value,
+			  g_list_copy(jack_client->device));
+    }
+    break;
+  case PROP_PORT:
+    {
+      g_value_set_pointer(value,
+			  g_list_copy(jack_client->port));
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -273,13 +359,105 @@ ags_jack_client_get_property(GObject *gobject,
 void
 ags_jack_client_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsJackClient *jack_client;
+
+  GList *list;
+  
+  jack_client = AGS_JACK_CLIENT(connectable);
+
+  if((AGS_JACK_CLIENT_CONNECTED & (jack_client->flags)) != 0){
+    return;
+  }
+
+  jack_client->flags |= AGS_JACK_CLIENT_CONNECTED;
+
+  /* port */
+  list = jack_client->port;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
 }
 
 void
 ags_jack_client_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsJackClient *jack_client;
+
+  GList *list;
+  
+  jack_client = AGS_JACK_CLIENT(connectable);
+
+  if((AGS_JACK_CLIENT_CONNECTED & (jack_client->flags)) == 0){
+    return;
+  }
+
+  jack_client->flags &= (~AGS_JACK_CLIENT_CONNECTED);
+
+  /* port */
+  list = jack_client->port;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+}
+
+void
+ags_jack_client_dispose(GObject *gobject)
+{
+  AgsJackClient *jack_client;
+
+  GList *list;
+  
+  jack_client = AGS_JACK_CLIENT(gobject);
+
+  /* jack server */
+  if(jack_client->jack_server != NULL){
+    g_object_unref(jack_client->jack_server);
+
+    jack_client->jack_server = NULL;
+  }
+
+  /* device */
+  if(jack_client->device != NULL){
+    list = jack_client->device;
+
+    while(list != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "jack-client\0", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(jack_client->device,
+		     g_object_unref);
+
+    jack_client->device = NULL;
+  }
+
+  /* port */
+  if(jack_client->port != NULL){
+    list = jack_client->port;
+
+    while(list != NULL){
+      g_object_run_dispose(G_OBJECT(list->data));
+
+      list = list->next;
+    }
+    
+    g_list_free_full(jack_client->port,
+		     g_object_unref);
+
+    jack_client->port = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_jack_client_parent_class)->dispose(gobject);
 }
 
 void
@@ -288,11 +466,25 @@ ags_jack_client_finalize(GObject *gobject)
   AgsJackClient *jack_client;
 
   jack_client = AGS_JACK_CLIENT(gobject);
-  
+
+  /* jack server */
   if(jack_client->jack_server != NULL){
     g_object_unref(jack_client->jack_server);
   }
 
+  /* device */
+  if(jack_client->device != NULL){
+    g_list_free_full(jack_client->device,
+		     g_object_unref);
+  }
+
+  /* port */
+  if(jack_client->port != NULL){
+    g_list_free_full(jack_client->port,
+		     g_object_unref);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
 

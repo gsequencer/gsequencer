@@ -207,10 +207,14 @@ ags_turtle_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    g_value_set_string(value, turtle->filename);
+    {
+      g_value_set_string(value, turtle->filename);
+    }
     break;
   case PROP_XML_DOC:
-    g_value_set_pointer(value, turtle->doc);
+    {
+      g_value_set_pointer(value, turtle->doc);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -225,6 +229,17 @@ ags_turtle_finalize(GObject *gobject)
   gchar **str;
   
   turtle = AGS_TURTLE(gobject);
+
+  if(turtle->filename != NULL){
+    g_free(turtle->filename);
+  }
+
+  if(turtle->doc != NULL){
+    xmlFreeDoc(turtle->doc);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_turtle_parent_class)->finalize(gobject);
 }
 
 /**

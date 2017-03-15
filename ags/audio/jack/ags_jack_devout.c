@@ -75,6 +75,7 @@ void ags_jack_devout_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_jack_devout_disconnect(AgsConnectable *connectable);
 void ags_jack_devout_connect(AgsConnectable *connectable);
+void ags_jack_devout_dispose(GObject *gobject);
 void ags_jack_devout_finalize(GObject *gobject);
 
 void ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
@@ -177,6 +178,7 @@ enum{
   PROP_DELAY_FACTOR,
   PROP_ATTACK,
   PROP_JACK_CLIENT,
+  PROP_JACK_PORT,
   PROP_CHANNEL,
 };
 
@@ -248,6 +250,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
   gobject->set_property = ags_jack_devout_set_property;
   gobject->get_property = ags_jack_devout_get_property;
 
+  gobject->dispose = ags_jack_devout_dispose;
   gobject->finalize = ags_jack_devout_finalize;
 
   /* properties */
@@ -471,6 +474,21 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
 				  PROP_JACK_CLIENT,
 				  param_spec);
 
+  /**
+   * AgsJackDevout:jack-port:
+   *
+   * The assigned #AgsJackPort
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("jack-port\0",
+				   "jack port object\0",
+				   "The jack port object\0",
+				   AGS_TYPE_JACK_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_JACK_PORT,
+				  param_spec);
 
   /**
    * AgsJackDevout:channel:
@@ -981,7 +999,28 @@ ags_jack_devout_set_property(GObject *gobject,
 	g_object_unref(G_OBJECT(jack_devout->jack_client));
       }
 
+      if(jack_client != NULL){
+	g_object_ref(jack_client);
+      }
+      
       jack_devout->jack_client = (GObject *) jack_client;
+    }
+    break;
+  case PROP_JACK_PORT:
+    {
+      AgsJackPort *jack_port;
+
+      jack_port = (AgsJackPort *) g_value_get_object(value);
+
+      if(g_list_find(jack_devout->jack_port, jack_port) != NULL){
+	return;
+      }
+
+      if(jack_port != NULL){
+	g_object_ref(jack_port);
+	jack_devout->jack_port = g_list_append(jack_devout->jack_port,
+					       jack_port);
+      }
     }
     break;
   default:
@@ -1066,10 +1105,52 @@ ags_jack_devout_get_property(GObject *gobject,
       g_value_set_object(value, jack_devout->jack_client);
     }
     break;
+  case PROP_JACK_PORT:
+    {
+      g_value_set_pointer(value,
+			  g_list_copy(jack_devout->jack_port));
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_jack_devout_dispose(GObject *gobject)
+{
+  AgsJackDevout *jack_devout;
+
+  GList *list;
+
+  jack_devout = AGS_JACK_DEVOUT(gobject);
+
+  /* application context */
+  if(jack_devout->application_context != NULL){
+    g_object_unref(jack_devout->application_context);
+
+    jack_devout->application_context = NULL;
+  }
+
+  /* unref audio */
+  if(jack_devout->audio != NULL){
+    list = jack_devout->audio;
+
+    while(list != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard\0", NULL,
+		   NULL);
+      
+      list = list->next;
+    }
+
+    g_list_free_full(jack_devout->audio,
+		     g_object_unref);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
 }
 
 void
@@ -1105,14 +1186,33 @@ ags_jack_devout_finalize(GObject *gobject)
   /* free AgsAttack */
   free(jack_devout->attack);
 
+  /* unref notify soundcard */
   if(jack_devout->notify_soundcard != NULL){
-    ags_task_thread_remove_cyclic_task(ags_application_context_get_instance()->task_thread,
-				       jack_devout->notify_soundcard);
+    if(jack_devout->application_context != NULL){
+      ags_task_thread_remove_cyclic_task(AGS_APPLICATION_CONTEXT(jack_devout->application_context)->task_thread,
+					 jack_devout->notify_soundcard);
+    }
     
     g_object_unref(jack_devout->notify_soundcard);
   }
+
+  /* application context */
+  if(jack_devout->application_context != NULL){
+    g_object_unref(jack_devout->application_context);
+  }
   
+  /* unref audio */
   if(jack_devout->audio != NULL){
+    list = jack_devout->audio;
+
+    while(list != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard\0", NULL,
+		   NULL);
+      
+      list = list->next;
+    }
+
     g_list_free_full(jack_devout->audio,
 		     g_object_unref);
   }

@@ -314,6 +314,7 @@ ags_remove_audio_launch(AgsTask *task)
   ags_soundcard_set_audio(AGS_SOUNDCARD(remove_audio->soundcard),
 			  list);
 
+  g_object_run_dispose(remove_audio->audio);
   g_object_unref(remove_audio->audio);
 }
 

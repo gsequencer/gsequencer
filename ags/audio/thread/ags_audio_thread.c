@@ -47,6 +47,7 @@ void ags_audio_thread_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_audio_thread_connect(AgsConnectable *connectable);
 void ags_audio_thread_disconnect(AgsConnectable *connectable);
+void ags_audio_thread_dispose(GObject *gobject);
 void ags_audio_thread_finalize(GObject *gobject);
 
 void ags_audio_thread_start(AgsThread *thread);
@@ -127,6 +128,7 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
   gobject->set_property = ags_audio_thread_set_property;
   gobject->get_property = ags_audio_thread_get_property;
 
+  gobject->dispose = ags_audio_thread_dispose;
   gobject->finalize = ags_audio_thread_finalize;
 
   /* properties */
@@ -367,11 +369,63 @@ ags_audio_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_audio_thread_dispose(GObject *gobject)
+{
+  AgsAudioThread *audio_thread;
+
+  audio_thread = AGS_AUDIO_THREAD(gobject);
+
+  /* soundcard */
+  if(audio_thread->soundcard != NULL){
+    g_object_unref(audio_thread->soundcard);
+
+    audio_thread->soundcard = NULL;
+  }
+
+  /* audio */
+  if(audio_thread->audio != NULL){
+    g_object_unref(audio_thread->audio);
+
+    audio_thread->audio = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_audio_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_audio_thread_parent_class)->finalize(gobject);
+  AgsAudioThread *audio_thread;
 
-  /* empty */
+  audio_thread = AGS_AUDIO_THREAD(gobject);
+
+  /* soundcard */
+  if(audio_thread->soundcard != NULL){
+    g_object_unref(audio_thread->soundcard);
+  }
+
+  /* wakeup mutex and cond */
+  pthread_mutex_destroy(audio_thread->wakeup_mutex);
+  free(audio_thread->wakeup_mutex);
+  
+  pthread_mutex_destroy(audio_thread->wakeup_cond);
+  free(audio_thread->wakeup_cond);
+
+  /* sync mutex and cond */
+  pthread_mutex_destroy(audio_thread->done_mutex);
+  free(audio_thread->done_mutex);
+  
+  pthread_mutex_destroy(audio_thread->done_cond);
+  free(audio_thread->done_cond);
+
+  /* audio */
+  if(audio_thread->audio != NULL){
+    g_object_unref(audio_thread->audio);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_thread_parent_class)->finalize(gobject);
 }
 
 void
