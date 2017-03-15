@@ -753,6 +753,8 @@ ags_recall_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_init(AgsRecall *recall)
 {
+  pthread_mutexattr_t *attr;
+
   recall->flags = 0;
 
   /* soundcard */
@@ -779,9 +781,14 @@ ags_recall_init(AgsRecall *recall)
   recall->recall_id = NULL;
 
   /* nested recall */
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
   recall->children_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(recall->children_mutex,
-		     NULL);
+		     attr);
 
   recall->parent = NULL;
   recall->children = NULL;
@@ -1344,7 +1351,7 @@ ags_recall_dispose(GObject *gobject)
 {
   AgsRecall *recall;
 
-  GList *list;
+  GList *list, *list_next;
 
   recall = AGS_RECALL(gobject);
 
@@ -1375,9 +1382,11 @@ ags_recall_dispose(GObject *gobject)
     list = recall->children;
 
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(G_OBJECT(list->data));
 
-      list = list->next;
+      list = list_next;
     }
     
     g_list_free_full(recall->children,
@@ -1462,6 +1471,9 @@ ags_recall_finalize(GObject *gobject)
   /* children */
   g_list_free_full(recall->children,
 		   g_object_unref);
+
+  pthread_mutex_destroy(recall->children_mutex);
+  free(recall->children_mutex);
   
   if(recall->container != NULL){
     ags_packable_unpack(AGS_PACKABLE(recall));

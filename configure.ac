@@ -187,8 +187,8 @@ AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
 docs/reference/libags/Makefile
-docs/reference/libags_audio/Makefile
-docs/reference/libags_gui/Makefile
+docs/reference/libags-audio/Makefile
+docs/reference/libags-gui/Makefile
 docs/reference/libgsequencer/Makefile
 libags.pc
 libags_audio.pc

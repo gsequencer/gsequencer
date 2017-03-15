@@ -9,6 +9,7 @@ ags (0.7.122.7)
 	* fixed division by zero caused by AgsOscillator
 	* fixed serious memory corruption in ags_pattern_set_dim()
 	* fixed segmentation fault of AgsFFPlayer restore
+	* fixed missing connection menu of AgsLv2Bridge after restore
 	* extended unit tests
 
 ags (0.7.122.6)

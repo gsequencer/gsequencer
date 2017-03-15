@@ -719,11 +719,14 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 				  "port-value-size\0", sizeof(gdouble),
 				  "port-value-length", 1,
 				  NULL);
-
+  g_object_ref(delay_audio->bpm);
+  
   delay_audio->bpm->port_value.ags_port_double = bpm;
 
+  /* add port */
   port = g_list_prepend(port, delay_audio->bpm);
-
+  g_object_ref(delay_audio->bpm);
+  
   /* tact */
   delay_audio->tact = g_object_new(AGS_TYPE_PORT,
 				   "plugin-name\0", ags_delay_audio_plugin_name,
@@ -734,11 +737,14 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 				   "port-value-size\0", sizeof(gdouble),
 				   "port-value-length", 1,
 				   NULL);
-
+  g_object_ref(delay_audio->tact);
+  
   delay_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
 
+  /* add port */
   port = g_list_prepend(port, delay_audio->tact);
-
+  g_object_ref(delay_audio->tact);
+  
   /* sequencer delay */
   delay_audio->sequencer_delay = g_object_new(AGS_TYPE_PORT,
 					      "plugin-name\0", ags_delay_audio_plugin_name,
@@ -749,11 +755,14 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 					      "port-value-size\0", sizeof(gdouble),
 					      "port-value-length", 1,
 					      NULL);
-
+  g_object_ref(delay_audio->sequencer_delay);
+  
   delay_audio->sequencer_delay->port_value.ags_port_double = delay;
 
+  /* add port */
   port = g_list_prepend(port, delay_audio->sequencer_delay);
-
+  g_object_ref(delay_audio->sequencer_delay);
+  
   /* notation delay */
   delay_audio->notation_delay = g_object_new(AGS_TYPE_PORT,
 					     "plugin-name\0", ags_delay_audio_plugin_name,
@@ -764,11 +773,14 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 					     "port-value-size\0", sizeof(gdouble),
 					     "port-value-length", 1,
 					     NULL);
-
+  g_object_ref(delay_audio->notation_delay);
+  
   delay_audio->notation_delay->port_value.ags_port_double = delay;
 
+  /* add port */
   port = g_list_prepend(port, delay_audio->notation_delay);
-
+  g_object_ref(delay_audio->notation_delay);
+  
   /* sequencer duration */
   delay_audio->sequencer_duration = g_object_new(AGS_TYPE_PORT,
 						 "plugin-name\0", ags_delay_audio_plugin_name,
@@ -779,11 +791,14 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 						 "port-value-size\0", sizeof(gdouble),
 						 "port-value-length", 1,
 						 NULL);
-
+  g_object_ref(delay_audio->sequencer_duration);
+  
   delay_audio->sequencer_duration->port_value.ags_port_double = ceil(16.0 * delay);
 
+  /* add port */
   port = g_list_prepend(port, delay_audio->sequencer_duration);
-
+  g_object_ref(delay_audio->sequencer_duration);
+  
   /* notation duration */
   delay_audio->notation_duration = g_object_new(AGS_TYPE_PORT,
 						"plugin-name\0", ags_delay_audio_plugin_name,
@@ -794,12 +809,15 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 						"port-value-size\0", sizeof(gdouble),
 						"port-value-length", 1,
 						NULL);
-
+  g_object_ref(delay_audio->notation_duration);
+  
   delay_audio->notation_duration->port_value.ags_port_double = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
 
+  /* add port */
   port = g_list_prepend(port, delay_audio->notation_duration);
-
-  /*  */
+  g_object_ref(delay_audio->notation_duration);
+  
+  /* set port */
   AGS_RECALL(delay_audio)->port = port;
 }
 

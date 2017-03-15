@@ -35,10 +35,10 @@ EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acs
 EXTRA_DIST += \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
-	docs/reference/libags_audio/libags_audio-sections.txt \
-	docs/reference/libags_audio/libags_audio.types \
-	docs/reference/libags_gui/libags_gui-sections.txt \
-	docs/reference/libags_gui/libags_gui.types
+	docs/reference/libags-audio/libags_audio-sections.txt \
+	docs/reference/libags-audio/libags_audio.types \
+	docs/reference/libags-gui/libags_gui-sections.txt \
+	docs/reference/libags-gui/libags_gui.types
 
 man1_MANS = gsequencer.1 midi2xml.1
 
@@ -72,11 +72,11 @@ EXTRA_DIST += \
 EXTRA_DIST += docs/reference/libags/git.mk docs/reference/libags/gtk-doc.make docs/reference/libags/Makefile.am docs/reference/libags/Makefile.in
 EXTRA_DIST += docs/reference/libags/libags-overrides.txt docs/reference/libags/libags-sections.txt docs/reference/libags/libags.types docs/reference/libags/libags.xml
 
-EXTRA_DIST += docs/reference/libags_audio/git.mk docs/reference/libags_audio/gtk-doc.make docs/reference/libags_audio/Makefile.am docs/reference/libags_audio/Makefile.in
-EXTRA_DIST += docs/reference/libags_audio/libags_audio-overrides.txt  docs/reference/libags_audio/libags_audio-sections.txt docs/reference/libags_audio/libags_audio.types docs/reference/libags_audio/libags_audio.xml
+EXTRA_DIST += docs/reference/libags-audio/git.mk docs/reference/libags-audio/gtk-doc.make docs/reference/libags-audio/Makefile.am docs/reference/libags-audio/Makefile.in
+EXTRA_DIST += docs/reference/libags-audio/libags_audio-overrides.txt  docs/reference/libags-audio/libags_audio-sections.txt docs/reference/libags-audio/libags_audio.types docs/reference/libags-audio/libags_audio.xml
 
-EXTRA_DIST += docs/reference/libags_gui/git.mk docs/reference/libags_gui/gtk-doc.make docs/reference/libags_gui/Makefile.am docs/reference/libags_gui/Makefile.in
-EXTRA_DIST += docs/reference/libags_gui/libags_gui-overrides.txt docs/reference/libags_gui/libags_gui-sections.txt docs/reference/libags_gui/libags_gui.types docs/reference/libags_gui/libags_gui.xml
+EXTRA_DIST += docs/reference/libags-gui/git.mk docs/reference/libags-gui/gtk-doc.make docs/reference/libags-gui/Makefile.am docs/reference/libags-gui/Makefile.in
+EXTRA_DIST += docs/reference/libags-gui/libags_gui-overrides.txt docs/reference/libags-gui/libags_gui-sections.txt docs/reference/libags-gui/libags_gui.types docs/reference/libags-gui/libags_gui.xml
 
 EXTRA_DIST += docs/reference/libgsequencer/git.mk docs/reference/libgsequencer/gtk-doc.make docs/reference/libgsequencer/Makefile.am docs/reference/libgsequencer/Makefile.in
 EXTRA_DIST += docs/reference/libgsequencer/libgsequencer-overrides.txt docs/reference/libgsequencer/libgsequencer.xml
@@ -1619,9 +1619,9 @@ midi2xml_SOURCES = ags/midi2xml_main.c
 ags-docs-local:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags
 	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags_audio
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
 	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags_gui
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags-gui
 	cd $(top_srcdir)
 	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
 	cd $(top_srcdir)
@@ -1676,12 +1676,15 @@ install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags_audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags_gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
+	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
+	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
@@ -1703,18 +1706,19 @@ clean-local:
 	rm -rf $(top_srcdir)/docs/reference/libags/xml
 	rm -rf $(top_srcdir)/docs/reference/libags/html
 	rm -rf $(top_srcdir)/docs/reference/libags/tmpl
-	rm -rf $(top_srcdir)/docs/reference/libags_audio/xml
-	rm -rf $(top_srcdir)/docs/reference/libags_audio/html
-	rm -rf $(top_srcdir)/docs/reference/libags_audio/tmpl
-	rm -rf $(top_srcdir)/docs/reference/libags_gui/xml
-	rm -rf $(top_srcdir)/docs/reference/libags_gui/html
-	rm -rf $(top_srcdir)/docs/reference/libags_gui/tmpl
+	rm -rf $(top_srcdir)/docs/reference/libags-audio/xml
+	rm -rf $(top_srcdir)/docs/reference/libags-audio/html
+	rm -rf $(top_srcdir)/docs/reference/libags-audio/tmpl
+	rm -rf $(top_srcdir)/docs/reference/libags-gui/xml
+	rm -rf $(top_srcdir)/docs/reference/libags-gui/html
+	rm -rf $(top_srcdir)/docs/reference/libags-gui/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
 	rm -f $(top_builddir)/docs/reference/libags/Makefile
-	rm -f $(top_builddir)/docs/reference/libags_audio/Makefile
-	rm -f $(top_builddir)/docs/reference/libags_gui/Makefile
+	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
+	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
+	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
 
 
 gen-symbols-ags:

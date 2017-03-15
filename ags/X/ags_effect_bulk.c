@@ -783,8 +783,8 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
 
   effect_plugin = (AgsEffectBulkPlugin *) malloc(sizeof(AgsEffectBulkPlugin));
 
-  effect_plugin->filename = filename;
-  effect_plugin->effect = effect;
+  effect_plugin->filename = g_strdup(filename);
+  effect_plugin->effect = g_strdup(effect);
 
   effect_plugin->control_type_name = NULL;
   

@@ -398,8 +398,8 @@ ags_gui_thread_run(AgsThread *thread)
 
   gdk_threads_enter();
 
-  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-  pango_cairo_font_map_set_default(NULL);
+  //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  //  pango_cairo_font_map_set_default(NULL);
 
   //  cairo_debug_reset_static_data();
   //  FcFini();
@@ -425,9 +425,9 @@ ags_gui_thread_interrupted(AgsThread *thread,
 		   SIGIO);
 
 #ifdef AGS_PTHREAD_SUSPEND
-    pthread_suspend(thread->thread);
+      //    pthread_suspend(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+      //    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
     }
   }
@@ -492,9 +492,9 @@ ags_gui_thread_dispatch_callback(AgsPollFd *poll_fd,
 		     (~AGS_THREAD_INTERRUPTED));
 
 #ifdef AGS_PTHREAD_RESUME
-    pthread_resume(thread->thread);
+    //    pthread_resume(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
+    //    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
 #endif
   }
 }

@@ -639,6 +639,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 			       "port-value-is-pointer\0", FALSE,
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
+	g_object_ref(current);
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
 
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){

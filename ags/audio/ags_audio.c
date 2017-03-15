@@ -965,13 +965,23 @@ ags_audio_init(AgsAudio *audio)
   audio->recycling_context = NULL;
 
   /* recall */
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
   audio->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio->recall_mutex,
-		     NULL);
+		     attr);
+
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
 
   audio->play_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio->play_mutex,
-		     NULL);
+		     attr);
 
   audio->container = NULL;
   
@@ -1490,7 +1500,7 @@ ags_audio_dispose(GObject *gobject)
 {
   AgsAudio *audio;
 
-  GList *list;
+  GList *list, *list_next;
 
   audio = AGS_AUDIO(gobject);
   
@@ -1520,9 +1530,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->audio_connection;
 
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
   
     g_list_free_full(audio->audio_connection,
@@ -1536,9 +1548,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->notation;
 
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
   
     g_list_free_full(audio->notation,
@@ -1552,9 +1566,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->automation;
 
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
   
     g_list_free_full(audio->automation,
@@ -1568,9 +1584,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->recall_id;
     
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
       
-      list = list->next;
+      list = list_next;
     }
 
     
@@ -1585,9 +1603,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->recycling_context;
 
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
   
     g_list_free_full(audio->recycling_context,
@@ -1601,9 +1621,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->container;
 
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
 
-      list = list->next;
+      list = list_next;
     }
 
     g_list_free_full(audio->container,
@@ -1619,9 +1641,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->recall;
   
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
     
-      list = list->next;
+      list = list_next;
     }
 
     g_list_free_full(audio->recall,
@@ -1639,9 +1663,11 @@ ags_audio_dispose(GObject *gobject)
     list = audio->play;
 
     while(list != NULL){
+      list_next = list->next;
+      
       g_object_run_dispose(list->data);
     
-      list = list->next;
+      list = list_next;
     }
 
     g_list_free_full(audio->play,
@@ -4675,7 +4701,7 @@ ags_audio_play(AgsAudio *audio,
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-
+  
   if(audio == NULL ||
      recall_id == NULL){
     return;
@@ -4752,8 +4778,6 @@ ags_audio_play(AgsAudio *audio,
   while(list != NULL){
     guint recall_flags;
     
-    pthread_mutex_lock(mutex);
-    
     list_next = list->next;
 
     recall = AGS_RECALL(list->data);
@@ -4770,8 +4794,6 @@ ags_audio_play(AgsAudio *audio,
 
       list = list_next;
       g_warning("recall == NULL\0");
-
-      pthread_mutex_unlock(mutex);
       
       continue;
     }
@@ -4782,8 +4804,6 @@ ags_audio_play(AgsAudio *audio,
       }
 
       list = list_next;
-
-      pthread_mutex_unlock(mutex);
       
       continue;
     }
@@ -4792,14 +4812,10 @@ ags_audio_play(AgsAudio *audio,
        (recall->recall_id->recycling_context != recall_id->recycling_context)){
       list = list_next;
 
-      pthread_mutex_unlock(mutex);
-      
       continue;
     }
 
     recall_flags = recall->flags;
-    
-    //    pthread_mutex_unlock(mutex);
     
     if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0){
       if((AGS_RECALL_HIDE & (recall_flags)) == 0){
@@ -4813,11 +4829,7 @@ ags_audio_play(AgsAudio *audio,
       }
     }
     
-    //    pthread_mutex_lock(mutex);
-    
     list = list_next;
-
-    pthread_mutex_unlock(mutex);
   }
 
   g_list_free(list_start);

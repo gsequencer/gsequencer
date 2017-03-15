@@ -2126,6 +2126,8 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
 
     gtk_widget_show((GtkWidget *) item);
   }
+
+  gtk_widget_show_all(machine->popup);
 }
 
 /**
@@ -2174,4 +2176,6 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
 
     gtk_widget_show((GtkWidget *) item);
   }
+
+  gtk_widget_show_all(machine->popup);
 }

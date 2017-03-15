@@ -790,6 +790,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 			       "port-value-is-pointer\0", FALSE,
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
+	g_object_ref(current);
 	
 	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;

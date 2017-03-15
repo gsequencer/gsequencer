@@ -760,13 +760,23 @@ ags_channel_init(AgsChannel *channel)
   channel->recall_id = NULL;
 
   /* recall */
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
   channel->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(channel->recall_mutex,
-		     NULL);
+		     attr);
+
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
 
   channel->play_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(channel->play_mutex,
-		     NULL);
+		     attr);
 
   channel->container = NULL;
   channel->recall = NULL;
@@ -1356,7 +1366,7 @@ ags_channel_dispose(GObject *gobject)
   AgsRecycling *recycling, *recycling_next;
   AgsRecycling *end_region;
 
-  GList *list;
+  GList *list, *list_next;
   
   gboolean dispose_recycling;
   
@@ -1408,19 +1418,23 @@ ags_channel_dispose(GObject *gobject)
   }
 
   /* remote channel */
-  list = channel->remote_channel;
+  if(channel->remote_channel != NULL){
+    list = channel->remote_channel;
 
-  while(list != NULL){
-    g_object_run_dispose(list->data);
+    while(list != NULL){
+      list_next = list->next;
 
-    list = list->next;
-  }
+      g_object_run_dispose(list->data);
 
-  g_list_free_full(channel->remote_channel,
-		   g_object_unref);
+      list = list_next;
+    }
+
+    g_list_free_full(channel->remote_channel,
+		     g_object_unref);
   
-  channel->remote_channel = NULL;
-
+    channel->remote_channel = NULL;
+  }
+  
   /* playback */
   //  if(channel->playback != NULL){
   //    g_object_run_dispose(channel->playback);
@@ -1430,82 +1444,103 @@ ags_channel_dispose(GObject *gobject)
   //  }
 
   /* recall id */
-  list = channel->recall_id;
+  if(channel->recall_id != NULL){
+    list = channel->recall_id;
 
-  while(list != NULL){
-    g_object_run_dispose(list->data);
+    while(list != NULL){
+      list_next = list->next;
 
-    list = list->next;
-  }
+      g_object_run_dispose(list->data);
 
-  g_list_free_full(channel->recall_id,
-		   g_object_unref);
+      list = list_next;
+    }
+
+    g_list_free_full(channel->recall_id,
+		     g_object_unref);
   
-  channel->recall_id = NULL;
+    channel->recall_id = NULL;
+  }
   
   /* recall container */
-  list = channel->container;
+  if(channel->container != NULL){
+    list = channel->container;
 
-  while(list != NULL){
-    g_object_run_dispose(list->data);
+    while(list != NULL){
+      list_next = list->next;
 
-    list = list->next;
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+
+    g_list_free_full(channel->container,
+		     g_object_unref);
+
+    channel->container = NULL;
   }
-
-  g_list_free_full(channel->container,
-		   g_object_unref);
-
-  channel->container = NULL;
-
-  /* recall */
-  pthread_mutex_lock(channel->recall_mutex);
-
-  list = channel->recall;
-
-  while(list != NULL){
-    g_object_run_dispose(list->data);
-
-    list = list->next;
-  }
-
-  g_list_free_full(channel->recall,
-		   g_object_unref);
   
-  channel->recall = NULL;
+  /* recall */
+  if(channel->recall != NULL){
+    pthread_mutex_lock(channel->recall_mutex);
 
-  pthread_mutex_unlock(channel->recall_mutex);
+    list = channel->recall;
 
+    while(list != NULL){
+      list_next = list->next;
+
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+
+    g_list_free_full(channel->recall,
+		     g_object_unref);
+  
+    channel->recall = NULL;
+
+    pthread_mutex_unlock(channel->recall_mutex);
+  }
+  
   /* play */
-  pthread_mutex_lock(channel->play_mutex);
+  if(channel->play != NULL){
+    pthread_mutex_lock(channel->play_mutex);
 
-  list = channel->play;
+    list = channel->play;
 
-  while(list != NULL){
-    g_object_run_dispose(list->data);
+    while(list != NULL){
+      list_next = list->next;
 
-    list = list->next;
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+
+    g_list_free_full(channel->play,
+		     g_object_unref);
+
+    channel->play = NULL;
+
+    pthread_mutex_unlock(channel->play_mutex);
   }
-
-  g_list_free_full(channel->play,
-		   g_object_unref);
-
-  channel->play = NULL;
-
-  pthread_mutex_unlock(channel->play_mutex);
-
+  
   /* pattern */
-  list = channel->remote_channel;
+  if(channel->remote_channel != NULL){
+    list = channel->pattern;
 
-  while(list != NULL){
-    g_object_run_dispose(list->data);
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
 
-    list = list->next;
+      list = list_next;
+    }
+
+    
+    g_list_free_full(channel->pattern,
+		     g_object_unref);
+
+    channel->pattern = NULL;
   }
-
-  g_list_free_full(channel->pattern,
-		   g_object_unref);
-
-  channel->pattern = NULL;
   
   /* call parent */
   G_OBJECT_CLASS(ags_channel_parent_class)->dispose(gobject);
@@ -4579,8 +4614,6 @@ ags_channel_play(AgsChannel *channel,
   while(list != NULL){
     guint recall_flags;
     
-    pthread_mutex_lock(mutex);
-    
     list_next = list->next;
 
     recall = AGS_RECALL(list->data);
@@ -4597,8 +4630,6 @@ ags_channel_play(AgsChannel *channel,
 
       list = list_next;
       g_warning("recall == NULL\0");
-
-      pthread_mutex_unlock(mutex);
       
       continue;
     }
@@ -4611,8 +4642,6 @@ ags_channel_play(AgsChannel *channel,
 
       list = list_next;
 
-      pthread_mutex_unlock(mutex);
-
       continue;
     }
 
@@ -4620,15 +4649,11 @@ ags_channel_play(AgsChannel *channel,
        recall->recall_id->recycling_context != recall_id->recycling_context){
       list = list_next;
 
-      pthread_mutex_unlock(mutex);
-
       continue;
     }
 
     recall_flags = recall->flags;
-    
-    //    pthread_mutex_unlock(mutex);
-    
+        
     if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0){
 #ifdef AGS_DEBUG
       g_message("%s play channel %x:%d @%x -> %x\0", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
@@ -4645,11 +4670,7 @@ ags_channel_play(AgsChannel *channel,
       }
     }
 
-    //    pthread_mutex_lock(mutex);
-
     list = list_next;
-
-    pthread_mutex_unlock(mutex);
   }
 
   g_list_free(list_start);
