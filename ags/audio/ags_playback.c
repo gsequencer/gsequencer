@@ -193,6 +193,9 @@ ags_playback_init(AgsPlayback *playback)
   config = ags_config_get_instance();
 
   /* thread model */
+  super_threaded_channel = FALSE;
+  super_threaded_recycling = FALSE;
+  
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "model\0");
