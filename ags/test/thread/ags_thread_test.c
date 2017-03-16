@@ -24,18 +24,7 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_async_queue.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-
-#include <ags/thread/ags_generic_main_loop.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 int ags_thread_test_init_suite();
 int ags_thread_test_clean_suite();
@@ -83,7 +72,7 @@ void ags_thread_test_stop();
 
 #define AGS_THREAD_TEST_LOCK_PARENT_PARENT_COUNT (8)
 
-#define AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT (8)
+#define AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT (64)
 
 #define AGS_THREAD_TEST_LOCK_CHILDREN_CHILDREN_COUNT (8)
 
@@ -1139,36 +1128,207 @@ void
 ags_thread_test_lock_parent()
 {
   AgsThread *toplevel;
-
-  GList *thread;
+  AgsThread *parent, *current;
   
+  GList *thread;
+
+  guint i;
+  gboolean success;
+
+  //TODO:JK: improve this test
   toplevel = ags_thread_new(NULL);
 
-  //TODO:JK: implement me
+  /* create tree */
+  parent = toplevel;
+  
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_PARENT_PARENT_COUNT; i++){
+    current = ags_thread_new(NULL);
+    ags_thread_add_child(parent,
+			 current);
+
+    parent = current;
+  }
+
+  /* lock parent */
+  ags_thread_lock_parent(current,
+			 NULL);
+
+  /* assert current not locked */
+  CU_ASSERT((AGS_THREAD_LOCKED & (g_atomic_int_get(&(current->flags)))) == 0);
+  CU_ASSERT(AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_or(&(current->sync_flags)))) == 0);
+  
+  /* assert all parent locked */
+  current = g_atomic_pointer_get(&(current->parent));
+  success = TRUE;
+  
+  while(current != NULL){
+    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(current->flags)))) == 0 ||
+       (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_or(&(current->sync_flags)))) == 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    current = g_atomic_pointer_get(&(current->parent));
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_thread_test_lock_sibling()
 {
   AgsThread *toplevel;
+  AgsThread *current, *iter;
 
-  GList *thread;
+  guint nth;
+  guint i;
+
+  auto gboolean ags_thread_test_lock_sibling_assert(AgsThread *parent, AgsThread *current){
+    AgsThread *iter;
+    
+    gboolean success;
+    
+    /* assert sibling */
+    iter = g_atomic_pointer_get(&(parent->children));
+    success = TRUE;
+
+    while(iter != NULL){
+      if(iter == current){
+	if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) != 0 ||
+	   (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_or(&(iter->sync_flags)))) != 0){
+	  success = FALSE;
+	  
+	  break;
+	}
+	
+	iter = g_atomic_pointer_get(&(iter->next));
+
+	continue;
+      }
+    
+      if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) == 0 ||
+	 (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_or(&(iter->sync_flags)))) == 0){
+	success = FALSE;
+
+	break;
+      }
+    
+      iter = g_atomic_pointer_get(&(iter->next));
+    }
+
+
+    return(success);
+  }
   
   toplevel = ags_thread_new(NULL);
 
-  //TODO:JK: implement me
+  /* create tree */
+  parent = toplevel;
+  
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT; i++){
+    current = ags_thread_new(NULL);
+    ags_thread_add_child(toplevel,
+			 current);
+  }
+
+  /* lock sibling first */
+  current = g_atomic_pointer_get(&(parent->children));
+  ags_thread_lock_sibling(current);
+
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);  
+  
+  ags_thread_unlock_sibling(current);
+  
+  /* lock sibling last */
+  current = ags_thread_last(g_atomic_pointer_get(&(parent->children)));
+  ags_thread_lock_sibling(current);
+  
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);
+  
+  ags_thread_unlock_sibling(current);
+
+  /* lock sibling random 0 */
+  current = g_atomic_pointer_get(&(parent->children));
+  nth = rand() % AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT;
+
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT; i++){
+    current = g_atomic_pointer_get(&(current->next));
+  }  
+  
+  ags_thread_lock_sibling(current);
+
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);
+  
+  ags_thread_unlock_sibling(current);
+
+  /* lock sibling random 1 */
+  current = g_atomic_pointer_get(&(parent->children));
+  nth = rand() % AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT;
+
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT; i++){
+    current = g_atomic_pointer_get(&(current->next));
+  }  
+  
+  ags_thread_lock_sibling(current);
+
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);
+  
+  ags_thread_unlock_sibling(current);
 }
 
 void
 ags_thread_test_lock_children()
 {
   AgsThread *toplevel;
-
-  GList *thread;
+  AgsThread *parent, *current;
   
+  GList *thread;
+
+  guint i;
+  gboolean success;
+
+  //TODO:JK: improve this test
   toplevel = ags_thread_new(NULL);
 
-  //TODO:JK: implement me
+  /* create tree */
+  parent = toplevel;
+  
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_PARENT_PARENT_COUNT; i++){
+    current = ags_thread_new(NULL);
+    ags_thread_add_child(parent,
+			 current);
+
+    parent = current;
+  }
+
+  /* lock children */
+  ags_thread_lock_children(toplevel);
+
+  /* assert toplevel not locked */
+  CU_ASSERT((AGS_THREAD_LOCKED & (g_atomic_int_get(&(toplevel->flags)))) == 0);
+  CU_ASSERT(AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_or(&(toplevel->sync_flags)))) == 0);
+
+  /* assert all children locked */
+  current = g_atomic_pointer_get(&(current->children));
+  success = TRUE;
+  
+  while(current != NULL){
+    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(current->flags)))) == 0 ||
+       (AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_or(&(current->sync_flags)))) == 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    current = g_atomic_pointer_get(&(current->children));
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
