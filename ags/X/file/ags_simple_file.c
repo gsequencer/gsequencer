@@ -1625,7 +1625,10 @@ ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
 
 	  iter = g_list_nth(*machine,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_machine(simple_file, child, &current);
@@ -2578,7 +2581,10 @@ ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList *
 
 	  iter = g_list_nth(*pad,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_pad(simple_file, child, &current);
@@ -2798,7 +2804,10 @@ ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList 
 
 	  iter = g_list_nth(*line,
 			    i);
-	  current = iter->data;
+	  
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_line(simple_file, child, &current);
@@ -3687,7 +3696,10 @@ ags_simple_file_read_effect_line_list(AgsSimpleFile *simple_file, xmlNode *node,
 
 	  iter = g_list_nth(*effect_line,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_effect_line(simple_file, child, &current);
@@ -4198,7 +4210,10 @@ ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GL
 
 	  iter = g_list_nth(*notation,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_notation(simple_file, child, &current);
@@ -4387,12 +4402,15 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 
 	  iter = g_list_nth(*automation,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
-	
+
 	ags_simple_file_read_automation(simple_file, child, &current);
 	list = g_list_prepend(list, current);
-
+	
 	i++;
       }
     }
