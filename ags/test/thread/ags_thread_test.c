@@ -24,18 +24,7 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_async_queue.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-
-#include <ags/thread/ags_generic_main_loop.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 int ags_thread_test_init_suite();
 int ags_thread_test_clean_suite();
@@ -80,6 +69,12 @@ void ags_thread_test_stop();
 #define AGS_THREAD_TEST_REMOVE_CHILD_N_THREADS (16)
 
 #define AGS_THREAD_TEST_ADD_CHILD_N_THREADS (16)
+
+#define AGS_THREAD_TEST_LOCK_PARENT_PARENT_COUNT (8)
+
+#define AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT (64)
+
+#define AGS_THREAD_TEST_LOCK_CHILDREN_CHILDREN_COUNT (8)
 
 AgsApplicationContext *application_context;
 
@@ -711,37 +706,629 @@ ags_thread_test_is_tree_ready()
 void
 ags_thread_test_next_parent_locked()
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+
+  AgsThread *locked_thread_level_1_a;
+  AgsThread *locked_thread_level_2_a;
+  AgsThread *locked_thread_level_3_a;
+
+  AgsThread *locked_thread_level_1_b;
+  AgsThread *locked_thread_level_2_b;
+
+  AgsThread *locked_thread_level_1_c;
+
+  AgsThread *locked_thread_level_1_d;
+  AgsThread *locked_thread_level_3_d;
+
+  AgsThread *thread_level_4_a;
+  AgsThread *thread_level_4_b;
+  AgsThread *thread_level_4_c;
+  AgsThread *thread_level_4_d;
+
+  AgsThread *current, *parent;
+  
+  toplevel = ags_thread_new(NULL);
+
+  /* thread group a */
+  locked_thread_level_1_a = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_a);
+
+  g_atomic_int_or(&(locked_thread_level_1_a->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  locked_thread_level_2_a = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_a,
+		       locked_thread_level_2_a);
+
+  g_atomic_int_or(&(locked_thread_level_2_a->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  locked_thread_level_3_a = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_2_a,
+		       locked_thread_level_3_a);
+
+  g_atomic_int_or(&(locked_thread_level_3_a->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  locked_thread_level_4_a = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_3_a,
+		       locked_thread_level_4_a);
+
+  /* thread group b */
+  locked_thread_level_1_b = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_b);
+
+  g_atomic_int_or(&(locked_thread_level_1_b->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  locked_thread_level_2_b = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_b,
+		       locked_thread_level_2_b);
+
+  g_atomic_int_or(&(locked_thread_level_2_b->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_2_b,
+		       current);
+
+  parent = current;
+  
+  locked_thread_level_4_b = ags_thread_new(NULL);
+  ags_thread_add_child(parent,
+		       locked_thread_level_4_b);
+
+  /* thread group c */
+  locked_thread_level_1_c = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_c);
+
+  g_atomic_int_or(&(locked_thread_level_1_c->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_c,
+		       current);
+
+  parent = current;
+  
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(parent,
+		       current);
+
+  locked_thread_level_4_c = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_3_c,
+		       locked_thread_level_4_c);
+
+  /* thread group d */
+  locked_thread_level_1_d = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_d);
+
+  g_atomic_int_or(&(locked_thread_level_1_d->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_d,
+		       current);
+
+  parent = current;
+
+  locked_thread_level_3_d = ags_thread_new(NULL);
+  ags_thread_add_child(parent,
+		       locked_thread_level_3_d);
+
+  g_atomic_int_or(&(locked_thread_level_3_d->sync_flags),
+		    AGS_THREAD_WAITING_FOR_CHILDREN);
+
+  locked_thread_level_4_d = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_3_d,
+		       locked_thread_level_4_d);
+
+  /* assert thread group a */
+  current = locked_thread_level_4_a;
+  
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_3_a);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_2_a);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_1_a);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == NULL);
+
+  /* assert thread group b */
+  current = locked_thread_level_4_b;
+  
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_2_b);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_1_b);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == NULL);
+
+  /* assert thread group c */
+  current = locked_thread_level_4_c;
+  
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_1_c);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == NULL);
+  
+  /* assert thread group d */
+  current = locked_thread_level_4_d;
+  
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_3_d);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == locked_thread_level_1_d);
+  CU_ASSERT((current = ags_thread_next_parent_locked(current)) == NULL);
 }
 
 void
 ags_thread_test_next_sibling_locked()
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+
+  AgsThread *sibling0;
+  AgsThread *sibling1;
+  AgsThread *sibling3;
+  AgsThread *sibling7;
+
+  AgsThread *current, *prev;
+
+  toplevel = ags_thread_new(NULL);
+
+  /* create sibling */
+  sibling0 =
+    current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  g_atomic_int_or(&(current->sync_flags),
+		  AGS_THREAD_WAITING_FOR_SIBLING);
+
+  sibling1 =
+    current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+  g_atomic_int_or(&(current->sync_flags),
+		  AGS_THREAD_WAITING_FOR_SIBLING);
+  
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  sibling3 = 
+    current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  g_atomic_int_or(&(current->sync_flags),
+		    AGS_THREAD_WAITING_FOR_SIBLING);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  sibling7 =
+    current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  g_atomic_int_or(&(current->sync_flags),
+		  AGS_THREAD_WAITING_FOR_SIBLING);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       current);
+
+  /* assert sibling */
+  current = sibling0;
+
+  CU_ASSERT((current = ags_thread_next_sibling_locked(current)) == sibling1);
+  CU_ASSERT((current = ags_thread_next_sibling_locked(current)) == sibling3);
+  CU_ASSERT((current = ags_thread_next_sibling_locked(current)) == sibling7);
+  CU_ASSERT((current = ags_thread_next_sibling_locked(current)) == NULL);
 }
 
 void
 ags_thread_test_next_children_locked()
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+
+  AgsThread *locked_thread_level_1_a;
+  AgsThread *locked_thread_level_2_a;
+  AgsThread *locked_thread_level_3_a;
+
+  AgsThread *locked_thread_level_1_b;
+  AgsThread *locked_thread_level_2_b;
+
+  AgsThread *locked_thread_level_1_c;
+
+  AgsThread *locked_thread_level_1_d;
+  AgsThread *locked_thread_level_3_d;
+
+  AgsThread *thread_level_4_a;
+  AgsThread *thread_level_4_b;
+  AgsThread *thread_level_4_c;
+  AgsThread *thread_level_4_d;
+
+  AgsThread *current, *parent;
+  
+  toplevel = ags_thread_new(NULL);
+
+  /* thread group a */
+  locked_thread_level_1_a = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_a);
+
+  g_atomic_int_or(&(locked_thread_level_1_a->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  locked_thread_level_2_a = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_a,
+		       locked_thread_level_2_a);
+
+  g_atomic_int_or(&(locked_thread_level_2_a->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  locked_thread_level_3_a = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_2_a,
+		       locked_thread_level_3_a);
+
+  g_atomic_int_or(&(locked_thread_level_3_a->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  locked_thread_level_4_a = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_3_a,
+		       locked_thread_level_4_a);
+
+  /* thread group b */
+  locked_thread_level_1_b = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_b);
+
+  g_atomic_int_or(&(locked_thread_level_1_b->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  locked_thread_level_2_b = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_b,
+		       locked_thread_level_2_b);
+
+  g_atomic_int_or(&(locked_thread_level_2_b->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_2_b,
+		       current);
+
+  parent = current;
+  
+  locked_thread_level_4_b = ags_thread_new(NULL);
+  ags_thread_add_child(parent,
+		       locked_thread_level_4_b);
+
+  /* thread group c */
+  locked_thread_level_1_c = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_c);
+
+  g_atomic_int_or(&(locked_thread_level_1_c->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_c,
+		       current);
+
+  parent = current;
+  
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(parent,
+		       current);
+
+  locked_thread_level_4_c = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_3_c,
+		       locked_thread_level_4_c);
+
+  /* thread group d */
+  locked_thread_level_1_d = ags_thread_new(NULL);
+  ags_thread_add_child(toplevel,
+		       locked_thread_level_1_d);
+
+  g_atomic_int_or(&(locked_thread_level_1_d->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  current = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_1_d,
+		       current);
+
+  parent = current;
+
+  locked_thread_level_3_d = ags_thread_new(NULL);
+  ags_thread_add_child(parent,
+		       locked_thread_level_3_d);
+
+  g_atomic_int_or(&(locked_thread_level_3_d->sync_flags),
+		    AGS_THREAD_WAITING_FOR_PARENT);
+
+  locked_thread_level_4_d = ags_thread_new(NULL);
+  ags_thread_add_child(locked_thread_level_3_d,
+		       locked_thread_level_4_d);
+
+  /* assert children */
+  //NOTE:JK: don't touch because you need the order
+  current = toplevel;
+  
+  /* assert group d */
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_3_d);
+
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+
+  
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_1_d);
+
+  /* assert group c */
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_1_c);
+  
+  /* assert group b */
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+ 
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_2_b);
+
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_1_b);
+
+  /* assert group a */
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_3_a);
+
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_2_a);
+
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == locked_thread_level_1_a);
+
+  current = toplevel;
+  g_atomic_int_and(&(current->sync_flags),
+		   (~AGS_THREAD_WAITING_FOR_PARENT));
+
+  /* assert group NULL */
+  CU_ASSERT((current = ags_thread_next_children_locked(current)) == NULL);
 }
 
 void
 ags_thread_test_lock_parent()
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+  AgsThread *parent, *current;
+  
+  GList *thread;
+
+  guint i;
+  gboolean success;
+
+  //TODO:JK: improve this test
+  toplevel = ags_thread_new(NULL);
+
+  /* create tree */
+  parent = toplevel;
+  
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_PARENT_PARENT_COUNT; i++){
+    current = ags_thread_new(NULL);
+    ags_thread_add_child(parent,
+			 current);
+
+    parent = current;
+  }
+
+  /* lock parent */
+  ags_thread_lock_parent(current,
+			 NULL);
+
+  /* assert current not locked */
+  CU_ASSERT((AGS_THREAD_LOCKED & (g_atomic_int_get(&(current->flags)))) == 0);
+  CU_ASSERT(AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_or(&(current->sync_flags)))) == 0);
+  
+  /* assert all parent locked */
+  current = g_atomic_pointer_get(&(current->parent));
+  success = TRUE;
+  
+  while(current != NULL){
+    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(current->flags)))) == 0 ||
+       (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_or(&(current->sync_flags)))) == 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    current = g_atomic_pointer_get(&(current->parent));
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_thread_test_lock_sibling()
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+  AgsThread *current, *iter;
+
+  guint nth;
+  guint i;
+
+  auto gboolean ags_thread_test_lock_sibling_assert(AgsThread *parent, AgsThread *current){
+    AgsThread *iter;
+    
+    gboolean success;
+    
+    /* assert sibling */
+    iter = g_atomic_pointer_get(&(parent->children));
+    success = TRUE;
+
+    while(iter != NULL){
+      if(iter == current){
+	if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) != 0 ||
+	   (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_or(&(iter->sync_flags)))) != 0){
+	  success = FALSE;
+	  
+	  break;
+	}
+	
+	iter = g_atomic_pointer_get(&(iter->next));
+
+	continue;
+      }
+    
+      if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) == 0 ||
+	 (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_or(&(iter->sync_flags)))) == 0){
+	success = FALSE;
+
+	break;
+      }
+    
+      iter = g_atomic_pointer_get(&(iter->next));
+    }
+
+
+    return(success);
+  }
+  
+  toplevel = ags_thread_new(NULL);
+
+  /* create tree */
+  parent = toplevel;
+  
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT; i++){
+    current = ags_thread_new(NULL);
+    ags_thread_add_child(toplevel,
+			 current);
+  }
+
+  /* lock sibling first */
+  current = g_atomic_pointer_get(&(parent->children));
+  ags_thread_lock_sibling(current);
+
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);  
+  
+  ags_thread_unlock_sibling(current);
+  
+  /* lock sibling last */
+  current = ags_thread_last(g_atomic_pointer_get(&(parent->children)));
+  ags_thread_lock_sibling(current);
+  
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);
+  
+  ags_thread_unlock_sibling(current);
+
+  /* lock sibling random 0 */
+  current = g_atomic_pointer_get(&(parent->children));
+  nth = rand() % AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT;
+
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT; i++){
+    current = g_atomic_pointer_get(&(current->next));
+  }  
+  
+  ags_thread_lock_sibling(current);
+
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);
+  
+  ags_thread_unlock_sibling(current);
+
+  /* lock sibling random 1 */
+  current = g_atomic_pointer_get(&(parent->children));
+  nth = rand() % AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT;
+
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_SIBLING_SIBLING_COUNT; i++){
+    current = g_atomic_pointer_get(&(current->next));
+  }  
+  
+  ags_thread_lock_sibling(current);
+
+  /* assert sibling */
+  CU_ASSERT(ags_thread_test_lock_sibling_assert(parent, current) == TRUE);
+  
+  ags_thread_unlock_sibling(current);
 }
 
 void
 ags_thread_test_lock_children()
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+  AgsThread *parent, *current;
+  
+  GList *thread;
+
+  guint i;
+  gboolean success;
+
+  //TODO:JK: improve this test
+  toplevel = ags_thread_new(NULL);
+
+  /* create tree */
+  parent = toplevel;
+  
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_PARENT_PARENT_COUNT; i++){
+    current = ags_thread_new(NULL);
+    ags_thread_add_child(parent,
+			 current);
+
+    parent = current;
+  }
+
+  /* lock children */
+  ags_thread_lock_children(toplevel);
+
+  /* assert toplevel not locked */
+  CU_ASSERT((AGS_THREAD_LOCKED & (g_atomic_int_get(&(toplevel->flags)))) == 0);
+  CU_ASSERT(AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_or(&(toplevel->sync_flags)))) == 0);
+
+  /* assert all children locked */
+  current = g_atomic_pointer_get(&(current->children));
+  success = TRUE;
+  
+  while(current != NULL){
+    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(current->flags)))) == 0 ||
+       (AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_or(&(current->sync_flags)))) == 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    current = g_atomic_pointer_get(&(current->children));
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void

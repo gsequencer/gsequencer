@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -352,9 +352,11 @@ void
 ags_thread_init(AgsThread *thread)
 {
   AgsMutexManager *mutex_manager;
-
+  AgsConditionManager *condition_manager;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
+  pthread_cond_t *cond;
   pthread_mutexattr_t *attr;
 
   int err;
@@ -390,6 +392,21 @@ ags_thread_init(AgsThread *thread)
   
   pthread_mutex_unlock(application_mutex);
 
+  /* the condition */
+  cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(cond, NULL);
+
+  condition_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_condition_manager_insert(condition_manager,
+			       (GObject *) thread,
+			       cond);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* fields */
   g_atomic_int_set(&(thread->flags),
 		   0);
@@ -606,7 +623,8 @@ ags_thread_finalize(GObject *gobject)
 {
   AgsThread *thread, *parent;
   AgsMutexManager *mutex_manager;
-
+  AgsConditionManager *condition_manager;
+  
   gboolean running;
   gboolean do_exit;
   
@@ -649,12 +667,17 @@ ags_thread_finalize(GObject *gobject)
 
   /*  */
   mutex_manager = ags_mutex_manager_get_instance();
+  condition_manager = ags_condition_manager_get_instance();
+
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   pthread_mutex_lock(application_mutex);
 
   ags_mutex_manager_remove(mutex_manager,
 			   (GObject *) thread);
+  
+  ags_condition_manager_remove(condition_manager,
+			       (GObject *) thread);
   
   /*  */  
   free(thread->computing_time);

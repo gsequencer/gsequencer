@@ -72,6 +72,7 @@
 #include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_history.h>
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_polling_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
