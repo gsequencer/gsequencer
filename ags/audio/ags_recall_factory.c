@@ -3878,7 +3878,7 @@ ags_recall_factory_create(AgsAudio *audio,
 						   create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-prepare\0",
-		    9)){
+		    12)){
     recall = ags_recall_factory_create_prepare(audio,
 					       play_container, recall_container,
 					       plugin_name,
