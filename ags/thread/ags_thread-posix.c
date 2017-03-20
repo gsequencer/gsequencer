@@ -26,6 +26,7 @@
 #include <ags/object/ags_async_queue.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <stdlib.h>

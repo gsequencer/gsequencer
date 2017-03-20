@@ -157,7 +157,7 @@ ags_condition_manager_insert(AgsConditionManager *condition_manager,
 {
   if(condition_manager == NULL ||
      lock_object == NULL ||
-     condition == NULL){
+     cond == NULL){
     return(FALSE);
   }
 

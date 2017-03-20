@@ -465,6 +465,7 @@ libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
 	ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
+	ags/thread/ags_condition_manager.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
 	ags/thread/ags_mutex_manager.h \
@@ -488,6 +489,7 @@ libags_thread_c_sources = \
 	$(deprecated_libags_thread_c_sources) \
 	ags/thread/ags_autosave_thread.c \
 	ags/thread/ags_concurrency_provider.c \
+	ags/thread/ags_condition_manager.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
 	ags/thread/ags_mutex_manager.c \
