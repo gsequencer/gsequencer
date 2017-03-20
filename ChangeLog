@@ -1,3 +1,16 @@
+ags (0.7.122.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored ags-copy recall to instantiate like ags-buffer
+	* TODO:JK: implemented non-deterministic mode
+	* implemented ags-prepare recall
+	* TODO:JK: implemented worker threads
+	* TODO:JK: implemented unref worker
+	* improved AgsDelayAudio port instantiation to use default values
+	* TODO:JK: fixed using default values as no soundcard available
+	* fixed crash as no soundcard configured within GUI
+	* TODO:JK: fixed AgsThread tree lock functions
+
 ags (0.7.122.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

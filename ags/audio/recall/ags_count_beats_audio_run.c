@@ -763,7 +763,6 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 			       guint steps,
 			       gboolean move_forward)
 {
-  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -773,12 +772,6 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(seekable);
   delay_audio_run = count_beats_audio_run->delay_audio_run;
   delay_audio = (AgsDelayAudio *) AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
-
-  soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
-
-  if(soundcard == NULL){
-    return;
-  }
   
   if(delay_audio->sequencer_duration->port_value.ags_port_double != 0.0){
     seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);

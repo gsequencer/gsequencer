@@ -1,0 +1,238 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2017 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <ags/audio/recall/ags_prepare_audio_signal.h>
+#include <ags/audio/recall/ags_prepare_channel.h>
+
+#include <ags/lib/ags_parameter.h>
+
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
+
+#include <ags/audio/ags_recall_channel_run.h>
+
+void ags_prepare_audio_signal_class_init(AgsPrepareAudioSignalClass *prepare_audio_signal);
+void ags_prepare_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_prepare_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
+void ags_prepare_audio_signal_init(AgsPrepareAudioSignal *prepare_audio_signal);
+void ags_prepare_audio_signal_connect(AgsConnectable *connectable);
+void ags_prepare_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_prepare_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_prepare_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_prepare_audio_signal_finalize(GObject *gobject);
+
+void ags_prepare_audio_signal_run_pre(AgsRecall *recall);
+AgsRecall* ags_prepare_audio_signal_duplicate(AgsRecall *recall,
+					      AgsRecallID *recall_id,
+					      guint *n_params, GParameter *parameter);
+
+/**
+ * SECTION:ags_prepare_audio_signal
+ * @short_description: prepares audio signal
+ * @title: AgsPrepareAudioSignal
+ * @section_id:
+ * @include: ags/audio/recall/ags_prepare_audio_signal.h
+ *
+ * The #AgsPrepareAudioSignal class prepares the audio signal.
+ */
+
+static gpointer ags_prepare_audio_signal_parent_class = NULL;
+static AgsConnectableInterface *ags_prepare_audio_signal_parent_connectable_interface;
+static AgsDynamicConnectableInterface *ags_prepare_audio_signal_parent_dynamic_connectable_interface;
+
+GType
+ags_prepare_audio_signal_get_type()
+{
+  static GType ags_type_prepare_audio_signal = 0;
+
+  if(!ags_type_prepare_audio_signal){
+    static const GTypeInfo ags_prepare_audio_signal_info = {
+      sizeof (AgsPrepareAudioSignalClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_prepare_audio_signal_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsPrepareAudioSignal),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_prepare_audio_signal_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_prepare_audio_signal_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_prepare_audio_signal_dynamic_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_prepare_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
+							   "AgsPrepareAudioSignal\0",
+							   &ags_prepare_audio_signal_info,
+							   0);
+
+    g_type_add_interface_static(ags_type_prepare_audio_signal,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_prepare_audio_signal,
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
+  }
+
+  return (ags_type_prepare_audio_signal);
+}
+
+void
+ags_prepare_audio_signal_class_init(AgsPrepareAudioSignalClass *prepare_audio_signal)
+{
+  GObjectClass *gobject;
+  AgsRecallClass *recall;
+  GParamSpec *param_spec;
+
+  ags_prepare_audio_signal_parent_class = g_type_class_peek_parent(prepare_audio_signal);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) prepare_audio_signal;
+
+  gobject->finalize = ags_prepare_audio_signal_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) prepare_audio_signal;
+
+  recall->run_pre = ags_prepare_audio_signal_run_pre;
+}
+
+void
+ags_prepare_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_prepare_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_prepare_audio_signal_connect;
+  connectable->disconnect = ags_prepare_audio_signal_disconnect;
+}
+
+void
+ags_prepare_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
+{
+  ags_prepare_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
+
+  dynamic_connectable->connect_dynamic = ags_prepare_audio_signal_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_prepare_audio_signal_disconnect_dynamic;
+}
+
+void
+ags_prepare_audio_signal_init(AgsPrepareAudioSignal *prepare_audio_signal)
+{
+  AGS_RECALL(prepare_audio_signal)->name = "ags-prepare\0";
+  AGS_RECALL(prepare_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(prepare_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(prepare_audio_signal)->xml_type = "ags-prepare-audio-signal\0";
+  AGS_RECALL(prepare_audio_signal)->port = NULL;
+}
+
+void
+ags_prepare_audio_signal_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_prepare_audio_signal_parent_class)->finalize(gobject);
+
+  /* empty */
+}
+
+void
+ags_prepare_audio_signal_connect(AgsConnectable *connectable)
+{
+  /* call parent */
+  ags_prepare_audio_signal_parent_connectable_interface->connect(connectable);
+
+  /* empty */
+}
+
+void
+ags_prepare_audio_signal_disconnect(AgsConnectable *connectable)
+{
+  /* call parent */
+  ags_prepare_audio_signal_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
+}
+
+void
+ags_prepare_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
+{
+  /* call parent */
+  ags_prepare_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
+
+  /* empty */
+}
+
+void
+ags_prepare_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
+{
+  /* call parent */
+  ags_prepare_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
+
+  /* empty */
+}
+
+void
+ags_prepare_audio_signal_run_pre(AgsRecall *recall)
+{
+  AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_pre(recall);
+
+  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
+    void *buffer;
+
+    guint buffer_size;
+
+    buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
+    buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->source->buffer_size;
+
+    ags_audio_buffer_util_clear_buffer(buffer, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(AGS_RECALL_AUDIO_SIGNAL(recall)->source->format));
+  }else{
+    ags_recall_done(recall);
+  }
+}
+
+/**
+ * ags_prepare_audio_signal_new:
+ * @audio_signal: an #AgsAudioSignal
+ *
+ * Creates an #AgsPrepareAudioSignal
+ *
+ * Returns: a new #AgsPrepareAudioSignal
+ *
+ * Since: 0.7.122.8
+ */
+AgsPrepareAudioSignal*
+ags_prepare_audio_signal_new(AgsAudioSignal *audio_signal)
+{
+  AgsPrepareAudioSignal *prepare_audio_signal;
+
+  prepare_audio_signal = (AgsPrepareAudioSignal *) g_object_new(AGS_TYPE_PREPARE_AUDIO_SIGNAL,
+								NULL);
+
+  return(prepare_audio_signal);
+}

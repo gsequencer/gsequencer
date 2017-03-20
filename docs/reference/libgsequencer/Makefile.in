@@ -689,9 +689,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/gtk-doc.make $(am__c
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
