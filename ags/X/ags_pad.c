@@ -30,6 +30,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
@@ -770,6 +771,7 @@ ags_pad_play(AgsPad *pad)
   
   GList *tasks;
 
+  gboolean no_soundcard;
   gboolean play_all;
 
   pthread_mutex_t *application_mutex;
@@ -783,7 +785,23 @@ ags_pad_play(AgsPad *pad)
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  no_soundcard = FALSE;
   
+  pthread_mutex_lock(application_mutex);
+
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  if(no_soundcard){
+    g_message("No soundcard available\0");
+    
+    return;
+  }
+
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 

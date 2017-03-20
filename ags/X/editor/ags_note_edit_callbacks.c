@@ -27,6 +27,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -46,6 +47,7 @@
 #include <ags/audio/task/ags_append_recall.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -1210,6 +1212,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   auto void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note);
 
   void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note){
+    AgsWindow *window;
+    
     GObject *soundcard;
     AgsAudio *audio;
 
@@ -1226,13 +1230,35 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     
     GList *tasks;
 
+    gboolean no_soundcard;
+    
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *soundcard_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
+    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) note_edit);
+
+    application_context = (AgsApplicationContext *) window->application_context;
+
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    no_soundcard = FALSE;
+
+    pthread_mutex_lock(application_mutex);
+
+    if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+      no_soundcard = TRUE;
+    }
+
+    pthread_mutex_unlock(application_mutex);
+
+    if(no_soundcard){
+      g_message("No soundcard available\0");
+      
+      return;
+    }
 
     /* lookup channel mutex */
     pthread_mutex_lock(application_mutex);
@@ -1271,13 +1297,6 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 					       (GObject *) soundcard);
 
     pthread_mutex_unlock(application_mutex);
-
-    /* get application_context */
-    pthread_mutex_lock(soundcard_mutex);
-
-    application_context = (AgsApplicationContext *) ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-
-    pthread_mutex_unlock(soundcard_mutex);
 
     /* get threads */
     pthread_mutex_lock(application_mutex);

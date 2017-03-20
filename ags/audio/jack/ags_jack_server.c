@@ -867,6 +867,9 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
     list = list->next;
   }
 
+  ags_jack_client_remove_device(default_client,
+				soundcard);
+  
   if(default_client->port == NULL){
     jack_server->n_soundcards = 0;
   }
@@ -975,6 +978,9 @@ ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
     list = list->next;
   }
 
+  ags_jack_client_remove_device(default_client,
+				sequencer);
+  
   if(default_client->port == NULL){
     jack_server->n_sequencers = 0;
   }

@@ -1503,6 +1503,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+
+  gboolean no_soundcard;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_loop_mutex;
@@ -1513,12 +1515,28 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  no_soundcard = FALSE;
   
+  pthread_mutex_lock(application_mutex);
+
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  if(no_soundcard){
+    g_message("No soundcard available\0");
+    
+    return;
+  }
+
   /* get threads */
   pthread_mutex_lock(application_mutex);
 
   audio_loop = (AgsAudioLoop *) application_context->main_loop;
-
+  
   pthread_mutex_unlock(application_mutex);
 
   /* lookup audio loop mutex */

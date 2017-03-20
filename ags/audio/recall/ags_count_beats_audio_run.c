@@ -775,7 +775,11 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   delay_audio = (AgsDelayAudio *) AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
 
   soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
-    
+
+  if(soundcard == NULL){
+    return;
+  }
+  
   if(delay_audio->sequencer_duration->port_value.ags_port_double != 0.0){
     seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   }else{
@@ -947,6 +951,10 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   GList *list;
 
   guint i, i_stop;
+
+  if(recall->soundcard == NULL){
+    return;
+  }
 
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run)->data);
 
