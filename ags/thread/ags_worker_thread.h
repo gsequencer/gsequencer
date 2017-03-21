@@ -72,6 +72,8 @@ struct _AgsWorkerThreadClass
 
 GType ags_worker_thread_get_type();
 
+void* ags_woker_thread_do_poll_loop(void *ptr);
+
 void ags_worker_thread_do_poll(AgsWorkerThread *worker_thread);
 
 AgsWorkerThread* ags_worker_thread_new();

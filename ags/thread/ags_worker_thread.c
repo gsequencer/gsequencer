@@ -78,9 +78,9 @@ ags_worker_thread_get_type()
     };
 
     ags_type_worker_thread = g_type_register_static(AGS_TYPE_THREAD,
-						     "AgsWorkerThread\0",
-						     &ags_worker_thread_info,
-						     0);
+						    "AgsWorkerThread\0",
+						    &ags_worker_thread_info,
+						    0);
     
     g_type_add_interface_static(ags_type_worker_thread,
 				AGS_TYPE_CONNECTABLE,
@@ -251,6 +251,9 @@ ags_worker_thread_start(AgsThread *thread)
     AGS_THREAD_CLASS(ags_worker_thread_parent_class)->start(thread);
   }
 
+  g_atomic_int_or(&(worker_thread->flags),
+		  AGS_WORKER_THREAD_RUNNING);
+
   pthread_create(worker_thread->worker_thread, worker_thread->worker_thread_attr,
 		 ags_woker_thread_do_poll_loop, worker_thread);
 }
@@ -301,6 +304,15 @@ ags_worker_thread_stop(AgsThread *thread)
   AGS_THREAD_CLASS(ags_worker_thread_parent_class)->stop(thread);  
 }
 
+/**
+ * ags_woker_thread_do_poll_loop:
+ * @ptr: the #AgsWorkerThread
+ * 
+ * Do loop and invoke ags_worker_thread_do_poll() unless flag
+ * AGS_WORKER_THREAD_RUNNING was unset.
+ * 
+ * Since: 0.7.122.8
+ */
 void*
 ags_woker_thread_do_poll_loop(void *ptr)
 {
@@ -348,7 +360,7 @@ ags_worker_thread_new()
   AgsWorkerThread *worker_thread;
   
   worker_thread = (AgsWorkerThread *) g_object_new(AGS_TYPE_WORKER_THREAD,
-						     NULL);
+						   NULL);
 
   return(worker_thread);
 }

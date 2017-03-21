@@ -6,7 +6,7 @@ ags (0.7.122.8)
 	* implemented ags-prepare recall
 	* implemented AgsConditionManager to use with AgsThread tree lock functions
 	* implemented worker threads
-	* TODO:JK: implemented unref worker
+	* implemented destroy worker
 	* improved AgsDelayAudio port instantiation to use default values
 	* TODO:JK: fixed using default values as no soundcard available
 	* fixed crash as no soundcard configured within GUI
