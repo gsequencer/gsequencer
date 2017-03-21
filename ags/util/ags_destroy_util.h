@@ -17,11 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_ID_GENERATOR_H__
-#define __AGS_ID_GENERATOR_H__
+#ifndef __AGS_DESTROY_UTIL_H__
+#define __AGS_DESTROY_UTIL_H__
 
 #include <glib.h>
+#include <glib-object.h>
 
-gchar* ags_id_generator_create_uuid();
+void ags_destroy_util_dispose_and_unref(GObject *gobject);
 
-#endif /*__AGS_ID_GENERATOR_H__*/
+#endif /*__AGS_DESTROY_UTIL_H__*/

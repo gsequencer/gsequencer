@@ -8,9 +8,10 @@ ags (0.7.122.8)
 	* implemented worker threads
 	* implemented destroy worker
 	* improved AgsDelayAudio port instantiation to use default values
-	* TODO:JK: fixed using default values as no soundcard available
+	* fixed using default values as no soundcard available
 	* fixed crash as no soundcard configured within GUI
-	* TODO:JK: fixed AgsThread tree lock functions
+	* fixed AgsThread tree lock functions
+	* added more unit tests in ags_thread_test.c
 
 ags (0.7.122.7)
 

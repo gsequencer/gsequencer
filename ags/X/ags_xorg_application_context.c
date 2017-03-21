@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -157,6 +157,9 @@ void ags_xorg_application_context_disconnect(AgsConnectable *connectable);
 AgsThread* ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+GList* ags_xorg_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+void ags_xorg_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					     GList *worker);
 GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
 						GList *soundcard);
@@ -312,6 +315,8 @@ ags_xorg_application_context_concurrency_provider_interface_init(AgsConcurrencyP
   concurrency_provider->get_main_loop = ags_xorg_application_context_get_main_loop;
   concurrency_provider->get_task_thread = ags_xorg_application_context_get_task_thread;
   concurrency_provider->get_thread_pool = ags_xorg_application_context_get_thread_pool;
+  concurrency_provider->get_worker = ags_xorg_application_context_get_worker;
+  concurrency_provider->set_worker = ags_xorg_application_context_set_worker;
 }
 
 void
@@ -766,6 +771,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 				    TRUE, TRUE);
     }
   }
+
+  /* AgsWorkerThread */
+  xorg_application_context->worker = NULL;
   
   /* AgsThreadPool */
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
@@ -904,6 +912,19 @@ AgsThreadPool*
 ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
   return(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+}
+
+GList*
+ags_xorg_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker);
+}
+
+void
+ags_xorg_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					GList *worker)
+{
+  AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
 }
 
 GList*

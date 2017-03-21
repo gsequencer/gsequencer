@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,11 +17,15 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_ID_GENERATOR_H__
-#define __AGS_ID_GENERATOR_H__
+#include <ags/util/ags_destroy_util.h>
 
-#include <glib.h>
+void
+ags_destroy_util_dispose_and_unref(GObject *gobject)
+{
+  if(gobject == NULL){
+    return;
+  }
 
-gchar* ags_id_generator_create_uuid();
-
-#endif /*__AGS_ID_GENERATOR_H__*/
+  g_object_run_dispose(gobject);
+  g_object_unref(gobject);
+}

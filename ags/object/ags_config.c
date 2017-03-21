@@ -408,6 +408,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "autosave-thread\0", "false\0");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "simple-file\0", "true\0");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "disable-feature\0", "experimental\0");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "engine-mode\0", "deterministic\0");
 
   ags_config_set_value(config, AGS_CONFIG_THREAD, "model\0", "super-threaded\0");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "super-threaded-scope\0", "channel\0");
