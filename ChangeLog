@@ -4,7 +4,8 @@ ags (0.7.122.8)
 	* refactored ags-copy recall to instantiate like ags-buffer
 	* TODO:JK: implemented non-deterministic mode
 	* implemented ags-prepare recall
-	* TODO:JK: implemented worker threads
+	* implemented AgsConditionManager to use with AgsThread tree lock functions
+	* implemented worker threads
 	* TODO:JK: implemented unref worker
 	* improved AgsDelayAudio port instantiation to use default values
 	* TODO:JK: fixed using default values as no soundcard available

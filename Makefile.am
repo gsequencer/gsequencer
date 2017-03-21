@@ -481,7 +481,8 @@ libags_thread_h_sources = \
 	ags/thread/ags_thread-posix.h \
 	ags/thread/ags_timestamp_factory.h \
 	ags/thread/ags_timestamp_thread.h \
-	ags/thread/ags_timestamp.h
+	ags/thread/ags_timestamp.h \
+	ags/thread/ags_worker_thread.h
 
 deprecated_libags_thread_c_sources =
 
@@ -505,7 +506,8 @@ libags_thread_c_sources = \
 	ags/thread/ags_thread-posix.c \
 	ags/thread/ags_timestamp_factory.c \
 	ags/thread/ags_timestamp_thread.c \
-	ags/thread/ags_timestamp.c
+	ags/thread/ags_timestamp.c \
+	ags/thread/ags_worker_thread.c
 
 # libags-thread - file
 deprecated_libags_thread_file_h_sources =

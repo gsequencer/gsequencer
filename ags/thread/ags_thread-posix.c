@@ -194,7 +194,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::clock:
    * @thread: the #AgsThread
    *
-   * The ::clock signal is invoked every thread tic.
+   * The ::clock() signal is invoked every thread tic.
    *
    * Returns: the number of cycles to perform
    * 
@@ -214,7 +214,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::start:
    * @thread: the #AgsThread
    *
-   * The ::start signal is invoked as thread started.
+   * The ::start() signal is invoked as thread started.
    * 
    * Since: 0.5.0
    */
@@ -231,7 +231,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::run:
    * @thread: the #AgsThread
    *
-   * The ::run signal is invoked during run loop.
+   * The ::run() signal is invoked during run loop.
    * 
    * Since: 0.5.0
    */
@@ -248,7 +248,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::suspend:
    * @thread: the #AgsThread
    *
-   * The ::suspend signal is invoked during suspending.
+   * The ::suspend() signal is invoked during suspending.
    * 
    * Since: 0.5.0
    */
@@ -264,9 +264,8 @@ ags_thread_class_init(AgsThreadClass *thread)
   /**
    * AgsThread::resume:
    * @thread: the #AgsThread
-   * @recall_id: the appropriate #AgsRecallID
    *
-   * The ::resume signal is invoked during resuming.
+   * The ::resume() signal is invoked during resuming.
    * 
    * Since: 0.5.0
    */
@@ -282,9 +281,8 @@ ags_thread_class_init(AgsThreadClass *thread)
   /**
    * AgsThread::timelock:
    * @thread: the #AgsThread
-   * @recall_id: the appropriate #AgsRecallID
    *
-   * The ::timelock signal is invoked as standard compution
+   * The ::timelock() signal is invoked as standard compution
    * time exceeded.
    * 
    * Since: 0.5.0
@@ -301,9 +299,8 @@ ags_thread_class_init(AgsThreadClass *thread)
   /**
    * AgsThread::stop:
    * @thread: the #AgsThread
-   * @recall_id: the appropriate #AgsRecallID
    *
-   * The ::stop signal is invoked as @thread stopped.
+   * The ::stop() signal is invoked as @thread stopped.
    * 
    * Since: 0.5.0
    */
@@ -323,7 +320,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * @time_cycle: the cycles duration
    * @time_spent: the time spent
    *
-   * The ::interrupted signal is invoked as @thread should resume from interrupt.
+   * The ::interrupted() signal is invoked as @thread should resume from interrupt.
    *
    * Returns: the time spent
    *
@@ -2284,16 +2281,6 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
   ags_thread_signal_children(g_atomic_pointer_get(&(thread->children)), broadcast);
 }
 
-/**
- * ags_thread_clock:
- * @thread: the #AgsThread instance
- *
- * Clock the thread.
- *
- * Returns: the cycles to be performed
- * 
- * Since: 0.6.42
- */
 guint
 ags_thread_real_clock(AgsThread *thread)
 {
@@ -2654,9 +2641,9 @@ ags_thread_real_clock(AgsThread *thread)
  *
  * Clock the thread.
  *
- * Returns: the number of cycles to perform.
+ * Returns: the cycles to be performed
  * 
- * Since: 0.4.0
+ * Since: 0.6.42
  */
 guint
 ags_thread_clock(AgsThread *thread)

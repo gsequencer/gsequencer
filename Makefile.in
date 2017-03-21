@@ -512,7 +512,8 @@ am__objects_17 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_thread-posix.lo \
 	ags/thread/libags_thread_la-ags_timestamp_factory.lo \
 	ags/thread/libags_thread_la-ags_timestamp_thread.lo \
-	ags/thread/libags_thread_la-ags_timestamp.lo
+	ags/thread/libags_thread_la-ags_timestamp.lo \
+	ags/thread/libags_thread_la-ags_worker_thread.lo
 am__objects_18 = $(am__objects_1) \
 	ags/thread/file/libags_thread_la-ags_thread_file_xml.lo
 am_libags_thread_la_OBJECTS = $(am__objects_17) $(am__objects_18)
@@ -1852,7 +1853,8 @@ libags_thread_h_sources = \
 	ags/thread/ags_thread-posix.h \
 	ags/thread/ags_timestamp_factory.h \
 	ags/thread/ags_timestamp_thread.h \
-	ags/thread/ags_timestamp.h
+	ags/thread/ags_timestamp.h \
+	ags/thread/ags_worker_thread.h
 
 deprecated_libags_thread_c_sources = 
 libags_thread_c_sources = \
@@ -1875,7 +1877,8 @@ libags_thread_c_sources = \
 	ags/thread/ags_thread-posix.c \
 	ags/thread/ags_timestamp_factory.c \
 	ags/thread/ags_timestamp_thread.c \
-	ags/thread/ags_timestamp.c
+	ags/thread/ags_timestamp.c \
+	ags/thread/ags_worker_thread.c
 
 
 # libags-thread - file
@@ -4024,6 +4027,9 @@ ags/thread/libags_thread_la-ags_timestamp_thread.lo:  \
 ags/thread/libags_thread_la-ags_timestamp.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
+ags/thread/libags_thread_la-ags_worker_thread.lo:  \
+	ags/thread/$(am__dirstamp) \
+	ags/thread/$(DEPDIR)/$(am__dirstamp)
 ags/thread/file/$(am__dirstamp):
 	@$(MKDIR_P) ags/thread/file
 	@: > ags/thread/file/$(am__dirstamp)
@@ -5357,6 +5363,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_timestamp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_timestamp_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_timestamp_thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_file_xml.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/util/$(DEPDIR)/libags_la-ags_id_generator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_cartesian.Plo@am__quote@
@@ -7500,6 +7507,13 @@ ags/thread/libags_thread_la-ags_timestamp.lo: ags/thread/ags_timestamp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_timestamp.c' object='ags/thread/libags_thread_la-ags_timestamp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_timestamp.lo `test -f 'ags/thread/ags_timestamp.c' || echo '$(srcdir)/'`ags/thread/ags_timestamp.c
+
+ags/thread/libags_thread_la-ags_worker_thread.lo: ags/thread/ags_worker_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_worker_thread.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Tpo -c -o ags/thread/libags_thread_la-ags_worker_thread.lo `test -f 'ags/thread/ags_worker_thread.c' || echo '$(srcdir)/'`ags/thread/ags_worker_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_worker_thread.c' object='ags/thread/libags_thread_la-ags_worker_thread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_worker_thread.lo `test -f 'ags/thread/ags_worker_thread.c' || echo '$(srcdir)/'`ags/thread/ags_worker_thread.c
 
 ags/thread/file/libags_thread_la-ags_thread_file_xml.lo: ags/thread/file/ags_thread_file_xml.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/file/libags_thread_la-ags_thread_file_xml.lo -MD -MP -MF ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_file_xml.Tpo -c -o ags/thread/file/libags_thread_la-ags_thread_file_xml.lo `test -f 'ags/thread/file/ags_thread_file_xml.c' || echo '$(srcdir)/'`ags/thread/file/ags_thread_file_xml.c
