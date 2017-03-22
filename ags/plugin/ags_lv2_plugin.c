@@ -238,11 +238,13 @@ ags_lv2_plugin_init(AgsLv2Plugin *lv2_plugin)
 
   lv2_plugin->manifest = NULL;
   lv2_plugin->turtle = NULL;
-
+  
   lv2_plugin->doap_name = NULL;
   lv2_plugin->foaf_name = NULL;
   lv2_plugin->foaf_homepage = NULL;
   lv2_plugin->foaf_mbox = NULL;
+
+  lv2_plugin->preset = NULL;
 }
 
 void

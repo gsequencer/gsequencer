@@ -336,6 +336,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) dssi_bridge),
 		    (GtkWidget *) vbox);
 
+  /* program */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) hbox,
@@ -354,12 +355,12 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		     FALSE, FALSE,
 		     0);
 
+  /* effect bridge */
   AGS_MACHINE(dssi_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge,
 		     FALSE, FALSE,
 		     0);
-
   
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),

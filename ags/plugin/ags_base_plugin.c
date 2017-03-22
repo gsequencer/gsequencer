@@ -661,6 +661,37 @@ ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
 }
 
 /**
+ * ags_port_descriptor_find_symbol:
+ * @port_descriptor: the #GList-struct containing #AgsPortDescriptor
+ * @port_symbol: the port symbol
+ * 
+ * Find @port_symbol within @port_descriptor.
+ * 
+ * Returns: the matching #GList-struct containing #AgsPortDescriptor
+ * 
+ * Since: 0.7.122.8 
+ */
+GList*
+ags_port_descriptor_find_symbol(GList *port_descriptor,
+				gchar *port_symbol)
+{
+  if(port_symbol == NULL){
+    return(NULL);
+  }
+
+  while(port_descriptor != NULL){
+    if(!g_strcmp0(port_symbol,
+		  AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_symbol)){
+      return(port_descriptor);
+    }
+    
+    port_descriptor = port_descriptor->next;
+  }
+  
+  return(NULL);
+}
+
+/**
  * ags_base_plugin_find_filename:
  * @base_plugin: the #GList-struct containing #AgsBasePlugin
  * @filename: the filename as string

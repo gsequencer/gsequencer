@@ -788,7 +788,9 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 			      "uri\0", uri,
 			      NULL);
     ags_lv2_preset_parse_turtle(lv2_preset);
-
+    lv2_plugin->preset = g_list_append(lv2_plugin->preset,
+				       lv2_preset);
+    
     /* iterate */
     preset_list = preset_list->next;
   }

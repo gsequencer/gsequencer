@@ -135,6 +135,9 @@ GType ags_base_plugin_get_type(void);
 AgsPortDescriptor* ags_port_descriptor_alloc();
 void ags_port_descriptor_free(AgsPortDescriptor *port_descriptor);
 
+GList* ags_port_descriptor_find_symbol(GList *port_descriptor,
+				       gchar *port_symbol);
+
 GList* ags_base_plugin_find_filename(GList *base_plugin, gchar *filename);
 GList* ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect);
 

@@ -35,7 +35,7 @@
 #define AGS_IS_LV2_PRESET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_PRESET))
 #define AGS_LV2_PRESET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_PRESET, AgsLv2PresetClass))
 
-#define AGS_LV2_PRESET_RESPONSE_DATA(ptr) ((AgsLv2PresetResponseData *)(ptr))
+#define AGS_LV2_PORT_PRESET(ptr) ((AgsLv2PortPreset*)(ptr))
 
 typedef struct _AgsLv2Preset AgsLv2Preset;
 typedef struct _AgsLv2PresetClass AgsLv2PresetClass;
@@ -82,6 +82,9 @@ AgsLv2PortPreset* ags_lv2_port_preset_alloc(gchar *port_symobl,
 void ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset);
 
 void ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset);
+
+GList* ags_lv2_preset_find_preset_label(GList *lv2_preset,
+					gchar *preset_label);
 
 AgsLv2Preset* ags_lv2_preset_new(GObject *lv2_plugin,
 				 AgsTurtle *turtle,

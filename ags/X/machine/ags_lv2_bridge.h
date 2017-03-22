@@ -78,9 +78,13 @@ struct _AgsLv2Bridge
   gchar *gui_filename;
   gchar *gui_uri;
 
+  GtkVBox *vbox;
+  
+  GtkComboBoxText *preset;
+
   LV2_Feature **ui_feature;
   LV2UI_Handle ui_handle;
-  
+
   GtkWidget *lv2_gui;
   GtkWidget *ui_widget;
 
@@ -97,6 +101,7 @@ GType ags_lv2_bridge_get_type(void);
 void ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_start, guint input_pad_start);
 void ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_start, guint output_pad_start);
 
+void ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge);

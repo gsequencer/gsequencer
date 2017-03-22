@@ -34,4 +34,6 @@ gboolean ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event
 
 void ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer);
 
+void ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2_bridge);
+
 #endif /*__AGS_LV2_BRIDGE_CALLBACKS_H__*/

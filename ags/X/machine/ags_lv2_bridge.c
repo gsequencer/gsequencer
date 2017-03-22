@@ -44,6 +44,7 @@
 #include <ags/plugin/ags_lv2ui_manager.h>
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2ui_plugin.h>
 
 #include <ags/audio/ags_input.h>
@@ -405,9 +406,18 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   lv2_bridge->has_midi = FALSE;
 
-  AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  lv2_bridge->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) lv2_bridge),
-		    (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
+		    (GtkWidget *) lv2_bridge->vbox);
+
+  lv2_bridge->preset = NULL;
+  
+  /* effect bridge */  
+  AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
+		     (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge,
+		     FALSE, FALSE,
+		     0);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge),
@@ -1390,6 +1400,66 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
 }
 
 void
+ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
+{
+  GtkHBox *hbox;
+  GtkLabel *label;
+  
+  AgsLv2Plugin *lv2_plugin;
+
+  GList *list;  
+  
+  /* program */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
+  gtk_box_reorder_child(GTK_BOX(lv2_bridge->vbox),
+  			GTK_WIDGET(hbox),
+  			0);
+  
+  label = (GtkLabel *) gtk_label_new("preset\0");
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
+  lv2_bridge->preset = gtk_combo_box_text_new();
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) lv2_bridge->preset,
+		     FALSE, FALSE,
+		     0);
+  
+  /* retrieve lv2 plugin */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       lv2_bridge->filename,
+					       lv2_bridge->effect);
+
+  /* preset */
+  list = lv2_plugin->preset;
+
+  while(list != NULL){
+    gtk_combo_box_text_append_text(lv2_bridge->preset,
+				   AGS_LV2_PRESET(list->data)->preset_label);
+
+    list = list->next;
+  }
+
+  gtk_widget_show_all(hbox);
+
+  /* connect preset */
+  g_signal_connect_after(G_OBJECT(lv2_bridge->preset), "changed\0",
+			 G_CALLBACK(ags_lv2_bridge_preset_changed_callback), lv2_bridge);
+}
+
+void
+ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
@@ -1397,7 +1467,7 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 
   GList *list;
   
-  /* check if works with Gtk+ */
+  /* retrieve lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       lv2_bridge->filename,
 					       lv2_bridge->effect);
@@ -1407,6 +1477,7 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
     return;
   }
 
+  /* retrieve lv2ui plugin */
   list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
 				       lv2_plugin->ui_uri);
 
@@ -1440,11 +1511,18 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
   if(lv2_plugin == NULL){
     return;
   }
-  
+
+  /* URI */
   g_object_set(lv2_bridge,
 	       "uri\0", lv2_plugin->uri,
 	       NULL);
-  
+
+  /* preset */
+  if(lv2_plugin->preset != NULL){
+    ags_lv2_bridge_load_preset(lv2_bridge);
+  }
+
+  /* load gui */
   ags_lv2_bridge_load_gui(lv2_bridge);
 }
 
