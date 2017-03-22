@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <ags/object/ags_marshal.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_lv2_preset.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -433,11 +434,13 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 
   g_message("lv2 check - %s\0", path);
 
+  //  xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
+  
   /* turtle pname */
-  xpath = g_strdup_printf("//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text() = '<%s>']/ancestor::*[self::rdf-triple][1]//rdf-pname-ln[1]\0",
+  xpath = g_strdup_printf("//rdf-triple//rdf-pname-ln[1]\0",
 			  filename);
-;
-  pname_list = ags_turtle_find_xpath(manifest,
+
+  pname_list = ags_turtle_find_xpath(turtle,
 				     xpath);
 
   if(pname_list != NULL){
@@ -665,13 +668,130 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
   AgsLv2Preset *lv2_preset;
 
   GList *preset_list;
+
+  gchar *str;
+  gchar *xpath;
+  gchar *uri;
   
-  lv2_preset = g_object_new(AGS_TYPE_LV2_PRESET,
-			    "lv2-plugin\0", plugin,
-			    "turtle\0", turtle,
-			    "uri\0", uri,
-			    NULL);
-  ags_lv2_preset_parse_turtle(lv2_preset);
+  xpath = "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-triple][1]/rdf-subject/rdf-iri\0";
+
+  preset_list = ags_turtle_find_xpath(preset,
+				      xpath);
+
+  while(preset_list != NULL){
+    xmlNode *child;
+    
+    child = ((xmlNode *) preset_list->data)->children;
+    uri = NULL;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"rdf-iriref\0",
+				11)){
+	  uri = xmlNodeGetContent(child);
+
+	  if(strlen(uri) > 2){
+	    uri = g_strndup(uri + 1,
+			    strlen(uri) - 2);
+	  }
+	  break;
+	}else if(!g_ascii_strncasecmp(child->name,
+				      "rdf-prefixed-name\0",
+				      18)){
+	  xmlNode *pname_node;
+
+	  gchar *pname;
+	  
+	  pname_node = child->children;
+	  pname = NULL;
+	  
+	  while(pname_node != NULL){
+	    if(pname_node->type == XML_ELEMENT_NODE){
+	      if(!g_ascii_strncasecmp(pname_node->name,
+				      "rdf-pname-ln\0",
+				      11)){
+		pname = xmlNodeGetContent(pname_node);
+		
+		break;
+	      }
+	    }
+
+	    pname_node = pname_node->next;
+	  }
+
+	  uri = pname;
+	    
+	  if(pname != NULL){
+	    gchar *suffix, *prefix;
+	    gchar *offset;
+
+	    offset = index(pname, ':');
+
+	    if(offset != NULL){
+	      GList *prefix_node;
+	      
+	      offset++;
+	      suffix = g_strndup(offset,
+				 strlen(pname) - (offset - pname));
+	      prefix = g_strndup(pname,
+				 offset - pname);
+
+	      str = g_strdup_printf("//rdf-pname-ns[text()='%s']/following-sibling::*[self::rdf-iriref][1]\0",
+				    prefix);
+	      prefix_node = ags_turtle_find_xpath(preset,
+						  str);
+	      free(str);
+
+	      if(prefix_node != NULL){
+		gchar *iriref;
+
+		iriref = xmlNodeGetContent(prefix_node->data);
+
+		if(iriref != NULL){
+		  if(strlen(iriref) > 2){
+		    gchar *tmp;
+		    
+		    tmp = g_strndup(iriref + 1,
+				    strlen(iriref) - 2);
+		    uri = g_strdup_printf("%s%s\0",
+					  tmp,
+					  suffix);
+		    free(tmp);
+		  }
+		  
+		  free(iriref);
+		}
+	      }
+	    }
+	  }
+	  
+	  break;
+	}
+      }
+
+      child = child->next;
+    }
+
+    if(uri == NULL){
+      /* iterate */
+      preset_list = preset_list->next;
+
+      continue;
+    }
+
+    g_message("parse presets for %s\0", uri);
+    
+    lv2_preset = g_object_new(AGS_TYPE_LV2_PRESET,
+			      "lv2-plugin\0", lv2_plugin,
+			      "turtle\0", preset,
+			      "uri\0", uri,
+			      NULL);
+    ags_lv2_preset_parse_turtle(lv2_preset);
+
+    /* iterate */
+    preset_list = preset_list->next;
+  }
 }
 
 /**
@@ -689,6 +809,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
   gchar **lv2_path;
   gchar *path, *plugin_path;
+  gchar *xpath;
   gchar *str;
 
   GError *error;
@@ -746,6 +867,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
       
 	GList *ttl_list, *binary_list;
 	GList *preset_list;
+	GList *pname_list;
 	GList *list;
 	
 	gchar *manifest_filename;
@@ -866,12 +988,18 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	}
 
     	/* read presets from turtle */
+	xpath = "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-triple][1]\0";
 	preset_list = ags_turtle_find_xpath(manifest,
-					    "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
+					    xpath);
 
-	while(preset_list != NULL){	  
+	while(preset_list != NULL){
+	  xpath = ".//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']";
+	  list = ags_turtle_find_xpath_with_context_node(manifest,
+							 xpath,
+							 preset_list->data);
+	  
 	  /* read filename of turtle */
-	  preset_path = xmlNodeGetContent((xmlNode *) preset_list->data);
+	  preset_path = xmlNodeGetContent((xmlNode *) list->data);
 
 	  if(preset_path == NULL){
 	    preset_list = preset_list->next;
@@ -892,7 +1020,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	  }
 
 	  /* turtle pname */
-	  xpath = ".//ancestor::*[self::rdf-triple][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':appliesto') + 1) = ':appliesto']]\0";
+	  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':appliesto') + 1) = ':appliesto']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln\0";
 	  pname_list = ags_turtle_find_xpath_with_context_node(manifest,
 							       xpath,
 							       preset_list->data);
@@ -902,10 +1030,6 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
     
 	    g_list_free(pname_list);
 	  }else{
-	    turtle_pname = NULL;
-	  }
-
-	  if(turtle_pname == NULL){
 	    preset_list = preset_list->next;
 
 	    continue;

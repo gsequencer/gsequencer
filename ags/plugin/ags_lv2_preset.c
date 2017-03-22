@@ -498,7 +498,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
     g_list_free(list);
   }else{
-    xpath = g_strdup_printf("//rdf-triple/rdf-subject/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s']/ancestor::*[self::rdf-triple][1]\0",
+    xpath = g_strdup_printf("//rdf-triple//rdf-iriref[text() = '<%s>']/ancestor::*[self::rdf-triple][1]\0",
 			    lv2_preset->uri);
     
     list = ags_turtle_find_xpath(lv2_preset->turtle,

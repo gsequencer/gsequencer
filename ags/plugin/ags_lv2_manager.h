@@ -74,8 +74,7 @@ void ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 			       gchar *filename);
 void ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 				 AgsLv2Plugin *lv2_plugin,
-				 AgsTurtle *preset,
-				 gchar *turtle_pname);
+				 AgsTurtle *preset);
 void ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager);
 
 /*  */
