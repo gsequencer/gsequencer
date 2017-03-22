@@ -69,6 +69,7 @@
 /* thread */
 #include <ags/thread/ags_autosave_thread.h>
 #include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_destroy_worker.h>
 #include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_history.h>
 #include <ags/thread/ags_mutex_manager.h>
@@ -86,6 +87,7 @@
 #include <ags/thread/ags_timestamp_factory.h>
 #include <ags/thread/ags_timestamp_thread.h>
 #include <ags/thread/ags_timestamp.h>
+#include <ags/thread/ags_worker_thread.h>
 
 /* thread file */
 #include <ags/thread/file/ags_thread_file_xml.h>

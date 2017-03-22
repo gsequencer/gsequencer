@@ -31,6 +31,7 @@
 #include <ags/plugin/ags_lv2_conversion.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_log_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
@@ -174,6 +175,10 @@
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_play_note.h>
 #include <ags/audio/recall/ags_play_recycling.h>
+#include <ags/audio/recall/ags_prepare_audio_signal.h>
+#include <ags/audio/recall/ags_prepare_channel.h>
+#include <ags/audio/recall/ags_prepare_channel_run.h>
+#include <ags/audio/recall/ags_prepare_recycling.h>
 #include <ags/audio/recall/ags_record_midi_audio.h>
 #include <ags/audio/recall/ags_record_midi_audio_run.h>
 #include <ags/audio/recall/ags_route_dssi_audio.h>

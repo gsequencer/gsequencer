@@ -165,6 +165,7 @@ ags_worker_thread_init(AgsWorkerThread *worker_thread)
   pthread_cond_init(worker_thread->run_cond, NULL);
 
   /* worker thread */
+  worker_thread->worker_thread = (pthread_t *) malloc(sizeof(pthread_t));  
 }
 
 void

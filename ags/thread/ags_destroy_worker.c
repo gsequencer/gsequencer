@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <stdlib.h>
+
 void ags_destroy_worker_class_init(AgsDestroyWorkerClass *destroy_worker);
 void ags_destroy_worker_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_destroy_worker_init(AgsDestroyWorker *destroy_worker);
@@ -120,6 +122,11 @@ ags_destroy_worker_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_destroy_worker_init(AgsDestroyWorker *destroy_worker)
 {
+  destroy_worker->destroy_interval = (struct timespec *) malloc(sizeof(struct timespec));
+
+  destroy_worker->destroy_interval->tv_sec = 1;
+  destroy_worker->destroy_interval->tv_nsec = 0;
+  
   /* lock destroy list */
   destroy_worker->destroy_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
@@ -153,6 +160,10 @@ ags_destroy_worker_finalize(GObject *gobject)
 
   destroy_worker = AGS_DESTROY_WORKER(gobject);
 
+  if(destroy_worker->destroy_interval != NULL){
+    free(destroy_worker->destroy_interval);
+  }
+  
   /* destroy mutex */
   pthread_mutex_destroy(destroy_worker->destroy_mutex);
   free(destroy_worker->destroy_mutex);
@@ -210,6 +221,9 @@ ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread)
   }
 
   g_list_free(list_start);
+
+  nanosleep(destroy_worker->destroy_interval,
+	    NULL);
 }
 
 /**

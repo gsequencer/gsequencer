@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <stdarg.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/lib/ags_turtle.h>
 
 #include <alsa/seq_midi_event.h>
@@ -73,6 +74,8 @@ struct _AgsLv2Plugin
   gchar *foaf_name;
   gchar *foaf_homepage;
   gchar *foaf_mbox;
+
+  GList *preset;
 };
 
 struct _AgsLv2PluginClass

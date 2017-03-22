@@ -41,6 +41,7 @@
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_destroy_worker.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
@@ -346,7 +347,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
   AgsThread *sequencer_thread;
-
+  AgsDestroyWorker *destroy_worker;
+  
   AgsConfig *config;
 
   GList *list;  
@@ -687,7 +689,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 				TRUE, TRUE);
   g_signal_connect(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread, "clear-cache\0",
 		   G_CALLBACK(ags_xorg_application_context_clear_cache), NULL);
-
   
   /* AgsSoundcardThread and AgsExportThread */
   xorg_application_context->soundcard_thread = NULL;
@@ -774,6 +775,16 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsWorkerThread */
   xorg_application_context->worker = NULL;
+
+  /* AgsDestroyWorker */
+  destroy_worker = ags_destroy_worker_new();
+  g_object_ref(destroy_worker);
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				destroy_worker,
+				TRUE, TRUE);
+  xorg_application_context->worker = g_list_prepend(xorg_application_context->worker,
+						    destroy_worker);
+  ags_thread_start(destroy_worker);
   
   /* AgsThreadPool */
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
@@ -995,6 +1006,22 @@ ags_xorg_application_context_dispose(GObject *gobject)
     xorg_application_context->polling_thread = NULL;
   }
 
+  /* worker thread */
+  if(xorg_application_context->worker != NULL){
+    list = xorg_application_context->worker;
+
+    while(list != NULL){
+      g_object_run_dispose(list->data);
+      
+      list = list->next;
+    }
+    
+    g_list_free_full(xorg_application_context->worker,
+		     g_object_unref);
+
+    xorg_application_context->worker = NULL;
+  }
+  
   /* soundcard and export thread */
   if(xorg_application_context->soundcard_thread != NULL){
     g_object_unref(xorg_application_context->soundcard_thread);
@@ -1102,6 +1129,13 @@ ags_xorg_application_context_finalize(GObject *gobject)
     g_object_unref(xorg_application_context->polling_thread);
   }
 
+  if(xorg_application_context->worker != NULL){
+    g_list_free_full(xorg_application_context->worker,
+		     g_object_unref);
+
+    xorg_application_context->worker = NULL;
+  }
+  
   if(xorg_application_context->soundcard_thread != NULL){
     g_object_unref(xorg_application_context->soundcard_thread);
   }

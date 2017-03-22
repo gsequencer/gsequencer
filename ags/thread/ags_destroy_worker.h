@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+#include <time.h>
+
 #include <ags/thread/ags_worker_thread.h>
 
 #define AGS_TYPE_DESTROY_WORKER                (ags_destroy_worker_get_type())
@@ -44,6 +47,8 @@ struct _AgsDestroyWorker
 {
   AgsWorkerThread worker_thread;
 
+  struct timespec *destroy_interval;
+  
   pthread_mutex_t *destroy_mutex;
   pthread_mutexattr_t *destroy_mutexattr;
 

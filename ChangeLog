@@ -3,6 +3,7 @@ ags (0.7.122.8)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* refactored ags-copy recall to instantiate like ags-buffer
 	* TODO:JK: implemented non-deterministic mode
+	* TODO:JK: implemented LV2 presets
 	* implemented ags-prepare recall
 	* implemented AgsConditionManager to use with AgsThread tree lock functions
 	* implemented worker threads
