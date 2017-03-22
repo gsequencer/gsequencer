@@ -395,12 +395,14 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 
   xmlNode *node;
 
+  GList *pname_list;
   GList *effect_list;
   GList *uri_list;
-  
+
   gchar *str;
   gchar *path;
   gchar *xpath;
+  gchar *turtle_pname;
   gchar *effect;
   gchar *escaped_effect;
   gchar *uri;
@@ -430,6 +432,21 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 			 filename);
 
   g_message("lv2 check - %s\0", path);
+
+  /* turtle pname */
+  xpath = g_strdup_printf("//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text() = '<%s>']/ancestor::*[self::rdf-triple][1]//rdf-pname-ln[1]\0",
+			  filename);
+;
+  pname_list = ags_turtle_find_xpath(manifest,
+				     xpath);
+
+  if(pname_list != NULL){
+    turtle_pname = xmlNodeGetContent(pname_list->data);
+    
+    g_list_free(pname_list);
+  }else{
+    turtle_pname = NULL;
+  }
   
   /* parse lv2 plugin */
   xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
@@ -610,6 +627,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 				      "turtle\0", turtle,
 				      "filename\0", path,
 				      "effect\0", effect,
+				      "pname\0", turtle_pname,
 				      "uri\0", uri,
 				      "effect-index\0", i,
 				      NULL);
@@ -627,6 +645,33 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
   }
 
   pthread_mutex_unlock(&(mutex));
+}
+
+/**
+ * ags_lv2_manager_load_preset:
+ * @lv2_manager: the #AgsLv2Manager
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @preset: the #AgsTurtle
+ * 
+ * Load preset.
+ * 
+ * Since: 0.7.122.8
+ */
+void
+ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
+			    AgsLv2Plugin *lv2_plugin,
+			    AgsTurtle *preset)
+{
+  AgsLv2Preset *lv2_preset;
+
+  GList *preset_list;
+  
+  lv2_preset = g_object_new(AGS_TYPE_LV2_PRESET,
+			    "lv2-plugin\0", plugin,
+			    "turtle\0", turtle,
+			    "uri\0", uri,
+			    NULL);
+  ags_lv2_preset_parse_turtle(lv2_preset);
 }
 
 /**
@@ -687,20 +732,29 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
       if(g_file_test(plugin_path,
 		     G_FILE_TEST_IS_DIR)){
+	AgsLv2Plugin *lv2_plugin;
+	
 	AgsTurtle *manifest, *turtle;
-
+	AgsTurtle *preset;
+	
 	xmlDoc *doc;
 
-	FILE *out;
+	//	FILE *out;
 
-	xmlChar *buffer;
-	int size;
+	//	xmlChar *buffer;
+	//	int size;
       
 	GList *ttl_list, *binary_list;
-
+	GList *preset_list;
+	GList *list;
+	
 	gchar *manifest_filename;
-	gchar *turtle_path, *filename;
 
+	gchar *turtle_path, *filename;
+	gchar *turtle_pname;
+	
+	gchar *preset_path;
+	
 	gboolean turtle_loaded;
 
 	manifest_filename = g_strdup_printf("%s/manifest.ttl\0",
@@ -811,7 +865,82 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	  binary_list = binary_list->next;
 	}
 
-	g_object_unref(manifest);
+    	/* read presets from turtle */
+	preset_list = ags_turtle_find_xpath(manifest,
+					    "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
+
+	while(preset_list != NULL){	  
+	  /* read filename of turtle */
+	  preset_path = xmlNodeGetContent((xmlNode *) preset_list->data);
+
+	  if(preset_path == NULL){
+	    preset_list = preset_list->next;
+
+	    continue;
+	  }
+
+	  /* read filename */
+	  preset_path = g_strndup(&(preset_path[1]),
+				  strlen(preset_path) - 2);
+	
+	  if(!g_ascii_strncasecmp(preset_path,
+				  "http://\0",
+				  7)){
+	    ttl_list = ttl_list->next;
+	  
+	    continue;
+	  }
+
+	  /* turtle pname */
+	  xpath = ".//ancestor::*[self::rdf-triple][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':appliesto') + 1) = ':appliesto']]\0";
+	  pname_list = ags_turtle_find_xpath_with_context_node(manifest,
+							       xpath,
+							       preset_list->data);
+
+	  if(pname_list != NULL){
+	    turtle_pname = xmlNodeGetContent(pname_list->data);
+    
+	    g_list_free(pname_list);
+	  }else{
+	    turtle_pname = NULL;
+	  }
+
+	  if(turtle_pname == NULL){
+	    preset_list = preset_list->next;
+
+	    continue;
+	  }
+
+	  /* find lv2 plugin by pname */
+	  list = ags_lv2_plugin_find_pname(lv2_manager->lv2_plugin,
+					   turtle_pname);	  
+	  
+	  if(list == NULL){
+	    preset_list = preset_list->next;
+
+	    continue;
+	  }
+
+	  lv2_plugin = list->data;
+	  
+	  /* load turtle doc */
+	  if((preset = (AgsTurtle *) ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+							     preset_path)) == NULL){
+	    preset = ags_turtle_new(g_strdup_printf("%s/%s\0",
+						    plugin_path,
+						    preset_path));
+	    ags_turtle_load(preset,
+			    NULL);
+	    ags_turtle_manager_add(ags_turtle_manager_get_instance(),
+				   (GObject *) preset);
+	  }
+
+	  ags_lv2_manager_load_preset(lv2_manager,
+				      lv2_plugin,
+				      preset);
+
+	  preset_list = preset_list->next;
+	}
       }
     }
 

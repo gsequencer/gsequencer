@@ -23,6 +23,8 @@
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
+#include <stdlib.h>
+
 void ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset);
 void ags_lv2_preset_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_preset_init(AgsLv2Preset *lv2_preset);
@@ -51,7 +53,9 @@ void ags_lv2_preset_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_LV2_PLUGIN,
+  PROP_URI,
   PROP_BANK,
+  PROP_PRESET_LABEL,
   PROP_TURTLE,
 };
 
@@ -129,6 +133,22 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
 				  param_spec);
 
   /**
+   * AgsLv2Preset:uri:
+   *
+   * The assigned uri.
+   * 
+   * Since: 0.7.122.8
+   */
+  param_spec = g_param_spec_string("uri\0",
+				   "uri of the preset\0",
+				   "The uri this preset is located in\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_URI,
+				  param_spec);
+
+  /**
    * AgsLv2Preset:bank:
    *
    * The assigned bank.
@@ -142,6 +162,22 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BANK,
+				  param_spec);
+
+  /**
+   * AgsLv2Preset:preset-label:
+   *
+   * The preset label.
+   * 
+   * Since: 0.7.122.8
+   */
+  param_spec = g_param_spec_string("preset-label\0",
+				   "preset label\0",
+				   "The preset label\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESET_LABEL,
 				  param_spec);
 
   /**
@@ -177,7 +213,10 @@ ags_lv2_preset_init(AgsLv2Preset *lv2_preset)
 
   lv2_preset->lv2_plugin = NULL;
 
+  lv2_preset->uri = NULL;
+
   lv2_preset->bank = NULL;
+  lv2_preset->preset_label = NULL;
 
   lv2_preset->turtle = NULL;
 }
@@ -215,6 +254,23 @@ ags_lv2_preset_set_property(GObject *gobject,
       lv2_preset->lv2_plugin = lv2_plugin;
     }
     break;
+  case PROP_URI:
+    {
+      gchar *uri;
+
+      uri = (gchar *) g_value_get_string(value);
+
+      if(lv2_preset->uri == uri){
+	return;
+      }
+      
+      if(lv2_preset->uri != NULL){
+	g_free(lv2_preset->uri);
+      }
+
+      lv2_preset->uri = g_strdup(uri);
+    }
+    break;
   case PROP_BANK:
     {
       gchar *bank;
@@ -230,6 +286,23 @@ ags_lv2_preset_set_property(GObject *gobject,
       }
 
       lv2_preset->bank = g_strdup(bank);
+    }
+    break;
+  case PROP_PRESET_LABEL:
+    {
+      gchar *preset_label;
+
+      preset_label = (gchar *) g_value_get_string(value);
+
+      if(lv2_preset->preset_label == preset_label){
+	return;
+      }
+      
+      if(lv2_preset->preset_label != NULL){
+	g_free(lv2_preset->preset_label);
+      }
+
+      lv2_preset->preset_label = g_strdup(preset_label);
     }
     break;
   case PROP_TURTLE:
@@ -275,9 +348,19 @@ ags_lv2_preset_get_property(GObject *gobject,
       g_value_set_object(value, lv2_preset->lv2_plugin);
     }
     break;
+  case PROP_URI:
+    {
+      g_value_set_string(value, lv2_preset->uri);
+    }
+    break;
   case PROP_BANK:
     {
       g_value_set_string(value, lv2_preset->bank);
+    }
+    break;
+  case PROP_PRESET_LABEL:
+    {
+      g_value_set_string(value, lv2_preset->preset_label);
     }
     break;
   case PROP_TURTLE:
@@ -306,28 +389,211 @@ ags_lv2_preset_disconnect(AgsConnectable *connectable)
 void
 ags_lv2_preset_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsLv2Preset *lv2_preset;
 
+  lv2_preset = AGS_LV2_PRESET(gobject);
+
+  /* lv2 plugin */
+  if(lv2_preset->lv2_plugin != NULL){
+    g_object_unref(lv2_preset->lv2_plugin);
+  }
+
+  /* uri */
+  if(lv2_preset->uri != NULL){
+    free(lv2_preset->uri);
+  }
+
+  /* bank and preset label */
+  if(lv2_preset->bank != NULL){
+    free(lv2_preset->bank);
+  }
+  
+  if(lv2_preset->preset_label != NULL){
+    free(lv2_preset->preset_label);
+  }
+
+  /* turtle */
+  if(lv2_preset->turtle != NULL){
+    g_object_unref(lv2_preset->turtle);
+  }
+
+  /* port preset */
+  if(lv2_preset->port_preset != NULL){
+    g_list_free_full(lv2_preset->port_preset,
+		     ags_lv2_port_preset_free);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_preset_parent_class)->finalize(gobject);
+}
+
+AgsLv2PortPreset*
+ags_lv2_port_preset_alloc(gchar *port_symbol,
+			  GType port_type)
+{
+  AgsLv2PortPreset *lv2_port_preset;
+
+  lv2_port_preset = (AgsLv2PortPreset *) malloc(sizeof(AgsLv2PortPreset));
+
+  lv2_port_preset->port_symbol = port_symbol;
+
+  lv2_port_preset->port_value = g_new0(GValue,
+				       1);
+  
+  if(port_type != G_TYPE_NONE){
+    g_value_init(lv2_port_preset->port_value,
+		 port_type);
+  }
+
+  return(lv2_port_preset);
+}
+
+void
+ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset)
+{
+  if(lv2_port_preset->port_symbol != NULL){
+    free(lv2_port_preset->port_symbol);
+  }
+  
+  if(lv2_port_preset->port_value != NULL){
+    g_value_unset(lv2_port_preset->port_value);
+
+    free(lv2_port_preset->port_value);
+  }
+  
+  free(lv2_port_preset);
 }
 
 void
 ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 {
+  AgsLv2PortPreset *lv2_port_preset;
+  
+  xmlNode *triple_node;
+  xmlNode *port_node;
+  xmlNode *current;
+  
+  GList *label_list;
+  GList *port_list, *list;
+
+  gchar *xpath;
+
   if(lv2_preset == NULL ||
-     lv2_preset->turtle == NULL){
+     lv2_preset->turtle == NULL ||
+     lv2_preset->uri == NULL){
     return;
   }
 
-  //TODO:JK: implement me
+  /* retrieve triple by uri */
+  xpath = g_strdup_printf("(//rdf-triple/rdf-subject/rdf-iri/rdf-iriref[text() = '%s'])/ancestor::*[self::rdf-triple][1]\0",
+			  lv2_preset->uri);
+    
+  list = ags_turtle_find_xpath(lv2_preset->turtle,
+			       xpath);
+
+  free(xpath);
+
+  if(list != NULL){
+    triple_node = (xmlNode *) list->data;
+
+    g_list_free(list);
+  }else{
+    xpath = g_strdup_printf("//rdf-triple/rdf-subject/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s']/ancestor::*[self::rdf-triple][1]\0",
+			    lv2_preset->uri);
+    
+    list = ags_turtle_find_xpath(lv2_preset->turtle,
+				 xpath);
+
+    free(xpath);
+    
+    if(list != NULL){
+      triple_node = (xmlNode *) list->data;
+
+      g_list_free(list);
+    }else{
+      g_warning("rdf-triple not found\0");
+      
+      return;
+    }
+  }
+
+  /* preset label */
+  xpath = ".//rdf-pname-ln[text()='rdfs:label']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0";    
+  label_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+						       xpath,
+						       triple_node);
+
+  if(label_list != NULL){
+    lv2_preset->preset_label = xmlNodeGetContent((xmlNode *) label_list->data);
+
+    g_list_free(label_list);
+  }
+  
+  /* load ports */
+  xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object[.//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':symbol') + 1) = ':symbol']]\0";
+  port_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+						      xpath,
+						      triple_node);
+
+  while(port_list != NULL){
+    lv2_port_preset = ags_lv2_port_preset_alloc(NULL,
+						G_TYPE_FLOAT);
+
+    port_node = port_list->data;
+    
+    /* load symbol */
+    xpath = g_ascii_strdown(".//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':symbol') + 1) = ':symbol']]\0",
+			    -1);
+    list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+						   xpath,
+						   port_node);
+
+    if(list != NULL){
+      gchar *str;
+	
+      current = (xmlNode *) list->data;
+      str = xmlNodeGetContent(current);
+
+      if(strlen(str) > 2){
+	lv2_port_preset->port_symbol = g_strndup(str + 1,
+						 strlen(str) - 2);
+      }
+
+      g_list_free(list);
+    }
+
+    /* port value */
+    xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':value') + 1) = ':value']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0",
+			    -1);
+    list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+						   xpath,
+						   port_node);
+
+    if(list != NULL){
+      current = (xmlNode *) list->data;
+
+      g_value_set_float(lv2_port_preset->port_value,
+			g_ascii_strtod(xmlNodeGetContent(current),
+				       NULL));
+
+      g_list_free(list);
+    }
+
+    /* iterate */
+    port_list = port_list->next;
+  }
+
+  if(port_list != NULL){
+    g_list_free(port_list);
+  }
 }
 
 /**
  * ags_lv2_preset_new:
  * @lv2_plugin: an #AgsLv2Plugin
  * @turtle: the #AgsTurtle
- *
+ * @uri: the URI as string
+ * 
  * Create a new instance of #AgsLv2Preset.
  *
  * Returns: the new #AgsLv2Preset
@@ -336,13 +602,15 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
  */ 
 AgsLv2Preset*
 ags_lv2_preset_new(GObject *lv2_plugin,
-		   AgsTurtle *turtle)
+		   AgsTurtle *turtle,
+		   gchar *uri)
 {
   AgsLv2Preset *lv2_preset;
 
   lv2_preset = (AgsLv2Preset *) g_object_new(AGS_TYPE_LV2_PRESET,
 					     "lv2-plugin\0", lv2_plugin,
 					     "turtle\0", turtle,
+					     "uri\0", uri,
 					     NULL);
 
   return(lv2_preset);

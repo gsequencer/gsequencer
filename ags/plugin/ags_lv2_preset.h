@@ -39,6 +39,7 @@
 
 typedef struct _AgsLv2Preset AgsLv2Preset;
 typedef struct _AgsLv2PresetClass AgsLv2PresetClass;
+typedef struct _AgsLv2PortPreset AgsLv2PortPreset;
 
 typedef enum{
   AGS_LV2_PRESET_CONNECTED    = 1,
@@ -51,10 +52,15 @@ struct _AgsLv2Preset
   guint flags;
   
   GObject *lv2_plugin;
-  
-  gchar *bank;
 
+  gchar *uri;
+
+  gchar *bank;
+  gchar *preset_label;
+  
   AgsTurtle *turtle;
+
+  GList *port_preset;
 };
 
 struct _AgsLv2PresetClass
@@ -62,11 +68,23 @@ struct _AgsLv2PresetClass
   GObjectClass gobject;
 };
 
+struct _AgsLv2PortPreset
+{
+  gchar *port_symbol;
+
+  GValue *port_value;
+};
+
 GType ags_lv2_preset_get_type(void);
+
+AgsLv2PortPreset* ags_lv2_port_preset_alloc(gchar *port_symobl,
+					    GType port_type);
+void ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset);
 
 void ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset);
 
 AgsLv2Preset* ags_lv2_preset_new(GObject *lv2_plugin,
-				 AgsTurtle *turtle);
+				 AgsTurtle *turtle,
+				 gchar *uri);
 
 #endif /*__AGS_LV2_PRESET_H__*/

@@ -76,6 +76,7 @@ void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
 enum{
   PROP_0,
+  PROP_PNAME,
   PROP_URI,
   PROP_UI_URI,
   PROP_MANIFEST,
@@ -131,6 +132,22 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
   gobject->finalize = ags_lv2_plugin_finalize;
 
   /* properties */
+  /**
+   * AgsLv2Plugin:pname:
+   *
+   * The assigned pname.
+   * 
+   * Since: 0.122.8
+   */
+  param_spec = g_param_spec_string("pname\0",
+				   "pname of the plugin\0",
+				   "The pname this plugin is associated with\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PNAME,
+				  param_spec);
+
   /**
    * AgsLv2Plugin:uri:
    *
@@ -215,6 +232,7 @@ ags_lv2_plugin_init(AgsLv2Plugin *lv2_plugin)
 {
   lv2_plugin->flags = 0;
 
+  lv2_plugin->pname = NULL;
   lv2_plugin->uri = NULL;
   lv2_plugin->ui_uri = NULL;
 
@@ -238,6 +256,23 @@ ags_lv2_plugin_set_property(GObject *gobject,
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_PNAME:
+    {
+      gchar *pname;
+
+      pname = (gchar *) g_value_get_string(value);
+
+      if(lv2_plugin->pname == pname){
+	return;
+      }
+      
+      if(lv2_plugin->pname != NULL){
+	g_free(lv2_plugin->pname);
+      }
+
+      lv2_plugin->pname = g_strdup(pname);
+    }
+    break;
   case PROP_URI:
     {
       gchar *uri;
@@ -331,6 +366,11 @@ ags_lv2_plugin_get_property(GObject *gobject,
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_PNAME:
+    {
+      g_value_set_string(value, lv2_plugin->pname);
+    }
+    break;
   case PROP_URI:
     {
       g_value_set_string(value, lv2_plugin->uri);
@@ -972,7 +1012,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	g_list_free(list);
       }
-      
+
+      /* iterate */
       port_list = port_list->next;
     }
 
@@ -1303,6 +1344,37 @@ ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
     
     offset += (8 + sizeof(LV2_Atom_Sequence));
   }
+}
+
+/**
+ * ags_lv2_plugin_find_pname:
+ * @lv2_plugin: a #GList-struct containig #AgsLv2Plugin
+ * @pname: the pname to find
+ * 
+ * Find pname in @lv2_plugin #GList-struct
+ * 
+ * Returns: the matching #GList-struct containing #AgsLv2Plugin
+ * 
+ * Since: 0.7.122.8
+ */
+GList*
+ags_lv2_plugin_find_pname(GList *lv2_plugin,
+			  gchar *pname)
+{
+  if(pname == NULL){
+    return(NULL);
+  }
+
+  while(lv2_plugin != NULL){
+    if(!g_strcmp0(pname,
+		  AGS_LV2_PLUGIN(lv2_plugin->data)->pname)){
+      return(lv2_plugin);
+    }
+    
+    lv2_plugin = lv2_plugin->next;
+  }
+
+  return(NULL);
 }
 
 /**

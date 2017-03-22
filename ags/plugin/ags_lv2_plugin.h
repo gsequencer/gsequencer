@@ -63,7 +63,8 @@ struct _AgsLv2Plugin
   AgsBasePlugin base_plugin;
 
   guint flags;
-  
+
+  gchar *pname;
   gchar *uri;
   gchar *ui_uri;
   
@@ -104,6 +105,9 @@ gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 						  guint event_count);
 void ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 					guint sequence_size);
+
+GList* ags_lv2_plugin_find_pname(GList *lv2_plugin,
+				 gchar *pname);
 
 AgsLv2Plugin* ags_lv2_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index);
 
