@@ -2718,6 +2718,45 @@ ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
 }
 
 /**
+ * ags_audio_signal_is_active:
+ * @audio_signal: the #GList-struct containing #AgsAudioSignal
+ * @recall_id: the #AgsRecallID
+ * 
+ * Check if is active.
+ * 
+ * Returns: %TRUE if related audio signal to recall id is available, otherwise %FALSE
+ * 
+ * Since: 0.7.122.9
+ */
+gboolean
+ags_audio_signal_is_active(GList *audio_signal,
+			   GObject *recall_id)
+{
+  AgsAudioSignal *current;
+  AgsRecyclingContext *recycling_context;
+  
+  if(recall_id == NULL ||
+     AGS_RECALL_ID(recall_id)->recycling_context == NULL){
+    return(FALSE);
+  }
+  
+  recycling_context = AGS_RECALL_ID(recall_id)->recycling_context;
+  
+  while(audio_signal != NULL){
+    current = AGS_AUDIO_SIGNAL(audio_signal->data);
+    
+    if(current->recall_id != NULL &&
+       AGS_RECALL_ID(current->recall_id)->recycling_context == recycling_context){
+      return(TRUE);
+    }
+    
+    audio_signal = audio_signal->next;
+  }
+  
+  return(FALSE);
+}
+
+/**
  * ags_audio_signal_new:
  * @soundcard: the assigned #AgsSoundcard
  * @recycling: the #AgsRecycling

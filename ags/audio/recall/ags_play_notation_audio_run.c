@@ -1,4 +1,4 @@
-/* GSequencer - Advanced GTK Sequencer
+y/* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2015 Joël Krähemann
  *
  * This file is part of GSequencer.
@@ -534,8 +534,7 @@ ags_play_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
 
   /* connect */
   g_signal_connect(G_OBJECT(play_notation_audio_run->delay_audio_run), "notation-alloc-input\0",
-		   G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);
-  
+		   G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);  
 }
 
 void

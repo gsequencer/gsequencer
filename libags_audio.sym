@@ -490,6 +490,7 @@ ags_playable_read_audio_signal
 ags_input_get_type
 ags_input_open_file
 ags_input_apply_synth
+ags_input_next_active
 ags_input_new
 ags_recall_channel_run_dummy_get_type
 ags_recall_channel_run_dummy_new
@@ -716,6 +717,7 @@ ags_recycling_create_audio_signal_with_defaults
 ags_recycling_create_audio_signal_with_frame_count
 ags_recycling_position
 ags_recycling_find_next_channel
+ags_recycling_is_active
 ags_recycling_new
 ags_jack_midiin_get_type
 ags_jack_midiin_error_quark
@@ -1074,6 +1076,7 @@ ags_audio_signal_tile
 ags_audio_signal_scale
 ags_audio_signal_feed
 ags_audio_signal_envelope
+ags_audio_signal_is_active
 ags_audio_signal_new
 ags_audio_signal_new_with_length
 ags_audio_application_context_get_type

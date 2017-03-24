@@ -462,6 +462,13 @@ ags_input_apply_synth(AgsInput *input,
   //TODO:JK: implement me
 }
 
+AgsInput*
+ags_input_next_active(AgsInput *input,
+		      GObject *parent_recycling_context)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_input_new:
  * @audio: the #AgsAudio
