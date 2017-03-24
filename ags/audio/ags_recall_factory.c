@@ -663,14 +663,14 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
 {
   AgsPrepareChannel *prepare_channel;
   AgsPrepareChannelRun *prepare_channel_run;
-  AgsChannel *start, *channel;
+  AgsChannel *start, *channel, *output;
   AgsPort *port;
 
   GList *list;
   GList *recall;
 
   guint i, j;
-  
+
   if(audio == NULL){
     return(NULL);
   }
@@ -689,55 +689,87 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
 
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
-    if(play_container == NULL){
-      play_container = ags_recall_container_new();
-    }
+    gboolean found_prepare;
 
-    play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
-    ags_audio_add_recall_container(audio, (GObject *) play_container);
-
+    channel = start;
+    
     for(i = 0; i < stop_pad - start_pad; i++){
       channel = ags_channel_nth(channel,
 				start_audio_channel);
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	ags_channel_add_recall_container(channel, (GObject *) play_container);
+	output = ags_channel_nth(audio->output,
+				 start_audio_channel + j);
+	
+	while(output != NULL){
+	  found_prepare = FALSE;
+	  list = channel->recall;
 
-	/* AgsPrepareChannel */
-	prepare_channel = (AgsPrepareChannel *) g_object_new(AGS_TYPE_PREPARE_CHANNEL,
-							     "soundcard\0", audio->soundcard,
-							     "source\0", channel,
-							     "recall_container\0", play_container,
-							     NULL);
+	  while((list = ags_recall_template_find_type(list,
+						      AGS_TYPE_PREPARE_CHANNEL)) != NULL){
+	    if(AGS_RECALL_CHANNEL(list->data)->destination == output){
+	      found_prepare = TRUE;
+	      break;
+	    }
+	
+	    list = list->next;
+	  }
+      
+	  if(found_prepare){
+	    output = output->next_pad;
+	    continue;
+	  }
+	
+	  if(play_container == NULL){
+	    play_container = ags_recall_container_new();
+	    play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+	    ags_audio_add_recall_container(audio, (GObject *) play_container);
+	  }
+	
+	  ags_channel_add_recall_container(channel, (GObject *) play_container);
+
+	  /* AgsPrepareChannel */
+	  prepare_channel = (AgsPrepareChannel *) g_object_new(AGS_TYPE_PREPARE_CHANNEL,
+							       "soundcard\0", audio->soundcard,
+							       "source\0", channel,
+							       "destination\0", output,
+							       "recall_container\0", play_container,
+							       NULL);
 							      
-	ags_recall_set_flags(AGS_RECALL(prepare_channel), (AGS_RECALL_TEMPLATE |
-							   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							   AGS_RECALL_PLAYBACK |
-							   AGS_RECALL_SEQUENCER |
-							   AGS_RECALL_NOTATION));
-	ags_channel_add_recall(channel, (GObject *) prepare_channel, TRUE);
-	recall = g_list_prepend(recall,
-				prepare_channel);
-	ags_connectable_connect(AGS_CONNECTABLE(prepare_channel));
+	  ags_recall_set_flags(AGS_RECALL(prepare_channel), (AGS_RECALL_TEMPLATE |
+							     (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+							     AGS_RECALL_PLAYBACK |
+							     AGS_RECALL_SEQUENCER |
+							     AGS_RECALL_NOTATION));
+	  g_object_ref(prepare_channel);
+	  channel->play = g_list_append(channel->play, prepare_channel);
+	  recall = g_list_prepend(recall,
+				  prepare_channel);
+	  ags_connectable_connect(AGS_CONNECTABLE(prepare_channel));
 
-	/* AgsPrepareChannelRun */
-	prepare_channel_run = (AgsPrepareChannelRun *) g_object_new(AGS_TYPE_PREPARE_CHANNEL_RUN,
-								    "soundcard\0", audio->soundcard,
-								    "recall-channel\0", prepare_channel,
-								    "source\0", channel,
-								    "recall_container\0", play_container,
-								    NULL);
-	ags_recall_set_flags(AGS_RECALL(prepare_channel_run), (AGS_RECALL_TEMPLATE |
-							       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							       AGS_RECALL_PLAYBACK |
-							       AGS_RECALL_SEQUENCER |
-							       AGS_RECALL_NOTATION));
-	ags_channel_add_recall(channel, (GObject *) prepare_channel_run, TRUE);
-	recall = g_list_prepend(recall,
-				prepare_channel_run);
-	ags_connectable_connect(AGS_CONNECTABLE(prepare_channel_run));
+	  /* AgsPrepareChannelRun */
+	  prepare_channel_run = (AgsPrepareChannelRun *) g_object_new(AGS_TYPE_PREPARE_CHANNEL_RUN,
+								      "soundcard\0", audio->soundcard,
+								      "recall_channel\0", prepare_channel,
+								      "source\0", channel,
+								      "destination\0", output,
+								      "recall_container\0", play_container,
+								      NULL);
+	  ags_recall_set_flags(AGS_RECALL(prepare_channel_run), (AGS_RECALL_TEMPLATE |
+								 (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+								 AGS_RECALL_PLAYBACK |
+								 AGS_RECALL_SEQUENCER |
+								 AGS_RECALL_NOTATION));
+	  g_object_ref(prepare_channel);
+	  channel->play = g_list_append(channel->play, prepare_channel_run);
+	  recall = g_list_prepend(recall,
+				  prepare_channel_run);
+	  ags_connectable_connect(AGS_CONNECTABLE(prepare_channel_run));
 
-	/* iterate */
+	  /* iterate */
+	  output = output->next_pad;
+	}
+
 	channel = channel->next;
       }
 
@@ -748,56 +780,86 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
 
   /* recall */
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
+    gboolean found_prepare;
+    
     channel = start;
-
-    if(recall_container == NULL){
-      recall_container = ags_recall_container_new();
-    }
-
-    ags_audio_add_recall_container(audio, (GObject *) recall_container);
-
+    
     for(i = 0; i < stop_pad - start_pad; i++){
       channel = ags_channel_nth(channel,
 				start_audio_channel);
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	ags_channel_add_recall_container(channel, (GObject *) recall_container);
+	output = ags_channel_nth(audio->output,
+				 start_audio_channel + j);
+	
+	while(output != NULL){
+	  list = channel->recall;
+	  found_prepare = FALSE;
+	
+	  while((list = ags_recall_template_find_type(list,
+						      AGS_TYPE_PREPARE_CHANNEL)) != NULL){
+	    if(AGS_RECALL_CHANNEL(list->data)->destination == output){
+	      found_prepare = TRUE;
+	      break;
+	    }
+	
+	    list = list->next;
+	  }
+	
+	  if(found_prepare){
+	    output = output->next_pad;
+	    continue;
+	  }
 
-	/* AgsPrepareChannel */
-	prepare_channel = (AgsPrepareChannel *) g_object_new(AGS_TYPE_PREPARE_CHANNEL,
-							     "soundcard\0", audio->soundcard,
-							     "source\0", channel,
-							     "recall_container\0", recall_container,
-							     NULL);
+	  if(recall_container == NULL){
+	    recall_container = ags_recall_container_new();
+	    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+	  }
+	
+	  ags_channel_add_recall_container(channel, (GObject *) recall_container);
+
+	  /* AgsPrepareChannel */
+	  prepare_channel = (AgsPrepareChannel *) g_object_new(AGS_TYPE_PREPARE_CHANNEL,
+							       "soundcard\0", audio->soundcard,
+							       "source\0", channel,
+							       "destination\0", output,
+							       "recall_container\0", recall_container,
+							       NULL);
 							      
-	ags_recall_set_flags(AGS_RECALL(prepare_channel), (AGS_RECALL_TEMPLATE |
-							   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							   AGS_RECALL_PLAYBACK |
-							   AGS_RECALL_SEQUENCER |
-							   AGS_RECALL_NOTATION));
-	ags_channel_add_recall(channel, (GObject *) prepare_channel, FALSE);
-	recall = g_list_prepend(recall,
-				prepare_channel);
-	ags_connectable_connect(AGS_CONNECTABLE(prepare_channel));
+	  ags_recall_set_flags(AGS_RECALL(prepare_channel), (AGS_RECALL_TEMPLATE |
+							     (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+							     AGS_RECALL_PLAYBACK |
+							     AGS_RECALL_SEQUENCER |
+							     AGS_RECALL_NOTATION));
+	  g_object_ref(prepare_channel);
+	  channel->recall = g_list_append(channel->recall, prepare_channel);
+	  recall = g_list_prepend(recall,
+				  prepare_channel);
+	  ags_connectable_connect(AGS_CONNECTABLE(prepare_channel));
 
-	/* AgsPrepareChannelRun */
-	prepare_channel_run = (AgsPrepareChannelRun *) g_object_new(AGS_TYPE_PREPARE_CHANNEL_RUN,
-								    "soundcard\0", audio->soundcard,
-								    "recall_channel\0", prepare_channel,
-								    "source\0", channel,
-								    "recall_container\0", recall_container,
-								    NULL);
-	ags_recall_set_flags(AGS_RECALL(prepare_channel_run), (AGS_RECALL_TEMPLATE |
-							       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							       AGS_RECALL_PLAYBACK |
-							       AGS_RECALL_SEQUENCER |
-							       AGS_RECALL_NOTATION));
-	ags_channel_add_recall(channel, (GObject *) prepare_channel_run, FALSE);
-	recall = g_list_prepend(recall,
-				prepare_channel_run);
-	ags_connectable_connect(AGS_CONNECTABLE(prepare_channel_run));
+	  /* AgsPrepareChannelRun */
+	  prepare_channel_run = (AgsPrepareChannelRun *) g_object_new(AGS_TYPE_PREPARE_CHANNEL_RUN,
+								      "soundcard\0", audio->soundcard,
+								      "recall_channel\0", prepare_channel,
+								      "source\0", channel,
+								      "destination\0", output,
+								      "recall_container\0", recall_container,
+								      NULL);
+	  ags_recall_set_flags(AGS_RECALL(prepare_channel_run), (AGS_RECALL_TEMPLATE |
+								 (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+								 AGS_RECALL_PLAYBACK |
+								 AGS_RECALL_SEQUENCER |
+								 AGS_RECALL_NOTATION));
+	  g_object_ref(prepare_channel);
+	  channel->recall = g_list_append(channel->recall, prepare_channel_run);
+	  recall = g_list_prepend(recall,
+				  prepare_channel_run);
+	  ags_connectable_connect(AGS_CONNECTABLE(prepare_channel_run));
 
-	/* iterate */
+	  /* iterate */
+	  output = output->next_pad;
+	}
+	
 	channel = channel->next;
       }
 

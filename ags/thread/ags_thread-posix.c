@@ -2848,6 +2848,7 @@ ags_thread_loop(void *ptr)
   pthread_mutex_t *mutex;
   
   thread = (AgsThread *) ptr;
+  g_object_ref(thread);
   
   pthread_once(&ags_thread_key_once, ags_thread_self_create);
   pthread_setspecific(ags_thread_key, thread);
@@ -3178,7 +3179,7 @@ ags_thread_loop(void *ptr)
     }    
   }
 
-  g_object_ref(thread);
+  //  g_object_ref(thread);
   
   pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
@@ -3280,7 +3281,8 @@ ags_thread_loop(void *ptr)
   g_message("thread finished\0");
 #endif  
   
-  g_object_ref(thread);
+  g_object_unref(thread);
+  //  g_object_ref(thread);
   
   /* exit thread */
   pthread_exit(NULL);

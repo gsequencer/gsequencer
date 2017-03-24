@@ -1,4 +1,5 @@
 ags_id_generator_create_uuid
+ags_list_util_find_type
 ags_destroy_util_dispose_and_unref
 ags_turtle_manager_get_type
 ags_turtle_manager_find

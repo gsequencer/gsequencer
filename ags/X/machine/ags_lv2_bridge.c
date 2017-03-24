@@ -1269,7 +1269,13 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
   AgsAudio *audio;
   AgsChannel *source, *current;
   
+  AgsConfig *config;
+  
   GList *list;
+
+  gchar *str;
+
+  gboolean performance_mode;
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
 
@@ -1280,23 +1286,55 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
   source = ags_channel_nth(audio->input,
 			   audio_channel_start + input_pad_start * audio->audio_channels);
 
+  config = ags_config_get_instance();
+
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
     /* map dependending on output */
-    current = source;
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "engine-mode\0");
+    performance_mode = FALSE;
+  
+    if(str != NULL &&
+       !g_ascii_strncasecmp(str,
+			    "performance\0",
+			    12)){
+      current = source;
 
-    while(current != NULL){
-      /* ags-buffer */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-buffer\0",
-				audio_channel_start, audio->audio_channels, 
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
+      while(current != NULL){
+	/* ags-copy */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-copy\0",
+				  audio_channel_start, audio->audio_channels, 
+				  current->pad, current->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	current = current->next_pad;
+      }
+
+      /* set performance mode */
+      performance_mode = TRUE;
+    }else{    
+      current = source;
+
+      while(current != NULL){
+	/* ags-buffer */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-buffer\0",
+				  audio_channel_start, audio->audio_channels, 
+				  current->pad, current->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
     
-      current = current->next_pad;
+	current = current->next_pad;
+      }
     }
   
     /*  */
@@ -1349,7 +1387,13 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
 
+  AgsConfig *config;
+
   GList *list;
+
+  gchar *str;
+
+  gboolean performance_mode;
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
 
@@ -1357,42 +1401,78 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
     return;
   }
 
+  config = ags_config_get_instance();
+
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+    /* map dependending on output */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "engine-mode\0");
+    performance_mode = FALSE;
+  
     /* remap for input */
-    input = audio->input;
+    if(str != NULL &&
+       !g_ascii_strncasecmp(str,
+			    "performance\0",
+			    12)){
+      input = audio->input;
 
-    while(input != NULL){
-      /* ags-buffer */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-buffer\0",
-				audio_channel_start, audio->audio_channels, 
-				input->pad, input->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_REMAP),
-				0);
+      while(input != NULL){
+	/* ags-copy */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-copy\0",
+				  audio_channel_start, audio->audio_channels, 
+				  input->pad, input->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_REMAP),
+				  0);
     
-      input = input->next_pad;
+	input = input->next_pad;
+      }
+
+      /* set performance mode */
+      performance_mode = TRUE;
+    }else{    
+      input = audio->input;
+
+      while(input != NULL){
+	/* ags-buffer */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-buffer\0",
+				  audio_channel_start, audio->audio_channels, 
+				  input->pad, input->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_REMAP),
+				  0);
+    
+	input = input->next_pad;
+      }
     }
+    
+    /*  */
+    if(!performance_mode){
+      current = ags_channel_nth(audio->output,
+				audio_channel_start + output_pad_start * audio->audio_channels);
 
-    current = ags_channel_nth(audio->output,
-			      audio_channel_start + output_pad_start * audio->audio_channels);
+      while(current != NULL){
+	/* ags-stream */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-stream\0",
+				  audio_channel_start, audio->audio_channels,
+				  current->pad, current->pad + 1,
+				  (AGS_RECALL_FACTORY_OUTPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
 
-    while(current != NULL){
-      /* ags-stream */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream\0",
-				audio_channel_start, audio->audio_channels,
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_OUTPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      current = current->next_pad;
+	current = current->next_pad;
+      }
     }
   }
   

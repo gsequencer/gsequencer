@@ -2142,6 +2142,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   auto void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
   auto void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
   auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
+  auto void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
 
   auto void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
   auto void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
@@ -2359,6 +2360,44 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     }
   }
 
+  void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge){
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    xmlChar *str;
+    gchar *value;
+
+    if(lv2_bridge->preset == NULL){
+      return;
+    }
+    
+    /* program */
+    //NOTE:JK: work-around
+    gtk_combo_box_set_active((GtkComboBox *) lv2_bridge->preset,
+			     0);
+
+    model = gtk_combo_box_get_model((GtkComboBox *) lv2_bridge->preset);
+
+    str = xmlGetProp(node,
+		     "preset\0");
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) lv2_bridge->preset,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+  }
+
   void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge){
     AgsEffectBulk *effect_bulk;
     
@@ -2513,6 +2552,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_ffplayer_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFFPlayer *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
     ags_simple_file_read_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
+  }else if(AGS_IS_LV2_BRIDGE(machine)){
+    ags_simple_file_read_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
   }
   
   /* children */
@@ -5208,6 +5249,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "effect\0",
 	       lv2_bridge->effect);
+
+    if(lv2_bridge->preset != NULL){
+      xmlNewProp(node,
+		 "preset\0",
+		 gtk_combo_box_text_get_active_text(lv2_bridge->preset));
+    }
   }
   
   /* input */

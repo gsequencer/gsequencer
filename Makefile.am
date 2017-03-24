@@ -371,14 +371,16 @@ deprecated_libags_util_h_sources =
 libags_util_h_sources = \
 	$(deprecated_libags_util_h_sources) \
 	ags/util/ags_destroy_util.h \
-	ags/util/ags_id_generator.h
+	ags/util/ags_id_generator.h \
+	ags/util/ags_list_util.h
 
 deprecated_libags_util_c_sources =
 
 libags_util_c_sources = \
 	$(deprecated_libags_util_c_sources) \
 	ags/util/ags_destroy_util.c \
-	ags/util/ags_id_generator.c
+	ags/util/ags_id_generator.c \
+	ags/util/ags_list_util.c
 
 deprecated_libags_object_h_sources =
 

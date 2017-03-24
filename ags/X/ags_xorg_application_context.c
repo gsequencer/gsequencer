@@ -46,6 +46,9 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_worker_manager.h>
+#include <ags/plugin/ags_lv2_worker.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
@@ -1183,6 +1186,12 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_gui_thread_get_type();
 
   /*  */
+  ags_lv2_manager_get_type();
+  ags_lv2_urid_manager_get_type();
+  ags_lv2_worker_manager_get_type();
+  ags_lv2_worker_get_type();
+  
+  /*  */
   ags_audio_loop_get_type();
   ags_soundcard_thread_get_type();
   ags_export_thread_get_type();
@@ -1304,7 +1313,7 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 {
   AgsLadspaManager *ladspa_manager;
   AgsDssiManager *dssi_manager;
-  AgsLv2Manager *lv2_manager;;
+  AgsLv2Manager *lv2_manager;
 
   AgsJackServer *jack_server;
 

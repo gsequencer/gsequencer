@@ -21,6 +21,8 @@
 
 #include <ags/X/machine/ags_drum.h>
 
+#include <ags/object/ags_config.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -73,6 +75,17 @@ ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
 				       guint pads_new, guint pads_old,
 				       AgsDrumOutputLine *output_line)
 {
+  AgsConfig *config;
+
+  gchar *str;
+
+  gboolean performance_mode;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "engine-mode\0");
+  performance_mode = FALSE;
+
   if(channel_type == AGS_TYPE_INPUT){
     if(pads_new > pads_old){
       AgsChannel *input;
@@ -80,19 +93,42 @@ ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
       input = ags_channel_pad_nth(audio->input,
 				  pads_old);
 
-      while(input != NULL){
-	/* ags-buffer */
-	ags_recall_factory_create(audio,
-				  NULL, NULL,
-				  "ags-buffer\0",
-				  0, audio->audio_channels, 
-				  input->pad, input->pad + 1,
-				  (AGS_RECALL_FACTORY_INPUT |
-				   AGS_RECALL_FACTORY_RECALL |
-				   AGS_RECALL_FACTORY_ADD),
-				  0);
+      if(str != NULL &&
+	 !g_ascii_strncasecmp(str,
+			      "performance\0",
+			      12)){
+	while(input != NULL){
+	  /* ags-copy */
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-copy\0",
+				    0, audio->audio_channels, 
+				    input->pad, input->pad + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_RECALL |
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
 
-	input = input->next_pad;
+	  input = input->next_pad;
+	}
+	
+	/* set performance mode */
+	performance_mode = TRUE;
+      }else{
+	while(input != NULL){
+	  /* ags-buffer */
+	  ags_recall_factory_create(audio,
+				    NULL, NULL,
+				    "ags-buffer\0",
+				    0, audio->audio_channels, 
+				    input->pad, input->pad + 1,
+				    (AGS_RECALL_FACTORY_INPUT |
+				     AGS_RECALL_FACTORY_RECALL |
+				     AGS_RECALL_FACTORY_ADD),
+				    0);
+
+	  input = input->next_pad;
+	}
       }
     }
   }

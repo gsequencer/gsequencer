@@ -17,15 +17,13 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/util/ags_destroy_util.h>
+#ifndef __AGS_LIST_UTIL_H__
+#define __AGS_LIST_UTIL_H__
 
-void
-ags_destroy_util_dispose_and_unref(GObject *gobject)
-{
-  if(gobject == NULL){
-    return;
-  }
+#include <glib.h>
+#include <glib-object.h>
 
-  g_object_run_dispose(gobject);
-  g_object_unref(gobject);
-}
+GList* ags_list_util_find_type(GList *list,
+			       GType gtype);
+
+#endif /*__AGS_LIST_UTIL_H__*/

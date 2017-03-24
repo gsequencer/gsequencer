@@ -1,7 +1,14 @@
+ags (0.7.122.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented non-deterministic mode
+	* implemented restore and persist of AgsLv2Bridge preset
+	* fixed memory leak related to AgsReturnableThread
+	* fixed crash related to notation offset cached
+
 ags (0.7.122.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented non-deterministic mode
 	* refactored ags-copy recall to instantiate like ags-buffer
 	* implemented LV2 presets
 	* implemented presets in AgsLv2Bridge

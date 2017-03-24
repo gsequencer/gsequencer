@@ -266,9 +266,6 @@ ags_worker_thread_run(AgsThread *thread)
 
   worker_thread = AGS_WORKER_THREAD(thread);
   
-  /* call parent */
-  AGS_THREAD_CLASS(ags_worker_thread_parent_class)->run(thread);
-
   /* synchronization point */
   if((AGS_WORKER_THREAD_RUN_WAIT & (g_atomic_int_get(&(worker_thread->flags)))) != 0 &&
      (AGS_WORKER_THREAD_RUN_DONE & (g_atomic_int_get(&(worker_thread->flags)))) == 0){
