@@ -515,6 +515,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   GList *metadata_list;
   GList *instrument_list;
+  GList *feature_list;
   GList *ui_list;
   GList *port_list;
   GList *port_descriptor_list;
@@ -621,6 +622,19 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       lv2_plugin->foaf_mbox = xmlNodeGetContent((xmlNode *) metadata_list->data);
     
       g_list_free(metadata_list);
+    }
+
+    /* check needs worker */
+    xpath = ".//rdf-pname-ln[text()='lv2:requiredFeature']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln[text()=lv2worker:schedule]";
+
+    feature_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							   xpath,
+							   triple_node);
+
+    if(feature_list != NULL){
+      lv2_plugin->flags |= AGS_LV2_PLUGIN_NEEDS_WORKER;
+    
+      g_list_free(feature_list);
     }
 
     /* check if is synthesizer */
@@ -1368,8 +1382,8 @@ ags_lv2_plugin_find_pname(GList *lv2_plugin,
   }
 
   while(lv2_plugin != NULL){
-    if(!g_strcmp0(pname,
-		  AGS_LV2_PLUGIN(lv2_plugin->data)->pname)){
+    if(!g_ascii_strcasecmp(pname,
+			   AGS_LV2_PLUGIN(lv2_plugin->data)->pname)){
       return(lv2_plugin);
     }
     

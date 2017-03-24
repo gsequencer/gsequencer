@@ -90,6 +90,10 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
     
     list = list->next;
   }
+
+  if(editor_child == NULL){
+    return;
+  }
   
   if(audio_channels_old < audio_channels){
     notation = g_list_nth(audio->notation,
@@ -137,10 +141,10 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
 
   if(AGS_IS_NOTE_EDIT(note_edit)){
     ags_note_edit_set_map_height(note_edit,
-			       pads * note_edit->control_height);
+				 pads * note_edit->control_height);
   }else if(AGS_IS_NOTE_EDIT(note_edit)){
     ags_note_edit_set_map_height(AGS_NOTE_EDIT(note_edit),
-				    pads * AGS_NOTE_EDIT(note_edit)->control_height);
+				 pads * AGS_NOTE_EDIT(note_edit)->control_height);
   }
 
   gtk_widget_queue_draw((GtkWidget *) editor->current_meter);

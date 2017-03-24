@@ -3,6 +3,7 @@ ags (0.7.122.9)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented non-deterministic mode
 	* implemented restore and persist of AgsLv2Bridge preset
+	* disabled lv2 worker feature if not requested by plugin
 	* fixed memory leak related to AgsReturnableThread
 	* fixed crash related to notation offset cached
 

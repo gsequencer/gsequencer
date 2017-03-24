@@ -709,6 +709,10 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
     if(dlerror() == NULL && lv2_descriptor){
       recall_lv2->plugin_descriptor = 
 	plugin_descriptor = lv2_descriptor(recall_lv2->index);
+
+      if((AGS_LV2_PLUGIN_NEEDS_WORKER & (lv2_plugin->flags)) != 0){
+	recall_lv2->flags |= AGS_RECALL_LV2_HAS_WORKER;
+      }
     }
   }
 }
