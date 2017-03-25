@@ -195,9 +195,11 @@ ags_recall_dssi_run_finalize(GObject *gobject)
   free(recall_dssi_run->event_count);    
 
   free(recall_dssi_run->ladspa_handle);
-  
-  AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi,
-											     recall_dssi_run->note);
+
+  if(recall_dssi_run->route_dssi_audio_run != NULL){
+    AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi,
+											       recall_dssi_run->note);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_recall_dssi_run_parent_class)->finalize(gobject);

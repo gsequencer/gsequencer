@@ -237,6 +237,8 @@ ags_play_audio_signal_get_type
 ags_play_audio_signal_new
 ags_record_midi_audio_get_type
 ags_record_midi_audio_new
+ags_play_pattern_audio_run_get_type
+ags_play_pattern_audio_run_new
 ags_play_note_get_type
 ags_play_note_new
 ags_route_dssi_audio_get_type
@@ -292,6 +294,8 @@ ags_play_notation_audio_run_get_type
 ags_play_notation_audio_run_new
 ags_loop_channel_get_type
 ags_loop_channel_new
+ags_play_pattern_audio_get_type
+ags_play_pattern_audio_new
 ags_copy_notation_audio_get_type
 ags_copy_notation_audio_new
 ags_prepare_channel_get_type
@@ -490,6 +494,7 @@ ags_playable_read_audio_signal
 ags_input_get_type
 ags_input_open_file
 ags_input_apply_synth
+ags_input_is_active
 ags_input_next_active
 ags_input_new
 ags_recall_channel_run_dummy_get_type

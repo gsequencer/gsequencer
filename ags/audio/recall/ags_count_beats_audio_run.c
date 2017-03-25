@@ -531,8 +531,9 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 
       delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
 
-      if(count_beats_audio_run->delay_audio_run == delay_audio_run)
+      if(count_beats_audio_run->delay_audio_run == delay_audio_run){
 	return;
+      }
 
       if(delay_audio_run != NULL &&
 	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(delay_audio_run)->flags)) != 0){

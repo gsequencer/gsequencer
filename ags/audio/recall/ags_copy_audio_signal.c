@@ -207,9 +207,7 @@ ags_copy_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connecta
 
 void
 ags_copy_audio_signal_finalize(GObject *gobject)
-{
-  /* empty */
-
+{  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
 }
@@ -340,20 +338,27 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
+
+  destination = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination;
   
   if(stream_source == NULL){
+    if(destination != NULL){
+      ags_recycling_remove_audio_signal(destination->recycling,
+					destination);
+      g_object_run_dispose(destination);
+      g_object_unref(destination);
+    }
+
     ags_recall_done(recall);
 
-    if(AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination != NULL){
-      ags_recycling_remove_audio_signal(AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination->recycling,
-					AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination);
-    }
+    ags_recycling_remove_audio_signal(source->recycling,
+				      source);
+    g_object_unref(source);
     
     return;
   }
 
   //FIXME:JK: attack probably needs to be removed
-  destination = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination;
 
   if(destination == NULL){
     g_warning("no destination\0");

@@ -372,7 +372,7 @@ ags_recall_recycling_set_property(GObject *gobject,
 	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(recall_recycling)->flags)) != 0){
 	    g_signal_handler_disconnect(gobject, recall_recycling->source_add_audio_signal_handler);
 	      
-	    //	    g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
+	    g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
 	  }
 	}
 
@@ -394,9 +394,9 @@ ags_recall_recycling_set_property(GObject *gobject,
 	      g_signal_connect_after(gobject, "add_audio_signal\0",
 				     G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
 	    
-	    //	    recall_recycling->source_remove_audio_signal_handler =
-	    //	      g_signal_connect(gobject, "remove_audio_signal\0",
-	    //		       G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
+	    recall_recycling->source_remove_audio_signal_handler =
+	      g_signal_connect(gobject, "remove_audio_signal\0",
+	    		       G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
 	  }
 	}
       }
@@ -598,7 +598,7 @@ ags_recall_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
       
     //    recall_recycling->destination_remove_audio_signal_handler =
     //      g_signal_connect(gobject, "remove_audio_signal\0",
-    //		       G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
+    //    		       G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
   }
 
   /* source */
@@ -608,9 +608,9 @@ ags_recall_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
     g_signal_connect_after(gobject, "add_audio_signal\0",
 			   G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
 
-  //  recall_recycling->source_remove_audio_signal_handler =
-  //    g_signal_connect(gobject, "remove_audio_signal\0",
-  //		     G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
+  recall_recycling->source_remove_audio_signal_handler =
+    g_signal_connect(gobject, "remove_audio_signal\0",
+  		     G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
 }
 
 void
@@ -642,7 +642,7 @@ ags_recall_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
 
     g_signal_handler_disconnect(gobject, recall_recycling->source_add_audio_signal_handler);
     
-    //    g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
+    g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
   }
 
   /* call parent */
@@ -1143,6 +1143,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 
     if(recall_audio_signal->destination == audio_signal &&
        (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal)->flags)) == 0){
+      //      ags_recall_done(recall_audio_signal);
       //	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
       //				      NULL);
 

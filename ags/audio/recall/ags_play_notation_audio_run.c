@@ -1,4 +1,4 @@
-y/* GSequencer - Advanced GTK Sequencer
+/* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2015 Joël Krähemann
  *
  * This file is part of GSequencer.

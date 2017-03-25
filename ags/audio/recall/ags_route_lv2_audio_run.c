@@ -867,8 +867,8 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	    
 	      if(recall_lv2_run->note == NULL){
 		/* prepend note */
-		route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
-								note);
+		//		route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
+		//						note);
   
 		recall_lv2_run->route_lv2_audio_run = (GObject *) route_lv2_audio_run;
 		

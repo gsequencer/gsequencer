@@ -38,3 +38,21 @@ ags_list_util_find_type(GList *list,
   
   return(NULL);
 }
+
+GList*
+ags_list_util_copy_and_ref(GList *list)
+{
+  GList *list_start;
+
+  list = 
+    list_start = g_list_copy(list);
+  
+  while(list != NULL){
+    g_object_ref(list->data);
+    
+    list = list->next;
+  }
+
+  return(list_start);
+}
+

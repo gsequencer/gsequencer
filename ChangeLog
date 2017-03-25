@@ -1,9 +1,9 @@
 ags (0.7.122.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented non-deterministic mode
 	* TODO:JK: implemented ags-play-pattern recall
-	* TODO:JK: implemented ags_input_next_active()
+	* implemented non-deterministic mode i.e. performance mode
+	* implemented ags_input_next_active() and ags_input_is_active()
 	* implemented restore and persist of AgsLv2Bridge preset
 	* disabled lv2 worker feature if not requested by plugin
 	* fixed memory leak related to AgsReturnableThread

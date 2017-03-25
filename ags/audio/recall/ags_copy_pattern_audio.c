@@ -407,7 +407,7 @@ ags_copy_pattern_audio_new(GObject *soundcard,
 		      value);
 
   g_value_unset(value);
-  g_value_free(value);
+  g_free(value);
   
   return(copy_pattern_audio);
 }

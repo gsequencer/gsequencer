@@ -184,7 +184,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
 				 "performance\0");
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
-			   0);
+			   1);
   
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(generic_preferences->engine_mode),

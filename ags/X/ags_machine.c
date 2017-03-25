@@ -340,6 +340,8 @@ ags_machine_init(AgsMachine *machine)
 
   machine->audio = ags_audio_new(NULL);
   g_object_ref(G_OBJECT(machine->audio));
+
+  machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine = (GObject *) machine;
 
   /* AgsAudio */

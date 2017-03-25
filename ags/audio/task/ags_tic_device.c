@@ -149,9 +149,17 @@ ags_tic_device_launch(AgsTask *task)
   tic_device = AGS_TIC_DEVICE(task);
 
   if(AGS_IS_SOUNDCARD(tic_device->device)){
-    ags_soundcard_tic(AGS_SOUNDCARD(tic_device->device));
+    AgsSoundcardInterface *soundcard_interface;
+    
+    soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(tic_device->device));
+  
+    soundcard_interface->tic(AGS_SOUNDCARD(tic_device->device));
   }else if(AGS_IS_SEQUENCER(AGS_SEQUENCER(tic_device->device))){
-    ags_sequencer_tic(AGS_SEQUENCER(tic_device->device));
+    AgsSequencerInterface *sequencer_interface;
+    
+    sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(tic_device->device));
+  
+    sequencer_interface->tic(AGS_SEQUENCER(tic_device->device));
   }
 }
 

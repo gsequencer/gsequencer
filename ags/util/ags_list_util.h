@@ -25,5 +25,6 @@
 
 GList* ags_list_util_find_type(GList *list,
 			       GType gtype);
+GList* ags_list_util_copy_and_ref(GList *list);
 
 #endif /*__AGS_LIST_UTIL_H__*/
