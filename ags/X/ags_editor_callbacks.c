@@ -98,7 +98,8 @@ ags_editor_tic_callback(GObject *soundcard,
   task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(window->navigation->scroll))){
+  if(window->navigation->scroll != NULL &&
+     gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(window->navigation->scroll))){
     AgsScrollOnPlay *scroll_on_play;
 
     guint note_offset;  

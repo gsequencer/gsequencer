@@ -341,10 +341,10 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 
     /* call parent */
     AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
-  }else{
+  }else{    
     /* call parent */
     AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
-    
+
     ags_recall_done(recall);
   }
 }

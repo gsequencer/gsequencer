@@ -1,13 +1,20 @@
-ags (0.7.122.9)
+ags (0.7.122.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented ags-play-pattern recall
+	* fixed broken optical feedback of peak
+	* removed auto-scroll feature because it costs too much performance
+
+ags (0.7.122.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented non-deterministic mode i.e. performance mode
 	* implemented ags_input_next_active() and ags_input_is_active()
 	* implemented restore and persist of AgsLv2Bridge preset
 	* disabled lv2 worker feature if not requested by plugin
 	* fixed memory leak related to AgsReturnableThread
 	* fixed crash related to notation offset cached
+	* note disabled some signals
 
 ags (0.7.122.8)
 
