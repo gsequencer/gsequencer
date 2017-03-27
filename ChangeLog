@@ -1,3 +1,9 @@
+ags (0.7.122.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixes to configuration in place
+	* fixes to audio connection editor
+
 ags (0.7.122.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

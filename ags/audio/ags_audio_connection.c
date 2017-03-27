@@ -122,7 +122,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
   param_spec = g_param_spec_ulong("channel-type\0",
 				  "channel type\0",
 				  "The channel type belonging to\0",
-				  0, G_MAXUINT32,
+				  0, G_MAXULONG,
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
