@@ -23,11 +23,15 @@
 #include <glib.h>
 #include <glib-object.h>
 
+void ags_test_show_file_error(gchar *filename,
+			      GError *error);
+
 void ags_test_signal_handler(int signr);
-static void ags_test_signal_cleanup();
+void ags_test_signal_cleanup();
 
 void ags_test_setup(int argc, char **argv);
 
+void ags_test_start_animation(pthread_t *thread);
 void* ags_test_start_animation_thread(void *ptr);
 
 void ags_test_launch(gboolean single_thread);

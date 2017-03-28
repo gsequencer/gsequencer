@@ -1,3 +1,22 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2017 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -39,7 +58,32 @@
 
 #include "config.h"
 
+struct sigaction ags_test_sigact;
+
+extern AgsApplicationContext *ags_application_context;
+extern gboolean ags_gui_ready;
+
 extern volatile gboolean ags_show_start_animation;
+
+void
+ags_test_show_file_error(gchar *filename,
+			 GError *error)
+{
+  GtkDialog *dialog;
+      
+  g_warning("could not parse file %s\0", filename);
+      
+  dialog = gtk_message_dialog_new(NULL,
+				  0,
+				  GTK_MESSAGE_WARNING,
+				  GTK_BUTTONS_OK,
+				  "Failed to open '%s'\0",
+				  filename);
+  gtk_widget_show_all((GtkWidget *) dialog);
+  g_signal_connect(dialog, "response\0",
+		   G_CALLBACK(gtk_main_quit), NULL);
+  gtk_main();
+}
 
 void
 ags_test_signal_handler(int signr)
@@ -49,7 +93,7 @@ ags_test_signal_handler(int signr)
     
     exit(-1);
   }else{
-    sigemptyset(&(ags_sigact.sa_mask));
+    sigemptyset(&(ags_test_sigact.sa_mask));
 
     //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
       // pthread_yield();
@@ -57,10 +101,10 @@ ags_test_signal_handler(int signr)
   }
 }
 
-static void
-ags_signal_cleanup()
+void
+ags_test_signal_cleanup()
 {
-  sigemptyset(&(ags_sigact.sa_mask));
+  sigemptyset(&(ags_test_sigact.sa_mask));
 }
 
 void
@@ -73,8 +117,6 @@ ags_test_setup(int argc, char **argv)
   AgsLv2WorkerManager *lv2_worker_manager;
 
   AgsLog *log;
-  
-  struct passwd *pw;
 
   gchar *blacklist_filename;
   gchar *filename;
@@ -153,16 +195,10 @@ ags_test_setup(int argc, char **argv)
     }
   }
 
-  /* get user information */
-  uid = getuid();
-  pw = getpwuid(uid);
-
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist\0",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = "ladspa.blacklist\0";
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
@@ -174,9 +210,7 @@ ags_test_setup(int argc, char **argv)
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist\0",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = "dssi_plugin.blacklist\0";
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
@@ -189,9 +223,7 @@ ags_test_setup(int argc, char **argv)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist\0",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = "lv2_plugin.blacklist\0";
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
@@ -203,9 +235,7 @@ ags_test_setup(int argc, char **argv)
   /* load lv2ui manager */
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist\0",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
+  blacklist_filename = "lv2ui_plugin.blacklist\0";
   ags_lv2ui_manager_load_blacklist(lv2ui_manager,
 				   blacklist_filename);
   
@@ -228,6 +258,24 @@ ags_test_setup(int argc, char **argv)
 		   FALSE);
 }
 
+void
+ags_test_start_animation(pthread_t *thread)
+{
+  GtkWindow *window;
+
+  GdkWindowAttr *attr;
+
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  g_object_set(window,
+	       "decorated\0", FALSE,
+	       0);
+  gtk_widget_set_size_request(window,
+			      800, 450);
+  gtk_widget_show_all(window);
+
+  pthread_create(thread, NULL,
+		 ags_test_start_animation_thread, window);
+}
 void*
 ags_test_start_animation_thread(void *ptr)
 {
@@ -450,11 +498,6 @@ ags_test_launch(gboolean single_thread)
     ags_thread_start(gui_thread);
 
     ags_gui_ready = TRUE;
-    
-    /* join gui thread */
-    //    gtk_main();
-    pthread_join(*(gui_thread->thread),
-    		 NULL);
   }else{
     AgsSingleThread *single_thread;
 
@@ -540,8 +583,8 @@ ags_test_launch_filename(gchar *filename,
 			 &error);
 
     if(error != NULL){
-      ags_show_file_error(filename,
-			  error);
+      ags_test_show_file_error(filename,
+			       error);
       ags_application_context_quit(ags_application_context);
     }
     
@@ -637,8 +680,8 @@ ags_test_launch_filename(gchar *filename,
 		    &error);
 
       if(error != NULL){
-	ags_show_file_error(filename,
-			    error);
+	ags_test_show_file_error(filename,
+				 error);
 	
 	ags_application_context_quit(ags_application_context);
       }
@@ -649,11 +692,6 @@ ags_test_launch_filename(gchar *filename,
   }
 
   if(!single_thread){
-    ags_thread_start(gui_thread);
-    
-    /* join gui thread */
-    //    gtk_main();
-    pthread_join(*(gui_thread->thread),
-    		 NULL);
+    ags_thread_start(gui_thread);    
   }
 }
