@@ -31,10 +31,16 @@
 int ags_functional_note_edit_test_init_suite();
 int ags_functional_note_edit_test_clean_suite();
 
-void ags_functional_note_edit_test_note_edit_manual_setup();
-void ags_functional_note_edit_test_note_edit_file_setup();
+void ags_functional_note_edit_test_note_manual_setup();
+void ags_functional_note_edit_test_note_file_setup();
 
-#define AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG "[generic]\n" \
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_COUNT (8)
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_DURATION (720)
+
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (8)
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_MANUAL_PLAYBACK_DURATION (720)
+
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
   "simple-file=true\n"				       \
   "disable-feature=experimental\n"		       \
@@ -64,14 +70,14 @@ void ags_functional_note_edit_test_note_edit_file_setup();
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_xorg_application_context_test_init_suite()
+ags_functional_note_edit_test_init_suite()
 {
   AgsConfig *config;
 
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
-			    AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG,
-			    strlen(AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG));
+			    AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG,
+			    strlen(AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG));
     
   return(0);
 }
@@ -81,19 +87,19 @@ ags_xorg_application_context_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_xorg_application_context_test_clean_suite()
+ags_functional_note_edit_test_clean_suite()
 {  
   return(0);
 }
 
 void
-ags_functional_note_edit_test_note_edit_manual_setup()
+ags_functional_note_edit_test_manual_setup()
 {
   //TODO:JK: implement me
 }
 
 void
-ags_functional_note_edit_test_note_edit_file_setup()
+ags_functional_note_edit_test_file_setup()
 {
   //TODO:JK: implement me
 }
@@ -103,9 +109,127 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
+  AgsConfig *config;
+
+  pthread_t *animation_thread;
+
+  struct sched_param param;
+  struct rlimit rl;
+  struct sigaction sa;
+  struct passwd *pw;
+
+  gchar *rc_filename;
+  
+  uid_t uid;
+  int result;
+
+  const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
+
+#ifdef AGS_USE_TIMER
+  timer_t *timer_id
+#endif
+  
   putenv("LC_ALL=C\0");
   putenv("LANG=C\0");
 
+  //  mtrace();
+  atexit(ags_test_signal_cleanup);
+
+  result = getrlimit(RLIMIT_STACK, &rl);
+
+  /* set stack size 64M */
+  if(result == 0){
+    if(rl.rlim_cur < kStackSize){
+      rl.rlim_cur = kStackSize;
+      result = setrlimit(RLIMIT_STACK, &rl);
+
+      if(result != 0){
+	//TODO:JK
+      }
+    }
+  }
+
+  param.sched_priority = GSEQUENCER_RT_PRIORITY;
+      
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed\0");
+  }
+
+  /* Ignore interactive and job-control signals.  */
+  signal(SIGINT, SIG_IGN);
+  signal(SIGQUIT, SIG_IGN);
+  signal(SIGTSTP, SIG_IGN);
+  signal(SIGTTIN, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
+  signal(SIGCHLD, SIG_IGN);
+  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
+  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
+
+  ags_sigact.sa_handler = ags_signal_handler;
+  sigemptyset(&ags_sigact.sa_mask);
+  ags_sigact.sa_flags = 0;
+  sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
+  sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+
+  XInitThreads();
+  
+  uid = getuid();
+  pw = getpwuid(uid);
+    
+  /* parse rc file */
+  if(!builtin_theme_disabled){
+    rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
+				  pw->pw_dir,
+				  AGS_DEFAULT_DIRECTORY);
+
+    if(!g_file_test(rc_filename,
+		    G_FILE_TEST_IS_REGULAR)){
+      g_free(rc_filename);
+      rc_filename = g_strdup_printf("%s%s\0",
+				    DESTDIR,
+				    "/gsequencer/styles/ags.rc\0");
+    }
+  
+    gtk_rc_parse(rc_filename);
+    g_free(rc_filename);
+  }
+  
+  /**/
+  LIBXML_TEST_VERSION;
+
+  //ao_initialize();
+
+  gdk_threads_enter();
+  //  g_thread_init(NULL);
+  gtk_init(&argc, &argv);
+
+  if(!builtin_theme_disabled){
+    g_object_set(gtk_settings_get_default(),
+		 "gtk-theme-name\0", "Raleigh\0",
+		 NULL);
+    g_signal_handlers_block_matched(gtk_settings_get_default(),
+				    G_SIGNAL_MATCH_DETAIL,
+				    g_signal_lookup("set-property\0",
+						    GTK_TYPE_SETTINGS),
+				    g_quark_from_string("gtk-theme-name\0"),
+				    NULL,
+				    NULL,
+				    NULL);
+  }
+  
+  ipatch_init();
+  //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
+		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+
+  /* animate */
+  animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  g_atomic_int_set(&(ags_show_start_animation),
+		   TRUE);
+  
+  ags_test_start_animation(animation_thread);
+  
+  ags_test_setup(argc, argv);
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -126,12 +250,14 @@ main(int argc, char **argv)
   //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer setup by file and editing notes\0", ags_functional_note_edit_test_note_edit_file_setup) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer setup manual and editing notes\0", ags_functional_note_edit_test_note_edit_manual_setup) == NULL)){
+  if((CU_add_test(pSuite, "functional test of GSequencer setup by file and editing notes\0", ags_functional_note_edit_test_file_setup) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer setup manual and editing notes\0", ags_functional_note_edit_test_manual_setup) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();
   }
+
+  ags_application_context_quit(ags_application_context);
   
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);

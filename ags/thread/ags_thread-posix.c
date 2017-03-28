@@ -2897,7 +2897,8 @@ ags_thread_loop(void *ptr)
       start_queue_next = start_queue->next;
       
       queued_thread = (AgsThread *) start_queue->data;
-
+      g_object_ref(queued_thread);
+      
       /*  */
       ags_thread_start(queued_thread);
 
@@ -2948,7 +2949,8 @@ ags_thread_loop(void *ptr)
       }
       
       pthread_mutex_unlock(queued_thread->start_mutex);
-
+      g_object_unref(queued_thread);
+      
       start_queue = start_queue_next;
     }
 
