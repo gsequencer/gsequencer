@@ -48,6 +48,8 @@ void ags_gui_thread_suspend(AgsThread *thread);
 void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
+void* ags_gui_thread_do_poll_loop(void *ptr);
+
 guint ags_gui_thread_interrupted(AgsThread *thread,
 				 int sig,
 				 guint time_cycle, guint *time_spent);
@@ -69,6 +71,7 @@ void ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
+gboolean ags_gui_ready = FALSE;
 
 __thread struct sigaction ags_gui_thread_sigact;
 
@@ -232,8 +235,48 @@ ags_gui_thread_start(AgsThread *thread)
 
   /*  */
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
-    AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
+    //    AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
   }
+
+  g_atomic_int_or(&(gui_thread->flags),
+		  AGS_GUI_THREAD_RUNNING);
+
+  pthread_create(thread->thread, thread->thread_attr,
+		 ags_gui_thread_do_poll_loop, thread);
+}
+
+void
+ags_gui_thread_stop(AgsThread *thread)
+{
+  AgsGuiThread *gui_thread;
+
+  gui_thread = AGS_GUI_THREAD(thread);
+
+  g_atomic_int_and(&(gui_thread->flags),
+		   (~(AGS_GUI_THREAD_RUNNING)));
+  
+  /*  */
+  gdk_flush();
+}
+
+void*
+ags_gui_thread_do_poll_loop(void *ptr)
+{
+  AgsGuiThread *gui_thread;
+  
+  gui_thread = (AgsGuiThread *) ptr;
+  
+  /* wait for audio loop */
+  while(!ags_gui_ready){
+    usleep(500000);
+  }
+  
+  /* poll */
+  while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
+    AGS_THREAD_GET_CLASS(gui_thread)->run(gui_thread);
+  }
+  
+  pthread_exit(NULL);
 }
 
 void
@@ -425,9 +468,9 @@ ags_gui_thread_interrupted(AgsThread *thread,
 		   SIGIO);
 
 #ifdef AGS_PTHREAD_SUSPEND
-      //    pthread_suspend(thread->thread);
+      pthread_suspend(thread->thread);
 #else
-      //    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+      pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
     }
   }
@@ -465,16 +508,6 @@ ags_gui_thread_resume(AgsThread *thread)
       pthread_mutex_unlock(thread->suspend_mutex);
     }
   }
-}
-
-void
-ags_gui_thread_stop(AgsThread *thread)
-{
-  /*  */
-  AGS_THREAD_CLASS(ags_gui_thread_parent_class)->stop(thread);  
-
-  /*  */
-  gdk_flush();
 }
 
 void
@@ -536,8 +569,8 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 
       poll_fd->delay = 5.0;
       
-      g_signal_connect(poll_fd, "dispatch\0",
-		       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
+      //      g_signal_connect(poll_fd, "dispatch\0",
+      //	       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
       
       ags_polling_thread_add_poll_fd(polling_thread,
 				     (GObject *) poll_fd);

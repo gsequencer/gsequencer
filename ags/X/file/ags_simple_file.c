@@ -234,6 +234,8 @@ enum{
 static gpointer ags_simple_file_parent_class = NULL;
 static guint simple_file_signals[LAST_SIGNAL] = { 0 };
 
+extern gboolean ags_gui_ready;
+
 GType
 ags_simple_file_get_type(void)
 {
@@ -1136,15 +1138,21 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 {
   AgsApplicationContext *application_context;
 
-  xmlNode *root_node, *child;
+  AgsGuiThread *gui_thread;
 
+  xmlNode *root_node, *child;
+  
   application_context = (AgsApplicationContext *) simple_file->application_context;
+
+  gui_thread = ags_thread_find_type(application_context->main_loop,
+				    AGS_TYPE_GUI_THREAD);
 
   root_node = simple_file->root_node;
 
   /* child elements */
   child = root_node->children;
 
+  /*  */
   ags_application_context_register_types(application_context);
   
   while(child != NULL){
@@ -1181,6 +1189,8 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
   /* start */
   ags_simple_file_read_start(simple_file);
+
+  ags_gui_ready = TRUE;
 }
 
 void

@@ -46,7 +46,7 @@ typedef enum{
   AGS_WORKER_THREAD_RUN_WAIT   = 1 <<  1,
   AGS_WORKER_THREAD_RUN_DONE   = 1 <<  2,
   AGS_WORKER_THREAD_RUN_SYNC   = 1 <<  3,
-};
+}AgsWorkerThreadFlags;
 
 struct _AgsWorkerThread
 {

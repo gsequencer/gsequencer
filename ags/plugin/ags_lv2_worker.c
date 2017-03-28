@@ -192,9 +192,9 @@ ags_lv2_worker_interrupted_callback(AgsThread *thread,
     
     if((AGS_LV2_WORKER_RUN & (g_atomic_int_get(&(lv2_worker->flags)))) != 0){
 #ifdef AGS_PTHREAD_SUSPEND
-    pthread_suspend(thread->thread);
+      pthread_suspend(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+      pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
     }
   }

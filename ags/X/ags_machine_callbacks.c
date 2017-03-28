@@ -138,6 +138,8 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
   AgsWindow *window;
 
   GList *list, *list_start;
+
+  gdk_threads_enter();
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
@@ -174,6 +176,8 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
   /* destroy machine */
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);
+
+  gdk_threads_leave();
 }
 
 void
@@ -211,8 +215,8 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   g_object_ref(machine->audio);
   remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
-  g_signal_connect_after(remove_audio, "launch\0",
-			 G_CALLBACK(ags_machine_remove_audio_launch_callback), machine);
+  g_signal_connect(remove_audio, "launch\0",
+		   G_CALLBACK(ags_machine_remove_audio_launch_callback), machine);
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(remove_audio));
 }
