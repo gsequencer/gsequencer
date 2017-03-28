@@ -45,11 +45,11 @@ void ags_functional_note_edit_test_note_manual_setup();
 void ags_functional_note_edit_test_note_file_setup();
 
 #define AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_COUNT (8)
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_DURATION (10)
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_DURATION (960)
 
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME "ags_functional_note_edit.xml\0"
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME "ags_functional_note_edit_test.xml\0"
 #define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (8)
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (10)
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (960)
 
 #define AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -77,6 +77,7 @@ void ags_functional_note_edit_test_note_file_setup();
   "\n"
 
 extern struct sigaction ags_test_sigact;
+extern gboolean ags_gui_ready;
 
 extern AgsApplicationContext *ags_application_context;
 extern volatile gboolean ags_show_start_animation;
@@ -115,90 +116,13 @@ ags_functional_note_edit_test_quit_stub(AgsApplicationContext *application_conte
 }
 
 void
-ags_functional_note_edit_test_manual_setup()
-{
-  GtkButton *play_button;
-  GtkButton *stop_button;
-  
-  AgsGuiThread *gui_thread;
-  
-  struct timespec start_time, current_time;
-
-  gchar *start_arg[] = {
-    "./gsequencer\0"
-  };
-  
-  guint i;
-  gboolean expired;
-  gboolean success;
-  
-  ags_application_context = NULL;
-
-  ags_test_setup(1, start_arg);
-
-  AGS_APPLICATION_CONTEXT_GET_CLASS(ags_application_context)->quit = ags_functional_note_edit_test_quit_stub;
-  
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* get buttons */
-  play_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->play;
-  stop_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->stop;
-
-  /* launch */
-  ags_test_launch(FALSE);
-
-  /* get initial time */
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
-  success = TRUE;
-  
-  /* do manual setup */
-  //TODO:JK: implement me
-
-  /* do the work */  
-  for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_COUNT; i++){
-    expired = FALSE;
-
-    g_message("start playback");
-    gtk_test_widget_click(play_button,
-    			  0,
-			  0);
-    while(!expired){      
-      /* check expired */
-      clock_gettime(CLOCK_MONOTONIC, &current_time);
-      
-      if(start_time.tv_sec + AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_DURATION < current_time.tv_sec){
-	expired = TRUE;
-      }
-    }
-
-    g_message("stop playback");
-    gtk_test_widget_click(stop_button,
-			  0,
-			  0);
-
-    /* wait some time before next playback */
-    usleep(5000000);
-    
-    if(!expired){
-      success = FALSE;
-    }
-  }
-
-  ags_thread_stop(gui_thread);
-  
-  CU_ASSERT(success == TRUE);
-}
-
-void
 ags_functional_note_edit_test_file_setup()
 {
   GtkButton *play_button;
   GtkButton *stop_button;
   
   AgsGuiThread *gui_thread;
-
+  
   struct timespec start_time, current_time;
 
   gchar *start_arg[] = {
@@ -224,20 +148,25 @@ ags_functional_note_edit_test_file_setup()
   stop_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->stop;
 
   /* launch application */
-  ags_test_launch(FALSE);
+  ags_test_launch_filename(AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME,
+			   FALSE);
 
   /* get initial time */
   clock_gettime(CLOCK_MONOTONIC, &start_time);
   success = TRUE;
   
-  /* do the work */  
+  /* do the work */
+  while(!ags_gui_ready){
+    usleep(500000);
+  }
+
+  usleep(10000000);
+  
   for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_COUNT; i++){
     expired = FALSE;
     
     g_message("start playback");
-    gtk_test_widget_click(play_button,
-			  0,
-			  0);
+    gtk_button_clicked(play_button);
 
     while(!expired){  
       /* check expired */
@@ -249,9 +178,7 @@ ags_functional_note_edit_test_file_setup()
     }
 
     g_message("stop playback");
-    gtk_test_widget_click(stop_button,
-			  0,
-			  0);
+    gtk_button_clicked(stop_button);
 
     /* wait some time before next playback */
     usleep(5000000);
@@ -339,7 +266,7 @@ main(int argc, char **argv)
   pw = getpwuid(uid);
     
   /* parse rc file */
-  rc_filename = g_strdup_printf("gsequencer.share/themes/ags.rc\0",
+  rc_filename = g_strdup_printf("gsequencer.share/styles/ags.rc\0",
 				pw->pw_dir,
 				AGS_DEFAULT_DIRECTORY);
   
@@ -403,8 +330,6 @@ main(int argc, char **argv)
       
     return CU_get_error();
   }
-
-  //  ags_application_context_quit(ags_application_context);
   
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);

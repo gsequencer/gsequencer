@@ -310,7 +310,7 @@ ags_test_start_animation_thread(void *ptr)
   
   gdk_cr = gdk_cairo_create(window->window);
   
-  filename = g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png\0");
+  filename = "gsequencer.share/images/ags_supermoon-800x450.png\0";
 
   surface = cairo_image_surface_create_from_png(filename);
   image_data = cairo_image_surface_get_data(surface);
