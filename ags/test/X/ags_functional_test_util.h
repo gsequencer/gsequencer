@@ -23,10 +23,17 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gtk/gtk.h>
+
+GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,
+					       gchar *item_label);
+gboolean ags_functional_test_util_menu_click(GtkMenu *menu,
+					     gchar *item_label);
+
 /* generic dialog */
-gboolean ags_functional_test_util_dialog_apply(guint nth);
-gboolean ags_functional_test_util_dialog_ok(guint nth);
-gboolean ags_functional_test_util_dialog_cancel(guint nth);
+gboolean ags_functional_test_util_dialog_apply(GtkDialog *dialog);
+gboolean ags_functional_test_util_dialog_ok(GtkDialog *dialog);
+gboolean ags_functional_test_util_dialog_cancel(GtkDialog *dialog);
 
 /* file */
 gboolean ags_functional_test_util_open(gchar *filename);
@@ -37,21 +44,20 @@ gboolean ags_functional_test_util_save_as(gchar *filename);
 gboolean ags_functional_test_util_export_open();
 gboolean ags_functional_test_util_export_close();
 gboolean ags_funcitonal_test_util_export_add();
-gboolean ags_funcitonal_test_util_export_tact();
+gboolean ags_funcitonal_test_util_export_tact(gdouble tact);
 
 gboolean ags_funcitonal_test_util_export_remove(guint nth);
 gboolean ags_funcitonal_test_util_export_set_backend(guint nth,
-						     gchar *device);
+						     gchar *backend);
 gboolean ags_funcitonal_test_util_export_set_device(guint nth,
 						    gchar *device);
 gboolean ags_funcitonal_test_util_export_set_filename(guint nth,
-						      gchar *format);
+						      gchar *filename);
 gboolean ags_funcitonal_test_util_export_set_open(guint nth);
 gboolean ags_funcitonal_test_util_export_set_format(guint nth,
 						    gchar *format);
 
-gboolean ags_funcitonal_test_util_export_do_export(guint nth,
-						   gchar *format);
+gboolean ags_funcitonal_test_util_export_do_export();
 
 gboolean ags_functional_test_util_quit();
 
@@ -91,25 +97,79 @@ gboolean ags_functional_test_util_navigation_loop_right(gdouble loop_right);
 gboolean ags_functional_test_util_navigation_exclude_sequencers();
 
 /* toolbar */
-//TODO:JK:
+gboolean ags_functional_test_util_toolbar_cursor_click();
+gboolean ags_functional_test_util_toolbar_edit_click();
+gboolean ags_functional_test_util_toolbar_delete_click();
+gboolean ags_functional_test_util_toolbar_select_click();
+gboolean ags_functional_test_util_toolbar_invert_click();
+
+gboolean ags_functional_test_util_toolbar_paste_click();
+gboolean ags_functional_test_util_toolbar_copy_click();
+gboolean ags_functional_test_util_toolbar_cut_click();
+
+gboolean ags_functional_test_util_toolbar_zoom(guint nth_zoom);
 
 /* machine selector */
-//TODO:JK:
+gboolean ags_functional_test_util_machine_selector_select(guint nth_machine);
 
 /* machine selection */
-//TODO:JK:
+gboolean ags_functional_test_util_machine_selection_select(guint nth_machine);
+
+gboolean ags_functional_test_util_machine_selection_remove_index();
+gboolean ags_functional_test_util_machine_selection_add_index();
+gboolean ags_functional_test_util_machine_selection_link_index();
+gboolean ags_functional_test_util_machine_selection_reverse_mapping();
+gboolean ags_functional_test_util_machine_selection_shift_piano(guint nth_shift);
 
 /* pattern edit */
-//TODO:JK:
+gboolean ags_functional_test_util_pattern_edit_delete_point(guint nth_index,
+							    guint x,
+							    guint y);
+gboolean ags_functional_test_util_pattern_edit_add_point(guint nth_index,
+							 guint x,
+							 guint y);
+gboolean ags_functional_test_util_pattern_edit_select_region(guint nth_index,
+							     guint x0, guint x1,
+							     guint y0, guint y1);
 
 /* note edit */
-//TODO:JK:
+gboolean ags_functional_test_util_note_edit_delete_point(guint nth_index,
+							 guint x,
+							 guint y);
+gboolean ags_functional_test_util_note_edit_add_point(guint nth_index,
+						      guint x0, guint x1,
+						      guint y);
+gboolean ags_functional_test_util_note_edit_select_region(guint nth_index,
+							  guint x0, guint x1,
+							  guint y0, guint y1);
 
 /* automation toolbar */
-//TODO:JK:
+gboolean ags_functional_test_util_automation_toolbar_cursor_click();
+gboolean ags_functional_test_util_automation_toolbar_edit_click();
+gboolean ags_functional_test_util_automation_toolbar_delete_click();
+gboolean ags_functional_test_util_automation_toolbar_select_click();
+
+gboolean ags_functional_test_util_automation_toolbar_paste_click();
+gboolean ags_functional_test_util_automation_toolbar_copy_click();
+gboolean ags_functional_test_util_automation_toolbar_cut_click();
+
+gboolean ags_functional_test_util_automation_toolbar_zoom(guint nth_zoom);
 
 /* automation edit */
-//TODO:JK:
+gboolean ags_functional_test_util_automation_edit_audio_click();
+gboolean ags_functional_test_util_automation_edit_output_click();
+gboolean ags_functional_test_util_automation_edit_input_click();
+
+/* automation area */
+gboolean ags_functional_test_util_automation_edit_delete_point(guint nth_index,
+							       guint x,
+							       guint y);
+gboolean ags_functional_test_util_automation_edit_add_point(guint nth_index,
+							    guint x,
+							    guint y);
+gboolean ags_functional_test_util_automation_edit_select_region(guint nth_index,
+								guint x0, guint x1,
+								guint y0, guint y1);
 
 /* generic machine */
 gboolean ags_functional_test_util_machine_move_up(guint nth_machine);
@@ -174,10 +234,10 @@ gboolean ags_functional_test_util_machine_properties_bulk_link(guint nth_machine
 							       gchar *link);
 gboolean ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
 								     guint nth_bulk,
-								     guint first_line)
-  gboolean ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
-								     guint nth_bulk,
-								      guint first_link_line);
+								     guint first_line);
+gboolean ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
+								    guint nth_bulk,
+								    guint first_link_line);
 gboolean ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
 								guint nth_bulk,
 								guint count);
@@ -192,7 +252,10 @@ gboolean ags_functional_test_util_machine_properties_resize_outputs(guint nth_ma
 gboolean ags_functional_test_util_machine_edit_copy(guint nth_machine);
 
 /* line member */
-//TODO:JK:
+gboolean ags_functional_test_util_line_member_set_toggled(gchar *specifier,
+							  gboolean is_toggled);
+gboolean ags_functional_test_util_line_member_set_value(gchar *specifier,
+							gdouble value);
 
 /* audio connection */
 gboolean ags_functional_test_util_machine_audio_connection_click_tab(guint nth_machine,
