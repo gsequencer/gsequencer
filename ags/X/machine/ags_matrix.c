@@ -469,8 +469,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   AgsMachine *machine;
   AgsMatrix *matrix;
 
-  AgsGuiThread *gui_thread;
-
   AgsChannel *channel, *source;
   AgsAudioSignal *audio_signal;
 
@@ -514,19 +512,14 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   machine = AGS_MACHINE(matrix);
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
+  application_context = window->application_context;
+  
   /* get main loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
   
   pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
-						      AGS_TYPE_GUI_THREAD);
-
-  /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   /* set size request if needed */
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
@@ -544,8 +537,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       //				  AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY * matrix->cell_pattern->cell_height + AGS_LED_DEFAULT_HEIGHT + 2);
     }
   }
-
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   gdk_threads_leave();
   

@@ -55,42 +55,16 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
   AgsAutomationEditor *automation_editor;
   AgsAutomationEditorChild *editor_child;
   AgsNotebook *notebook;
-  
-  AgsGuiThread *gui_thread;
-  
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-
-  AgsApplicationContext *application_context;
 
   GList *list;
 
   guint pads;
   guint i, j;
   gboolean is_output;
-  
-  pthread_mutex_t *application_mutex;
+
+  gdk_threads_enter();
 
   window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
-						     AGS_TYPE_GUI_THREAD);
-  
-  /*  */
-  gdk_threads_enter();
   
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
@@ -163,42 +137,16 @@ ags_automation_edit_set_pads_callback(AgsAudio *audio,
   AgsAutomationEditor *automation_editor;
   AgsAutomationEditorChild *editor_child;
   AgsNotebook *notebook;
-  
-  AgsGuiThread *gui_thread;
-  
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-
-  AgsApplicationContext *application_context;
 
   GList *list;
 
   guint audio_channels;
   guint i, j;
   gboolean is_output;
-
-  pthread_mutex_t *application_mutex;
   
-  window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
-  /*  */
   gdk_threads_enter();
+
+  window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);

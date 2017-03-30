@@ -69,6 +69,8 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <math.h>
 
 void ags_synth_class_init(AgsSynthClass *synth);
@@ -607,7 +609,9 @@ ags_synth_update(AgsSynth *synth)
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *application_mutex;
-    
+
+  gdk_threads_enter();
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -634,7 +638,7 @@ ags_synth_update(AgsSynth *synth)
 					 (GObject *) audio);
   
   pthread_mutex_unlock(application_mutex);
-  
+
   /*  */
   start_frequency = (gdouble) gtk_spin_button_get_value_as_float(synth->lower);
 
@@ -731,6 +735,8 @@ ags_synth_update(AgsSynth *synth)
   }
   
   g_list_free(input_pad_start);
+
+  gdk_threads_leave();
 }
 
 /**

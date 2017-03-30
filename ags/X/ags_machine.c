@@ -1303,27 +1303,31 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
     GList *list, *list_next;
 
     /* input - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-    list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_INPUT){
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+      list = g_list_nth(list, pads);
 
-    while(list != NULL){
-      list_next = list->next;
+      while(list != NULL){
+	list_next = list->next;
 
-      gtk_widget_destroy(GTK_WIDGET(list->data));
+	gtk_widget_destroy(GTK_WIDGET(list->data));
 
-      list = list_next;
+	list = list_next;
+      }
     }
-
+    
     /* output - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-    list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_OUTPUT){
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+      list = g_list_nth(list, pads);
 
-    while(list != NULL){
-      list_next = list->next;
+      while(list != NULL){
+	list_next = list->next;
 
-      gtk_widget_destroy(GTK_WIDGET(list->data));
+	gtk_widget_destroy(GTK_WIDGET(list->data));
 
-      list = list_next;
+	list = list_next;
+      }
     }
   }
 

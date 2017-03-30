@@ -26,6 +26,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_polling_thread.h>
 #include <ags/thread/ags_poll_fd.h>
+#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
 
 #include <ags/X/ags_xorg_application_context.h>
@@ -269,6 +270,7 @@ void*
 ags_gui_thread_do_poll_loop(void *ptr)
 {
   AgsGuiThread *gui_thread;
+  AgsTaskThread *task_thread;
   AgsThread *thread;
   
   AgsXorgApplicationContext *xorg_application_context;
@@ -294,10 +296,17 @@ ags_gui_thread_do_poll_loop(void *ptr)
   while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
     usleep(500000);
   }
+
+  task_thread = ags_thread_find_type(AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop,
+				     AGS_TYPE_TASK_THREAD);
   
   /* poll */
   while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
+    pthread_mutex_lock(task_thread->launch_mutex);
+    
     AGS_THREAD_GET_CLASS(gui_thread)->run(gui_thread);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
   }
   
   pthread_exit(NULL);
@@ -452,11 +461,11 @@ ags_gui_thread_run(AgsThread *thread)
   /* dispatch */  
   some_ready = g_main_context_check(main_context, gui_thread->max_priority, gui_thread->cached_poll_array, gui_thread->cached_poll_array_size);
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  gdk_threads_enter();
   
   g_main_context_dispatch(main_context);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  gdk_threads_leave();
   
   if(g_atomic_int_get(&(gui_thread->dispatching)) == TRUE){
     g_atomic_int_set(&(gui_thread->dispatching),

@@ -186,12 +186,12 @@ ags_remove_soundcard_editor_jack_launch(AgsTask *task)
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
 						      AGS_TYPE_GUI_THREAD);
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  gdk_threads_enter();
 
   ags_soundcard_editor_remove_jack(AGS_REMOVE_SOUNDCARD_EDITOR_JACK(task)->soundcard_editor,
 				   AGS_REMOVE_SOUNDCARD_EDITOR_JACK(task)->card);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  gdk_threads_leave();
 
   /* unlock gdk threads */
   gdk_threads_leave();

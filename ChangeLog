@@ -1,3 +1,10 @@
+ags (0.7.122.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented notebook resize in automation editor
+	* fixed NULL pointer dereference in ags_matrix.c
+	* fixed resize pad to distinguish between input and output
+
 ags (0.7.122.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
