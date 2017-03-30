@@ -26,6 +26,15 @@
 
 #include <ags/X/editor/ags_automation_edit.h>
 
+
+void ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
+						     guint audio_channels, guint audio_channels_old,
+						     AgsAutomationEdit *automation_edit);
+void ags_automation_edit_set_pads_callback(AgsAudio *audio,
+					   GType channel_type,
+					   guint pads, guint pads_old,
+					   AgsAutomationEdit *automation_edit);
+
 gboolean ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event,
 						       AgsAutomationEdit *automation_edit);
 gboolean ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event,

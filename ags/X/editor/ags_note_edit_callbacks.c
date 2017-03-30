@@ -89,8 +89,6 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
 
   pthread_mutex_t *application_mutex;
 
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) note_edit);
 
   application_context = (AgsApplicationContext *) window->application_context;
@@ -110,7 +108,7 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
 						      AGS_TYPE_GUI_THREAD);
 
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  gdk_threads_enter();
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
@@ -127,9 +125,7 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
     list = list->next;
   }
 
-  if(editor_child == NULL){
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
-    
+  if(editor_child == NULL){    
     gdk_threads_leave();
     
     return;
@@ -156,8 +152,6 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
 			      i);
     }
   }
-
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   gdk_threads_leave();
 }
@@ -190,8 +184,6 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
     }
   }
   
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) note_edit);
 
   application_context = (AgsApplicationContext *) window->application_context;
@@ -211,7 +203,7 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
 						      AGS_TYPE_GUI_THREAD);
 
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  gdk_threads_enter();
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
@@ -225,8 +217,6 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
   }
 
   gtk_widget_queue_draw((GtkWidget *) editor->current_meter);
-
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   gdk_threads_leave();
 }

@@ -19,12 +19,16 @@
 
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
+
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_thread-posix.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_notebook.h>
@@ -37,8 +41,228 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <math.h>
 #include <gdk/gdkkeysyms.h>
+
+void
+ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
+						guint audio_channels, guint audio_channels_old,
+						AgsAutomationEdit *automation_edit)
+{
+  AgsWindow *window;
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationEditorChild *editor_child;
+  AgsNotebook *notebook;
+  
+  AgsGuiThread *gui_thread;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+
+  guint pads;
+  guint i, j;
+  gboolean is_output;
+  
+  pthread_mutex_t *application_mutex;
+
+  window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						     AGS_TYPE_GUI_THREAD);
+  
+  /*  */
+  gdk_threads_enter();
+  
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  editor_child = NULL;
+  list = automation_editor->automation_editor_child;
+  
+  while(list != NULL){
+    if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_automation_edit == (GtkWidget *) automation_edit){
+      gdk_threads_leave();
+    
+      return;
+    }else if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_automation_edit == (GtkWidget *) automation_edit){
+      editor_child = AGS_AUTOMATION_EDITOR_CHILD(list->data);
+
+      notebook = editor_child->output_notebook;
+
+      pads = audio->output_pads;
+      is_output = TRUE;
+
+      break;
+    }else if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_automation_edit == (GtkWidget *) automation_edit){
+      editor_child = AGS_AUTOMATION_EDITOR_CHILD(list->data);
+
+      notebook = editor_child->input_notebook;
+
+      pads = audio->input_pads;
+      is_output = FALSE;
+
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  if(editor_child == NULL){    
+    gdk_threads_leave();
+    
+    return;
+  }
+
+  if(audio_channels_old < audio_channels){
+    for(j = 0; j < pads; j++){
+      for(i = audio_channels_old; i < audio_channels; i++){
+	ags_notebook_insert_tab(notebook,
+				j * audio_channels + i);
+      }
+    }
+    
+    gtk_widget_show_all((GtkWidget *) notebook);
+  }else if(audio_channels_old > audio_channels){
+    for(j = 0; j < pads; j++){
+      for(i = audio_channels; i < audio_channels_old; i++){
+	ags_notebook_remove_tab(notebook,
+				j * audio_channels + i);
+      }
+    }
+  }
+
+  gdk_threads_leave();
+}
+
+void
+ags_automation_edit_set_pads_callback(AgsAudio *audio,
+				      GType channel_type,
+				      guint pads, guint pads_old,
+				      AgsAutomationEdit *automation_edit)
+{
+  AgsWindow *window;
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationEditorChild *editor_child;
+  AgsNotebook *notebook;
+  
+  AgsGuiThread *gui_thread;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+
+  guint audio_channels;
+  guint i, j;
+  gboolean is_output;
+
+  pthread_mutex_t *application_mutex;
+  
+  window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						     AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  gdk_threads_enter();
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  editor_child = NULL;
+  list = automation_editor->automation_editor_child;
+
+  audio_channels = audio->audio_channels;
+  
+  while(list != NULL){
+    if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_automation_edit == (GtkWidget *) automation_edit){
+      gdk_threads_leave();
+    
+      return;
+    }else if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_automation_edit == (GtkWidget *) automation_edit){
+      editor_child = AGS_AUTOMATION_EDITOR_CHILD(list->data);
+
+      notebook = editor_child->output_notebook;
+      
+      is_output = TRUE;
+
+      break;
+    }else if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_automation_edit == (GtkWidget *) automation_edit){
+      editor_child = AGS_AUTOMATION_EDITOR_CHILD(list->data);
+
+      notebook = editor_child->input_notebook;
+ 
+      is_output = FALSE;
+
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  if(editor_child == NULL){    
+    gdk_threads_leave();
+    
+    return;
+  }
+
+  if(pads_old < pads){
+    for(j = pads_old; j < pads; j++){
+      for(i = 0; i < audio_channels; i++){
+	ags_notebook_insert_tab(notebook,
+				j * audio_channels + i);
+      }
+    }
+    
+    gtk_widget_show_all((GtkWidget *) notebook);
+  }else if(pads_old > pads){
+    for(j = pads; j < pads_old; j++){
+      for(i = 0; i < audio_channels; i++){
+	ags_notebook_remove_tab(notebook,
+				j * audio_channels + i);
+      }
+    }
+  }
+
+  gdk_threads_leave();
+}
 
 gboolean
 ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event,
