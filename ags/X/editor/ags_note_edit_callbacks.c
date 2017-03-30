@@ -59,6 +59,8 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <gdk/gdkkeysyms.h>
 
 void ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note);
@@ -68,13 +70,47 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
 					  guint audio_channels, guint audio_channels_old,
 					  AgsNoteEdit *note_edit)
 {
+  AgsWindow *window;
   AgsEditor *editor;
   AgsEditorChild *editor_child;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
 
   GList *list;
   GList *tabs;
   GList *notation;
+
   guint i;
+
+  pthread_mutex_t *application_mutex;
+
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) note_edit);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
@@ -92,6 +128,10 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
   }
 
   if(editor_child == NULL){
+    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    
+    gdk_threads_leave();
+    
     return;
   }
   
@@ -116,6 +156,10 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
 			      i);
     }
   }
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  gdk_threads_leave();
 }
 
 void
@@ -124,10 +168,17 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
 				guint pads, guint pads_old,
 				AgsNoteEdit *note_edit)
 {
+  AgsWindow *window;
   AgsEditor *editor;
 
-  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
-						 AGS_TYPE_EDITOR);
+  AgsGuiThread *gui_thread;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
 
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
@@ -138,6 +189,32 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
       return;
     }
   }
+  
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) note_edit);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
+						 AGS_TYPE_EDITOR);
 
   if(AGS_IS_NOTE_EDIT(note_edit)){
     ags_note_edit_set_map_height(note_edit,
@@ -148,6 +225,10 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
   }
 
   gtk_widget_queue_draw((GtkWidget *) editor->current_meter);
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  gdk_threads_leave();
 }
 
 gboolean

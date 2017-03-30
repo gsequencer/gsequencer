@@ -29,9 +29,9 @@
 
 #include "gsequencer_setup_util.h"
 
-#include <libags.h>
-#include <libags-audio.h>
-#include <libags-gui.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -61,7 +61,6 @@
 struct sigaction ags_test_sigact;
 
 extern AgsApplicationContext *ags_application_context;
-extern gboolean ags_gui_ready;
 
 extern volatile gboolean ags_show_start_animation;
 
@@ -458,24 +457,30 @@ ags_test_launch(gboolean single_thread)
     
     pthread_mutex_unlock(audio_loop->start_mutex);
 
+    /* start gui thread */
+    ags_thread_start(gui_thread);
+
     /* wait for gui thread */
-    //    pthread_mutex_lock(gui_thread->start_mutex);
+    pthread_mutex_lock(gui_thread->start_mutex);
 
-    //    if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+    if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
       
-    //      g_atomic_int_set(&(gui_thread->start_wait),
-    //		       TRUE);
+      g_atomic_int_set(&(gui_thread->start_wait),
+    		       TRUE);
 
-    //      while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-    //	g_atomic_int_set(&(gui_thread->start_wait),
-    //			 TRUE);
+      while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+    	g_atomic_int_set(&(gui_thread->start_wait),
+    			 TRUE);
 	
-    //	pthread_cond_wait(gui_thread->start_cond,
-    //			  gui_thread->start_mutex);
-    //      }
-    //    }
+    	pthread_cond_wait(gui_thread->start_cond,
+			  gui_thread->start_mutex);
+      }
+    }
     
-  //    pthread_mutex_unlock(gui_thread->start_mutex);
+    pthread_mutex_unlock(gui_thread->start_mutex);
+
+    g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready),
+		     1);
     
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
@@ -493,11 +498,6 @@ ags_test_launch(gboolean single_thread)
 	
       pthread_mutex_unlock(audio_loop->start_mutex);
     }
-
-    /* start gui thread */
-    ags_thread_start(gui_thread);
-
-    ags_gui_ready = TRUE;
   }else{
     AgsSingleThread *single_thread;
 
@@ -624,26 +624,28 @@ ags_test_launch_filename(gchar *filename,
       }
     
       pthread_mutex_unlock(audio_loop->start_mutex);
+      
+      /* start gui thread */
+      ags_thread_start(gui_thread);
 
       /* wait for gui thread */
-      //      pthread_mutex_lock(gui_thread->start_mutex);
+      pthread_mutex_lock(gui_thread->start_mutex);
 
-      //      if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+      if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
       
-      //	g_atomic_int_set(&(gui_thread->start_wait),
-      //			 TRUE);
+      	g_atomic_int_set(&(gui_thread->start_wait),
+      			 TRUE);
 
-    //	while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-    //	  g_atomic_int_set(&(gui_thread->start_wait),
-    //			   TRUE);
+    	while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+    	  g_atomic_int_set(&(gui_thread->start_wait),
+    			   TRUE);
 	
-    //	  pthread_cond_wait(gui_thread->start_cond,
-    //			    gui_thread->start_mutex);
-    //	}
-    //      }
+    	  pthread_cond_wait(gui_thread->start_cond,
+    			    gui_thread->start_mutex);
+    	}
+      }
     
-    //      pthread_mutex_unlock(gui_thread->start_mutex);
-     
+      pthread_mutex_unlock(gui_thread->start_mutex);     
       
       /* autosave thread */
       if(!g_strcmp0(ags_config_get_value(config,

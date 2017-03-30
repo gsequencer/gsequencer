@@ -28,6 +28,8 @@
 #include <ags/thread/ags_poll_fd.h>
 #include <ags/thread/ags_task_completion.h>
 
+#include <ags/X/ags_xorg_application_context.h>
+
 #include <gdk/gdk.h>
 
 #include <fontconfig/fontconfig.h>
@@ -71,7 +73,6 @@ void ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
-gboolean ags_gui_ready = FALSE;
 
 __thread struct sigaction ags_gui_thread_sigact;
 
@@ -196,9 +197,14 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->task_completion_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(gui_thread->task_completion_mutex,
 		     &attr);
-    
+
   g_atomic_pointer_set(&(gui_thread->task_completion),
 		       NULL);
+
+  /*  */
+  gui_thread->dispatch_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(gui_thread->dispatch_mutex,
+		     &attr);
 }
 
 void
@@ -263,11 +269,29 @@ void*
 ags_gui_thread_do_poll_loop(void *ptr)
 {
   AgsGuiThread *gui_thread;
+  AgsThread *thread;
+  
+  AgsXorgApplicationContext *xorg_application_context;
   
   gui_thread = (AgsGuiThread *) ptr;
+  thread = (AgsThread *) ptr;
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* notify start */
+  pthread_mutex_lock(thread->start_mutex);
+      
+  g_atomic_int_set(&(thread->start_done),
+		   TRUE);    
+      
+  if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
+    pthread_cond_broadcast(thread->start_cond);
+  }
+      
+  pthread_mutex_unlock(thread->start_mutex);
   
   /* wait for audio loop */
-  while(!ags_gui_ready){
+  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
     usleep(500000);
   }
   
@@ -428,7 +452,11 @@ ags_gui_thread_run(AgsThread *thread)
   /* dispatch */  
   some_ready = g_main_context_check(main_context, gui_thread->max_priority, gui_thread->cached_poll_array, gui_thread->cached_poll_array_size);
 
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  
   g_main_context_dispatch(main_context);
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
   
   if(g_atomic_int_get(&(gui_thread->dispatching)) == TRUE){
     g_atomic_int_set(&(gui_thread->dispatching),

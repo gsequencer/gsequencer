@@ -1,3 +1,13 @@
+ags (0.7.122.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* stability improvements
+
+ags (0.7.122.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* decoupled gui thread
+
 ags (0.7.122.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

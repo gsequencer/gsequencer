@@ -47,6 +47,8 @@
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #define AGS_RENAME_ENTRY "AgsRenameEntry\0"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
@@ -137,17 +139,54 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
 {
   AgsWindow *window;
 
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+
+  AgsApplicationContext *application_context;
+
   GList *list, *list_start;
+
+  pthread_mutex_t *application_mutex;
 
   gdk_threads_enter();
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  
   /* destroy editor */
   list = window->editor->editor_child;
 
   while(list != NULL){
     if(AGS_EDITOR_CHILD(list->data)->machine == machine){
+      //TODO:JK: remove work-around
+      g_signal_handlers_disconnect_by_data(machine->audio,
+					   AGS_EDITOR_CHILD(list->data)->notebook);
+      g_signal_handlers_disconnect_by_data(machine->audio,
+					   AGS_EDITOR_CHILD(list->data)->edit_widget);
+      
+      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_EDITOR_CHILD(list->data)->notebook));
+      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_EDITOR_CHILD(list->data)->edit_widget));
+      
       gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->notebook);
       gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->meter);
       gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->edit_widget);
@@ -177,6 +216,8 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);
 
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  
   gdk_threads_leave();
 }
 
@@ -634,11 +675,46 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
 					guint audio_channels, guint audio_channels_old,
 					AgsMachine *machine)
 {
+  AgsWindow *window;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
   GList *pad_list;
   GList *line_list;
   
   guint i;
+
+  pthread_mutex_t *application_mutex;
   
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+
+  /* resize */
   ags_machine_resize_audio_channels(machine,
 				    audio_channels, audio_channels_old);
 
@@ -681,6 +757,10 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
       }
     }
   }
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  gdk_threads_leave();
 }
 
 void
@@ -688,8 +768,43 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
 			      guint pads, guint pads_old,
 			      AgsMachine *machine)
 {
-  GList *pad_list;
+  AgsWindow *window;
+
+  AgsGuiThread *gui_thread;
   
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  GList *pad_list;
+
+  pthread_mutex_t *application_mutex;
+  
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+
+  /* resize */
   ags_machine_resize_pads(machine,
 			  channel_type,
 			  pads, pads_old);
@@ -723,6 +838,10 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
       }
     }
   }
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  gdk_threads_leave();
 }
 
 void

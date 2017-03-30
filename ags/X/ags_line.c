@@ -624,6 +624,9 @@ ags_line_disconnect(AgsConnectable *connectable)
   if(list_start != NULL){
     g_list_free(list_start);
   }
+
+  g_signal_handlers_disconnect_by_data(line->channel,
+				       line);
 }
 
 gchar*
@@ -1630,13 +1633,13 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 {
   AgsLine *line;
 
-  line = gtk_widget_get_ancestor(widget,
-				 AGS_TYPE_LINE);
-  
   if(g_hash_table_lookup(ags_line_indicator_queue_draw,
 			 widget) != NULL){      
     GList *list, *list_start;
     
+    line = gtk_widget_get_ancestor(widget,
+				   AGS_TYPE_LINE);
+  
     list_start = 
       list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);
     

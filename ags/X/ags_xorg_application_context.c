@@ -363,6 +363,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   guint i;
   gboolean has_jack;
+
+  g_atomic_int_set(&(xorg_application_context->gui_ready),
+		   0);
   
   AGS_APPLICATION_CONTEXT(xorg_application_context)->log = NULL;
 

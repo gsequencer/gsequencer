@@ -41,15 +41,11 @@ int ags_functional_note_edit_test_clean_suite();
 
 void ags_functional_note_edit_test_quit_stub(AgsApplicationContext *application_context);
 
-void ags_functional_note_edit_test_note_manual_setup();
 void ags_functional_note_edit_test_note_file_setup();
 
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_COUNT (8)
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_DURATION (960)
-
 #define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME "ags_functional_note_edit_test.xml\0"
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (8)
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (960)
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (30)
 
 #define AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -77,7 +73,6 @@ void ags_functional_note_edit_test_note_file_setup();
   "\n"
 
 extern struct sigaction ags_test_sigact;
-extern gboolean ags_gui_ready;
 
 extern AgsApplicationContext *ags_application_context;
 extern volatile gboolean ags_show_start_animation;
@@ -156,13 +151,13 @@ ags_functional_note_edit_test_file_setup()
   success = TRUE;
   
   /* do the work */
-  while(!ags_gui_ready){
+  while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
     usleep(500000);
   }
 
   usleep(10000000);
   
-  for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_COUNT; i++){
+  for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT; i++){
     expired = FALSE;
     
     g_message("start playback");
@@ -172,7 +167,7 @@ ags_functional_note_edit_test_file_setup()
       /* check expired */
       clock_gettime(CLOCK_MONOTONIC, &current_time);
       
-      if(start_time.tv_sec + AGS_FUNCTIONAL_NOTE_EDIT_TEST_MANUAL_SETUP_PLAYBACK_DURATION < current_time.tv_sec){
+      if(start_time.tv_sec + AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION < current_time.tv_sec){
 	expired = TRUE;
       }
     }

@@ -697,7 +697,47 @@ ags_machine_connect(AgsConnectable *connectable)
 void
 ags_machine_disconnect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
+  GList *pad_list;
+
+  /* AgsMachine */
+  machine = AGS_MACHINE(connectable);
+
+  if((AGS_MACHINE_CONNECTED & (machine->flags)) == 0){
+    return;
+  }
+
+  machine->flags &= (~AGS_MACHINE_CONNECTED);
+
+  if(machine->bridge != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(machine->bridge));
+  }
+
+  /* AgsPad - input */
+  if(machine->input != NULL){
+    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+    while(pad_list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(pad_list->data));
+      
+      pad_list = pad_list->next;
+    }
+  }
+
+  /* AgsPad - output */
+  if(machine->output != NULL){
+    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    
+    while(pad_list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(pad_list->data));
+      
+      pad_list = pad_list->next;
+    }
+  }
+
   //TODO:JK: implement me
+  g_signal_handlers_disconnect_by_data(machine->audio,
+				       machine);
 }
 
 

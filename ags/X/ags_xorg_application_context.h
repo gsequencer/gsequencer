@@ -70,6 +70,8 @@ struct _AgsXorgApplicationContext
 {
   AgsApplicationContext application_context;
 
+  volatile gboolean gui_ready;
+  
   AgsThreadPool *thread_pool;
 
   AgsPollingThread *polling_thread;

@@ -19,13 +19,59 @@
 
 #include <ags/X/ags_effect_bridge_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/X/ags_window.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
+
 void
 ags_effect_bridge_set_audio_channels_callback(AgsAudio *audio,
 					      guint audio_channels, guint audio_channels_old,
 					      AgsEffectBridge *effect_bridge)
 {
+  AgsWindow *window;
+  
+  AgsGuiThread *gui_thread;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bridge);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						     AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+
   ags_effect_bridge_resize_audio_channels(effect_bridge,
 					  audio_channels, audio_channels_old);
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  gdk_threads_leave();
 }
 
 void
@@ -34,8 +80,46 @@ ags_effect_bridge_set_pads_callback(AgsAudio *audio,
 				    guint pads, guint pads_old,
 				    AgsEffectBridge *effect_bridge)
 {  
+  AgsWindow *window;
+  
+  AgsGuiThread *gui_thread;
+  
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bridge);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						     AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+
   ags_effect_bridge_resize_pads(effect_bridge,
 				channel_type,
 				pads, pads_old);
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  gdk_threads_leave();
 }
 

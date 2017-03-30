@@ -74,6 +74,8 @@
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <math.h>
 
 #define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY"
@@ -463,14 +465,20 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 		    guint pads, guint pads_old,
 		    gpointer data)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsMatrix *matrix;
+
+  AgsGuiThread *gui_thread;
 
   AgsChannel *channel, *source;
   AgsAudioSignal *audio_signal;
 
   AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
 
+  AgsApplicationContext *application_context;
+  
   guint i, j;
   gboolean grow;
 
@@ -501,7 +509,24 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
   pthread_mutex_unlock(audio_mutex);
 
+  gdk_threads_enter();
+  
   machine = AGS_MACHINE(matrix);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+
+  /* get main loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   /* set size request if needed */
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
@@ -520,6 +545,10 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     }
   }
 
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  gdk_threads_leave();
+  
   if(pads_old < pads){
     grow = TRUE;
   }else{

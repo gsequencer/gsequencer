@@ -19,13 +19,19 @@
 
 #include <ags/X/task/ags_add_soundcard_editor_jack.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_add_soundcard_editor_jack_class_init(AgsAddSoundcardEditorJackClass *add_soundcard_editor_jack);
 void ags_add_soundcard_editor_jack_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -147,8 +153,47 @@ ags_add_soundcard_editor_jack_finalize(GObject *gobject)
 void
 ags_add_soundcard_editor_jack_launch(AgsTask *task)
 {
+  AgsWindow *window;
+
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+  
+  pthread_mutex_t *application_mutex;
+  
+  /* lock gdk threads */
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SOUNDCARD_EDITOR_JACK(task)->soundcard_editor);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+
   ags_soundcard_editor_add_jack(AGS_ADD_SOUNDCARD_EDITOR_JACK(task)->soundcard_editor,
 				NULL);
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
+  /* unlock gdk threads */
+  gdk_threads_leave();
 }
 
 /**

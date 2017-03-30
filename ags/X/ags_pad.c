@@ -422,7 +422,32 @@ ags_pad_connect(AgsConnectable *connectable)
 void
 ags_pad_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPad *pad;
+  GList *line_list, *line_list_start;
+
+  /* AgsPad */
+  pad = AGS_PAD(connectable);
+
+  if((AGS_PAD_CONNECTED & (pad->flags)) == 0){
+    return;
+  }
+  
+  pad->flags &= (~AGS_PAD_CONNECTED);
+
+  /* AgsLine */
+  line_list_start =  
+    line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+
+  while(line_list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_list->data));
+
+    line_list = line_list->next;
+  }
+
+  g_list_free(line_list_start);
+
+  g_signal_handlers_disconnect_by_data(pad->channel,
+				       pad);
 }
 
 gchar*

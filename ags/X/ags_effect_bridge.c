@@ -636,6 +636,10 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 
     g_list_free(effect_pad_list_start);
   }
+
+  //TODO:JK: implement me
+  g_signal_handlers_disconnect_by_data(effect_bridge->audio,
+				       effect_bridge);
 }
 
 gchar*

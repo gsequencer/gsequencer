@@ -234,8 +234,6 @@ enum{
 static gpointer ags_simple_file_parent_class = NULL;
 static guint simple_file_signals[LAST_SIGNAL] = { 0 };
 
-extern gboolean ags_gui_ready;
-
 GType
 ags_simple_file_get_type(void)
 {
@@ -1190,7 +1188,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   /* start */
   ags_simple_file_read_start(simple_file);
 
-  ags_gui_ready = TRUE;
+  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->gui_ready),
+		     1);
+    
 }
 
 void

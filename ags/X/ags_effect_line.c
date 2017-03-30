@@ -504,6 +504,9 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
   if(list_start != NULL){
     g_list_free(list_start);
   }
+
+  g_signal_handlers_disconnect_by_data(effect_line->channel,
+				       effect_line);
 }
 
 gchar*

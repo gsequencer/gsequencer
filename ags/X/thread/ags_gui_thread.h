@@ -71,6 +71,8 @@ struct _AgsGuiThread
   
   pthread_mutex_t *task_completion_mutex;
   volatile GList *task_completion;
+
+  pthread_mutex_t *dispatch_mutex;
 };
 
 struct _AgsGuiThreadClass

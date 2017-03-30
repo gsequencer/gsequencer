@@ -61,6 +61,8 @@
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
 {
@@ -153,17 +155,48 @@ ags_line_add_effect_callback(AgsChannel *channel,
 			     gchar *effect,
 			     AgsLine *line)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineMemberEditor *line_member_editor;
   AgsPluginBrowser *plugin_browser;
+
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
   
   GList *pad_editor, *pad_editor_start;
   GList *line_editor, *line_editor_start;
   GList *control_type_name;
   
+  pthread_mutex_t *application_mutex;
+
   /* lock gdk threads */
   gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   /* get machine and machine editor */
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
@@ -305,6 +338,8 @@ ags_line_add_effect_callback(AgsChannel *channel,
   g_list_free(pad_editor_start);
   g_list_free(line_editor_start);
 
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+
   /* unlock gdk threads */
   gdk_threads_leave();
 }
@@ -314,10 +349,44 @@ ags_line_remove_effect_callback(AgsChannel *channel,
 				guint nth,
 				AgsLine *line)
 {
+  AgsWindow *window;
+
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+
   gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   ags_line_remove_effect(line,
 			 nth);
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   gdk_threads_leave();
 }
