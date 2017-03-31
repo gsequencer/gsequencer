@@ -1,3 +1,10 @@
+ags (0.7.122.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing connect of AgsOscillator
+	* fixed noise creation in AgsSynth
+	* fixed SIGSEGV as adding plugin to AgsLine
+
 ags (0.7.122.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

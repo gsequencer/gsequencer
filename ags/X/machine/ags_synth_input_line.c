@@ -195,14 +195,24 @@ ags_synth_input_line_connect(AgsConnectable *connectable)
   }
 
   ags_synth_input_line_parent_connectable_interface->connect(connectable);
+
+  ags_connectable_connect(AGS_CONNECTABLE(synth_input_line->oscillator));
 }
 
 void
 ags_synth_input_line_disconnect(AgsConnectable *connectable)
 {
+  AgsSynthInputLine *synth_input_line;
+
+  synth_input_line = AGS_SYNTH_INPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(synth_input_line)->flags)) == 0){
+    return;
+  }
+
   ags_synth_input_line_parent_connectable_interface->disconnect(connectable);
 
-  /* empty */
+  ags_connectable_disconnect(AGS_CONNECTABLE(synth_input_line->oscillator));
 }
 
 void

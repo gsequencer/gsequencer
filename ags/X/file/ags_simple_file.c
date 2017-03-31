@@ -2753,6 +2753,8 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
     child = child->next;
   }
 
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+
   /* launch AgsPad */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "node\0", node,
@@ -3297,6 +3299,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     child = child->next;
   }
 
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+  
   /* launch AgsLine */
   if(AGS_IS_LINE(gobject)){
     file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,

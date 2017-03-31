@@ -782,7 +782,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
-  
+
+  port = NULL;
+  recall_port = NULL;
+    
   /* retrieve position within table  */
   x = 0;
   y = 0;
@@ -983,7 +986,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
       
-      port = port->next;
+      //      port = port->next;
       x++;
 
       if(x % AGS_LINE_COLUMNS_COUNT == 0){
@@ -1036,6 +1039,9 @@ ags_line_add_lv2_effect(AgsLine *line,
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
 
+  port = NULL;
+  recall_port = NULL;
+  
   /* retrieve position within table  */
   x = 0;
   y = 0;
@@ -1074,8 +1080,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   port_count = g_list_length(port_descriptor);
   k = 0;
   
-  while(port_descriptor != NULL &&
-	port != NULL){
+  while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
 
@@ -1212,7 +1217,7 @@ ags_line_add_lv2_effect(AgsLine *line,
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
 
-      port = port->next;
+      //      port = port->next;
       x++;
 
       if(x % AGS_LINE_COLUMNS_COUNT == 0){
