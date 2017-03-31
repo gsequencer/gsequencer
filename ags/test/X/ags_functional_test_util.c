@@ -17,11 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/test/ags_functional_test_util.h>
+#include <ags/test/X/ags_functional_test_util.h>
 
-#include <ags/X/ags_xorg_application_context.h>
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_menu_bar.h>
+#include <ags/test/X/libgsequencer.h>
 
 GtkMenu*
 ags_functional_test_util_submenu_find(GtkMenu *menu,
@@ -29,6 +27,8 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
 {
   GtkMenu *submenu;
 
+  GList *list_start, *list;
+  
   gchar *str;
   
   if(!GTK_IS_MENU(menu) ||
@@ -70,7 +70,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 				    gchar *item_label)
 {
   GList *list_start, *list;
-
+  
   gchar *str;
 
   gboolean success;
@@ -423,7 +423,7 @@ ags_funcitonal_test_util_export_set_device(guint nth,
       export_soundcard = AGS_EXPORT_SOUNDCARD(tmp_start->data);
       g_list_free(tmp_start);
 
-      model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->device));
+      model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
       active = 0;
 
       if(gtk_tree_model_get_iter_first(model, &iter)){
@@ -434,7 +434,7 @@ ags_funcitonal_test_util_export_set_device(guint nth,
 
 	  if(!g_strcmp0(device,
 			value)){
-	    gtk_combo_box_set_active_iter((GtkComboBox *) export_soundcard->device,
+	    gtk_combo_box_set_active_iter((GtkComboBox *) export_soundcard->card,
 					  &iter);
 	    success = TRUE;
 	    
@@ -505,7 +505,7 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
 }
 
 gboolean
-ags_funcitonal_test_util_export_set_open(guint nth)
+ags_funcitonal_test_util_export_open(guint nth)
 {
   //TODO:JK: 
 }
@@ -997,14 +997,6 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
 }
 
 gboolean
-ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine,
-							       guint pad, guint audio_channel,
-							       gchar *plugin_type)
-{
-  //TODO:JK: 
-}
-
-gboolean
 ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
 							    guint pad, guint audio_channel,
 							    gchar *filename)
@@ -1136,17 +1128,17 @@ ags_functional_test_util_machine_audio_connection_click_enable(guint nth_machine
 }
 
 gboolean
-ags_functional_test_util_machine_audio_connection_device(guint nth_machine,
-							 guint pad, guint audio_channel,
-							 gchar *device)
+ags_functional_test_util_machine_audio_connection_set_device(guint nth_machine,
+							     guint pad, guint audio_channel,
+							     gchar *device)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_functional_test_util_machine_audio_connection_device(guint nth_machine,
-							 uint pad, guint audio_channel,
-							 guint line)
+ags_functional_test_util_machine_audio_connection_set_line(guint nth_machine,
+							   uint pad, guint audio_channel,
+							   guint line)
 {
   //TODO:JK: 
 }

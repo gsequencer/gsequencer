@@ -36,10 +36,10 @@ gboolean ags_functional_test_util_dialog_ok(GtkDialog *dialog);
 gboolean ags_functional_test_util_dialog_cancel(GtkDialog *dialog);
 
 /* file */
-gboolean ags_functional_test_util_open(gchar *filename);
+gboolean ags_functional_test_util_open();
 
 gboolean ags_functional_test_util_save();
-gboolean ags_functional_test_util_save_as(gchar *filename);
+gboolean ags_functional_test_util_save_as();
 
 gboolean ags_functional_test_util_export_open();
 gboolean ags_functional_test_util_export_close();
@@ -53,7 +53,7 @@ gboolean ags_funcitonal_test_util_export_set_device(guint nth,
 						    gchar *device);
 gboolean ags_funcitonal_test_util_export_set_filename(guint nth,
 						      gchar *filename);
-gboolean ags_funcitonal_test_util_export_set_open(guint nth);
+gboolean ags_funcitonal_test_util_export_open(guint nth);
 gboolean ags_funcitonal_test_util_export_set_format(guint nth,
 						    gchar *format);
 
@@ -207,10 +207,6 @@ gboolean ags_functional_test_util_machine_properties_effect_plugin_type(guint nt
 									guint pad, guint audio_channel,
 									gchar *plugin_type);
 
-gboolean ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine,
-									guint pad, guint audio_channel,
-									gchar *plugin_type);
-
 gboolean ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
 								     guint pad, guint audio_channel,
 								     gchar *filename);
@@ -262,12 +258,12 @@ gboolean ags_functional_test_util_machine_audio_connection_click_tab(guint nth_m
 								     guint nth_tab);
 gboolean ags_functional_test_util_machine_audio_connection_click_enable(guint nth_machine);
 
-gboolean ags_functional_test_util_machine_audio_connection_device(guint nth_machine,
-								  guint pad, guint audio_channel,
-								  gchar *device);
-gboolean ags_functional_test_util_machine_audio_connection_device(guint nth_machine,
-								  uint pad, guint audio_channel,
-								  guint line);
+gboolean ags_functional_test_util_machine_audio_connection_set_device(guint nth_machine,
+								      guint pad, guint audio_channel,
+								      gchar *device);
+gboolean ags_functional_test_util_machine_audio_connection_set_line(guint nth_machine,
+								    uint pad, guint audio_channel,
+								    guint line);
 
 gboolean ags_functional_test_util_machine_audio_connection_bulk_add(guint nth_machine);
 gboolean ags_functional_test_util_machine_audio_connection_bulk_remove(guint nth_machine,

@@ -43,7 +43,7 @@ void ags_functional_note_edit_test_quit_stub(AgsApplicationContext *application_
 
 void ags_functional_note_edit_test_note_file_setup();
 
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME "ags_functional_note_edit_test.xml\0"
+#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_note_edit_test.xml\0"
 #define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
 #define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (30)
 
