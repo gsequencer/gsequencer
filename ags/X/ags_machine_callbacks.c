@@ -331,10 +331,12 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     gtk_menu_tool_button_set_menu((GtkMenuToolButton *) gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)),
 				  NULL);
     gtk_widget_destroy(gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)));
-    menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-				    "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
-				    "menu\0", machine->popup,
-				    NULL);
+
+    menu_tool_button = 
+      machine->menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+					       "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
+					       "menu\0", machine->popup,
+					       NULL);
     gtk_frame_set_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
 			       (GtkWidget *) menu_tool_button);
     gtk_widget_show_all((GtkWidget *) menu_tool_button);

@@ -25,12 +25,16 @@
 
 #include <gtk/gtk.h>
 
+void ags_functional_test_util_setup_and_launch();
 void ags_functional_test_util_idle();
 
 GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,
 					       gchar *item_label);
+gboolean ags_functional_test_util_menu_bar_click(gchar *item_label);
 gboolean ags_functional_test_util_menu_click(GtkMenu *menu,
 					     gchar *item_label);
+
+gboolean ags_functional_test_util_button_click(GtkButton *button);
 
 /* generic dialog */
 gboolean ags_functional_test_util_dialog_apply(GtkDialog *dialog);

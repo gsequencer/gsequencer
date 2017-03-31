@@ -313,7 +313,6 @@ ags_machine_init(AgsMachine *machine)
 {
   GtkVBox *vbox;
   GtkFrame *frame;
-  GtkMenuToolButton *menu_tool_button;
 
   machine->name = NULL;
 
@@ -367,12 +366,12 @@ ags_machine_init(AgsMachine *machine)
   machine->popup = ags_machine_popup_new(machine);
   g_object_ref(machine->popup);
   
-  menu_tool_button = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							"label\0", "machine\0",
-							"menu\0", machine->popup,
-							NULL);
+  machine->menu_tool_button = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								 "label\0", "machine\0",
+								 "menu\0", machine->popup,
+								 NULL);
   gtk_frame_set_label_widget(frame,
-			     (GtkWidget *) menu_tool_button);
+			     (GtkWidget *) machine->menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
   machine->connection_editor = NULL;
@@ -627,7 +626,8 @@ void
 ags_machine_connect(AgsConnectable *connectable)
 {
   AgsMachine *machine;
-  GList *pad_list;
+
+  GList *list_start, *list;
 
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
@@ -666,24 +666,30 @@ ags_machine_connect(AgsConnectable *connectable)
 
   /* AgsPad - input */
   if(machine->input != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
 
-    while(pad_list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   /* AgsPad - output */
   if(machine->output != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
     
-    while(pad_list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   /* audio */
@@ -698,7 +704,8 @@ void
 ags_machine_disconnect(AgsConnectable *connectable)
 {
   AgsMachine *machine;
-  GList *pad_list;
+
+  GList *list_start, *list;
 
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
@@ -715,24 +722,30 @@ ags_machine_disconnect(AgsConnectable *connectable)
 
   /* AgsPad - input */
   if(machine->input != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
 
-    while(pad_list != NULL){
-      ags_connectable_disconnect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   /* AgsPad - output */
   if(machine->output != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
     
-    while(pad_list != NULL){
-      ags_connectable_disconnect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   //TODO:JK: implement me

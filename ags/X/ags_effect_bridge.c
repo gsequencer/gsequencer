@@ -593,7 +593,7 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 
   effect_bridge = AGS_EFFECT_BRIDGE(connectable);
 
-  if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
+  if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) == 0){
     return;
   }
 

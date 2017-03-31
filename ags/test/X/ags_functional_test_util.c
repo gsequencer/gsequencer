@@ -19,12 +19,80 @@
 
 #include <ags/test/X/ags_functional_test_util.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/plugin/ags_ladspa_manager.h>
+
+#include <ags/gsequencer_main.h>
+
 #include <ags/test/X/libgsequencer.h>
+
+#include <gdk/gdk.h>
+#include <gdk/gdkevents.h>
+
+extern AgsApplicationContext *ags_application_context;
+
+extern AgsMutexManager *ags_mutex_manager;
+
+extern AgsLadspaManager *ags_ladspa_manager;
+extern AgsDssiManager *ags_dssi_manager;
+extern AgsLv2Manager *ags_lv2_manager;
+extern AgsLv2uiManager *ags_lv2ui_manager;
+
+AgsTaskThread *task_thread;
+AgsGuiThread *gui_thread;
+
+void
+ags_functional_test_util_clear_application_context()
+{  
+  ags_application_context = NULL;
+
+  //  ags_mutex_manager = NULL;
+
+  //  ags_ladspa_manager = NULL;
+  //  ags_dssi_manager = NULL;
+  //  ags_lv2_manager = NULL;
+  //  ags_lv2ui_manager = NULL;
+}
+
+void
+ags_functional_test_util_setup_and_launch()
+{
+  gchar *start_arg[] = {
+    "./gsequencer\0"
+  };
+
+  gboolean success;
+
+  ags_functional_test_util_clear_application_context();
+  
+  ags_test_setup(1, start_arg);
+
+  /* get gui thread */
+  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  task_thread = ags_thread_find_type(ags_application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  /* launch application */
+  ags_test_launch(FALSE);
+
+  /* do the work */
+  while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
+    usleep(500000);
+  }
+
+  usleep(10000000);
+}
 
 void
 ags_functional_test_util_idle()
 {
-  usleep(500000);
+  usleep(5000000);
 }
 
 GtkMenu*
@@ -41,6 +109,8 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
      item_label == NULL){
     return(NULL);
   }
+
+  gdk_threads_enter();
 
   list =
     list_start = gtk_container_get_children(menu);
@@ -67,10 +137,119 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
   }
 
   g_list_free(list_start);
-  
-  ags_functional_test_util_idle();
+
+  gdk_threads_leave();
   
   return(submenu);
+}
+
+gboolean
+ags_functional_test_util_menu_bar_click(gchar *item_label)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  GtkMenuBar *menu_bar;
+  
+  GList *list_start, *list;
+  
+  gchar *str;
+
+  gboolean success;
+  
+  if(item_label == NULL){
+    return(FALSE);
+  }
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+  menu_bar = xorg_application_context->window->menu_bar;
+
+  list =
+    list_start = gtk_container_get_children(menu_bar);
+  success = FALSE;
+
+  gdk_threads_leave();
+  
+  while(list != NULL){
+    if(GTK_IS_MENU_ITEM(list->data)){
+      str = NULL;
+      g_object_get(list->data,
+		   "label\0", &str,
+		   NULL);
+
+      if(!g_ascii_strcasecmp(str,
+			     item_label)){
+	GtkWidget *widget;
+
+	GdkWindow *window;
+	GdkEvent *event_motion;
+
+	struct timespec spec;
+	
+	gint x, y;
+	gint origin_x, origin_y;
+	
+	widget = GTK_WIDGET(list->data);
+
+	pthread_mutex_lock(task_thread->launch_mutex);
+
+	x = widget->allocation.x;
+	y = widget->allocation.y;
+
+	window = gtk_widget_get_window(widget);
+
+	x = widget->allocation.x;
+	y = widget->allocation.y;
+
+	gdk_window_get_origin(window, &origin_x, &origin_y);
+
+	gdk_display_warp_pointer(gtk_widget_get_display(widget),
+				 gtk_widget_get_screen(widget),
+				 origin_x + x + 15, origin_y + y + 5);
+	
+	pthread_mutex_unlock(task_thread->launch_mutex);
+
+	usleep(4000);
+
+	gdk_test_simulate_button(window,
+				 x + 5,
+				 y + 5,
+				 1,
+				 GDK_BUTTON1_MASK,
+				 GDK_BUTTON_PRESS);
+
+	usleep(4000);
+
+	gdk_test_simulate_button(window,
+				 x + 5,
+				 y + 5,
+				 1,
+				 GDK_BUTTON1_MASK,
+				 GDK_BUTTON_RELEASE);
+
+	usleep(4000);
+
+	pthread_mutex_lock(task_thread->launch_mutex);
+
+	g_signal_emit_by_name(widget,
+			      "activate-item\0");
+	
+	pthread_mutex_unlock(task_thread->launch_mutex);
+
+	success = TRUE;
+
+	break;
+      }
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  ags_functional_test_util_idle();
+  
+  return(success);
 }
 
 gboolean
@@ -89,9 +268,13 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
     return(FALSE);
   }
 
+  gdk_threads_enter();
+
   list =
     list_start = gtk_container_get_children(menu);
   success = FALSE;
+
+  gdk_threads_leave();
   
   while(list != NULL){
     if(GTK_IS_MENU_ITEM(list->data)){
@@ -102,8 +285,59 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 
       if(!g_ascii_strcasecmp(str,
 			     item_label)){
-	gtk_menu_item_activate(list->data);
+	GtkWidget *widget;
+
+	GdkWindow *window;
+	
+	gint x, y;
+	gint origin_x, origin_y;
+	
+	widget = GTK_WIDGET(list->data);
+
+	pthread_mutex_lock(task_thread->launch_mutex);
+
+	window = gtk_widget_get_window(widget);
+
+	x = widget->allocation.x;
+	y = widget->allocation.y;
+
+	gdk_window_get_origin(window, &origin_x, &origin_y);
+
+	gdk_display_warp_pointer(gtk_widget_get_display(widget),
+				 gtk_widget_get_screen(widget),
+				 origin_x + x + 15, origin_y + y + 5);
+
+	pthread_mutex_unlock(task_thread->launch_mutex);
+
+	usleep(4000);
+	
+	gdk_test_simulate_button(window,
+				 x + 5,
+				 y + 5,
+				 1,
+				 GDK_BUTTON1_MASK,
+				 GDK_BUTTON_PRESS);
+
+
+	usleep(4000);
+
+	gdk_test_simulate_button(window,
+				 x + 5,
+				 y + 5,
+				 1,
+				 GDK_BUTTON1_MASK,
+				 GDK_BUTTON_RELEASE);
+  	
+	usleep(4000);
+
 	success = TRUE;
+
+	pthread_mutex_lock(task_thread->launch_mutex);
+
+	g_signal_emit_by_name(widget,
+			      "activate-item\0");
+	
+	pthread_mutex_unlock(task_thread->launch_mutex);
 
 	break;
       }
@@ -120,14 +354,159 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 }
 
 gboolean
+ags_functional_test_util_button_click(GtkButton *button)
+{
+  GtkWidget *widget;
+
+  GdkWindow *window;
+
+  gint x, y;
+  gint origin_x, origin_y;
+	
+  if(button == NULL ||
+     !GTK_IS_BUTTON(button)){
+    return(FALSE);
+  }
+  
+  widget = button;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  window = gtk_widget_get_window(widget);
+
+  x = widget->allocation.x;
+  y = widget->allocation.y;
+
+  gdk_window_get_origin(window, &origin_x, &origin_y);
+
+  gdk_display_warp_pointer(gtk_widget_get_display(widget),
+			   gtk_widget_get_screen(widget),
+			   origin_x + x + 15, origin_y + y + 5);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  usleep(4000);
+	
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_PRESS);
+
+
+  usleep(4000);
+
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_RELEASE);
+  	
+  usleep(4000);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  
+  g_signal_emit_by_name(widget,
+			"clicked\0");
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_idle();
+  
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_menu_tool_button_click(GtkButton *button)
+{
+  GtkWidget *widget;
+
+  GdkWindow *window;
+
+  gint x, y;
+  gint origin_x, origin_y;
+	
+  if(button == NULL ||
+     !GTK_IS_MENU_TOOL_BUTTON(button)){
+    return(FALSE);
+  }
+  
+  widget = button;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  window = gtk_widget_get_window(widget);
+
+  x = widget->allocation.x;
+  y = widget->allocation.y;
+
+  gdk_window_get_origin(window, &origin_x, &origin_y);
+
+  gdk_display_warp_pointer(gtk_widget_get_display(widget),
+			   gtk_widget_get_screen(widget),
+			   origin_x + x + 15, origin_y + y + 5);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  usleep(4000);
+	
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_PRESS);
+
+
+  usleep(4000);
+
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_RELEASE);
+  	
+  usleep(4000);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  g_signal_emit_by_name(widget,
+			"show-menu\0");
+  gtk_menu_popup(gtk_menu_tool_button_get_menu(widget),
+		 NULL,
+		 NULL,
+		 NULL,
+		 NULL,
+		 1,
+		 gtk_get_current_event_time());
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_idle();
+  
+  return(TRUE);
+}
+
+gboolean
 ags_functional_test_util_dialog_apply(GtkDialog *dialog)
 {
   if(!GTK_IS_DIALOG(dialog)){
     return(FALSE);
   }
 
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_APPLY);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
 
   ags_functional_test_util_idle();
   
@@ -141,8 +520,14 @@ ags_functional_test_util_dialog_ok(GtkDialog *dialog)
     return(FALSE);
   }
 
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_OK);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
 
   ags_functional_test_util_idle();
   
@@ -156,8 +541,14 @@ ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
     return(FALSE);
   }
 
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_CANCEL);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
 
   ags_functional_test_util_idle();
   
@@ -172,13 +563,23 @@ ags_functional_test_util_open()
   GtkMenu *menu;
   
   gboolean success;
-  
+
+  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+    return(FALSE);
+  }
+
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+    
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"open\0");
-  
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
+
   ags_functional_test_util_idle();
   
   return(success); 
@@ -192,13 +593,23 @@ ags_functional_test_util_save()
   GtkMenu *menu;
   
   gboolean success;
-  
+
+  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+    return(FALSE);
+  }
+    
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"save\0");
-  
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
+
   ags_functional_test_util_idle();
   
   return(success); 
@@ -212,12 +623,22 @@ ags_functional_test_util_save_as()
   GtkMenu *menu;
   
   gboolean success;
-  
+
+  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+    return(FALSE);
+  }
+    
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"save as\0");
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
   
   ags_functional_test_util_idle();
   
@@ -232,12 +653,22 @@ ags_functional_test_util_export_open()
   GtkMenu *menu;
   
   gboolean success;
-  
+
+  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_FILE)){
+    return(FALSE);
+  }
+
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+    
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
 						"export\0");
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
   
   ags_functional_test_util_idle();
   
@@ -252,10 +683,16 @@ ags_functional_test_util_export_close()
   GtkDialog *dialog;
   
   gboolean success;
-  
+
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   xorg_application_context = ags_application_context_get_instance();
   dialog = xorg_application_context->window->export_window;
-  
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
+
   success = ags_functional_test_util_dialog_close(dialog);
   
   ags_functional_test_util_idle();
@@ -270,11 +707,17 @@ ags_funcitonal_test_util_export_add()
 
   AgsExportWindow *export_window;
   
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
 
   gtk_button_clicked(export_window->add);
-  
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
+
   ags_functional_test_util_idle();
   
   return(TRUE);
@@ -287,12 +730,18 @@ ags_funcitonal_test_util_export_tact(gdouble tact)
 
   AgsExportWindow *export_window;
   
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
 
   gtk_spin_button_set_value(export_window->tact,
 			    tact);
-  
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
+
   ags_functional_test_util_idle();
   
   return(TRUE);
@@ -310,6 +759,9 @@ ags_funcitonal_test_util_export_remove(guint nth)
   guint i;
   gboolean success;
   
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
 
@@ -341,6 +793,9 @@ ags_funcitonal_test_util_export_remove(guint nth)
 
   g_list_free(list_start);
   
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
+
   ags_functional_test_util_idle();
   
   return(success);
@@ -358,6 +813,9 @@ ags_funcitonal_test_util_export_set_backend(guint nth,
 
   guint i;
   gboolean success;
+
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
   
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -414,6 +872,9 @@ ags_funcitonal_test_util_export_set_backend(guint nth,
 
   g_list_free(list_start);
   
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
+
   ags_functional_test_util_idle();
   
   return(success);
@@ -432,6 +893,9 @@ ags_funcitonal_test_util_export_set_device(guint nth,
   guint i;
   gboolean success;
   
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
 
@@ -486,6 +950,9 @@ ags_funcitonal_test_util_export_set_device(guint nth,
   }
 
   g_list_free(list_start);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
   
   ags_functional_test_util_idle();
   
@@ -504,6 +971,9 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
 
   guint i;
   gboolean success;
+
+  gdk_threads_enter();
+  pthread_mutex_lock(task_thread->launch_mutex);
   
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -537,6 +1007,9 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
   }
 
   g_list_free(list_start);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  gdk_threads_leave();
   
   ags_functional_test_util_idle();
   
@@ -584,14 +1057,29 @@ ags_functional_test_util_add_machine(gchar *submenu,
     return(FALSE);
   }
 
+  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
+    return(FALSE);
+  }
+
+  gdk_threads_enter();
+  
   xorg_application_context = ags_application_context_get_instance();
   menu_bar = xorg_application_context->window->menu_bar;
+
+  gdk_threads_leave();
+
+  success = FALSE;
+  
+  success = ags_functional_test_util_menu_click(menu_bar->edit,
+						GTK_STOCK_ADD);
+
+  if(!success){
+    return(FALSE);
+  }
   
   add_menu = ags_functional_test_util_submenu_find(menu_bar->edit,
 						   GTK_STOCK_ADD);
 
-  success = FALSE;
-  
   if(submenu == NULL){
     success = ags_functional_test_util_menu_click(add_menu,
 						  machine_name);
@@ -991,6 +1479,8 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   GList *list_start, *list;
   
   gboolean success;
+
+  gdk_threads_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -999,6 +1489,8 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
+  gdk_threads_leave();
+  
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
     machine = list->data;
@@ -1009,11 +1501,11 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   g_list_free(list_start);
 
   /* activate destroy */
+  success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
+
   success = ags_functional_test_util_menu_click(machine->popup,
 						"destroy\0");
 
-  ags_functional_test_util_idle();
-  
   return(success);
 }
 

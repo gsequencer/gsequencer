@@ -68,10 +68,14 @@ void ags_functional_machine_add_and_destroy_test_ffplayer();
   "auto-sense=true\n"				       \
   "\n"
 
+extern AgsApplicationContext *ags_application_context;
+
 extern struct sigaction ags_test_sigact;
 
-extern AgsApplicationContext *ags_application_context;
 extern volatile gboolean ags_show_start_animation;
+
+AgsGuiThread *gui_thread;
+
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -86,6 +90,12 @@ ags_functional_machine_add_and_destroy_test_init_suite()
   ags_config_load_from_data(config,
 			    AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG,
 			    strlen(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG));
+
+  ags_functional_test_util_setup_and_launch();
+
+  /* get gui thread */
+  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
+				    AGS_TYPE_GUI_THREAD);
     
   return(0);
 }
@@ -97,37 +107,15 @@ ags_functional_machine_add_and_destroy_test_init_suite()
 int
 ags_functional_machine_add_and_destroy_test_clean_suite()
 {  
+  ags_thread_stop(gui_thread);  
+
   return(0);
 }
 
 void
 ags_functional_machine_add_and_destroy_test_panel()
-{
-  AgsGuiThread *gui_thread;
-
-  gchar *start_arg[] = {
-    "./gsequencer\0"
-  };
-
+{  
   gboolean success;
-
-  ags_application_context = NULL;
-
-  ags_test_setup(1, start_arg);
-
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* launch application */
-  ags_test_launch(FALSE);
-
-  /* do the work */
-  while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
-    usleep(500000);
-  }
-
-  usleep(10000000);
   
   /* add panel */
   success = ags_functional_test_util_add_machine(NULL,
@@ -135,7 +123,26 @@ ags_functional_machine_add_and_destroy_test_panel()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* destroy panel */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
+void
+ags_functional_machine_add_and_destroy_test_mixer()
+{
+  gboolean success;
+
+  /* add mixer */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Mixer");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy mixer */
   success = ags_functional_test_util_machine_destroy(0);
   
   CU_ASSERT(success == TRUE);
@@ -144,28 +151,79 @@ ags_functional_machine_add_and_destroy_test_panel()
 }
 
 void
-ags_functional_machine_add_and_destroy_test_mixer()
-{
-}
-
-void
 ags_functional_machine_add_and_destroy_test_drum()
 {
+  gboolean success;
+
+  /* add drum */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Drum");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy drum */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+
+  ags_thread_stop(gui_thread);  
 }
 
 void
 ags_functional_machine_add_and_destroy_test_matrix()
 {
+  gboolean success;
+
+  /* add matrix */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Matrix");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy matrix */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+
+  ags_thread_stop(gui_thread);  
 }
 
 void
 ags_functional_machine_add_and_destroy_test_synth()
 {
+  gboolean success;
+
+  /* add synth */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Synth");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy synth */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+
+  ags_thread_stop(gui_thread);  
 }
 
 void
 ags_functional_machine_add_and_destroy_test_ffplayer()
 {
+  gboolean success;
+
+  /* add fplayer */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "FPlayer");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy fplayer */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+
+  ags_thread_stop(gui_thread);  
 }
 
 int
