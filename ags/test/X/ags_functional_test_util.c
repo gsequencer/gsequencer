@@ -21,6 +21,12 @@
 
 #include <ags/test/X/libgsequencer.h>
 
+void
+ags_functional_test_util_idle()
+{
+  usleep(500000);
+}
+
 GtkMenu*
 ags_functional_test_util_submenu_find(GtkMenu *menu,
 				      gchar *item_label)
@@ -61,7 +67,9 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
   }
 
   g_list_free(list_start);
-
+  
+  ags_functional_test_util_idle();
+  
   return(submenu);
 }
 
@@ -75,8 +83,9 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 
   gboolean success;
   
-  if(!GTK_IS_MENU(menu) ||
-     item_label == NULL){
+  if(menu == NULL ||
+     item_label == NULL ||
+     !GTK_IS_MENU(menu)){
     return(FALSE);
   }
 
@@ -104,6 +113,8 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
   }
 
   g_list_free(list_start);
+
+  ags_functional_test_util_idle();
   
   return(success);
 }
@@ -118,6 +129,8 @@ ags_functional_test_util_dialog_apply(GtkDialog *dialog)
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_APPLY);
 
+  ags_functional_test_util_idle();
+  
   return(TRUE);
 }
 
@@ -131,6 +144,8 @@ ags_functional_test_util_dialog_ok(GtkDialog *dialog)
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_OK);
 
+  ags_functional_test_util_idle();
+  
   return(TRUE);
 }
 
@@ -144,6 +159,8 @@ ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_CANCEL);
 
+  ags_functional_test_util_idle();
+  
   return(TRUE);
 }
 
@@ -161,6 +178,8 @@ ags_functional_test_util_open()
   
   success = ags_functional_test_util_menu_click(menu,
 						"open\0");
+  
+  ags_functional_test_util_idle();
   
   return(success); 
 }
@@ -180,6 +199,8 @@ ags_functional_test_util_save()
   success = ags_functional_test_util_menu_click(menu,
 						"save\0");
   
+  ags_functional_test_util_idle();
+  
   return(success); 
 }
 
@@ -197,6 +218,8 @@ ags_functional_test_util_save_as()
   
   success = ags_functional_test_util_menu_click(menu,
 						"save as\0");
+  
+  ags_functional_test_util_idle();
   
   return(success); 
 }
@@ -216,6 +239,8 @@ ags_functional_test_util_export_open()
   success = ags_functional_test_util_menu_click(menu,
 						"export\0");
   
+  ags_functional_test_util_idle();
+  
   return(success); 
 }
 
@@ -233,6 +258,8 @@ ags_functional_test_util_export_close()
   
   success = ags_functional_test_util_dialog_close(dialog);
   
+  ags_functional_test_util_idle();
+  
   return(success); 
 }
 
@@ -247,6 +274,8 @@ ags_funcitonal_test_util_export_add()
   export_window = xorg_application_context->window->export_window;
 
   gtk_button_clicked(export_window->add);
+  
+  ags_functional_test_util_idle();
   
   return(TRUE);
 }
@@ -263,6 +292,8 @@ ags_funcitonal_test_util_export_tact(gdouble tact)
 
   gtk_spin_button_set_value(export_window->tact,
 			    tact);
+  
+  ags_functional_test_util_idle();
   
   return(TRUE);
 }
@@ -309,6 +340,8 @@ ags_funcitonal_test_util_export_remove(guint nth)
   }
 
   g_list_free(list_start);
+  
+  ags_functional_test_util_idle();
   
   return(success);
 }
@@ -381,6 +414,8 @@ ags_funcitonal_test_util_export_set_backend(guint nth,
 
   g_list_free(list_start);
   
+  ags_functional_test_util_idle();
+  
   return(success);
 }
 
@@ -452,6 +487,8 @@ ags_funcitonal_test_util_export_set_device(guint nth,
 
   g_list_free(list_start);
   
+  ags_functional_test_util_idle();
+  
   return(success);
 }
 
@@ -501,6 +538,8 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
 
   g_list_free(list_start);
   
+  ags_functional_test_util_idle();
+  
   return(success);
 }
 
@@ -534,7 +573,41 @@ gboolean
 ags_functional_test_util_add_machine(gchar *submenu,
 				     gchar *machine_name)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMenuBar *menu_bar;
+  
+  GtkMenu *add_menu;
+
+  gboolean success;
+  
+  if(machine_name == NULL){
+    return(FALSE);
+  }
+
+  xorg_application_context = ags_application_context_get_instance();
+  menu_bar = xorg_application_context->window->menu_bar;
+  
+  add_menu = ags_functional_test_util_submenu_find(menu_bar->edit,
+						   GTK_STOCK_ADD);
+
+  success = FALSE;
+  
+  if(submenu == NULL){
+    success = ags_functional_test_util_menu_click(add_menu,
+						  machine_name);
+  }else{
+    GtkMenu *bridge_menu;
+    
+    bridge_menu = ags_functional_test_util_submenu_find(add_menu,
+							submenu);
+
+    success = ags_functional_test_util_menu_click(bridge_menu,
+						  machine_name);    
+  }
+
+  ags_functional_test_util_idle();
+  
+  return(success);
 }
 
 gboolean
@@ -912,7 +985,36 @@ ags_functional_test_util_machine_show(guint nth_machine)
 gboolean
 ags_functional_test_util_machine_destroy(guint nth_machine)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+
+  GList *list_start, *list;
+  
+  gboolean success;
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+  
+  g_list_free(list_start);
+
+  /* activate destroy */
+  success = ags_functional_test_util_menu_click(machine->popup,
+						"destroy\0");
+
+  ags_functional_test_util_idle();
+  
+  return(success);
 }
 
 gboolean

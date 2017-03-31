@@ -28,24 +28,22 @@
 
 #include <ags/gsequencer_main.h>
 
-#include <ags/X/ags_xorg_application_context.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
+#include <ags/test/X/libgsequencer.h>
 
 #include "gsequencer_setup_util.h"
+#include "ags_functional_test_util.h"
 
-int ags_functional_note_edit_test_init_suite();
-int ags_functional_note_edit_test_clean_suite();
+int ags_functional_machine_add_and_destroy_test_init_suite();
+int ags_functional_machine_add_and_destroy_test_clean_suite();
 
-void ags_functional_note_edit_test_quit_stub(AgsApplicationContext *application_context);
+void ags_functional_machine_add_and_destroy_test_panel();
+void ags_functional_machine_add_and_destroy_test_mixer();
+void ags_functional_machine_add_and_destroy_test_drum();
+void ags_functional_machine_add_and_destroy_test_matrix();
+void ags_functional_machine_add_and_destroy_test_synth();
+void ags_functional_machine_add_and_destroy_test_ffplayer();
 
-void ags_functional_note_edit_test_note_file_setup();
-
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_note_edit_test.xml\0"
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (30)
-
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG "[generic]\n" \
+#define AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
   "simple-file=true\n"				       \
   "disable-feature=experimental\n"		       \
@@ -80,14 +78,14 @@ extern volatile gboolean ags_show_start_animation;
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_note_edit_test_init_suite()
+ags_functional_machine_add_and_destroy_test_init_suite()
 {
   AgsConfig *config;
 
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG));
+			    AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG,
+			    strlen(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG));
     
   return(0);
 }
@@ -97,57 +95,33 @@ ags_functional_note_edit_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_note_edit_test_clean_suite()
+ags_functional_machine_add_and_destroy_test_clean_suite()
 {  
   return(0);
 }
 
 void
-ags_functional_note_edit_test_quit_stub(AgsApplicationContext *application_context)
+ags_functional_machine_add_and_destroy_test_panel()
 {
-  g_critical("quit stub\0");
-}
-
-void
-ags_functional_note_edit_test_file_setup()
-{
-  GtkButton *play_button;
-  GtkButton *stop_button;
-  
   AgsGuiThread *gui_thread;
-  
-  struct timespec start_time, current_time;
 
   gchar *start_arg[] = {
     "./gsequencer\0"
   };
-  
-  guint i;
-  gboolean expired;
+
   gboolean success;
-  
+
   ags_application_context = NULL;
 
   ags_test_setup(1, start_arg);
-
-  AGS_APPLICATION_CONTEXT_GET_CLASS(ags_application_context)->quit = ags_functional_note_edit_test_quit_stub;
 
   /* get gui thread */
   gui_thread = ags_thread_find_type(ags_application_context->main_loop,
 				    AGS_TYPE_GUI_THREAD);
 
-  /* get buttons */
-  play_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->play;
-  stop_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->stop;
-
   /* launch application */
-  ags_test_launch_filename(AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME,
-			   FALSE);
+  ags_test_launch(FALSE);
 
-  /* get initial time */
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
-  success = TRUE;
-  
   /* do the work */
   while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
     usleep(500000);
@@ -155,35 +129,43 @@ ags_functional_note_edit_test_file_setup()
 
   usleep(10000000);
   
-  for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT; i++){
-    expired = FALSE;
-    
-    g_message("start playback");
-    gtk_button_clicked(play_button);
+  /* add panel */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Panel");
 
-    while(!expired){  
-      /* check expired */
-      clock_gettime(CLOCK_MONOTONIC, &current_time);
-      
-      if(start_time.tv_sec + AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION < current_time.tv_sec){
-	expired = TRUE;
-      }
-    }
+  CU_ASSERT(success == TRUE);
 
-    g_message("stop playback");
-    gtk_button_clicked(stop_button);
-
-    /* wait some time before next playback */
-    usleep(5000000);
-
-    if(!expired){
-      success = FALSE;
-    }
-  }
-
-  ags_thread_stop(gui_thread);
+  /* destroy panel */
+  success = ags_functional_test_util_machine_destroy(0);
   
   CU_ASSERT(success == TRUE);
+
+  ags_thread_stop(gui_thread);  
+}
+
+void
+ags_functional_machine_add_and_destroy_test_mixer()
+{
+}
+
+void
+ags_functional_machine_add_and_destroy_test_drum()
+{
+}
+
+void
+ags_functional_machine_add_and_destroy_test_matrix()
+{
+}
+
+void
+ags_functional_machine_add_and_destroy_test_synth()
+{
+}
+
+void
+ags_functional_machine_add_and_destroy_test_ffplayer()
+{
 }
 
 int
@@ -304,7 +286,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_note_edit_test_init_suite, ags_functional_note_edit_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_machine_add_and_destroy_test_init_suite, ags_functional_machine_add_and_destroy_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -318,7 +300,12 @@ main(int argc, char **argv)
   //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer setup by file and editing notes\0", ags_functional_note_edit_test_file_setup) == NULL)){
+  if((CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsPanel\0", ags_functional_machine_add_and_destroy_test_panel) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMixer\0", ags_functional_machine_add_and_destroy_test_mixer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsDrum\0", ags_functional_machine_add_and_destroy_test_drum) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMatrix\0", ags_functional_machine_add_and_destroy_test_matrix) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth\0", ags_functional_machine_add_and_destroy_test_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer\0", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

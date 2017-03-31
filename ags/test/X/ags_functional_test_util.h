@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+void ags_functional_test_util_idle();
+
 GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,
 					       gchar *item_label);
 gboolean ags_functional_test_util_menu_click(GtkMenu *menu,
@@ -34,6 +36,8 @@ gboolean ags_functional_test_util_menu_click(GtkMenu *menu,
 gboolean ags_functional_test_util_dialog_apply(GtkDialog *dialog);
 gboolean ags_functional_test_util_dialog_ok(GtkDialog *dialog);
 gboolean ags_functional_test_util_dialog_cancel(GtkDialog *dialog);
+
+#define ags_functional_test_util_dialog_close ags_functional_test_util_dialog_cancel
 
 /* file */
 gboolean ags_functional_test_util_open();
