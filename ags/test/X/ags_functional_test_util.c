@@ -435,7 +435,7 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   
   widget = button;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  pthread_mutex_lock(task_thread->launch_mutex);
 
   window = gtk_widget_get_window(widget);
 
@@ -471,17 +471,24 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   	
   usleep(4000);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
-
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  /*  */
+  pthread_mutex_lock(task_thread->launch_mutex);
 
   g_signal_emit_by_name(widget,
-			"show-menu\0");
+			"clicked\0");
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_idle();
+
+  /*  */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   gtk_menu_popup(gtk_menu_tool_button_get_menu(widget),
 		 NULL,
 		 NULL,
 		 NULL,
-		 NULL,
+		 widget,
 		 1,
 		 gtk_get_current_event_time());
   

@@ -616,6 +616,9 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
     return;
   }
 
+  effect_bulk->flags |= AGS_EFFECT_BULK_CONNECTED;
+  
+  /*  */
   g_signal_connect(G_OBJECT(effect_bulk->add), "clicked\0",
 		   G_CALLBACK(ags_effect_bulk_add_callback), effect_bulk);
 
@@ -660,7 +663,14 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
     return;
   }
 
+  effect_bulk->flags &= (~AGS_EFFECT_BULK_CONNECTED);
+
   //TODO:JK: implement me
+
+  if(effect_bulk->audio != NULL){
+    g_signal_handlers_disconnect_by_data(effect_bulk->audio,
+					 effect_bulk);
+  }  
 }
 
 gchar*

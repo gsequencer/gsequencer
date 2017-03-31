@@ -253,10 +253,10 @@ ags_matrix_init(AgsMatrix *matrix)
   AGS_MACHINE(matrix)->output_line_type = G_TYPE_NONE;
 
   g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_matrix_set_audio_channels), NULL);
+			 G_CALLBACK(ags_matrix_set_audio_channels), matrix);
 
   g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
-			 G_CALLBACK(ags_matrix_set_pads), NULL);
+			 G_CALLBACK(ags_matrix_set_pads), matrix);
 
   /*  */
   AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_IS_SEQUENCER |
