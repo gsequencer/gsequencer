@@ -264,7 +264,7 @@ ags_panel_input_line_show(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show(line);
 
-  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
+  //  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }
 
 void
@@ -272,7 +272,7 @@ ags_panel_input_line_show_all(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show_all(line);
 
-  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
+  //  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }
 
 void

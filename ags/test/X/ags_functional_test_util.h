@@ -43,6 +43,15 @@ gboolean ags_functional_test_util_dialog_cancel(GtkDialog *dialog);
 
 #define ags_functional_test_util_dialog_close ags_functional_test_util_dialog_cancel
 
+/* file chooser */
+gboolean ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
+							 gchar *path);
+gboolean ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_chooser,
+							       gchar *filename);
+gboolean ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_chooser,
+								GSList *filename);
+gboolean ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser);
+
 /* file */
 gboolean ags_functional_test_util_open();
 

@@ -252,10 +252,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
+			 G_CALLBACK(ags_ffplayer_set_audio_channels), ffplayer);
 
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
-			 G_CALLBACK(ags_ffplayer_set_pads), NULL);
+			 G_CALLBACK(ags_ffplayer_set_pads), ffplayer);
 
   ffplayer->flags = 0;
   
@@ -604,6 +604,8 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
     return;
   }
 
+  ags_ffplayer_parent_connectable_interface->disconnect(connectable);
+
   ffplayer = AGS_FFPLAYER(connectable);
 
   g_object_disconnect((GObject *) ffplayer,
@@ -631,7 +633,6 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
 		      (gpointer) ffplayer,
 		      NULL);
 
-
   g_object_disconnect((GObject *) ffplayer->drawing_area,
 		      "expose_event\0",
 		      G_CALLBACK(ags_ffplayer_drawing_area_expose_callback),
@@ -649,8 +650,6 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_ffplayer_hscrollbar_value_changed),
 		      (gpointer) ffplayer,
 		      NULL);
-
-  ags_ffplayer_parent_connectable_interface->disconnect(connectable);
 }
 
 void

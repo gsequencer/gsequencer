@@ -603,11 +603,14 @@ ags_line_disconnect(AgsConnectable *connectable)
 #endif
 
   /* disconnect group button */
-  g_object_disconnect((GObject *) line->group,
-		      "clicked\0",
-		      G_CALLBACK(ags_line_group_clicked_callback),
-		      (gpointer) line,
-		      NULL);
+  if(line->group != NULL &&
+     GTK_IS_BUTTON(line->group)){
+    g_object_disconnect(line->group,
+			"clicked\0",
+			G_CALLBACK(ags_line_group_clicked_callback),
+			(gpointer) line,
+			NULL);
+  }
 
   /* disconnect line members */
   list_start = 

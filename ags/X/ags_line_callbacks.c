@@ -89,7 +89,7 @@ ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
   }
 }
 
-int
+void
 ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 {
   AgsPad *pad;
@@ -115,7 +115,8 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
       if(!gtk_toggle_button_get_active(current->group)){
 	g_list_free(list_start);
-	return(0);
+
+	return;
       }
 
       list = list->next;
@@ -134,7 +135,8 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 	if(gtk_toggle_button_get_active(current->group)){
 	  ags_line_group_changed(line);
 	  g_list_free(list_start);
-	  return(0);
+
+	  return;
 	}
 
 	list = list->next;
@@ -146,7 +148,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
   g_list_free(list_start);
 
-  return(0);
+  return;
 }
 
 void

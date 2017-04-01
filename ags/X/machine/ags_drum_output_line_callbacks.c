@@ -81,6 +81,8 @@ ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
 
   gboolean performance_mode;
 
+  config = ags_config_get_instance();
+  
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
 			     "engine-mode\0");

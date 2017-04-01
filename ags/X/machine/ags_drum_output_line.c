@@ -189,7 +189,7 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
 
   g_signal_connect_after((GObject *) AGS_LINE(drum_output_line)->channel->audio, "set-pads\0",
-			 G_CALLBACK(ags_drum_output_line_set_pads_callback), NULL);
+			 G_CALLBACK(ags_drum_output_line_set_pads_callback), drum_output_line);
 
   /* empty */
 }
@@ -197,9 +197,20 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
 void
 ags_drum_output_line_disconnect(AgsConnectable *connectable)
 {
+  AgsDrumOutputLine *drum_output_line;
+
+  drum_output_line = AGS_DRUM_OUTPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_output_line)->flags)) == 0){
+    return;
+  }
+
   ags_drum_output_line_parent_connectable_interface->disconnect(connectable);
 
-  /* empty */
+  if(AGS_LINE(drum_output_line)->channel != NULL){
+    g_signal_handlers_disconnect_by_data(AGS_LINE(drum_output_line)->channel->audio,
+					 drum_output_line);
+  }
 }
 
 gchar*

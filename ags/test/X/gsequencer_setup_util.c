@@ -309,7 +309,7 @@ ags_test_start_animation_thread(void *ptr)
   
   gdk_cr = gdk_cairo_create(window->window);
   
-  filename = g_strdup_printf("%s/%s",
+  filename = g_strdup_printf("%s/%s\0",
 			     SRCDIR,
 			     "gsequencer.share/images/ags_supermoon-800x450.png\0");
 

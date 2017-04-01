@@ -657,6 +657,8 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 {
   AgsEffectBulk *effect_bulk;
 
+  GList *list, *list_start;
+
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
   if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) == 0){
@@ -664,6 +666,21 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
   }
 
   effect_bulk->flags &= (~AGS_EFFECT_BULK_CONNECTED);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
+
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+
+  while(list != NULL){
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 
   //TODO:JK: implement me
 

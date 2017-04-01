@@ -30,20 +30,17 @@
 
 #include <ags/test/X/libgsequencer.h>
 
-#include "gsequencer_setup_util.h"
-#include "ags_functional_test_util.h"
+#include "../gsequencer_setup_util.h"
+#include "../ags_functional_test_util.h"
 
-int ags_functional_machine_add_and_destroy_test_init_suite();
-int ags_functional_machine_add_and_destroy_test_clean_suite();
+int ags_functional_drum_test_init_suite();
+int ags_functional_drum_test_clean_suite();
 
-void ags_functional_machine_add_and_destroy_test_panel();
-void ags_functional_machine_add_and_destroy_test_mixer();
-void ags_functional_machine_add_and_destroy_test_drum();
-void ags_functional_machine_add_and_destroy_test_matrix();
-void ags_functional_machine_add_and_destroy_test_synth();
-void ags_functional_machine_add_and_destroy_test_ffplayer();
+void ags_functional_drum_test_open_drum_kit();
 
-#define AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
+#define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/Synthie-1/"
+
+#define AGS_FUNCTIONAL_DRUM_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
   "simple-file=true\n"				       \
   "disable-feature=experimental\n"		       \
@@ -82,14 +79,14 @@ AgsGuiThread *gui_thread;
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_machine_add_and_destroy_test_init_suite()
+ags_functional_drum_test_init_suite()
 {
   AgsConfig *config;
 
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG));
+			    AGS_FUNCTIONAL_DRUM_TEST_CONFIG,
+			    strlen(AGS_FUNCTIONAL_DRUM_TEST_CONFIG));
 
   ags_functional_test_util_setup_and_launch();
 
@@ -105,7 +102,7 @@ ags_functional_machine_add_and_destroy_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_machine_add_and_destroy_test_clean_suite()
+ags_functional_drum_test_clean_suite()
 {  
   ags_thread_stop(gui_thread);  
 
@@ -113,44 +110,15 @@ ags_functional_machine_add_and_destroy_test_clean_suite()
 }
 
 void
-ags_functional_machine_add_and_destroy_test_panel()
-{  
-  gboolean success;
-  
-  /* add panel */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Panel");
-
-  CU_ASSERT(success == TRUE);
-
-  ags_functional_test_util_idle();
-
-  /* destroy panel */
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
-}
-
-void
-ags_functional_machine_add_and_destroy_test_mixer()
+ags_functional_drum_test_open_drum_kit()
 {
-  gboolean success;
+  AgsXorgApplicationContext *xorg_application_context;
 
-  /* add mixer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Mixer");
+  AgsDrum *drum;
 
-  CU_ASSERT(success == TRUE);
+  GList *list_start, *list;
 
-  /* destroy mixer */
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
-}
-
-void
-ags_functional_machine_add_and_destroy_test_drum()
-{
+  guint nth_machine;
   gboolean success;
 
   /* add drum */
@@ -159,58 +127,50 @@ ags_functional_machine_add_and_destroy_test_drum()
 
   CU_ASSERT(success == TRUE);
 
+  /*  */
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve drum */
+  nth_machine = 0;
+
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+
+  if(list != NULL &&
+     AGS_IS_DRUM(list->data)){
+    drum = list->data;
+  }else{
+    drum = NULL;
+  }
+  
+  CU_ASSERT(drum != NULL);
+
+  /* open dialog */
+  success = ags_functional_test_util_drum_open(0);
+
+  CU_ASSERT(success == TRUE);
+
+  /* open path */
+  success = ags_functional_test_util_file_chooser_open_path(GTK_FILE_CHOOSER(drum->open_dialog),
+							    AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH);
+  CU_ASSERT(success == TRUE);
+
+  /* select all */
+  success = ags_functional_test_util_file_chooser_select_all(GTK_FILE_CHOOSER(drum->open_dialog));
+
+  CU_ASSERT(success == TRUE);
+
+  /* response ok */
+  success = ags_functional_test_util_dialog_ok(GTK_DIALOG(drum->open_dialog));
+
+  CU_ASSERT(success == TRUE);
+
   /* destroy drum */
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
-}
-
-void
-ags_functional_machine_add_and_destroy_test_matrix()
-{
-  gboolean success;
-
-  /* add matrix */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Matrix");
-
-  CU_ASSERT(success == TRUE);
-
-  /* destroy matrix */
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
-}
-
-void
-ags_functional_machine_add_and_destroy_test_synth()
-{
-  gboolean success;
-
-  /* add synth */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Synth");
-
-  CU_ASSERT(success == TRUE);
-
-  /* destroy synth */
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
-}
-
-void
-ags_functional_machine_add_and_destroy_test_ffplayer()
-{
-  gboolean success;
-
-  /* add fplayer */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "FPlayer");
-
-  CU_ASSERT(success == TRUE);
-
-  /* destroy fplayer */
   success = ags_functional_test_util_machine_destroy(0);
   
   CU_ASSERT(success == TRUE);
@@ -329,7 +289,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_machine_add_and_destroy_test_init_suite, ags_functional_machine_add_and_destroy_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_drum_test_init_suite, ags_functional_drum_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -343,12 +303,7 @@ main(int argc, char **argv)
   //		       G_LOG_LEVEL_CRITICAL);
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsPanel\0", ags_functional_machine_add_and_destroy_test_panel) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMixer\0", ags_functional_machine_add_and_destroy_test_mixer) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsDrum\0", ags_functional_machine_add_and_destroy_test_drum) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMatrix\0", ags_functional_machine_add_and_destroy_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth\0", ags_functional_machine_add_and_destroy_test_synth) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer\0", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)){
+  if((CU_add_test(pSuite, "functional test of AgsDrum open drum kit\0", ags_functional_drum_test_open_drum_kit) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();
