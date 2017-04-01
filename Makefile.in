@@ -161,8 +161,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" \
 	"$(DESTDIR)$(docdir)" "$(DESTDIR)$(pkgconfigdir)" \
 	"$(DESTDIR)$(includedir)"
-LTLIBRARIES = $(lib_LTLIBRARIES) $(libgsequencer_LTLIBRARIES) \
-	$(noinst_LTLIBRARIES)
+LTLIBRARIES = $(lib_LTLIBRARIES) $(libgsequencer_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libags_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
@@ -759,13 +758,14 @@ libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libgsequencer_la_CFLAGS) $(CFLAGS) \
 	$(libgsequencer_la_LDFLAGS) $(LDFLAGS) -o $@
-libgsequencer_test_la_DEPENDENCIES = libgsequencer.la libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la \
+am__DEPENDENCIES_2 = libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1)
+libgsequencer_test_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
 am_libgsequencer_test_la_OBJECTS =  \
 	ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo \
 	ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo
@@ -848,11 +848,14 @@ ags_devout_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_audio_test_OBJECTS = ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.$(OBJEXT)
 ags_functional_audio_test_OBJECTS =  \
 	$(am_ags_functional_audio_test_OBJECTS)
-ags_functional_audio_test_DEPENDENCIES = libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la \
+am__DEPENDENCIES_3 = libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la libgsequencer_test.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_audio_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_audio_test_CFLAGS) $(CFLAGS) \
@@ -860,14 +863,7 @@ ags_functional_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_drum_test_OBJECTS = ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.$(OBJEXT)
 ags_functional_drum_test_OBJECTS =  \
 	$(am_ags_functional_drum_test_OBJECTS)
-ags_functional_drum_test_DEPENDENCIES = libgsequencer.la \
-	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_drum_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_drum_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_drum_test_CFLAGS) $(CFLAGS) \
@@ -875,14 +871,7 @@ ags_functional_drum_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_ffplayer_test_OBJECTS = ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.$(OBJEXT)
 ags_functional_ffplayer_test_OBJECTS =  \
 	$(am_ags_functional_ffplayer_test_OBJECTS)
-ags_functional_ffplayer_test_DEPENDENCIES = libgsequencer.la \
-	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_ffplayer_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_ffplayer_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) \
@@ -891,13 +880,7 @@ am_ags_functional_machine_add_and_destroy_test_OBJECTS = ags/test/X/ags_function
 ags_functional_machine_add_and_destroy_test_OBJECTS =  \
 	$(am_ags_functional_machine_add_and_destroy_test_OBJECTS)
 ags_functional_machine_add_and_destroy_test_DEPENDENCIES =  \
-	libgsequencer.la libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_3)
 ags_functional_machine_add_and_destroy_test_LINK = $(LIBTOOL) \
 	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) \
@@ -908,14 +891,7 @@ ags_functional_machine_add_and_destroy_test_LINK = $(LIBTOOL) \
 am_ags_functional_matrix_test_OBJECTS = ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.$(OBJEXT)
 ags_functional_matrix_test_OBJECTS =  \
 	$(am_ags_functional_matrix_test_OBJECTS)
-ags_functional_matrix_test_DEPENDENCIES = libgsequencer.la \
-	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_matrix_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_matrix_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_matrix_test_CFLAGS) $(CFLAGS) \
@@ -923,14 +899,7 @@ ags_functional_matrix_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_mixer_test_OBJECTS = ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.$(OBJEXT)
 ags_functional_mixer_test_OBJECTS =  \
 	$(am_ags_functional_mixer_test_OBJECTS)
-ags_functional_mixer_test_DEPENDENCIES = libgsequencer.la \
-	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_mixer_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_mixer_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_mixer_test_CFLAGS) $(CFLAGS) \
@@ -938,14 +907,7 @@ ags_functional_mixer_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_note_edit_test_OBJECTS = ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.$(OBJEXT)
 ags_functional_note_edit_test_OBJECTS =  \
 	$(am_ags_functional_note_edit_test_OBJECTS)
-ags_functional_note_edit_test_DEPENDENCIES = libgsequencer.la \
-	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_note_edit_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_note_edit_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_note_edit_test_CFLAGS) $(CFLAGS) \
@@ -953,14 +915,7 @@ ags_functional_note_edit_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_panel_test_OBJECTS = ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.$(OBJEXT)
 ags_functional_panel_test_OBJECTS =  \
 	$(am_ags_functional_panel_test_OBJECTS)
-ags_functional_panel_test_DEPENDENCIES = libgsequencer.la \
-	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_panel_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_panel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_panel_test_CFLAGS) $(CFLAGS) \
@@ -968,14 +923,7 @@ ags_functional_panel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_synth_test_OBJECTS = ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.$(OBJEXT)
 ags_functional_synth_test_OBJECTS =  \
 	$(am_ags_functional_synth_test_OBJECTS)
-ags_functional_synth_test_DEPENDENCIES = libgsequencer.la \
-	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la libgsequencer_test.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_synth_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_synth_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_synth_test_CFLAGS) $(CFLAGS) \
@@ -1448,6 +1396,7 @@ GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GREP = @GREP@
 GSEQUENCER_CFLAGS = @GSEQUENCER_CFLAGS@
+GSEQUENCER_FUNCTIONAL_TEST_LDADD = @GSEQUENCER_FUNCTIONAL_TEST_LDADD@
 GSEQUENCER_LDFLAGS = @GSEQUENCER_LDFLAGS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_CHECK_PATH = @GTKDOC_CHECK_PATH@
@@ -1469,6 +1418,7 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBASOUND2_CFLAGS = @LIBASOUND2_CFLAGS@
 LIBASOUND2_LIBS = @LIBASOUND2_LIBS@
+LIBGSEQUENCER_TEST_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
 LIBINSTPATCH_CFLAGS = @LIBINSTPATCH_CFLAGS@
 LIBINSTPATCH_LIBS = @LIBINSTPATCH_LIBS@
 LIBOBJS = @LIBOBJS@
@@ -1900,75 +1850,91 @@ ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_cont
 ags_xorg_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_xorg_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_xorg_application_context_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-noinst_LTLIBRARIES = libgsequencer_test.la
+
+# libadd and ldadd
+libgsequencer_test_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@ \
+	libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm \
+	$(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) \
+	$(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) \
+	$(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) \
+	$(CAIRO_LIBS) $(GTK_LIBS)
+gsequencer_functional_test_LDADD = @GSEQUENCER_FUNCTIONAL_TEST_LDADD@ \
+	libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la libgsequencer_test.la \
+	-lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) \
+	$(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) \
+	$(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) \
+	$(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+check_LTLIBRARIES = libgsequencer_test.la
 
 # functional test util library
 libgsequencer_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h
 libgsequencer_test_la_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libgsequencer_test_la_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
-libgsequencer_test_la_LIBADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
 
 # functional audio test
 ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
 ags_functional_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_functional_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_audio_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_functional_audio_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional machine add and destroy test
 ags_functional_machine_add_and_destroy_test_SOURCES = ags/test/X/ags_functional_machine_add_and_destroy_test.c
 ags_functional_machine_add_and_destroy_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_machine_add_and_destroy_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_machine_add_and_destroy_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_machine_add_and_destroy_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_machine_add_and_destroy_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional panel test
 ags_functional_panel_test_SOURCES = ags/test/X/machine/ags_functional_panel_test.c
 ags_functional_panel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_panel_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_panel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_panel_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_panel_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional mixer test
 ags_functional_mixer_test_SOURCES = ags/test/X/machine/ags_functional_mixer_test.c
 ags_functional_mixer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_mixer_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_mixer_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_mixer_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_mixer_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional drum test
 ags_functional_drum_test_SOURCES = ags/test/X/machine/ags_functional_drum_test.c
 ags_functional_drum_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_drum_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_drum_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_drum_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_drum_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional matrix test
 ags_functional_matrix_test_SOURCES = ags/test/X/machine/ags_functional_matrix_test.c
 ags_functional_matrix_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_matrix_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_matrix_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_matrix_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_matrix_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional synth test
 ags_functional_synth_test_SOURCES = ags/test/X/machine/ags_functional_synth_test.c
 ags_functional_synth_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_synth_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_synth_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_synth_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_synth_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional ffplayer test
 ags_functional_ffplayer_test_SOURCES = ags/test/X/machine/ags_functional_ffplayer_test.c
 ags_functional_ffplayer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_ffplayer_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_ffplayer_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_ffplayer_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_ffplayer_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional note edit test
 ags_functional_note_edit_test_SOURCES = ags/test/X/ags_functional_note_edit_test.c
 ags_functional_note_edit_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_note_edit_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_note_edit_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_note_edit_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la libgsequencer_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+ags_functional_note_edit_test_LDADD = $(gsequencer_functional_test_LDADD)
 TESTS = $(check_PROGRAMS)
 
 # libags all files
@@ -3307,6 +3273,17 @@ libags_gui.pc: $(top_builddir)/config.status $(srcdir)/libags_gui.pc.in
 libgsequencer.pc: $(top_builddir)/config.status $(srcdir)/libgsequencer.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
+clean-checkLTLIBRARIES:
+	-test -z "$(check_LTLIBRARIES)" || rm -f $(check_LTLIBRARIES)
+	@list='$(check_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
+
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
@@ -3369,17 +3346,6 @@ uninstall-libgsequencerLTLIBRARIES:
 clean-libgsequencerLTLIBRARIES:
 	-test -z "$(libgsequencer_LTLIBRARIES)" || rm -f $(libgsequencer_LTLIBRARIES)
 	@list='$(libgsequencer_LTLIBRARIES)'; \
-	locs=`for p in $$list; do echo $$p; done | \
-	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
-	      sort -u`; \
-	test -z "$$locs" || { \
-	  echo rm -f $${locs}; \
-	  rm -f $${locs}; \
-	}
-
-clean-noinstLTLIBRARIES:
-	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
-	@list='$(noinst_LTLIBRARIES)'; \
 	locs=`for p in $$list; do echo $$p; done | \
 	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
 	      sort -u`; \
@@ -10037,7 +10003,7 @@ check-TESTS:
 	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
 	exit $$?;
-recheck: all $(check_PROGRAMS)
+recheck: all $(check_LTLIBRARIES) $(check_PROGRAMS)
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 	@set +e; $(am__set_TESTS_bases); \
 	bases=`for i in $$bases; do echo $$i; done \
@@ -10388,7 +10354,7 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) $(check_LTLIBRARIES) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) $(HEADERS)
@@ -10502,9 +10468,9 @@ ags-docs-am: ags-docs-local
 
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
-	clean-libLTLIBRARIES clean-libgsequencerLTLIBRARIES \
-	clean-libtool clean-local clean-noinstLTLIBRARIES \
+clean-am: clean-binPROGRAMS clean-checkLTLIBRARIES clean-checkPROGRAMS \
+	clean-generic clean-libLTLIBRARIES \
+	clean-libgsequencerLTLIBRARIES clean-libtool clean-local \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -10550,7 +10516,7 @@ install-ps: install-ps-am
 
 install-ps-am:
 
-installcheck-am:
+installcheck-am: installcheck-local
 
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -10584,10 +10550,10 @@ uninstall-man: uninstall-man1
 
 .PHONY: CTAGS GTAGS TAGS ags-docs-am ags-docs-local all all-am \
 	am--refresh check check-TESTS check-am clean clean-binPROGRAMS \
-	clean-checkPROGRAMS clean-cscope clean-generic \
-	clean-libLTLIBRARIES clean-libgsequencerLTLIBRARIES \
-	clean-libtool clean-local clean-noinstLTLIBRARIES cscope \
-	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	clean-checkLTLIBRARIES clean-checkPROGRAMS clean-cscope \
+	clean-generic clean-libLTLIBRARIES \
+	clean-libgsequencerLTLIBRARIES clean-libtool clean-local \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
 	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
 	distcheck distclean distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags distcleancheck \
@@ -10600,18 +10566,21 @@ uninstall-man: uninstall-man1
 	install-libgsequencerLTLIBRARIES install-man install-man1 \
 	install-nobase_includeHEADERS install-pdf install-pdf-am \
 	install-pkgconfigDATA install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am \
-	uninstall-appdataDATA uninstall-binPROGRAMS uninstall-docDATA \
-	uninstall-hook uninstall-libLTLIBRARIES \
+	installcheck installcheck-am installcheck-local installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am recheck tags tags-am uninstall \
+	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
+	uninstall-docDATA uninstall-hook uninstall-libLTLIBRARIES \
 	uninstall-libgsequencerLTLIBRARIES uninstall-man \
 	uninstall-man1 uninstall-nobase_includeHEADERS \
 	uninstall-pkgconfigDATA
 
 .PRECIOUS: Makefile
 
+
+installcheck-local: 
+	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
 
 ags-docs-local:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags

@@ -12,8 +12,10 @@ AM_CPPFLAGS = -std=gnu99 -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR
 CFLAGS = @CFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@
 gsequencer_LDFLAGS = @GSEQUENCER_LDFLAGS@
+
 midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@
 midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@
 
@@ -1550,6 +1552,9 @@ midi2xml_LDFLAGS += -ldl $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 midi2xml_SOURCES = ags/midi2xml_main.c
+
+installcheck-local: 
+	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
 
 ags-docs-local:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags
