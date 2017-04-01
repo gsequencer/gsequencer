@@ -642,7 +642,7 @@ ags_recycling_dispose(GObject *gobject)
 
   /* parent */
   if(recycling->parent != NULL){
-    g_object_unref(recycling->parent);
+    //    g_object_unref(recycling->parent);
 
     recycling->parent = NULL;
   }

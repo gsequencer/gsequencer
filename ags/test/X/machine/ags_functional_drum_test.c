@@ -37,8 +37,12 @@ int ags_functional_drum_test_init_suite();
 int ags_functional_drum_test_clean_suite();
 
 void ags_functional_drum_test_open_drum_kit();
+void ags_functional_drum_test_resize_pads();
 
 #define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/Synthie-1/"
+
+#define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_OUTPUT_PADS (5)
+#define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_INPUT_PADS (15)
 
 #define AGS_FUNCTIONAL_DRUM_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -72,7 +76,7 @@ extern struct sigaction ags_test_sigact;
 extern volatile gboolean ags_show_start_animation;
 
 AgsGuiThread *gui_thread;
-
+AgsTaskThread *task_thread;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -93,6 +97,9 @@ ags_functional_drum_test_init_suite()
   /* get gui thread */
   gui_thread = ags_thread_find_type(ags_application_context->main_loop,
 				    AGS_TYPE_GUI_THREAD);
+
+  task_thread = ags_thread_find_type(ags_application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
     
   return(0);
 }
@@ -174,6 +181,87 @@ ags_functional_drum_test_open_drum_kit()
   success = ags_functional_test_util_machine_destroy(0);
   
   CU_ASSERT(success == TRUE);
+}
+
+void
+ags_functional_drum_test_resize_pads()
+{
+  GtkDialog *properties;
+
+  AgsXorgApplicationContext *xorg_application_context;
+  
+  AgsDrum *drum;
+
+  GList *list_start, *list;
+
+  guint nth_machine;
+  guint resize_tab;
+  gboolean success;
+
+  /* add drum */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Drum");
+
+  CU_ASSERT(success == TRUE);
+
+  /*  */
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve drum */
+  nth_machine = 0;
+
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+
+  if(list != NULL &&
+     AGS_IS_DRUM(list->data)){
+    drum = list->data;
+  }else{
+    drum = NULL;
+  }
+  
+  CU_ASSERT(drum != NULL);
+
+  /*
+   * resize output and input pads
+   */
+  
+  /* open properties */
+  ags_functional_test_util_machine_properties_open(nth_machine);
+
+  /* click tab */
+  resize_tab = 4;
+  
+  ags_functional_test_util_machine_properties_click_tab(nth_machine,
+							resize_tab);
+  
+  /* click enable */
+  ags_functional_test_util_machine_properties_click_enable(nth_machine);
+
+  /* set output pads */
+  ags_functional_test_util_machine_properties_resize_outputs(nth_machine,
+							     AGS_FUNCTIONAL_DRUM_TEST_RESIZE_OUTPUT_PADS);
+
+  /* set input pads */
+  ags_functional_test_util_machine_properties_resize_inputs(nth_machine,
+							    AGS_FUNCTIONAL_DRUM_TEST_RESIZE_INPUT_PADS);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(drum)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_dialog_ok(properties);
+
+  /* destroy drum */
+  success = ags_functional_test_util_machine_destroy(0);
 }
 
 int
@@ -273,8 +361,8 @@ main(int argc, char **argv)
 				  NULL);
   
   ipatch_init();
-  //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
-		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
+		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
   /* animate */
   animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
@@ -289,7 +377,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_drum_test_init_suite, ags_functional_drum_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalDrumTest\0", ags_functional_drum_test_init_suite, ags_functional_drum_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -303,7 +391,8 @@ main(int argc, char **argv)
   //		       G_LOG_LEVEL_CRITICAL);
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of AgsDrum open drum kit\0", ags_functional_drum_test_open_drum_kit) == NULL)){
+  if((CU_add_test(pSuite, "functional test of AgsDrum open drum kit\0", ags_functional_drum_test_open_drum_kit) == NULL) ||
+     (CU_add_test(pSuite, "functional test of AgsDrum resize pads\0", ags_functional_drum_test_resize_pads) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();
