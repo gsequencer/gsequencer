@@ -2504,7 +2504,45 @@ ags_functional_test_util_oscillator_volume(guint nth_machine,
 gboolean
 ags_functional_test_util_ffplayer_open(guint nth_machine)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsFFPlayer *ffplayer;
+  GtkButton *open_button;
+
+  GList *list_start, *list;
+  
+  gboolean success;
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve ffplayer */
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_FFPLAYER(list->data)){
+    ffplayer = list->data;
+  }else{
+    return(FALSE);
+  }
+  
+  g_list_free(list_start);
+
+  /* open dialog */
+  pthread_mutex_lock(task_thread->launch_mutex);
+  
+  open_button = ffplayer->open;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /* click open */
+  success = ags_functional_test_util_button_click(open_button);
+  
+  return(success);
 }
 
 gboolean ags_functional_test_util_ffplayer_preset(guint nth_machine,

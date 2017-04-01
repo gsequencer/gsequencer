@@ -33,43 +33,40 @@
 #include "../gsequencer_setup_util.h"
 #include "../ags_functional_test_util.h"
 
-int ags_functional_drum_test_init_suite();
-int ags_functional_drum_test_clean_suite();
+int ags_functional_matrix_test_init_suite();
+int ags_functional_matrix_test_clean_suite();
 
-void ags_functional_drum_test_open_drum_kit();
-void ags_functional_drum_test_resize_pads();
-void ags_functional_drum_test_resize_audio_channels();
+void ags_functional_matrix_test_resize_pads();
+void ags_functional_matrix_test_resize_audio_channels();
 
-#define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/Synthie-1/"
+#define AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_OUTPUT_PADS (5)
+#define AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_INPUT_PADS (15)
 
-#define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_OUTPUT_PADS (5)
-#define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_INPUT_PADS (15)
+#define AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_AUDIO_CHANNELS (0)
 
-#define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_AUDIO_CHANNELS (7)
-
-#define AGS_FUNCTIONAL_DRUM_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=true\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=hw:0,0\n"                                    \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+#define AGS_FUNCTIONAL_MATRIX_TEST_CONFIG "[generic]\n" \
+  "autosave-thread=false\n"				\
+  "simple-file=true\n"					\
+  "disable-feature=experimental\n"			\
+  "segmentation=4/4\n"					\
+  "\n"							\
+  "[thread]\n"						\
+  "model=super-threaded\n"				\
+  "super-threaded-scope=channel\n"			\
+  "lock-global=ags-thread\n"				\
+  "lock-parent=ags-recycling-thread\n"			\
+  "\n"							\
+  "[soundcard-0]\n"					\
+  "backend=alsa\n"					\
+  "device=hw:0,0\n"					\
+  "samplerate=44100\n"					\
+  "buffer-size=1024\n"					\
+  "pcm-channels=2\n"					\
+  "dsp-channels=2\n"					\
+  "format=16\n"						\
+  "\n"							\
+  "[recall]\n"						\
+  "auto-sense=true\n"					\
   "\n"
 
 extern AgsApplicationContext *ags_application_context;
@@ -86,14 +83,14 @@ AgsTaskThread *task_thread;
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_drum_test_init_suite()
+ags_functional_matrix_test_init_suite()
 {
   AgsConfig *config;
 
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_DRUM_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_DRUM_TEST_CONFIG));
+			    AGS_FUNCTIONAL_MATRIX_TEST_CONFIG,
+			    strlen(AGS_FUNCTIONAL_MATRIX_TEST_CONFIG));
 
   ags_functional_test_util_setup_and_launch();
 
@@ -112,7 +109,7 @@ ags_functional_drum_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_drum_test_clean_suite()
+ags_functional_matrix_test_clean_suite()
 {  
   ags_thread_stop(gui_thread);  
 
@@ -120,80 +117,13 @@ ags_functional_drum_test_clean_suite()
 }
 
 void
-ags_functional_drum_test_open_drum_kit()
-{
-  AgsXorgApplicationContext *xorg_application_context;
-
-  AgsDrum *drum;
-
-  GList *list_start, *list;
-
-  guint nth_machine;
-  gboolean success;
-
-  /* add drum */
-  success = ags_functional_test_util_add_machine(NULL,
-						 "Drum");
-
-  CU_ASSERT(success == TRUE);
-
-  /*  */
-  gdk_threads_enter();
-  
-  xorg_application_context = ags_application_context_get_instance();
-
-  /* retrieve drum */
-  nth_machine = 0;
-
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
-  list = g_list_nth(list_start,
-		    nth_machine);
-
-  gdk_threads_leave();
-
-  if(list != NULL &&
-     AGS_IS_DRUM(list->data)){
-    drum = list->data;
-  }else{
-    drum = NULL;
-  }
-  
-  CU_ASSERT(drum != NULL);
-
-  /* open dialog */
-  success = ags_functional_test_util_drum_open(0);
-
-  CU_ASSERT(success == TRUE);
-
-  /* open path */
-  success = ags_functional_test_util_file_chooser_open_path(GTK_FILE_CHOOSER(drum->open_dialog),
-							    AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH);
-  CU_ASSERT(success == TRUE);
-
-  /* select all */
-  success = ags_functional_test_util_file_chooser_select_all(GTK_FILE_CHOOSER(drum->open_dialog));
-
-  CU_ASSERT(success == TRUE);
-
-  /* response ok */
-  success = ags_functional_test_util_dialog_ok(GTK_DIALOG(drum->open_dialog));
-
-  CU_ASSERT(success == TRUE);
-
-  /* destroy drum */
-  success = ags_functional_test_util_machine_destroy(0);
-  
-  CU_ASSERT(success == TRUE);
-}
-
-void
-ags_functional_drum_test_resize_pads()
+ags_functional_matrix_test_resize_pads()
 {
   GtkDialog *properties;
 
   AgsXorgApplicationContext *xorg_application_context;
   
-  AgsDrum *drum;
+  AgsMatrix *matrix;
 
   GList *list_start, *list;
 
@@ -201,9 +131,9 @@ ags_functional_drum_test_resize_pads()
   guint resize_tab;
   gboolean success;
 
-  /* add drum */
+  /* add matrix */
   success = ags_functional_test_util_add_machine(NULL,
-						 "Drum");
+						 "Matrix");
 
   CU_ASSERT(success == TRUE);
 
@@ -212,7 +142,7 @@ ags_functional_drum_test_resize_pads()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  /* retrieve drum */
+  /* retrieve matrix */
   nth_machine = 0;
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
@@ -222,13 +152,13 @@ ags_functional_drum_test_resize_pads()
   gdk_threads_leave();
 
   if(list != NULL &&
-     AGS_IS_DRUM(list->data)){
-    drum = list->data;
+     AGS_IS_MATRIX(list->data)){
+    matrix = list->data;
   }else{
-    drum = NULL;
+    matrix = NULL;
   }
   
-  CU_ASSERT(drum != NULL);
+  CU_ASSERT(matrix != NULL);
 
   /*
    * resize output and input pads
@@ -248,33 +178,33 @@ ags_functional_drum_test_resize_pads()
 
   /* set output pads */
   ags_functional_test_util_machine_properties_resize_outputs(nth_machine,
-							     AGS_FUNCTIONAL_DRUM_TEST_RESIZE_OUTPUT_PADS);
+							     AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_OUTPUT_PADS);
 
   /* set input pads */
   ags_functional_test_util_machine_properties_resize_inputs(nth_machine,
-							    AGS_FUNCTIONAL_DRUM_TEST_RESIZE_INPUT_PADS);
+							    AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_INPUT_PADS);
 
   /* response ok */
   pthread_mutex_lock(task_thread->launch_mutex);
 
-  properties = AGS_MACHINE(drum)->properties;
+  properties = AGS_MACHINE(matrix)->properties;
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   ags_functional_test_util_dialog_ok(properties);
 
-  /* destroy drum */
+  /* destroy matrix */
   success = ags_functional_test_util_machine_destroy(0);
 }
 
 void
-ags_functional_drum_test_resize_audio_channels()
+ags_functional_matrix_test_resize_audio_channels()
 {
   GtkDialog *properties;
 
   AgsXorgApplicationContext *xorg_application_context;
   
-  AgsDrum *drum;
+  AgsMatrix *matrix;
 
   GList *list_start, *list;
 
@@ -282,9 +212,9 @@ ags_functional_drum_test_resize_audio_channels()
   guint resize_tab;
   gboolean success;
 
-  /* add drum */
+  /* add matrix */
   success = ags_functional_test_util_add_machine(NULL,
-						 "Drum");
+						 "Matrix");
 
   CU_ASSERT(success == TRUE);
 
@@ -293,7 +223,7 @@ ags_functional_drum_test_resize_audio_channels()
   
   xorg_application_context = ags_application_context_get_instance();
 
-  /* retrieve drum */
+  /* retrieve matrix */
   nth_machine = 0;
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
@@ -303,13 +233,13 @@ ags_functional_drum_test_resize_audio_channels()
   gdk_threads_leave();
 
   if(list != NULL &&
-     AGS_IS_DRUM(list->data)){
-    drum = list->data;
+     AGS_IS_MATRIX(list->data)){
+    matrix = list->data;
   }else{
-    drum = NULL;
+    matrix = NULL;
   }
   
-  CU_ASSERT(drum != NULL);
+  CU_ASSERT(matrix != NULL);
 
   /*
    * resize audio channels
@@ -329,18 +259,18 @@ ags_functional_drum_test_resize_audio_channels()
 
   /* set output audio_channels */
   ags_functional_test_util_machine_properties_resize_audio_channels(nth_machine,
-								    AGS_FUNCTIONAL_DRUM_TEST_RESIZE_AUDIO_CHANNELS);
+								    AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_AUDIO_CHANNELS);
 
   /* response ok */
   pthread_mutex_lock(task_thread->launch_mutex);
 
-  properties = AGS_MACHINE(drum)->properties;
+  properties = AGS_MACHINE(matrix)->properties;
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   ags_functional_test_util_dialog_ok(properties);
 
-  /* destroy drum */
+  /* destroy matrix */
   success = ags_functional_test_util_machine_destroy(0);
 }
 
@@ -367,7 +297,7 @@ main(int argc, char **argv)
   timer_t *timer_id
 #endif
   
-  putenv("LC_ALL=C\0");
+    putenv("LC_ALL=C\0");
   putenv("LANG=C\0");
 
   //  mtrace();
@@ -457,7 +387,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalDrumTest\0", ags_functional_drum_test_init_suite, ags_functional_drum_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalMatrixTest\0", ags_functional_matrix_test_init_suite, ags_functional_matrix_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -471,9 +401,8 @@ main(int argc, char **argv)
   //		       G_LOG_LEVEL_CRITICAL);
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of AgsDrum open drum kit\0", ags_functional_drum_test_open_drum_kit) == NULL) ||
-     (CU_add_test(pSuite, "functional test of AgsDrum resize pads\0", ags_functional_drum_test_resize_pads) == NULL) ||
-     (CU_add_test(pSuite, "functional test of AgsDrum resize audio channels\0", ags_functional_drum_test_resize_audio_channels) == NULL)){
+  if((CU_add_test(pSuite, "functional test of AgsMatrix resize pads\0", ags_functional_matrix_test_resize_pads) == NULL) ||
+     (CU_add_test(pSuite, "functional test of AgsMatrix resize audio channels\0", ags_functional_matrix_test_resize_audio_channels) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

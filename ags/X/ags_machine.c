@@ -1111,7 +1111,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
 
-	list_input_pad->next = list_input_pad_next;
+	list_input_pad = list_input_pad_next;
       }
 
       /* AgsOutput */
@@ -1120,7 +1120,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	gtk_widget_destroy(GTK_WIDGET(list_output_pad->data));
 
-	list_output_pad->next = list_output_pad_next;
+	list_output_pad = list_output_pad_next;
       }
     }else{
       /* AgsInput */

@@ -1,3 +1,12 @@
+ags (0.7.122.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory corruption of AgsFFPlayer destruction
+	* fixed some AgsConnectable::disconnect() of machines
+	* fixed potential infinite loop in ags_machine_resize_audio_channels()
+	* added functional test add and destroy machine
+	* added functional tests resize pads and audio channels
+
 ags (0.7.122.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
