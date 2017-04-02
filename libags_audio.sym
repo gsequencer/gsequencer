@@ -776,6 +776,8 @@ ags_recall_recycling_get_child_source
 ags_recall_recycling_new
 ags_append_audio_get_type
 ags_append_audio_new
+ags_clear_audio_signal_get_type
+ags_clear_audio_signal_new
 ags_apply_synth_get_type
 ags_apply_synth_new
 ags_tic_device_get_type

@@ -9,6 +9,7 @@ noinst_LTLIBRARIES = libgsequencer_check_system_test.la
 installcheck_programs = \
 	ags_check_system_functional_audio_test \
 	ags_check_system_functional_machine_add_and_destroy_test \
+	ags_check_system_functional_machine_link_test \
 	ags_check_system_functional_panel_test \
 	ags_check_system_functional_mixer_test \
 	ags_check_system_functional_drum_test \

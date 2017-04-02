@@ -621,23 +621,6 @@ ags_apply_synth_launch(AgsTask *task)
 
   factor = 1.0;
 
-  /* clear */
-  for(i = 0; channel != NULL && i < apply_synth->count; i++){
-    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-    /* clear the stream */
-    stream = audio_signal->stream_beginning;
-
-    while(stream != NULL){
-      ags_audio_buffer_util_clear_buffer(stream->data, 1,
-					 audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
-      
-      stream = stream->next;
-    }
-
-    channel = channel->next;
-  }
-
   /* fill */
   channel = apply_synth->start_channel;
 

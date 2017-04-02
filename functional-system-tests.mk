@@ -133,6 +133,7 @@ libgsequencer_check_system_test_la_LINK = $(LIBTOOL) $(AM_V_lt) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am__EXEEXT_1 = ags_check_system_functional_audio_test$(EXEEXT) \
 	ags_check_system_functional_machine_add_and_destroy_test$(EXEEXT) \
+	ags_check_system_functional_machine_link_test$(EXEEXT) \
 	ags_check_system_functional_panel_test$(EXEEXT) \
 	ags_check_system_functional_mixer_test$(EXEEXT) \
 	ags_check_system_functional_drum_test$(EXEEXT) \
@@ -187,6 +188,17 @@ ags_check_system_functional_machine_add_and_destroy_test_LINK =  \
 	$(ags_check_system_functional_machine_add_and_destroy_test_CFLAGS) \
 	$(CFLAGS) \
 	$(ags_check_system_functional_machine_add_and_destroy_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_check_system_functional_machine_link_test_OBJECTS = ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.$(OBJEXT)
+ags_check_system_functional_machine_link_test_OBJECTS =  \
+	$(am_ags_check_system_functional_machine_link_test_OBJECTS)
+ags_check_system_functional_machine_link_test_DEPENDENCIES =
+ags_check_system_functional_machine_link_test_LINK = $(LIBTOOL) \
+	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) \
+	$(ags_check_system_functional_machine_link_test_CFLAGS) \
+	$(CFLAGS) \
+	$(ags_check_system_functional_machine_link_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_ags_check_system_functional_matrix_test_OBJECTS = ags/test/X/machine/ags_check_system_functional_matrix_test-ags_functional_matrix_test.$(OBJEXT)
 ags_check_system_functional_matrix_test_OBJECTS =  \
@@ -278,6 +290,7 @@ SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
 	$(ags_check_system_functional_ffplayer_test_SOURCES) \
 	$(ags_check_system_functional_machine_add_and_destroy_test_SOURCES) \
+	$(ags_check_system_functional_machine_link_test_SOURCES) \
 	$(ags_check_system_functional_matrix_test_SOURCES) \
 	$(ags_check_system_functional_mixer_test_SOURCES) \
 	$(ags_check_system_functional_note_edit_test_SOURCES) \
@@ -288,6 +301,7 @@ DIST_SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
 	$(ags_check_system_functional_ffplayer_test_SOURCES) \
 	$(ags_check_system_functional_machine_add_and_destroy_test_SOURCES) \
+	$(ags_check_system_functional_machine_link_test_SOURCES) \
 	$(ags_check_system_functional_matrix_test_SOURCES) \
 	$(ags_check_system_functional_mixer_test_SOURCES) \
 	$(ags_check_system_functional_note_edit_test_SOURCES) \
@@ -430,10 +444,10 @@ OTOOL64 =
 PACKAGE = gsequencer
 PACKAGE_BUGREPORT = jkraehemann-guest@users.alioth.debian.org
 PACKAGE_NAME = gsequencer
-PACKAGE_STRING = gsequencer 0.7.122.16
+PACKAGE_STRING = gsequencer 0.7.122.17
 PACKAGE_TARNAME = gsequencer
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.7.122.16
+PACKAGE_VERSION = 0.7.122.17
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -449,7 +463,7 @@ SNDFILE_LIBS = -lsndfile
 STRIP = strip
 UUID_CFLAGS = -I/usr/include/uuid
 UUID_LIBS = -luuid
-VERSION = 0.7.122.16
+VERSION = 0.7.122.17
 XMKMF = 
 XMLRPC_SERVER_ABYSS_CFLAGS = 
 XMLRPC_SERVER_ABYSS_LIBS = 
@@ -522,6 +536,7 @@ noinst_LTLIBRARIES = libgsequencer_check_system_test.la
 installcheck_programs = \
 	ags_check_system_functional_audio_test \
 	ags_check_system_functional_machine_add_and_destroy_test \
+	ags_check_system_functional_machine_link_test \
 	ags_check_system_functional_panel_test \
 	ags_check_system_functional_mixer_test \
 	ags_check_system_functional_drum_test \
@@ -549,6 +564,13 @@ ags_check_system_functional_machine_add_and_destroy_test_CFLAGS = $(CFLAGS) $(LI
 ags_check_system_functional_machine_add_and_destroy_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_check_system_functional_machine_add_and_destroy_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_machine_add_and_destroy_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional machine link test
+ags_check_system_functional_machine_link_test_SOURCES = ags/test/X/ags_check_system_functional_machine_link_test.c
+ags_check_system_functional_machine_link_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_machine_link_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_check_system_functional_machine_link_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_machine_link_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional panel test
 ags_check_system_functional_panel_test_SOURCES = ags/test/X/machine/ags_functional_panel_test.c
@@ -733,6 +755,13 @@ ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_function
 ags_check_system_functional_machine_add_and_destroy_test$(EXEEXT): $(ags_check_system_functional_machine_add_and_destroy_test_OBJECTS) $(ags_check_system_functional_machine_add_and_destroy_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_machine_add_and_destroy_test_DEPENDENCIES) 
 	@rm -f ags_check_system_functional_machine_add_and_destroy_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_functional_machine_add_and_destroy_test_LINK) $(ags_check_system_functional_machine_add_and_destroy_test_OBJECTS) $(ags_check_system_functional_machine_add_and_destroy_test_LDADD) $(LIBS)
+ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_check_system_functional_machine_link_test$(EXEEXT): $(ags_check_system_functional_machine_link_test_OBJECTS) $(ags_check_system_functional_machine_link_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_machine_link_test_DEPENDENCIES) 
+	@rm -f ags_check_system_functional_machine_link_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_functional_machine_link_test_LINK) $(ags_check_system_functional_machine_link_test_OBJECTS) $(ags_check_system_functional_machine_link_test_LDADD) $(LIBS)
 ags/test/X/machine/ags_check_system_functional_matrix_test-ags_functional_matrix_test.$(OBJEXT):  \
 	ags/test/X/machine/$(am__dirstamp) \
 	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -780,6 +809,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po
+include ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Po
 include ags/test/X/$(DEPDIR)/ags_check_system_functional_note_edit_test-ags_functional_note_edit_test.Po
 include ags/test/X/$(DEPDIR)/libgsequencer_check_system_test_la-ags_functional_test_util.Plo
 include ags/test/X/$(DEPDIR)/libgsequencer_check_system_test_la-gsequencer_setup_util.Plo
@@ -884,6 +914,20 @@ ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_function
 #	$(AM_V_CC)source='ags/test/X/ags_functional_machine_add_and_destroy_test.c' object='ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_machine_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_machine_add_and_destroy_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.obj `if test -f 'ags/test/X/ags_functional_machine_add_and_destroy_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_machine_add_and_destroy_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_machine_add_and_destroy_test.c'; fi`
+
+ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.o: ags/test/X/ags_check_system_functional_machine_link_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_machine_link_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Tpo -c -o ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.o `test -f 'ags/test/X/ags_check_system_functional_machine_link_test.c' || echo '$(srcdir)/'`ags/test/X/ags_check_system_functional_machine_link_test.c
+	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Tpo ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Po
+#	$(AM_V_CC)source='ags/test/X/ags_check_system_functional_machine_link_test.c' object='ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_machine_link_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.o `test -f 'ags/test/X/ags_check_system_functional_machine_link_test.c' || echo '$(srcdir)/'`ags/test/X/ags_check_system_functional_machine_link_test.c
+
+ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.obj: ags/test/X/ags_check_system_functional_machine_link_test.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_machine_link_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Tpo -c -o ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.obj `if test -f 'ags/test/X/ags_check_system_functional_machine_link_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_check_system_functional_machine_link_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_check_system_functional_machine_link_test.c'; fi`
+	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Tpo ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Po
+#	$(AM_V_CC)source='ags/test/X/ags_check_system_functional_machine_link_test.c' object='ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_machine_link_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.obj `if test -f 'ags/test/X/ags_check_system_functional_machine_link_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_check_system_functional_machine_link_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_check_system_functional_machine_link_test.c'; fi`
 
 ags/test/X/machine/ags_check_system_functional_matrix_test-ags_functional_matrix_test.o: ags/test/X/machine/ags_functional_matrix_test.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_matrix_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_matrix_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_check_system_functional_matrix_test-ags_functional_matrix_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_check_system_functional_matrix_test-ags_functional_matrix_test.Tpo -c -o ags/test/X/machine/ags_check_system_functional_matrix_test-ags_functional_matrix_test.o `test -f 'ags/test/X/machine/ags_functional_matrix_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_matrix_test.c

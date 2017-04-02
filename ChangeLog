@@ -1,3 +1,10 @@
+ags (0.7.122.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsClearAudioSignal task
+	* fixed ags_synth_update() it didn't clear the buffers correctly
+	* added functional test to check link sanity
+
 ags (0.7.122.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

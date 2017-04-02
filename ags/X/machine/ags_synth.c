@@ -53,6 +53,7 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
+#include <ags/audio/task/ags_clear_audio_signal.h>
 #include <ags/audio/task/ags_apply_synth.h>
 
 #include <ags/widget/ags_expander_set.h>
@@ -587,7 +588,8 @@ ags_synth_update(AgsSynth *synth)
   
   AgsAudio *audio;
   AgsChannel *channel;
-  
+
+  AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
   AgsMutexManager *mutex_manager;
@@ -598,7 +600,8 @@ ags_synth_update(AgsSynth *synth)
   
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;
-
+  GList *task;
+  
   guint output_lines;
   guint wave;
   guint attack, frame_count;
@@ -698,7 +701,7 @@ ags_synth_update(AgsSynth *synth)
   
   g_list_free(input_pad_start);
 
-  /* write output */
+  /* clear output */
   input_pad_start = 
     input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
@@ -708,7 +711,46 @@ ags_synth_update(AgsSynth *synth)
   output_lines = audio->output_lines;
 
   pthread_mutex_unlock(audio_mutex);
+
+  task = NULL;
+
+  while(channel != NULL){
+    AgsAudioSignal *template;
+    
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
   
+    pthread_mutex_unlock(application_mutex);
+
+    /* clear task */
+    pthread_mutex_lock(channel_mutex);
+
+    template = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+    pthread_mutex_unlock(channel_mutex);
+
+    clear_audio_signal = ags_clear_audio_signal_new(template);
+    task = g_list_prepend(task,
+			  clear_audio_signal);
+    
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
+  
+  /* write output */
+  pthread_mutex_lock(audio_mutex);
+  
+  channel = audio->output;
+
+  pthread_mutex_unlock(audio_mutex);
+
   while(input_pad != NULL){
     /* do it so */
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
@@ -727,16 +769,18 @@ ags_synth_update(AgsSynth *synth)
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
-
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(apply_synth));
+    task = g_list_prepend(task,
+			  apply_synth);
 
     input_pad = input_pad->next;
   }
   
   g_list_free(input_pad_start);
-
+  
   gdk_threads_leave();
+
+  ags_task_thread_append_tasks(task_thread,
+			       g_list_reverse(task));
 }
 
 /**
