@@ -579,11 +579,187 @@ ags_functional_machine_link_test_matrix()
 void
 ags_functional_machine_link_test_synth()
 {
+  GtkDialog *properties;
+  
+  GList *list_start, *list;
+  
+  gchar *link_name;
+
+  guint input_line_count;
+  guint input_link_tab;
+  guint nth_parent_machine;
+  guint nth_machine;
+  gboolean success;
+
+  /* add synth */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Synth");
+
+  CU_ASSERT(success == TRUE);
+
+  /*  */
+  gdk_threads_enter();
+  
+  /* retrieve synth */
+  nth_parent_machine = 4;
+  nth_machine = 5;
+
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+
+  if(list != NULL &&
+     AGS_IS_SYNTH(list->data)){
+    synth = list->data;
+  }else{
+    synth = NULL;
+  }
+  
+  CU_ASSERT(synth != NULL);
+
+  /*
+   * link matrix with synth
+   */
+
+  /* open properties */
+  ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  /* click tab */
+  input_link_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB;
+  
+  ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+							input_link_tab);
+
+  /* click enable */
+  ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(synth),
+			      AGS_MACHINE(synth)->name);
+
+  input_line_count = matrix->audio->input_lines;  
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_machine_properties_bulk_add(nth_parent_machine);
+
+  ags_functional_test_util_machine_properties_bulk_link(nth_parent_machine,
+							0,
+							link_name);
+
+  ags_functional_test_util_machine_properties_bulk_count(nth_parent_machine,
+							 0,
+							 input_line_count);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(matrix)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_dialog_ok(properties);
+
+  /* hide */
+  success = ags_functional_test_util_machine_hide(nth_machine);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_link_test_ffplayer()
 {
+  GtkDialog *properties;
+  
+  GList *list_start, *list;
+  
+  gchar *link_name;
+  
+  guint resize_tab;
+  guint input_tab;
+  guint nth_parent_machine;
+  guint nth_machine;
+  gboolean success;
+
+  /* add ffplayer */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "FPlayer");
+
+  CU_ASSERT(success == TRUE);
+
+  /*  */
+  gdk_threads_enter();
+  
+  /* retrieve ffplayer */
+  nth_parent_machine = 2;
+  nth_machine = 6;
+
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+
+  if(list != NULL &&
+     AGS_IS_FFPLAYER(list->data)){
+    ffplayer = list->data;
+  }else{
+    ffplayer = NULL;
+  }
+  
+  CU_ASSERT(ffplayer != NULL);
+
+  /*
+   * link slave mixer with ffplayer
+   */
+
+  /* open properties */
+  ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  /* click tab */
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  
+  ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+							input_tab);
+
+  /* click enable */
+  ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(ffplayer),
+			      AGS_MACHINE(ffplayer)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+						       2, 0,
+						       link_name, 0);
+
+  ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+						       2, 1,
+						       link_name, 1);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_dialog_ok(properties);
+
+  /* hide */
+  success = ags_functional_test_util_machine_hide(nth_machine);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void

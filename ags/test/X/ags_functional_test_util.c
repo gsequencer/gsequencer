@@ -2147,7 +2147,69 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
 gboolean
 ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsPropertyCollectionEditor *property_collection_editor;
+  GtkButton *add_collection;
+
+  GList *list_start, *list;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_OUTPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+    }
+    break;
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  add_collection = property_collection_editor->add_collection;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /* add collection */
+  success = ags_functional_test_util_button_click(add_collection);
+
+  return(success);
 }
 
 gboolean
@@ -2162,7 +2224,115 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
 						      guint nth_bulk,
 						      gchar *link)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsPropertyCollectionEditor *property_collection_editor;
+  AgsLinkCollectionEditor *link_collection_editor;
+
+  GList *list_start, *list;
+
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get notebook tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_OUTPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+    }
+    break;
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* get bulk editor */
+  list_start = gtk_container_get_children(property_collection_editor->child);
+  list = g_list_nth(list_start,
+		    nth_bulk);
+
+  if(list != NULL){
+    GtkTable *table;
+    
+    table = list->data;
+    g_list_free(list_start);
+
+    link_collection_editor = g_object_get_data(table,
+					       "AgsChild\0");
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+  
+  /* set link */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(link_collection_editor->link));
+  success = FALSE;
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+      
+      if(!g_strcmp0(link,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) link_collection_editor->link,
+				      &iter);
+	success = TRUE;
+	
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }      
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_idle();
+
+  return(success);
 }
 
 gboolean
@@ -2170,7 +2340,95 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
 							    guint nth_bulk,
 							    guint first_line)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsPropertyCollectionEditor *property_collection_editor;
+  AgsLinkCollectionEditor *link_collection_editor;
+
+  GList *list_start, *list;
+
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+
+  gchar *value;
+
+  guint nth_tab;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get notebook tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_OUTPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+    }
+    break;
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* get bulk editor */
+  list_start = gtk_container_get_children(property_collection_editor->child);
+  list = g_list_nth(list_start,
+		    nth_bulk);
+
+  if(list != NULL){
+    GtkTable *table;
+    
+    table = list->data;
+    g_list_free(list_start);
+
+    link_collection_editor = g_object_get_data(table,
+					       "AgsChild\0");
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  gtk_spin_button_set_value(link_collection_editor->first_line,
+			    first_line);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_idle();
+
+  return(TRUE);
 }
 
 gboolean
@@ -2178,7 +2436,96 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
 							   guint nth_bulk,
 							   guint first_link_line)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsPropertyCollectionEditor *property_collection_editor;
+  AgsLinkCollectionEditor *link_collection_editor;
+
+  GList *list_start, *list;
+
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+
+  gchar *value;
+
+  guint nth_tab;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get notebook tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_OUTPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+    }
+    break;
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* get bulk editor */
+  list_start = gtk_container_get_children(property_collection_editor->child);
+  list = g_list_nth(list_start,
+		    nth_bulk);
+
+  if(list != NULL &&
+     AGS_IS_LINK_COLLECTION_EDITOR(list->data)){
+    GtkTable *table;
+    
+    table = list->data;
+    g_list_free(list_start);
+
+    link_collection_editor = g_object_get_data(table,
+					       "AgsChild\0");
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  gtk_spin_button_set_value(link_collection_editor->first_link,
+			    first_link_line);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_idle();
+
+  return(TRUE);
 }
 
 gboolean
@@ -2186,7 +2533,95 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
 						       guint nth_bulk,
 						       guint count)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsPropertyCollectionEditor *property_collection_editor;
+  AgsLinkCollectionEditor *link_collection_editor;
+
+  GList *list_start, *list;
+
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+
+  gchar *value;
+
+  guint nth_tab;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get notebook tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_OUTPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->output_link_editor);
+    }
+    break;
+  case AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB:
+    {
+      property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(machine_editor->input_link_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* get bulk editor */
+  list_start = gtk_container_get_children(property_collection_editor->child);
+  list = g_list_nth(list_start,
+		    nth_bulk);
+
+  if(list != NULL){
+    GtkTable *table;
+    
+    table = list->data;
+    g_list_free(list_start);
+
+    link_collection_editor = g_object_get_data(table,
+					       "AgsChild\0");
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  gtk_spin_button_set_value(link_collection_editor->count,
+			    count);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_idle();
+
+  return(TRUE);
 }
 
 gboolean
