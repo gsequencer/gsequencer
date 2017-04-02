@@ -1621,13 +1621,79 @@ ags_functional_test_util_machine_move_down(guint nth_machine)
 gboolean
 ags_functional_test_util_machine_hide(guint nth_machine)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+
+  GList *list_start, *list;
+  
+  gboolean success;
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+  
+  g_list_free(list_start);
+
+  /* activate hide */
+  success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
+
+  success = ags_functional_test_util_menu_click(machine->popup,
+						"hide\0");
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_machine_show(guint nth_machine)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+
+  GList *list_start, *list;
+  
+  gboolean success;
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+  
+  g_list_free(list_start);
+
+  /* activate show */
+  success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
+
+  success = ags_functional_test_util_menu_click(machine->popup,
+						"show\0");
+
+  return(success);
 }
 
 gboolean
@@ -1865,6 +1931,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   AgsXorgApplicationContext *xorg_application_context;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
   AgsPadEditor *pad_editor;
   AgsLineEditor *line_editor;
   AgsLinkEditor *link_editor;
@@ -1876,6 +1943,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
 
   gchar *value;
 
+  guint nth_tab;
   gboolean success;
   
   gdk_threads_enter();
@@ -1903,7 +1971,26 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
 
   machine_editor = machine->properties;
 
-  list_start = gtk_container_get_children(AGS_LISTING_EDITOR(machine_editor->output_editor)->child);
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
   list = g_list_nth(list_start,
 		    pad);
 

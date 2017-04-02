@@ -46,6 +46,8 @@ void ags_functional_machine_link_test_destroy_all();
 
 #define AGS_FUNCTIONAL_MACHINE_LINK_TEST_MASTER_MIXER_INPUT_PADS (1)
 
+#define AGS_FUNCTIONAL_MACHINE_LINK_TEST_MATRIX_OUTPUT_PADS (2)
+
 #define AGS_FUNCTIONAL_MACHINE_LINK_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
   "simple-file=true\n"				       \
@@ -139,6 +141,8 @@ ags_functional_machine_link_test_init_suite()
     panel = NULL;
   }
   
+  ags_functional_test_util_machine_hide(nth_machine);
+
   return(0);
 }
 
@@ -173,7 +177,7 @@ ags_functional_machine_link_test_master_mixer()
 						 "Mixer");
 
   CU_ASSERT(success == TRUE);
-  
+
   /*  */
   gdk_threads_enter();
   
@@ -265,21 +269,311 @@ ags_functional_machine_link_test_master_mixer()
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   ags_functional_test_util_dialog_ok(properties);
+
+  /* hide */
+  success = ags_functional_test_util_machine_hide(nth_machine);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_link_test_slave_mixer()
 {
+  GtkDialog *properties;
+  
+  GList *list_start, *list;
+  
+  gchar *link_name;
+  
+  guint resize_tab;
+  guint output_tab;
+  guint nth_machine;
+  gboolean success;
+
+  /* add mixer */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Mixer");
+
+  CU_ASSERT(success == TRUE);
+
+  /*  */
+  gdk_threads_enter();
+  
+  /* retrieve master mixer */
+  nth_machine = 2;
+
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+
+  if(list != NULL &&
+     AGS_IS_MIXER(list->data)){
+    slave_mixer = list->data;
+  }else{
+    slave_mixer = NULL;
+  }
+  
+  CU_ASSERT(slave_mixer != NULL);
+
+  /*
+   * link master mixer with slave mixer
+   */
+
+  /* open properties */
+  ags_functional_test_util_machine_properties_open(nth_machine);
+
+  /* click tab */
+  output_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_OUTPUT_TAB;
+  
+  ags_functional_test_util_machine_properties_click_tab(nth_machine,
+							output_tab);
+
+  /* click enable */
+  ags_functional_test_util_machine_properties_click_enable(nth_machine);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(master_mixer),
+			      AGS_MACHINE(master_mixer)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_machine_properties_link_set(nth_machine,
+						       0, 0,
+						       link_name, 0);
+
+  ags_functional_test_util_machine_properties_link_set(nth_machine,
+						       0, 1,
+						       link_name, 1);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_dialog_ok(properties);
+
+  /* hide */
+  success = ags_functional_test_util_machine_hide(nth_machine);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_link_test_drum()
 {
+  GtkDialog *properties;
+  
+  GList *list_start, *list;
+  
+  gchar *link_name;
+  
+  guint resize_tab;
+  guint input_tab;
+  guint nth_parent_machine;
+  guint nth_machine;
+  gboolean success;
+
+  /* add drum */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Drum");
+
+  CU_ASSERT(success == TRUE);
+
+  /*  */
+  gdk_threads_enter();
+  
+  /* retrieve drum */
+  nth_parent_machine = 2;
+  nth_machine = 3;
+
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+
+  if(list != NULL &&
+     AGS_IS_DRUM(list->data)){
+    drum = list->data;
+  }else{
+    drum = NULL;
+  }
+  
+  CU_ASSERT(drum != NULL);
+
+  /*
+   * link slave mixer with drum
+   */
+
+  /* open properties */
+  ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  /* click tab */
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  
+  ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+							input_tab);
+
+  /* click enable */
+  ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(drum),
+			      AGS_MACHINE(drum)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+						       0, 0,
+						       link_name, 0);
+
+  ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+						       0, 1,
+						       link_name, 1);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_dialog_ok(properties);
+
+  /* hide */
+  success = ags_functional_test_util_machine_hide(nth_machine);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_machine_link_test_matrix()
 {
+  GtkDialog *properties;
+  
+  GList *list_start, *list;
+  
+  gchar *link_name;
+  
+  guint resize_tab;
+  guint input_tab;
+  guint nth_parent_machine;
+  guint nth_machine;
+  gboolean success;
+
+  /* add matrix */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Matrix");
+
+  CU_ASSERT(success == TRUE);
+
+  /*  */
+  gdk_threads_enter();
+  
+  /* retrieve matrix */
+  nth_parent_machine = 2;
+  nth_machine = 4;
+
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+
+  if(list != NULL &&
+     AGS_IS_MATRIX(list->data)){
+    matrix = list->data;
+  }else{
+    matrix = NULL;
+  }
+  
+  CU_ASSERT(matrix != NULL);
+
+  /*
+   * resize output pads
+   */
+  
+  /* open properties */
+  ags_functional_test_util_machine_properties_open(nth_machine);
+
+  /* click tab */
+  resize_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_RESIZE_TAB;
+  
+  ags_functional_test_util_machine_properties_click_tab(nth_machine,
+							resize_tab);
+  
+  /* click enable */
+  ags_functional_test_util_machine_properties_click_enable(nth_machine);
+
+  /* resize output */
+  ags_functional_test_util_machine_properties_resize_outputs(nth_machine,
+							     AGS_FUNCTIONAL_MACHINE_LINK_TEST_MATRIX_OUTPUT_PADS);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(matrix)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_dialog_ok(properties);
+  
+  /*
+   * link slave mixer with matrix
+   */
+
+  /* open properties */
+  ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  /* click tab */
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  
+  ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+							input_tab);
+
+  /* click enable */
+  ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(matrix),
+			      AGS_MACHINE(matrix)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+						       1, 0,
+						       link_name, 0);
+
+  ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+						       1, 1,
+						       link_name, 1);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_dialog_ok(properties);
+
+  /* hide */
+  success = ags_functional_test_util_machine_hide(nth_machine);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
