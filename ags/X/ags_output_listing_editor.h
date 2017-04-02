@@ -36,7 +36,7 @@
 #define AGS_IS_OUTPUT_LISTING_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OUTPUT_LISTING_EDITOR))
 #define AGS_OUTPUT_LISTING_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OUTPUT_LISTING_EDITOR, AgsOutputListingEditorClass))
 
-  typedef struct _AgsOutputListingEditor AgsOutputListingEditor;
+typedef struct _AgsOutputListingEditor AgsOutputListingEditor;
 typedef struct _AgsOutputListingEditorClass AgsOutputListingEditorClass;
 
 struct _AgsOutputListingEditor

@@ -25,7 +25,14 @@
 
 #include <gtk/gtk.h>
 
+#define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_OUTPUT_TAB (0)
+#define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB (1)
+#define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_OUTPUT_TAB (2)
+#define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB (3)
+#define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_RESIZE_TAB (4)
+
 void ags_functional_test_util_setup_and_launch();
+void ags_functional_test_util_setup_and_launch_filename(gchar *filename);
 void ags_functional_test_util_idle();
 
 GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,

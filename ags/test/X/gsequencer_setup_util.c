@@ -626,7 +626,7 @@ ags_test_launch_filename(gchar *filename,
       }
     
       pthread_mutex_unlock(audio_loop->start_mutex);
-      
+
       /* start gui thread */
       ags_thread_start(gui_thread);
 
@@ -669,7 +669,7 @@ ags_test_launch_filename(gchar *filename,
       /* now start read task */
       simple_file_read = ags_simple_file_read_new(simple_file);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				  (AgsTask *) simple_file_read);
+				  (AgsTask *) simple_file_read);      
     }else{
       AgsFile *file;
 
@@ -693,9 +693,5 @@ ags_test_launch_filename(gchar *filename,
       ags_file_read(file);
       ags_file_close(file);
     }
-  }
-
-  if(!single_thread){
-    ags_thread_start(gui_thread);    
   }
 }

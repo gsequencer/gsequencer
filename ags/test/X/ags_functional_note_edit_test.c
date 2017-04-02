@@ -113,8 +113,10 @@ ags_functional_note_edit_test_file_setup()
 {
   GtkButton *play_button;
   GtkButton *stop_button;
-  
+
   AgsGuiThread *gui_thread;
+  
+  AgsTaskThread *task_thread;
   
   struct timespec start_time, current_time;
 
@@ -126,40 +128,32 @@ ags_functional_note_edit_test_file_setup()
   gboolean expired;
   gboolean success;
   
-  ags_application_context = NULL;
-
-  ags_test_setup(1, start_arg);
-
-  AGS_APPLICATION_CONTEXT_GET_CLASS(ags_application_context)->quit = ags_functional_note_edit_test_quit_stub;
+  ags_functional_test_util_setup_and_launch_filename(AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME);
 
   /* get gui thread */
   gui_thread = ags_thread_find_type(ags_application_context->main_loop,
 				    AGS_TYPE_GUI_THREAD);
 
+  task_thread = ags_thread_find_type(ags_application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
   /* get buttons */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
   play_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->play;
   stop_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->stop;
 
-  /* launch application */
-  ags_test_launch_filename(AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME,
-			   FALSE);
+  pthread_mutex_unlock(task_thread->launch_mutex);
 
   /* get initial time */
   clock_gettime(CLOCK_MONOTONIC, &start_time);
   success = TRUE;
-  
-  /* do the work */
-  while(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready)) == 0){
-    usleep(500000);
-  }
-
-  usleep(10000000);
-  
+    
   for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT; i++){
     expired = FALSE;
     
     g_message("start playback");
-    gtk_button_clicked(play_button);
+    ags_functional_test_util_button_click(play_button);
 
     while(!expired){  
       /* check expired */
@@ -171,7 +165,7 @@ ags_functional_note_edit_test_file_setup()
     }
 
     g_message("stop playback");
-    gtk_button_clicked(stop_button);
+    ags_functional_test_util_button_click(stop_button);
 
     /* wait some time before next playback */
     usleep(5000000);
@@ -198,11 +192,9 @@ main(int argc, char **argv)
   struct sched_param param;
   struct rlimit rl;
   struct sigaction sa;
-  struct passwd *pw;
 
   gchar *rc_filename;
   
-  uid_t uid;
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
@@ -255,13 +247,10 @@ main(int argc, char **argv)
 
   XInitThreads();
   
-  uid = getuid();
-  pw = getpwuid(uid);
-    
   /* parse rc file */
-  rc_filename = g_strdup_printf("gsequencer.share/styles/ags.rc\0",
-				pw->pw_dir,
-				AGS_DEFAULT_DIRECTORY);
+  rc_filename = g_strdup_printf("%s/%s",
+				SRCDIR,
+				"gsequencer.share/styles/ags.rc\0");
   
   gtk_rc_parse(rc_filename);
   g_free(rc_filename);
