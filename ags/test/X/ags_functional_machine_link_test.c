@@ -45,6 +45,7 @@ void ags_functional_machine_link_test_ffplayer_0();
 void ags_functional_machine_link_test_ffplayer_1();
 
 void ags_functional_machine_link_test_relink_all();
+void ags_functional_machine_link_test_reset_link_all();
 
 void ags_functional_machine_link_test_destroy_all();
 
@@ -967,7 +968,6 @@ ags_functional_machine_link_test_ffplayer_1()
 void
 ags_functional_machine_link_test_relink_all()
 {
-
   GtkDialog *properties;
   
   GList *list_start, *list;
@@ -1038,11 +1038,6 @@ ags_functional_machine_link_test_relink_all()
 
   CU_ASSERT(success == TRUE);
 
-  /* hide */
-  success = ags_functional_test_util_machine_hide(nth_machine);
-
-  CU_ASSERT(success == TRUE);
-
   /*
    * relink slave mixer with drum
    */
@@ -1098,11 +1093,6 @@ ags_functional_machine_link_test_relink_all()
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   success = ags_functional_test_util_dialog_ok(properties);
-
-  CU_ASSERT(success == TRUE);
-
-  /* hide */
-  success = ags_functional_test_util_machine_hide(nth_machine);
 
   CU_ASSERT(success == TRUE);
 
@@ -1163,9 +1153,241 @@ ags_functional_machine_link_test_relink_all()
   success = ags_functional_test_util_dialog_ok(properties);
 
   CU_ASSERT(success == TRUE);
+}
 
-  /* hide */
-  success = ags_functional_test_util_machine_hide(nth_machine);
+void
+ags_functional_machine_link_test_reset_link_all()
+{
+  GtkDialog *properties;
+  
+  GList *list_start, *list;
+  
+  gchar *link_name;
+  
+  guint resize_tab;
+  guint input_tab;
+  guint nth_parent_machine;
+  guint nth_machine;
+  gboolean success;  
+
+  /*
+   * reset link slave mixer with ffplayer #0
+   */
+
+  /*  */
+  nth_parent_machine = 2;
+  nth_machine = 6;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click tab */
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+								  input_tab);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click enable */
+  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(ffplayer_0),
+			      AGS_MACHINE(ffplayer_0)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 0, 0,
+								 link_name, 0);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 0, 1,
+								 link_name, 1);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(properties);
+
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * reset link slave mixer with drum
+   */
+
+  /*  */
+  nth_parent_machine = 2;
+  nth_machine = 3;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click tab */
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+								  input_tab);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click enable */
+  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(drum),
+			      AGS_MACHINE(drum)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 1, 0,
+								 link_name, 0);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 1, 1,
+								 link_name, 1);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(properties);
+
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * reset link slave mixer with matrix
+   */
+  
+  /*  */
+  nth_parent_machine = 2;
+  nth_machine = 4;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click tab */
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+								  input_tab);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click enable */
+  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(matrix),
+			      AGS_MACHINE(matrix)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 1, 0,
+								 link_name, 0);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 1, 1,
+								 link_name, 1);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(properties);
+
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * reset link slave mixer with drum
+   */
+
+  /*  */
+  nth_parent_machine = 2;
+  nth_machine = 3;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click tab */
+  input_tab = AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB;
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_parent_machine,
+								  input_tab);
+
+  CU_ASSERT(success == TRUE);
+
+  /* click enable */
+  success = ags_functional_test_util_machine_properties_click_enable(nth_parent_machine);
+
+  CU_ASSERT(success == TRUE);
+
+  /* set link */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  link_name = g_strdup_printf("%s: %s\0",
+			      G_OBJECT_TYPE_NAME(drum),
+			      AGS_MACHINE(drum)->name);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 2, 0,
+								 link_name, 0);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
+								 2, 1,
+								 link_name, 1);
 
   CU_ASSERT(success == TRUE);
 }
@@ -1351,6 +1573,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #0\0", ags_functional_machine_link_test_ffplayer_0) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #1\0", ags_functional_machine_link_test_ffplayer_1) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine relink all\0", ags_functional_machine_link_test_relink_all) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine reset link all\0", ags_functional_machine_link_test_reset_link_all) == NULL) ||
     (CU_add_test(pSuite, "functional test of GSequencer machine link destroy all\0", ags_functional_machine_link_test_destroy_all) == NULL)){
     CU_cleanup_registry();
       
