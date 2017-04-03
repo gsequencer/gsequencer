@@ -35,6 +35,11 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1 ags_functional_note_edit_test.xml
 
 EXTRA_DIST += \
+	functional-system-tests.mk.am \
+	functional-system-tests.mk.in \
+	functional-system-tests.mk
+
+EXTRA_DIST += \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags-audio/libags_audio-sections.txt \
@@ -1555,7 +1560,7 @@ midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la
 
 midi2xml_SOURCES = ags/midi2xml_main.c
 
-installcheck-local: 
+ags-integration-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
 
 ags-docs-local:
@@ -1662,7 +1667,7 @@ clean-local:
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
 	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
-
+	rm -f $(top_builddir)functional-system-tests.mk
 
 gen-symbols-ags:
 	rm -f libags.sym

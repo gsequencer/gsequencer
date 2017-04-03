@@ -1579,6 +1579,8 @@ EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make \
 	gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README \
 	ags_example.xml gsequencer-documentation midi2xml.1 \
 	ags_functional_note_edit_test.xml \
+	functional-system-tests.mk.am functional-system-tests.mk.in \
+	functional-system-tests.mk \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags-audio/libags_audio-sections.txt \
@@ -10577,7 +10579,7 @@ install-ps: install-ps-am
 
 install-ps-am:
 
-installcheck-am: installcheck-local
+installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -10627,12 +10629,12 @@ uninstall-man: uninstall-man1
 	install-libgsequencerLTLIBRARIES install-man install-man1 \
 	install-nobase_includeHEADERS install-pdf install-pdf-am \
 	install-pkgconfigDATA install-ps install-ps-am install-strip \
-	installcheck installcheck-am installcheck-local installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am recheck tags tags-am uninstall \
-	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
-	uninstall-docDATA uninstall-hook uninstall-libLTLIBRARIES \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am \
+	uninstall-appdataDATA uninstall-binPROGRAMS uninstall-docDATA \
+	uninstall-hook uninstall-libLTLIBRARIES \
 	uninstall-libgsequencerLTLIBRARIES uninstall-man \
 	uninstall-man1 uninstall-nobase_includeHEADERS \
 	uninstall-pkgconfigDATA
@@ -10640,7 +10642,7 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-installcheck-local: 
+ags-integration-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
 
 ags-docs-local:
@@ -10747,6 +10749,7 @@ clean-local:
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
 	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
+	rm -f $(top_builddir)functional-system-tests.mk
 
 gen-symbols-ags:
 	rm -f libags.sym
