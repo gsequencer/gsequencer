@@ -246,7 +246,7 @@ ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUti
 
     list = gtk_container_get_children(*(container_test->container));
     
-    if(g_list_length(list) != container_test->count){
+    if(g_list_length(list) == container_test->count){
       do_idle = FALSE;
     }
 
@@ -1005,9 +1005,10 @@ ags_funcitonal_test_util_export_add()
   AgsXorgApplicationContext *xorg_application_context;
   AgsExportWindow *export_window;
   GtkButton *add_button;
+
   AgsFunctionalTestUtilContainerTest container_test;
 
-  GList *list;
+  GList *list_start;
   
   gboolean success;
   
@@ -1020,13 +1021,13 @@ ags_funcitonal_test_util_export_add()
 
   container_test.container = &(export_window->export_soundcard);
 
-  list = gtk_container_get_children(export_window->export_soundcard);
+  list_start = gtk_container_get_children(export_window->export_soundcard);
 
-  container_test.count = g_list_length(list) + 1;
+  container_test.count = g_list_length(list_start) + 1;
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  g_list_free(list);
+  g_list_free(list_start);
   
   success = ags_functional_test_util_button_click(add_button);
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
@@ -1065,9 +1066,12 @@ ags_funcitonal_test_util_export_remove(guint nth)
 
   AgsExportWindow *export_window;
 
-  GList *list_start, *list;
   GtkButton *remove_button;
-  
+
+  AgsFunctionalTestUtilContainerTest container_test;
+
+  GList *list_start, *list;
+
   guint i;
   gboolean success;
   
@@ -1076,42 +1080,54 @@ ags_funcitonal_test_util_export_remove(guint nth)
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
 
-  remove_button = NULL;
-  
-  list_start =
-    list = gtk_container_get_children(export_window->export_soundcard);
+  container_test.container = &(export_window->export_soundcard);
+
+  list_start = gtk_container_get_children(export_window->export_soundcard);
 
   success = FALSE;
 
-  for(i = 0; list != NULL; i++){
-    if(i == nth){
-      GtkHBox *hbox;
-      
-      GList *tmp_start;
-      
-      hbox = GTK_HBOX(list->data);
-      tmp_start = gtk_container_get_children(hbox);
+  if(list_start != NULL){
+    remove_button = NULL;
+  
+    list = list_start;
 
-      remove_button = gtk_bin_get_child(tmp_start->next->data);
-      g_list_free(tmp_start);
+    container_test.count = g_list_length(list_start) - 1;
 
-      success = TRUE;
+    for(i = 0; list != NULL; i++){
+      if(i == nth){
+	GtkHBox *hbox;
       
-      break;
+	GList *tmp_start;
+      
+	hbox = GTK_HBOX(list->data);
+	tmp_start = gtk_container_get_children(hbox);
+
+	remove_button = gtk_bin_get_child(tmp_start->next->data);
+	g_list_free(tmp_start);
+
+	success = TRUE;
+      
+	break;
+      }
+
+      list = list->next;
     }
 
-    list = list->next;
-  }
-
-  g_list_free(list_start);
+    g_list_free(list_start);
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+    pthread_mutex_unlock(task_thread->launch_mutex);
 
-  if(!success){
-    return(FALSE);
-  }
+    g_list_free(list);
   
-  success = ags_functional_test_util_button_click(remove_button);
+    if(!success){
+      return(FALSE);
+    }
+    
+    success = ags_functional_test_util_button_click(remove_button);
+    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+							&ags_functional_test_util_default_timeout,
+							&container_test);
+  }  
   
   return(success);
 }
@@ -1356,9 +1372,14 @@ ags_functional_test_util_add_machine(gchar *submenu,
 				     gchar *machine_name)
 {
   AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
   AgsMenuBar *menu_bar;
   
   GtkMenu *add_menu;
+
+  GList *list_start;
+  
+  AgsFunctionalTestUtilContainerTest container_test;
 
   gboolean success;
   
@@ -1373,10 +1394,17 @@ ags_functional_test_util_add_machine(gchar *submenu,
   gdk_threads_enter();
   
   xorg_application_context = ags_application_context_get_instance();
-  menu_bar = xorg_application_context->window->menu_bar;
+
+  window = xorg_application_context->window;
+  menu_bar = window->menu_bar;
+
+  container_test.container = &(window->machines);
+  list_start = gtk_container_get_children(window->machines);
 
   gdk_threads_leave();
 
+  container_test.count = g_list_length(list_start) + 1;
+  
   success = FALSE;
   
   success = ags_functional_test_util_menu_click(menu_bar->edit,
@@ -1402,7 +1430,12 @@ ags_functional_test_util_add_machine(gchar *submenu,
 						  machine_name);    
   }
 
-  ags_functional_test_util_reaction_time_long();
+  if(success){
+    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+							&ags_functional_test_util_default_timeout,
+							&container_test);
+    ags_functional_test_util_reaction_time_long();
+  }
 
   return(success);
 }
@@ -1799,9 +1832,11 @@ ags_functional_test_util_machine_hide(guint nth_machine)
 
   /* activate hide */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
+  ags_functional_test_util_reaction_time_long();
 
   success = ags_functional_test_util_menu_click(machine->popup,
 						"hide\0");
+  ags_functional_test_util_reaction_time_long();
 
   return(success);
 }
@@ -1838,9 +1873,11 @@ ags_functional_test_util_machine_show(guint nth_machine)
 
   /* activate show */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
+  ags_functional_test_util_reaction_time_long();
 
   success = ags_functional_test_util_menu_click(machine->popup,
 						"show\0");
+  ags_functional_test_util_reaction_time_long();
 
   return(success);
 }
@@ -1849,9 +1886,12 @@ gboolean
 ags_functional_test_util_machine_destroy(guint nth_machine)
 {
   AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
   AgsMachine *machine;
 
   GList *list_start, *list;
+
+  AgsFunctionalTestUtilContainerTest container_test;
   
   gboolean success;
 
@@ -1859,8 +1899,12 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   
   xorg_application_context = ags_application_context_get_instance();
 
+  window = xorg_application_context->window;
+  
   /* retrieve machine */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  container_test.container = &(window->machines);
+
+  list_start = gtk_container_get_children(window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1873,13 +1917,19 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
     return(FALSE);
   }
   
-  g_list_free(list_start);
+  container_test.count = g_list_length(list_start) - 1;
 
+  g_list_free(list_start);
+  
   /* activate destroy */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
 
   success = ags_functional_test_util_menu_click(machine->popup,
 						"destroy\0");
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      &ags_functional_test_util_default_timeout,
+						      &container_test);
 
   return(success);
 }
@@ -1907,7 +1957,9 @@ gboolean
 ags_functional_test_util_machine_properties_open(guint nth_machine)
 {
   AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
   AgsMachine *machine;
+  GtkWidget **properties;
 
   GList *list_start, *list;
   
@@ -1917,8 +1969,10 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   
   xorg_application_context = ags_application_context_get_instance();
 
+  window = xorg_application_context->window;
+  
   /* retrieve machine */
-  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list_start = gtk_container_get_children(window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
@@ -1934,18 +1988,23 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   g_list_free(list_start);
 
   /* activate destroy */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = &(machine->properties);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
 
   success = ags_functional_test_util_menu_click(machine->popup,
 						"properties\0");
 
-  return(success);
-}
+  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_test_util_default_timeout,
+						      properties);
 
-gboolean
-ags_functional_test_util_machine_properties_close(guint nth_machine)
-{
-  //TODO:JK: 
+  return(success);
 }
 
 gboolean
@@ -2068,6 +2127,8 @@ ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   success = ags_functional_test_util_button_click(enable_button);
+
+  ags_functional_test_util_reaction_time_long();
 
   return(success);
 }
@@ -2357,6 +2418,8 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
 
   /* add collection */
   success = ags_functional_test_util_button_click(add_collection);
+
+  ags_functional_test_util_reaction_time_long();
 
   return(success);
 }
@@ -3130,7 +3193,8 @@ ags_functional_test_util_drum_open(guint nth_machine)
   AgsXorgApplicationContext *xorg_application_context;
   AgsDrum *drum;
   GtkButton *open_button;
-
+  GtkWidget **open_dialog;
+  
   GList *list_start, *list;
   
   gboolean success;
@@ -3159,11 +3223,16 @@ ags_functional_test_util_drum_open(guint nth_machine)
   pthread_mutex_lock(task_thread->launch_mutex);
   
   open_button = drum->open;
-
+  open_dialog = &(drum->open_dialog);
+  
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   /* click open */
   success = ags_functional_test_util_button_click(open_button);
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_test_util_default_timeout,
+						      open_dialog);
   
   return(success);
 }
@@ -3342,7 +3411,8 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   AgsXorgApplicationContext *xorg_application_context;
   AgsFFPlayer *ffplayer;
   GtkButton *open_button;
-
+  GtkWidget **open_dialog;
+  
   GList *list_start, *list;
   
   gboolean success;
@@ -3371,11 +3441,16 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   pthread_mutex_lock(task_thread->launch_mutex);
   
   open_button = ffplayer->open;
+  open_dialog = &(ffplayer->open_dialog);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   /* click open */
   success = ags_functional_test_util_button_click(open_button);
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_test_util_default_timeout,
+						      open_dialog);
   
   return(success);
 }

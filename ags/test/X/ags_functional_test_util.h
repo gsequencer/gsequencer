@@ -233,7 +233,6 @@ gboolean ags_functional_test_util_machine_rename_set_name(guint nth_machine,
 							  gchar *name);
 
 gboolean ags_functional_test_util_machine_properties_open(guint nth_machine);
-gboolean ags_functional_test_util_machine_properties_close(guint nth_machine);
 
 gboolean ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
 							       guint nth_tab);
