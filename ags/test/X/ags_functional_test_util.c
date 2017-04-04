@@ -1953,6 +1953,65 @@ ags_functional_test_util_machine_rename_set_name(guint nth_machine,
   //TODO:JK: 
 }
 
+GtkWidget*
+ags_functional_test_util_get_line_editor(GtkWidget *machine_editor,
+					 guint nth_pad, guint nth_audio_channel,
+					 gboolean is_output)
+{
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;  
+  
+  GList *list_start, *list;
+
+  if(machine_editor == NULL){
+    return(NULL);
+  }
+  
+  gdk_threads_enter();
+
+  if(is_output){
+    listing_editor = AGS_LISTING_EDITOR(AGS_MACHINE_EDITOR(machine_editor)->output_editor);
+  }else{
+    listing_editor = AGS_LISTING_EDITOR(AGS_MACHINE_EDITOR(machine_editor)->input_editor);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    nth_pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    return(NULL);
+  }
+  
+  /* line editor */
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    nth_audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    return(NULL);
+  }
+  
+  gdk_threads_leave();
+
+  return(line_editor);
+}
+
 gboolean
 ags_functional_test_util_machine_properties_open(guint nth_machine)
 {
@@ -1960,7 +2019,8 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   AgsWindow *window;
   AgsMachine *machine;
   GtkWidget **properties;
-
+  GtkMenuToolButton *menu_tool_button;
+  
   GList *list_start, *list;
   
   gboolean success;
@@ -1992,9 +2052,11 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
 
   properties = &(machine->properties);
 
+  menu_tool_button = machine->menu_tool_button;
+
   pthread_mutex_unlock(task_thread->launch_mutex);
   
-  success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
+  success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
 
   success = ags_functional_test_util_menu_click(machine->popup,
 						"properties\0");
@@ -2303,15 +2365,294 @@ gboolean
 ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
 						       guint pad, guint audio_channel)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;
+  AgsLineMemberEditor *member_editor;
+  GtkDialog **effect_dialog;
+  GtkButton *add_button;
+  
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+  GList *list_start, *list;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* expander */
+  gtk_expander_set_expanded(pad_editor->line_editor_expander,
+			    TRUE);
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+  
+  /* line editor */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* line member editor */
+  member_editor = line_editor->member_editor;
+  
+  /* effect dialog and add button */
+  effect_dialog = &(member_editor->plugin_browser);
+  add_button = member_editor->add;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_button_click(add_button);
+  
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_test_util_default_timeout,
+						      effect_dialog);
+  
+  ags_functional_test_util_reaction_time_long();
+ 
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
 							  guint pad, guint audio_channel,
-							  guint nth)
+							  guint nth_effect)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;
+  AgsLineMemberEditor *member_editor;
+  GtkDialog **effect_dialog;
+  GtkButton *check_button;
+  GtkButton *remove_button;
+  
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+  GList *list_start, *list;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* expander */
+  gtk_expander_set_expanded(pad_editor->line_editor_expander,
+			    TRUE);
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+  
+  /* line editor */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* line member editor */
+  member_editor = line_editor->member_editor;
+  
+  /* effect dialog and remove button */
+  effect_dialog = &(member_editor->plugin_browser);
+  remove_button = member_editor->remove;
+
+  /* check button */
+  check_button = NULL;
+
+  list_start = gtk_container_get_children(member_editor->line_member);
+  list = g_list_nth(list_start,
+		    nth_effect);
+
+  if(list != NULL){
+    GtkHBox *hbox;
+
+    hbox = list->data;
+    list_start = gtk_container_get_children(hbox);
+    
+    check_button = list_start->data;
+
+    g_list_free(list_start);
+  }
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /* click check button */
+  success = ags_functional_test_util_button_click(check_button);
+
+  /* click remove */
+  if(success){
+    ags_functional_test_util_reaction_time_long();
+  
+    success = ags_functional_test_util_button_click(remove_button);
+  
+    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+							&ags_functional_test_util_default_timeout,
+							effect_dialog);
+  
+    ags_functional_test_util_reaction_time_long();
+  }
+  
+  return(success);
 }
 
 gboolean
@@ -2319,7 +2660,136 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
 							       guint pad, guint audio_channel,
 							       gchar *plugin_type)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;
+  AgsLineMemberEditor *member_editor;
+  AgsPluginBrowser *plugin_browser;
+  
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+  GList *list_start, *list;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* pad editor */
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+    
+  /* line editor */
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* line member editor */
+  member_editor = line_editor->member_editor;
+  plugin_browser = member_editor->plugin_browser;
+  
+  /* set plugin type */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(plugin_browser->plugin_type));
+  success = FALSE;
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+      
+      if(!g_strcmp0(plugin_type,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) plugin_browser->plugin_type,
+				      &iter);
+	success = TRUE;
+	
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }      
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+ 
+  return(success);
 }
 
 gboolean
@@ -2327,7 +2797,137 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
 							    guint pad, guint audio_channel,
 							    gchar *filename)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;
+  AgsLineMemberEditor *member_editor;
+  AgsPluginBrowser *plugin_browser;
+  AgsLadspaBrowser *ladspa_browser;
+  
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+  GList *list_start, *list;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+  
+  /* line editor */
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* line member editor */
+  member_editor = line_editor->member_editor;
+  plugin_browser = member_editor->plugin_browser;
+  ladspa_browser = plugin_browser->ladspa_browser;
+  
+  /* set plugin filename */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ladspa_browser->filename));
+  success = FALSE;
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+      
+      if(!g_strcmp0(filename,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) ladspa_browser->filename,
+				      &iter);
+	success = TRUE;
+	
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }      
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+ 
+  return(success);
 }
 
 gboolean
@@ -2335,7 +2935,137 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
 							  guint pad, guint audio_channel,
 							  gchar *effect)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;
+  AgsLineMemberEditor *member_editor;
+  AgsPluginBrowser *plugin_browser;
+  AgsLadspaBrowser *ladspa_browser;
+  
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+  GList *list_start, *list;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+  
+  /* line editor */
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* line member editor */
+  member_editor = line_editor->member_editor;
+  plugin_browser = member_editor->plugin_browser;
+  ladspa_browser = plugin_browser->ladspa_browser;
+  
+  /* set plugin effect */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(ladspa_browser->effect));
+  success = FALSE;
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+      
+      if(!g_strcmp0(effect,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) ladspa_browser->effect,
+				      &iter);
+	success = TRUE;
+	
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }      
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+ 
+  return(success);
 }
 
 gboolean
@@ -2343,7 +3073,137 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
 							 guint pad, guint audio_channel,
 							 gchar *filename)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;
+  AgsLineMemberEditor *member_editor;
+  AgsPluginBrowser *plugin_browser;
+  AgsLv2Browser *lv2_browser;
+  
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+  GList *list_start, *list;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+  
+  /* line editor */
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* line member editor */
+  member_editor = line_editor->member_editor;
+  plugin_browser = member_editor->plugin_browser;
+  lv2_browser = plugin_browser->lv2_browser;
+  
+  /* set plugin filename */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_browser->filename));
+  success = FALSE;
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+      
+      if(!g_strcmp0(filename,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) lv2_browser->filename,
+				      &iter);
+	success = TRUE;
+	
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }      
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+ 
+  return(success);
 }
 
 gboolean
@@ -2351,7 +3211,137 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
 						       guint pad, guint audio_channel,
 						       gchar *effect)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsListingEditor *listing_editor;
+  AgsPadEditor *pad_editor;
+  AgsLineEditor *line_editor;
+  AgsLineMemberEditor *member_editor;
+  AgsPluginBrowser *plugin_browser;
+  AgsLv2Browser *lv2_browser;
+  
+  GtkTreeModel *model;
+  
+  GtkTreeIter iter;
+  GList *list_start, *list;
+
+  gchar *value;
+
+  guint nth_tab;
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* retrieve machine */  
+  list_start = gtk_container_get_children(xorg_application_context->window->machines);
+  list = g_list_nth(list_start,
+		    nth_machine);
+
+  gdk_threads_leave();
+  
+  if(list != NULL &&
+     AGS_IS_MACHINE(list->data)){
+    machine = list->data;
+  }else{
+    return(FALSE);
+  }
+
+  g_list_free(list_start);
+
+  /* get tab */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  nth_tab = gtk_notebook_get_current_page(machine_editor->notebook);
+
+  switch(nth_tab){
+  case 0:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->output_editor);
+    }
+    break;
+  case 1:
+    {
+      listing_editor = AGS_LISTING_EDITOR(machine_editor->input_editor);
+    }
+    break;
+  default:
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  list_start = gtk_container_get_children(listing_editor->child);
+  list = g_list_nth(list_start,
+		    pad);
+
+  if(list != NULL &&
+     AGS_IS_PAD_EDITOR(list->data)){
+    pad_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+  
+  /* line editor */
+  list_start = gtk_container_get_children(pad_editor->line_editor);
+  list = g_list_nth(list_start,
+		    audio_channel);
+
+  if(list != NULL &&
+     AGS_IS_LINE_EDITOR(list->data)){
+    line_editor = list->data;
+
+    g_list_free(list_start);
+  }else{
+    g_list_free(list_start);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+
+    return(FALSE);
+  }
+
+  /* line member editor */
+  member_editor = line_editor->member_editor;
+  plugin_browser = member_editor->plugin_browser;
+  lv2_browser = plugin_browser->lv2_browser;
+  
+  /* set plugin effect */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_browser->effect));
+  success = FALSE;
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+      
+      if(!g_strcmp0(effect,
+		    value)){
+	gtk_combo_box_set_active_iter((GtkComboBox *) lv2_browser->effect,
+				      &iter);
+	success = TRUE;
+	
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }      
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+ 
+  return(success);
 }
 
 gboolean
@@ -2388,7 +3378,7 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
 
   g_list_free(list_start);
 
-  /* set link */
+  /* get tab */
   pthread_mutex_lock(task_thread->launch_mutex);
 
   machine_editor = machine->properties;

@@ -41,6 +41,10 @@ struct _AgsLv2Browser
   gchar *path;
 
   GtkHBox *plugin;
+
+  GtkComboBox *filename;
+  GtkComboBox *effect;
+
   GtkVBox *description;
 
   GtkWidget *preview;

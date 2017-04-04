@@ -1390,6 +1390,17 @@ ags_functional_machine_link_test_reset_link_all()
 								 link_name, 1);
 
   CU_ASSERT(success == TRUE);
+
+  /* response ok */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  properties = AGS_MACHINE(slave_mixer)->properties;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(properties);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void

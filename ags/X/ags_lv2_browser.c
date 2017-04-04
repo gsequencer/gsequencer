@@ -155,7 +155,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  lv2_browser->filename = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -183,7 +184,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  lv2_browser->effect = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,

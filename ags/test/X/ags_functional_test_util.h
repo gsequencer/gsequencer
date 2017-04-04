@@ -232,6 +232,10 @@ gboolean ags_functional_test_util_machine_rename_close(guint nth_machine);
 gboolean ags_functional_test_util_machine_rename_set_name(guint nth_machine,
 							  gchar *name);
 
+GtkWidget* ags_functional_test_util_get_line_editor(GtkWidget *machine_editor,
+						    guint nth_pad, guint nth_audio_channel,
+						    gboolean is_output);
+
 gboolean ags_functional_test_util_machine_properties_open(guint nth_machine);
 
 gboolean ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
@@ -248,7 +252,7 @@ gboolean ags_functional_test_util_machine_properties_effect_add(guint nth_machin
 								guint pad, guint audio_channel);
 gboolean ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
 								   guint pad, guint audio_channel,
-								   guint nth);
+								   guint nth_effect);
 
 gboolean ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine,
 									guint pad, guint audio_channel,
