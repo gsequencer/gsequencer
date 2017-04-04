@@ -31,9 +31,32 @@
 #define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB (3)
 #define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_RESIZE_TAB (4)
 
+#define AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(f) ((AgsFunctionalTestUtilIdleCondition)(f))
+
+typedef struct _AgsFunctionalTestUtilContainerTest AgsFunctionalTestUtilContainerTest;
+
+typedef gboolean (*AgsFunctionalTestUtilIdleCondition)(gpointer data);
+
+struct _AgsFunctionalTestUtilContainerTest
+{
+  GtkContainer **container;
+
+  guint count;
+};
+
 void ags_functional_test_util_setup_and_launch();
 void ags_functional_test_util_setup_and_launch_filename(gchar *filename);
+void ags_functional_test_util_reaction_time();
+void ags_functional_test_util_reaction_time_long();
 void ags_functional_test_util_idle();
+void ags_functional_test_util_idle_condition_and_timeout(AgsFunctionalTestUtilIdleCondition idle_condition,
+							 struct timespec *timeout,
+							 gpointer data);
+
+gboolean ags_functional_test_util_idle_test_widget_visible(GtkWidget **widget);
+gboolean ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget);
+gboolean ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUtilContainerTest *container_test);
+gboolean ags_functional_test_util_idle_test_null(GtkWidget **widget);
 
 GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,
 					       gchar *item_label);

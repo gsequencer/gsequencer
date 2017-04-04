@@ -34,6 +34,7 @@
 #include <gdk/gdkevents.h>
 
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (4000)
+#define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (500000)
 
 extern AgsApplicationContext *ags_application_context;
 
@@ -46,6 +47,11 @@ extern AgsLv2uiManager *ags_lv2ui_manager;
 
 AgsTaskThread *task_thread;
 AgsGuiThread *gui_thread;
+
+struct timespec ags_functional_test_util_default_timeout = {
+  20,
+  0,
+};
 
 void
 ags_functional_test_util_clear_application_context()
@@ -126,9 +132,130 @@ ags_functional_test_util_setup_and_launch_filename(gchar *filename)
 }
 
 void
+ags_functional_test_util_reaction_time()
+{
+  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+}
+
+void
+ags_functional_test_util_reaction_time_long()
+{
+  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG);
+}
+
+void
 ags_functional_test_util_idle()
 {
   usleep(5000000);
+}
+
+void
+ags_functional_test_util_idle_condition_and_timeout(AgsFunctionalTestUtilIdleCondition idle_condition,
+						    struct timespec *timeout,
+						    gpointer data)
+{
+  struct timespec start_time, current_time;
+
+  clock_gettime(CLOCK_MONOTONIC,
+		&start_time);
+  
+  while(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(idle_condition)(data)){
+    ags_functional_test_util_reaction_time();
+
+    clock_gettime(CLOCK_MONOTONIC,
+		  &current_time);
+
+    if(start_time.tv_sec + timeout->tv_sec < current_time.tv_sec){
+      break;
+    }
+  }
+
+  ags_functional_test_util_reaction_time();
+}
+
+gboolean
+ags_functional_test_util_idle_test_widget_visible(GtkWidget **widget)
+{
+  gboolean do_idle;
+
+  do_idle = TRUE;
+  
+  gdk_threads_enter();
+  
+  if(*widget != NULL &&
+     GTK_IS_WIDGET(*widget) &&
+     GTK_WIDGET_VISIBLE(*widget)){
+    do_idle = FALSE;
+  }
+
+  gdk_threads_leave();
+  
+  return(do_idle);
+}
+
+gboolean
+ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget)
+{
+  gboolean do_idle;
+
+  do_idle = TRUE;
+  
+  gdk_threads_enter();
+  
+  if(*widget != NULL &&
+     GTK_IS_WIDGET(*widget) &&
+     !GTK_WIDGET_VISIBLE(*widget)){
+    do_idle = FALSE;
+  }
+
+  gdk_threads_leave();
+  
+  return(do_idle);
+}
+
+gboolean
+ags_functional_test_util_idle_test_null(GtkWidget **widget)
+{
+  gboolean do_idle;
+
+  do_idle = TRUE;
+  
+  gdk_threads_enter();
+  
+  if(*widget == NULL){
+    do_idle = FALSE;
+  }
+
+  gdk_threads_leave();
+  
+  return(do_idle);
+}
+
+gboolean
+ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUtilContainerTest *container_test)
+{
+  gboolean do_idle;
+
+  do_idle = TRUE;
+  
+  gdk_threads_enter();
+
+  if(*(container_test->container) != NULL &&
+     GTK_IS_CONTAINER(*(container_test->container))){
+    GList *list;
+
+    list = gtk_container_get_children(*(container_test->container));
+    
+    if(g_list_length(list) != container_test->count){
+      do_idle = FALSE;
+    }
+
+    g_list_free(list);
+  }
+
+  gdk_threads_leave();
+  
+  return(do_idle);
 }
 
 GtkMenu*
@@ -247,7 +374,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	pthread_mutex_unlock(task_thread->launch_mutex);
 
 	/*  */
-	usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+	ags_functional_test_util_reaction_time();
 
 	gdk_test_simulate_button(window,
 				 x + 5,
@@ -256,7 +383,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 				 GDK_BUTTON1_MASK,
 				 GDK_BUTTON_PRESS);
 
-	usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+	ags_functional_test_util_reaction_time();
 
 	gdk_test_simulate_button(window,
 				 x + 5,
@@ -265,7 +392,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 				 GDK_BUTTON1_MASK,
 				 GDK_BUTTON_RELEASE);
 
-	usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+	ags_functional_test_util_reaction_time();
 
 	/*  */
 	pthread_mutex_lock(task_thread->launch_mutex);
@@ -286,7 +413,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 
   g_list_free(list_start);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success);
 }
@@ -349,7 +476,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 
 	pthread_mutex_unlock(task_thread->launch_mutex);
 
-	usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+	ags_functional_test_util_reaction_time();
 	
 	gdk_test_simulate_button(window,
 				 x + 5,
@@ -359,7 +486,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 				 GDK_BUTTON_PRESS);
 
 
-	usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+	ags_functional_test_util_reaction_time();
 
 	gdk_test_simulate_button(window,
 				 x + 5,
@@ -368,7 +495,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 				 GDK_BUTTON1_MASK,
 				 GDK_BUTTON_RELEASE);
   	
-	usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+	ags_functional_test_util_reaction_time();
 
 	success = TRUE;
 
@@ -389,7 +516,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 
   g_list_free(list_start);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success);
 }
@@ -428,7 +555,7 @@ ags_functional_test_util_button_click(GtkButton *button)
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   /*  */
-  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+  ags_functional_test_util_reaction_time();
 	
   gdk_test_simulate_button(window,
 			   x + 5,
@@ -438,7 +565,7 @@ ags_functional_test_util_button_click(GtkButton *button)
 			   GDK_BUTTON_PRESS);
 
 
-  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+  ags_functional_test_util_reaction_time();
 
   gdk_test_simulate_button(window,
 			   x + 5,
@@ -447,9 +574,9 @@ ags_functional_test_util_button_click(GtkButton *button)
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_RELEASE);
   	
-  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+  ags_functional_test_util_reaction_time();
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
 }
@@ -486,7 +613,7 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+  ags_functional_test_util_reaction_time();
 	
   gdk_test_simulate_button(window,
 			   x + 5,
@@ -496,7 +623,7 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 			   GDK_BUTTON_PRESS);
 
 
-  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+  ags_functional_test_util_reaction_time();
 
   gdk_test_simulate_button(window,
 			   x + 5,
@@ -505,7 +632,7 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_RELEASE);
   	
-  usleep(AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME);
+  ags_functional_test_util_reaction_time_long();
 
   /*  */
   pthread_mutex_lock(task_thread->launch_mutex);
@@ -530,7 +657,7 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
 }
@@ -549,7 +676,7 @@ ags_functional_test_util_dialog_apply(GtkDialog *dialog)
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
 }
@@ -657,7 +784,7 @@ ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
 }
@@ -679,7 +806,7 @@ ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_choos
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
 }
@@ -705,7 +832,7 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE); 
 }
@@ -724,7 +851,7 @@ ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser)
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE); 
 }
@@ -752,7 +879,7 @@ ags_functional_test_util_open()
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success); 
 }
@@ -780,7 +907,7 @@ ags_functional_test_util_save()
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success); 
 }
@@ -808,7 +935,7 @@ ags_functional_test_util_save_as()
   
   pthread_mutex_unlock(task_thread->launch_mutex);
   
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success); 
 }
@@ -817,7 +944,8 @@ gboolean
 ags_functional_test_util_export_open()
 {
   AgsXorgApplicationContext *xorg_application_context;
-
+  GtkWidget *export_window;
+  
   GtkMenu *menu;
   
   gboolean success;
@@ -830,13 +958,18 @@ ags_functional_test_util_export_open()
     
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
-  
-  success = ags_functional_test_util_menu_click(menu,
-						"export\0");
+
+  export_window = xorg_application_context->window->export_window;
 
   pthread_mutex_unlock(task_thread->launch_mutex);
   
-  ags_functional_test_util_idle();
+  success = ags_functional_test_util_menu_click(menu,
+						"export\0");
+  
+  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+						      &ags_functional_test_util_default_timeout,
+						      &export_window);
   
   return(success); 
 }
@@ -845,21 +978,23 @@ gboolean
 ags_functional_test_util_export_close()
 {
   AgsXorgApplicationContext *xorg_application_context;
-
-  GtkDialog *dialog;
+  GtkWidget *export_window;
   
   gboolean success;
 
   pthread_mutex_lock(task_thread->launch_mutex);
 
   xorg_application_context = ags_application_context_get_instance();
-  dialog = xorg_application_context->window->export_window;
+  export_window = xorg_application_context->window->export_window;
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  success = ags_functional_test_util_dialog_close(dialog);
+  success = ags_functional_test_util_dialog_close(export_window);
   
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_hidden),
+						      &ags_functional_test_util_default_timeout,
+						      &export_window);
   
   return(success); 
 }
@@ -870,7 +1005,10 @@ ags_funcitonal_test_util_export_add()
   AgsXorgApplicationContext *xorg_application_context;
   AgsExportWindow *export_window;
   GtkButton *add_button;
+  AgsFunctionalTestUtilContainerTest container_test;
 
+  GList *list;
+  
   gboolean success;
   
   pthread_mutex_lock(task_thread->launch_mutex);
@@ -880,9 +1018,20 @@ ags_funcitonal_test_util_export_add()
 
   add_button = export_window->add;
 
+  container_test.container = &(export_window->export_soundcard);
+
+  list = gtk_container_get_children(export_window->export_soundcard);
+
+  container_test.count = g_list_length(list) + 1;
+  
   pthread_mutex_unlock(task_thread->launch_mutex);
 
+  g_list_free(list);
+  
   success = ags_functional_test_util_button_click(add_button);
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
+						      &ags_functional_test_util_default_timeout,
+						      &container_test);
   
   return(success);
 }
@@ -904,7 +1053,7 @@ ags_funcitonal_test_util_export_tact(gdouble tact)
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(TRUE);
 }
@@ -1039,7 +1188,7 @@ ags_funcitonal_test_util_export_set_backend(guint nth,
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success);
 }
@@ -1116,7 +1265,7 @@ ags_funcitonal_test_util_export_set_device(guint nth,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
   
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success);
 }
@@ -1171,7 +1320,7 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
   
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
   
   return(success);
 }
@@ -1253,8 +1402,8 @@ ags_functional_test_util_add_machine(gchar *submenu,
 						  machine_name);    
   }
 
-  ags_functional_test_util_idle();
-  
+  ags_functional_test_util_reaction_time_long();
+
   return(success);
 }
 
@@ -1841,7 +1990,7 @@ ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(TRUE);
 }
@@ -2013,8 +2162,8 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
-
+  ags_functional_test_util_reaction_time_long();
+  
   /* line editor */
   pthread_mutex_lock(task_thread->launch_mutex);
 
@@ -2062,8 +2211,8 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
-
+  ags_functional_test_util_reaction_time_long();
+  
   if(!success){
     return(FALSE);
   }
@@ -2077,7 +2226,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
  
   return(success);
 }
@@ -2330,7 +2479,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(success);
 }
@@ -2426,7 +2575,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(TRUE);
 }
@@ -2523,7 +2672,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(TRUE);
 }
@@ -2619,7 +2768,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(TRUE);
 }
@@ -2663,7 +2812,7 @@ ags_functional_test_util_machine_properties_resize_audio_channels(guint nth_mach
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(TRUE);
 }
@@ -2707,7 +2856,7 @@ ags_functional_test_util_machine_properties_resize_inputs(guint nth_machine,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(TRUE);
 }
@@ -2751,7 +2900,7 @@ ags_functional_test_util_machine_properties_resize_outputs(guint nth_machine,
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
   return(TRUE);
 }
