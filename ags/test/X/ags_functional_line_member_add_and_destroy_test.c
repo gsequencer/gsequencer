@@ -43,9 +43,12 @@ void ags_functional_line_member_add_and_destroy_test_matrix();
 void ags_functional_line_member_add_and_destroy_test_synth();
 void ags_functional_line_member_add_and_destroy_test_ffplayer();
 
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CMT "/usr/lib/ladspa/cmt.so\0"
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CMT_DELAY "Echo Delay Line (Maximum Delay 1s)\0"
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CMT_FREEVERB "Freeverb (Version 3)\0"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT "/usr/lib/ladspa/cmt.so\0"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY "Echo Delay Line (Maximum Delay 1s)\0"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB "Freeverb (Version 3)\0"
+
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH "/usr/lib/lv2/gverb-swh.lv2/plugin-linux.so\0"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB "GVerb\0"
 
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -162,8 +165,6 @@ ags_functional_line_member_add_and_destroy_test_panel()
   }
   
   CU_ASSERT(machine != NULL);
-
-
   
   /*
    *  add line member to input
@@ -198,13 +199,13 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* cmt and delay */  
   success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
 									nth_pad, nth_audio_channel,
-									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CMT);
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
 
   CU_ASSERT(success == TRUE);
 
   success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
 								      nth_pad, nth_audio_channel,
-								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CMT_DELAY);
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY);
 
   CU_ASSERT(success == TRUE);
 
@@ -241,19 +242,19 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   CU_ASSERT(success == TRUE);
 
-  /* cmt and delay */  
+  /* cmt and freeverb */  
   success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
 									nth_pad, nth_audio_channel,
-									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CMT);
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
 
   CU_ASSERT(success == TRUE);
 
   success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
 								      nth_pad, nth_audio_channel,
-								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CMT_FREEVERB);
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB);
 
   CU_ASSERT(success == TRUE);
-
+  
   /* response OK */
   pthread_mutex_lock(task_thread->launch_mutex);
 
@@ -270,7 +271,129 @@ ags_functional_line_member_add_and_destroy_test_panel()
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
   
+  CU_ASSERT(success == TRUE);
+  
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* add lv2 effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "Lv2\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 and gverb */  
+  success = ags_functional_test_util_machine_properties_lv2_filename(nth_machine,
+								     nth_pad, nth_audio_channel,
+								     AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_lv2_effect(nth_machine,
+								   nth_pad, nth_audio_channel,
+								   AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * destroy effects
+   */  
+  nth_machine = 0;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* remove effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      2);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+
   /* destroy panel */
   success = ags_functional_test_util_machine_destroy(nth_machine);
   
@@ -282,10 +405,14 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsLineEditor *line_editor;
+  AgsPluginBrowser *plugin_browser;
   
   GList *list_start, *list;
 
   guint nth_machine;
+  guint nth_pad, nth_audio_channel;
   gboolean success;
 
   xorg_application_context = ags_application_context;
@@ -295,6 +422,8 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 						 "Mixer");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* get machine */
   gdk_threads_enter();
@@ -306,16 +435,241 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   gdk_threads_leave();
 
   if(list != NULL &&
-     AGS_IS_PANEL(list->data)){
+     AGS_IS_MIXER(list->data)){
     machine = list->data;
   }else{
     machine = NULL;
   }
   
   CU_ASSERT(machine != NULL);
+  
+  /*
+   *  add line member to input
+   */
 
-  //TODO:JK:   
   nth_machine = 0;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* add ladspa effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* ladspa */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "LADSPA\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* cmt and delay */  
+  success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
+									nth_pad, nth_audio_channel,
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* add ladspa effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* ladspa */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "LADSPA\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* cmt and freeverb */  
+  success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
+									nth_pad, nth_audio_channel,
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB);
+
+  CU_ASSERT(success == TRUE);
+  
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = AGS_MACHINE(machine)->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+  
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* add lv2 effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "Lv2\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 and gverb */  
+  success = ags_functional_test_util_machine_properties_lv2_filename(nth_machine,
+								     nth_pad, nth_audio_channel,
+								     AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_lv2_effect(nth_machine,
+								   nth_pad, nth_audio_channel,
+								   AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * destroy effects
+   */  
+  nth_machine = 0;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* remove effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      2);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
   
   /* destroy mixer */
   success = ags_functional_test_util_machine_destroy(nth_machine);
@@ -328,10 +682,14 @@ ags_functional_line_member_add_and_destroy_test_drum()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsLineEditor *line_editor;
+  AgsPluginBrowser *plugin_browser;
   
   GList *list_start, *list;
 
   guint nth_machine;
+  guint nth_pad, nth_audio_channel;
   gboolean success;
 
   xorg_application_context = ags_application_context;
@@ -341,6 +699,8 @@ ags_functional_line_member_add_and_destroy_test_drum()
 						 "Drum");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* get machine */
   gdk_threads_enter();
@@ -352,7 +712,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   gdk_threads_leave();
 
   if(list != NULL &&
-     AGS_IS_PANEL(list->data)){
+     AGS_IS_DRUM(list->data)){
     machine = list->data;
   }else{
     machine = NULL;
@@ -360,8 +720,233 @@ ags_functional_line_member_add_and_destroy_test_drum()
   
   CU_ASSERT(machine != NULL);
 
-  //TODO:JK: 
+  /*
+   *  add line member to input
+   */
+
   nth_machine = 0;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* add ladspa effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* ladspa */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "LADSPA\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* cmt and delay */  
+  success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
+									nth_pad, nth_audio_channel,
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* add ladspa effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* ladspa */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "LADSPA\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* cmt and freeverb */  
+  success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
+									nth_pad, nth_audio_channel,
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB);
+
+  CU_ASSERT(success == TRUE);
+  
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = AGS_MACHINE(machine)->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+  
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* add lv2 effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "Lv2\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 and gverb */  
+  success = ags_functional_test_util_machine_properties_lv2_filename(nth_machine,
+								     nth_pad, nth_audio_channel,
+								     AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_lv2_effect(nth_machine,
+								   nth_pad, nth_audio_channel,
+								   AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * destroy effects
+   */  
+  nth_machine = 0;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* remove effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      2);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
   
   /* destroy drum */
   success = ags_functional_test_util_machine_destroy(nth_machine);
@@ -388,6 +973,8 @@ ags_functional_line_member_add_and_destroy_test_matrix()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* get machine */
   gdk_threads_enter();
 
@@ -398,7 +985,7 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   gdk_threads_leave();
 
   if(list != NULL &&
-     AGS_IS_PANEL(list->data)){
+     AGS_IS_MATRIX(list->data)){
     machine = list->data;
   }else{
     machine = NULL;
@@ -434,6 +1021,8 @@ ags_functional_line_member_add_and_destroy_test_synth()
 
   CU_ASSERT(success == TRUE);
 
+  ags_functional_test_util_idle();
+
   /* get machine */
   gdk_threads_enter();
 
@@ -444,7 +1033,7 @@ ags_functional_line_member_add_and_destroy_test_synth()
   gdk_threads_leave();
 
   if(list != NULL &&
-     AGS_IS_PANEL(list->data)){
+     AGS_IS_SYNTH(list->data)){
     machine = list->data;
   }else{
     machine = NULL;
@@ -466,10 +1055,14 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsMachine *machine;
+  AgsMachineEditor *machine_editor;
+  AgsLineEditor *line_editor;
+  AgsPluginBrowser *plugin_browser;
   
   GList *list_start, *list;
 
   guint nth_machine;
+  guint nth_pad, nth_audio_channel;
   gboolean success;
 
   xorg_application_context = ags_application_context;
@@ -479,6 +1072,8 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 						 "FPlayer");
 
   CU_ASSERT(success == TRUE);
+
+  ags_functional_test_util_idle();
 
   /* get machine */
   gdk_threads_enter();
@@ -490,7 +1085,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   gdk_threads_leave();
 
   if(list != NULL &&
-     AGS_IS_PANEL(list->data)){
+     AGS_IS_FFPLAYER(list->data)){
     machine = list->data;
   }else{
     machine = NULL;
@@ -498,8 +1093,233 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   
   CU_ASSERT(machine != NULL);
 
-  //TODO:JK: 
+  /*
+   *  add line member to input
+   */
+
   nth_machine = 0;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* add ladspa effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* ladspa */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "LADSPA\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* cmt and delay */  
+  success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
+									nth_pad, nth_audio_channel,
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* add ladspa effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* ladspa */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "LADSPA\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* cmt and freeverb */  
+  success = ags_functional_test_util_machine_properties_ladspa_filename(nth_machine,
+									nth_pad, nth_audio_channel,
+									AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_ladspa_effect(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB);
+
+  CU_ASSERT(success == TRUE);
+  
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = AGS_MACHINE(machine)->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+  
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* add lv2 effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_add(nth_machine,
+								   nth_pad, nth_audio_channel);
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 */
+  success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
+									   nth_pad, nth_audio_channel,
+									   "Lv2\0");
+
+  CU_ASSERT(success == TRUE);
+
+  /* lv2 and gverb */  
+  success = ags_functional_test_util_machine_properties_lv2_filename(nth_machine,
+								     nth_pad, nth_audio_channel,
+								     AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_lv2_effect(nth_machine,
+								   nth_pad, nth_audio_channel,
+								   AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  line_editor = ags_functional_test_util_get_line_editor(machine_editor,
+							 nth_pad, nth_audio_channel,
+							 FALSE);
+
+  plugin_browser = line_editor->member_editor->plugin_browser;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(plugin_browser);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * destroy effects
+   */  
+  nth_machine = 0;
+
+  /* open properties */
+  success = ags_functional_test_util_machine_properties_open(nth_machine);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_click_tab(nth_machine,
+								  AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_INPUT_TAB);
+
+  /* remove effect */
+  nth_pad = 0;
+  nth_audio_channel = 0;
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      2);
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_machine_properties_effect_remove(nth_machine,
+								      nth_pad, nth_audio_channel,
+								      0);
+
+  CU_ASSERT(success == TRUE);
+
+  /* response OK */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_editor = machine->properties;
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_dialog_ok(machine_editor);
+  
+  CU_ASSERT(success == TRUE);
   
   /* destroy fplayer */
   success = ags_functional_test_util_machine_destroy(nth_machine);
@@ -587,7 +1407,6 @@ main(int argc, char **argv)
 
   //ao_initialize();
 
-  gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 

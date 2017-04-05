@@ -2511,6 +2511,8 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   GtkButton *remove_button;
   
   GtkTreeModel *model;
+
+  AgsFunctionalTestUtilContainerTest container_test;
   
   GtkTreeIter iter;
   GList *list_start, *list;
@@ -2617,9 +2619,14 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   remove_button = member_editor->remove;
 
   /* check button */
+  container_test.container = &(member_editor->line_member);
+  
   check_button = NULL;
 
   list_start = gtk_container_get_children(member_editor->line_member);
+
+  container_test.count = g_list_length(list_start) - 1;
+
   list = g_list_nth(list_start,
 		    nth_effect);
 
@@ -2645,9 +2652,9 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   
     success = ags_functional_test_util_button_click(remove_button);
   
-    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
+    ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
 							&ags_functional_test_util_default_timeout,
-							effect_dialog);
+							&container_test);
   
     ags_functional_test_util_reaction_time_long();
   }

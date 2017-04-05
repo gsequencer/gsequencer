@@ -1060,6 +1060,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   }
 
   /* add separator */
+  /*
   separator = gtk_hseparator_new();
   gtk_widget_set_size_request(separator,
 			      120, -1);
@@ -1074,7 +1075,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 		   0, y,
 		   AGS_LINE_COLUMNS_COUNT, 1);
   gtk_widget_show(separator);
-
+  */
+  
   y++;
   
   /* load ports */
@@ -1398,26 +1400,39 @@ ags_line_real_remove_effect(AgsLine *line,
     effect = AGS_RECALL_LADSPA(recall->data)->effect;
   }
   
+  pthread_mutex_unlock(channel_mutex);
+
+  //FIXME:JK: warning causes dead-lock
+  /*
   control_start =
     control = gtk_container_get_children((GtkContainer *) line->expander->table);
 
   while(control != NULL){
-    if(GTK_IS_SEPARATOR(control->data) &&
+    gchar *separator_filename;
+    gchar *separator_effect;
+
+    separator_filename = g_object_get_data(control->data,
+					   AGS_LINE_SEPARATOR_FILENAME);
+
+    separator_effect = g_object_get_data(control->data,
+					 AGS_LINE_SEPARATOR_EFFECT);
+    
+    if(separator_filename != NULL &&
+       separator_effect != NULL &&
        !strcmp(filename,
-	       g_object_get_data(control->data,
-				 AGS_LINE_SEPARATOR_FILENAME)) &&
+	       separator_filename) &&
        !strcmp(effect,
-	       g_object_get_data(control->data,
-				 AGS_LINE_SEPARATOR_EFFECT))){
+	       separator_effect)){
       gtk_widget_destroy(control->data);
       
       break;
     }
-
+  
     control->next;
   }
   
   g_list_free(control_start);
+  */
   
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
@@ -1466,8 +1481,6 @@ ags_line_real_remove_effect(AgsLine *line,
     
     port = port->next;
   }
-
-  pthread_mutex_unlock(channel_mutex);
 
   if(remove_specifier != NULL){
     remove_specifier[i] = NULL;

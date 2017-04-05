@@ -36,8 +36,7 @@ EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acs
 
 EXTRA_DIST += \
 	functional-system-tests.mk.am \
-	functional-system-tests.mk.in \
-	functional-system-tests.mk
+	functional-system-tests.mk.in
 
 EXTRA_DIST += \
 	docs/reference/libags/libags-sections.txt \
@@ -49,7 +48,7 @@ EXTRA_DIST += \
 
 man1_MANS = gsequencer.1 midi2xml.1
 
-CLEANFILES = 
+CLEANFILES = functional-system-tests.mk
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -1667,7 +1666,7 @@ clean-local:
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
 	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
-	rm -f $(top_builddir)functional-system-tests.mk
+	rm -f $(top_builddir)/functional-system-tests.mk
 
 gen-symbols-ags:
 	rm -f libags.sym

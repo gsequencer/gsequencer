@@ -1348,7 +1348,7 @@ main(int argc, char **argv)
 
   //ao_initialize();
 
-  gdk_threads_enter();
+  //  gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 

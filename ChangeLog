@@ -1,3 +1,11 @@
+ags (0.7.122.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock as removing line member
+	* improved plugin browser to reset plugin type
+	* improved the speed of functional tests
+	* added functional test to check line member sanity
+
 ags (0.7.122.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

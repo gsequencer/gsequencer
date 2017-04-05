@@ -134,6 +134,7 @@ libgsequencer_check_system_test_la_LINK = $(LIBTOOL) $(AM_V_lt) \
 am__EXEEXT_1 = ags_check_system_functional_audio_test$(EXEEXT) \
 	ags_check_system_functional_machine_add_and_destroy_test$(EXEEXT) \
 	ags_check_system_functional_machine_link_test$(EXEEXT) \
+	ags_check_system_functional_line_member_add_and_destroy_test$(EXEEXT) \
 	ags_check_system_functional_panel_test$(EXEEXT) \
 	ags_check_system_functional_mixer_test$(EXEEXT) \
 	ags_check_system_functional_drum_test$(EXEEXT) \
@@ -177,6 +178,17 @@ ags_check_system_functional_ffplayer_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_check_system_functional_ffplayer_test_CFLAGS) \
 	$(CFLAGS) $(ags_check_system_functional_ffplayer_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_check_system_functional_line_member_add_and_destroy_test_OBJECTS = ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.$(OBJEXT)
+ags_check_system_functional_line_member_add_and_destroy_test_OBJECTS = $(am_ags_check_system_functional_line_member_add_and_destroy_test_OBJECTS)
+ags_check_system_functional_line_member_add_and_destroy_test_DEPENDENCIES =  \
+	$(am__DEPENDENCIES_3)
+ags_check_system_functional_line_member_add_and_destroy_test_LINK =  \
+	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_check_system_functional_line_member_add_and_destroy_test_CFLAGS) \
+	$(CFLAGS) \
+	$(ags_check_system_functional_line_member_add_and_destroy_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_ags_check_system_functional_machine_add_and_destroy_test_OBJECTS = ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.$(OBJEXT)
 ags_check_system_functional_machine_add_and_destroy_test_OBJECTS = $(am_ags_check_system_functional_machine_add_and_destroy_test_OBJECTS)
@@ -289,6 +301,7 @@ SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_audio_test_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
 	$(ags_check_system_functional_ffplayer_test_SOURCES) \
+	$(ags_check_system_functional_line_member_add_and_destroy_test_SOURCES) \
 	$(ags_check_system_functional_machine_add_and_destroy_test_SOURCES) \
 	$(ags_check_system_functional_machine_link_test_SOURCES) \
 	$(ags_check_system_functional_matrix_test_SOURCES) \
@@ -300,6 +313,7 @@ DIST_SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_audio_test_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
 	$(ags_check_system_functional_ffplayer_test_SOURCES) \
+	$(ags_check_system_functional_line_member_add_and_destroy_test_SOURCES) \
 	$(ags_check_system_functional_machine_add_and_destroy_test_SOURCES) \
 	$(ags_check_system_functional_machine_link_test_SOURCES) \
 	$(ags_check_system_functional_matrix_test_SOURCES) \
@@ -537,6 +551,7 @@ installcheck_programs = \
 	ags_check_system_functional_audio_test \
 	ags_check_system_functional_machine_add_and_destroy_test \
 	ags_check_system_functional_machine_link_test \
+	ags_check_system_functional_line_member_add_and_destroy_test \
 	ags_check_system_functional_panel_test \
 	ags_check_system_functional_mixer_test \
 	ags_check_system_functional_drum_test \
@@ -571,6 +586,13 @@ ags_check_system_functional_machine_link_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS)
 ags_check_system_functional_machine_link_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_check_system_functional_machine_link_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_machine_link_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional line member add and destroy test
+ags_check_system_functional_line_member_add_and_destroy_test_SOURCES = ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+ags_check_system_functional_line_member_add_and_destroy_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_line_member_add_and_destroy_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_check_system_functional_line_member_add_and_destroy_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_line_member_add_and_destroy_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional panel test
 ags_check_system_functional_panel_test_SOURCES = ags/test/X/machine/ags_functional_panel_test.c
@@ -748,6 +770,13 @@ ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffpl
 ags_check_system_functional_ffplayer_test$(EXEEXT): $(ags_check_system_functional_ffplayer_test_OBJECTS) $(ags_check_system_functional_ffplayer_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_ffplayer_test_DEPENDENCIES) 
 	@rm -f ags_check_system_functional_ffplayer_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_functional_ffplayer_test_LINK) $(ags_check_system_functional_ffplayer_test_OBJECTS) $(ags_check_system_functional_ffplayer_test_LDADD) $(LIBS)
+ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_check_system_functional_line_member_add_and_destroy_test$(EXEEXT): $(ags_check_system_functional_line_member_add_and_destroy_test_OBJECTS) $(ags_check_system_functional_line_member_add_and_destroy_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_line_member_add_and_destroy_test_DEPENDENCIES) 
+	@rm -f ags_check_system_functional_line_member_add_and_destroy_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_functional_line_member_add_and_destroy_test_LINK) $(ags_check_system_functional_line_member_add_and_destroy_test_OBJECTS) $(ags_check_system_functional_line_member_add_and_destroy_test_LDADD) $(LIBS)
 ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.$(OBJEXT):  \
 	ags/test/X/$(am__dirstamp) \
 	ags/test/X/$(DEPDIR)/$(am__dirstamp)
@@ -808,6 +837,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_note_edit_test-ags_functional_note_edit_test.Po@am__quote@
@@ -900,6 +930,20 @@ ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffpl
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_ffplayer_test.c' object='ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_ffplayer_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_ffplayer_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.obj `if test -f 'ags/test/X/machine/ags_functional_ffplayer_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_ffplayer_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_ffplayer_test.c'; fi`
+
+ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o: ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo -c -o ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_line_member_add_and_destroy_test.c' object='ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+
+ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj: ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo -c -o ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj `if test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_line_member_add_and_destroy_test.c' object='ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj `if test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; fi`
 
 ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o: ags/test/X/ags_functional_machine_add_and_destroy_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_machine_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_machine_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Tpo -c -o ags/test/X/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_machine_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_machine_add_and_destroy_test.c
