@@ -583,7 +583,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 				  gchar *effect)
 {
   AgsLineMember *line_member;
-  GtkSeparator *separator;
+  //  GtkSeparator *separator;
   GtkAdjustment *adjustment;
   
   AgsAddLineMember *add_line_member;
@@ -730,7 +730,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   gtk_widget_show(separator);
   */
   
-  y++;
+  //  y++;
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -934,7 +934,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 			       gchar *effect)
 {
   AgsLineMember *line_member;
-  GtkSeparator *separator;
+  //  GtkSeparator *separator;
   GtkAdjustment *adjustment;
 
   AgsAddLineMember *add_line_member;
@@ -1062,6 +1062,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   pthread_mutex_unlock(channel_mutex);
 
   /* add separator */
+  /*
   separator = gtk_hseparator_new();
   gtk_widget_set_size_request(separator,
 			      120, -1);
@@ -1078,8 +1079,9 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   gtk_widget_show(separator);
-
-  y++;
+  */
+  
+  //y++;
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;

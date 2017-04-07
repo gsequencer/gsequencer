@@ -368,6 +368,8 @@ ags_line_remove_effect_callback(AgsChannel *channel,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
+  gdk_threads_leave();
+
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
@@ -383,14 +385,8 @@ ags_line_remove_effect_callback(AgsChannel *channel,
 						      AGS_TYPE_GUI_THREAD);
 
   /*  */
-  gdk_threads_enter();
-
   ags_line_remove_effect(line,
 			 nth);
-
-  gdk_threads_leave();
-
-  gdk_threads_leave();
 }
 
 void

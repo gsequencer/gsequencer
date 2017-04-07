@@ -1,3 +1,8 @@
+ags (0.7.122.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled separator in AgsLine and AgsEffectLine
+
 ags (0.7.122.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

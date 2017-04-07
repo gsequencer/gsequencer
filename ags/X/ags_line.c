@@ -764,7 +764,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 			   gchar *effect)
 {
   AgsLineMember *line_member;
-  GtkSeparator *separator;
+  //  GtkSeparator *separator;
   GtkAdjustment *adjustment;
 
   AgsRecallHandler *recall_handler;
@@ -804,22 +804,22 @@ ags_line_add_ladspa_effect(AgsLine *line,
   }
 
   /* add separator */
-  separator = gtk_hseparator_new();
-  gtk_widget_set_size_request(separator,
-			      120, -1);
-  g_object_set_data(separator,
-		    AGS_LINE_SEPARATOR_FILENAME,
-		    filename);
-  g_object_set_data(separator,
-		    AGS_LINE_SEPARATOR_EFFECT,
-		    effect);
-  ags_expander_add(line->expander,
-		   (GtkWidget *) separator,
-		   0, y,
-		   AGS_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show(separator);
+  //  separator = gtk_hseparator_new();
+  //  gtk_widget_set_size_request(separator,
+  //			      120, -1);
+  //  g_object_set_data(separator,
+  //		    AGS_LINE_SEPARATOR_FILENAME,
+  //		    filename);
+  //  g_object_set_data(separator,
+  //		    AGS_LINE_SEPARATOR_EFFECT,
+  //		    effect);
+  //  ags_expander_add(line->expander,
+  //		   (GtkWidget *) separator,
+  //		   0, y,
+  //		   AGS_LINE_COLUMNS_COUNT, 1);
+  //  gtk_widget_show(separator);
 
-  y++;
+  //  y++;
   
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -1012,7 +1012,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 			gchar *effect)
 {
   AgsLineMember *line_member;
-  GtkSeparator *separator;
+  //  GtkSeparator *separator;
   GtkAdjustment *adjustment;
 
   AgsRecallHandler *recall_handler;
@@ -1060,24 +1060,23 @@ ags_line_add_lv2_effect(AgsLine *line,
   }
 
   /* add separator */
-  /*
-  separator = gtk_hseparator_new();
-  gtk_widget_set_size_request(separator,
-			      120, -1);
-  g_object_set_data(separator,
-		    AGS_LINE_SEPARATOR_FILENAME,
-		    filename);
-  g_object_set_data(separator,
-		    AGS_LINE_SEPARATOR_EFFECT,
-		    effect);
-  ags_expander_add(line->expander,
-		   (GtkWidget *) separator,
-		   0, y,
-		   AGS_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show(separator);
-  */
+  //  separator = gtk_hseparator_new();
+  //  gtk_widget_set_size_request(separator,
+  //			      120, -1);
+  //  g_object_set_data(separator,
+  //		    AGS_LINE_SEPARATOR_FILENAME,
+  //		    filename);
+  //  g_object_set_data(separator,
+  //		    AGS_LINE_SEPARATOR_EFFECT,
+  //		    effect);
+  //  ags_expander_add(line->expander,
+  //		   (GtkWidget *) separator,
+  //		   0, y,
+  //		   AGS_LINE_COLUMNS_COUNT, 1);
+  //gtk_widget_show(separator);
+
   
-  y++;
+  //  y++;
   
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
