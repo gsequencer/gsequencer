@@ -28,7 +28,7 @@ ags_list_util_find_type(GList *list,
   }
   
   while(list != NULL){
-    if(g_type_is_a(list->data,
+    if(g_type_is_a(G_OBJECT_TYPE(G_OBJECT(list->data)),
 		   gtype)){
       return(list);
     }
@@ -48,7 +48,7 @@ ags_list_util_copy_and_ref(GList *list)
     list_start = g_list_copy(list);
   
   while(list != NULL){
-    g_object_ref(list->data);
+    g_object_ref(G_OBJECT(list->data));
     
     list = list->next;
   }

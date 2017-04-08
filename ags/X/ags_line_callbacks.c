@@ -177,8 +177,6 @@ ags_line_add_effect_callback(AgsChannel *channel,
   pthread_mutex_t *application_mutex;
 
   /* lock gdk threads */
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
 
   application_context = (AgsApplicationContext *) window->application_context;
@@ -198,7 +196,6 @@ ags_line_add_effect_callback(AgsChannel *channel,
 						      AGS_TYPE_GUI_THREAD);
 
   /*  */
-  gdk_threads_enter();
 
   /* get machine and machine editor */
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
@@ -339,11 +336,6 @@ ags_line_add_effect_callback(AgsChannel *channel,
   /* free lists */
   g_list_free(pad_editor_start);
   g_list_free(line_editor_start);
-
-  gdk_threads_leave();
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }
 
 void

@@ -17,10 +17,13 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ags_effect_separator.h"
+#include <ags/X/ags_effect_separator.h>
+
+#include <ags/object/ags_connectable.h>
 
 void ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator);
 void ags_effect_separator_init(AgsEffectSeparator *effect_separator);
+void ags_effect_separator_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_separator_set_property(GObject *gobject,
 				       guint prop_id,
 				       const GValue *value,
@@ -67,10 +70,19 @@ ags_effect_separator_get_type(void)
       (GInstanceInitFunc) ags_effect_separator_init,
     };
 
-    ags_type_effect_separator = g_type_register_static(GTK_TYPE_ALIGNMENT,
-						       "AgsEffectSeparator\0",
-						       &ags_effect_separator_info,
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_effect_separator_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_effect_separator = g_type_register_static(GTK_TYPE_HBOX,
+						       "AgsEffectSeparator\0", &ags_effect_separator_info,
 						       0);
+
+    g_type_add_interface_static(ags_type_effect_separator,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_effect_separator);
@@ -142,12 +154,40 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
 }
 
 void
+ags_effect_separator_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = NULL;
+  connectable->disconnect = NULL;
+}
+
+void
 ags_effect_separator_init(AgsEffectSeparator *effect_separator)
-{  
+{
+  GtkSeparator *separator;
+  
   effect_separator->filename = NULL;
   effect_separator->effect = NULL;
 
+  /* heading separator */
+  separator = gtk_hseparator_new();
+  gtk_box_pack_start(effect_separator,
+		     separator,
+		     TRUE, TRUE,
+		     0);
+
+  /* label */
   effect_separator->label = gtk_label_new(NULL);
+  gtk_box_pack_start(effect_separator,
+		     effect_separator->label,
+		     FALSE, FALSE,
+		     0);
+
+  /* trailing separator */
+  separator = gtk_hseparator_new();
+  gtk_box_pack_start(effect_separator,
+		     separator,
+		     TRUE, TRUE,
+		     0);
 }
 
 void

@@ -1097,6 +1097,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_effect_line.h \
 	ags/X/ags_effect_pad_callbacks.h \
 	ags/X/ags_effect_pad.h \
+	ags/X/ags_effect_separator.h \
 	ags/X/ags_export_soundcard_callbacks.h \
 	ags/X/ags_export_soundcard.h \
 	ags/X/ags_export_window_callbacks.h \
@@ -1195,6 +1196,7 @@ libgsequencer_c_sources = \
 	ags/X/ags_effect_line_callbacks.c \
 	ags/X/ags_effect_pad.c \
 	ags/X/ags_effect_pad_callbacks.c \
+	ags/X/ags_effect_separator.c \
 	ags/X/ags_export_soundcard.c \
 	ags/X/ags_export_soundcard_callbacks.c \
 	ags/X/ags_export_window.c \

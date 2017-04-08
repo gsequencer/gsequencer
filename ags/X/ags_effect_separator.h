@@ -28,16 +28,16 @@
 #define AGS_TYPE_EFFECT_SEPARATOR                (ags_effect_separator_get_type())
 #define AGS_EFFECT_SEPARATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_SEPARATOR, AgsEffectSeparator))
 #define AGS_EFFECT_SEPARATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EFFECT_SEPARATOR, AgsEffectSeparatorClass))
-#define AGS_IS_EFFECT_SEPARATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_EFFECT_SEPARATOR))
-#define AGS_IS_EFFECT_SEPARATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_SEPARATOR))
-#define AGS_EFFECT_SEPARATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_SEPARATOR, AgsEffectSeparatorClass))
+#define AGS_IS_EFFECT_SEPARATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_EFFECT_SEPARATOR))
+#define AGS_IS_EFFECT_SEPARATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_EFFECT_SEPARATOR))
+#define AGS_EFFECT_SEPARATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_EFFECT_SEPARATOR, AgsEffectSeparatorClass))
 
 typedef struct _AgsEffectSeparator AgsEffectSeparator;
 typedef struct _AgsEffectSeparatorClass AgsEffectSeparatorClass;
 
 struct _AgsEffectSeparator
 {
-  GtkAlignment alignment;
+  GtkHBox hbox;
 
   gchar *filename;
   gchar *effect;
@@ -47,7 +47,7 @@ struct _AgsEffectSeparator
 
 struct _AgsEffectSeparatorClass
 {
-  GtkAlignmentClass alignment;
+  GtkHBoxClass hbox;
 };
 
 GType ags_effect_separator_get_type(void);

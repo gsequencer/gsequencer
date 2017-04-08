@@ -111,6 +111,10 @@
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
 
+#include <ags/X/ags_effect_pad.h>
+#include <ags/X/ags_effect_line.h>
+#include <ags/X/ags_effect_separator.h>
+
 #include <ags/X/file/ags_gui_file_xml.h>
 #include <ags/X/file/ags_simple_file.h>
 
@@ -1188,6 +1192,9 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
 {
   ags_gui_thread_get_type();
 
+  /* */
+  ags_connectable_get_type();
+  
   /*  */
   ags_lv2_manager_get_type();
   ags_lv2_urid_manager_get_type();
@@ -1280,6 +1287,7 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_effect_bulk_get_type();
   ags_effect_pad_get_type();
   ags_effect_line_get_type();
+  ags_effect_separator_get_type();
 
   ags_bulk_member_get_type();
   ags_line_member_get_type();  

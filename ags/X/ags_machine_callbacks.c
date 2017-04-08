@@ -393,9 +393,13 @@ ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *ma
   machine->properties = (GtkDialog *) ags_machine_editor_new(machine);
   g_signal_connect_after(machine->properties, "destroy\0",
 			 G_CALLBACK(ags_machine_popup_properties_destroy_callback), machine);
+
   gtk_window_set_default_size((GtkWindow *) machine->properties, -1, 400);
+  
   ags_connectable_connect(AGS_CONNECTABLE(machine->properties));
+
   ags_applicable_reset(AGS_APPLICABLE(machine->properties));
+
   gtk_widget_show_all((GtkWidget *) machine->properties);
 
   return(0);

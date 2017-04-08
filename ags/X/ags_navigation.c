@@ -757,13 +757,9 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 
   gchar *str;
   
-  gdk_threads_enter();
-
   navigation = AGS_NAVIGATION(widget);
 
   if(navigation->soundcard == NULL){
-    gdk_threads_leave();
-    
     return(TRUE);
   }
 
@@ -774,8 +770,6 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
   g_free(str);
   
   gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
-
-  gdk_threads_leave();
 
   return(TRUE);
 }

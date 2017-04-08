@@ -54,7 +54,9 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_line_member.h>
+#include <ags/X/ags_effect_separator.h>
 
 #include <ags/X/task/ags_add_line_member.h>
 
@@ -583,7 +585,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 				  gchar *effect)
 {
   AgsLineMember *line_member;
-  //  GtkSeparator *separator;
+  AgsEffectSeparator *separator;
   GtkAdjustment *adjustment;
   
   AgsAddLineMember *add_line_member;
@@ -711,26 +713,22 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   pthread_mutex_unlock(channel_mutex);
 
   /* add separator */
-  /*
-  separator = gtk_hseparator_new();
-  gtk_widget_set_size_request(separator,
-			      120, -1);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_FILENAME,
-		    filename);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_EFFECT,
-		    effect);
+  separator = ags_effect_separator_new();
+  g_object_set(separator,
+	       "text\0", effect,
+	       "filename\0", filename,
+	       "effect\0", effect,
+	       NULL);
+  
   gtk_table_attach(effect_line->table,
 		   (GtkWidget *) separator,
 		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
 		   y, y + 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_show(separator);
-  */
-  
-  //  y++;
+  gtk_widget_show_all(separator);
+
+  y++;
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
@@ -934,7 +932,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 			       gchar *effect)
 {
   AgsLineMember *line_member;
-  //  GtkSeparator *separator;
+  AgsEffectSeparator *separator;
   GtkAdjustment *adjustment;
 
   AgsAddLineMember *add_line_member;
@@ -1062,26 +1060,21 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   pthread_mutex_unlock(channel_mutex);
 
   /* add separator */
-  /*
-  separator = gtk_hseparator_new();
-  gtk_widget_set_size_request(separator,
-			      120, -1);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_FILENAME,
-		    filename);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_EFFECT,
-		    effect);
+  separator = ags_effect_separator_new();
+  g_object_set(separator,
+	       "text\0", effect,
+	       "filename\0", filename,
+	       "effect\0", effect,
+	       NULL);
   gtk_table_attach(effect_line->table,
 		   (GtkWidget *) separator,
 		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
 		   y, y + 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_show(separator);
-  */
+  gtk_widget_show_all(separator);
   
-  //y++;
+  y++;
 
   /* load ports */
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
@@ -1416,37 +1409,36 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
     effect = AGS_RECALL_LADSPA(recall->data)->effect;
   }
 
-  //FIXME:JK: warning causes dead-lock
-  /*
+  /* destroy separator */
   control_start =
     control = gtk_container_get_children((GtkContainer *) effect_line->table);
 
   while(control != NULL){
     gchar *separator_filename;
     gchar *separator_effect;
-
-    separator_filename = g_object_get_data(control->data,
-					   AGS_EFFECT_LINE_SEPARATOR_FILENAME);
+    
+    if(AGS_IS_EFFECT_SEPARATOR(control->data)){
+      g_object_get(control->data,
+		   "filename\0", &separator_filename,
+		   "effect\0", &separator_effect,
+		   NULL);
       
-    separator_effect = g_object_get_data(control->data,
-					 AGS_EFFECT_LINE_SEPARATOR_EFFECT);
-
-    if(separator_filename != NULL &&
-       separator_effect != NULL &&
-       !strcmp(filename,
-	       separator_filename) &&
-       !strcmp(effect,
-	       separator_effect)){
-      gtk_widget_destroy(control->data);
+      if(separator_filename != NULL &&
+	 separator_effect != NULL &&
+	 !g_strcmp0(filename,
+		    separator_filename) &&
+	 !g_strcmp0(effect,
+		    separator_effect)){
+	gtk_widget_destroy(control->data);
       
-      break;
+	break;
+      }
     }
     
-    control->next;
+    control = control->next;
   }
   
   g_list_free(control_start);
-  */
     
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
