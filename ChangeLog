@@ -3,6 +3,7 @@ ags (0.7.122.19)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsEffectSeparator for AgsLine and AgsEffectLine
 	* removed gtk separator in AgsLine and AgsEffectLine
+	* disabled AgsDestroyWorker
 
 ags (0.7.122.18)
 

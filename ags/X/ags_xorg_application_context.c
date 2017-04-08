@@ -787,6 +787,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->worker = NULL;
 
   /* AgsDestroyWorker */
+  /*
   destroy_worker = ags_destroy_worker_new();
   g_object_ref(destroy_worker);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
@@ -795,7 +796,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->worker = g_list_prepend(xorg_application_context->worker,
 						    destroy_worker);
   ags_thread_start(destroy_worker);
-
+  */
+  
   /* AgsThreadPool */
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
 

@@ -146,10 +146,11 @@ ags_functional_note_edit_test_file_setup()
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   /* get initial time */
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
   success = TRUE;
     
   for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT; i++){
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
+    
     expired = FALSE;
     
     g_message("start playback");
@@ -260,7 +261,6 @@ main(int argc, char **argv)
 
   //ao_initialize();
 
-  gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
