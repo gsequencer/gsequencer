@@ -135,6 +135,7 @@ am__EXEEXT_1 = ags_check_system_functional_audio_test$(EXEEXT) \
 	ags_check_system_functional_machine_add_and_destroy_test$(EXEEXT) \
 	ags_check_system_functional_machine_link_test$(EXEEXT) \
 	ags_check_system_functional_line_member_add_and_destroy_test$(EXEEXT) \
+	ags_check_system_functional_editor_workflow_test$(EXEEXT) \
 	ags_check_system_functional_panel_test$(EXEEXT) \
 	ags_check_system_functional_mixer_test$(EXEEXT) \
 	ags_check_system_functional_drum_test$(EXEEXT) \
@@ -168,6 +169,17 @@ ags_check_system_functional_drum_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_check_system_functional_drum_test_CFLAGS) \
 	$(CFLAGS) $(ags_check_system_functional_drum_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_check_system_functional_editor_workflow_test_OBJECTS = ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.$(OBJEXT)
+ags_check_system_functional_editor_workflow_test_OBJECTS = $(am_ags_check_system_functional_editor_workflow_test_OBJECTS)
+ags_check_system_functional_editor_workflow_test_DEPENDENCIES =  \
+	$(am__DEPENDENCIES_3)
+ags_check_system_functional_editor_workflow_test_LINK = $(LIBTOOL) \
+	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) \
+	$(ags_check_system_functional_editor_workflow_test_CFLAGS) \
+	$(CFLAGS) \
+	$(ags_check_system_functional_editor_workflow_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_ags_check_system_functional_ffplayer_test_OBJECTS = ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.$(OBJEXT)
 ags_check_system_functional_ffplayer_test_OBJECTS =  \
@@ -300,6 +312,7 @@ am__v_CCLD_1 =
 SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_audio_test_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
+	$(ags_check_system_functional_editor_workflow_test_SOURCES) \
 	$(ags_check_system_functional_ffplayer_test_SOURCES) \
 	$(ags_check_system_functional_line_member_add_and_destroy_test_SOURCES) \
 	$(ags_check_system_functional_machine_add_and_destroy_test_SOURCES) \
@@ -312,6 +325,7 @@ SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 DIST_SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_audio_test_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
+	$(ags_check_system_functional_editor_workflow_test_SOURCES) \
 	$(ags_check_system_functional_ffplayer_test_SOURCES) \
 	$(ags_check_system_functional_line_member_add_and_destroy_test_SOURCES) \
 	$(ags_check_system_functional_machine_add_and_destroy_test_SOURCES) \
@@ -546,12 +560,13 @@ libgsequencer_check_system_test_LIBADD = -L$(libdir) -lags -lags_audio -lags_gui
 gsequencer_check_system_functional_test_LDADD = -lags -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer libgsequencer_check_system_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 noinst_LTLIBRARIES = libgsequencer_check_system_test.la
 
-# functional system tests
+# functional system tests - edit target
 installcheck_programs = \
 	ags_check_system_functional_audio_test \
 	ags_check_system_functional_machine_add_and_destroy_test \
 	ags_check_system_functional_machine_link_test \
 	ags_check_system_functional_line_member_add_and_destroy_test \
+	ags_check_system_functional_editor_workflow_test \
 	ags_check_system_functional_panel_test \
 	ags_check_system_functional_mixer_test \
 	ags_check_system_functional_drum_test \
@@ -593,6 +608,13 @@ ags_check_system_functional_line_member_add_and_destroy_test_CFLAGS = $(CFLAGS) 
 ags_check_system_functional_line_member_add_and_destroy_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_check_system_functional_line_member_add_and_destroy_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_line_member_add_and_destroy_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional editor workflow test
+ags_check_system_functional_editor_workflow_test_SOURCES = ags/test/X/ags_functional_editor_workflow_test.c
+ags_check_system_functional_editor_workflow_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_editor_workflow_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_check_system_functional_editor_workflow_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_editor_workflow_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional panel test
 ags_check_system_functional_panel_test_SOURCES = ags/test/X/machine/ags_functional_panel_test.c
@@ -652,15 +674,15 @@ $(srcdir)/functional-system-tests.mk.in:  $(srcdir)/functional-system-tests.mk.a
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu functional-system-tests.mk'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign functional-system-tests.mk'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu functional-system-tests.mk
+	  $(AUTOMAKE) --foreign functional-system-tests.mk
 functional-system-tests.mk: $(srcdir)/functional-system-tests.mk.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -763,6 +785,13 @@ ags/test/X/machine/ags_check_system_functional_drum_test-ags_functional_drum_tes
 ags_check_system_functional_drum_test$(EXEEXT): $(ags_check_system_functional_drum_test_OBJECTS) $(ags_check_system_functional_drum_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_drum_test_DEPENDENCIES) 
 	@rm -f ags_check_system_functional_drum_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_check_system_functional_drum_test_LINK) $(ags_check_system_functional_drum_test_OBJECTS) $(ags_check_system_functional_drum_test_LDADD) $(LIBS)
+ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_check_system_functional_editor_workflow_test$(EXEEXT): $(ags_check_system_functional_editor_workflow_test_OBJECTS) $(ags_check_system_functional_editor_workflow_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_editor_workflow_test_DEPENDENCIES) 
+	@rm -f ags_check_system_functional_editor_workflow_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_functional_editor_workflow_test_LINK) $(ags_check_system_functional_editor_workflow_test_OBJECTS) $(ags_check_system_functional_editor_workflow_test_LDADD) $(LIBS)
 ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.$(OBJEXT):  \
 	ags/test/X/machine/$(am__dirstamp) \
 	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -837,6 +866,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_check_system_functional_machine_link_test-ags_check_system_functional_machine_link_test.Po@am__quote@
@@ -916,6 +946,20 @@ ags/test/X/machine/ags_check_system_functional_drum_test-ags_functional_drum_tes
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_drum_test.c' object='ags/test/X/machine/ags_check_system_functional_drum_test-ags_functional_drum_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_drum_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_drum_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_check_system_functional_drum_test-ags_functional_drum_test.obj `if test -f 'ags/test/X/machine/ags_functional_drum_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_drum_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_drum_test.c'; fi`
+
+ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.o: ags/test/X/ags_functional_editor_workflow_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo -c -o ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.o `test -f 'ags/test/X/ags_functional_editor_workflow_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_editor_workflow_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo ags/test/X/$(DEPDIR)/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_editor_workflow_test.c' object='ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.o `test -f 'ags/test/X/ags_functional_editor_workflow_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_editor_workflow_test.c
+
+ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj: ags/test/X/ags_functional_editor_workflow_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo -c -o ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj `if test -f 'ags/test/X/ags_functional_editor_workflow_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_editor_workflow_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_editor_workflow_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo ags/test/X/$(DEPDIR)/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_editor_workflow_test.c' object='ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_check_system_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj `if test -f 'ags/test/X/ags_functional_editor_workflow_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_editor_workflow_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_editor_workflow_test.c'; fi`
 
 ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.o: ags/test/X/machine/ags_functional_ffplayer_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_ffplayer_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_ffplayer_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.Tpo -c -o ags/test/X/machine/ags_check_system_functional_ffplayer_test-ags_functional_ffplayer_test.o `test -f 'ags/test/X/machine/ags_functional_ffplayer_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_ffplayer_test.c
@@ -1420,6 +1464,9 @@ uninstall-am:
 ags-check-system: $(installcheck_programs)
 	./ags_check_system_functional_audio_test
 	./ags_check_system_functional_machine_add_and_destroy_test
+	./ags_check_system_functional_machine_link_test
+	./ags_check_system_functional_line_member_add_and_destroy_test
+	./ags_check_system_functional_editor_workflow_test
 	./ags_check_system_functional_panel_test
 	./ags_check_system_functional_mixer_test
 	./ags_check_system_functional_drum_test

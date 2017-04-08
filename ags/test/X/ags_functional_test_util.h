@@ -157,10 +157,10 @@ gboolean ags_functional_test_util_toolbar_cut_click();
 gboolean ags_functional_test_util_toolbar_zoom(guint nth_zoom);
 
 /* machine selector */
-gboolean ags_functional_test_util_machine_selector_select(guint nth_machine);
+gboolean ags_functional_test_util_machine_selector_select(guint nth_index);
 
 /* machine selection */
-gboolean ags_functional_test_util_machine_selection_select(guint nth_machine);
+gboolean ags_functional_test_util_machine_selection_select(gchar *machine);
 
 gboolean ags_functional_test_util_machine_selection_remove_index();
 gboolean ags_functional_test_util_machine_selection_add_index();

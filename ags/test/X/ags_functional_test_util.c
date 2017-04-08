@@ -1609,13 +1609,13 @@ ags_functional_test_util_toolbar_zoom(guint nth_zoom)
 }
 
 gboolean
-ags_functional_test_util_machine_selector_select(guint nth_machine)
+ags_functional_test_util_machine_selector_select(guint nth_index)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_functional_test_util_machine_selection_select(guint nth_machine)
+ags_functional_test_util_machine_selection_select(gchar *machine)
 {
   //TODO:JK: 
 }
@@ -1629,7 +1629,54 @@ ags_functional_test_util_machine_selection_remove_index()
 gboolean
 ags_functional_test_util_machine_selection_add_index()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachineSelector *machine_selector;
+  
+  GtkButton *menu_tool_button;
+  GtkMenu *popup;
+  
+  AgsFunctionalTestUtilContainerTest container_test;
+
+  gboolean success;
+  
+  if(machine_name == NULL){
+    return(FALSE);
+  }
+
+  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
+    return(FALSE);
+  }
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  machine_selector = editor->machine_selector;
+  
+  menu_tool_button = machine_selector->menu_button;
+  popup = machine_selector->popup;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
+
+  if(!success){
+    return(FALSE);
+  }
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  success = ags_functional_test_util_menu_click(popup,
+						"add index\0");
+  
+  ags_functional_test_util_reaction_time_long();
+
+  
+  return(success);
 }
 
 gboolean
@@ -1806,6 +1853,8 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   AgsXorgApplicationContext *xorg_application_context;
   AgsMachine *machine;
 
+  GtkMenu *popup;
+  
   GList *list_start, *list;
   
   gboolean success;
@@ -1829,12 +1878,23 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   }
   
   g_list_free(list_start);
+  
+  gdk_threads_enter();
+
+  popup = machine->popup;
+  
+  gdk_threads_leave();
 
   /* activate hide */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
-  ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_menu_click(machine->popup,
+  if(!success){
+    return(FALSE);
+  }
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  success = ags_functional_test_util_menu_click(popup,
 						"hide\0");
   ags_functional_test_util_reaction_time_long();
 
@@ -1847,6 +1907,8 @@ ags_functional_test_util_machine_show(guint nth_machine)
   AgsXorgApplicationContext *xorg_application_context;
   AgsMachine *machine;
 
+  GtkMenu *popup;
+
   GList *list_start, *list;
   
   gboolean success;
@@ -1871,11 +1933,17 @@ ags_functional_test_util_machine_show(guint nth_machine)
   
   g_list_free(list_start);
 
+  gdk_threads_enter();
+
+  popup = machine->popup;
+  
+  gdk_threads_leave();
+
   /* activate show */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
   ags_functional_test_util_reaction_time_long();
 
-  success = ags_functional_test_util_menu_click(machine->popup,
+  success = ags_functional_test_util_menu_click(popup,
 						"show\0");
   ags_functional_test_util_reaction_time_long();
 
@@ -1888,6 +1956,8 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
   AgsMachine *machine;
+
+  GtkMenu *popup;
 
   GList *list_start, *list;
 
@@ -1920,11 +1990,17 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   container_test.count = g_list_length(list_start) - 1;
 
   g_list_free(list_start);
+
+  gdk_threads_enter();
+
+  popup = machine->popup;
+  
+  gdk_threads_leave();
   
   /* activate destroy */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
 
-  success = ags_functional_test_util_menu_click(machine->popup,
+  success = ags_functional_test_util_menu_click(popup,
 						"destroy\0");
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
