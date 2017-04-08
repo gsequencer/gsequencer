@@ -67,7 +67,9 @@ struct _AgsEditor
   gchar *build_id;
 
   GObject *soundcard;
-
+  
+  GtkHPaned *paned;
+  
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
 

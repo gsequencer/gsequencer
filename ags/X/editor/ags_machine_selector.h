@@ -57,6 +57,8 @@ struct _AgsMachineSelector
   GtkMenu *popup;
   
   GtkWidget *current;
+
+  GtkDialog *machine_selection;
 };
 
 struct _AgsMachineSelectorClass

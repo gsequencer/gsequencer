@@ -82,6 +82,10 @@ gboolean ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *
 								GSList *filename);
 gboolean ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser);
 
+/* UI control */
+gboolean ags_functional_test_util_file_default_window_resize();
+gboolean ags_functional_test_util_file_default_editor_resize();
+
 /* file */
 gboolean ags_functional_test_util_open();
 

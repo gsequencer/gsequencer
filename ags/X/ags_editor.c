@@ -205,7 +205,8 @@ ags_editor_init(AgsEditor *editor)
 		     (GtkWidget *) editor->toolbar,
 		     FALSE, FALSE, 0);
 
-  paned = (GtkHPaned *) gtk_hpaned_new();
+  editor->paned = 
+    paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) editor,
 		     (GtkWidget *) paned,
 		     TRUE, TRUE, 0);

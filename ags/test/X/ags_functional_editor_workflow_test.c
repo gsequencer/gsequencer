@@ -98,6 +98,11 @@ ags_functional_editor_workflow_test_init_suite()
   task_thread = ags_thread_find_type(ags_application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
+  /* window and editor size */
+  ags_functional_test_util_file_default_window_resize();
+
+  ags_functional_test_util_file_default_editor_resize();
+ 
   return(0);
 }
 
@@ -117,16 +122,23 @@ void
 ags_functional_editor_workflow_test_drum()
 {
   AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
   AgsMachine *machine;
-
+  AgsMachineSelector *machine_selector;
+  AgsMachineSelection *machine_selection;
+  
   GList *list_start, *list;
 
+  gchar *machine_str;
+  
   guint nth_machine;
-
   gboolean success;
 
   xorg_application_context = ags_application_context;
-  
+
+  nth_machine = 0;
+
   /* add drum */
   success = ags_functional_test_util_add_machine(NULL,
 						 "Drum");
@@ -157,21 +169,67 @@ ags_functional_editor_workflow_test_drum()
    *  add machine to editor
    */
 
-  nth_machine = 0;
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /* add index and link */
+  success = ags_functional_test_util_machine_selection_add_index();
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_selection_link_index();
+
+  CU_ASSERT(success == TRUE);
+
+  /* select machine */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_selector = editor->machine_selector;
+  machine_selection = machine_selector->machine_selection;
+
+  machine_str = g_strdup_printf("%s: %s\0",
+				G_OBJECT_TYPE_NAME(machine),
+				machine->name);
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_machine_selection_select(machine_str);
+  
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_dialog_ok(machine_selection);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_editor_workflow_test_matrix()
 {
   AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
   AgsMachine *machine;
-
+  AgsMachineSelector *machine_selector;
+  AgsMachineSelection *machine_selection;
+  
   GList *list_start, *list;
+
+  gchar *machine_str;
 
   guint nth_machine;
   gboolean success;
 
   xorg_application_context = ags_application_context;
+
+  nth_machine = 1;
   
   /* add matrix */
   success = ags_functional_test_util_add_machine(NULL,
@@ -203,21 +261,67 @@ ags_functional_editor_workflow_test_matrix()
    *  add machine to editor
    */
 
-  nth_machine = 1;
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /* add index set link */
+  success = ags_functional_test_util_machine_selection_add_index();
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_selection_link_index();
+
+  CU_ASSERT(success == TRUE);
+
+  /* select machine */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_selector = editor->machine_selector;
+  machine_selection = machine_selector->machine_selection;
+
+  machine_str = g_strdup_printf("%s: %s\0",
+				G_OBJECT_TYPE_NAME(machine),
+				machine->name);
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+  
+  success = ags_functional_test_util_machine_selection_select(machine_str);
+  
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_dialog_ok(machine_selection);
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_functional_editor_workflow_test_ffplayer()
 {
   AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
   AgsMachine *machine;
-  
+  AgsMachineSelector *machine_selector;
+  AgsMachineSelection *machine_selection;
+    
   GList *list_start, *list;
+
+  gchar *machine_str;
 
   guint nth_machine;
   gboolean success;
 
   xorg_application_context = ags_application_context;
+
+  nth_machine = 2;
   
   /* add fplayer */
   success = ags_functional_test_util_add_machine(NULL,
@@ -249,7 +353,45 @@ ags_functional_editor_workflow_test_ffplayer()
    *  add machine to editor
    */
 
-  nth_machine = 2;
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /* add index and link */
+  success = ags_functional_test_util_machine_selection_add_index();
+
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_machine_selection_link_index();
+
+  CU_ASSERT(success == TRUE);
+
+  /* select machine */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  machine_selector = editor->machine_selector;
+  machine_selection = machine_selector->machine_selection;
+
+  machine_str = g_strdup_printf("%s: %s\0",
+				G_OBJECT_TYPE_NAME(machine),
+				machine->name);
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  success = ags_functional_test_util_machine_selection_select(machine_str);
+  
+  CU_ASSERT(success == TRUE);
+
+  success = ags_functional_test_util_dialog_ok(machine_selection);
+
+  CU_ASSERT(success == TRUE);
 }
 
 int

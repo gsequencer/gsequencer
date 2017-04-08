@@ -857,6 +857,62 @@ ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser)
 }
 
 gboolean
+ags_functional_test_util_file_default_window_resize()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+
+  pthread_mutex_lock(task_thread->launch_mutex);
+    
+  xorg_application_context = ags_application_context_get_instance();
+  window = xorg_application_context->window;
+
+  gdk_window_move_resize(gtk_widget_get_window(window),
+			 64, 0,
+			 1920 - 128, 1080 - 64);
+    
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_file_default_editor_resize()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+
+  GtkPaned *main_paned;
+  GtkPaned *editor_paned;
+  
+  GdkRectangle allocation;
+  
+  pthread_mutex_lock(task_thread->launch_mutex);
+    
+  xorg_application_context = ags_application_context_get_instance();
+  window = xorg_application_context->window;
+  editor = window->editor;
+
+  main_paned = window->paned;
+  editor_paned = editor->paned;
+
+  gtk_paned_set_position(main_paned,
+			 (1080 - 64) * (2.0 / 3.0));
+
+  gtk_paned_set_position(editor_paned,
+			 (1920 - 128) / 6);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
 ags_functional_test_util_open()
 {
   AgsXorgApplicationContext *xorg_application_context;
@@ -1611,19 +1667,152 @@ ags_functional_test_util_toolbar_zoom(guint nth_zoom)
 gboolean
 ags_functional_test_util_machine_selector_select(guint nth_index)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachineSelector *machine_selector;
+  AgsMachineRadioButton *machine_radio_button;
+  
+  GList *list_start, *list;
+  
+  gboolean success;
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  machine_selector = editor->machine_selector;
+  
+  list_start = gtk_container_get_children(machine_selector);
+
+  gdk_threads_leave();
+
+  list = g_list_nth(list_start,
+		    nth_index + 1);
+  
+  if(list == NULL){
+    return(FALSE);
+  }
+
+  machine_radio_button = list->data;
+  g_list_free(list_start);
+  
+  success = ags_functional_test_util_button_click(machine_radio_button);
+
+  ags_functional_test_util_reaction_time_long();  
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_machine_selection_select(gchar *machine)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachineSelector *machine_selector;
+  AgsMachineSelection *machine_selection;
+
+  GtkRadioButton *radio_button;
+  
+  GList *list_start, *list;
+  
+  gboolean success;
+  
+  if(machine == NULL){
+    return(FALSE);
+  }
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  machine_selector = editor->machine_selector;
+  machine_selection = machine_selector->machine_selection;
+
+  list = 
+    list_start = gtk_container_get_children(GTK_DIALOG(machine_selection)->vbox);
+
+  success = FALSE;
+
+  while(list != NULL){
+    if(GTK_IS_RADIO_BUTTON(list->data)){
+      gchar *str;
+
+      str = gtk_button_get_label(GTK_BUTTON(list->data));
+    
+      if(!g_ascii_strcasecmp(machine,
+			     str)){
+	radio_button = list->data;
+	
+	success = TRUE;
+
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+  
+  gdk_threads_leave();
+
+  g_list_free(list_start);
+
+  if(!success){
+    return(FALSE);
+  }
+  
+  success = ags_functional_test_util_button_click(radio_button);
+
+  ags_functional_test_util_reaction_time_long();  
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_machine_selection_remove_index()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachineSelector *machine_selector;
+  
+  GtkButton *menu_tool_button;
+  GtkMenu *popup;
+  
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  machine_selector = editor->machine_selector;
+  
+  menu_tool_button = machine_selector->menu_button;
+  popup = machine_selector->popup;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
+
+  if(!success){
+    return(FALSE);
+  }
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  success = ags_functional_test_util_menu_click(popup,
+						"remove index\0");
+  
+  ags_functional_test_util_reaction_time_long();
+
+  return(success);
 }
 
 gboolean
@@ -1637,18 +1826,8 @@ ags_functional_test_util_machine_selection_add_index()
   GtkButton *menu_tool_button;
   GtkMenu *popup;
   
-  AgsFunctionalTestUtilContainerTest container_test;
-
   gboolean success;
   
-  if(machine_name == NULL){
-    return(FALSE);
-  }
-
-  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
-    return(FALSE);
-  }
-
   gdk_threads_enter();
   
   xorg_application_context = ags_application_context_get_instance();
@@ -1675,20 +1854,91 @@ ags_functional_test_util_machine_selection_add_index()
   
   ags_functional_test_util_reaction_time_long();
 
-  
   return(success);
 }
 
 gboolean
 ags_functional_test_util_machine_selection_link_index()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachineSelector *machine_selector;
+  
+  GtkButton *menu_tool_button;
+  GtkMenu *popup;
+  
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  machine_selector = editor->machine_selector;
+  
+  menu_tool_button = machine_selector->menu_button;
+  popup = machine_selector->popup;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
+
+  if(!success){
+    return(FALSE);
+  }
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  success = ags_functional_test_util_menu_click(popup,
+						"link index\0");
+  
+  ags_functional_test_util_reaction_time_long();
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_machine_selection_reverse_mapping()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachineSelector *machine_selector;
+  
+  GtkButton *menu_tool_button;
+  GtkMenu *popup;
+  
+  gboolean success;
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  machine_selector = editor->machine_selector;
+  
+  menu_tool_button = machine_selector->menu_button;
+  popup = machine_selector->popup;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
+
+  if(!success){
+    return(FALSE);
+  }
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  success = ags_functional_test_util_menu_click(popup,
+						"reverse mapping\0");
+  
+  ags_functional_test_util_reaction_time_long();
+
+  return(success);
 }
 
 gboolean
