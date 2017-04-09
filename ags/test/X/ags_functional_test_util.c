@@ -522,6 +522,76 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 }
 
 gboolean
+ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
+					 guint nth)
+{
+  GtkWidget *widget;
+
+  GdkWindow *window;
+  
+  gint x, y;
+  gint origin_x, origin_y;	
+  
+  if(combo_box == NULL ||
+     !GTK_IS_COMBO_BOX(combo_box)){
+    return(FALSE);
+  }
+
+  widget = combo_box;
+  
+  /*  */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  window = gtk_widget_get_window(widget);
+
+  x = widget->allocation.x;
+  y = widget->allocation.y;
+
+  gdk_window_get_origin(window, &origin_x, &origin_y);
+
+  gdk_display_warp_pointer(gtk_widget_get_display(widget),
+			   gtk_widget_get_screen(widget),
+			   origin_x + x + 15, origin_y + y + 5);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /*
+  ags_functional_test_util_reaction_time();
+	
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_PRESS);
+
+
+  ags_functional_test_util_reaction_time();
+
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_RELEASE);
+  	
+  ags_functional_test_util_reaction_time();
+  */
+  
+  /*  */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  gtk_combo_box_set_active(combo_box,
+			   nth);
+	
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  ags_functional_test_util_reaction_time_long();
+  
+  return(TRUE);
+}
+
+gboolean
 ags_functional_test_util_button_click(GtkButton *button)
 {
   GtkWidget *widget;
@@ -1613,55 +1683,263 @@ ags_functional_test_util_navigation_exclude_sequencers()
 gboolean
 ags_functional_test_util_toolbar_cursor_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *position;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  position = toolbar->position;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(position);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_edit_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *edit;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  edit = toolbar->edit;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(edit);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_delete_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *clear;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  clear = toolbar->clear;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(clear);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_select_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *select;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  select = toolbar->select;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(select);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_invert_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *invert;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  invert = toolbar->invert;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(invert);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_paste_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *paste;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  paste = toolbar->paste;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(paste);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_copy_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *copy;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  copy = toolbar->copy;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(copy);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_cut_click()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkButton *cut;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  cut = toolbar->cut;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_button_click(cut);
+
+  return(success);
 }
 
 gboolean
 ags_functional_test_util_toolbar_zoom(guint nth_zoom)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  
+  GtkComboBox *zoom;
+
+  gboolean success;
+  
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  editor = window->editor;
+  toolbar = editor->toolbar;
+
+  zoom = toolbar->zoom;
+  
+  gdk_threads_leave();
+
+  success = ags_functional_test_util_combo_box_click(zoom,
+						     nth_zoom);
+
+  return(success);
 }
 
 gboolean
@@ -1948,48 +2226,118 @@ ags_functional_test_util_machine_selection_shift_piano(guint nth_shift)
 }
 
 gboolean
-ags_functional_test_util_pattern_edit_delete_point(guint nth_index,
-						   guint x,
+ags_functional_test_util_pattern_edit_delete_point(guint x,
 						   guint y)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_functional_test_util_pattern_edit_add_point(guint nth_index,
-						guint x,
+ags_functional_test_util_pattern_edit_add_point(guint x,
 						guint y)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+
+  GtkWidget *widget;
+
+  GdkDisplay *display;
+  GdkScreen *screen;
+  GdkWindow *window;
+
+  gdouble zoom;
+  guint history;
+  guint origin_x, origin_y;
+  guint widget_x, widget_y;
+  gboolean success;
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  editor = xorg_application_context->window->editor;  
+  toolbar = editor->toolbar;
+
+  widget = editor->current_edit_widget;
+
+  if(widget == NULL){
+    gdk_threads_leave();
+
+    return(FALSE);
+  }
+  
+  display = gtk_widget_get_display(widget);
+  screen = gtk_widget_get_screen(widget);
+  
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(toolbar->zoom));
+  zoom = exp2((double) history - 2.0);
+  
+  gdk_threads_leave();
+
+  /*  */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  window = gtk_widget_get_window(widget);
+
+  widget_x = widget->allocation.x;
+  widget_y = widget->allocation.y;
+
+  gdk_window_get_origin(window, &origin_x, &origin_y);
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /*  */
+  gdk_display_warp_pointer(display,
+			   screen,
+			   origin_x + widget_x + (x * 64 / zoom) + 8, origin_y + widget_y + 7);
+
+  ags_functional_test_util_reaction_time();
+
+  gdk_test_simulate_button(window,
+			   widget_x + (x * 64 / zoom) + 8,
+			   widget_y + 7,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_PRESS);
+
+  ags_functional_test_util_reaction_time();
+
+  gdk_test_simulate_button(window,
+			   widget_x + (x * 64 / zoom) + 8,
+			   widget_y + 7,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_RELEASE);
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  return(TRUE);
 }
 
 gboolean
-ags_functional_test_util_pattern_edit_select_region(guint nth_index,
-						    guint x0, guint x1,
+ags_functional_test_util_pattern_edit_select_region(guint x0, guint x1,
 						    guint y0, guint y1)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_functional_test_util_note_edit_delete_point(guint nth_index,
-						guint x,
+ags_functional_test_util_note_edit_delete_point(guint x,
 						guint y)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_functional_test_util_note_edit_add_point(guint nth_index,
-					     guint x0, guint x1,
+ags_functional_test_util_note_edit_add_point(guint x0, guint x1,
 					     guint y)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_functional_test_util_note_edit_select_region(guint nth_index,
-						 guint x0, guint x1,
+ags_functional_test_util_note_edit_select_region(guint x0, guint x1,
 						 guint y0, guint y1)
 {
   //TODO:JK: 

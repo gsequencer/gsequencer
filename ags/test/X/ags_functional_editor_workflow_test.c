@@ -39,6 +39,8 @@ int ags_functional_editor_workflow_test_clean_suite();
 void ags_functional_editor_workflow_test_drum();
 void ags_functional_editor_workflow_test_matrix();
 void ags_functional_editor_workflow_test_ffplayer();
+void ags_functional_editor_workflow_test_edit_all();
+void ags_functional_editor_workflow_test_fill_all();
 
 #define AGS_FUNCTIONAL_EDITOR_WORKFLOW_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -394,6 +396,52 @@ ags_functional_editor_workflow_test_ffplayer()
   CU_ASSERT(success == TRUE);
 }
 
+void
+ags_functional_editor_workflow_test_edit_all()
+{
+  guint nth_machine;
+  guint i;
+  gboolean success;
+
+  /*
+   * edit drum
+   */
+  nth_machine = 0;
+  
+  /* set zoom */
+  success = ags_functional_test_util_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+
+  CU_ASSERT(success == TRUE);
+
+  /* edit tool */
+  success = ags_functional_test_util_toolbar_edit_click();
+
+  CU_ASSERT(success == TRUE);
+
+  /* select index */
+  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* add drum kick pattern 2/4 */
+  success = TRUE;
+  
+  for(i = 0; i < 64 && success;){
+    success = ags_functional_test_util_pattern_edit_add_point(i, 0);
+
+    i += 8;
+  }
+
+  CU_ASSERT(success == TRUE);
+}
+
+void
+ags_functional_editor_workflow_test_fill_all()
+{
+  guint nth_machine;
+
+}
+
 int
 main(int argc, char **argv)
 {
@@ -522,7 +570,9 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsDrum\0", ags_functional_editor_workflow_test_drum) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsMatrix\0", ags_functional_editor_workflow_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsFFPlayer\0", ags_functional_editor_workflow_test_ffplayer) == NULL)){
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsFFPlayer\0", ags_functional_editor_workflow_test_ffplayer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow edit all\0", ags_functional_editor_workflow_test_edit_all) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow fill all\0", ags_functional_editor_workflow_test_fill_all) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

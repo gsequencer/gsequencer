@@ -31,6 +31,14 @@
 #define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_BULK_INPUT_TAB (3)
 #define AGS_FUNCTIONAL_TEST_UTIL_MACHINE_PROPERTIES_RESIZE_TAB (4)
 
+#define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_4_TO_1 (0)
+#define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_2_TO_1 (1)
+#define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_1 (2)
+#define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_2 (3)
+#define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4 (4)
+#define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8 (5)
+#define AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_16 (6)
+
 #define AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(f) ((AgsFunctionalTestUtilIdleCondition)(f))
 
 typedef struct _AgsFunctionalTestUtilContainerTest AgsFunctionalTestUtilContainerTest;
@@ -63,6 +71,9 @@ GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,
 gboolean ags_functional_test_util_menu_bar_click(gchar *item_label);
 gboolean ags_functional_test_util_menu_click(GtkMenu *menu,
 					     gchar *item_label);
+
+gboolean ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
+						  guint nth);
 
 gboolean ags_functional_test_util_button_click(GtkButton *button);
 
@@ -173,25 +184,19 @@ gboolean ags_functional_test_util_machine_selection_reverse_mapping();
 gboolean ags_functional_test_util_machine_selection_shift_piano(guint nth_shift);
 
 /* pattern edit */
-gboolean ags_functional_test_util_pattern_edit_delete_point(guint nth_index,
-							    guint x,
+gboolean ags_functional_test_util_pattern_edit_delete_point(guint x,
 							    guint y);
-gboolean ags_functional_test_util_pattern_edit_add_point(guint nth_index,
-							 guint x,
+gboolean ags_functional_test_util_pattern_edit_add_point(guint x,
 							 guint y);
-gboolean ags_functional_test_util_pattern_edit_select_region(guint nth_index,
-							     guint x0, guint x1,
+gboolean ags_functional_test_util_pattern_edit_select_region(guint x0, guint x1,
 							     guint y0, guint y1);
 
 /* note edit */
-gboolean ags_functional_test_util_note_edit_delete_point(guint nth_index,
-							 guint x,
+gboolean ags_functional_test_util_note_edit_delete_point(guint x,
 							 guint y);
-gboolean ags_functional_test_util_note_edit_add_point(guint nth_index,
-						      guint x0, guint x1,
+gboolean ags_functional_test_util_note_edit_add_point(guint x0, guint x1,
 						      guint y);
-gboolean ags_functional_test_util_note_edit_select_region(guint nth_index,
-							  guint x0, guint x1,
+gboolean ags_functional_test_util_note_edit_select_region(guint x0, guint x1,
 							  guint y0, guint y1);
 
 /* automation toolbar */
