@@ -432,6 +432,12 @@ ags_functional_editor_workflow_test_edit_all()
     i += 8;
   }
 
+  for(i = 4; i < 64 && success;){
+    success = ags_functional_test_util_pattern_edit_add_point(i, 1);
+
+    i += 8;
+  }
+
   CU_ASSERT(success == TRUE);
 }
 

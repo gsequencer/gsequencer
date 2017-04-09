@@ -2239,7 +2239,8 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   AgsXorgApplicationContext *xorg_application_context;
   AgsEditor *editor;
   AgsToolbar *toolbar;
-
+  AgsNoteEdit *pattern_edit;
+  
   GtkWidget *widget;
 
   GdkDisplay *display;
@@ -2248,6 +2249,7 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
 
   gdouble zoom;
   guint history;
+  guint height;
   guint origin_x, origin_y;
   guint widget_x, widget_y;
   gboolean success;
@@ -2259,13 +2261,15 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   editor = xorg_application_context->window->editor;  
   toolbar = editor->toolbar;
 
-  widget = editor->current_edit_widget;
-
-  if(widget == NULL){
+  if(editor->current_edit_widget == NULL ||
+     !AGS_PATTERN_EDIT(editor->current_edit_widget)){
     gdk_threads_leave();
 
     return(FALSE);
   }
+  
+  pattern_edit = editor->current_edit_widget;
+  widget = pattern_edit->drawing_area;
   
   display = gtk_widget_get_display(widget);
   screen = gtk_widget_get_screen(widget);
@@ -2283,6 +2287,8 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   widget_x = widget->allocation.x;
   widget_y = widget->allocation.y;
 
+  height = widget->allocation.height;
+  
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
@@ -2290,13 +2296,13 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   /*  */
   gdk_display_warp_pointer(display,
 			   screen,
-			   origin_x + widget_x + (x * 64 / zoom) + 8, origin_y + widget_y + 7);
+			   origin_x + (x * 64 / zoom) + 8, origin_y + (y * 14) + 7);
 
   ags_functional_test_util_reaction_time();
 
   gdk_test_simulate_button(window,
-			   widget_x + (x * 64 / zoom) + 8,
-			   widget_y + 7,
+			   (x * 64 / zoom) + 8,
+			   (y * 14) + 7,
 			   1,
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_PRESS);
@@ -2304,8 +2310,8 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   ags_functional_test_util_reaction_time();
 
   gdk_test_simulate_button(window,
-			   widget_x + (x * 64 / zoom) + 8,
-			   widget_y + 7,
+			   (x * 64 / zoom) + 8,
+			   (y * 14) + 7,
 			   1,
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_RELEASE);
