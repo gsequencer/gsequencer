@@ -2242,7 +2242,10 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   AgsNoteEdit *pattern_edit;
   
   GtkWidget *widget;
-
+  GtkScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkAdjustment *adjustment;
+  
   GdkDisplay *display;
   GdkScreen *screen;
   GdkWindow *window;
@@ -2282,6 +2285,9 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   /*  */
   pthread_mutex_lock(task_thread->launch_mutex);
 
+  hscrollbar = pattern_edit->hscrollbar;
+  vscrollbar = pattern_edit->vscrollbar;
+  
   window = gtk_widget_get_window(widget);
 
   widget_x = widget->allocation.x;
@@ -2291,18 +2297,55 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
+  /* make visible */
+  adjustment = GTK_RANGE(hscrollbar)->adjustment;
+  
+  if((x * 64 / zoom) * (adjustment->upper / (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom)) > ((adjustment->value / adjustment->upper) * (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom)) + ((4.0 * adjustment->page_increment / adjustment->upper) * (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom))){
+    gtk_adjustment_set_value(adjustment,
+			     (x * 64 / zoom) * (adjustment->upper / (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom)));
+
+    ags_functional_test_util_reaction_time_long();
+  }else if((x * 64 / zoom) * (adjustment->upper / (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom)) < ((adjustment->value / adjustment->upper) * (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom))){
+    gtk_adjustment_set_value(adjustment,
+			     (x * 64 / zoom) * (adjustment->upper / (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom)));
+
+    ags_functional_test_util_reaction_time_long();
+  }
+
+  x = (x * 64 / zoom) - (((adjustment->value / adjustment->upper) * (AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64 * zoom)));
+
+  if(height < pattern_edit->map_height){
+    adjustment = GTK_RANGE(vscrollbar)->adjustment;
+  
+    if((y * 14) / (pattern_edit->map_height) > adjustment->value / adjustment->upper + (8.0 * adjustment->value / adjustment->upper)){
+      gtk_adjustment_set_value(adjustment,
+			       (y * 14) * adjustment->upper / (pattern_edit->map_height));
+
+      ags_functional_test_util_reaction_time_long();
+    }else if((y * 14) / (pattern_edit->map_height) < adjustment->value / adjustment->upper){
+      gtk_adjustment_set_value(adjustment,
+			       (y * 14) * adjustment->upper / (pattern_edit->map_height));
+
+      ags_functional_test_util_reaction_time_long();
+    }
+
+    y = (y * 14) - ((adjustment->value / adjustment->upper) * (pattern_edit->map_height));
+  }else{
+    y = y * 14;
+  }
+  
   pthread_mutex_unlock(task_thread->launch_mutex);
 
   /*  */
   gdk_display_warp_pointer(display,
 			   screen,
-			   origin_x + (x * 64 / zoom) + 8, origin_y + (y * 14) + 7);
+			   origin_x + x + 8, origin_y + y + 7);
 
   ags_functional_test_util_reaction_time();
 
   gdk_test_simulate_button(window,
-			   (x * 64 / zoom) + 8,
-			   (y * 14) + 7,
+			   x + 8,
+			   y + 7,
 			   1,
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_PRESS);
@@ -2310,8 +2353,8 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   ags_functional_test_util_reaction_time();
 
   gdk_test_simulate_button(window,
-			   (x * 64 / zoom) + 8,
-			   (y * 14) + 7,
+			   x + 8,
+			   y + 7,
 			   1,
 			   GDK_BUTTON1_MASK,
 			   GDK_BUTTON_RELEASE);
