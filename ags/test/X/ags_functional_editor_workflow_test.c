@@ -400,12 +400,13 @@ void
 ags_functional_editor_workflow_test_edit_all()
 {
   guint nth_machine;
-  guint i;
+  guint i, j;
   gboolean success;
 
   /*
    * edit drum
    */
+
   nth_machine = 0;
   
   /* set zoom */
@@ -435,6 +436,71 @@ ags_functional_editor_workflow_test_edit_all()
   for(i = 4; i < 64 && success;){
     success = ags_functional_test_util_pattern_edit_add_point(i, 1);
 
+    i += 8;
+  }
+
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * edit matrix
+   */
+
+  nth_machine = 1;
+
+  /* select index */
+  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* set zoom */
+  success = ags_functional_test_util_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8);
+
+  CU_ASSERT(success == TRUE);
+
+  /* add matrix baseline pattern 8/8 */
+  success = TRUE;
+  
+  for(i = 0; i < 32 && success;){
+    for(j = 0; j < 56 && success;){
+      success = ags_functional_test_util_pattern_edit_add_point(i * 8 + j, 15);
+
+      j += 8;
+    }
+
+    if(!success){
+      break;
+    }
+    
+    success = ags_functional_test_util_pattern_edit_add_point(i * 8 + 56, 14);
+    
+    i += 8;
+  }
+
+  CU_ASSERT(success == TRUE);
+
+  /*
+   * edit ffplayer
+   */
+
+  nth_machine = 2;
+
+  /* select index */
+  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  
+  CU_ASSERT(success == TRUE);
+
+  /* set zoom */
+  success = ags_functional_test_util_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+
+  CU_ASSERT(success == TRUE);
+
+  /* add matrix baseline pattern 4/4 */
+  success = TRUE;
+  
+  for(i = 0; i < 64 && success;){
+    success = ags_functional_test_util_note_edit_add_point(i, i + 1,
+							   rand() % 10);
+    
     i += 8;
   }
 

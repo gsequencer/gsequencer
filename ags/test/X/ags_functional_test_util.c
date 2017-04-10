@@ -2317,14 +2317,14 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   if(height < pattern_edit->map_height){
     adjustment = GTK_RANGE(vscrollbar)->adjustment;
   
-    if((y * 14) / (pattern_edit->map_height) > adjustment->value / adjustment->upper + (8.0 * adjustment->value / adjustment->upper)){
+    if((y * 14) > (adjustment->value / adjustment->upper) * (pattern_edit->map_height) + (8 * 14)){
       gtk_adjustment_set_value(adjustment,
-			       (y * 14) * adjustment->upper / (pattern_edit->map_height));
+			       (y * 14) * (adjustment->upper / pattern_edit->map_height));
 
       ags_functional_test_util_reaction_time_long();
-    }else if((y * 14) / (pattern_edit->map_height) < adjustment->value / adjustment->upper){
+    }else if((y * 14) < (adjustment->value / adjustment->upper) * (pattern_edit->map_height)){
       gtk_adjustment_set_value(adjustment,
-			       (y * 14) * adjustment->upper / (pattern_edit->map_height));
+			       (y * 14) * (adjustment->upper / pattern_edit->map_height));
 
       ags_functional_test_util_reaction_time_long();
     }
@@ -2382,7 +2382,139 @@ gboolean
 ags_functional_test_util_note_edit_add_point(guint x0, guint x1,
 					     guint y)
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  AgsNoteEdit *note_edit;
+  
+  GtkWidget *widget;
+  GtkScrollbar *hscrollbar;
+  GtkScrollbar *vscrollbar;
+  GtkAdjustment *adjustment;
+  
+  GdkDisplay *display;
+  GdkScreen *screen;
+  GdkWindow *window;
+
+  gdouble zoom;
+  guint history;
+  guint height;
+  guint origin_x, origin_y;
+  guint widget_x, widget_y;
+  gboolean success;
+
+  gdk_threads_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  editor = xorg_application_context->window->editor;  
+  toolbar = editor->toolbar;
+
+  if(editor->current_edit_widget == NULL ||
+     !AGS_NOTE_EDIT(editor->current_edit_widget)){
+    gdk_threads_leave();
+
+    return(FALSE);
+  }
+  
+  note_edit = editor->current_edit_widget;
+  widget = note_edit->drawing_area;
+  
+  display = gtk_widget_get_display(widget);
+  screen = gtk_widget_get_screen(widget);
+  
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(toolbar->zoom));
+  zoom = exp2((double) history - 2.0);
+  
+  gdk_threads_leave();
+
+  /*  */
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  hscrollbar = note_edit->hscrollbar;
+  vscrollbar = note_edit->vscrollbar;
+  
+  window = gtk_widget_get_window(widget);
+
+  widget_x = widget->allocation.x;
+  widget_y = widget->allocation.y;
+
+  height = widget->allocation.height;
+  
+  gdk_window_get_origin(window, &origin_x, &origin_y);
+
+  /* make visible */
+  adjustment = GTK_RANGE(hscrollbar)->adjustment;
+  
+  if((x0 * 64 / zoom) * (adjustment->upper / (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom)) > ((adjustment->value / adjustment->upper) * (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom)) + ((4.0 * adjustment->page_increment / adjustment->upper) * (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom))){
+    gtk_adjustment_set_value(adjustment,
+			     (x0 * 64 / zoom) * (adjustment->upper / (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom)));
+
+    ags_functional_test_util_reaction_time_long();
+  }else if((x0 * 64 / zoom) * (adjustment->upper / (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom)) < ((adjustment->value / adjustment->upper) * (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom))){
+    gtk_adjustment_set_value(adjustment,
+			     (x0 * 64 / zoom) * (adjustment->upper / (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom)));
+
+    ags_functional_test_util_reaction_time_long();
+  }
+
+  x0 = (x0 * 64 / zoom) - (((adjustment->value / adjustment->upper) * (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom)));
+  x1 = (x1 * 64 / zoom) - (((adjustment->value / adjustment->upper) * (AGS_NOTE_EDIT_MAX_CONTROLS * 16 * 64 * zoom)));
+
+  if(height < note_edit->map_height){
+    adjustment = GTK_RANGE(vscrollbar)->adjustment;
+  
+    if((y * 14) > (adjustment->value / adjustment->upper) * (note_edit->map_height) + (8 * 14)){
+      gtk_adjustment_set_value(adjustment,
+			       (y * 14) * (adjustment->upper / note_edit->map_height));
+
+      ags_functional_test_util_reaction_time_long();
+    }else if((y * 14) < (adjustment->value / adjustment->upper) * (note_edit->map_height)){
+      gtk_adjustment_set_value(adjustment,
+			       (y * 14) * (adjustment->upper / note_edit->map_height));
+
+      ags_functional_test_util_reaction_time_long();
+    }
+
+    y = (y * 14) - ((adjustment->value / adjustment->upper) * (note_edit->map_height));
+  }else{
+    y = y * 14;
+  }
+  
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  /*  */
+  gdk_display_warp_pointer(display,
+			   screen,
+			   origin_x + x0 + 8, origin_y + y + 7);
+
+  ags_functional_test_util_reaction_time();
+
+  gdk_test_simulate_button(window,
+			   x0 + 8,
+			   y + 7,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_PRESS);
+
+  ags_functional_test_util_reaction_time();
+
+  gdk_display_warp_pointer(display,
+			   screen,
+			   origin_x + x1 + 8, origin_y + y + 7);
+
+  ags_functional_test_util_reaction_time();
+
+  gdk_test_simulate_button(window,
+			   x1 + 8,
+			   y + 7,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_RELEASE);
+  
+  ags_functional_test_util_reaction_time_long();
+  
+  return(TRUE);
 }
 
 gboolean
