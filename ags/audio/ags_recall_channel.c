@@ -576,7 +576,7 @@ ags_recall_channel_automate(AgsRecall *recall)
 			 &loop_left, &loop_right,
 			 &do_loop);
 
-  return_prev_on_failure = FALSE;
+  return_prev_on_failure = TRUE;
   
   if(do_loop &&
      loop_left <= note_offset){

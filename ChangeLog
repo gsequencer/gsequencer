@@ -1,3 +1,9 @@
+ags (0.7.122.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation to use previous value if range doesn't match
+	* added functional test to check editor workflow
+
 ags (0.7.122.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
