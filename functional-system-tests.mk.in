@@ -556,8 +556,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # libadd and ldadd
-libgsequencer_check_system_test_LIBADD = -L$(libdir) -lags -lags_audio -lags_gui -L$(libdir)/gsequencer/ -lgsequencer -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-gsequencer_check_system_functional_test_LDADD = -lags -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer libgsequencer_check_system_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libgsequencer_check_system_test_LIBADD = -L$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(libdir)/gsequencer/ -lgsequencer -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+gsequencer_check_system_functional_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer libgsequencer_check_system_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 noinst_LTLIBRARIES = libgsequencer_check_system_test.la
 
 # functional system tests - edit target

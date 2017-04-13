@@ -1,3 +1,8 @@
+ags (0.7.122.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed LIBADD nad LDADD of GSequencer system check automake file
+
 ags (0.7.122.21)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
