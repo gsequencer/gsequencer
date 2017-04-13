@@ -429,7 +429,7 @@ ags_route_dssi_audio_run_dispose(GObject *gobject)
   }
 
   /* call parent */
-  G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->dispose(gobject);
 }
 
 void

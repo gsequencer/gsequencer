@@ -1,3 +1,10 @@
+ags (0.7.122.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing ags_route_lv2_audio_run_dispose()
+	* fixed in ags-route-dssi use of parent ::finalize() during ::dispose()
+	* fixed switch buffer flag to be done during poll MIDI device
+
 ags (0.7.122.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
