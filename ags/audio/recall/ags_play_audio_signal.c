@@ -277,6 +277,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     pthread_mutex_unlock(soundcard_mutex);
 
     ags_recall_done(recall);
+  
+    ags_recycling_remove_audio_signal(source->recycling,
+				      source);
+    g_object_unref(source);
 
     return;
   }

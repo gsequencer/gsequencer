@@ -29,9 +29,9 @@
 #include <ags/thread/ags_task.h>
 #include <ags/thread/ags_task_completion.h>
 
-int ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad);
-int ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad);
-int ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad);
+void ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad);
+void ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad);
+void ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad);
 
 void ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
 				     AgsPad *pad);

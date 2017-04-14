@@ -20,7 +20,10 @@
 #ifndef __AGS_AUDIO_H__
 #define __AGS_AUDIO_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
@@ -49,6 +52,7 @@ typedef enum{
   AGS_AUDIO_RUNNING                     = 1 << 10,
   AGS_AUDIO_PLAYING                     = 1 << 11,
   AGS_AUDIO_CONNECTED                   = 1 << 12,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 13,
 }AgsAudioFlags;
 
 struct _AgsAudio

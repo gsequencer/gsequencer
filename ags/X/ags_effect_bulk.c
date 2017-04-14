@@ -616,6 +616,9 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
     return;
   }
 
+  effect_bulk->flags |= AGS_EFFECT_BULK_CONNECTED;
+  
+  /*  */
   g_signal_connect(G_OBJECT(effect_bulk->add), "clicked\0",
 		   G_CALLBACK(ags_effect_bulk_add_callback), effect_bulk);
 
@@ -654,13 +657,37 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 {
   AgsEffectBulk *effect_bulk;
 
+  GList *list, *list_start;
+
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
   if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) == 0){
     return;
   }
 
+  effect_bulk->flags &= (~AGS_EFFECT_BULK_CONNECTED);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
+
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+
+  while(list != NULL){
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
   //TODO:JK: implement me
+
+  if(effect_bulk->audio != NULL){
+    g_signal_handlers_disconnect_by_data(effect_bulk->audio,
+					 effect_bulk);
+  }  
 }
 
 gchar*
@@ -1004,17 +1031,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-
-      /* recall handler of output port */
-      if(has_output_port){
-	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-	recall_handler->signal_name = "run-post\0";
-	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
-	recall_handler->data = (gpointer) effect_bulk;
-
-	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
-      }
       
       /* ladspa recall */
       recall_container = ags_recall_container_new();
@@ -1071,17 +1087,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-
-      /* recall handler of output port */
-      if(has_output_port){
-	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-	recall_handler->signal_name = "run-post\0";
-	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
-	recall_handler->data = (gpointer) effect_bulk;
-
-	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
-      }
       
       /* iterate */
       pthread_mutex_lock(channel_mutex);
@@ -1495,18 +1500,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-      
-      /* recall handler of output port */
-      if(has_output_port){
-	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-	recall_handler->signal_name = "run-post\0";
-	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
-	recall_handler->data = (gpointer) effect_bulk;
-
-	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
-      }
-      
+            
       /* dssi recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
@@ -1569,17 +1563,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
       
-      /* recall handler of output port */
-      if(has_output_port){
-	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-	recall_handler->signal_name = "run-post\0";
-	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
-	recall_handler->data = (gpointer) effect_bulk;
-
-	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
-      }
-
       /* iterate */
       pthread_mutex_lock(channel_mutex);
       
@@ -1999,17 +1982,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
-      /* recall handler of output port */
-      if(has_output_port){
-	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-	recall_handler->signal_name = "run-post\0";
-	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
-	recall_handler->data = (gpointer) effect_bulk;
-
-	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
-      }
-
       /* lv2 recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
@@ -2073,17 +2045,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-
-      /* recall handler of output port */
-      if(has_output_port){
-	recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-	recall_handler->signal_name = "run-post\0";
-	recall_handler->callback = G_CALLBACK(ags_effect_bulk_output_port_run_post_callback);
-	recall_handler->data = (gpointer) effect_bulk;
-
-	ags_recall_add_handler(AGS_RECALL(recall_channel_run_dummy), recall_handler);
-      }
 
       /* iterate */
       pthread_mutex_lock(channel_mutex);

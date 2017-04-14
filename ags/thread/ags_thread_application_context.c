@@ -57,6 +57,9 @@ void ags_thread_application_context_disconnect(AgsConnectable *connectable);
 AgsThread* ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_thread_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+GList* ags_thread_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+void ags_thread_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					       GList *worker);
 void ags_thread_application_context_finalize(GObject *gobject);
 
 void ags_thread_application_context_load_config(AgsApplicationContext *application_context);
@@ -206,6 +209,8 @@ ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrenc
   concurrency_provider->get_main_loop = ags_thread_application_context_get_main_loop;
   concurrency_provider->get_task_thread = ags_thread_application_context_get_task_thread;
   concurrency_provider->get_thread_pool = ags_thread_application_context_get_thread_pool;
+  concurrency_provider->get_worker = ags_thread_application_context_get_worker;
+  concurrency_provider->set_worker = ags_thread_application_context_set_worker;
 }
 
 void
@@ -236,7 +241,10 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
 
   /* AgsAutosaveThread */
   thread_application_context->autosave_thread = NULL;
-  
+
+  /* AgsWorkerThread */
+  thread_application_context->worker = NULL;
+
   /* AgsThreadPool */
   thread_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread)->thread_pool;
 }
@@ -377,6 +385,19 @@ AgsThreadPool*
 ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
   return((AgsThreadPool *) AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+}
+
+GList*
+ags_thread_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker);
+}
+
+void
+ags_thread_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					  GList *worker)
+{
+  AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
 }
 
 void

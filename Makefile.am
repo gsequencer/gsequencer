@@ -12,8 +12,10 @@ AM_CPPFLAGS = -std=gnu99 -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR
 CFLAGS = @CFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
+
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@
 gsequencer_LDFLAGS = @GSEQUENCER_LDFLAGS@
+
 midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@
 midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@
 
@@ -30,7 +32,11 @@ bin_PROGRAMS = gsequencer midi2xml
 libgsequencerdir = $(libdir)/gsequencer
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
-EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1
+EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1 ags_functional_note_edit_test.xml
+
+EXTRA_DIST += \
+	functional-system-tests.mk.am \
+	functional-system-tests.mk.in
 
 EXTRA_DIST += \
 	docs/reference/libags/libags-sections.txt \
@@ -42,7 +48,7 @@ EXTRA_DIST += \
 
 man1_MANS = gsequencer.1 midi2xml.1
 
-CLEANFILES = 
+CLEANFILES = functional-system-tests.mk
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -187,151 +193,66 @@ EXTRA_DIST += \
 # libraries and gsequencer
 libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
 libags_la_HEADERS_0 = ags/libags.h $(libags_h_sources) $(libags_util_h_sources) $(libags_object_h_sources) $(libags_file_h_sources) $(libags_file_task_h_sources)
+
 libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
 libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_sources) $(libags_thread_task_h_sources)
+
 libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources)
+
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_client_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
 libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_client_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
+
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
-# libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-# libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
+
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
+libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags.so -pthread
+libags_la_LIBADD = -ldl -lm $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
 
 # library libags-thread
 libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_thread.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-libags_thread_la_LIBADD = libags.la
+libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_thread.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags_thread.so -pthread
+libags_thread_la_LIBADD = libags.la -ldl -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-server
 libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_server.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-libags_server_la_LIBADD = libags_thread.la libags.la
+libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_server.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags_server.so -pthread
+libags_server_la_LIBADD = libags_thread.la libags.la -ldl -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-audio
 libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 0:7:0 -shared -fPIC -soname -ldl -lm -pthread $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la
+libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 0:7:0 -shared -fPIC -soname,libags_audio.so -pthread 
+libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -ldl -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # library libags-gui
 libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags_gui.so -pthread
+libags_gui_la_LIBADD = -ldl -lm $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 # library libgsequencer
-# libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(JACK_CFLAGS)
-# libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
-# libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(JACK_CFLAGS)
-libgsequencer_la_LDFLAGS =  $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
-libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname,libgsequencer.so -pthread
+libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
 
-# static gsequencer - for testing
+# gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 
 gsequencer_CFLAGS += $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)
-gsequencer_LDFLAGS += -ldl -lm -lrt -pthread -lX11 $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
-gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+gsequencer_LDFLAGS += -pthread
+gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm -lrt -lX11 $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
 
 # unit and functional tests
-check_PROGRAMS = \
-	ags_thread_test \
-	ags_turtle_test \
-	ags_audio_application_context_test \
-	ags_devout_test \
-	ags_audio_test \
-	ags_channel_test \
-	ags_recycling_test \
-	ags_audio_signal_test \
-	ags_recall_test \
-	ags_pattern_test \
-	ags_notation_test \
-	ags_automation_test \
-	ags_midi_buffer_util_test \
-	ags_functional_audio_test \
-	ags_xorg_application_context_test
+check_PROGRAMS = 
+
+include $(top_srcdir)/unit-tests.mk
+include $(top_srcdir)/functional-tests.mk
 
 TESTS = $(check_PROGRAMS)
-
-ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
-ags_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-ags_thread_test_LDADD = libags_thread.la libags.la
-
-ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
-ags_turtle_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_turtle_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_audio_application_context_test_SOURCES = ags/test/audio/ags_audio_application_context_test.c
-ags_audio_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_audio_application_context_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_application_context_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_devout_test_SOURCES = ags/test/audio/ags_devout_test.c
-ags_devout_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_devout_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_devout_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
-ags_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_audio_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
-ags_functional_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_functional_audio_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_functional_audio_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_channel_test_SOURCES = ags/test/audio/ags_channel_test.c
-ags_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_channel_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_channel_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_recycling_test_SOURCES = ags/test/audio/ags_recycling_test.c
-ags_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_recycling_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_recycling_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
-ags_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_audio_signal_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_recall_test_SOURCES = ags/test/audio/ags_recall_test.c
-ags_recall_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_recall_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_recall_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_pattern_test_SOURCES = ags/test/audio/ags_pattern_test.c
-ags_pattern_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_pattern_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_pattern_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_notation_test_SOURCES = ags/test/audio/ags_notation_test.c
-ags_notation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_notation_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_notation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_automation_test_SOURCES = ags/test/audio/ags_automation_test.c
-ags_automation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_automation_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_automation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_test.c
-ags_midi_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_midi_buffer_util_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-
-ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
-ags_xorg_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-ags_xorg_application_context_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-ags_xorg_application_context_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
 deprecated_libags_h_sources =
@@ -369,13 +290,17 @@ deprecated_libags_util_h_sources =
 # libags - util
 libags_util_h_sources = \
 	$(deprecated_libags_util_h_sources) \
-	ags/util/ags_id_generator.h
+	ags/util/ags_destroy_util.h \
+	ags/util/ags_id_generator.h \
+	ags/util/ags_list_util.h
 
 deprecated_libags_util_c_sources =
 
 libags_util_c_sources = \
 	$(deprecated_libags_util_c_sources) \
-	ags/util/ags_id_generator.c
+	ags/util/ags_destroy_util.c \
+	ags/util/ags_id_generator.c \
+	ags/util/ags_list_util.c
 
 deprecated_libags_object_h_sources =
 
@@ -464,6 +389,8 @@ libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
 	ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
+	ags/thread/ags_condition_manager.h \
+	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
 	ags/thread/ags_mutex_manager.h \
@@ -479,7 +406,8 @@ libags_thread_h_sources = \
 	ags/thread/ags_thread-posix.h \
 	ags/thread/ags_timestamp_factory.h \
 	ags/thread/ags_timestamp_thread.h \
-	ags/thread/ags_timestamp.h
+	ags/thread/ags_timestamp.h \
+	ags/thread/ags_worker_thread.h
 
 deprecated_libags_thread_c_sources =
 
@@ -487,6 +415,8 @@ libags_thread_c_sources = \
 	$(deprecated_libags_thread_c_sources) \
 	ags/thread/ags_autosave_thread.c \
 	ags/thread/ags_concurrency_provider.c \
+	ags/thread/ags_condition_manager.c \
+	ags/thread/ags_destroy_worker.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
 	ags/thread/ags_mutex_manager.c \
@@ -502,7 +432,8 @@ libags_thread_c_sources = \
 	ags/thread/ags_thread-posix.c \
 	ags/thread/ags_timestamp_factory.c \
 	ags/thread/ags_timestamp_thread.c \
-	ags/thread/ags_timestamp.c
+	ags/thread/ags_timestamp.c \
+	ags/thread/ags_worker_thread.c
 
 # libags-thread - file
 deprecated_libags_thread_file_h_sources =
@@ -718,6 +649,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
 	ags/plugin/ags_lv2_plugin.h \
+	ags/plugin/ags_lv2_preset.h \
 	ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
 	ags/plugin/ags_lv2_option_manager.h \
@@ -742,6 +674,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
 	ags/plugin/ags_lv2_plugin.c \
+	ags/plugin/ags_lv2_preset.c \
 	ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
 	ags/plugin/ags_lv2_option_manager.c \
@@ -877,6 +810,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_play_notation_audio_run.h \
 	ags/audio/recall/ags_play_note.h \
 	ags/audio/recall/ags_play_recycling.h \
+	ags/audio/recall/ags_prepare_audio_signal.h \
+	ags/audio/recall/ags_prepare_channel.h \
+	ags/audio/recall/ags_prepare_channel_run.h \
+	ags/audio/recall/ags_prepare_recycling.h \
 	ags/audio/recall/ags_record_midi_audio.h \
 	ags/audio/recall/ags_record_midi_audio_run.h \
 	ags/audio/recall/ags_route_dssi_audio.h \
@@ -945,6 +882,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_play_notation_audio_run.c \
 	ags/audio/recall/ags_play_note.c \
 	ags/audio/recall/ags_play_recycling.c \
+	ags/audio/recall/ags_prepare_audio_signal.c \
+	ags/audio/recall/ags_prepare_channel.c \
+	ags/audio/recall/ags_prepare_channel_run.c \
+	ags/audio/recall/ags_prepare_recycling.c \
 	ags/audio/recall/ags_record_midi_audio.c \
 	ags/audio/recall/ags_record_midi_audio_run.c \
 	ags/audio/recall/ags_route_dssi_audio.c \
@@ -985,6 +926,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_cancel_channel.h \
 	ags/audio/task/ags_cancel_recall.h \
 	ags/audio/task/ags_change_soundcard.h \
+	ags/audio/task/ags_clear_audio_signal.h \
 	ags/audio/task/ags_clear_buffer.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
@@ -1047,6 +989,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_cancel_channel.c \
 	ags/audio/task/ags_cancel_recall.c \
 	ags/audio/task/ags_change_soundcard.c \
+	ags/audio/task/ags_clear_audio_signal.c \
 	ags/audio/task/ags_clear_buffer.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
@@ -1158,6 +1101,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_effect_line.h \
 	ags/X/ags_effect_pad_callbacks.h \
 	ags/X/ags_effect_pad.h \
+	ags/X/ags_effect_separator.h \
 	ags/X/ags_export_soundcard_callbacks.h \
 	ags/X/ags_export_soundcard.h \
 	ags/X/ags_export_window_callbacks.h \
@@ -1256,6 +1200,7 @@ libgsequencer_c_sources = \
 	ags/X/ags_effect_line_callbacks.c \
 	ags/X/ags_effect_pad.c \
 	ags/X/ags_effect_pad_callbacks.c \
+	ags/X/ags_effect_separator.c \
 	ags/X/ags_export_soundcard.c \
 	ags/X/ags_export_soundcard_callbacks.c \
 	ags/X/ags_export_window.c \
@@ -1620,6 +1565,9 @@ midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la
 
 midi2xml_SOURCES = ags/midi2xml_main.c
 
+ags-integration-test: 
+	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
+
 ags-docs-local:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags
 	cd $(top_srcdir)
@@ -1724,7 +1672,7 @@ clean-local:
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
 	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
-
+	rm -f $(top_builddir)/functional-system-tests.mk
 
 gen-symbols-ags:
 	rm -f libags.sym

@@ -237,6 +237,9 @@ ags_output_editor_apply(AgsApplicable *applicable)
 
     connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
 								      AGS_TYPE_CONNECTION_EDITOR));
+    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
+							  AGS_TYPE_LINE_EDITOR));
+
     machine = connection_editor->machine;
     audio = machine->audio;
     channel = line_editor->channel;

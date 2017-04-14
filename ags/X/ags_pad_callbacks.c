@@ -52,7 +52,7 @@ void ags_pad_start_complete_response(GtkWidget *dialog,
 				     gint response,
 				     AgsPad *pad);
 
-int
+void
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsLine *line;
@@ -86,7 +86,9 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
       line = AGS_LINE(list->data);
 
       if(!gtk_toggle_button_get_active(line->group)){
-	return(0);
+	g_list_free(list_start);
+	
+	return;
       }
 
       list = list->next;
@@ -95,11 +97,9 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
     g_list_free(list_start);
     gtk_toggle_button_set_active(pad->group, TRUE);
   }
-
-  return(0);
 }
 
-int
+void
 ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsWindow *window;
@@ -245,11 +245,9 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   ags_task_thread_append_tasks(task_thread,
 			       tasks);
-
-  return(0);
 }
 
-int
+void
 ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
@@ -281,10 +279,9 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
     g_list_free(list_start);
     machine->flags |= (AGS_MACHINE_SOLO);
-  }else
+  }else{
     machine->flags &= ~(AGS_MACHINE_SOLO);
-
-  return(0);
+  }
 }
 
 void

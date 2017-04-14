@@ -225,9 +225,11 @@ ags_panel_input_pad_show(GtkWidget *pad)
 {
   GTK_WIDGET_CLASS(ags_panel_input_pad_parent_class)->show(pad);
 
+  /*
   gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->group));
   gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->mute));
   gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->solo));
+  */
 }
 
 void

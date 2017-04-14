@@ -190,7 +190,7 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 
 void
 ags_returnable_thread_finalize(GObject *gobject)
-{  
+{
   pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   free(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   
@@ -238,7 +238,7 @@ ags_returnable_thread_run(AgsThread *thread)
   }
 
   if(unref_thread){
-    g_object_unref(thread);
+    //    g_object_unref(thread);
   }
 }
 

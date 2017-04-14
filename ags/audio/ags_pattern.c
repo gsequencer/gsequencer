@@ -877,6 +877,8 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 	}
       }
     }
+
+    pattern->dim[2] = length;
   }
 }
 

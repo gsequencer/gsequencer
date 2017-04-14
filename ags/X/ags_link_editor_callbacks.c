@@ -74,7 +74,8 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
     
 	model = GTK_TREE_MODEL(ags_machine_get_possible_links(machine));
   
-	if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
+	if(AGS_IS_INPUT(line_editor->channel) &&
+	   (AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
 	   ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
 	    ((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0))){
 	  gtk_list_store_append(GTK_LIST_STORE(model), &iter);

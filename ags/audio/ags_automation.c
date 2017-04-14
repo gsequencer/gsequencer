@@ -35,6 +35,8 @@
 
 #include <ags/config.h>
 
+#include <pthread.h>
+
 #include <stdlib.h>
 
 #include <math.h>
@@ -317,7 +319,22 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  PROP_DEFAULT_VALUE,
 				  param_spec);
 
-    
+
+  /**
+   * AgsAutomation:acceleration:
+   *
+   * The acceleration list.
+   * 
+   * Since: 0.7.122.8
+   */
+  param_spec = g_param_spec_pointer("acceleration\0",
+				    "acceleration\0",
+				    "The acceleration\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ACCELERATION,
+				  param_spec);
+
   /**
    * AgsAutomation:current-accelerations:
    *

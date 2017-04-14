@@ -296,11 +296,13 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
 
   navigation->scroll = NULL;
+  /*
   navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll\0");
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
 			       FALSE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
-
+  */
+  
   navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers\0");
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->exclude_sequencer),
 			       TRUE);
@@ -755,13 +757,9 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 
   gchar *str;
   
-  gdk_threads_enter();
-
   navigation = AGS_NAVIGATION(widget);
 
   if(navigation->soundcard == NULL){
-    gdk_threads_leave();
-    
     return(TRUE);
   }
 
@@ -772,8 +770,6 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
   g_free(str);
   
   gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
-
-  gdk_threads_leave();
 
   return(TRUE);
 }

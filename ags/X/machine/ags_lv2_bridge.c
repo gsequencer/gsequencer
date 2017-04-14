@@ -44,6 +44,7 @@
 #include <ags/plugin/ags_lv2ui_manager.h>
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2ui_plugin.h>
 
 #include <ags/audio/ags_input.h>
@@ -405,9 +406,18 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   lv2_bridge->has_midi = FALSE;
 
-  AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  lv2_bridge->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) lv2_bridge),
-		    (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge);
+		    (GtkWidget *) lv2_bridge->vbox);
+
+  lv2_bridge->preset = NULL;
+  
+  /* effect bridge */  
+  AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
+		     (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge,
+		     FALSE, FALSE,
+		     0);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge),
@@ -1259,7 +1269,13 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
   AgsAudio *audio;
   AgsChannel *source, *current;
   
+  AgsConfig *config;
+  
   GList *list;
+
+  gchar *str;
+
+  gboolean performance_mode;
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
 
@@ -1270,23 +1286,55 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
   source = ags_channel_nth(audio->input,
 			   audio_channel_start + input_pad_start * audio->audio_channels);
 
+  config = ags_config_get_instance();
+
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
     /* map dependending on output */
-    current = source;
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "engine-mode\0");
+    performance_mode = FALSE;
+  
+    if(str != NULL &&
+       !g_ascii_strncasecmp(str,
+			    "performance\0",
+			    12)){
+      current = source;
 
-    while(current != NULL){
-      /* ags-buffer */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-buffer\0",
-				audio_channel_start, audio->audio_channels, 
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
+      while(current != NULL){
+	/* ags-copy */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-copy\0",
+				  audio_channel_start, audio->audio_channels, 
+				  current->pad, current->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	current = current->next_pad;
+      }
+
+      /* set performance mode */
+      performance_mode = TRUE;
+    }else{    
+      current = source;
+
+      while(current != NULL){
+	/* ags-buffer */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-buffer\0",
+				  audio_channel_start, audio->audio_channels, 
+				  current->pad, current->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
     
-      current = current->next_pad;
+	current = current->next_pad;
+      }
     }
   
     /*  */
@@ -1339,7 +1387,13 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
 
+  AgsConfig *config;
+
   GList *list;
+
+  gchar *str;
+
+  gboolean performance_mode;
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
 
@@ -1347,46 +1401,142 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
     return;
   }
 
+  config = ags_config_get_instance();
+
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+    /* map dependending on output */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "engine-mode\0");
+    performance_mode = FALSE;
+  
     /* remap for input */
-    input = audio->input;
+    if(str != NULL &&
+       !g_ascii_strncasecmp(str,
+			    "performance\0",
+			    12)){
+      input = audio->input;
 
-    while(input != NULL){
-      /* ags-buffer */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-buffer\0",
-				audio_channel_start, audio->audio_channels, 
-				input->pad, input->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_REMAP),
-				0);
+      while(input != NULL){
+	/* ags-copy */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-copy\0",
+				  audio_channel_start, audio->audio_channels, 
+				  input->pad, input->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_REMAP),
+				  0);
     
-      input = input->next_pad;
+	input = input->next_pad;
+      }
+
+      /* set performance mode */
+      performance_mode = TRUE;
+    }else{    
+      input = audio->input;
+
+      while(input != NULL){
+	/* ags-buffer */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-buffer\0",
+				  audio_channel_start, audio->audio_channels, 
+				  input->pad, input->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_REMAP),
+				  0);
+    
+	input = input->next_pad;
+      }
     }
+    
+    /*  */
+    if(!performance_mode){
+      current = ags_channel_nth(audio->output,
+				audio_channel_start + output_pad_start * audio->audio_channels);
 
-    current = ags_channel_nth(audio->output,
-			      audio_channel_start + output_pad_start * audio->audio_channels);
+      while(current != NULL){
+	/* ags-stream */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-stream\0",
+				  audio_channel_start, audio->audio_channels,
+				  current->pad, current->pad + 1,
+				  (AGS_RECALL_FACTORY_OUTPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_RECALL | 
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
 
-    while(current != NULL){
-      /* ags-stream */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream\0",
-				audio_channel_start, audio->audio_channels,
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_OUTPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      current = current->next_pad;
+	current = current->next_pad;
+      }
     }
   }
   
   lv2_bridge->mapped_output_pad = audio->output_pads;
+}
+
+void
+ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
+{
+  GtkHBox *hbox;
+  GtkLabel *label;
+  
+  AgsLv2Plugin *lv2_plugin;
+
+  GList *list;  
+  
+  /* program */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
+  gtk_box_reorder_child(GTK_BOX(lv2_bridge->vbox),
+  			GTK_WIDGET(hbox),
+  			0);
+  
+  label = (GtkLabel *) gtk_label_new("preset\0");
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
+  lv2_bridge->preset = gtk_combo_box_text_new();
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) lv2_bridge->preset,
+		     FALSE, FALSE,
+		     0);
+  
+  /* retrieve lv2 plugin */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       lv2_bridge->filename,
+					       lv2_bridge->effect);
+
+  /* preset */
+  list = lv2_plugin->preset;
+
+  while(list != NULL){
+    gtk_combo_box_text_append_text(lv2_bridge->preset,
+				   AGS_LV2_PRESET(list->data)->preset_label);
+
+    list = list->next;
+  }
+
+  gtk_widget_show_all(hbox);
+
+  /* connect preset */
+  g_signal_connect_after(G_OBJECT(lv2_bridge->preset), "changed\0",
+			 G_CALLBACK(ags_lv2_bridge_preset_changed_callback), lv2_bridge);
+}
+
+void
+ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge)
+{
+  //TODO:JK: implement me
 }
 
 void
@@ -1397,7 +1547,7 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 
   GList *list;
   
-  /* check if works with Gtk+ */
+  /* retrieve lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       lv2_bridge->filename,
 					       lv2_bridge->effect);
@@ -1407,6 +1557,7 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
     return;
   }
 
+  /* retrieve lv2ui plugin */
   list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
 				       lv2_plugin->ui_uri);
 
@@ -1440,11 +1591,18 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
   if(lv2_plugin == NULL){
     return;
   }
-  
+
+  /* URI */
   g_object_set(lv2_bridge,
 	       "uri\0", lv2_plugin->uri,
 	       NULL);
-  
+
+  /* preset */
+  if(lv2_plugin->preset != NULL){
+    ags_lv2_bridge_load_preset(lv2_bridge);
+  }
+
+  /* load gui */
   ags_lv2_bridge_load_gui(lv2_bridge);
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -134,7 +134,7 @@ ags_signal_handler(int signr)
     sigemptyset(&(ags_sigact.sa_mask));
 
     //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
-      // pthread_yield();
+    // pthread_yield();
     //    }
   }
 }
@@ -144,16 +144,16 @@ ags_signal_handler(int signr)
 void
 ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
 {
-    pthread_mutex_lock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
+  pthread_mutex_lock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
 
-    g_atomic_int_set(&(AGS_THREAD(ags_application_context->main_loop)->timer_expired),
-		     TRUE);
+  g_atomic_int_set(&(AGS_THREAD(ags_application_context->main_loop)->timer_expired),
+		   TRUE);
   
-    if(AGS_THREAD(ags_application_context->main_loop)->timer_wait){
-      pthread_cond_signal(AGS_THREAD(ags_application_context->main_loop)->timer_cond);
-    }
+  if(AGS_THREAD(ags_application_context->main_loop)->timer_wait){
+    pthread_cond_signal(AGS_THREAD(ags_application_context->main_loop)->timer_cond);
+  }
     
-    pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
+  pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
   //  signal(sig, SIG_IGN);
 }
 #endif
@@ -504,8 +504,8 @@ ags_launch(gboolean single_thread)
 			       polling_thread);
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
-  start_queue = g_list_prepend(start_queue,
-			       gui_thread);
+  //  start_queue = g_list_prepend(start_queue,
+  //			       gui_thread);
   g_atomic_pointer_set(&(audio_loop->start_queue),
 		       start_queue);
   
@@ -533,6 +533,9 @@ ags_launch(gboolean single_thread)
     
     pthread_mutex_unlock(audio_loop->start_mutex);
 
+    /* start gui thread */
+    ags_thread_start(gui_thread);
+    
     /* wait for gui thread */
     pthread_mutex_lock(gui_thread->start_mutex);
 
@@ -551,6 +554,9 @@ ags_launch(gboolean single_thread)
     }
     
     pthread_mutex_unlock(gui_thread->start_mutex);
+    
+    g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready),
+		     1);
     
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
@@ -644,7 +650,7 @@ ags_launch_filename(gchar *filename,
   if(g_strcmp0(ags_config_get_value(config,
 				    AGS_CONFIG_GENERIC,
 				    "simple-file\0"),
-		 "false\0")){
+	       "false\0")){
     AgsSimpleFile *simple_file;
 
     AgsSimpleFileRead *simple_file_read;
@@ -673,8 +679,8 @@ ags_launch_filename(gchar *filename,
 				 polling_thread);
     start_queue = g_list_prepend(start_queue,
 				 task_thread);
-    start_queue = g_list_prepend(start_queue,
-				 gui_thread);
+    //    start_queue = g_list_prepend(start_queue,
+    //				 gui_thread);
     g_atomic_pointer_set(&(audio_loop->start_queue),
 			 start_queue);
   
@@ -702,6 +708,9 @@ ags_launch_filename(gchar *filename,
     
       pthread_mutex_unlock(audio_loop->start_mutex);
 
+      /* start gui thread */
+      ags_thread_start(gui_thread);
+      
       /* wait for gui thread */
       pthread_mutex_lock(gui_thread->start_mutex);
 
@@ -720,7 +729,6 @@ ags_launch_filename(gchar *filename,
       }
     
       pthread_mutex_unlock(gui_thread->start_mutex);
-     
       
       /* autosave thread */
       if(!g_strcmp0(ags_config_get_value(config,
@@ -885,8 +893,8 @@ ags_timer_launch(timer_t *timer_id,
 			       polling_thread);
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
-  start_queue = g_list_prepend(start_queue,
-			       gui_thread);
+  //  start_queue = g_list_prepend(start_queue,
+  //			       gui_thread);
   g_atomic_pointer_set(&(audio_loop->start_queue),
 		       start_queue);
 
@@ -917,6 +925,9 @@ ags_timer_launch(timer_t *timer_id,
     }
   
     pthread_mutex_unlock(audio_loop->start_mutex);
+
+    /* start gui thread */
+    ags_thread_start(gui_thread);
     
     /* wait for gui thread */
     pthread_mutex_lock(gui_thread->start_mutex);
@@ -924,11 +935,11 @@ ags_timer_launch(timer_t *timer_id,
     if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
       
       g_atomic_int_set(&(gui_thread->start_wait),
-		       TRUE);
+    		       TRUE);
 
       while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
 	g_atomic_int_set(&(gui_thread->start_wait),
-			 TRUE);
+    			 TRUE);
 	
 	pthread_cond_wait(gui_thread->start_cond,
 			  gui_thread->start_mutex);
@@ -936,6 +947,9 @@ ags_timer_launch(timer_t *timer_id,
     }
     
     pthread_mutex_unlock(gui_thread->start_mutex);
+
+    g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready),
+		     1);
 
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
@@ -1057,8 +1071,8 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
 				 polling_thread);
     start_queue = g_list_prepend(start_queue,
 				 task_thread);
-    start_queue = g_list_prepend(start_queue,
-				 gui_thread);
+    //    start_queue = g_list_prepend(start_queue,
+    //				 gui_thread);
     g_atomic_pointer_set(&(audio_loop->start_queue),
 			 start_queue);
 
@@ -1090,17 +1104,20 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
   
       pthread_mutex_unlock(audio_loop->start_mutex);
     
+      /* start gui thread */
+      ags_thread_start(gui_thread);
+
       /* wait for gui thread */
       pthread_mutex_lock(gui_thread->start_mutex);
 
       if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
       
-	g_atomic_int_set(&(gui_thread->start_wait),
+      	g_atomic_int_set(&(gui_thread->start_wait),
 			 TRUE);
 
-	while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-	  g_atomic_int_set(&(gui_thread->start_wait),
-			   TRUE);
+      	while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+      	  g_atomic_int_set(&(gui_thread->start_wait),
+      			   TRUE);
 	
 	  pthread_cond_wait(gui_thread->start_cond,
 			    gui_thread->start_mutex);
@@ -1331,7 +1348,7 @@ main(int argc, char **argv)
 
   //ao_initialize();
 
-  gdk_threads_enter();
+  //  gdk_threads_enter();
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
@@ -1351,7 +1368,7 @@ main(int argc, char **argv)
   
   ipatch_init();
   //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
-  //		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
   /* animate */
   animation_thread = (pthread_t *) malloc(sizeof(pthread_t));

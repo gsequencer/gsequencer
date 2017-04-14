@@ -64,6 +64,12 @@ gboolean ags_input_apply_synth(AgsInput *input,
 			       gdouble volume,
 			       guint n_frames);
 
+gboolean ags_input_is_active(AgsInput *input,
+			     GObject *parent_recycling_context);
+
+AgsInput* ags_input_next_active(AgsInput *input,
+				GObject *parent_recycling_context);
+
 AgsInput* ags_input_new(GObject *audio);
 
 #endif /*__AGS_INPUT_H__*/

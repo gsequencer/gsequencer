@@ -356,8 +356,6 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 {
   AgsChannel *source;
   AgsRecycling *recycling;
-
-  AgsConfig *config;
   
   GList *audio_signal;
 
@@ -377,32 +375,12 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   if(peak_channel == NULL){
     return;
   }
-
-  config = ags_config_get_instance();
   
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
-  }
-
-  
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }else{
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
-  
+
+  buffer_size = source->buffer_size;
+
   /* initialize buffer */
   buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
   memset(buffer,

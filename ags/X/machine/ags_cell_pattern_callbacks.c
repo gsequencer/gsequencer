@@ -26,6 +26,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -208,6 +209,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     
     GList *tasks;
 
+    gboolean no_soundcard;
+
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
@@ -216,6 +219,22 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    no_soundcard = FALSE;
+
+    pthread_mutex_lock(application_mutex);
+
+    if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+      no_soundcard = TRUE;
+    }
+
+    pthread_mutex_unlock(application_mutex);
+
+    if(no_soundcard){
+      g_message("No soundcard available\0");
+      
+      return;
+    }
 
     /* lookup channel mutex */
     pthread_mutex_lock(application_mutex);

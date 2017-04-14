@@ -156,6 +156,8 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 		     GTK_WIDGET(machine_selector->menu_button),
 		     FALSE, FALSE,
 		     0);
+
+  machine_selector->machine_selection = NULL;
 }
 
 void

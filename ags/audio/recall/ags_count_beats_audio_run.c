@@ -531,8 +531,9 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 
       delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
 
-      if(count_beats_audio_run->delay_audio_run == delay_audio_run)
+      if(count_beats_audio_run->delay_audio_run == delay_audio_run){
 	return;
+      }
 
       if(delay_audio_run != NULL &&
 	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(delay_audio_run)->flags)) != 0){
@@ -763,7 +764,6 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 			       guint steps,
 			       gboolean move_forward)
 {
-  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -773,9 +773,7 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(seekable);
   delay_audio_run = count_beats_audio_run->delay_audio_run;
   delay_audio = (AgsDelayAudio *) AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
-
-  soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
-    
+  
   if(delay_audio->sequencer_duration->port_value.ags_port_double != 0.0){
     seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   }else{
@@ -947,6 +945,10 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   GList *list;
 
   guint i, i_stop;
+
+  if(recall->soundcard == NULL){
+    return;
+  }
 
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run)->data);
 

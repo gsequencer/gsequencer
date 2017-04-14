@@ -232,7 +232,7 @@ ags_connection_find_type(GList *connection,
 
   while(connection != NULL){
     if(AGS_IS_CONNECTION(connection->data) &&
-       g_type_is_a(G_OBJECT_TYPE(connection->data),
+       g_type_is_a(G_OBJECT_TYPE(G_OBJECT(connection->data)),
 				 connection_type)){
       return(connection);
     }

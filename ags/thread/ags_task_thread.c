@@ -579,7 +579,7 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 		       task);
 
   thread = ags_thread_pool_pull(task_thread->thread_pool);
-  g_object_ref(thread);
+  //  g_object_ref(thread);
   
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 
@@ -660,7 +660,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 		       list);
 
   thread = ags_thread_pool_pull(task_thread->thread_pool);
-  g_object_ref(thread);
+  //  g_object_ref(thread);
 
   /* set safe data and run */
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);

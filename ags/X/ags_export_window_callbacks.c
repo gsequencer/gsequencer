@@ -105,6 +105,8 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 
   AgsMutexManager *mutex_manager;
 
+  gchar *str;
+  
   gdouble delay_factor;
   gdouble delay;
 
@@ -134,11 +136,13 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   pthread_mutex_unlock(soundcard_mutex);
 
   /* update duration */
+  str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
+					window->navigation->bpm->adjustment->value,
+					delay,
+					delay_factor);
   gtk_label_set_text(export_window->duration,
-		     ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
-						     window->navigation->bpm->adjustment->value,
-						     delay,
-						     delay_factor));
+		     str);
+  g_free(str);
 }
 
 void

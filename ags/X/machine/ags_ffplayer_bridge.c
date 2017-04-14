@@ -185,7 +185,7 @@ ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
     return;
   }
 
-  ags_ffplayer_bridge_parent_connectable_interface->connect(connectable);
+  ags_ffplayer_bridge_parent_connectable_interface->disconnect(connectable);
 
   //TODO:JK: implement me
 }

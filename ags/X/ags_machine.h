@@ -117,7 +117,9 @@ struct _AgsMachine
   GList *port;
   gchar **automation_port;
 
+  GtkMenuToolButton *menu_tool_button;
   GtkMenu *popup;
+  
   GtkDialog *properties;
   GtkDialog *rename;
   GtkDialog *connection_editor;

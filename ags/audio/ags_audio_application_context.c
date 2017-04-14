@@ -121,6 +121,9 @@ void ags_audio_application_context_disconnect(AgsConnectable *connectable);
 AgsThread* ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_audio_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+GList* ags_audio_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+void ags_audio_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					      GList *worker);
 GList* ags_audio_application_context_get_soundcard(AgsSoundProvider *sound_provider);
 GObject* ags_audio_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
 void ags_audio_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
@@ -275,6 +278,8 @@ ags_audio_application_context_concurrency_provider_interface_init(AgsConcurrency
   concurrency_provider->get_main_loop = ags_audio_application_context_get_main_loop;
   concurrency_provider->get_task_thread = ags_audio_application_context_get_task_thread;
   concurrency_provider->get_thread_pool = ags_audio_application_context_get_thread_pool;
+  concurrency_provider->get_worker = ags_audio_application_context_get_worker;
+  concurrency_provider->set_worker = ags_audio_application_context_set_worker;
 }
 
 void
@@ -615,6 +620,9 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				AGS_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread),
 				TRUE, TRUE);
+
+  /* AgsWorkerThread */
+  audio_application_context->worker = NULL;
   
   /* AgsSoundcardThread */
   audio_application_context->soundcard_thread = NULL;
@@ -823,6 +831,19 @@ AgsThreadPool*
 ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
   return(AGS_AUDIO_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+}
+
+GList*
+ags_audio_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_AUDIO_APPLICATION_CONTEXT(concurrency_provider)->worker);
+}
+
+void
+ags_audio_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					 GList *worker)
+{
+  AGS_AUDIO_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
 }
 
 GList*

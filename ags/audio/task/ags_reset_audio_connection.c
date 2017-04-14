@@ -448,7 +448,6 @@ ags_reset_audio_connection_launch(AgsTask *task)
     audio_connection = list->data;
   }else{
     audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
-				    "data-object\0", reset_audio_connection->soundcard,
 				    NULL);
     ags_audio_add_audio_connection(audio,
 				   (GObject *) audio_connection);
@@ -457,6 +456,7 @@ ags_reset_audio_connection_launch(AgsTask *task)
   }
 
   g_object_set(audio_connection,
+	       "data-object\0", reset_audio_connection->soundcard,
 	       "audio\0", audio,
 	       "channel-type\0", reset_audio_connection->channel_type,
 	       "pad\0", reset_audio_connection->pad,

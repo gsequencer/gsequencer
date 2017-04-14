@@ -335,11 +335,132 @@ ags_delay_audio_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_delay_audio_init(AgsDelayAudio *delay_audio)
 {
+  GList *port;
+
+  gdouble bpm;
+  gdouble delay;
+
   AGS_RECALL(delay_audio)->name = "ags-delay\0";
   AGS_RECALL(delay_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(delay_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(delay_audio)->xml_type = "ags-delay-audio\0";
 
+  port = NULL;
+
+  bpm = AGS_SOUNDCARD_DEFAULT_BPM;
+  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  /* bpm */
+  delay_audio->bpm = g_object_new(AGS_TYPE_PORT,
+				  "plugin-name\0", ags_delay_audio_plugin_name,
+				  "specifier\0", ags_delay_audio_specifier[0],
+				  "control-port\0", ags_delay_audio_control_port[0],
+				  "port-value-is-pointer\0", FALSE,
+				  "port-value-type\0", G_TYPE_DOUBLE,
+				  "port-value-size\0", sizeof(gdouble),
+				  "port-value-length", 1,
+				  NULL);
+  g_object_ref(delay_audio->bpm);
+  
+  delay_audio->bpm->port_value.ags_port_double = bpm;
+
+  /* add port */
+  port = g_list_prepend(port, delay_audio->bpm);
+  g_object_ref(delay_audio->bpm);
+  
+  /* tact */
+  delay_audio->tact = g_object_new(AGS_TYPE_PORT,
+				   "plugin-name\0", ags_delay_audio_plugin_name,
+				   "specifier\0", ags_delay_audio_specifier[1],
+				   "control-port\0", ags_delay_audio_control_port[1],
+				   "port-value-is-pointer\0", FALSE,
+				   "port-value-type\0", G_TYPE_DOUBLE,
+				   "port-value-size\0", sizeof(gdouble),
+				   "port-value-length", 1,
+				   NULL);
+  g_object_ref(delay_audio->tact);
+  
+  delay_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
+
+  /* add port */
+  port = g_list_prepend(port, delay_audio->tact);
+  g_object_ref(delay_audio->tact);
+  
+  /* sequencer delay */
+  delay_audio->sequencer_delay = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name\0", ags_delay_audio_plugin_name,
+					      "specifier\0", ags_delay_audio_specifier[2],
+					      "control-port\0", ags_delay_audio_control_port[2],
+					      "port-value-is-pointer\0", FALSE,
+					      "port-value-type\0", G_TYPE_DOUBLE,
+					      "port-value-size\0", sizeof(gdouble),
+					      "port-value-length", 1,
+					      NULL);
+  g_object_ref(delay_audio->sequencer_delay);
+  
+  delay_audio->sequencer_delay->port_value.ags_port_double = delay;
+
+  /* add port */
+  port = g_list_prepend(port, delay_audio->sequencer_delay);
+  g_object_ref(delay_audio->sequencer_delay);
+  
+  /* notation delay */
+  delay_audio->notation_delay = g_object_new(AGS_TYPE_PORT,
+					     "plugin-name\0", ags_delay_audio_plugin_name,
+					     "specifier\0", ags_delay_audio_specifier[3],
+					     "control-port\0", ags_delay_audio_control_port[3],
+					     "port-value-is-pointer\0", FALSE,
+					     "port-value-type\0", G_TYPE_DOUBLE,
+					     "port-value-size\0", sizeof(gdouble),
+					     "port-value-length", 1,
+					     NULL);
+  g_object_ref(delay_audio->notation_delay);
+  
+  delay_audio->notation_delay->port_value.ags_port_double = delay;
+
+  /* add port */
+  port = g_list_prepend(port, delay_audio->notation_delay);
+  g_object_ref(delay_audio->notation_delay);
+  
+  /* sequencer duration */
+  delay_audio->sequencer_duration = g_object_new(AGS_TYPE_PORT,
+						 "plugin-name\0", ags_delay_audio_plugin_name,
+						 "specifier\0", ags_delay_audio_specifier[4],
+						 "control-port\0", ags_delay_audio_control_port[4],
+						 "port-value-is-pointer\0", FALSE,
+						 "port-value-type\0", G_TYPE_DOUBLE,
+						 "port-value-size\0", sizeof(gdouble),
+						 "port-value-length", 1,
+						 NULL);
+  g_object_ref(delay_audio->sequencer_duration);
+  
+  delay_audio->sequencer_duration->port_value.ags_port_double = ceil(16.0 * delay);
+
+  /* add port */
+  port = g_list_prepend(port, delay_audio->sequencer_duration);
+  g_object_ref(delay_audio->sequencer_duration);
+  
+  /* notation duration */
+  delay_audio->notation_duration = g_object_new(AGS_TYPE_PORT,
+						"plugin-name\0", ags_delay_audio_plugin_name,
+						"specifier\0", ags_delay_audio_specifier[5],
+						"control-port\0", ags_delay_audio_control_port[5],
+						"port-value-is-pointer\0", FALSE,
+						"port-value-type\0", G_TYPE_DOUBLE,
+						"port-value-size\0", sizeof(gdouble),
+						"port-value-length", 1,
+						NULL);
+  g_object_ref(delay_audio->notation_duration);
+  
+  delay_audio->notation_duration->port_value.ags_port_double = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
+
+  /* add port */
+  port = g_list_prepend(port, delay_audio->notation_duration);
+  g_object_ref(delay_audio->notation_duration);
+  
+  /* set port */
+  AGS_RECALL(delay_audio)->port = port;
+  
   /* notify some properties to do final configuration */
   g_signal_connect_after(delay_audio, "notify::audio\0",
 			 G_CALLBACK(ags_delay_audio_notify_audio_callback), NULL);
@@ -687,8 +808,6 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 					  gpointer user_data)
 {
   AgsDelayAudio *delay_audio;
-  
-  GList *port;
 
   GObject *soundcard;
   gdouble bpm;
@@ -703,122 +822,27 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
     return;
   }
   
-  port = NULL;
-
   /*  */
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
 
   /* bpm */
-  delay_audio->bpm = g_object_new(AGS_TYPE_PORT,
-				  "plugin-name\0", ags_delay_audio_plugin_name,
-				  "specifier\0", ags_delay_audio_specifier[0],
-				  "control-port\0", ags_delay_audio_control_port[0],
-				  "port-value-is-pointer\0", FALSE,
-				  "port-value-type\0", G_TYPE_DOUBLE,
-				  "port-value-size\0", sizeof(gdouble),
-				  "port-value-length", 1,
-				  NULL);
-  g_object_ref(delay_audio->bpm);
-  
   delay_audio->bpm->port_value.ags_port_double = bpm;
 
-  /* add port */
-  port = g_list_prepend(port, delay_audio->bpm);
-  g_object_ref(delay_audio->bpm);
-  
   /* tact */
-  delay_audio->tact = g_object_new(AGS_TYPE_PORT,
-				   "plugin-name\0", ags_delay_audio_plugin_name,
-				   "specifier\0", ags_delay_audio_specifier[1],
-				   "control-port\0", ags_delay_audio_control_port[1],
-				   "port-value-is-pointer\0", FALSE,
-				   "port-value-type\0", G_TYPE_DOUBLE,
-				   "port-value-size\0", sizeof(gdouble),
-				   "port-value-length", 1,
-				   NULL);
-  g_object_ref(delay_audio->tact);
-  
   delay_audio->tact->port_value.ags_port_double = AGS_SOUNDCARD_DEFAULT_TACT;
 
-  /* add port */
-  port = g_list_prepend(port, delay_audio->tact);
-  g_object_ref(delay_audio->tact);
-  
   /* sequencer delay */
-  delay_audio->sequencer_delay = g_object_new(AGS_TYPE_PORT,
-					      "plugin-name\0", ags_delay_audio_plugin_name,
-					      "specifier\0", ags_delay_audio_specifier[2],
-					      "control-port\0", ags_delay_audio_control_port[2],
-					      "port-value-is-pointer\0", FALSE,
-					      "port-value-type\0", G_TYPE_DOUBLE,
-					      "port-value-size\0", sizeof(gdouble),
-					      "port-value-length", 1,
-					      NULL);
-  g_object_ref(delay_audio->sequencer_delay);
-  
   delay_audio->sequencer_delay->port_value.ags_port_double = delay;
-
-  /* add port */
-  port = g_list_prepend(port, delay_audio->sequencer_delay);
-  g_object_ref(delay_audio->sequencer_delay);
   
   /* notation delay */
-  delay_audio->notation_delay = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name\0", ags_delay_audio_plugin_name,
-					     "specifier\0", ags_delay_audio_specifier[3],
-					     "control-port\0", ags_delay_audio_control_port[3],
-					     "port-value-is-pointer\0", FALSE,
-					     "port-value-type\0", G_TYPE_DOUBLE,
-					     "port-value-size\0", sizeof(gdouble),
-					     "port-value-length", 1,
-					     NULL);
-  g_object_ref(delay_audio->notation_delay);
-  
   delay_audio->notation_delay->port_value.ags_port_double = delay;
 
-  /* add port */
-  port = g_list_prepend(port, delay_audio->notation_delay);
-  g_object_ref(delay_audio->notation_delay);
-  
   /* sequencer duration */
-  delay_audio->sequencer_duration = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name\0", ags_delay_audio_plugin_name,
-						 "specifier\0", ags_delay_audio_specifier[4],
-						 "control-port\0", ags_delay_audio_control_port[4],
-						 "port-value-is-pointer\0", FALSE,
-						 "port-value-type\0", G_TYPE_DOUBLE,
-						 "port-value-size\0", sizeof(gdouble),
-						 "port-value-length", 1,
-						 NULL);
-  g_object_ref(delay_audio->sequencer_duration);
-  
   delay_audio->sequencer_duration->port_value.ags_port_double = ceil(16.0 * delay);
 
-  /* add port */
-  port = g_list_prepend(port, delay_audio->sequencer_duration);
-  g_object_ref(delay_audio->sequencer_duration);
-  
-  /* notation duration */
-  delay_audio->notation_duration = g_object_new(AGS_TYPE_PORT,
-						"plugin-name\0", ags_delay_audio_plugin_name,
-						"specifier\0", ags_delay_audio_specifier[5],
-						"control-port\0", ags_delay_audio_control_port[5],
-						"port-value-is-pointer\0", FALSE,
-						"port-value-type\0", G_TYPE_DOUBLE,
-						"port-value-size\0", sizeof(gdouble),
-						"port-value-length", 1,
-						NULL);
-  g_object_ref(delay_audio->notation_duration);
-  
+  /* notation duration */  
   delay_audio->notation_duration->port_value.ags_port_double = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
-
-  /* add port */
-  port = g_list_prepend(port, delay_audio->notation_duration);
-  g_object_ref(delay_audio->notation_duration);
-  
-  /* set port */
-  AGS_RECALL(delay_audio)->port = port;
 }
 
 void

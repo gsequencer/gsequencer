@@ -531,10 +531,12 @@ ags_notebook_remove_tab(AgsNotebook *notebook,
   tab = g_list_nth_data(notebook->tabs,
 			length - nth - 1);
 
-  notebook->tabs = g_list_remove(notebook->tabs,
-				 tab);
-  gtk_widget_destroy(GTK_WIDGET(tab->toggle));
-  free(tab);
+  if(tab != NULL){
+    notebook->tabs = g_list_remove(notebook->tabs,
+				   tab);
+    gtk_widget_destroy(GTK_WIDGET(tab->toggle));
+    free(tab);
+  }
 }
 
 void
