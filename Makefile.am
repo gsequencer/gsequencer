@@ -806,6 +806,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_play_channel.h \
 	ags/audio/recall/ags_play_channel_run.h \
 	ags/audio/recall/ags_play_channel_run_master.h \
+	ags/audio/recall/ags_play_dssi_audio.h \
+	ags/audio/recall/ags_play_dssi_audio_run.h \
+	ags/audio/recall/ags_play_lv2_audio.h \
+	ags/audio/recall/ags_play_lv2_audio_run.h \
 	ags/audio/recall/ags_play_notation_audio.h \
 	ags/audio/recall/ags_play_notation_audio_run.h \
 	ags/audio/recall/ags_play_note.h \
@@ -878,6 +882,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_play_channel.c \
 	ags/audio/recall/ags_play_channel_run.c \
 	ags/audio/recall/ags_play_channel_run_master.c \
+	ags/audio/recall/ags_play_dssi_audio.c \
+	ags/audio/recall/ags_play_dssi_audio_run.c \
+	ags/audio/recall/ags_play_lv2_audio.c \
+	ags/audio/recall/ags_play_lv2_audio_run.c \
 	ags/audio/recall/ags_play_notation_audio.c \
 	ags/audio/recall/ags_play_notation_audio_run.c \
 	ags/audio/recall/ags_play_note.c \

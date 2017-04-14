@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #ifndef __AGS_PLAY_NOTATION_AUDIO_RUN_H__
 #define __AGS_PLAY_NOTATION_AUDIO_RUN_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_audio_run.h>
