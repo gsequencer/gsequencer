@@ -41,6 +41,10 @@ struct _AgsLadspaBrowser
   gchar *path;
 
   GtkHBox *plugin;
+  
+  GtkComboBox *filename;
+  GtkComboBox *effect;
+  
   GtkVBox *description;
 
   GtkWidget *preview;

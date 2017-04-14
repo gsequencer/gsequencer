@@ -589,7 +589,11 @@ ags_functional_audio_test_playback()
   /*
    * Setup audio tree sink, mixer and notation player as source
    */
-  soundcard = audio_application_context->soundcard->data;
+  soundcard = NULL;
+  
+  if(audio_application_context->soundcard != NULL){
+    soundcard = audio_application_context->soundcard->data;
+  }
 
   /* the output panel */
   panel = ags_audio_new(soundcard);

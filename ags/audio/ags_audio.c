@@ -4780,7 +4780,7 @@ ags_audio_play(AgsAudio *audio,
     
     list_next = list->next;
 
-    recall = AGS_RECALL(list->data);
+    recall = (AgsRecall *) list->data;
 
     if(recall == NULL ||
        !AGS_IS_RECALL(recall)){
@@ -4819,13 +4819,17 @@ ags_audio_play(AgsAudio *audio,
     
     if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0){
       if((AGS_RECALL_HIDE & (recall_flags)) == 0){
+	g_object_ref(recall);
+	
 	if(stage == 0){
-	  ags_recall_run_pre(recall);
+	  AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
 	}else if(stage == 1){
-	  ags_recall_run_inter(recall);
+	  AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
 	}else{
-	  ags_recall_run_post(recall);
+	  AGS_RECALL_GET_CLASS(recall)->run_post(recall);
 	}
+
+	g_object_unref(recall);
       }
     }
     

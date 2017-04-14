@@ -376,6 +376,7 @@ GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GREP = @GREP@
 GSEQUENCER_CFLAGS = @GSEQUENCER_CFLAGS@
+GSEQUENCER_FUNCTIONAL_TEST_LDADD = @GSEQUENCER_FUNCTIONAL_TEST_LDADD@
 GSEQUENCER_LDFLAGS = @GSEQUENCER_LDFLAGS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_CHECK_PATH = @GTKDOC_CHECK_PATH@
@@ -397,6 +398,7 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBASOUND2_CFLAGS = @LIBASOUND2_CFLAGS@
 LIBASOUND2_LIBS = @LIBASOUND2_LIBS@
+LIBGSEQUENCER_TEST_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
 LIBINSTPATCH_CFLAGS = @LIBINSTPATCH_CFLAGS@
 LIBINSTPATCH_LIBS = @LIBINSTPATCH_LIBS@
 LIBOBJS = @LIBOBJS@
@@ -685,9 +687,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/gtk-doc.make $(am__c
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libags/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libags/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libags/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

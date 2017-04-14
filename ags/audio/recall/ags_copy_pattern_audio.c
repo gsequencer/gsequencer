@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -387,12 +387,27 @@ ags_copy_pattern_audio_new(GObject *soundcard,
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
+  GValue *value;
+  
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
 							    "soundcard\0", soundcard,
 							    "tact\0", tact,
-							    "bank_index_0\0", i,
-							    "bank_index_1\0", j,
 							    NULL);
 
+  value = g_new0(GValue,
+		 1);
+  g_value_init(value, G_TYPE_UINT);
+
+  g_value_set_uint(value, i);
+  ags_port_safe_write(copy_pattern_audio->bank_index_0,
+		      value);
+
+  g_value_set_uint(value, j);
+  ags_port_safe_write(copy_pattern_audio->bank_index_1,
+		      value);
+
+  g_value_unset(value);
+  g_free(value);
+  
   return(copy_pattern_audio);
 }

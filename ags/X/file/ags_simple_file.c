@@ -1136,15 +1136,21 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 {
   AgsApplicationContext *application_context;
 
-  xmlNode *root_node, *child;
+  AgsGuiThread *gui_thread;
 
+  xmlNode *root_node, *child;
+  
   application_context = (AgsApplicationContext *) simple_file->application_context;
+
+  gui_thread = ags_thread_find_type(application_context->main_loop,
+				    AGS_TYPE_GUI_THREAD);
 
   root_node = simple_file->root_node;
 
   /* child elements */
   child = root_node->children;
 
+  /*  */
   ags_application_context_register_types(application_context);
   
   while(child != NULL){
@@ -1181,6 +1187,10 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
   /* start */
   ags_simple_file_read_start(simple_file);
+
+  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->gui_ready),
+		     1);
+    
 }
 
 void
@@ -1625,7 +1635,10 @@ ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
 
 	  iter = g_list_nth(*machine,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_machine(simple_file, child, &current);
@@ -2139,6 +2152,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   auto void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
   auto void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
   auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
+  auto void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
 
   auto void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
   auto void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
@@ -2356,6 +2370,44 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     }
   }
 
+  void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge){
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    xmlChar *str;
+    gchar *value;
+
+    if(lv2_bridge->preset == NULL){
+      return;
+    }
+    
+    /* program */
+    //NOTE:JK: work-around
+    gtk_combo_box_set_active((GtkComboBox *) lv2_bridge->preset,
+			     0);
+
+    model = gtk_combo_box_get_model((GtkComboBox *) lv2_bridge->preset);
+
+    str = xmlGetProp(node,
+		     "preset\0");
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) lv2_bridge->preset,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+  }
+
   void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge){
     AgsEffectBulk *effect_bulk;
     
@@ -2510,6 +2562,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_ffplayer_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFFPlayer *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
     ags_simple_file_read_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
+  }else if(AGS_IS_LV2_BRIDGE(machine)){
+    ags_simple_file_read_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
   }
   
   /* children */
@@ -2578,7 +2632,10 @@ ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList *
 
 	  iter = g_list_nth(*pad,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_pad(simple_file, child, &current);
@@ -2696,6 +2753,8 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
     child = child->next;
   }
 
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+
   /* launch AgsPad */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "node\0", node,
@@ -2798,7 +2857,10 @@ ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList 
 
 	  iter = g_list_nth(*line,
 			    i);
-	  current = iter->data;
+	  
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_line(simple_file, child, &current);
@@ -3237,6 +3299,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     child = child->next;
   }
 
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+  
   /* launch AgsLine */
   if(AGS_IS_LINE(gobject)){
     file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
@@ -3687,7 +3751,10 @@ ags_simple_file_read_effect_line_list(AgsSimpleFile *simple_file, xmlNode *node,
 
 	  iter = g_list_nth(*effect_line,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_effect_line(simple_file, child, &current);
@@ -4198,7 +4265,10 @@ ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GL
 
 	  iter = g_list_nth(*notation,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
 	
 	ags_simple_file_read_notation(simple_file, child, &current);
@@ -4387,12 +4457,15 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 
 	  iter = g_list_nth(*automation,
 			    i);
-	  current = iter->data;
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
 	}
-	
+
 	ags_simple_file_read_automation(simple_file, child, &current);
 	list = g_list_prepend(list, current);
-
+	
 	i++;
       }
     }
@@ -5190,6 +5263,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "effect\0",
 	       lv2_bridge->effect);
+
+    if(lv2_bridge->preset != NULL){
+      xmlNewProp(node,
+		 "preset\0",
+		 gtk_combo_box_text_get_active_text(lv2_bridge->preset));
+    }
   }
   
   /* input */

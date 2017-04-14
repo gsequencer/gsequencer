@@ -127,6 +127,9 @@ void ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
 			       gdouble release,
 			       gdouble ratio);
 
+gboolean ags_audio_signal_is_active(GList *audio_signal,
+				    GObject *recall_id);
+
 AgsAudioSignal* ags_audio_signal_new(GObject *soundcard,
 				     GObject *recycling,
 				     GObject *recall_id);

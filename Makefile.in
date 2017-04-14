@@ -100,8 +100,19 @@ check_PROGRAMS = ags_thread_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_pattern_test$(EXEEXT) ags_notation_test$(EXEEXT) \
 	ags_automation_test$(EXEEXT) \
 	ags_midi_buffer_util_test$(EXEEXT) \
+	ags_xorg_application_context_test$(EXEEXT) \
 	ags_functional_audio_test$(EXEEXT) \
-	ags_xorg_application_context_test$(EXEEXT)
+	ags_functional_machine_add_and_destroy_test$(EXEEXT) \
+	ags_functional_machine_link_test$(EXEEXT) \
+	ags_functional_line_member_add_and_destroy_test$(EXEEXT) \
+	ags_functional_editor_workflow_test$(EXEEXT) \
+	ags_functional_panel_test$(EXEEXT) \
+	ags_functional_mixer_test$(EXEEXT) \
+	ags_functional_drum_test$(EXEEXT) \
+	ags_functional_matrix_test$(EXEEXT) \
+	ags_functional_synth_test$(EXEEXT) \
+	ags_functional_ffplayer_test$(EXEEXT) \
+	ags_functional_note_edit_test$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gtk-doc.m4 \
@@ -154,7 +165,9 @@ am__installdirs = "$(DESTDIR)$(libdir)" \
 	"$(DESTDIR)$(docdir)" "$(DESTDIR)$(pkgconfigdir)" \
 	"$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES) $(libgsequencer_LTLIBRARIES)
-libags_la_LIBADD =
+am__DEPENDENCIES_1 =
+libags_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__objects_1 =
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_2 = $(am__objects_1) ags/lib/libags_la-ags_complex.lo \
@@ -166,7 +179,9 @@ am__objects_2 = $(am__objects_1) ags/lib/libags_la-ags_complex.lo \
 	ags/lib/libags_la-ags_time.lo ags/lib/libags_la-ags_turtle.lo \
 	ags/lib/libags_la-ags_turtle_manager.lo
 am__objects_3 = $(am__objects_1) \
-	ags/util/libags_la-ags_id_generator.lo
+	ags/util/libags_la-ags_destroy_util.lo \
+	ags/util/libags_la-ags_id_generator.lo \
+	ags/util/libags_la-ags_list_util.lo
 am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_applicable.lo \
 	ags/object/libags_la-ags_application_context.lo \
@@ -207,7 +222,10 @@ libags_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libags_la_CFLAGS) \
 	$(CFLAGS) $(libags_la_LDFLAGS) $(LDFLAGS) -o $@
 libags_audio_la_DEPENDENCIES = libags_server.la libags_thread.la \
-	libags.la
+	libags.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_acceleration.lo \
 	ags/audio/libags_audio_la-ags_audio.lo \
@@ -313,6 +331,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_cancel_channel.lo \
 	ags/audio/task/libags_audio_la-ags_cancel_recall.lo \
 	ags/audio/task/libags_audio_la-ags_change_soundcard.lo \
+	ags/audio/task/libags_audio_la-ags_clear_audio_signal.lo \
 	ags/audio/task/libags_audio_la-ags_clear_buffer.lo \
 	ags/audio/task/libags_audio_la-ags_export_output.lo \
 	ags/audio/task/libags_audio_la-ags_free_selection.lo \
@@ -400,6 +419,10 @@ am__objects_13 = $(am__objects_1) \
 	ags/audio/recall/libags_audio_la-ags_play_notation_audio_run.lo \
 	ags/audio/recall/libags_audio_la-ags_play_note.lo \
 	ags/audio/recall/libags_audio_la-ags_play_recycling.lo \
+	ags/audio/recall/libags_audio_la-ags_prepare_audio_signal.lo \
+	ags/audio/recall/libags_audio_la-ags_prepare_channel.lo \
+	ags/audio/recall/libags_audio_la-ags_prepare_channel_run.lo \
+	ags/audio/recall/libags_audio_la-ags_prepare_recycling.lo \
 	ags/audio/recall/libags_audio_la-ags_record_midi_audio.lo \
 	ags/audio/recall/libags_audio_la-ags_record_midi_audio_run.lo \
 	ags/audio/recall/libags_audio_la-ags_route_dssi_audio.lo \
@@ -425,6 +448,7 @@ am__objects_14 = $(am__objects_1) \
 	ags/plugin/libags_audio_la-ags_lv2_conversion.lo \
 	ags/plugin/libags_audio_la-ags_lv2_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_plugin.lo \
+	ags/plugin/libags_audio_la-ags_lv2_preset.lo \
 	ags/plugin/libags_audio_la-ags_lv2_log_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_event_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_option_manager.lo \
@@ -444,7 +468,9 @@ libags_audio_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libags_audio_la_CFLAGS) $(CFLAGS) $(libags_audio_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-libags_gui_la_LIBADD =
+libags_gui_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am__objects_15 = $(am__objects_1) \
 	ags/widget/libags_gui_la-ags_cartesian.lo \
 	ags/widget/libags_gui_la-ags_dial.lo \
@@ -468,7 +494,8 @@ libags_gui_la_OBJECTS = $(am_libags_gui_la_OBJECTS)
 libags_gui_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libags_gui_la_CFLAGS) \
 	$(CFLAGS) $(libags_gui_la_LDFLAGS) $(LDFLAGS) -o $@
-libags_server_la_DEPENDENCIES = libags_thread.la libags.la
+libags_server_la_DEPENDENCIES = libags_thread.la libags.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__objects_16 = $(am__objects_1) \
 	ags/server/libags_server_la-ags_registry.lo \
 	ags/server/libags_server_la-ags_remote_task.lo \
@@ -481,10 +508,13 @@ libags_server_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libags_server_la_CFLAGS) $(CFLAGS) \
 	$(libags_server_la_LDFLAGS) $(LDFLAGS) -o $@
-libags_thread_la_DEPENDENCIES = libags.la
+libags_thread_la_DEPENDENCIES = libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am__objects_17 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_autosave_thread.lo \
 	ags/thread/libags_thread_la-ags_concurrency_provider.lo \
+	ags/thread/libags_thread_la-ags_condition_manager.lo \
+	ags/thread/libags_thread_la-ags_destroy_worker.lo \
 	ags/thread/libags_thread_la-ags_generic_main_loop.lo \
 	ags/thread/libags_thread_la-ags_history.lo \
 	ags/thread/libags_thread_la-ags_mutex_manager.lo \
@@ -500,7 +530,8 @@ am__objects_17 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_thread-posix.lo \
 	ags/thread/libags_thread_la-ags_timestamp_factory.lo \
 	ags/thread/libags_thread_la-ags_timestamp_thread.lo \
-	ags/thread/libags_thread_la-ags_timestamp.lo
+	ags/thread/libags_thread_la-ags_timestamp.lo \
+	ags/thread/libags_thread_la-ags_worker_thread.lo
 am__objects_18 = $(am__objects_1) \
 	ags/thread/file/libags_thread_la-ags_thread_file_xml.lo
 am_libags_thread_la_OBJECTS = $(am__objects_17) $(am__objects_18)
@@ -510,7 +541,11 @@ libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(libags_thread_la_CFLAGS) $(CFLAGS) \
 	$(libags_thread_la_LDFLAGS) $(LDFLAGS) -o $@
 libgsequencer_la_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__objects_19 = $(am__objects_1)
 am__objects_20 = $(am__objects_19) $(am__objects_19) $(am__objects_19) \
 	$(am__objects_19) $(am__objects_19) $(am__objects_19) \
@@ -538,6 +573,7 @@ am__objects_21 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_effect_line_callbacks.lo \
 	ags/X/libgsequencer_la-ags_effect_pad.lo \
 	ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo \
+	ags/X/libgsequencer_la-ags_effect_separator.lo \
 	ags/X/libgsequencer_la-ags_export_soundcard.lo \
 	ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo \
 	ags/X/libgsequencer_la-ags_export_window.lo \
@@ -729,12 +765,31 @@ libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libgsequencer_la_CFLAGS) $(CFLAGS) \
 	$(libgsequencer_la_LDFLAGS) $(LDFLAGS) -o $@
+am__DEPENDENCIES_2 = libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+libgsequencer_test_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_libgsequencer_test_la_OBJECTS =  \
+	ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo \
+	ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo
+libgsequencer_test_la_OBJECTS = $(am_libgsequencer_test_la_OBJECTS)
+libgsequencer_test_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(libgsequencer_test_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_audio_application_context_test_OBJECTS = ags/test/audio/ags_audio_application_context_test-ags_audio_application_context_test.$(OBJEXT)
 ags_audio_application_context_test_OBJECTS =  \
 	$(am_ags_audio_application_context_test_OBJECTS)
 ags_audio_application_context_test_DEPENDENCIES = libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la
+	libags_server.la libags_gui.la libags_thread.la libags.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 ags_audio_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_audio_application_context_test_CFLAGS) $(CFLAGS) \
@@ -742,7 +797,10 @@ ags_audio_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 am_ags_audio_signal_test_OBJECTS = ags/test/audio/ags_audio_signal_test-ags_audio_signal_test.$(OBJEXT)
 ags_audio_signal_test_OBJECTS = $(am_ags_audio_signal_test_OBJECTS)
 ags_audio_signal_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_audio_signal_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_audio_signal_test_CFLAGS) $(CFLAGS) \
@@ -751,7 +809,10 @@ am_ags_audio_test_OBJECTS =  \
 	ags/test/audio/ags_audio_test-ags_audio_test.$(OBJEXT)
 ags_audio_test_OBJECTS = $(am_ags_audio_test_OBJECTS)
 ags_audio_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_audio_test_CFLAGS) $(CFLAGS) $(ags_audio_test_LDFLAGS) \
@@ -759,7 +820,10 @@ ags_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_automation_test_OBJECTS = ags/test/audio/ags_automation_test-ags_automation_test.$(OBJEXT)
 ags_automation_test_OBJECTS = $(am_ags_automation_test_OBJECTS)
 ags_automation_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_automation_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_automation_test_CFLAGS) $(CFLAGS) \
@@ -768,7 +832,10 @@ am_ags_channel_test_OBJECTS =  \
 	ags/test/audio/ags_channel_test-ags_channel_test.$(OBJEXT)
 ags_channel_test_OBJECTS = $(am_ags_channel_test_OBJECTS)
 ags_channel_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_channel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_channel_test_CFLAGS) $(CFLAGS) \
@@ -777,7 +844,10 @@ am_ags_devout_test_OBJECTS =  \
 	ags/test/audio/ags_devout_test-ags_devout_test.$(OBJEXT)
 ags_devout_test_OBJECTS = $(am_ags_devout_test_OBJECTS)
 ags_devout_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_devout_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_devout_test_CFLAGS) $(CFLAGS) $(ags_devout_test_LDFLAGS) \
@@ -785,17 +855,124 @@ ags_devout_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_functional_audio_test_OBJECTS = ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.$(OBJEXT)
 ags_functional_audio_test_OBJECTS =  \
 	$(am_ags_functional_audio_test_OBJECTS)
-ags_functional_audio_test_DEPENDENCIES = libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la
+am__DEPENDENCIES_3 = libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la libgsequencer_test.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_functional_audio_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 ags_functional_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_audio_test_CFLAGS) $(CFLAGS) \
 	$(ags_functional_audio_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_drum_test_OBJECTS = ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.$(OBJEXT)
+ags_functional_drum_test_OBJECTS =  \
+	$(am_ags_functional_drum_test_OBJECTS)
+ags_functional_drum_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_drum_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_drum_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_drum_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_editor_workflow_test_OBJECTS = ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.$(OBJEXT)
+ags_functional_editor_workflow_test_OBJECTS =  \
+	$(am_ags_functional_editor_workflow_test_OBJECTS)
+ags_functional_editor_workflow_test_DEPENDENCIES =  \
+	$(am__DEPENDENCIES_3)
+ags_functional_editor_workflow_test_LINK = $(LIBTOOL) $(AM_V_lt) \
+	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
+	$(CCLD) $(ags_functional_editor_workflow_test_CFLAGS) \
+	$(CFLAGS) $(ags_functional_editor_workflow_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_functional_ffplayer_test_OBJECTS = ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.$(OBJEXT)
+ags_functional_ffplayer_test_OBJECTS =  \
+	$(am_ags_functional_ffplayer_test_OBJECTS)
+ags_functional_ffplayer_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_ffplayer_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_ffplayer_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_line_member_add_and_destroy_test_OBJECTS = ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.$(OBJEXT)
+ags_functional_line_member_add_and_destroy_test_OBJECTS =  \
+	$(am_ags_functional_line_member_add_and_destroy_test_OBJECTS)
+ags_functional_line_member_add_and_destroy_test_DEPENDENCIES =  \
+	$(am__DEPENDENCIES_3)
+ags_functional_line_member_add_and_destroy_test_LINK = $(LIBTOOL) \
+	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) \
+	$(ags_functional_line_member_add_and_destroy_test_CFLAGS) \
+	$(CFLAGS) \
+	$(ags_functional_line_member_add_and_destroy_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_functional_machine_add_and_destroy_test_OBJECTS = ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.$(OBJEXT)
+ags_functional_machine_add_and_destroy_test_OBJECTS =  \
+	$(am_ags_functional_machine_add_and_destroy_test_OBJECTS)
+ags_functional_machine_add_and_destroy_test_DEPENDENCIES =  \
+	$(am__DEPENDENCIES_3)
+ags_functional_machine_add_and_destroy_test_LINK = $(LIBTOOL) \
+	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) \
+	$(ags_functional_machine_add_and_destroy_test_CFLAGS) \
+	$(CFLAGS) \
+	$(ags_functional_machine_add_and_destroy_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_functional_machine_link_test_OBJECTS = ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.$(OBJEXT)
+ags_functional_machine_link_test_OBJECTS =  \
+	$(am_ags_functional_machine_link_test_OBJECTS)
+ags_functional_machine_link_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_machine_link_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_machine_link_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_machine_link_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_matrix_test_OBJECTS = ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.$(OBJEXT)
+ags_functional_matrix_test_OBJECTS =  \
+	$(am_ags_functional_matrix_test_OBJECTS)
+ags_functional_matrix_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_matrix_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_matrix_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_matrix_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_mixer_test_OBJECTS = ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.$(OBJEXT)
+ags_functional_mixer_test_OBJECTS =  \
+	$(am_ags_functional_mixer_test_OBJECTS)
+ags_functional_mixer_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_mixer_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_mixer_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_mixer_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_note_edit_test_OBJECTS = ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.$(OBJEXT)
+ags_functional_note_edit_test_OBJECTS =  \
+	$(am_ags_functional_note_edit_test_OBJECTS)
+ags_functional_note_edit_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_note_edit_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_note_edit_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_note_edit_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_panel_test_OBJECTS = ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.$(OBJEXT)
+ags_functional_panel_test_OBJECTS =  \
+	$(am_ags_functional_panel_test_OBJECTS)
+ags_functional_panel_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_panel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_panel_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_panel_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_functional_synth_test_OBJECTS = ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.$(OBJEXT)
+ags_functional_synth_test_OBJECTS =  \
+	$(am_ags_functional_synth_test_OBJECTS)
+ags_functional_synth_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+ags_functional_synth_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_functional_synth_test_CFLAGS) $(CFLAGS) \
+	$(ags_functional_synth_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_midi_buffer_util_test_OBJECTS = ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.$(OBJEXT)
 ags_midi_buffer_util_test_OBJECTS =  \
 	$(am_ags_midi_buffer_util_test_OBJECTS)
 ags_midi_buffer_util_test_DEPENDENCIES = libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la
+	libags_server.la libags_gui.la libags_thread.la libags.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 ags_midi_buffer_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_midi_buffer_util_test_CFLAGS) $(CFLAGS) \
@@ -804,7 +981,10 @@ am_ags_notation_test_OBJECTS =  \
 	ags/test/audio/ags_notation_test-ags_notation_test.$(OBJEXT)
 ags_notation_test_OBJECTS = $(am_ags_notation_test_OBJECTS)
 ags_notation_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_notation_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_notation_test_CFLAGS) $(CFLAGS) \
@@ -813,7 +993,10 @@ am_ags_pattern_test_OBJECTS =  \
 	ags/test/audio/ags_pattern_test-ags_pattern_test.$(OBJEXT)
 ags_pattern_test_OBJECTS = $(am_ags_pattern_test_OBJECTS)
 ags_pattern_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_pattern_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_pattern_test_CFLAGS) $(CFLAGS) \
@@ -822,7 +1005,10 @@ am_ags_recall_test_OBJECTS =  \
 	ags/test/audio/ags_recall_test-ags_recall_test.$(OBJEXT)
 ags_recall_test_OBJECTS = $(am_ags_recall_test_OBJECTS)
 ags_recall_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_recall_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_recall_test_CFLAGS) $(CFLAGS) $(ags_recall_test_LDFLAGS) \
@@ -830,7 +1016,10 @@ ags_recall_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_recycling_test_OBJECTS = ags/test/audio/ags_recycling_test-ags_recycling_test.$(OBJEXT)
 ags_recycling_test_OBJECTS = $(am_ags_recycling_test_OBJECTS)
 ags_recycling_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_recycling_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_recycling_test_CFLAGS) $(CFLAGS) \
@@ -847,7 +1036,10 @@ am_ags_turtle_test_OBJECTS =  \
 	ags/test/lib/ags_turtle_test-ags_turtle_test.$(OBJEXT)
 ags_turtle_test_OBJECTS = $(am_ags_turtle_test_OBJECTS)
 ags_turtle_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_turtle_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_turtle_test_CFLAGS) $(CFLAGS) $(ags_turtle_test_LDFLAGS) \
@@ -857,7 +1049,12 @@ ags_xorg_application_context_test_OBJECTS =  \
 	$(am_ags_xorg_application_context_test_OBJECTS)
 ags_xorg_application_context_test_DEPENDENCIES = libgsequencer.la \
 	libags_audio.la libags_server.la libags_gui.la \
-	libags_thread.la libags.la
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ags_xorg_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) \
@@ -866,7 +1063,14 @@ am__objects_28 = ags/gsequencer-gsequencer_main.$(OBJEXT)
 am_gsequencer_OBJECTS = $(am__objects_28) $(am__objects_1)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la
+	libags_server.la libags_gui.la libags_thread.la libags.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 gsequencer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(gsequencer_CFLAGS) \
 	$(CFLAGS) $(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
@@ -914,11 +1118,23 @@ am__v_CCLD_1 =
 SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(libags_gui_la_SOURCES) $(libags_server_la_SOURCES) \
 	$(libags_thread_la_SOURCES) $(libgsequencer_la_SOURCES) \
+	$(libgsequencer_test_la_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
 	$(ags_automation_test_SOURCES) $(ags_channel_test_SOURCES) \
 	$(ags_devout_test_SOURCES) \
 	$(ags_functional_audio_test_SOURCES) \
+	$(ags_functional_drum_test_SOURCES) \
+	$(ags_functional_editor_workflow_test_SOURCES) \
+	$(ags_functional_ffplayer_test_SOURCES) \
+	$(ags_functional_line_member_add_and_destroy_test_SOURCES) \
+	$(ags_functional_machine_add_and_destroy_test_SOURCES) \
+	$(ags_functional_machine_link_test_SOURCES) \
+	$(ags_functional_matrix_test_SOURCES) \
+	$(ags_functional_mixer_test_SOURCES) \
+	$(ags_functional_note_edit_test_SOURCES) \
+	$(ags_functional_panel_test_SOURCES) \
+	$(ags_functional_synth_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
@@ -928,11 +1144,23 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(libags_gui_la_SOURCES) $(libags_server_la_SOURCES) \
 	$(libags_thread_la_SOURCES) $(libgsequencer_la_SOURCES) \
+	$(libgsequencer_test_la_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
 	$(ags_automation_test_SOURCES) $(ags_channel_test_SOURCES) \
 	$(ags_devout_test_SOURCES) \
 	$(ags_functional_audio_test_SOURCES) \
+	$(ags_functional_drum_test_SOURCES) \
+	$(ags_functional_editor_workflow_test_SOURCES) \
+	$(ags_functional_ffplayer_test_SOURCES) \
+	$(ags_functional_line_member_add_and_destroy_test_SOURCES) \
+	$(ags_functional_machine_add_and_destroy_test_SOURCES) \
+	$(ags_functional_machine_link_test_SOURCES) \
+	$(ags_functional_matrix_test_SOURCES) \
+	$(ags_functional_mixer_test_SOURCES) \
+	$(ags_functional_note_edit_test_SOURCES) \
+	$(ags_functional_panel_test_SOURCES) \
+	$(ags_functional_synth_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
@@ -1150,6 +1378,7 @@ TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(srcdir)/libags_audio.pc.in $(srcdir)/libags_gui.pc.in \
 	$(srcdir)/libgsequencer.pc.in $(top_srcdir)/ags/config.h.in \
+	$(top_srcdir)/functional-tests.mk $(top_srcdir)/unit-tests.mk \
 	AUTHORS COPYING ChangeLog INSTALL NEWS README TODO compile \
 	config.guess config.rpath config.sub depcomp install-sh \
 	ltmain.sh missing test-driver
@@ -1210,6 +1439,7 @@ GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GREP = @GREP@
 GSEQUENCER_CFLAGS = @GSEQUENCER_CFLAGS@
+GSEQUENCER_FUNCTIONAL_TEST_LDADD = @GSEQUENCER_FUNCTIONAL_TEST_LDADD@
 GSEQUENCER_LDFLAGS = @GSEQUENCER_LDFLAGS@
 GTKDOC_CHECK = @GTKDOC_CHECK@
 GTKDOC_CHECK_PATH = @GTKDOC_CHECK_PATH@
@@ -1231,6 +1461,7 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBASOUND2_CFLAGS = @LIBASOUND2_CFLAGS@
 LIBASOUND2_LIBS = @LIBASOUND2_LIBS@
+LIBGSEQUENCER_TEST_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
 LIBINSTPATCH_CFLAGS = @LIBINSTPATCH_CFLAGS@
 LIBINSTPATCH_LIBS = @LIBINSTPATCH_LIBS@
 LIBOBJS = @LIBOBJS@
@@ -1358,13 +1589,7 @@ gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
 	$(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) \
 	$(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) \
 	$(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)
-gsequencer_LDFLAGS = @GSEQUENCER_LDFLAGS@ -ldl -lm -lrt -pthread -lX11 \
-	$(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) \
-	$(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) \
-	$(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) \
-	$(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) \
-	$(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) \
-	$(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
+gsequencer_LDFLAGS = @GSEQUENCER_LDFLAGS@ -pthread
 midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@ -I./ -I/usr/include \
 	$(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
 midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@ -ldl $(LIBXML2_LIBS) \
@@ -1384,6 +1609,8 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make \
 	gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README \
 	ags_example.xml gsequencer-documentation midi2xml.1 \
+	ags_functional_note_edit_test.xml \
+	functional-system-tests.mk.am functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags-audio/libags_audio-sections.txt \
@@ -1433,7 +1660,8 @@ EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make \
 man1_MANS = gsequencer.1 midi2xml.1
 
 # clean
-CLEANFILES = $(appdata_DATA) $(pkgconfig_DATA)
+CLEANFILES = functional-system-tests.mk $(appdata_DATA) \
+	$(pkgconfig_DATA)
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -1547,106 +1775,233 @@ libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_client_c_sour
 libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_client_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
-# libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-# libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
+libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags.so -pthread
+libags_la_LIBADD = -ldl -lm $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
 
 # library libags-thread
 libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_thread.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-libags_thread_la_LIBADD = libags.la
+libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_thread.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags_thread.so -pthread
+libags_thread_la_LIBADD = libags.la -ldl -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-server
 libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_server.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-libags_server_la_LIBADD = libags_thread.la libags.la
+libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_server.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags_server.so -pthread
+libags_server_la_LIBADD = libags_thread.la libags.la -ldl -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-audio
 libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 0:7:0 -shared -fPIC -soname -ldl -lm -pthread $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la
+libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 0:7:0 -shared -fPIC -soname,libags_audio.so -pthread 
+libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -ldl -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # library libags-gui
 libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym -version-info 0:7:0 -shared -fPIC -Wl,-soname,libags_gui.so -pthread
+libags_gui_la_LIBADD = -ldl -lm $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 # library libgsequencer
-# libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(JACK_CFLAGS)
-# libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
-# libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(JACK_CFLAGS)
-libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname -ldl -lm -pthread $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
-libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname,libgsequencer.so -pthread
+libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
 
-# static gsequencer - for testing
+# gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
-gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-TESTS = $(check_PROGRAMS)
+gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm -lrt -lX11 $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
+
+# thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
 ags_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 ags_thread_test_LDADD = libags_thread.la libags.la
+
+# turtle unit test
 ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
 ags_turtle_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_turtle_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_turtle_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# audio application context unit test
 ags_audio_application_context_test_SOURCES = ags/test/audio/ags_audio_application_context_test.c
 ags_audio_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_audio_application_context_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_application_context_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_audio_application_context_test_LDFLAGS = $(LDFLAGS) -pthread
+ags_audio_application_context_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# devout unit test
 ags_devout_test_SOURCES = ags/test/audio/ags_devout_test.c
 ags_devout_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_devout_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_devout_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_devout_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_devout_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# audio unit test
 ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
 ags_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_audio_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
-ags_functional_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_functional_audio_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_functional_audio_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_audio_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# channel unit test
 ags_channel_test_SOURCES = ags/test/audio/ags_channel_test.c
 ags_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_channel_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_channel_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_channel_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# recycling unit test
 ags_recycling_test_SOURCES = ags/test/audio/ags_recycling_test.c
 ags_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_recycling_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_recycling_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_recycling_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# audio signal unit test
 ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
 ags_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_audio_signal_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# recall unit test
 ags_recall_test_SOURCES = ags/test/audio/ags_recall_test.c
 ags_recall_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_recall_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_recall_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_recall_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_recall_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# pattern unit test
 ags_pattern_test_SOURCES = ags/test/audio/ags_pattern_test.c
 ags_pattern_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_pattern_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_pattern_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_pattern_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_pattern_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# notation unit test
 ags_notation_test_SOURCES = ags/test/audio/ags_notation_test.c
 ags_notation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_notation_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_notation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_notation_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_notation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# automation unit test
 ags_automation_test_SOURCES = ags/test/audio/ags_automation_test.c
 ags_automation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_automation_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_automation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_automation_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_automation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# midi buffer util unit test
 ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_test.c
 ags_midi_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_midi_buffer_util_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_midi_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
 ags_xorg_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-ags_xorg_application_context_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(LDFLAGS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-ags_xorg_application_context_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+ags_xorg_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_xorg_application_context_test_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+
+# libadd and ldadd
+libgsequencer_test_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@ \
+	libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm \
+	$(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) \
+	$(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) \
+	$(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) \
+	$(CAIRO_LIBS) $(GTK_LIBS)
+gsequencer_functional_test_LDADD = @GSEQUENCER_FUNCTIONAL_TEST_LDADD@ \
+	libgsequencer.la libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la libgsequencer_test.la \
+	-lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) \
+	$(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) \
+	$(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) \
+	$(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+check_LTLIBRARIES = libgsequencer_test.la
+
+# functional test util library
+libgsequencer_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h
+libgsequencer_test_la_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libgsequencer_test_la_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
+
+# functional audio test
+ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c
+ags_functional_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_functional_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_audio_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional machine add and destroy test
+ags_functional_machine_add_and_destroy_test_SOURCES = ags/test/X/ags_functional_machine_add_and_destroy_test.c
+ags_functional_machine_add_and_destroy_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_machine_add_and_destroy_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_machine_add_and_destroy_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_machine_add_and_destroy_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional machine link test
+ags_functional_machine_link_test_SOURCES = ags/test/X/ags_functional_machine_link_test.c
+ags_functional_machine_link_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_machine_link_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_machine_link_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_machine_link_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional line member add and destroy test
+ags_functional_line_member_add_and_destroy_test_SOURCES = ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+ags_functional_line_member_add_and_destroy_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_line_member_add_and_destroy_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_line_member_add_and_destroy_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_line_member_add_and_destroy_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional editor workflow test
+ags_functional_editor_workflow_test_SOURCES = ags/test/X/ags_functional_editor_workflow_test.c
+ags_functional_editor_workflow_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_editor_workflow_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_editor_workflow_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_editor_workflow_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional panel test
+ags_functional_panel_test_SOURCES = ags/test/X/machine/ags_functional_panel_test.c
+ags_functional_panel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_panel_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_panel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_panel_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional mixer test
+ags_functional_mixer_test_SOURCES = ags/test/X/machine/ags_functional_mixer_test.c
+ags_functional_mixer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_mixer_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_mixer_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_mixer_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional drum test
+ags_functional_drum_test_SOURCES = ags/test/X/machine/ags_functional_drum_test.c
+ags_functional_drum_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_drum_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_drum_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_drum_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional matrix test
+ags_functional_matrix_test_SOURCES = ags/test/X/machine/ags_functional_matrix_test.c
+ags_functional_matrix_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_matrix_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_matrix_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_matrix_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional synth test
+ags_functional_synth_test_SOURCES = ags/test/X/machine/ags_functional_synth_test.c
+ags_functional_synth_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_synth_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_synth_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_synth_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional ffplayer test
+ags_functional_ffplayer_test_SOURCES = ags/test/X/machine/ags_functional_ffplayer_test.c
+ags_functional_ffplayer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_ffplayer_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_ffplayer_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_ffplayer_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional note edit test
+ags_functional_note_edit_test_SOURCES = ags/test/X/ags_functional_note_edit_test.c
+ags_functional_note_edit_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_note_edit_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
+ags_functional_note_edit_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_note_edit_test_LDADD = $(gsequencer_functional_test_LDADD)
+TESTS = $(check_PROGRAMS)
 
 # libags all files
 deprecated_libags_h_sources = 
@@ -1682,12 +2037,16 @@ deprecated_libags_util_h_sources =
 # libags - util
 libags_util_h_sources = \
 	$(deprecated_libags_util_h_sources) \
-	ags/util/ags_id_generator.h
+	ags/util/ags_destroy_util.h \
+	ags/util/ags_id_generator.h \
+	ags/util/ags_list_util.h
 
 deprecated_libags_util_c_sources = 
 libags_util_c_sources = \
 	$(deprecated_libags_util_c_sources) \
-	ags/util/ags_id_generator.c
+	ags/util/ags_destroy_util.c \
+	ags/util/ags_id_generator.c \
+	ags/util/ags_list_util.c
 
 deprecated_libags_object_h_sources = 
 
@@ -1774,6 +2133,8 @@ libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
 	ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
+	ags/thread/ags_condition_manager.h \
+	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
 	ags/thread/ags_mutex_manager.h \
@@ -1789,13 +2150,16 @@ libags_thread_h_sources = \
 	ags/thread/ags_thread-posix.h \
 	ags/thread/ags_timestamp_factory.h \
 	ags/thread/ags_timestamp_thread.h \
-	ags/thread/ags_timestamp.h
+	ags/thread/ags_timestamp.h \
+	ags/thread/ags_worker_thread.h
 
 deprecated_libags_thread_c_sources = 
 libags_thread_c_sources = \
 	$(deprecated_libags_thread_c_sources) \
 	ags/thread/ags_autosave_thread.c \
 	ags/thread/ags_concurrency_provider.c \
+	ags/thread/ags_condition_manager.c \
+	ags/thread/ags_destroy_worker.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
 	ags/thread/ags_mutex_manager.c \
@@ -1811,7 +2175,8 @@ libags_thread_c_sources = \
 	ags/thread/ags_thread-posix.c \
 	ags/thread/ags_timestamp_factory.c \
 	ags/thread/ags_timestamp_thread.c \
-	ags/thread/ags_timestamp.c
+	ags/thread/ags_timestamp.c \
+	ags/thread/ags_worker_thread.c
 
 
 # libags-thread - file
@@ -2021,6 +2386,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
 	ags/plugin/ags_lv2_plugin.h \
+	ags/plugin/ags_lv2_preset.h \
 	ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
 	ags/plugin/ags_lv2_option_manager.h \
@@ -2044,6 +2410,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
 	ags/plugin/ags_lv2_plugin.c \
+	ags/plugin/ags_lv2_preset.c \
 	ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
 	ags/plugin/ags_lv2_option_manager.c \
@@ -2176,6 +2543,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_play_notation_audio_run.h \
 	ags/audio/recall/ags_play_note.h \
 	ags/audio/recall/ags_play_recycling.h \
+	ags/audio/recall/ags_prepare_audio_signal.h \
+	ags/audio/recall/ags_prepare_channel.h \
+	ags/audio/recall/ags_prepare_channel_run.h \
+	ags/audio/recall/ags_prepare_recycling.h \
 	ags/audio/recall/ags_record_midi_audio.h \
 	ags/audio/recall/ags_record_midi_audio_run.h \
 	ags/audio/recall/ags_route_dssi_audio.h \
@@ -2243,6 +2614,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_play_notation_audio_run.c \
 	ags/audio/recall/ags_play_note.c \
 	ags/audio/recall/ags_play_recycling.c \
+	ags/audio/recall/ags_prepare_audio_signal.c \
+	ags/audio/recall/ags_prepare_channel.c \
+	ags/audio/recall/ags_prepare_channel_run.c \
+	ags/audio/recall/ags_prepare_recycling.c \
 	ags/audio/recall/ags_record_midi_audio.c \
 	ags/audio/recall/ags_record_midi_audio_run.c \
 	ags/audio/recall/ags_route_dssi_audio.c \
@@ -2283,6 +2658,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_cancel_channel.h \
 	ags/audio/task/ags_cancel_recall.h \
 	ags/audio/task/ags_change_soundcard.h \
+	ags/audio/task/ags_clear_audio_signal.h \
 	ags/audio/task/ags_clear_buffer.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
@@ -2344,6 +2720,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_cancel_channel.c \
 	ags/audio/task/ags_cancel_recall.c \
 	ags/audio/task/ags_change_soundcard.c \
+	ags/audio/task/ags_clear_audio_signal.c \
 	ags/audio/task/ags_clear_buffer.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
@@ -2454,6 +2831,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_effect_line.h \
 	ags/X/ags_effect_pad_callbacks.h \
 	ags/X/ags_effect_pad.h \
+	ags/X/ags_effect_separator.h \
 	ags/X/ags_export_soundcard_callbacks.h \
 	ags/X/ags_export_soundcard.h \
 	ags/X/ags_export_window_callbacks.h \
@@ -2551,6 +2929,7 @@ libgsequencer_c_sources = \
 	ags/X/ags_effect_line_callbacks.c \
 	ags/X/ags_effect_pad.c \
 	ags/X/ags_effect_pad_callbacks.c \
+	ags/X/ags_effect_separator.c \
 	ags/X/ags_export_soundcard.c \
 	ags/X/ags_export_soundcard_callbacks.c \
 	ags/X/ags_export_window.c \
@@ -2912,7 +3291,7 @@ all: all-am
 .SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
 am--refresh: Makefile
 	@:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/unit-tests.mk $(top_srcdir)/functional-tests.mk $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -2934,6 +3313,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
 	esac;
+$(top_srcdir)/unit-tests.mk $(top_srcdir)/functional-tests.mk $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
@@ -2966,6 +3346,17 @@ libags_gui.pc: $(top_builddir)/config.status $(srcdir)/libags_gui.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 libgsequencer.pc: $(top_builddir)/config.status $(srcdir)/libgsequencer.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
+
+clean-checkLTLIBRARIES:
+	-test -z "$(check_LTLIBRARIES)" || rm -f $(check_LTLIBRARIES)
+	@list='$(check_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -3068,7 +3459,11 @@ ags/util/$(am__dirstamp):
 ags/util/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ags/util/$(DEPDIR)
 	@: > ags/util/$(DEPDIR)/$(am__dirstamp)
+ags/util/libags_la-ags_destroy_util.lo: ags/util/$(am__dirstamp) \
+	ags/util/$(DEPDIR)/$(am__dirstamp)
 ags/util/libags_la-ags_id_generator.lo: ags/util/$(am__dirstamp) \
+	ags/util/$(DEPDIR)/$(am__dirstamp)
+ags/util/libags_la-ags_list_util.lo: ags/util/$(am__dirstamp) \
 	ags/util/$(DEPDIR)/$(am__dirstamp)
 ags/object/$(am__dirstamp):
 	@$(MKDIR_P) ags/object
@@ -3435,6 +3830,9 @@ ags/audio/task/libags_audio_la-ags_cancel_recall.lo:  \
 ags/audio/task/libags_audio_la-ags_change_soundcard.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/libags_audio_la-ags_clear_audio_signal.lo:  \
+	ags/audio/task/$(am__dirstamp) \
+	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/libags_audio_la-ags_clear_buffer.lo:  \
 	ags/audio/task/$(am__dirstamp) \
 	ags/audio/task/$(DEPDIR)/$(am__dirstamp)
@@ -3705,6 +4103,18 @@ ags/audio/recall/libags_audio_la-ags_play_note.lo:  \
 ags/audio/recall/libags_audio_la-ags_play_recycling.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_prepare_audio_signal.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_prepare_channel.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_prepare_channel_run.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_prepare_recycling.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/recall/libags_audio_la-ags_record_midi_audio.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
@@ -3781,6 +4191,9 @@ ags/plugin/libags_audio_la-ags_lv2_manager.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_lv2_plugin.lo:  \
+	ags/plugin/$(am__dirstamp) \
+	ags/plugin/$(DEPDIR)/$(am__dirstamp)
+ags/plugin/libags_audio_la-ags_lv2_preset.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_lv2_log_manager.lo:  \
@@ -3899,6 +4312,12 @@ ags/thread/libags_thread_la-ags_autosave_thread.lo:  \
 ags/thread/libags_thread_la-ags_concurrency_provider.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
+ags/thread/libags_thread_la-ags_condition_manager.lo:  \
+	ags/thread/$(am__dirstamp) \
+	ags/thread/$(DEPDIR)/$(am__dirstamp)
+ags/thread/libags_thread_la-ags_destroy_worker.lo:  \
+	ags/thread/$(am__dirstamp) \
+	ags/thread/$(DEPDIR)/$(am__dirstamp)
 ags/thread/libags_thread_la-ags_generic_main_loop.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
@@ -3944,6 +4363,9 @@ ags/thread/libags_thread_la-ags_timestamp_thread.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
 ags/thread/libags_thread_la-ags_timestamp.lo:  \
+	ags/thread/$(am__dirstamp) \
+	ags/thread/$(DEPDIR)/$(am__dirstamp)
+ags/thread/libags_thread_la-ags_worker_thread.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
 ags/thread/file/$(am__dirstamp):
@@ -4008,6 +4430,8 @@ ags/X/libgsequencer_la-ags_effect_pad.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_effect_separator.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_export_soundcard.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_export_soundcard_callbacks.lo:  \
@@ -4507,6 +4931,21 @@ ags/X/editor/libgsequencer_la-ags_toolbar_callbacks.lo:  \
 
 libgsequencer.la: $(libgsequencer_la_OBJECTS) $(libgsequencer_la_DEPENDENCIES) $(EXTRA_libgsequencer_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libgsequencer_la_LINK) -rpath $(libgsequencerdir) $(libgsequencer_la_OBJECTS) $(libgsequencer_la_LIBADD) $(LIBS)
+ags/test/X/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/X
+	@: > ags/test/X/$(am__dirstamp)
+ags/test/X/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/X/$(DEPDIR)
+	@: > ags/test/X/$(DEPDIR)/$(am__dirstamp)
+ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo:  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo:  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+libgsequencer_test.la: $(libgsequencer_test_la_OBJECTS) $(libgsequencer_test_la_DEPENDENCIES) $(EXTRA_libgsequencer_test_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libgsequencer_test_la_LINK)  $(libgsequencer_test_la_OBJECTS) $(libgsequencer_test_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -4620,6 +5059,89 @@ ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.$(OBJEXT):  \
 ags_functional_audio_test$(EXEEXT): $(ags_functional_audio_test_OBJECTS) $(ags_functional_audio_test_DEPENDENCIES) $(EXTRA_ags_functional_audio_test_DEPENDENCIES) 
 	@rm -f ags_functional_audio_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_functional_audio_test_LINK) $(ags_functional_audio_test_OBJECTS) $(ags_functional_audio_test_LDADD) $(LIBS)
+ags/test/X/machine/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/X/machine
+	@: > ags/test/X/machine/$(am__dirstamp)
+ags/test/X/machine/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/X/machine/$(DEPDIR)
+	@: > ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.$(OBJEXT):  \
+	ags/test/X/machine/$(am__dirstamp) \
+	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_drum_test$(EXEEXT): $(ags_functional_drum_test_OBJECTS) $(ags_functional_drum_test_DEPENDENCIES) $(EXTRA_ags_functional_drum_test_DEPENDENCIES) 
+	@rm -f ags_functional_drum_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_drum_test_LINK) $(ags_functional_drum_test_OBJECTS) $(ags_functional_drum_test_LDADD) $(LIBS)
+ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_editor_workflow_test$(EXEEXT): $(ags_functional_editor_workflow_test_OBJECTS) $(ags_functional_editor_workflow_test_DEPENDENCIES) $(EXTRA_ags_functional_editor_workflow_test_DEPENDENCIES) 
+	@rm -f ags_functional_editor_workflow_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_editor_workflow_test_LINK) $(ags_functional_editor_workflow_test_OBJECTS) $(ags_functional_editor_workflow_test_LDADD) $(LIBS)
+ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.$(OBJEXT):  \
+	ags/test/X/machine/$(am__dirstamp) \
+	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_ffplayer_test$(EXEEXT): $(ags_functional_ffplayer_test_OBJECTS) $(ags_functional_ffplayer_test_DEPENDENCIES) $(EXTRA_ags_functional_ffplayer_test_DEPENDENCIES) 
+	@rm -f ags_functional_ffplayer_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_ffplayer_test_LINK) $(ags_functional_ffplayer_test_OBJECTS) $(ags_functional_ffplayer_test_LDADD) $(LIBS)
+ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_line_member_add_and_destroy_test$(EXEEXT): $(ags_functional_line_member_add_and_destroy_test_OBJECTS) $(ags_functional_line_member_add_and_destroy_test_DEPENDENCIES) $(EXTRA_ags_functional_line_member_add_and_destroy_test_DEPENDENCIES) 
+	@rm -f ags_functional_line_member_add_and_destroy_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_line_member_add_and_destroy_test_LINK) $(ags_functional_line_member_add_and_destroy_test_OBJECTS) $(ags_functional_line_member_add_and_destroy_test_LDADD) $(LIBS)
+ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_machine_add_and_destroy_test$(EXEEXT): $(ags_functional_machine_add_and_destroy_test_OBJECTS) $(ags_functional_machine_add_and_destroy_test_DEPENDENCIES) $(EXTRA_ags_functional_machine_add_and_destroy_test_DEPENDENCIES) 
+	@rm -f ags_functional_machine_add_and_destroy_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_machine_add_and_destroy_test_LINK) $(ags_functional_machine_add_and_destroy_test_OBJECTS) $(ags_functional_machine_add_and_destroy_test_LDADD) $(LIBS)
+ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_machine_link_test$(EXEEXT): $(ags_functional_machine_link_test_OBJECTS) $(ags_functional_machine_link_test_DEPENDENCIES) $(EXTRA_ags_functional_machine_link_test_DEPENDENCIES) 
+	@rm -f ags_functional_machine_link_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_machine_link_test_LINK) $(ags_functional_machine_link_test_OBJECTS) $(ags_functional_machine_link_test_LDADD) $(LIBS)
+ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.$(OBJEXT):  \
+	ags/test/X/machine/$(am__dirstamp) \
+	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_matrix_test$(EXEEXT): $(ags_functional_matrix_test_OBJECTS) $(ags_functional_matrix_test_DEPENDENCIES) $(EXTRA_ags_functional_matrix_test_DEPENDENCIES) 
+	@rm -f ags_functional_matrix_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_matrix_test_LINK) $(ags_functional_matrix_test_OBJECTS) $(ags_functional_matrix_test_LDADD) $(LIBS)
+ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.$(OBJEXT):  \
+	ags/test/X/machine/$(am__dirstamp) \
+	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_mixer_test$(EXEEXT): $(ags_functional_mixer_test_OBJECTS) $(ags_functional_mixer_test_DEPENDENCIES) $(EXTRA_ags_functional_mixer_test_DEPENDENCIES) 
+	@rm -f ags_functional_mixer_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_mixer_test_LINK) $(ags_functional_mixer_test_OBJECTS) $(ags_functional_mixer_test_LDADD) $(LIBS)
+ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_note_edit_test$(EXEEXT): $(ags_functional_note_edit_test_OBJECTS) $(ags_functional_note_edit_test_DEPENDENCIES) $(EXTRA_ags_functional_note_edit_test_DEPENDENCIES) 
+	@rm -f ags_functional_note_edit_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_note_edit_test_LINK) $(ags_functional_note_edit_test_OBJECTS) $(ags_functional_note_edit_test_LDADD) $(LIBS)
+ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.$(OBJEXT):  \
+	ags/test/X/machine/$(am__dirstamp) \
+	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_panel_test$(EXEEXT): $(ags_functional_panel_test_OBJECTS) $(ags_functional_panel_test_DEPENDENCIES) $(EXTRA_ags_functional_panel_test_DEPENDENCIES) 
+	@rm -f ags_functional_panel_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_panel_test_LINK) $(ags_functional_panel_test_OBJECTS) $(ags_functional_panel_test_LDADD) $(LIBS)
+ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.$(OBJEXT):  \
+	ags/test/X/machine/$(am__dirstamp) \
+	ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+
+ags_functional_synth_test$(EXEEXT): $(ags_functional_synth_test_OBJECTS) $(ags_functional_synth_test_DEPENDENCIES) $(EXTRA_ags_functional_synth_test_DEPENDENCIES) 
+	@rm -f ags_functional_synth_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_functional_synth_test_LINK) $(ags_functional_synth_test_OBJECTS) $(ags_functional_synth_test_LDADD) $(LIBS)
 ags/test/audio/midi/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/audio/midi
 	@: > ags/test/audio/midi/$(am__dirstamp)
@@ -4687,12 +5209,6 @@ ags/test/lib/ags_turtle_test-ags_turtle_test.$(OBJEXT):  \
 ags_turtle_test$(EXEEXT): $(ags_turtle_test_OBJECTS) $(ags_turtle_test_DEPENDENCIES) $(EXTRA_ags_turtle_test_DEPENDENCIES) 
 	@rm -f ags_turtle_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_turtle_test_LINK) $(ags_turtle_test_OBJECTS) $(ags_turtle_test_LDADD) $(LIBS)
-ags/test/X/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/X
-	@: > ags/test/X/$(am__dirstamp)
-ags/test/X/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/X/$(DEPDIR)
-	@: > ags/test/X/$(DEPDIR)/$(am__dirstamp)
 ags/test/X/ags_xorg_application_context_test-ags_xorg_application_context_test.$(OBJEXT):  \
 	ags/test/X/$(am__dirstamp) \
 	ags/test/X/$(DEPDIR)/$(am__dirstamp)
@@ -4765,6 +5281,8 @@ mostlyclean-compile:
 	-rm -f ags/server/*.$(OBJEXT)
 	-rm -f ags/server/*.lo
 	-rm -f ags/test/X/*.$(OBJEXT)
+	-rm -f ags/test/X/*.lo
+	-rm -f ags/test/X/machine/*.$(OBJEXT)
 	-rm -f ags/test/audio/*.$(OBJEXT)
 	-rm -f ags/test/audio/midi/*.$(OBJEXT)
 	-rm -f ags/test/lib/*.$(OBJEXT)
@@ -4805,6 +5323,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_line_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_pad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_pad_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_separator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_export_window.Plo@am__quote@
@@ -5099,6 +5618,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_play_notation_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_play_note.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_play_recycling.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_audio_signal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel_run.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_recycling.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_record_midi_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_record_midi_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_dssi_audio.Plo@am__quote@
@@ -5133,6 +5656,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_cancel_recall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_change_soundcard.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_export_output.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/$(DEPDIR)/libags_audio_la-ags_free_selection.Plo@am__quote@
@@ -5231,6 +5755,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker.Plo@am__quote@
@@ -5243,7 +5768,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_machine_link_test-ags_functional_machine_link_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_note_edit_test-ags_functional_note_edit_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_xorg_application_context_test-ags_xorg_application_context_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/libgsequencer_test_la-ags_functional_test_util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/libgsequencer_test_la-gsequencer_setup_util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_ffplayer_test-ags_functional_ffplayer_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_matrix_test-ags_functional_matrix_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_application_context_test-ags_audio_application_context_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_signal_test-ags_audio_signal_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_test-ags_audio_test.Po@am__quote@
@@ -5260,6 +5798,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_thread_test-ags_thread_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_concurrency_provider.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_condition_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_destroy_worker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_history.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_mutex_manager.Plo@am__quote@
@@ -5276,8 +5816,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_timestamp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_timestamp_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_timestamp_thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_file_xml.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/util/$(DEPDIR)/libags_la-ags_id_generator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/util/$(DEPDIR)/libags_la-ags_list_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_cartesian.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_dial.Plo@am__quote@
@@ -5390,12 +5933,26 @@ ags/lib/libags_la-ags_turtle_manager.lo: ags/lib/ags_turtle_manager.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_turtle_manager.lo `test -f 'ags/lib/ags_turtle_manager.c' || echo '$(srcdir)/'`ags/lib/ags_turtle_manager.c
 
+ags/util/libags_la-ags_destroy_util.lo: ags/util/ags_destroy_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/util/libags_la-ags_destroy_util.lo -MD -MP -MF ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Tpo -c -o ags/util/libags_la-ags_destroy_util.lo `test -f 'ags/util/ags_destroy_util.c' || echo '$(srcdir)/'`ags/util/ags_destroy_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Tpo ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/util/ags_destroy_util.c' object='ags/util/libags_la-ags_destroy_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/util/libags_la-ags_destroy_util.lo `test -f 'ags/util/ags_destroy_util.c' || echo '$(srcdir)/'`ags/util/ags_destroy_util.c
+
 ags/util/libags_la-ags_id_generator.lo: ags/util/ags_id_generator.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/util/libags_la-ags_id_generator.lo -MD -MP -MF ags/util/$(DEPDIR)/libags_la-ags_id_generator.Tpo -c -o ags/util/libags_la-ags_id_generator.lo `test -f 'ags/util/ags_id_generator.c' || echo '$(srcdir)/'`ags/util/ags_id_generator.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/util/$(DEPDIR)/libags_la-ags_id_generator.Tpo ags/util/$(DEPDIR)/libags_la-ags_id_generator.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/util/ags_id_generator.c' object='ags/util/libags_la-ags_id_generator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/util/libags_la-ags_id_generator.lo `test -f 'ags/util/ags_id_generator.c' || echo '$(srcdir)/'`ags/util/ags_id_generator.c
+
+ags/util/libags_la-ags_list_util.lo: ags/util/ags_list_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/util/libags_la-ags_list_util.lo -MD -MP -MF ags/util/$(DEPDIR)/libags_la-ags_list_util.Tpo -c -o ags/util/libags_la-ags_list_util.lo `test -f 'ags/util/ags_list_util.c' || echo '$(srcdir)/'`ags/util/ags_list_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/util/$(DEPDIR)/libags_la-ags_list_util.Tpo ags/util/$(DEPDIR)/libags_la-ags_list_util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/util/ags_list_util.c' object='ags/util/libags_la-ags_list_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/util/libags_la-ags_list_util.lo `test -f 'ags/util/ags_list_util.c' || echo '$(srcdir)/'`ags/util/ags_list_util.c
 
 ags/object/libags_la-ags_applicable.lo: ags/object/ags_applicable.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_applicable.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_applicable.Tpo -c -o ags/object/libags_la-ags_applicable.lo `test -f 'ags/object/ags_applicable.c' || echo '$(srcdir)/'`ags/object/ags_applicable.c
@@ -6279,6 +6836,13 @@ ags/audio/task/libags_audio_la-ags_change_soundcard.lo: ags/audio/task/ags_chang
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_change_soundcard.lo `test -f 'ags/audio/task/ags_change_soundcard.c' || echo '$(srcdir)/'`ags/audio/task/ags_change_soundcard.c
 
+ags/audio/task/libags_audio_la-ags_clear_audio_signal.lo: ags/audio/task/ags_clear_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_clear_audio_signal.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_audio_signal.Tpo -c -o ags/audio/task/libags_audio_la-ags_clear_audio_signal.lo `test -f 'ags/audio/task/ags_clear_audio_signal.c' || echo '$(srcdir)/'`ags/audio/task/ags_clear_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_audio_signal.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_audio_signal.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/ags_clear_audio_signal.c' object='ags/audio/task/libags_audio_la-ags_clear_audio_signal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/libags_audio_la-ags_clear_audio_signal.lo `test -f 'ags/audio/task/ags_clear_audio_signal.c' || echo '$(srcdir)/'`ags/audio/task/ags_clear_audio_signal.c
+
 ags/audio/task/libags_audio_la-ags_clear_buffer.lo: ags/audio/task/ags_clear_buffer.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/libags_audio_la-ags_clear_buffer.lo -MD -MP -MF ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Tpo -c -o ags/audio/task/libags_audio_la-ags_clear_buffer.lo `test -f 'ags/audio/task/ags_clear_buffer.c' || echo '$(srcdir)/'`ags/audio/task/ags_clear_buffer.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Tpo ags/audio/task/$(DEPDIR)/libags_audio_la-ags_clear_buffer.Plo
@@ -6881,6 +7445,34 @@ ags/audio/recall/libags_audio_la-ags_play_recycling.lo: ags/audio/recall/ags_pla
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_play_recycling.lo `test -f 'ags/audio/recall/ags_play_recycling.c' || echo '$(srcdir)/'`ags/audio/recall/ags_play_recycling.c
 
+ags/audio/recall/libags_audio_la-ags_prepare_audio_signal.lo: ags/audio/recall/ags_prepare_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_prepare_audio_signal.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_audio_signal.Tpo -c -o ags/audio/recall/libags_audio_la-ags_prepare_audio_signal.lo `test -f 'ags/audio/recall/ags_prepare_audio_signal.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_audio_signal.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_audio_signal.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_prepare_audio_signal.c' object='ags/audio/recall/libags_audio_la-ags_prepare_audio_signal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_prepare_audio_signal.lo `test -f 'ags/audio/recall/ags_prepare_audio_signal.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_audio_signal.c
+
+ags/audio/recall/libags_audio_la-ags_prepare_channel.lo: ags/audio/recall/ags_prepare_channel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_prepare_channel.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel.Tpo -c -o ags/audio/recall/libags_audio_la-ags_prepare_channel.lo `test -f 'ags/audio/recall/ags_prepare_channel.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_channel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_prepare_channel.c' object='ags/audio/recall/libags_audio_la-ags_prepare_channel.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_prepare_channel.lo `test -f 'ags/audio/recall/ags_prepare_channel.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_channel.c
+
+ags/audio/recall/libags_audio_la-ags_prepare_channel_run.lo: ags/audio/recall/ags_prepare_channel_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_prepare_channel_run.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel_run.Tpo -c -o ags/audio/recall/libags_audio_la-ags_prepare_channel_run.lo `test -f 'ags/audio/recall/ags_prepare_channel_run.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_channel_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel_run.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_channel_run.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_prepare_channel_run.c' object='ags/audio/recall/libags_audio_la-ags_prepare_channel_run.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_prepare_channel_run.lo `test -f 'ags/audio/recall/ags_prepare_channel_run.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_channel_run.c
+
+ags/audio/recall/libags_audio_la-ags_prepare_recycling.lo: ags/audio/recall/ags_prepare_recycling.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_prepare_recycling.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_recycling.Tpo -c -o ags/audio/recall/libags_audio_la-ags_prepare_recycling.lo `test -f 'ags/audio/recall/ags_prepare_recycling.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_recycling.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_recycling.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_prepare_recycling.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_prepare_recycling.c' object='ags/audio/recall/libags_audio_la-ags_prepare_recycling.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_prepare_recycling.lo `test -f 'ags/audio/recall/ags_prepare_recycling.c' || echo '$(srcdir)/'`ags/audio/recall/ags_prepare_recycling.c
+
 ags/audio/recall/libags_audio_la-ags_record_midi_audio.lo: ags/audio/recall/ags_record_midi_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_record_midi_audio.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_record_midi_audio.Tpo -c -o ags/audio/recall/libags_audio_la-ags_record_midi_audio.lo `test -f 'ags/audio/recall/ags_record_midi_audio.c' || echo '$(srcdir)/'`ags/audio/recall/ags_record_midi_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_record_midi_audio.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_record_midi_audio.Plo
@@ -7048,6 +7640,13 @@ ags/plugin/libags_audio_la-ags_lv2_plugin.lo: ags/plugin/ags_lv2_plugin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_plugin.c' object='ags/plugin/libags_audio_la-ags_lv2_plugin.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_plugin.lo `test -f 'ags/plugin/ags_lv2_plugin.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_plugin.c
+
+ags/plugin/libags_audio_la-ags_lv2_preset.lo: ags/plugin/ags_lv2_preset.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_preset.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_preset.lo `test -f 'ags/plugin/ags_lv2_preset.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_preset.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_preset.c' object='ags/plugin/libags_audio_la-ags_lv2_preset.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_preset.lo `test -f 'ags/plugin/ags_lv2_preset.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_preset.c
 
 ags/plugin/libags_audio_la-ags_lv2_log_manager.lo: ags/plugin/ags_lv2_log_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_log_manager.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_log_manager.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_log_manager.lo `test -f 'ags/plugin/ags_lv2_log_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_log_manager.c
@@ -7287,6 +7886,20 @@ ags/thread/libags_thread_la-ags_concurrency_provider.lo: ags/thread/ags_concurre
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_concurrency_provider.lo `test -f 'ags/thread/ags_concurrency_provider.c' || echo '$(srcdir)/'`ags/thread/ags_concurrency_provider.c
 
+ags/thread/libags_thread_la-ags_condition_manager.lo: ags/thread/ags_condition_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_condition_manager.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_condition_manager.Tpo -c -o ags/thread/libags_thread_la-ags_condition_manager.lo `test -f 'ags/thread/ags_condition_manager.c' || echo '$(srcdir)/'`ags/thread/ags_condition_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_condition_manager.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_condition_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_condition_manager.c' object='ags/thread/libags_thread_la-ags_condition_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_condition_manager.lo `test -f 'ags/thread/ags_condition_manager.c' || echo '$(srcdir)/'`ags/thread/ags_condition_manager.c
+
+ags/thread/libags_thread_la-ags_destroy_worker.lo: ags/thread/ags_destroy_worker.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_destroy_worker.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_destroy_worker.Tpo -c -o ags/thread/libags_thread_la-ags_destroy_worker.lo `test -f 'ags/thread/ags_destroy_worker.c' || echo '$(srcdir)/'`ags/thread/ags_destroy_worker.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_destroy_worker.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_destroy_worker.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_destroy_worker.c' object='ags/thread/libags_thread_la-ags_destroy_worker.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_destroy_worker.lo `test -f 'ags/thread/ags_destroy_worker.c' || echo '$(srcdir)/'`ags/thread/ags_destroy_worker.c
+
 ags/thread/libags_thread_la-ags_generic_main_loop.lo: ags/thread/ags_generic_main_loop.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_generic_main_loop.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Tpo -c -o ags/thread/libags_thread_la-ags_generic_main_loop.lo `test -f 'ags/thread/ags_generic_main_loop.c' || echo '$(srcdir)/'`ags/thread/ags_generic_main_loop.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Plo
@@ -7398,6 +8011,13 @@ ags/thread/libags_thread_la-ags_timestamp.lo: ags/thread/ags_timestamp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_timestamp.c' object='ags/thread/libags_thread_la-ags_timestamp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_timestamp.lo `test -f 'ags/thread/ags_timestamp.c' || echo '$(srcdir)/'`ags/thread/ags_timestamp.c
+
+ags/thread/libags_thread_la-ags_worker_thread.lo: ags/thread/ags_worker_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_worker_thread.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Tpo -c -o ags/thread/libags_thread_la-ags_worker_thread.lo `test -f 'ags/thread/ags_worker_thread.c' || echo '$(srcdir)/'`ags/thread/ags_worker_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_worker_thread.c' object='ags/thread/libags_thread_la-ags_worker_thread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_worker_thread.lo `test -f 'ags/thread/ags_worker_thread.c' || echo '$(srcdir)/'`ags/thread/ags_worker_thread.c
 
 ags/thread/file/libags_thread_la-ags_thread_file_xml.lo: ags/thread/file/ags_thread_file_xml.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/file/libags_thread_la-ags_thread_file_xml.lo -MD -MP -MF ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_file_xml.Tpo -c -o ags/thread/file/libags_thread_la-ags_thread_file_xml.lo `test -f 'ags/thread/file/ags_thread_file_xml.c' || echo '$(srcdir)/'`ags/thread/file/ags_thread_file_xml.c
@@ -7559,6 +8179,13 @@ ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo: ags/X/ags_effect_pad_callbac
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_effect_pad_callbacks.c' object='ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_effect_pad_callbacks.lo `test -f 'ags/X/ags_effect_pad_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_effect_pad_callbacks.c
+
+ags/X/libgsequencer_la-ags_effect_separator.lo: ags/X/ags_effect_separator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_effect_separator.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_separator.Tpo -c -o ags/X/libgsequencer_la-ags_effect_separator.lo `test -f 'ags/X/ags_effect_separator.c' || echo '$(srcdir)/'`ags/X/ags_effect_separator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_separator.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_effect_separator.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_effect_separator.c' object='ags/X/libgsequencer_la-ags_effect_separator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_effect_separator.lo `test -f 'ags/X/ags_effect_separator.c' || echo '$(srcdir)/'`ags/X/ags_effect_separator.c
 
 ags/X/libgsequencer_la-ags_export_soundcard.lo: ags/X/ags_export_soundcard.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_export_soundcard.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_export_soundcard.Tpo -c -o ags/X/libgsequencer_la-ags_export_soundcard.lo `test -f 'ags/X/ags_export_soundcard.c' || echo '$(srcdir)/'`ags/X/ags_export_soundcard.c
@@ -8799,6 +9426,20 @@ ags/X/editor/libgsequencer_la-ags_toolbar_callbacks.lo: ags/X/editor/ags_toolbar
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_toolbar_callbacks.lo `test -f 'ags/X/editor/ags_toolbar_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_toolbar_callbacks.c
 
+ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo: ags/test/X/gsequencer_setup_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgsequencer_test_la_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_la_CFLAGS) $(CFLAGS) -MT ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo -MD -MP -MF ags/test/X/$(DEPDIR)/libgsequencer_test_la-gsequencer_setup_util.Tpo -c -o ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo `test -f 'ags/test/X/gsequencer_setup_util.c' || echo '$(srcdir)/'`ags/test/X/gsequencer_setup_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/libgsequencer_test_la-gsequencer_setup_util.Tpo ags/test/X/$(DEPDIR)/libgsequencer_test_la-gsequencer_setup_util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/gsequencer_setup_util.c' object='ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgsequencer_test_la_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_la_CFLAGS) $(CFLAGS) -c -o ags/test/X/libgsequencer_test_la-gsequencer_setup_util.lo `test -f 'ags/test/X/gsequencer_setup_util.c' || echo '$(srcdir)/'`ags/test/X/gsequencer_setup_util.c
+
+ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo: ags/test/X/ags_functional_test_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgsequencer_test_la_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_la_CFLAGS) $(CFLAGS) -MT ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo -MD -MP -MF ags/test/X/$(DEPDIR)/libgsequencer_test_la-ags_functional_test_util.Tpo -c -o ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo `test -f 'ags/test/X/ags_functional_test_util.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_test_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/libgsequencer_test_la-ags_functional_test_util.Tpo ags/test/X/$(DEPDIR)/libgsequencer_test_la-ags_functional_test_util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_test_util.c' object='ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgsequencer_test_la_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_la_CFLAGS) $(CFLAGS) -c -o ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo `test -f 'ags/test/X/ags_functional_test_util.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_test_util.c
+
 ags/test/audio/ags_audio_application_context_test-ags_audio_application_context_test.o: ags/test/audio/ags_audio_application_context_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_audio_application_context_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_audio_application_context_test-ags_audio_application_context_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_audio_application_context_test-ags_audio_application_context_test.Tpo -c -o ags/test/audio/ags_audio_application_context_test-ags_audio_application_context_test.o `test -f 'ags/test/audio/ags_audio_application_context_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_audio_application_context_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_audio_application_context_test-ags_audio_application_context_test.Tpo ags/test/audio/$(DEPDIR)/ags_audio_application_context_test-ags_audio_application_context_test.Po
@@ -8896,6 +9537,160 @@ ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.obj: ags/test
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_functional_audio_test.c' object='ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.obj `if test -f 'ags/test/audio/ags_functional_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_functional_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_functional_audio_test.c'; fi`
+
+ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.o: ags/test/X/machine/ags_functional_drum_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_drum_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Tpo -c -o ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.o `test -f 'ags/test/X/machine/ags_functional_drum_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_drum_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_drum_test.c' object='ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_drum_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.o `test -f 'ags/test/X/machine/ags_functional_drum_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_drum_test.c
+
+ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.obj: ags/test/X/machine/ags_functional_drum_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_drum_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.obj -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Tpo -c -o ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.obj `if test -f 'ags/test/X/machine/ags_functional_drum_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_drum_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_drum_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_drum_test.c' object='ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_drum_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_drum_test-ags_functional_drum_test.obj `if test -f 'ags/test/X/machine/ags_functional_drum_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_drum_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_drum_test.c'; fi`
+
+ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.o: ags/test/X/ags_functional_editor_workflow_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo -c -o ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.o `test -f 'ags/test/X/ags_functional_editor_workflow_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_editor_workflow_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_editor_workflow_test.c' object='ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.o `test -f 'ags/test/X/ags_functional_editor_workflow_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_editor_workflow_test.c
+
+ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj: ags/test/X/ags_functional_editor_workflow_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo -c -o ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj `if test -f 'ags/test/X/ags_functional_editor_workflow_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_editor_workflow_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_editor_workflow_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_editor_workflow_test.c' object='ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_editor_workflow_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_editor_workflow_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.obj `if test -f 'ags/test/X/ags_functional_editor_workflow_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_editor_workflow_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_editor_workflow_test.c'; fi`
+
+ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.o: ags/test/X/machine/ags_functional_ffplayer_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_ffplayer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_ffplayer_test-ags_functional_ffplayer_test.Tpo -c -o ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.o `test -f 'ags/test/X/machine/ags_functional_ffplayer_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_ffplayer_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_ffplayer_test-ags_functional_ffplayer_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_ffplayer_test-ags_functional_ffplayer_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_ffplayer_test.c' object='ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_ffplayer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.o `test -f 'ags/test/X/machine/ags_functional_ffplayer_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_ffplayer_test.c
+
+ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.obj: ags/test/X/machine/ags_functional_ffplayer_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_ffplayer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.obj -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_ffplayer_test-ags_functional_ffplayer_test.Tpo -c -o ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.obj `if test -f 'ags/test/X/machine/ags_functional_ffplayer_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_ffplayer_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_ffplayer_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_ffplayer_test-ags_functional_ffplayer_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_ffplayer_test-ags_functional_ffplayer_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_ffplayer_test.c' object='ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_ffplayer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_ffplayer_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_ffplayer_test-ags_functional_ffplayer_test.obj `if test -f 'ags/test/X/machine/ags_functional_ffplayer_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_ffplayer_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_ffplayer_test.c'; fi`
+
+ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o: ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo -c -o ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_line_member_add_and_destroy_test.c' object='ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+
+ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj: ags/test/X/ags_functional_line_member_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo -c -o ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj `if test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_line_member_add_and_destroy_test.c' object='ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_line_member_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_line_member_add_and_destroy_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.obj `if test -f 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_line_member_add_and_destroy_test.c'; fi`
+
+ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o: ags/test/X/ags_functional_machine_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Tpo -c -o ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_machine_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_machine_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_machine_add_and_destroy_test.c' object='ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_add_and_destroy_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.o `test -f 'ags/test/X/ags_functional_machine_add_and_destroy_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_machine_add_and_destroy_test.c
+
+ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.obj: ags/test/X/ags_functional_machine_add_and_destroy_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_add_and_destroy_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Tpo -c -o ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.obj `if test -f 'ags/test/X/ags_functional_machine_add_and_destroy_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_machine_add_and_destroy_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_machine_add_and_destroy_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_machine_add_and_destroy_test.c' object='ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_add_and_destroy_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_add_and_destroy_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.obj `if test -f 'ags/test/X/ags_functional_machine_add_and_destroy_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_machine_add_and_destroy_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_machine_add_and_destroy_test.c'; fi`
+
+ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.o: ags/test/X/ags_functional_machine_link_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_link_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_machine_link_test-ags_functional_machine_link_test.Tpo -c -o ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.o `test -f 'ags/test/X/ags_functional_machine_link_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_machine_link_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_machine_link_test-ags_functional_machine_link_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_machine_link_test-ags_functional_machine_link_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_machine_link_test.c' object='ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_link_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.o `test -f 'ags/test/X/ags_functional_machine_link_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_machine_link_test.c
+
+ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.obj: ags/test/X/ags_functional_machine_link_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_link_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_machine_link_test-ags_functional_machine_link_test.Tpo -c -o ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.obj `if test -f 'ags/test/X/ags_functional_machine_link_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_machine_link_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_machine_link_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_machine_link_test-ags_functional_machine_link_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_machine_link_test-ags_functional_machine_link_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_machine_link_test.c' object='ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_machine_link_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_machine_link_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_machine_link_test-ags_functional_machine_link_test.obj `if test -f 'ags/test/X/ags_functional_machine_link_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_machine_link_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_machine_link_test.c'; fi`
+
+ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.o: ags/test/X/machine/ags_functional_matrix_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_matrix_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_matrix_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_matrix_test-ags_functional_matrix_test.Tpo -c -o ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.o `test -f 'ags/test/X/machine/ags_functional_matrix_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_matrix_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_matrix_test-ags_functional_matrix_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_matrix_test-ags_functional_matrix_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_matrix_test.c' object='ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_matrix_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_matrix_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.o `test -f 'ags/test/X/machine/ags_functional_matrix_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_matrix_test.c
+
+ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.obj: ags/test/X/machine/ags_functional_matrix_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_matrix_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_matrix_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.obj -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_matrix_test-ags_functional_matrix_test.Tpo -c -o ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.obj `if test -f 'ags/test/X/machine/ags_functional_matrix_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_matrix_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_matrix_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_matrix_test-ags_functional_matrix_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_matrix_test-ags_functional_matrix_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_matrix_test.c' object='ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_matrix_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_matrix_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_matrix_test-ags_functional_matrix_test.obj `if test -f 'ags/test/X/machine/ags_functional_matrix_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_matrix_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_matrix_test.c'; fi`
+
+ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.o: ags/test/X/machine/ags_functional_mixer_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_mixer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_mixer_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Tpo -c -o ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.o `test -f 'ags/test/X/machine/ags_functional_mixer_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_mixer_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_mixer_test.c' object='ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_mixer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_mixer_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.o `test -f 'ags/test/X/machine/ags_functional_mixer_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_mixer_test.c
+
+ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.obj: ags/test/X/machine/ags_functional_mixer_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_mixer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_mixer_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.obj -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Tpo -c -o ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.obj `if test -f 'ags/test/X/machine/ags_functional_mixer_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_mixer_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_mixer_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_mixer_test.c' object='ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_mixer_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_mixer_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_mixer_test-ags_functional_mixer_test.obj `if test -f 'ags/test/X/machine/ags_functional_mixer_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_mixer_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_mixer_test.c'; fi`
+
+ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.o: ags/test/X/ags_functional_note_edit_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_note_edit_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_note_edit_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_note_edit_test-ags_functional_note_edit_test.Tpo -c -o ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.o `test -f 'ags/test/X/ags_functional_note_edit_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_note_edit_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_note_edit_test-ags_functional_note_edit_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_note_edit_test-ags_functional_note_edit_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_note_edit_test.c' object='ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_note_edit_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_note_edit_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.o `test -f 'ags/test/X/ags_functional_note_edit_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_note_edit_test.c
+
+ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.obj: ags/test/X/ags_functional_note_edit_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_note_edit_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_note_edit_test_CFLAGS) $(CFLAGS) -MT ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/ags_functional_note_edit_test-ags_functional_note_edit_test.Tpo -c -o ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.obj `if test -f 'ags/test/X/ags_functional_note_edit_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_note_edit_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_note_edit_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/ags_functional_note_edit_test-ags_functional_note_edit_test.Tpo ags/test/X/$(DEPDIR)/ags_functional_note_edit_test-ags_functional_note_edit_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_note_edit_test.c' object='ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_note_edit_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_note_edit_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/ags_functional_note_edit_test-ags_functional_note_edit_test.obj `if test -f 'ags/test/X/ags_functional_note_edit_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_note_edit_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_note_edit_test.c'; fi`
+
+ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.o: ags/test/X/machine/ags_functional_panel_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_panel_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_panel_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Tpo -c -o ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.o `test -f 'ags/test/X/machine/ags_functional_panel_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_panel_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_panel_test.c' object='ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_panel_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_panel_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.o `test -f 'ags/test/X/machine/ags_functional_panel_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_panel_test.c
+
+ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.obj: ags/test/X/machine/ags_functional_panel_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_panel_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_panel_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.obj -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Tpo -c -o ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.obj `if test -f 'ags/test/X/machine/ags_functional_panel_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_panel_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_panel_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_panel_test.c' object='ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_panel_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_panel_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_panel_test-ags_functional_panel_test.obj `if test -f 'ags/test/X/machine/ags_functional_panel_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_panel_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_panel_test.c'; fi`
+
+ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.o: ags/test/X/machine/ags_functional_synth_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_synth_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_synth_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.o -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Tpo -c -o ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.o `test -f 'ags/test/X/machine/ags_functional_synth_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_synth_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_synth_test.c' object='ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_synth_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_synth_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.o `test -f 'ags/test/X/machine/ags_functional_synth_test.c' || echo '$(srcdir)/'`ags/test/X/machine/ags_functional_synth_test.c
+
+ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.obj: ags/test/X/machine/ags_functional_synth_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_synth_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_synth_test_CFLAGS) $(CFLAGS) -MT ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.obj -MD -MP -MF ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Tpo -c -o ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.obj `if test -f 'ags/test/X/machine/ags_functional_synth_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_synth_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_synth_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Tpo ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/machine/ags_functional_synth_test.c' object='ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_functional_synth_test_CPPFLAGS) $(CPPFLAGS) $(ags_functional_synth_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/machine/ags_functional_synth_test-ags_functional_synth_test.obj `if test -f 'ags/test/X/machine/ags_functional_synth_test.c'; then $(CYGPATH_W) 'ags/test/X/machine/ags_functional_synth_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/machine/ags_functional_synth_test.c'; fi`
 
 ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.o: ags/test/audio/midi/ags_midi_buffer_util_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_buffer_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.o -MD -MP -MF ags/test/audio/midi/$(DEPDIR)/ags_midi_buffer_util_test-ags_midi_buffer_util_test.Tpo -c -o ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.o `test -f 'ags/test/audio/midi/ags_midi_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/audio/midi/ags_midi_buffer_util_test.c
@@ -9063,6 +9858,7 @@ clean-libtool:
 	-rm -rf ags/object/.libs ags/object/_libs
 	-rm -rf ags/plugin/.libs ags/plugin/_libs
 	-rm -rf ags/server/.libs ags/server/_libs
+	-rm -rf ags/test/X/.libs ags/test/X/_libs
 	-rm -rf ags/thread/.libs ags/thread/_libs
 	-rm -rf ags/thread/file/.libs ags/thread/file/_libs
 	-rm -rf ags/util/.libs ags/util/_libs
@@ -9389,7 +10185,7 @@ check-TESTS:
 	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
 	exit $$?;
-recheck: all $(check_PROGRAMS)
+recheck: all $(check_LTLIBRARIES) $(check_PROGRAMS)
 	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 	@set +e; $(am__set_TESTS_bases); \
 	bases=`for i in $$bases; do echo $$i; done \
@@ -9491,6 +10287,13 @@ ags_midi_buffer_util_test.log: ags_midi_buffer_util_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_xorg_application_context_test.log: ags_xorg_application_context_test$(EXEEXT)
+	@p='ags_xorg_application_context_test$(EXEEXT)'; \
+	b='ags_xorg_application_context_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_functional_audio_test.log: ags_functional_audio_test$(EXEEXT)
 	@p='ags_functional_audio_test$(EXEEXT)'; \
 	b='ags_functional_audio_test'; \
@@ -9498,9 +10301,79 @@ ags_functional_audio_test.log: ags_functional_audio_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-ags_xorg_application_context_test.log: ags_xorg_application_context_test$(EXEEXT)
-	@p='ags_xorg_application_context_test$(EXEEXT)'; \
-	b='ags_xorg_application_context_test'; \
+ags_functional_machine_add_and_destroy_test.log: ags_functional_machine_add_and_destroy_test$(EXEEXT)
+	@p='ags_functional_machine_add_and_destroy_test$(EXEEXT)'; \
+	b='ags_functional_machine_add_and_destroy_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_machine_link_test.log: ags_functional_machine_link_test$(EXEEXT)
+	@p='ags_functional_machine_link_test$(EXEEXT)'; \
+	b='ags_functional_machine_link_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_line_member_add_and_destroy_test.log: ags_functional_line_member_add_and_destroy_test$(EXEEXT)
+	@p='ags_functional_line_member_add_and_destroy_test$(EXEEXT)'; \
+	b='ags_functional_line_member_add_and_destroy_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_editor_workflow_test.log: ags_functional_editor_workflow_test$(EXEEXT)
+	@p='ags_functional_editor_workflow_test$(EXEEXT)'; \
+	b='ags_functional_editor_workflow_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_panel_test.log: ags_functional_panel_test$(EXEEXT)
+	@p='ags_functional_panel_test$(EXEEXT)'; \
+	b='ags_functional_panel_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_mixer_test.log: ags_functional_mixer_test$(EXEEXT)
+	@p='ags_functional_mixer_test$(EXEEXT)'; \
+	b='ags_functional_mixer_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_drum_test.log: ags_functional_drum_test$(EXEEXT)
+	@p='ags_functional_drum_test$(EXEEXT)'; \
+	b='ags_functional_drum_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_matrix_test.log: ags_functional_matrix_test$(EXEEXT)
+	@p='ags_functional_matrix_test$(EXEEXT)'; \
+	b='ags_functional_matrix_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_synth_test.log: ags_functional_synth_test$(EXEEXT)
+	@p='ags_functional_synth_test$(EXEEXT)'; \
+	b='ags_functional_synth_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_ffplayer_test.log: ags_functional_ffplayer_test$(EXEEXT)
+	@p='ags_functional_ffplayer_test$(EXEEXT)'; \
+	b='ags_functional_ffplayer_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_functional_note_edit_test.log: ags_functional_note_edit_test$(EXEEXT)
+	@p='ags_functional_note_edit_test$(EXEEXT)'; \
+	b='ags_functional_note_edit_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -9684,7 +10557,7 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) $(check_LTLIBRARIES) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) $(HEADERS)
@@ -9770,6 +10643,8 @@ distclean-generic:
 	-rm -f ags/server/$(am__dirstamp)
 	-rm -f ags/test/X/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/X/$(am__dirstamp)
+	-rm -f ags/test/X/machine/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ags/test/X/machine/$(am__dirstamp)
 	-rm -f ags/test/audio/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/audio/$(am__dirstamp)
 	-rm -f ags/test/audio/midi/$(DEPDIR)/$(am__dirstamp)
@@ -9796,13 +10671,14 @@ ags-docs-am: ags-docs-local
 
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
-	clean-libLTLIBRARIES clean-libgsequencerLTLIBRARIES \
-	clean-libtool clean-local mostlyclean-am
+clean-am: clean-binPROGRAMS clean-checkLTLIBRARIES clean-checkPROGRAMS \
+	clean-generic clean-libLTLIBRARIES \
+	clean-libgsequencerLTLIBRARIES clean-libtool clean-local \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -9848,7 +10724,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -9877,19 +10753,19 @@ uninstall-man: uninstall-man1
 
 .PHONY: CTAGS GTAGS TAGS ags-docs-am ags-docs-local all all-am \
 	am--refresh check check-TESTS check-am clean clean-binPROGRAMS \
-	clean-checkPROGRAMS clean-cscope clean-generic \
-	clean-libLTLIBRARIES clean-libgsequencerLTLIBRARIES \
-	clean-libtool clean-local cscope cscopelist-am ctags ctags-am \
-	dist dist-all dist-bzip2 dist-gzip dist-lzip dist-shar \
-	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-compile distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-appdataDATA install-binPROGRAMS \
-	install-data install-data-am install-data-local \
-	install-docDATA install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-libLTLIBRARIES \
+	clean-checkLTLIBRARIES clean-checkPROGRAMS clean-cscope \
+	clean-generic clean-libLTLIBRARIES \
+	clean-libgsequencerLTLIBRARIES clean-libtool clean-local \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
+	distcheck distclean distclean-compile distclean-generic \
+	distclean-hdr distclean-libtool distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am info \
+	info-am install install-am install-appdataDATA \
+	install-binPROGRAMS install-data install-data-am \
+	install-data-local install-docDATA install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-libLTLIBRARIES \
 	install-libgsequencerLTLIBRARIES install-man install-man1 \
 	install-nobase_includeHEADERS install-pdf install-pdf-am \
 	install-pkgconfigDATA install-ps install-ps-am install-strip \
@@ -9905,6 +10781,9 @@ uninstall-man: uninstall-man1
 
 .PRECIOUS: Makefile
 
+
+ags-integration-test: 
+	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
 
 ags-docs-local:
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags
@@ -10010,6 +10889,7 @@ clean-local:
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
 	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
+	rm -f $(top_builddir)/functional-system-tests.mk
 
 gen-symbols-ags:
 	rm -f libags.sym

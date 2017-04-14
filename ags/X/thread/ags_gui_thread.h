@@ -38,17 +38,23 @@
 #define AGS_IS_GUI_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_GUI_THREAD))
 #define AGS_GUI_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_GUI_THREAD, AgsGuiThreadClass))
 
-#define AGS_GUI_THREAD_RT_PRIORITY (0)
+#define AGS_GUI_THREAD_RT_PRIORITY (99)
 
 #define AGS_GUI_THREAD_DEFAULT_JIFFIE (60.0)
 
 typedef struct _AgsGuiThread AgsGuiThread;
 typedef struct _AgsGuiThreadClass AgsGuiThreadClass;
 
+typedef enum{
+  AGS_GUI_THREAD_RUNNING    = 1,
+}AgsGuiThreadFlags;
+
 struct _AgsGuiThread
 {
   AgsThread thread;
 
+  volatile guint flags;
+  
   volatile gboolean dispatching;
   
   GMutex mutex;
@@ -65,6 +71,8 @@ struct _AgsGuiThread
   
   pthread_mutex_t *task_completion_mutex;
   volatile GList *task_completion;
+
+  pthread_mutex_t *dispatch_mutex;
 };
 
 struct _AgsGuiThreadClass

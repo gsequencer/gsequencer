@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <ags/object/ags_async_queue.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <stdlib.h>
@@ -193,7 +194,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::clock:
    * @thread: the #AgsThread
    *
-   * The ::clock signal is invoked every thread tic.
+   * The ::clock() signal is invoked every thread tic.
    *
    * Returns: the number of cycles to perform
    * 
@@ -213,7 +214,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::start:
    * @thread: the #AgsThread
    *
-   * The ::start signal is invoked as thread started.
+   * The ::start() signal is invoked as thread started.
    * 
    * Since: 0.5.0
    */
@@ -230,7 +231,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::run:
    * @thread: the #AgsThread
    *
-   * The ::run signal is invoked during run loop.
+   * The ::run() signal is invoked during run loop.
    * 
    * Since: 0.5.0
    */
@@ -247,7 +248,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * AgsThread::suspend:
    * @thread: the #AgsThread
    *
-   * The ::suspend signal is invoked during suspending.
+   * The ::suspend() signal is invoked during suspending.
    * 
    * Since: 0.5.0
    */
@@ -263,9 +264,8 @@ ags_thread_class_init(AgsThreadClass *thread)
   /**
    * AgsThread::resume:
    * @thread: the #AgsThread
-   * @recall_id: the appropriate #AgsRecallID
    *
-   * The ::resume signal is invoked during resuming.
+   * The ::resume() signal is invoked during resuming.
    * 
    * Since: 0.5.0
    */
@@ -281,9 +281,8 @@ ags_thread_class_init(AgsThreadClass *thread)
   /**
    * AgsThread::timelock:
    * @thread: the #AgsThread
-   * @recall_id: the appropriate #AgsRecallID
    *
-   * The ::timelock signal is invoked as standard compution
+   * The ::timelock() signal is invoked as standard compution
    * time exceeded.
    * 
    * Since: 0.5.0
@@ -300,9 +299,8 @@ ags_thread_class_init(AgsThreadClass *thread)
   /**
    * AgsThread::stop:
    * @thread: the #AgsThread
-   * @recall_id: the appropriate #AgsRecallID
    *
-   * The ::stop signal is invoked as @thread stopped.
+   * The ::stop() signal is invoked as @thread stopped.
    * 
    * Since: 0.5.0
    */
@@ -322,7 +320,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * @time_cycle: the cycles duration
    * @time_spent: the time spent
    *
-   * The ::interrupted signal is invoked as @thread should resume from interrupt.
+   * The ::interrupted() signal is invoked as @thread should resume from interrupt.
    *
    * Returns: the time spent
    *
@@ -352,9 +350,11 @@ void
 ags_thread_init(AgsThread *thread)
 {
   AgsMutexManager *mutex_manager;
-
+  AgsConditionManager *condition_manager;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
+  pthread_cond_t *cond;
   pthread_mutexattr_t *attr;
 
   int err;
@@ -390,6 +390,21 @@ ags_thread_init(AgsThread *thread)
   
   pthread_mutex_unlock(application_mutex);
 
+  /* the condition */
+  cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(cond, NULL);
+
+  condition_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_condition_manager_insert(condition_manager,
+			       (GObject *) thread,
+			       cond);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* fields */
   g_atomic_int_set(&(thread->flags),
 		   0);
@@ -606,7 +621,8 @@ ags_thread_finalize(GObject *gobject)
 {
   AgsThread *thread, *parent;
   AgsMutexManager *mutex_manager;
-
+  AgsConditionManager *condition_manager;
+  
   gboolean running;
   gboolean do_exit;
   
@@ -649,12 +665,17 @@ ags_thread_finalize(GObject *gobject)
 
   /*  */
   mutex_manager = ags_mutex_manager_get_instance();
+  condition_manager = ags_condition_manager_get_instance();
+
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   pthread_mutex_lock(application_mutex);
 
   ags_mutex_manager_remove(mutex_manager,
 			   (GObject *) thread);
+  
+  ags_condition_manager_remove(condition_manager,
+			       (GObject *) thread);
   
   /*  */  
   free(thread->computing_time);
@@ -1696,6 +1717,10 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
 {
   AgsThread *current;
 
+  if(thread == NULL){
+    return(NULL);
+  }
+  
   current = g_atomic_pointer_get(&(thread->parent));
 
   while(current != parent){
@@ -1724,6 +1749,10 @@ ags_thread_next_sibling_locked(AgsThread *thread)
 {
   AgsThread *current;
 
+  if(thread == NULL){
+    return(NULL);
+  }
+  
   current = ags_thread_first(thread);
 
   while(current != NULL){
@@ -1733,7 +1762,7 @@ ags_thread_next_sibling_locked(AgsThread *thread)
       continue;
     }
 
-    if((AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
+    if((AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(current->sync_flags)))) != 0){
       return(current);
     }
 
@@ -1759,13 +1788,17 @@ ags_thread_next_children_locked(AgsThread *thread)
   auto AgsThread* ags_thread_next_children_locked_recursive(AgsThread *thread);
 
   AgsThread* ags_thread_next_children_locked_recursive(AgsThread *child){
-    AgsThread *current;
+    AgsThread *current, *retval;
 
     current = ags_thread_last(child);
 
     while(current != NULL){
-      ags_thread_next_children_locked_recursive(g_atomic_pointer_get(&(current->children)));
-
+      retval = ags_thread_next_children_locked_recursive(g_atomic_pointer_get(&(current->children)));
+      
+      if(retval != NULL){
+	return(retval);
+      }
+      
       if((AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_get(&(current->sync_flags)))) != 0){
 	return(current);
       }
@@ -1776,7 +1809,11 @@ ags_thread_next_children_locked(AgsThread *thread)
     return(NULL);
   }
 
-  return(ags_thread_next_children_locked(g_atomic_pointer_get(&(thread->children))));
+  if(thread == NULL){
+    return(NULL);
+  }
+  
+  return(ags_thread_next_children_locked_recursive(g_atomic_pointer_get(&(thread->children))));
 }
 
 /**
@@ -1906,6 +1943,8 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
     return;
   }
 
+  ags_thread_unlock(thread);
+
   current = g_atomic_pointer_get(&(thread->parent));
 
   while(current != parent){
@@ -1941,6 +1980,8 @@ ags_thread_unlock_sibling(AgsThread *thread)
     return;
   }
 
+  ags_thread_unlock(thread);
+  
   current = ags_thread_first(thread);
 
   while(current != NULL){
@@ -2008,7 +2049,13 @@ ags_thread_unlock_children(AgsThread *thread)
       current = g_atomic_pointer_get(&(current->prev));
     }
   }
+
+  if(thread == NULL){
+    return;
+  }
   
+  ags_thread_unlock(thread);
+
   ags_thread_unlock_children_recursive(g_atomic_pointer_get(&(thread->children)));
 }
 
@@ -2260,16 +2307,6 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
   ags_thread_signal_children(g_atomic_pointer_get(&(thread->children)), broadcast);
 }
 
-/**
- * ags_thread_clock:
- * @thread: the #AgsThread instance
- *
- * Clock the thread.
- *
- * Returns: the cycles to be performed
- * 
- * Since: 0.6.42
- */
 guint
 ags_thread_real_clock(AgsThread *thread)
 {
@@ -2401,9 +2438,11 @@ ags_thread_real_clock(AgsThread *thread)
 	  ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
 				  FALSE);
 	}
+	
+	async_queue_running = ((AGS_THREAD_RUNNING & (g_atomic_int_get(&(async_queue->flags)))) != 0) ? TRUE: FALSE;
+      }else{
+	async_queue_running = FALSE;
       }
-
-      async_queue_running = ((AGS_THREAD_RUNNING & (g_atomic_int_get(&(async_queue->flags)))) != 0) ? TRUE: FALSE;
       
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), thread->current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
@@ -2628,9 +2667,9 @@ ags_thread_real_clock(AgsThread *thread)
  *
  * Clock the thread.
  *
- * Returns: the number of cycles to perform.
+ * Returns: the cycles to be performed
  * 
- * Since: 0.4.0
+ * Since: 0.6.42
  */
 guint
 ags_thread_clock(AgsThread *thread)
@@ -2807,6 +2846,7 @@ ags_thread_loop(void *ptr)
   pthread_mutex_t *mutex;
   
   thread = (AgsThread *) ptr;
+  g_object_ref(thread);
   
   pthread_once(&ags_thread_key_once, ags_thread_self_create);
   pthread_setspecific(ags_thread_key, thread);
@@ -2855,7 +2895,8 @@ ags_thread_loop(void *ptr)
       start_queue_next = start_queue->next;
       
       queued_thread = (AgsThread *) start_queue->data;
-
+      g_object_ref(queued_thread);
+      
       /*  */
       ags_thread_start(queued_thread);
 
@@ -2906,7 +2947,8 @@ ags_thread_loop(void *ptr)
       }
       
       pthread_mutex_unlock(queued_thread->start_mutex);
-
+      g_object_unref(queued_thread);
+      
       start_queue = start_queue_next;
     }
 
@@ -3137,7 +3179,7 @@ ags_thread_loop(void *ptr)
     }    
   }
 
-  g_object_ref(thread);
+  //  g_object_ref(thread);
   
   pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
@@ -3239,7 +3281,8 @@ ags_thread_loop(void *ptr)
   g_message("thread finished\0");
 #endif  
   
-  g_object_ref(thread);
+  g_object_unref(thread);
+  //  g_object_ref(thread);
   
   /* exit thread */
   pthread_exit(NULL);

@@ -402,6 +402,9 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(effect_line_list_start);
+
+  g_signal_handlers_disconnect_by_data(effect_pad->channel,
+				       effect_pad);
 }
 
 gchar*

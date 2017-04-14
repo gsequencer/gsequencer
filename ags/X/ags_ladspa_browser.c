@@ -156,7 +156,8 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  ladspa_browser->filename = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -184,7 +185,8 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  ladspa_browser->effect = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,

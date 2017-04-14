@@ -140,6 +140,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     FALSE, FALSE,
 		     0);
 
+  /* segmentation */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
   gtk_box_pack_start(GTK_BOX(generic_preferences),
@@ -160,6 +161,33 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 			   2);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(generic_preferences->segmentation),
+		     FALSE, FALSE,
+		     0);
+
+  /* engine mode */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start(GTK_BOX(generic_preferences),
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new("engine mode\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  generic_preferences->engine_mode = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_combo_box_text_append_text(generic_preferences->engine_mode,
+				 "deterministic\0");
+  gtk_combo_box_text_append_text(generic_preferences->engine_mode,
+				 "performance\0");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
+			   1);
+  
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(generic_preferences->engine_mode),
 		     FALSE, FALSE,
 		     0);
 }
@@ -213,6 +241,11 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 		       AGS_CONFIG_GENERIC,
 		       "segmentation\0",
 		       gtk_combo_box_text_get_active_text(generic_preferences->segmentation));
+
+  ags_config_set_value(config,
+		       AGS_CONFIG_GENERIC,
+		       "engine-mode\0",
+		       gtk_combo_box_text_get_active_text(generic_preferences->engine_mode));
 }
 
 void

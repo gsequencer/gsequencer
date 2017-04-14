@@ -19,16 +19,23 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/util/ags_destroy_util.h>
 #include <ags/util/ags_id_generator.h>
+#include <ags/util/ags_list_util.h>
 
 #include <ags/lib/ags_parameter.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_destroy_worker.h>
 
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_service_provider.h>
@@ -1758,27 +1765,31 @@ ags_recall_automate(AgsRecall *recall)
 void
 ags_recall_real_run_pre(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list, *list_start;
 
   /* lock ports */
   ags_recall_lock_port(recall);
 
   /* run */
-  list = recall->children;
+  list_start = 
+    list = ags_list_util_copy_and_ref(recall->children);
 
   while(list != NULL){
-    list_next = list->next;
-
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list_next;
+      list = list->next;
       continue;
     }
 
-    ags_recall_run_pre(AGS_RECALL(list->data));
-
-    list = list_next;
+    g_object_ref(list->data);
+    AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_pre(AGS_RECALL(list->data));
+    g_object_unref(list->data);
+    g_object_unref(list->data);
+    
+    list = list->next;
   }
+
+  g_list_free(list_start);
 
   /* unlock ports */
   ags_recall_unlock_port(recall);
@@ -1806,27 +1817,31 @@ ags_recall_run_pre(AgsRecall *recall)
 void
 ags_recall_real_run_inter(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list, *list_start;
 
   /* lock port */
   ags_recall_lock_port(recall);
 
   /* run */
-  list = recall->children;
+  list_start = 
+    list = ags_list_util_copy_and_ref(recall->children);
 
   while(list != NULL){
-    list_next = list->next;
-
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list_next;
+      list = list->next;
       continue;
     }
 
-    ags_recall_run_inter(AGS_RECALL(list->data));
-
-    list = list_next;
+    g_object_ref(list->data);
+    AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_inter(AGS_RECALL(list->data));
+    g_object_unref(list->data);
+    g_object_unref(list->data);
+    
+    list = list->next;
   }
+
+  g_list_free(list_start);
 
   /* unlock port */
   ags_recall_unlock_port(recall);
@@ -1854,28 +1869,32 @@ ags_recall_run_inter(AgsRecall *recall)
 void
 ags_recall_real_run_post(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list, *list_start;
 
   /* lock port */
   ags_recall_lock_port(recall);
 
   /* run */
-  list = recall->children;
-
+  list_start = 
+    list = ags_list_util_copy_and_ref(recall->children);
+  
   while(list != NULL){
-    list_next = list->next;
-
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list_next;
+      list = list->next;
       continue;
     }
 
-    ags_recall_run_post(AGS_RECALL(list->data));
-
-    list = list_next;
+    g_object_ref(list->data);
+    AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_post(AGS_RECALL(list->data));
+    g_object_unref(list->data);
+    g_object_unref(list->data);
+    
+    list = list->next;
   }
 
+  g_list_free(list_start);
+  
   if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
     recall->flags &= (~AGS_RECALL_INITIAL_RUN);
   }
@@ -2027,23 +2046,64 @@ ags_recall_cancel(AgsRecall *recall)
 void
 ags_recall_real_remove(AgsRecall *recall)
 {
-  AgsRecall *parent;
+  AgsMutexManager *mutex_manager;
+  AgsDestroyWorker *destroy_worker;
   
+  AgsApplicationContext *application_context;
+
+  AgsRecall *parent;
+
+  GList *worker;
+  
+  pthread_mutex_t *application_mutex;
+  
+  application_context = ags_application_context_get_instance();
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get destroy worker */
+  pthread_mutex_lock(application_mutex);
+  
+  worker = ags_concurrency_provider_get_worker(AGS_CONCURRENCY_PROVIDER(application_context));
+  worker = ags_list_util_find_type(worker,
+				   AGS_TYPE_DESTROY_WORKER);
+
+  if(worker != NULL){
+    destroy_worker = worker->data;
+  }else{
+    destroy_worker = NULL;
+  }
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* dispose and unref */
   g_object_ref(recall);
 
   if(recall->parent == NULL){
-    g_object_run_dispose(recall);
-    g_object_unref(recall);
+    if(destroy_worker != NULL){
+      ags_destroy_worker_add(destroy_worker,
+			     recall, ags_destroy_util_dispose_and_unref);
+    }else{
+      g_object_run_dispose(recall);
+      g_object_unref(recall);
+    }
     
     return;
   }else{
     parent = AGS_RECALL(recall->parent);
 
     ags_recall_remove_child(parent,
-			    recall);
+    			    recall);
 
-    g_object_run_dispose(recall);
-    g_object_unref(recall);
+    if(destroy_worker != NULL){
+      ags_destroy_worker_add(destroy_worker,
+			     recall, ags_destroy_util_dispose_and_unref);
+    }else{
+      g_object_run_dispose(recall);
+      g_object_unref(recall);
+    }
   }
 
   /* propagate done */
@@ -2377,6 +2437,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     return;
   }
 
+  g_object_ref(child);
+
   inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
 			    AGS_RECALL_SEQUENCER |
 			    AGS_RECALL_NOTATION |
@@ -2401,6 +2463,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     pthread_mutex_unlock(child->parent->children_mutex);
 
     g_object_unref(child->parent);
+    g_object_unref(child);
     g_object_set(G_OBJECT(child),
 		 "recall_id\0", NULL,
 		 NULL);
@@ -2427,10 +2490,6 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     g_signal_connect(G_OBJECT(child), "done\0",
     		     G_CALLBACK(ags_recall_child_done), parent);
   }
-
-  if(child->parent != NULL){
-    g_object_unref(child);
-  }
   
   child->parent = parent;
 
@@ -2450,6 +2509,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     ags_recall_run_init_inter(AGS_RECALL(child));
     ags_recall_run_init_post(AGS_RECALL(child));
   }
+
+  g_object_unref(child);
 }
 
 /**
@@ -2596,8 +2657,9 @@ ags_recall_find_type(GList *recall_i, GType type)
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(G_OBJECT_TYPE(recall) == type)
+    if(G_OBJECT_TYPE(recall) == type){
       break;
+    }
 
     recall_i = recall_i->next;
   }
@@ -2751,8 +2813,9 @@ ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject
 
     if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context)
+       recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
       return(recall_i);
+    }
 
     recall_i = recall_i->next;
   }
@@ -3009,6 +3072,7 @@ ags_recall_child_done(AgsRecall *child,
   
   ags_recall_remove_child(parent,
 			  child);
+  g_object_run_dispose(child);
 }
 
 /**

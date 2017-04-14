@@ -2075,53 +2075,6 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
 		   NULL);
     }
   }
-
-  child_widget = (GtkWidget *) gtk_bin_get_child(GTK_BIN(line_member));
-
-  if(AGS_IS_VINDICATOR(child_widget)){
-    AgsLine *line;
-    AgsChannel *source;
-    
-    AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
-    AgsRecallHandler *recall_handler;
-    GList *list;
-
-    line = (AgsLine *) gtk_widget_get_ancestor((GtkWidget *) line_member,
-					       AGS_TYPE_LINE);
-    source = line->channel;
-    
-    /* play - connect run_post */
-    list = ags_recall_template_find_type(source->play,
-					 AGS_TYPE_PEAK_CHANNEL_RUN);
-
-    if(list != NULL){
-      play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
-
-      recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-      recall_handler->signal_name = "run-post\0";
-      recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
-      recall_handler->data = (gpointer) line;
-
-      ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
-    }
-
-    /* recall - connect run_post */
-    list = ags_recall_template_find_type(source->recall,
-					 AGS_TYPE_PEAK_CHANNEL_RUN);
-
-    if(list != NULL){
-      recall_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
-
-      recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-      recall_handler->signal_name = "run-post\0";
-      recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
-      recall_handler->data = (gpointer) line;
-
-      ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);
-    }
-  }
 }
 
 xmlNode*

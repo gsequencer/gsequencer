@@ -116,6 +116,10 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
+  if(drum->open_dialog != NULL){
+    return;
+  }
+  
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,

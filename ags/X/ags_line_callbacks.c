@@ -61,6 +61,8 @@
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_lv2_browser.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
 {
@@ -87,7 +89,7 @@ ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
   }
 }
 
-int
+void
 ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 {
   AgsPad *pad;
@@ -113,7 +115,8 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
       if(!gtk_toggle_button_get_active(current->group)){
 	g_list_free(list_start);
-	return(0);
+
+	return;
       }
 
       list = list->next;
@@ -132,7 +135,8 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 	if(gtk_toggle_button_get_active(current->group)){
 	  ags_line_group_changed(line);
 	  g_list_free(list_start);
-	  return(0);
+
+	  return;
 	}
 
 	list = list->next;
@@ -144,7 +148,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
   g_list_free(list_start);
 
-  return(0);
+  return;
 }
 
 void
@@ -153,17 +157,45 @@ ags_line_add_effect_callback(AgsChannel *channel,
 			     gchar *effect,
 			     AgsLine *line)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineMemberEditor *line_member_editor;
   AgsPluginBrowser *plugin_browser;
+
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
   
   GList *pad_editor, *pad_editor_start;
   GList *line_editor, *line_editor_start;
   GList *control_type_name;
   
+  pthread_mutex_t *application_mutex;
+
   /* lock gdk threads */
-  gdk_threads_enter();
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
 
   /* get machine and machine editor */
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
@@ -304,9 +336,6 @@ ags_line_add_effect_callback(AgsChannel *channel,
   /* free lists */
   g_list_free(pad_editor_start);
   g_list_free(line_editor_start);
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }
 
 void
@@ -314,12 +343,42 @@ ags_line_remove_effect_callback(AgsChannel *channel,
 				guint nth,
 				AgsLine *line)
 {
+  AgsWindow *window;
+
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+
   gdk_threads_enter();
 
-  ags_line_remove_effect(line,
-			 nth);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
+
+  application_context = (AgsApplicationContext *) window->application_context;
 
   gdk_threads_leave();
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+
+  /*  */
+  ags_line_remove_effect(line,
+			 nth);
 }
 
 void
@@ -352,160 +411,6 @@ ags_line_volume_callback(GtkRange *range,
 
     list = list->next;
   }
-}
-
-void
-ags_line_output_port_run_post_callback(AgsRecall *recall,
-				       AgsLine *line)
-{
-  GtkWidget *child;
-
-  GList *list, *list_start;
-  
-  /* lock gdk threads */
-  gdk_threads_enter();
-  
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);
-
-  /* check members */
-  while(list != NULL){
-    if(AGS_IS_LINE_MEMBER(list->data) &&
-       (AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR ||
-	AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_HINDICATOR ||
-	AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_LED)){
-      AgsLineMember *line_member;
-      GtkAdjustment *adjustment;
-
-      AgsPort *current;
-	
-      gdouble average_peak;
-      gdouble lower, upper;
-      gdouble range;
-      gdouble peak;
-
-      GValue value = {0,};
-
-      line_member = AGS_LINE_MEMBER(list->data);
-      child = GTK_BIN(line_member)->child;
-      
-      average_peak = 0.0;
-      
-      /* play port */
-      current = line_member->port;
-
-      if(current == NULL){
-	list = list->next;
-	
-	continue;
-      }
-	
-      /* check if output port and specifier matches */
-      pthread_mutex_lock(current->mutex);
-      
-      if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
-	 current->port_descriptor == NULL ||
-	 g_ascii_strcasecmp(current->specifier,
-			    line_member->specifier)){
-	pthread_mutex_unlock(current->mutex);
-	
-	list = list->next;
-	
-	continue;
-      }
-
-      /* lower and upper */
-      lower = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->lower_value);
-      upper = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->upper_value);
-      
-      pthread_mutex_unlock(current->mutex);
-
-      /* get range */
-      if(line_member->conversion != NULL){
-	lower = ags_conversion_convert(line_member->conversion,
-				       lower,
-				       TRUE);
-
-	upper = ags_conversion_convert(line_member->conversion,
-				       upper,
-				       TRUE);
-      }
-      
-      range = upper - lower;
-      
-      /* play port - read value */
-      g_value_init(&value, G_TYPE_FLOAT);
-      ags_port_safe_read(current,
-			 &value);
-      
-      peak = g_value_get_float(&value);
-      g_value_unset(&value);
-
-      if(line_member->conversion != NULL){
-	peak = ags_conversion_convert(line_member->conversion,
-				      peak,
-				      TRUE);
-      }
-      
-      /* calculate peak */
-      if(range == 0.0 ||
-	 current->port_value_type == G_TYPE_BOOLEAN){
-	if(peak != 0.0){
-	  average_peak = 10.0;
-	}
-      }else{
-	average_peak += ((1.0 / (range / peak)) * 10.0);
-      }
-
-      /* recall port */
-      current = line_member->recall_port;
-
-      /* recall port - read value */
-      g_value_init(&value, G_TYPE_FLOAT);
-      ags_port_safe_read(current,
-			 &value);
-      
-      peak = g_value_get_float(&value);
-      g_value_unset(&value);
-
-      if(line_member->conversion != NULL){
-	peak = ags_conversion_convert(line_member->conversion,
-				      peak,
-				      TRUE);
-      }
-
-      /* calculate peak */
-      if(range == 0.0 ||
-	 current->port_value_type == G_TYPE_BOOLEAN){
-	if(peak != 0.0){
-	  average_peak = 10.0;
-	}
-      }else{
-	average_peak += ((1.0 / (range / peak)) * 10.0);
-      }
-      
-      /* apply */
-      if(AGS_IS_LED(child)){
-	if(average_peak != 0.0){
-	  ags_led_set_active(child);
-	}
-      }else{
-	g_object_get(child,
-		     "adjustment\0", &adjustment,
-		     NULL);
-	
-	gtk_adjustment_set_value(adjustment,
-				 average_peak);
-      }
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }
 
 void

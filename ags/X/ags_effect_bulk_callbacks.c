@@ -19,6 +19,10 @@
 
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/plugin/ags_base_plugin.h>
 
 #include <ags/audio/ags_audio.h>
@@ -29,9 +33,12 @@
 #include <ags/widget/ags_vindicator.h>
 #include <ags/widget/ags_hindicator.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_plugin_browser.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void
 ags_effect_bulk_add_callback(GtkWidget *button,
@@ -142,9 +149,17 @@ ags_effect_bulk_set_audio_channels_callback(AgsAudio *audio,
 					    guint audio_channels_old,
 					    AgsEffectBulk *effect_bulk)
 {
+  AgsWindow *window;
+
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bulk);
+
   ags_effect_bulk_resize_audio_channels(effect_bulk,
 					audio_channels,
 					audio_channels_old);
+
+  gdk_threads_leave();
 }
 
 void
@@ -154,11 +169,19 @@ ags_effect_bulk_set_pads_callback(AgsAudio *audio,
 				  guint pads_old,
 				  AgsEffectBulk *effect_bulk)
 {
+  AgsWindow *window;
+  
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bulk);
+
   if(channel_type == effect_bulk->channel_type){
     ags_effect_bulk_resize_pads(effect_bulk,
 				pads,
 				pads_old);    
   }
+
+  gdk_threads_leave();
 }
 
 void

@@ -621,6 +621,9 @@ ags_apply_synth_launch(AgsTask *task)
 
   factor = 1.0;
 
+  /* fill */
+  channel = apply_synth->start_channel;
+
   for(i = 0; channel != NULL && i < apply_synth->count; i++){
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 
@@ -665,7 +668,7 @@ ags_apply_synth_launch(AgsTask *task)
     
     audio_signal->loop_start = (guint) ((double) apply_synth->loop_start) * factor;
     audio_signal->loop_end = (guint) ((double) apply_synth->loop_end) * factor;
-
+    
     /* fill in the stream */
     stream = g_list_nth(audio_signal->stream_beginning, stream_start);
     

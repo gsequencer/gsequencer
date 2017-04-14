@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,13 +46,17 @@ typedef struct _AgsConcurrencyProviderInterface AgsConcurrencyProviderInterface;
 struct _AgsConcurrencyProviderInterface
 {
   GTypeInterface interface;
-
+  
   AgsMutexManager* (*get_mutex_manager)(AgsConcurrencyProvider *concurrency_provider);
   
   AgsThread* (*get_main_loop)(AgsConcurrencyProvider *concurrency_provider);
   AgsThread* (*get_task_thread)(AgsConcurrencyProvider *concurrency_provider);
   
   AgsThreadPool* (*get_thread_pool)(AgsConcurrencyProvider *concurrency_provider);
+  
+  GList* (*get_worker)(AgsConcurrencyProvider *concurrency_provider);
+  void (*set_worker)(AgsConcurrencyProvider *concurrency_provider,
+		     GList *worker);
 };
 
 GType ags_concurrency_provider_get_type();
@@ -63,5 +67,9 @@ AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concur
 AgsThread* ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 
 AgsThreadPool* ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+
+GList* ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider);
+void ags_concurrency_provider_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					 GList *worker);
 
 #endif /*__AGS_CONCURRENCY_PROVIDER_H__*/

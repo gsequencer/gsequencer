@@ -41,8 +41,13 @@ AC_ENABLE_SHARED
 
 AC_SUBST([GSEQUENCER_CFLAGS])
 AC_SUBST([GSEQUENCER_LDFLAGS])
+
 AC_SUBST([MIDI2XML_CFLAGS])
 AC_SUBST([MIDI2XML_LDFLAGS])
+
+AC_SUBST([LIBGSEQUENCER_TEST_LIBADD])
+
+AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
@@ -186,6 +191,7 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
+functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile

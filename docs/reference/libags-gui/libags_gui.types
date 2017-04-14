@@ -3,9 +3,12 @@ ags_dial_get_type
 ags_expander_get_type
 ags_expander_set_get_type
 ags_hindicator_get_type
+ags_hled_array_get_type
 ags_indicator_get_type
+ags_led_array_get_type
 ags_led_get_type
 ags_ruler_get_type
 ags_table_get_type
 ags_vindicator_get_type
+ags_vled_array_get_type
 ags_waveform_get_type

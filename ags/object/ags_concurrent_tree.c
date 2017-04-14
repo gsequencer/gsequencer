@@ -174,8 +174,11 @@ ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
 
 
   pthread_mutex_lock(&exclusive_lock);
-  
+
+  //FIXME:JK: check depenendencies - probably should be pthread_mutex_trylock()
   pthread_mutex_lock(parent_mutex);
+  parent_locked = TRUE;
+  
   pthread_mutex_lock(mutex);
 
   pthread_mutex_unlock(&exclusive_lock);

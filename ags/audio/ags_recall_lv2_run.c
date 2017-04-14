@@ -207,7 +207,7 @@ ags_recall_lv2_run_finalize(GObject *gobject)
   uint32_t i;
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
-
+  
   free(recall_lv2_run->lv2_handle);
 
   if(recall_lv2_run->feature != NULL){
@@ -254,10 +254,7 @@ ags_recall_lv2_run_finalize(GObject *gobject)
     if(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread != NULL){  
       g_atomic_int_and(&(AGS_RETURNABLE_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
 		       (~AGS_RETURNABLE_THREAD_IN_USE));
-      g_atomic_int_and(&(AGS_THREAD(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread)->flags),
-		       (~AGS_THREAD_RUNNING));
-
-      g_object_unref(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread);
+      ags_thread_stop(AGS_LV2_WORKER(recall_lv2_run->worker_handle)->returnable_thread);
     }
     
     g_object_unref(recall_lv2_run->worker_handle);
@@ -273,8 +270,13 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   AgsRecallLv2 *recall_lv2;
   AgsRecallLv2Run *recall_lv2_run;
   AgsAudioSignal *audio_signal;
+  
   AgsConfig *config;
+
   gchar *path;
+
+  guint total_feature;
+  guint nth;
   double samplerate;
   uint32_t buffer_size;
   uint32_t i;
@@ -305,31 +307,42 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   path = g_strndup(recall_lv2->filename,
 		   rindex(recall_lv2->filename, '/') - recall_lv2->filename + 1);
 
-  /* feature array */
+  /**/
+  total_feature = 8;
+  nth = 0;
+    
   recall_lv2_run->feature = 
-    feature = (LV2_Feature **) malloc(8 * sizeof(LV2_Feature *));
-
-  /* URI map feature */
+    feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
+  
+  /* URI map feature */  
   uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
   uri_map_feature->callback_data = NULL;
   uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
   
-  feature[0] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[0]->URI = LV2_URI_MAP_URI;
-  feature[0]->data = uri_map_feature;
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_URI_MAP_URI;
+  feature[nth]->data = uri_map_feature;
 
+  nth++;
+  
   /* worker feature */
-  recall_lv2_run->worker_handle = 
-    worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
+  if((AGS_RECALL_LV2_HAS_WORKER & (recall_lv2->flags)) != 0){
+    recall_lv2_run->worker_handle = 
+      worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
   
-  worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
-  worker_schedule->handle = worker_handle;
-  worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
+    worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
+    worker_schedule->handle = worker_handle;
+    worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
   
-  feature[1] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[1]->URI = LV2_WORKER__schedule;
-  feature[1]->data = worker_schedule;
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_WORKER__schedule;
+    feature[nth]->data = worker_schedule;
 
+    nth++;
+  }else{
+    worker_handle = NULL;
+  }
+  
   /* log feature */
   log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
   
@@ -337,10 +350,12 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   log_feature->printf = ags_lv2_log_manager_printf;
   log_feature->vprintf = ags_lv2_log_manager_vprintf;
 
-  feature[2] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[2]->URI = LV2_LOG__log;
-  feature[2]->data = log_feature;
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_LOG__log;
+  feature[nth]->data = log_feature;
 
+  nth++;
+  
   /* event feature */
   event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
   
@@ -348,39 +363,49 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   event_feature->lv2_event_ref = ags_lv2_event_manager_lv2_event_ref;
   event_feature->lv2_event_unref = ags_lv2_event_manager_lv2_event_unref;
   
-  feature[3] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[3]->URI = LV2_EVENT_URI;
-  feature[3]->data = event_feature;
-  
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_EVENT_URI;
+  feature[nth]->data = event_feature;
+
+  nth++;
+    
   /* URID map feature */
   urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
   urid_map->handle = NULL;
   urid_map->map = ags_lv2_urid_manager_map;
   
-  feature[4] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[4]->URI = LV2_URID_MAP_URI;
-  feature[4]->data = urid_map;
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_URID_MAP_URI;
+  feature[nth]->data = urid_map;
 
+  nth++;
+  
   /* URID unmap feature */
   urid_unmap = (LV2_URID_Unmap *) malloc(sizeof(LV2_URID_Unmap));
   urid_unmap->handle = NULL;
   urid_unmap->unmap = ags_lv2_urid_manager_unmap;
   
-  feature[5] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[5]->URI = LV2_URID_UNMAP_URI;
-  feature[5]->data = urid_unmap;
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_URID_UNMAP_URI;
+  feature[nth]->data = urid_unmap;
+
+  nth++;
 
   /* Options interface */
   options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
   options_interface->set = ags_lv2_option_manager_lv2_options_set;
   options_interface->get = ags_lv2_option_manager_lv2_options_get;
   
-  feature[6] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[6]->URI = LV2_OPTIONS_URI;
-  feature[6]->data = options_interface;
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_OPTIONS_URI;
+  feature[nth]->data = options_interface;
+
+  nth++;
 
   /* terminate */
-  feature[7] = NULL;
+  for(; nth < total_feature; nth++){
+    feature[nth] = NULL;
+  }
 
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
@@ -456,6 +481,10 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 					 options);
 
   /*  */  
+  if(worker_handle != NULL){
+    AGS_LV2_WORKER(worker_handle)->handle = recall_lv2_run->lv2_handle[0];
+  }
+  
   free(path);
   
 #ifdef AGS_DEBUG

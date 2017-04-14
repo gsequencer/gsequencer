@@ -75,8 +75,6 @@ void ags_midiin_connect(AgsConnectable *connectable);
 void ags_midiin_dispose(GObject *gobject);
 void ags_midiin_finalize(GObject *gobject);
 
-void ags_midiin_switch_buffer_flag(AgsMidiin *midiin);
-
 void ags_midiin_set_application_context(AgsSequencer *sequencer,
 					AgsApplicationContext *application_context);
 AgsApplicationContext* ags_midiin_get_application_context(AgsSequencer *sequencer);
@@ -1265,7 +1263,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   AgsMidiin *midiin;
 
   AgsTicDevice *tic_device;
-  AgsSwitchBufferFlag *switch_buffer_flag;
+  //  AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
   AgsMutexManager *mutex_manager;
@@ -1358,9 +1356,9 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
 		       tic_device);
   
   /* reset - switch buffer flags */
-  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) midiin);
-  task = g_list_append(task,
-		       switch_buffer_flag);
+  //  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) midiin);
+  //  task = g_list_append(task,
+  //		       switch_buffer_flag);
 
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
@@ -1546,7 +1544,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   AgsMidiin *midiin;
 
   AgsTicDevice *tic_device;
-  AgsSwitchBufferFlag *switch_buffer_flag;
+  //  AgsSwitchBufferFlag *switch_buffer_flag;
   
   AgsThread *task_thread;
   AgsMutexManager *mutex_manager;
@@ -1639,9 +1637,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 		       tic_device);
   
   /* reset - switch buffer flags */
-  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) midiin);
-  task = g_list_append(task,
-		       switch_buffer_flag);
+  //  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) midiin);
+  //  task = g_list_append(task,
+  //		       switch_buffer_flag);
 
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
@@ -2053,6 +2051,8 @@ ags_midiin_oss_poll(void *ptr)
 
     pthread_mutex_lock(mutex);
 
+    ags_midiin_switch_buffer_flag(midiin);
+    
     device_fd = midiin->in.oss.device_fd;
       
     /* nth buffer */
@@ -2273,6 +2273,8 @@ ags_midiin_alsa_poll(void *ptr)
 
     /*  */
     pthread_mutex_lock(mutex);
+
+    ags_midiin_switch_buffer_flag(midiin);
 
     device_handle = midiin->in.alsa.handle;
       

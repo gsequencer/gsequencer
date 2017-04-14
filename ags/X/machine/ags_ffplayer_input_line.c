@@ -177,12 +177,6 @@ ags_ffplayer_input_line_disconnect(AgsConnectable *connectable)
 void
 ags_ffplayer_input_line_finalize(GObject *gobject)
 {
-  g_object_disconnect(gobject,
-		      "notify::channel\0",
-		      G_CALLBACK(ags_ffplayer_input_line_notify_channel_callback),
-		      NULL,
-		      NULL);
-
   G_OBJECT_CLASS(ags_ffplayer_input_line_parent_class)->finalize(gobject);
 }
 

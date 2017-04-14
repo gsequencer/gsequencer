@@ -331,6 +331,14 @@ ags_note_edit_connect(AgsConnectable *connectable)
 void
 ags_note_edit_disconnect(AgsConnectable *connectable)
 {
+  AgsEditor *editor;
+  AgsNoteEdit *note_edit;
+
+  note_edit = AGS_NOTE_EDIT(connectable);
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
+						 AGS_TYPE_EDITOR);
+
   //TODO:JK: implement me
 }
 

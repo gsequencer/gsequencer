@@ -146,7 +146,7 @@ ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
     return;
   }
 
-  ags_ffplayer_bulk_input_parent_connectable_interface->connect(connectable);
+  ags_ffplayer_bulk_input_parent_connectable_interface->disconnect(connectable);
 
   //TODO:JK: implement me
 }

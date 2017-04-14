@@ -30,6 +30,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
@@ -421,7 +422,32 @@ ags_pad_connect(AgsConnectable *connectable)
 void
 ags_pad_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPad *pad;
+  GList *line_list, *line_list_start;
+
+  /* AgsPad */
+  pad = AGS_PAD(connectable);
+
+  if((AGS_PAD_CONNECTED & (pad->flags)) == 0){
+    return;
+  }
+  
+  pad->flags &= (~AGS_PAD_CONNECTED);
+
+  /* AgsLine */
+  line_list_start =  
+    line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+
+  while(line_list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_list->data));
+
+    line_list = line_list->next;
+  }
+
+  g_list_free(line_list_start);
+
+  g_signal_handlers_disconnect_by_data(pad->channel,
+				       pad);
 }
 
 gchar*
@@ -770,6 +796,7 @@ ags_pad_play(AgsPad *pad)
   
   GList *tasks;
 
+  gboolean no_soundcard;
   gboolean play_all;
 
   pthread_mutex_t *application_mutex;
@@ -783,7 +810,23 @@ ags_pad_play(AgsPad *pad)
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  no_soundcard = FALSE;
   
+  pthread_mutex_lock(application_mutex);
+
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  if(no_soundcard){
+    g_message("No soundcard available\0");
+    
+    return;
+  }
+
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 

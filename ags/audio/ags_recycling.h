@@ -90,6 +90,9 @@ gint ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region
 AgsRecycling* ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
 					      GObject *prev_channel);
 
+gboolean ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
+				 GObject *recall_id);
+
 AgsRecycling* ags_recycling_new(GObject *soundcard);
 
 #endif /*__AGS_RECYCLING_H__*/

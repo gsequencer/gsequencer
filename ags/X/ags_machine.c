@@ -313,7 +313,6 @@ ags_machine_init(AgsMachine *machine)
 {
   GtkVBox *vbox;
   GtkFrame *frame;
-  GtkMenuToolButton *menu_tool_button;
 
   machine->name = NULL;
 
@@ -340,6 +339,8 @@ ags_machine_init(AgsMachine *machine)
 
   machine->audio = ags_audio_new(NULL);
   g_object_ref(G_OBJECT(machine->audio));
+
+  machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine = (GObject *) machine;
 
   /* AgsAudio */
@@ -365,12 +366,12 @@ ags_machine_init(AgsMachine *machine)
   machine->popup = ags_machine_popup_new(machine);
   g_object_ref(machine->popup);
   
-  menu_tool_button = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							"label\0", "machine\0",
-							"menu\0", machine->popup,
-							NULL);
+  machine->menu_tool_button = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								 "label\0", "machine\0",
+								 "menu\0", machine->popup,
+								 NULL);
   gtk_frame_set_label_widget(frame,
-			     (GtkWidget *) menu_tool_button);
+			     (GtkWidget *) machine->menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
   machine->connection_editor = NULL;
@@ -625,7 +626,8 @@ void
 ags_machine_connect(AgsConnectable *connectable)
 {
   AgsMachine *machine;
-  GList *pad_list;
+
+  GList *list_start, *list;
 
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
@@ -664,24 +666,30 @@ ags_machine_connect(AgsConnectable *connectable)
 
   /* AgsPad - input */
   if(machine->input != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
 
-    while(pad_list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   /* AgsPad - output */
   if(machine->output != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
     
-    while(pad_list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   /* audio */
@@ -695,7 +703,54 @@ ags_machine_connect(AgsConnectable *connectable)
 void
 ags_machine_disconnect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
+
+  GList *list_start, *list;
+
+  /* AgsMachine */
+  machine = AGS_MACHINE(connectable);
+
+  if((AGS_MACHINE_CONNECTED & (machine->flags)) == 0){
+    return;
+  }
+
+  machine->flags &= (~AGS_MACHINE_CONNECTED);
+
+  if(machine->bridge != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(machine->bridge));
+  }
+
+  /* AgsPad - input */
+  if(machine->input != NULL){
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+    while(list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+  }
+
+  /* AgsPad - output */
+  if(machine->output != NULL){
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    
+    while(list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+  }
+
   //TODO:JK: implement me
+  g_signal_handlers_disconnect_by_data(machine->audio,
+				       machine);
 }
 
 
@@ -1056,7 +1111,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
 
-	list_input_pad->next = list_input_pad_next;
+	list_input_pad = list_input_pad_next;
       }
 
       /* AgsOutput */
@@ -1065,7 +1120,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	gtk_widget_destroy(GTK_WIDGET(list_output_pad->data));
 
-	list_output_pad->next = list_output_pad_next;
+	list_output_pad = list_output_pad_next;
       }
     }else{
       /* AgsInput */
@@ -1261,27 +1316,31 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
     GList *list, *list_next;
 
     /* input - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-    list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_INPUT){
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+      list = g_list_nth(list, pads);
 
-    while(list != NULL){
-      list_next = list->next;
+      while(list != NULL){
+	list_next = list->next;
 
-      gtk_widget_destroy(GTK_WIDGET(list->data));
+	gtk_widget_destroy(GTK_WIDGET(list->data));
 
-      list = list_next;
+	list = list_next;
+      }
     }
-
+    
     /* output - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-    list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_OUTPUT){
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+      list = g_list_nth(list, pads);
 
-    while(list != NULL){
-      list_next = list->next;
+      while(list != NULL){
+	list_next = list->next;
 
-      gtk_widget_destroy(GTK_WIDGET(list->data));
+	gtk_widget_destroy(GTK_WIDGET(list->data));
 
-      list = list_next;
+	list = list_next;
+      }
     }
   }
 
@@ -1503,6 +1562,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+
+  gboolean no_soundcard;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_loop_mutex;
@@ -1513,12 +1574,28 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  no_soundcard = FALSE;
   
+  pthread_mutex_lock(application_mutex);
+
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  if(no_soundcard){
+    g_message("No soundcard available\0");
+    
+    return;
+  }
+
   /* get threads */
   pthread_mutex_lock(application_mutex);
 
   audio_loop = (AgsAudioLoop *) application_context->main_loop;
-
+  
   pthread_mutex_unlock(application_mutex);
 
   /* lookup audio loop mutex */

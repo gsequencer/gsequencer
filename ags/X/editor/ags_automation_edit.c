@@ -261,6 +261,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 void
 ags_automation_edit_connect(AgsConnectable *connectable)
 {
+  AgsAutomationEditor *automation_editor;
   AgsAutomationEdit *automation_edit;
 
   automation_edit = AGS_AUTOMATION_EDIT(connectable);
@@ -270,6 +271,18 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   }
   
   automation_edit->flags |= AGS_AUTOMATION_EDIT_CONNECTED;
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  if(automation_editor != NULL && automation_editor->selected_machine != NULL){
+    g_signal_connect_after(automation_editor->selected_machine->audio, "set-audio-channels\0",
+			   G_CALLBACK(ags_automation_edit_set_audio_channels_callback), automation_edit);
+
+    g_signal_connect_after(automation_editor->selected_machine->audio, "set-pads\0",
+			   G_CALLBACK(ags_automation_edit_set_pads_callback), automation_edit);
+  }
+
   
   /*  */
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event\0",

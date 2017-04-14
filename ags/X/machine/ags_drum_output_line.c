@@ -24,6 +24,7 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_config.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
@@ -188,7 +189,7 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
 
   g_signal_connect_after((GObject *) AGS_LINE(drum_output_line)->channel->audio, "set-pads\0",
-			 G_CALLBACK(ags_drum_output_line_set_pads_callback), NULL);
+			 G_CALLBACK(ags_drum_output_line_set_pads_callback), drum_output_line);
 
   /* empty */
 }
@@ -196,9 +197,20 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
 void
 ags_drum_output_line_disconnect(AgsConnectable *connectable)
 {
+  AgsDrumOutputLine *drum_output_line;
+
+  drum_output_line = AGS_DRUM_OUTPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_output_line)->flags)) == 0){
+    return;
+  }
+
   ags_drum_output_line_parent_connectable_interface->disconnect(connectable);
 
-  /* empty */
+  if(AGS_LINE(drum_output_line)->channel != NULL){
+    g_signal_handlers_disconnect_by_data(AGS_LINE(drum_output_line)->channel->audio,
+					 drum_output_line);
+  }
 }
 
 gchar*
@@ -294,9 +306,14 @@ ags_drum_output_line_map_recall(AgsLine *line,
 				guint output_pad_start)
 {
   AgsAudio *audio;
-
   AgsChannel *output, *input;
 
+  AgsConfig *config;
+  
+  gchar *str;
+
+  gboolean performance_mode;
+  
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
@@ -304,37 +321,71 @@ ags_drum_output_line_map_recall(AgsLine *line,
 
   output = line->channel;
   audio = AGS_AUDIO(output->audio);
+
+  config = ags_config_get_instance();
   
   /* remap for input */
-  input = audio->input;
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "engine-mode\0");
+  performance_mode = FALSE;
+  
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "performance\0",
+			  12)){    
+    input = audio->input;
 
-  while(input != NULL){
+    while(input != NULL){
+      /* ags-copy */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-copy\0",
+				0, audio->audio_channels, 
+				input->pad, input->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_RECALL |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      input = input->next_pad;
+    }
+
+    /* set performance mode */
+    performance_mode = TRUE;
+  }else{
     /* ags-buffer */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-buffer\0",
-			      0, audio->audio_channels, 
-			      input->pad, input->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+    input = audio->input;
 
-    input = input->next_pad;
+    while(input != NULL){
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-buffer\0",
+				0, audio->audio_channels, 
+				input->pad, input->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_RECALL |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      input = input->next_pad;
+    }
   }
   
-  /* ags-stream */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-stream\0",
-			    output->audio_channel, output->audio_channel + 1,
-			    output->pad, output->pad + 1,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
+  if(!performance_mode){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      output->audio_channel, output->audio_channel + 1,
+			      output->pad, output->pad + 1,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
+  
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->map_recall(line,
 								output_pad_start);
 }

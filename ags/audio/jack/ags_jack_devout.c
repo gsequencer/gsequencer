@@ -1878,7 +1878,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
     /* tic soundcard */
     tic_device = ags_tic_device_new((GObject *) jack_devout);
     task = g_list_append(task,
-			 tic_device);
+    			 tic_device);
 
     /* reset - clear buffer */
     clear_buffer = ags_clear_buffer_new((GObject *) jack_devout);

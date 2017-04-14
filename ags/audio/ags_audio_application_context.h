@@ -52,8 +52,8 @@
 
 #define AGS_AUDIO_RT_PRIORITY (49)
 
-#define AGS_AUDIO_BUILD_ID "Wed Apr 13 00:16:43 CEST 2016\0"
-#define AGS_AUDIO_DEFAULT_VERSION "0.7.13\0"
+#define AGS_AUDIO_DEFAULT_VERSION "0.7.122.8\0"
+#define AGS_AUDIO_BUILD_ID "Tue Mar 21 20:03:29 CET 2017\0"
 
 #define AGS_EFFECTS_DEFAULT_VERSION "0.7.13\0"
 
@@ -74,6 +74,8 @@ struct _AgsAudioApplicationContext
   gchar *build_id;
 
   AgsThreadPool *thread_pool;
+
+  GList *worker;
 
   AgsThread *soundcard_thread;
   AgsThread *export_thread;

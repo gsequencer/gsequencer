@@ -642,7 +642,7 @@ ags_recycling_dispose(GObject *gobject)
 
   /* parent */
   if(recycling->parent != NULL){
-    g_object_unref(recycling->parent);
+    //    g_object_unref(recycling->parent);
 
     recycling->parent = NULL;
   }
@@ -1345,6 +1345,68 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 
   /* no match within region */
   return(-1);
+}
+
+/**
+ * ags_recycling_is_active:
+ * @start_region: boundary start
+ * @end_region: boundary end
+ * @recall_id: the #AgsRecallID
+ * 
+ * Check if is active.
+ * 
+ * Returns: %TRUE if related audio signal to recall id is available, otherwise %FALSE
+ * 
+ * Since: 0.7.122.9
+ */
+gboolean
+ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
+			GObject *recall_id)
+{
+  AgsRecycling *current;
+
+  AgsMutexManager *mutex_manager;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *current_mutex;
+  
+  if(recall_id == NULL ||
+     AGS_RECALL_ID(recall_id)->recycling_context == NULL){
+    return(FALSE);
+  }
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  current = start_region;
+
+  while(current != end_region){
+    /* lock current */
+    pthread_mutex_lock(application_mutex);
+    
+    current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) current);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* is active */
+    pthread_mutex_lock(current_mutex);
+
+    if(ags_audio_signal_is_active(current->audio_signal,
+				  recall_id)){
+      pthread_mutex_unlock(current_mutex);
+      
+      return(TRUE);
+    }
+
+    
+    current = current->next;
+
+    pthread_mutex_unlock(current_mutex);
+  }
+
+  return(FALSE);
 }
 
 /**

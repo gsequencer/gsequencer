@@ -74,6 +74,124 @@ ags (0.7.123)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
 
+ags (0.7.122.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing ags_route_lv2_audio_run_dispose()
+	* fixed in ags-route-dssi use of parent ::finalize() during ::dispose()
+	* fixed switch buffer flag to be done during poll MIDI device
+
+ags (0.7.122.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed LIBADD nad LDADD of GSequencer system check automake file
+
+ags (0.7.122.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing length of pattern
+
+ags (0.7.122.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation to use previous value if range doesn't match
+	* added functional test to check editor workflow
+
+ags (0.7.122.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsEffectSeparator for AgsLine and AgsEffectLine
+	* removed gtk separator in AgsLine and AgsEffectLine
+	* disabled AgsDestroyWorker
+
+ags (0.7.122.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock as removing line member
+	* improved plugin browser to reset plugin type
+	* improved the speed of functional tests
+	* added functional test to check line member sanity
+
+ags (0.7.122.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsClearAudioSignal task
+	* fixed ags_synth_update() it didn't clear the buffers correctly
+	* added functional test to check link sanity
+
+ags (0.7.122.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory corruption of AgsFFPlayer destruction
+	* fixed some AgsConnectable::disconnect() of machines
+	* fixed potential infinite loop in ags_machine_resize_audio_channels()
+	* added functional test add and destroy machine
+	* added functional tests resize pads and audio channels
+
+ags (0.7.122.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing connect of AgsOscillator
+	* fixed noise creation in AgsSynth
+	* fixed SIGSEGV as adding plugin to AgsLine
+
+ags (0.7.122.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented notebook resize in automation editor
+	* fixed NULL pointer dereference in ags_matrix.c
+	* fixed resize pad to distinguish between input and output
+
+ags (0.7.122.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* stability improvements
+
+ags (0.7.122.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* decoupled gui thread
+
+ags (0.7.122.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixes to configuration in place
+	* fixes to audio connection editor
+
+ags (0.7.122.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented ags-play-pattern recall
+	* fixed broken optical feedback of peak
+	* removed auto-scroll feature because it costs too much performance
+
+ags (0.7.122.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented non-deterministic mode i.e. performance mode
+	* implemented ags_input_next_active() and ags_input_is_active()
+	* implemented restore and persist of AgsLv2Bridge preset
+	* disabled lv2 worker feature if not requested by plugin
+	* fixed memory leak related to AgsReturnableThread
+	* fixed crash related to notation offset cached
+	* note disabled some signals
+
+ags (0.7.122.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored ags-copy recall to instantiate like ags-buffer
+	* implemented LV2 presets
+	* implemented presets in AgsLv2Bridge
+	* implemented ags-prepare recall
+	* implemented AgsConditionManager to use with AgsThread tree lock functions
+	* implemented worker threads
+	* implemented destroy worker
+	* improved AgsDelayAudio port instantiation to use default values
+	* fixed using default values as no soundcard available
+	* fixed crash as no soundcard configured within GUI
+	* fixed AgsThread tree lock functions
+	* added more unit tests in ags_thread_test.c
+
 ags (0.7.122.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

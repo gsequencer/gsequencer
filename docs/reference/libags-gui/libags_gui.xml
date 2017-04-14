@@ -23,15 +23,14 @@
     <xi:include href="xml/ags_dial.xml"/>
     <xi:include href="xml/ags_expander.xml"/>
     <xi:include href="xml/ags_expander_set.xml"/>
-    <xi:include href="xml/ags_hindicator.xml"/>
-    <xi:include href="xml/ags_htimebar.xml"/>
     <xi:include href="xml/ags_indicator.xml"/>
+    <xi:include href="xml/ags_hindicator.xml"/>
+    <xi:include href="xml/ags_vindicator.xml"/>
     <xi:include href="xml/ags_led.xml"/>
     <xi:include href="xml/ags_ruler.xml"/>
-    <xi:include href="xml/ags_table.xml"/>
-    <xi:include href="xml/ags_timebar.xml"/>
-    <xi:include href="xml/ags_vindicator.xml"/>
-    <xi:include href="xml/ags_waveform.xml"/>
+    <xi:include href="xml/ags_led_array.xml"/>
+    <xi:include href="xml/ags_hled_array.xml"/>
+    <xi:include href="xml/ags_vled_array.xml"/>
   </chapter>
   
   <chapter id="object-tree">

@@ -429,7 +429,7 @@ ags_route_dssi_audio_run_dispose(GObject *gobject)
   }
 
   /* call parent */
-  G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->dispose(gobject);
 }
 
 void
@@ -892,8 +892,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	    
 	      if(recall_dssi_run->event_buffer == NULL){
 		/* prepend note */
-		route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
-								 note);
+		//		route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
+		//						 note);
 	      
 		recall_dssi_run->route_dssi_audio_run = (GObject *) route_dssi_audio_run;
 	      

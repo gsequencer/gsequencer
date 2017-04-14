@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <stdarg.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/lib/ags_turtle.h>
 
 #include <alsa/seq_midi_event.h>
@@ -55,6 +56,7 @@ typedef struct _AgsLv2PluginClass AgsLv2PluginClass;
 
 typedef enum{
   AGS_LV2_PLUGIN_IS_SYNTHESIZER  = 1,
+  AGS_LV2_PLUGIN_NEEDS_WORKER    = 1 <<  1,
 }AgsLv2PluginFlags;
 
 struct _AgsLv2Plugin
@@ -62,7 +64,8 @@ struct _AgsLv2Plugin
   AgsBasePlugin base_plugin;
 
   guint flags;
-  
+
+  gchar *pname;
   gchar *uri;
   gchar *ui_uri;
   
@@ -73,6 +76,8 @@ struct _AgsLv2Plugin
   gchar *foaf_name;
   gchar *foaf_homepage;
   gchar *foaf_mbox;
+
+  GList *preset;
 };
 
 struct _AgsLv2PluginClass
@@ -101,6 +106,9 @@ gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 						  guint event_count);
 void ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 					guint sequence_size);
+
+GList* ags_lv2_plugin_find_pname(GList *lv2_plugin,
+				 gchar *pname);
 
 AgsLv2Plugin* ags_lv2_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index);
 

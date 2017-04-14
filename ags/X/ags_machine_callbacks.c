@@ -39,6 +39,7 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
+#include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_connection_editor.h>
@@ -47,6 +48,8 @@
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #define AGS_RENAME_ENTRY "AgsRenameEntry\0"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
@@ -54,6 +57,7 @@ int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine 
 void ags_machine_connection_editor_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine);
 void ags_machine_midi_dialog_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine);
 void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
+void ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine);
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -132,6 +136,110 @@ ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine)
 }
 
 void
+ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
+{
+  AgsWindow *window;
+
+  GList *list, *list_start;
+
+  gdk_threads_enter();
+  
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+  
+  /* destroy editor */
+  list = window->editor->editor_child;
+
+  while(list != NULL){
+    if(AGS_EDITOR_CHILD(list->data)->machine == machine){
+      //TODO:JK: remove work-around
+      g_signal_handlers_disconnect_by_data(machine->audio,
+					   AGS_EDITOR_CHILD(list->data)->notebook);
+      g_signal_handlers_disconnect_by_data(machine->audio,
+					   AGS_EDITOR_CHILD(list->data)->edit_widget);
+      
+      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_EDITOR_CHILD(list->data)->notebook));
+      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_EDITOR_CHILD(list->data)->edit_widget));
+      
+      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->notebook);
+      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->meter);
+      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->edit_widget);
+      break;
+    }
+
+    list = list->next;
+  }
+
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) window->editor->machine_selector);
+
+  list = list->next;
+
+  while(list != NULL){
+    if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) && AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+      gtk_widget_destroy(list->data);
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* destroy automation editor */
+  list = window->automation_window->automation_editor->automation_editor_child;
+
+  while(list != NULL){
+    if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->machine == machine){
+      //TODO:JK: remove work-around
+      g_signal_handlers_disconnect_by_data(machine->audio,
+					   AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_notebook);
+      g_signal_handlers_disconnect_by_data(machine->audio,
+					   AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_notebook);
+      
+      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_notebook));
+      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_notebook));
+      
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_scale);
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_automation_edit);
+
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_scale);
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_notebook);
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_automation_edit);
+
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_scale);
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_notebook);
+      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_automation_edit);
+
+      break;
+    }
+
+    list = list->next;
+  }
+  
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) window->automation_window->automation_editor->machine_selector);
+
+  list = list->next;
+
+  while(list != NULL){
+    if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) && AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+      gtk_widget_destroy(list->data);
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* destroy machine */
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine));
+  gtk_widget_destroy((GtkWidget *) machine);
+
+  gdk_threads_leave();
+}
+
+void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsWindow *window;
@@ -142,8 +250,6 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
-
-  GList *list, *list_start;
 
   pthread_mutex_t *application_mutex;
   
@@ -168,43 +274,10 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   g_object_ref(machine->audio);
   remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
+  g_signal_connect(remove_audio, "launch\0",
+		   G_CALLBACK(ags_machine_remove_audio_launch_callback), machine);
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(remove_audio));
-
-  ags_connectable_disconnect(AGS_CONNECTABLE(machine));
-
-  /* destroy editor */
-  list = window->editor->editor_child;
-
-  while(list != NULL){
-    if(AGS_EDITOR_CHILD(list->data)->machine == machine){
-      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->notebook);
-      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->meter);
-      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->edit_widget);
-      break;
-    }
-
-    list = list->next;
-  }
-  
-  list =
-    list_start = gtk_container_get_children((GtkContainer *) window->editor->machine_selector);
-
-  list = list->next;
-
-  while(list != NULL){
-    if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) && AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
-      gtk_widget_destroy(list->data);
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  /* destroy machine */
-  gtk_widget_destroy((GtkWidget *) machine);
 }
 
 int
@@ -258,10 +331,12 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     gtk_menu_tool_button_set_menu((GtkMenuToolButton *) gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)),
 				  NULL);
     gtk_widget_destroy(gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)));
-    menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-				    "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
-				    "menu\0", machine->popup,
-				    NULL);
+
+    menu_tool_button = 
+      machine->menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+					       "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
+					       "menu\0", machine->popup,
+					       NULL);
     gtk_frame_set_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
 			       (GtkWidget *) menu_tool_button);
     gtk_widget_show_all((GtkWidget *) menu_tool_button);
@@ -318,9 +393,13 @@ ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *ma
   machine->properties = (GtkDialog *) ags_machine_editor_new(machine);
   g_signal_connect_after(machine->properties, "destroy\0",
 			 G_CALLBACK(ags_machine_popup_properties_destroy_callback), machine);
+
   gtk_window_set_default_size((GtkWindow *) machine->properties, -1, 400);
+  
   ags_connectable_connect(AGS_CONNECTABLE(machine->properties));
+
   ags_applicable_reset(AGS_APPLICABLE(machine->properties));
+
   gtk_widget_show_all((GtkWidget *) machine->properties);
 
   return(0);
@@ -620,11 +699,18 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
 					guint audio_channels, guint audio_channels_old,
 					AgsMachine *machine)
 {
+  AgsWindow *window;
+
   GList *pad_list;
   GList *line_list;
   
   guint i;
   
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+
+  /* resize */
   ags_machine_resize_audio_channels(machine,
 				    audio_channels, audio_channels_old);
 
@@ -667,6 +753,8 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
       }
     }
   }
+
+  gdk_threads_leave();
 }
 
 void
@@ -674,8 +762,15 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
 			      guint pads, guint pads_old,
 			      AgsMachine *machine)
 {
+  AgsWindow *window;
+
   GList *pad_list;
   
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+
+  /* resize */
   ags_machine_resize_pads(machine,
 			  channel_type,
 			  pads, pads_old);
@@ -709,6 +804,8 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
       }
     }
   }
+
+  gdk_threads_leave();
 }
 
 void

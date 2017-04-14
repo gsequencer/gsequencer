@@ -70,6 +70,7 @@ void ags_route_lv2_audio_run_get_property(GObject *gobject,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *param_spec);
+void ags_route_lv2_audio_run_dispose(GObject *gobject);
 void ags_route_lv2_audio_run_finalize(GObject *gobject);
 void ags_route_lv2_audio_run_connect(AgsConnectable *connectable);
 void ags_route_lv2_audio_run_disconnect(AgsConnectable *connectable);
@@ -217,6 +218,7 @@ ags_route_lv2_audio_run_class_init(AgsRouteLv2AudioRunClass *route_lv2_audio_run
   gobject->set_property = ags_route_lv2_audio_run_set_property;
   gobject->get_property = ags_route_lv2_audio_run_get_property;
 
+  gobject->dispose = ags_route_lv2_audio_run_dispose;
   gobject->finalize = ags_route_lv2_audio_run_finalize;
 
   /* properties */
@@ -396,6 +398,31 @@ ags_route_lv2_audio_run_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   };
+}
+
+void
+ags_route_lv2_audio_run_dispose(GObject *gobject)
+{
+  AgsRouteLv2AudioRun *route_lv2_audio_run;
+
+  route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(gobject);
+
+  /* delay audio run */
+  if(route_lv2_audio_run->delay_audio_run != NULL){
+    g_object_unref(G_OBJECT(route_lv2_audio_run->delay_audio_run));
+
+    route_lv2_audio_run->delay_audio_run = NULL;
+  }
+
+  /* count beats audio run */
+  if(route_lv2_audio_run->count_beats_audio_run != NULL){
+    g_object_unref(G_OBJECT(route_lv2_audio_run->count_beats_audio_run));
+
+    route_lv2_audio_run->count_beats_audio_run = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_route_lv2_audio_run_parent_class)->dispose(gobject);
 }
 
 void
@@ -867,8 +894,8 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	    
 	      if(recall_lv2_run->note == NULL){
 		/* prepend note */
-		route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
-								note);
+		//		route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
+		//						note);
   
 		recall_lv2_run->route_lv2_audio_run = (GObject *) route_lv2_audio_run;
 		
