@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_recall_audio.h>
 
+#include <dssi.h>
+
 #define AGS_TYPE_PLAY_DSSI_AUDIO                (ags_play_dssi_audio_get_type())
 #define AGS_PLAY_DSSI_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_DSSI_AUDIO, AgsPlayDssiAudio))
 #define AGS_PLAY_DSSI_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_DSSI_AUDIO, AgsPlayDssiAudio))
@@ -38,6 +40,21 @@ typedef struct _AgsPlayDssiAudioClass AgsPlayDssiAudioClass;
 struct _AgsPlayDssiAudio
 {
   AgsRecallAudio recall_audio;
+
+  gchar *filename;
+  gchar *effect;
+  unsigned long index;
+
+  unsigned long bank;
+  unsigned long program;
+  
+  DSSI_Descriptor *plugin_descriptor;
+
+  unsigned long *input_port;
+  unsigned long input_lines;
+
+  unsigned long *output_port;
+  unsigned long output_lines;
 };
 
 struct _AgsPlayDssiAudioClass
@@ -46,6 +63,16 @@ struct _AgsPlayDssiAudioClass
 };
 
 GType ags_play_dssi_audio_get_type();
+
+void ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio);
+
+GList* ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio);
+void ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
+					 GObject *port,
+					 gpointer port_descriptor);
+
+GList* ags_play_dssi_audio_find(GList *recall,
+				gchar *filename, gchar *effect);
 
 AgsPlayDssiAudio* ags_play_dssi_audio_new();
 

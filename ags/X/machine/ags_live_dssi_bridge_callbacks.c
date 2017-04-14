@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/machine/ags_dssi_bridge_callbacks.h>
+#include <ags/X/machine/ags_live_dssi_bridge_callbacks.h>
 
 #include <ags/lib/ags_endian.h>
 
@@ -25,7 +25,7 @@
 #include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
 
-#include <ags/audio/ags_recall_dssi.h>
+#include <ags/audio/ags_recall_live_dssi.h>
 
 #include <ags/widget/ags_dial.h>
 
@@ -34,7 +34,7 @@
 #include <ags/X/ags_bulk_member.h>
 
 void
-ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge)
+ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDssiBridge *live_dssi_bridge)
 {
   GtkTreeIter iter;
 
@@ -62,9 +62,9 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		       1, &bank,
 		       2, &program,
 		       -1);
-    dssi_bridge->dssi_descriptor->select_program(dssi_bridge->ladspa_handle,
-						 (unsigned long) bank,
-						 (unsigned long) program);
+    live_dssi_bridge->dssi_descriptor->select_program(live_dssi_bridge->ladspa_handle,
+						      (unsigned long) bank,
+						      (unsigned long) program);
 
 
 #ifdef AGS_DEBUG
@@ -72,21 +72,21 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 #endif
     
     /* update ports */
-    channel = AGS_MACHINE(dssi_bridge)->audio->input;
-    port_descriptor = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
+    channel = AGS_MACHINE(live_dssi_bridge)->audio->input;
+    port_descriptor = live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
     
     while(channel != NULL){
       recall = channel->recall;
 
-      while((recall = ags_recall_find_type(recall, AGS_TYPE_RECALL_DSSI)) != NULL){
-	AGS_RECALL_DSSI(recall->data)->bank = (unsigned long) bank;
-	AGS_RECALL_DSSI(recall->data)->program = (unsigned long) program;
+      while((recall = ags_recall_find_type(recall, AGS_TYPE_PLAY_DSSI_AUDIO)) != NULL){
+	AGS_PLAY_DSSI_AUDIO(recall->data)->bank = (unsigned long) bank;
+	AGS_PLAY_DSSI_AUDIO(recall->data)->program = (unsigned long) program;
       
-	for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
+	for(i = 0; i < live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
 	  if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
 	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	       LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	      specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
+	      specifier = live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
 	      port = AGS_RECALL(recall->data)->port;
 
 	      while(port != NULL){
@@ -95,13 +95,13 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		  GValue value = {0,};
 
 #ifdef AGS_DEBUG
-		  g_message("%s %f\0", specifier, dssi_bridge->port_values[i]);
+		  g_message("%s %f\0", specifier, live_dssi_bridge->port_values[i]);
 #endif
 		  
 		  g_value_init(&value,
 			       G_TYPE_FLOAT);
 		  g_value_set_float(&value,
-				    dssi_bridge->port_values[i]);
+				    live_dssi_bridge->port_values[i]);
 		  ags_port_safe_write_raw(port->data,
 					  &value);
 		
@@ -121,13 +121,13 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     }
 
     /* update UI */
-    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
+    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_input)->table);
   
-    for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
+    for(i = 0; i < live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
       /* find bulk member */
       bulk_member = bulk_member_start;
 
-      specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
+      specifier = live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
 
 #ifdef AGS_DEBUG
       g_message("%s\0", specifier);
@@ -146,7 +146,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	  ladspa_conversion = (AgsLadspaConversion *) AGS_BULK_MEMBER(bulk_member->data)->conversion;
 	  
 	  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	    if(dssi_bridge->port_values[i] == 0.0){
+	    if(live_dssi_bridge->port_values[i] == 0.0){
 	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					   FALSE);
 	    }else{
@@ -156,11 +156,11 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	  }else if(AGS_IS_DIAL(child_widget)){
 	    gdouble val;
 
-	    val = dssi_bridge->port_values[i];
+	    val = live_dssi_bridge->port_values[i];
 	    
 	    if(ladspa_conversion != NULL){
 	      //	      val = ags_ladspa_conversion_convert(ladspa_conversion,
-	      //				  dssi_bridge->port_values[i],
+	      //				  live_dssi_bridge->port_values[i],
 	      //				  TRUE);
 	    }
 	    
@@ -168,7 +168,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	    ags_dial_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
-	    g_message(" --- %f\0", dssi_bridge->port_values[i]);
+	    g_message(" --- %f\0", live_dssi_bridge->port_values[i]);
 #endif
 	  }
 	

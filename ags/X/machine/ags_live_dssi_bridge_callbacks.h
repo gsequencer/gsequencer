@@ -17,23 +17,15 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_LV2_BRIDGE_CALLBACKS_H__
-#define __AGS_LV2_BRIDGE_CALLBACKS_H__
+#ifndef __AGS_LIVE_DSSI_BRIDGE_CALLBACKS_H__
+#define __AGS_LIVE_DSSI_BRIDGE_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/machine/ags_lv2_bridge.h>
+#include <ags/X/machine/ags_live_dssi_bridge.h>
 
-#include <lv2.h>
-#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
+void ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDssiBridge *live_dssi_bridge);
 
-void ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge);
-gboolean ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge);
-
-void ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer);
-
-void ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2_bridge);
-
-#endif /*__AGS_LV2_BRIDGE_CALLBACKS_H__*/
+#endif /*__AGS_LIVE_DSSI_BRIDGE_CALLBACKS_H__*/

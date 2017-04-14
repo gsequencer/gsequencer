@@ -23,7 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <lv2.h>
+
+#include <ags/lib/ags_turtle.h>
+
 #include <ags/audio/ags_recall_audio.h>
+
 
 #define AGS_TYPE_PLAY_LV2_AUDIO                (ags_play_lv2_audio_get_type())
 #define AGS_PLAY_LV2_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_LV2_AUDIO, AgsPlayLv2Audio))
@@ -35,9 +40,35 @@
 typedef struct _AgsPlayLv2Audio AgsPlayLv2Audio;
 typedef struct _AgsPlayLv2AudioClass AgsPlayLv2AudioClass;
 
+typedef enum{
+  AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT   = 1,
+  AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT    = 1 <<  1,
+  AGS_PLAY_LV2_AUDIO_HAS_WORKER       = 1 <<  2,
+}AgsRecallLv2FLags;
+
 struct _AgsPlayLv2Audio
 {
   AgsRecallAudio recall_audio;
+
+  guint flags;
+  
+  AgsTurtle *turtle;
+  
+  gchar *filename;
+  gchar *effect;
+  gchar *uri;
+  uint32_t index;
+
+  LV2_Descriptor *plugin_descriptor;
+
+  uint32_t *input_port;
+  uint32_t input_lines;
+
+  uint32_t *output_port;
+  uint32_t output_lines;
+
+  uint32_t event_port;
+  uint32_t atom_port;
 };
 
 struct _AgsPlayLv2AudioClass

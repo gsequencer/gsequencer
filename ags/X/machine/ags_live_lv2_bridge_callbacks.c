@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/machine/ags_lv2_bridge_callbacks.h>
+#include <ags/X/machine/ags_live_lv2_bridge_callbacks.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2ui_manager.h>
@@ -48,10 +48,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-extern GHashTable *ags_lv2_bridge_lv2ui_idle;
+extern GHashTable *ags_live_lv2_bridge_lv2ui_idle;
 
 void
-ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_lv2_bridge)
 {
   AgsWindow *window;
   GtkWidget *plugin_widget;
@@ -71,15 +71,15 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
     NULL,
   };
 
-  window = gtk_widget_get_ancestor(lv2_bridge,
+  window = gtk_widget_get_ancestor(live_lv2_bridge,
 				   AGS_TYPE_WINDOW);
   
-  if(lv2_bridge->gui_uri == NULL){
+  if(live_lv2_bridge->gui_uri == NULL){
     return;
   }
   
   list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
-				       lv2_bridge->gui_uri);
+				       live_lv2_bridge->gui_uri);
   
   if(list == NULL){
     return;
@@ -87,14 +87,14 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 
   lv2ui_plugin = list->data;
 
-  if(lv2_bridge->ui_handle == NULL){
+  if(live_lv2_bridge->ui_handle == NULL){
     gchar *ui_filename;
     gchar *bundle_path;	
 
     LV2_Feature **feature;
 
     /* feature array */
-    lv2_bridge->ui_feature = 
+    live_lv2_bridge->ui_feature = 
       feature = (LV2_Feature **) malloc(3 * sizeof(LV2_Feature *));
 
     /* idle interface */
@@ -128,43 +128,43 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 	bundle_path = g_strndup(ui_filename,
 				rindex(ui_filename, '/') - ui_filename);
 
-	lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
-							   lv2_bridge->uri,
-							   bundle_path,
-							   ags_lv2_bridge_lv2ui_write_function,
-							   lv2_bridge,
-							   &plugin_widget,
-							   feature);
+	live_lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
+								live_lv2_bridge->uri,
+								bundle_path,
+								ags_live_lv2_bridge_lv2ui_write_function,
+								live_lv2_bridge,
+								&plugin_widget,
+								feature);
 
 	if(ui_descriptor->extension_data != NULL){
-	  lv2_bridge->ui_feature[0]->data = ui_descriptor->extension_data(LV2_UI__idleInterface);
-	  lv2_bridge->ui_feature[1]->data = ui_descriptor->extension_data(LV2_UI__showInterface);
+	  live_lv2_bridge->ui_feature[0]->data = ui_descriptor->extension_data(LV2_UI__idleInterface);
+	  live_lv2_bridge->ui_feature[1]->data = ui_descriptor->extension_data(LV2_UI__showInterface);
 
-	  g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
-			      lv2_bridge, ags_lv2_bridge_lv2ui_idle_timeout);
-	  g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge);
+	  g_hash_table_insert(ags_live_lv2_bridge_lv2ui_idle,
+			      live_lv2_bridge, ags_live_lv2_bridge_lv2ui_idle_timeout);
+	  g_timeout_add(1000 / 30, (GSourceFunc) ags_live_lv2_bridge_lv2ui_idle_timeout, (gpointer) live_lv2_bridge);
 	}	
       }
     }
   }
 
-  if(lv2_bridge->ui_feature != NULL &&
-     lv2_bridge->ui_feature[1]->data != NULL){
-    ((struct _LV2UI_Show_Interface *) lv2_bridge->ui_feature[1]->data)->show(lv2_bridge->ui_handle);
+  if(live_lv2_bridge->ui_feature != NULL &&
+     live_lv2_bridge->ui_feature[1]->data != NULL){
+    ((struct _LV2UI_Show_Interface *) live_lv2_bridge->ui_feature[1]->data)->show(live_lv2_bridge->ui_handle);
   }
 }
 
 gboolean
-ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLiveLv2Bridge *live_lv2_bridge)
 {
   
   return(TRUE);
 }
 
 void
-ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer)
+ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
   GtkWidget *widget;
 
   AgsChannel *channel;
@@ -178,14 +178,14 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 
   GValue value = {0,};
   
-  lv2_bridge = (AgsLv2Bridge *) controller;
+  live_lv2_bridge = (AgsLiveLv2Bridge *) controller;
   
-  if(lv2_bridge == NULL){
-    g_warning("ags_lv2_bridge_lv2ui_write_function() - lv2_bridge == NULL\0");
+  if(live_lv2_bridge == NULL){
+    g_warning("ags_live_lv2_bridge_lv2ui_write_function() - live_lv2_bridge == NULL\0");
     return;
   }
 
-  channel = AGS_MACHINE(lv2_bridge)->audio->input;
+  channel = AGS_MACHINE(live_lv2_bridge)->audio->input;
  
   switch(port_protocol){
   case 0:
@@ -205,7 +205,7 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
     
   while(channel != NULL){
     recall = ags_recall_get_by_effect(channel->play,
-				      lv2_bridge->filename, lv2_bridge->effect);
+				      live_lv2_bridge->filename, live_lv2_bridge->effect);
 
     if(recall != NULL){
       recall_lv2 = recall->data;
@@ -237,7 +237,7 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 }
 
 void
-ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Bridge *live_lv2_bridge)
 {
   GtkContainer *container;
   
@@ -257,8 +257,8 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
 
   /* retrieve lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       lv2_bridge->filename,
-					       lv2_bridge->effect);
+					       live_lv2_bridge->filename,
+					       live_lv2_bridge->effect);
   
   /* preset */
   lv2_preset = NULL;
@@ -274,7 +274,7 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
     return;
   }
 
-  container = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table;
+  container = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->table;
 
   port_preset = lv2_preset->port_preset;
   

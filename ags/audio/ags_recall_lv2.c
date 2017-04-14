@@ -159,7 +159,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The assigned turtle.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("turtle\0",
 				   "turtle of recall lv2\0",
@@ -175,7 +175,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The plugins filename.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("filename\0",
 				    "the object file\0",
@@ -191,7 +191,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The effect's name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("effect\0",
 				    "the effect\0",
@@ -207,7 +207,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The uri's name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("uri\0",
 				    "the uri\0",
@@ -223,7 +223,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The uri's index.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_ulong("index\0",
 				   "index of uri\0",
@@ -236,7 +236,6 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
 				  PROP_INDEX,
 				  param_spec);
 }
-
 
 void
 ags_recall_lv2_connectable_interface_init(AgsConnectableInterface *connectable)
@@ -457,6 +456,45 @@ ags_recall_lv2_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_recall_lv2_dispose(GObject *gobject)
+{
+  AgsRecallLv2 *recall_lv2;
+  
+  recall_lv2 = AGS_RECALL_LV2(gobject);
+
+  /* turtle */
+  if(recall_lv2->turtle != NULL){
+    g_object_unref(recall_lv2->turtle);
+
+    recall_lv2->turtle = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_lv2_parent_class)->dispose(gobject);
+}
+
+void
+ags_recall_lv2_finalize(GObject *gobject)
+{
+  AgsRecallLv2 *recall_lv2;
+  
+  recall_lv2 = AGS_RECALL_LV2(gobject);
+
+  /* turtle */
+  if(recall_lv2->turtle != NULL){
+    g_object_unref(recall_lv2->turtle);
+  }
+
+  /* filename, effect and uri */
+  g_free(recall_lv2->filename);
+  g_free(recall_lv2->effect);
+  g_free(recall_lv2->uri);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_lv2_parent_class)->finalize(gobject);
+}
+
+void
 ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 {
   AgsRecallLv2 *recall_lv2;
@@ -550,45 +588,6 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 
     AGS_RECALL(recall_lv2)->port = g_list_reverse(port);
   }
-}
-
-void
-ags_recall_lv2_dispose(GObject *gobject)
-{
-  AgsRecallLv2 *recall_lv2;
-  
-  recall_lv2 = AGS_RECALL_LV2(gobject);
-
-  /* turtle */
-  if(recall_lv2->turtle != NULL){
-    g_object_unref(recall_lv2->turtle);
-
-    recall_lv2->turtle = NULL;
-  }
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_recall_lv2_parent_class)->dispose(gobject);
-}
-
-void
-ags_recall_lv2_finalize(GObject *gobject)
-{
-  AgsRecallLv2 *recall_lv2;
-  
-  recall_lv2 = AGS_RECALL_LV2(gobject);
-
-  /* turtle */
-  if(recall_lv2->turtle != NULL){
-    g_object_unref(recall_lv2->turtle);
-  }
-
-  /* filename, effect and uri */
-  g_free(recall_lv2->filename);
-  g_free(recall_lv2->effect);
-  g_free(recall_lv2->uri);
-  
-  /* call parent */
-  G_OBJECT_CLASS(ags_recall_lv2_parent_class)->finalize(gobject);
 }
 
 void
@@ -686,7 +685,7 @@ ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Set up LV2 handle.
  * 
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
@@ -725,7 +724,7 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
  *
  * Returns: a #GList containing #AgsPort.
  * 
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
@@ -903,7 +902,7 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
  *
  * Returns: Next match.
  * 
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_recall_lv2_find(GList *recall,
@@ -938,7 +937,7 @@ ags_recall_lv2_find(GList *recall,
  *
  * Returns: a new #AgsRecallLv2
  * 
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsRecallLv2*
 ags_recall_lv2_new(AgsChannel *source,

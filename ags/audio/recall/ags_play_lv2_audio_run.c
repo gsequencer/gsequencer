@@ -269,6 +269,21 @@ ags_play_lv2_audio_run_init(AgsPlayLv2AudioRun *play_lv2_audio_run)
   AGS_RECALL(play_lv2_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_lv2_audio_run)->xml_type = "ags-play-lv2-audio-run\0";
   AGS_RECALL(play_lv2_audio_run)->port = NULL;
+  
+  play_lv2_audio_run->feature = NULL;
+  
+  play_lv2_audio_run->input = NULL;
+  play_lv2_audio_run->output = NULL;
+
+  play_lv2_audio_run->event_port = NULL;
+  play_lv2_audio_run->atom_port = NULL;
+  
+  play_lv2_audio_run->delta_time = 0;
+  
+  play_lv2_audio_run->event_buffer = NULL;
+  play_lv2_audio_run->event_count = NULL;
+  
+  play_lv2_audio_run->worker_handle = NULL;
 
   play_lv2_audio_run->delay_audio_run = NULL;
   play_lv2_audio_run->count_beats_audio_run = NULL;

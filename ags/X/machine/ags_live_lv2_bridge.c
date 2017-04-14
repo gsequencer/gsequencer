@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/machine/ags_lv2_bridge.h>
-#include <ags/X/machine/ags_lv2_bridge_callbacks.h>
+#include <ags/X/machine/ags_live_lv2_bridge.h>
+#include <ags/X/machine/ags_live_lv2_bridge_callbacks.h>
 
 #include <ags/util/ags_id_generator.h>
 
@@ -57,12 +57,10 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_lv2_audio.h>
+#include <ags/audio/recall/ags_play_lv2_audio_run.h>
 #include <ags/audio/recall/ags_record_midi_audio.h>
 #include <ags/audio/recall/ags_record_midi_audio_run.h>
-#include <ags/audio/recall/ags_route_lv2_audio.h>
-#include <ags/audio/recall/ags_route_lv2_audio_run.h>
 
 #include <ags/widget/ags_dial.h>
 
@@ -71,48 +69,48 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
-void ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge);
-void ags_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin);
-void ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge);
-void ags_lv2_bridge_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_lv2_bridge_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_lv2_bridge_finalize(GObject *gobject);
-void ags_lv2_bridge_connect(AgsConnectable *connectable);
-void ags_lv2_bridge_disconnect(AgsConnectable *connectable);
-gchar* ags_lv2_bridge_get_version(AgsPlugin *plugin);
-void ags_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_lv2_bridge_get_build_id(AgsPlugin *plugin);
-void ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_lv2_bridge_get_xml_type(AgsPlugin *plugin);
-void ags_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge);
-xmlNode* ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+void ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge);
+void ags_live_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_live_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin);
+void ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_live_lv2_bridge_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_live_lv2_bridge_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+void ags_live_lv2_bridge_finalize(GObject *gobject);
+void ags_live_lv2_bridge_connect(AgsConnectable *connectable);
+void ags_live_lv2_bridge_disconnect(AgsConnectable *connectable);
+gchar* ags_live_lv2_bridge_get_version(AgsPlugin *plugin);
+void ags_live_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version);
+gchar* ags_live_lv2_bridge_get_build_id(AgsPlugin *plugin);
+void ags_live_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_live_lv2_bridge_get_xml_type(AgsPlugin *plugin);
+void ags_live_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_live_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *live_lv2_bridge);
+xmlNode* ags_live_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
-				       guint audio_channels, guint audio_channels_old,
-				       gpointer data);
-void ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
-			     guint pads, guint pads_old,
-			     gpointer data);
+void ags_live_lv2_bridge_set_audio_channels(AgsAudio *audio,
+					    guint audio_channels, guint audio_channels_old,
+					    gpointer data);
+void ags_live_lv2_bridge_set_pads(AgsAudio *audio, GType type,
+				  guint pads, guint pads_old,
+				  gpointer data);
 
-void ags_lv2_bridge_map_recall(AgsMachine *machine);
+void ags_live_lv2_bridge_map_recall(AgsMachine *machine);
 
 /**
- * SECTION:ags_lv2_bridge
+ * SECTION:ags_live_lv2_bridge
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
- * @title: AgsLv2Bridge
+ * @title: AgsLiveLv2Bridge
  * @section_id:
- * @include: ags/X/ags_lv2_bridge.h
+ * @include: ags/X/ags_live_lv2_bridge.h
  *
- * #AgsLv2Bridge is a composite widget to visualize all #AgsChannel. It should be
+ * #AgsLiveLv2Bridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.
  */
 
@@ -128,82 +126,82 @@ enum{
   PROP_GUI_URI,
 };
 
-static gpointer ags_lv2_bridge_parent_class = NULL;
-static AgsConnectableInterface* ags_lv2_bridge_parent_connectable_interface;
-static AgsPluginInterface* ags_lv2_bridge_parent_plugin_interface;
+static gpointer ags_live_lv2_bridge_parent_class = NULL;
+static AgsConnectableInterface* ags_live_lv2_bridge_parent_connectable_interface;
+static AgsPluginInterface* ags_live_lv2_bridge_parent_plugin_interface;
 
-GHashTable *ags_lv2_bridge_lv2ui_idle = NULL;
+GHashTable *ags_live_lv2_bridge_lv2ui_idle = NULL;
 
 GType
-ags_lv2_bridge_get_type(void)
+ags_live_lv2_bridge_get_type(void)
 {
-  static GType ags_type_lv2_bridge = 0;
+  static GType ags_type_live_lv2_bridge = 0;
 
-  if(!ags_type_lv2_bridge){
-    static const GTypeInfo ags_lv2_bridge_info = {
-      sizeof(AgsLv2BridgeClass),
+  if(!ags_type_live_lv2_bridge){
+    static const GTypeInfo ags_live_lv2_bridge_info = {
+      sizeof(AgsLiveLv2BridgeClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_lv2_bridge_class_init,
+      (GClassInitFunc) ags_live_lv2_bridge_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2Bridge),
+      sizeof(AgsLiveLv2Bridge),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_lv2_bridge_init,
+      (GInstanceInitFunc) ags_live_lv2_bridge_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_bridge_connectable_interface_init,
+      (GInterfaceInitFunc) ags_live_lv2_bridge_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
     static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_bridge_plugin_interface_init,
+      (GInterfaceInitFunc) ags_live_lv2_bridge_plugin_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
-    ags_type_lv2_bridge = g_type_register_static(AGS_TYPE_MACHINE,
-						 "AgsLv2Bridge\0", &ags_lv2_bridge_info,
-						 0);
+    ags_type_live_lv2_bridge = g_type_register_static(AGS_TYPE_MACHINE,
+						      "AgsLiveLv2Bridge\0", &ags_live_lv2_bridge_info,
+						      0);
 
-    g_type_add_interface_static(ags_type_lv2_bridge,
+    g_type_add_interface_static(ags_type_live_lv2_bridge,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_type_add_interface_static(ags_type_lv2_bridge,
+    g_type_add_interface_static(ags_type_live_lv2_bridge,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
 
-  return(ags_type_lv2_bridge);
+  return(ags_type_live_lv2_bridge);
 }
 
 void
-ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
+ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
 {
   AgsMachineClass *machine;
   GObjectClass *gobject;
   GParamSpec *param_spec;
 
-  ags_lv2_bridge_parent_class = g_type_class_peek_parent(lv2_bridge);
+  ags_live_lv2_bridge_parent_class = g_type_class_peek_parent(live_lv2_bridge);
 
   /* GObjectClass */
-  gobject = G_OBJECT_CLASS(lv2_bridge);
+  gobject = G_OBJECT_CLASS(live_lv2_bridge);
 
-  gobject->set_property = ags_lv2_bridge_set_property;
-  gobject->get_property = ags_lv2_bridge_get_property;
+  gobject->set_property = ags_live_lv2_bridge_set_property;
+  gobject->get_property = ags_live_lv2_bridge_get_property;
 
-  gobject->finalize = ags_lv2_bridge_finalize;
+  gobject->finalize = ags_live_lv2_bridge_finalize;
   
   /* properties */
   /**
-   * AgsRecallLv2:filename:
+   * AgsRecallLiveLv2:filename:
    *
    * The plugin's filename.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_string("filename\0",
 				    "the object file\0",
@@ -215,11 +213,11 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
   
   /**
-   * AgsRecallLv2:effect:
+   * AgsRecallLiveLv2:effect:
    *
    * The effect's name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_string("effect\0",
 				    "the effect\0",
@@ -231,11 +229,11 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
 
   /**
-   * AgsRecallLv2:uri:
+   * AgsRecallLiveLv2:uri:
    *
    * The uri's name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_string("uri\0",
 				    "the uri\0",
@@ -247,11 +245,11 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
 
   /**
-   * AgsRecallLv2:index:
+   * AgsRecallLiveLv2:index:
    *
    * The uri's index.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_ulong("index\0",
 				   "index of uri\0",
@@ -265,12 +263,12 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
 
   /**
-   * AgsRecallLv2:has-midi:
+   * AgsRecallLiveLv2:has-midi:
    *
    * If has-midi is set to %TRUE appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 0.7.6
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_boolean("has-midi\0",
 				     "has-midi\0",
@@ -282,12 +280,12 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
 
   /**
-   * AgsRecallLv2:has-gui:
+   * AgsRecallLiveLv2:has-gui:
    *
    * If has-gui is set to %TRUE 128 inputs are allocated and appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 0.7.6
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_boolean("has-gui\0",
 				     "has-gui\0",
@@ -299,11 +297,11 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
 
   /**
-   * AgsRecallLv2:gui-filename:
+   * AgsRecallLiveLv2:gui-filename:
    *
    * The plugin's GUI filename.
    * 
-   * Since: 0.7.6
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_string("gui-filename\0",
 				    "the GUI object file\0",
@@ -315,11 +313,11 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
 
   /**
-   * AgsRecallLv2:gui-uri:
+   * AgsRecallLiveLv2:gui-uri:
    *
    * The GUI's uri name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.134
    */
   param_spec =  g_param_spec_string("gui-uri\0",
 				    "the gui-uri\0",
@@ -331,31 +329,31 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				  param_spec);
 
   /* AgsMachine */
-  machine = (AgsMachineClass *) lv2_bridge;
+  machine = (AgsMachineClass *) live_lv2_bridge;
 
-  machine->map_recall = ags_lv2_bridge_map_recall;
+  machine->map_recall = ags_live_lv2_bridge_map_recall;
 }
 
 void
-ags_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
+ags_live_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_lv2_bridge_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+  ags_live_lv2_bridge_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
-  connectable->connect = ags_lv2_bridge_connect;
-  connectable->disconnect = ags_lv2_bridge_disconnect;
+  connectable->connect = ags_live_lv2_bridge_connect;
+  connectable->disconnect = ags_live_lv2_bridge_disconnect;
 }
 
 void
-ags_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin)
+ags_live_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 {
   plugin->get_name = NULL;
   plugin->set_name = NULL;
-  plugin->get_version = ags_lv2_bridge_get_version;
-  plugin->set_version = ags_lv2_bridge_set_version;
-  plugin->get_build_id = ags_lv2_bridge_get_build_id;
-  plugin->set_build_id = ags_lv2_bridge_set_build_id;
+  plugin->get_version = ags_live_lv2_bridge_get_version;
+  plugin->set_version = ags_live_lv2_bridge_set_version;
+  plugin->get_build_id = ags_live_lv2_bridge_get_build_id;
+  plugin->set_build_id = ags_live_lv2_bridge_set_build_id;
   plugin->get_xml_type = NULL;
   plugin->set_xml_type = NULL;
   plugin->get_ports = NULL;
@@ -365,85 +363,85 @@ ags_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 }
 
 void
-ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 {
   GtkTable *table;
   GtkImageMenuItem *item;
 
   AgsAudio *audio;
 
-  if(ags_lv2_bridge_lv2ui_idle == NULL){
-    ags_lv2_bridge_lv2ui_idle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-						      NULL,
-						      NULL);
+  if(ags_live_lv2_bridge_live_lv2ui_idle == NULL){
+    ags_live_lv2_bridge_live_lv2ui_idle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								NULL,
+								NULL);
   }
 
-  audio = AGS_MACHINE(lv2_bridge)->audio;
+  audio = AGS_MACHINE(live_lv2_bridge)->audio;
   audio->flags |= (AGS_AUDIO_SYNC);
 
   g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
-			 G_CALLBACK(ags_lv2_bridge_set_audio_channels), NULL);
+			 G_CALLBACK(ags_live_lv2_bridge_set_audio_channels), NULL);
   
   g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
-			 G_CALLBACK(ags_lv2_bridge_set_pads), NULL);
+			 G_CALLBACK(ags_live_lv2_bridge_set_pads), NULL);
   
-  lv2_bridge->flags = 0;
+  live_lv2_bridge->flags = 0;
 
-  lv2_bridge->name = NULL;
+  live_lv2_bridge->name = NULL;
 
-  lv2_bridge->version = AGS_LV2_BRIDGE_DEFAULT_VERSION;
-  lv2_bridge->build_id = AGS_LV2_BRIDGE_DEFAULT_BUILD_ID;
+  live_lv2_bridge->version = AGS_LIVE_LV2_BRIDGE_DEFAULT_VERSION;
+  live_lv2_bridge->build_id = AGS_LIVE_LV2_BRIDGE_DEFAULT_BUILD_ID;
 
-  lv2_bridge->xml_type = "ags-lv2-bridge\0";
+  live_lv2_bridge->xml_type = "ags-live-lv2-bridge\0";
   
-  lv2_bridge->mapped_output_pad = 0;
-  lv2_bridge->mapped_input_pad = 0;
+  live_lv2_bridge->mapped_output_pad = 0;
+  live_lv2_bridge->mapped_input_pad = 0;
   
-  lv2_bridge->filename = NULL;
-  lv2_bridge->effect = NULL;
-  lv2_bridge->uri = NULL;
-  lv2_bridge->uri_index = 0;
+  live_lv2_bridge->filename = NULL;
+  live_lv2_bridge->effect = NULL;
+  live_lv2_bridge->uri = NULL;
+  live_lv2_bridge->uri_index = 0;
 
-  lv2_bridge->has_midi = FALSE;
+  live_lv2_bridge->has_midi = FALSE;
 
-  lv2_bridge->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) lv2_bridge),
-		    (GtkWidget *) lv2_bridge->vbox);
+  live_lv2_bridge->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) live_lv2_bridge),
+		    (GtkWidget *) live_lv2_bridge->vbox);
 
-  lv2_bridge->preset = NULL;
+  live_lv2_bridge->preset = NULL;
   
   /* effect bridge */  
-  AGS_MACHINE(lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
-  gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
-		     (GtkWidget *) AGS_MACHINE(lv2_bridge)->bridge,
+  AGS_MACHINE(live_lv2_bridge)->bridge = (GtkContainer *) ags_effect_bridge_new(audio);
+  gtk_box_pack_start((GtkBox *) live_lv2_bridge->vbox,
+		     (GtkWidget *) AGS_MACHINE(live_lv2_bridge)->bridge,
 		     FALSE, FALSE,
 		     0);
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge),
+  gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge),
 		     (GtkWidget *) table,
 		     FALSE, FALSE,
 		     0);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
-												     AGS_TYPE_INPUT);
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
-											     AGS_EFFECT_BULK_HIDE_ENTRIES |
-											     AGS_EFFECT_BULK_SHOW_LABELS);
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
+													  AGS_TYPE_INPUT);
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
+												  AGS_EFFECT_BULK_HIDE_ENTRIES |
+												  AGS_EFFECT_BULK_SHOW_LABELS);
   gtk_table_attach(table,
-		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  lv2_bridge->has_gui = FALSE;
-  lv2_bridge->gui_filename = NULL;
-  lv2_bridge->gui_uri = NULL;
+  live_lv2_bridge->has_gui = FALSE;
+  live_lv2_bridge->gui_filename = NULL;
+  live_lv2_bridge->gui_uri = NULL;
 
-  lv2_bridge->ui_handle = NULL;
+  live_lv2_bridge->ui_handle = NULL;
   
-  lv2_bridge->lv2_gui = NULL;
+  live_lv2_bridge->lv2_gui = NULL;
 
   /* lv2 menu */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Lv2\0");
@@ -451,26 +449,26 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 			(GtkWidget *) item);
   gtk_widget_show((GtkWidget *) item);
   
-  lv2_bridge->lv2_menu = (GtkMenu *) gtk_menu_new();
+  live_lv2_bridge->lv2_menu = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem *) item,
-			    (GtkWidget *) lv2_bridge->lv2_menu);
+			    (GtkWidget *) live_lv2_bridge->lv2_menu);
 
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("show GUI\0");
-  gtk_menu_shell_append((GtkMenuShell *) lv2_bridge->lv2_menu,
+  gtk_menu_shell_append((GtkMenuShell *) live_lv2_bridge->lv2_menu,
 			(GtkWidget *) item);
 
-  gtk_widget_show_all((GtkWidget *) lv2_bridge->lv2_menu);
+  gtk_widget_show_all((GtkWidget *) live_lv2_bridge->lv2_menu);
 }
 
 void
-ags_lv2_bridge_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+ags_live_lv2_bridge_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
-  lv2_bridge = AGS_LV2_BRIDGE(gobject);
+  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -479,12 +477,12 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
       filename = g_value_get_string(value);
 
-      if(filename == lv2_bridge->filename){
+      if(filename == live_lv2_bridge->filename){
 	return;
       }
 
-      if(lv2_bridge->filename != NULL){
-	g_free(lv2_bridge->filename);
+      if(live_lv2_bridge->filename != NULL){
+	g_free(live_lv2_bridge->filename);
       }
 
       if(filename != NULL){
@@ -492,7 +490,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
 
-	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) lv2_bridge);
+	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) live_lv2_bridge);
 
 	  ags_window_show_error(window,
 				g_strdup_printf("Plugin file not present %s\0",
@@ -500,7 +498,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 	}
       }
 
-      lv2_bridge->filename = g_strdup(filename);
+      live_lv2_bridge->filename = g_strdup(filename);
     }
     break;
   case PROP_EFFECT:
@@ -509,15 +507,15 @@ ags_lv2_bridge_set_property(GObject *gobject,
       
       effect = g_value_get_string(value);
 
-      if(effect == lv2_bridge->effect){
+      if(effect == live_lv2_bridge->effect){
 	return;
       }
 
-      if(lv2_bridge->effect != NULL){
-	g_free(lv2_bridge->effect);
+      if(live_lv2_bridge->effect != NULL){
+	g_free(live_lv2_bridge->effect);
       }
 
-      lv2_bridge->effect = g_strdup(effect);
+      live_lv2_bridge->effect = g_strdup(effect);
     }
     break;
   case PROP_URI:
@@ -526,15 +524,15 @@ ags_lv2_bridge_set_property(GObject *gobject,
       
       uri = g_value_get_string(value);
 
-      if(uri == lv2_bridge->uri){
+      if(uri == live_lv2_bridge->uri){
 	return;
       }
 
-      if(lv2_bridge->uri != NULL){
-	g_free(lv2_bridge->uri);
+      if(live_lv2_bridge->uri != NULL){
+	g_free(live_lv2_bridge->uri);
       }
 
-      lv2_bridge->uri = g_strdup(uri);
+      live_lv2_bridge->uri = g_strdup(uri);
     }
     break;
   case PROP_INDEX:
@@ -543,11 +541,11 @@ ags_lv2_bridge_set_property(GObject *gobject,
       
       uri_index = g_value_get_ulong(value);
 
-      if(uri_index == lv2_bridge->uri_index){
+      if(uri_index == live_lv2_bridge->uri_index){
 	return;
       }
 
-      lv2_bridge->uri_index = uri_index;
+      live_lv2_bridge->uri_index = uri_index;
     }
     break;
   case PROP_HAS_MIDI:
@@ -556,11 +554,11 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
       has_midi = g_value_get_boolean(value);
 
-      if(lv2_bridge->has_midi == has_midi){
+      if(live_lv2_bridge->has_midi == has_midi){
 	return;
       }
 
-      lv2_bridge->has_midi = has_midi;
+      live_lv2_bridge->has_midi = has_midi;
     }
     break;
   case PROP_HAS_GUI:
@@ -570,11 +568,11 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
       has_gui = g_value_get_boolean(value);
 
-      if(lv2_bridge->has_gui == has_gui){
+      if(live_lv2_bridge->has_gui == has_gui){
 	return;
       }
 
-      lv2_bridge->has_gui = has_gui;
+      live_lv2_bridge->has_gui = has_gui;
     }
     break;
   case PROP_GUI_FILENAME:
@@ -585,11 +583,11 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
       gui_filename = g_value_get_string(value);
 
-      if(lv2_bridge->gui_filename == gui_filename){
+      if(live_lv2_bridge->gui_filename == gui_filename){
 	return;
       }
 
-      lv2_bridge->gui_filename = g_strdup(gui_filename);
+      live_lv2_bridge->gui_filename = g_strdup(gui_filename);
     }
     break;
   case PROP_GUI_URI:
@@ -598,15 +596,15 @@ ags_lv2_bridge_set_property(GObject *gobject,
       
       gui_uri = g_value_get_string(value);
 
-      if(gui_uri == lv2_bridge->gui_uri){
+      if(gui_uri == live_lv2_bridge->gui_uri){
 	return;
       }
 
-      if(lv2_bridge->gui_uri != NULL){
-	g_free(lv2_bridge->gui_uri);
+      if(live_lv2_bridge->gui_uri != NULL){
+	g_free(live_lv2_bridge->gui_uri);
       }
 
-      lv2_bridge->gui_uri = g_strdup(gui_uri);
+      live_lv2_bridge->gui_uri = g_strdup(gui_uri);
     }
     break;
   default:
@@ -616,54 +614,54 @@ ags_lv2_bridge_set_property(GObject *gobject,
 }
 
 void
-ags_lv2_bridge_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec)
+ags_live_lv2_bridge_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
-  lv2_bridge = AGS_LV2_BRIDGE(gobject);
+  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
 
   switch(prop_id){
   case PROP_FILENAME:
     {
-      g_value_set_string(value, lv2_bridge->filename);
+      g_value_set_string(value, live_lv2_bridge->filename);
     }
     break;
   case PROP_EFFECT:
     {
-      g_value_set_string(value, lv2_bridge->effect);
+      g_value_set_string(value, live_lv2_bridge->effect);
     }
     break;
   case PROP_URI:
     {
-      g_value_set_string(value, lv2_bridge->uri);
+      g_value_set_string(value, live_lv2_bridge->uri);
     }
     break;
   case PROP_INDEX:
     {
-      g_value_set_ulong(value, lv2_bridge->uri_index);
+      g_value_set_ulong(value, live_lv2_bridge->uri_index);
     }
     break;
   case PROP_HAS_MIDI:
     {
-      g_value_set_boolean(value, lv2_bridge->has_midi);
+      g_value_set_boolean(value, live_lv2_bridge->has_midi);
     }
     break;
   case PROP_HAS_GUI:
     {
-      g_value_set_boolean(value, lv2_bridge->has_gui);
+      g_value_set_boolean(value, live_lv2_bridge->has_gui);
     }
     break;
   case PROP_GUI_FILENAME:
     {
-      g_value_set_string(value, lv2_bridge->gui_filename);
+      g_value_set_string(value, live_lv2_bridge->gui_filename);
     }
     break;
   case PROP_GUI_URI:
     {
-      g_value_set_string(value, lv2_bridge->gui_uri);
+      g_value_set_string(value, live_lv2_bridge->gui_uri);
     }
     break;
   default:
@@ -673,24 +671,24 @@ ags_lv2_bridge_get_property(GObject *gobject,
 }
 
 void
-ags_lv2_bridge_finalize(GObject *gobject)
+ags_live_lv2_bridge_finalize(GObject *gobject)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
-  lv2_bridge = AGS_LV2_BRIDGE(gobject);
+  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
   
-  if(lv2_bridge->ui_handle != NULL){
-    g_hash_table_remove(ags_lv2_bridge_lv2ui_idle,
-			lv2_bridge);
+  if(live_lv2_bridge->ui_handle != NULL){
+    g_hash_table_remove(ags_live_lv2_bridge_lv2ui_idle,
+			live_lv2_bridge);
   }
   
-  G_OBJECT_CLASS(ags_lv2_bridge_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_live_lv2_bridge_parent_class)->finalize(gobject);
 }
 
 void
-ags_lv2_bridge_connect(AgsConnectable *connectable)
+ags_live_lv2_bridge_connect(AgsConnectable *connectable)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
   GList *list;
   
@@ -698,75 +696,75 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
     return;
   }
 
-  ags_lv2_bridge_parent_connectable_interface->connect(connectable);
+  ags_live_lv2_bridge_parent_connectable_interface->connect(connectable);
 
-  lv2_bridge = AGS_LV2_BRIDGE(connectable);
+  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(connectable);
 
   /* menu */
-  list = gtk_container_get_children((GtkContainer *) lv2_bridge->lv2_menu);
+  list = gtk_container_get_children((GtkContainer *) live_lv2_bridge->lv2_menu);
 
   g_signal_connect(G_OBJECT(list->data), "activate\0",
-		   G_CALLBACK(ags_lv2_bridge_show_gui_callback), lv2_bridge);
+		   G_CALLBACK(ags_live_lv2_bridge_show_gui_callback), live_lv2_bridge);
 }
 
 void
-ags_lv2_bridge_disconnect(AgsConnectable *connectable)
+ags_live_lv2_bridge_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
 }
 
 gchar*
-ags_lv2_bridge_get_version(AgsPlugin *plugin)
+ags_live_lv2_bridge_get_version(AgsPlugin *plugin)
 {
-  return(AGS_LV2_BRIDGE(plugin)->version);
+  return(AGS_LIVE_LV2_BRIDGE(plugin)->version);
 }
 
 void
-ags_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version)
+ags_live_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
-  lv2_bridge = AGS_LV2_BRIDGE(plugin);
+  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
 
-  lv2_bridge->version = version;
+  live_lv2_bridge->version = version;
 }
 
 gchar*
-ags_lv2_bridge_get_build_id(AgsPlugin *plugin)
+ags_live_lv2_bridge_get_build_id(AgsPlugin *plugin)
 {
-  return(AGS_LV2_BRIDGE(plugin)->build_id);
+  return(AGS_LIVE_LV2_BRIDGE(plugin)->build_id);
 }
 
 void
-ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
+ags_live_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
-  lv2_bridge = AGS_LV2_BRIDGE(plugin);
+  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
 
-  lv2_bridge->build_id = build_id;
+  live_lv2_bridge->build_id = build_id;
 }
 
 
 gchar*
-ags_lv2_bridge_get_xml_type(AgsPlugin *plugin)
+ags_live_lv2_bridge_get_xml_type(AgsPlugin *plugin)
 {
-  return(AGS_LV2_BRIDGE(plugin)->xml_type);
+  return(AGS_LIVE_LV2_BRIDGE(plugin)->xml_type);
 }
 
 void
-ags_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+ags_live_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 {
-  AGS_LV2_BRIDGE(plugin)->xml_type = xml_type;
+  AGS_LIVE_LV2_BRIDGE(plugin)->xml_type = xml_type;
 }
 
 void
-ags_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+ags_live_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
-  AgsLv2Bridge *gobject;
+  AgsLiveLv2Bridge *gobject;
   AgsFileLaunch *file_launch;
 
-  gobject = AGS_LV2_BRIDGE(plugin);
+  gobject = AGS_LIVE_LV2_BRIDGE(plugin);
 
   g_object_set(gobject,
 	       "filename\0", xmlGetProp(node,
@@ -780,13 +778,13 @@ ags_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 					       "node\0", node,
 					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
-		   G_CALLBACK(ags_lv2_bridge_launch_task), gobject);
+		   G_CALLBACK(ags_live_lv2_bridge_launch_task), gobject);
   ags_file_add_launch(file,
 		      G_OBJECT(file_launch));
 }
 
 void
-ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *live_lv2_bridge)
 {
   GtkTreeModel *model;
 
@@ -795,11 +793,11 @@ ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
   GList *list, *list_start;
   GList *recall;
   
-  ags_lv2_bridge_load(lv2_bridge);
+  ags_live_lv2_bridge_load(live_lv2_bridge);
 
   /* block update bulk port */
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
+    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -812,14 +810,14 @@ ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
   /* update value and unblock update bulk port */
   recall = NULL;
   
-  if(AGS_MACHINE(lv2_bridge)->audio->input != NULL){
-    recall = AGS_MACHINE(lv2_bridge)->audio->input->recall;
+  if(AGS_MACHINE(live_lv2_bridge)->audio->input != NULL){
+    recall = AGS_MACHINE(live_lv2_bridge)->audio->input->recall;
     
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LV2)) != NULL){
-      if(!g_strcmp0(AGS_RECALL_LV2(recall->data)->filename,
-		  lv2_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL_LV2(recall->data)->effect,
-		    lv2_bridge->effect)){
+    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LIVE_LV2)) != NULL){
+      if(!g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->filename,
+		    live_lv2_bridge->filename) &&
+	 !g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->effect,
+		    live_lv2_bridge->effect)){
 	break;
       }
 
@@ -867,31 +865,31 @@ ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
 }
 
 xmlNode*
-ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+ags_live_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
   xmlNode *node;
 
   gchar *id;
   
-  lv2_bridge = AGS_LV2_BRIDGE(plugin);
+  live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(plugin);
 
   id = ags_id_generator_create_uuid();
     
   node = xmlNewNode(NULL,
-		    "ags-lv2-bridge\0");
+		    "ags-live-lv2-bridge\0");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   xmlNewProp(node,
 	     "filename\0",
-	     lv2_bridge->filename);
+	     live_lv2_bridge->filename);
 
   xmlNewProp(node,
 	     "effect\0",
-	     lv2_bridge->effect);
+	     live_lv2_bridge->effect);
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -899,7 +897,7 @@ ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", lv2_bridge,
+				   "reference\0", live_lv2_bridge,
 				   NULL));
 
   xmlAddChild(parent,
@@ -909,19 +907,19 @@ ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
-ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
-				  guint audio_channels, guint audio_channels_old,
-				  gpointer data)
+ags_live_lv2_bridge_set_audio_channels(AgsAudio *audio,
+				       guint audio_channels, guint audio_channels_old,
+				       gpointer data)
 {
   AgsMachine *machine;
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
   AgsChannel *channel, *next_pad;
   AgsAudioSignal *audio_signal;  
 
   /* get machine */
-  lv2_bridge = (AgsLv2Bridge *) audio->machine;
-  machine = AGS_MACHINE(lv2_bridge);
+  live_lv2_bridge = (AgsLiveLv2Bridge *) audio->machine;
+  machine = AGS_MACHINE(live_lv2_bridge);
   
   if(audio->input_pads == 0 &&
      audio->output_pads == 0){
@@ -977,24 +975,24 @@ ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 
     /* recall */
     if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
-      ags_lv2_bridge_input_map_recall(lv2_bridge,
-				      audio_channels_old,
-				      0);
+      ags_live_lv2_bridge_input_map_recall(live_lv2_bridge,
+					   audio_channels_old,
+					   0);
 
-      ags_lv2_bridge_output_map_recall(lv2_bridge,
-				       audio_channels_old,
-				       0);
+      ags_live_lv2_bridge_output_map_recall(live_lv2_bridge,
+					    audio_channels_old,
+					    0);
     }
   }
 }
 
 void
-ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
-			guint pads, guint pads_old,
-			gpointer data)
+ags_live_lv2_bridge_set_pads(AgsAudio *audio, GType type,
+			     guint pads, guint pads_old,
+			     gpointer data)
 {
   AgsMachine *machine;
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
 
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
@@ -1007,8 +1005,8 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
   }
 
   /* get machine */
-  lv2_bridge = (AgsLv2Bridge *) audio->machine;
-  machine = AGS_MACHINE(lv2_bridge);
+  live_lv2_bridge = (AgsLiveLv2Bridge *) audio->machine;
+  machine = AGS_MACHINE(live_lv2_bridge);
 
   if(pads_old < pads){
     grow = TRUE;
@@ -1039,12 +1037,12 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
 
       /* recall */
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
-	ags_lv2_bridge_input_map_recall(lv2_bridge,
-					0,
-					pads_old);
+	ags_live_lv2_bridge_input_map_recall(live_lv2_bridge,
+					     0,
+					     pads_old);
       }
     }else{
-      lv2_bridge->mapped_input_pad = pads;
+      live_lv2_bridge->mapped_input_pad = pads;
     }
   }else{
     if(grow){
@@ -1067,21 +1065,21 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
 
       /* recall */
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
-	ags_lv2_bridge_output_map_recall(lv2_bridge,
-					 0,
-					 pads_old);
+	ags_live_lv2_bridge_output_map_recall(live_lv2_bridge,
+					      0,
+					      pads_old);
       }
     }else{
-      lv2_bridge->mapped_output_pad = pads;
+      live_lv2_bridge->mapped_output_pad = pads;
     }
   }
 }
 
 void
-ags_lv2_bridge_map_recall(AgsMachine *machine)
+ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 {  
   AgsWindow *window;
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
   
   AgsAudio *audio;
 
@@ -1091,10 +1089,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsRecordMidiAudio *recall_record_midi_audio;
   AgsRecordMidiAudioRun *recall_record_midi_audio_run;
-  AgsPlayNotationAudio *recall_notation_audio;
-  AgsPlayNotationAudioRun *recall_notation_audio_run;
-  AgsRouteLv2Audio *recall_route_lv2_audio;
-  AgsRouteLv2AudioRun *recall_route_lv2_audio_run;
+  AgsPlayLv2Audio *recall_lv2_audio;
+  AgsPlayLv2AudioRun *recall_lv2_audio_run;
 
   GList *list;
   
@@ -1106,7 +1102,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
 
-  lv2_bridge = (AgsLv2Bridge *) machine;
+  live_lv2_bridge = (AgsLiveLv2Bridge *) machine;
   audio = machine->audio;
 
   /* ags-delay */
@@ -1188,36 +1184,6 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   NULL);
     }  
 
-    /* ags-route-lv2 */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-route-lv2\0",
-			      0, 0,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_RECALL),
-			      0);
-
-    list = ags_recall_find_type(audio->recall,
-				AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
-
-    if(list != NULL){
-      recall_route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(list->data);
-
-      /* set dependency */
-      g_object_set(G_OBJECT(recall_route_lv2_audio_run),
-		   "delay-audio-run\0", play_delay_audio_run,
-		   NULL);
-
-      /* set dependency */
-      g_object_set(G_OBJECT(recall_route_lv2_audio_run),
-		   "count-beats-audio-run\0", play_count_beats_audio_run,
-		   NULL);
-    }else{
-      recall_route_lv2_audio_run = NULL;
-    }
-
     /* ags-play-notation */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1248,23 +1214,23 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   }
   
   /* depending on destination */
-  ags_lv2_bridge_input_map_recall(lv2_bridge, 0, 0);
+  ags_live_lv2_bridge_input_map_recall(live_lv2_bridge, 0, 0);
 
   /* add new controls */
-  ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
+  ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
 			     NULL,
-			     lv2_bridge->filename,
-			     lv2_bridge->effect);
+			     live_lv2_bridge->filename,
+			     live_lv2_bridge->effect);
 
   /* depending on destination */
-  ags_lv2_bridge_output_map_recall(lv2_bridge, 0, 0);
+  ags_live_lv2_bridge_output_map_recall(live_lv2_bridge, 0, 0);
 
   /* call parent */
-  AGS_MACHINE_CLASS(ags_lv2_bridge_parent_class)->map_recall(machine);
+  AGS_MACHINE_CLASS(ags_live_lv2_bridge_parent_class)->map_recall(machine);
 }
 
 void
-ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_start, guint input_pad_start)
+ags_live_lv2_bridge_input_map_recall(AgsLiveLv2Bridge *live_lv2_bridge, guint audio_channel_start, guint input_pad_start)
 {
   AgsAudio *audio;
   AgsChannel *source, *current;
@@ -1277,9 +1243,9 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
 
   gboolean performance_mode;
 
-  audio = AGS_MACHINE(lv2_bridge)->audio;
+  audio = AGS_MACHINE(live_lv2_bridge)->audio;
 
-  if(lv2_bridge->mapped_input_pad > input_pad_start){
+  if(live_lv2_bridge->mapped_input_pad > input_pad_start){
     return;
   }
 
@@ -1288,7 +1254,7 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
 
   config = ags_config_get_instance();
 
-  if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+  if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(live_lv2_bridge)->flags)) != 0){
     /* map dependending on output */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_GENERIC,
@@ -1375,11 +1341,11 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
     }
   }
   
-  lv2_bridge->mapped_input_pad = audio->input_pads;
+  live_lv2_bridge->mapped_input_pad = audio->input_pads;
 }
 
 void
-ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_start, guint output_pad_start)
+ags_live_lv2_bridge_output_map_recall(AgsLiveLv2Bridge *live_lv2_bridge, guint audio_channel_start, guint output_pad_start)
 {
   AgsAudio *audio;
   AgsChannel *input, *current;
@@ -1395,15 +1361,15 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
 
   gboolean performance_mode;
 
-  audio = AGS_MACHINE(lv2_bridge)->audio;
+  audio = AGS_MACHINE(live_lv2_bridge)->audio;
 
-  if(lv2_bridge->mapped_output_pad > output_pad_start){
+  if(live_lv2_bridge->mapped_output_pad > output_pad_start){
     return;
   }
 
   config = ags_config_get_instance();
 
-  if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+  if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(live_lv2_bridge)->flags)) != 0){
     /* map dependending on output */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_GENERIC,
@@ -1476,11 +1442,11 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
     }
   }
   
-  lv2_bridge->mapped_output_pad = audio->output_pads;
+  live_lv2_bridge->mapped_output_pad = audio->output_pads;
 }
 
 void
-ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
 {
   GtkHBox *hbox;
   GtkLabel *label;
@@ -1491,11 +1457,11 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   
   /* program */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
+  gtk_box_pack_start((GtkBox *) live_lv2_bridge->vbox,
 		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
-  gtk_box_reorder_child(GTK_BOX(lv2_bridge->vbox),
+  gtk_box_reorder_child(GTK_BOX(live_lv2_bridge->vbox),
   			GTK_WIDGET(hbox),
   			0);
   
@@ -1505,16 +1471,16 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  lv2_bridge->preset = gtk_combo_box_text_new();
+  live_lv2_bridge->preset = gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) lv2_bridge->preset,
+		     (GtkWidget *) live_lv2_bridge->preset,
 		     FALSE, FALSE,
 		     0);
   
   /* retrieve lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       lv2_bridge->filename,
-					       lv2_bridge->effect);
+					       live_lv2_bridge->filename,
+					       live_lv2_bridge->effect);
 
   /* preset */
   list = lv2_plugin->preset;
@@ -1529,18 +1495,18 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   gtk_widget_show_all(hbox);
 
   /* connect preset */
-  g_signal_connect_after(G_OBJECT(lv2_bridge->preset), "changed\0",
-			 G_CALLBACK(ags_lv2_bridge_preset_changed_callback), lv2_bridge);
+  g_signal_connect_after(G_OBJECT(live_lv2_bridge->preset), "changed\0",
+			 G_CALLBACK(ags_live_lv2_bridge_preset_changed_callback), live_lv2_bridge);
 }
 
 void
-ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_load_midi(AgsLiveLv2Bridge *live_lv2_bridge)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_load_gui(AgsLiveLv2Bridge *live_lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
   AgsLv2uiPlugin *lv2ui_plugin;
@@ -1549,8 +1515,8 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
   
   /* retrieve lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       lv2_bridge->filename,
-					       lv2_bridge->effect);
+					       live_lv2_bridge->filename,
+					       live_lv2_bridge->effect);
   
   if(lv2_plugin == NULL ||
      lv2_plugin->ui_uri == NULL){
@@ -1572,7 +1538,7 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 #endif
 
   /* apply ui */
-  g_object_set(lv2_bridge,
+  g_object_set(live_lv2_bridge,
 	       "has-gui\0", TRUE,
 	       "gui-uri\0", lv2_plugin->ui_uri,
 	       "gui-filename\0", AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
@@ -1580,54 +1546,54 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 }
 
 void
-ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
+ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
     
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       lv2_bridge->filename,
-					       lv2_bridge->effect);
+					       live_lv2_bridge->filename,
+					       live_lv2_bridge->effect);
 
   if(lv2_plugin == NULL){
     return;
   }
 
   /* URI */
-  g_object_set(lv2_bridge,
+  g_object_set(live_lv2_bridge,
 	       "uri\0", lv2_plugin->uri,
 	       NULL);
 
   /* preset */
   if(lv2_plugin->preset != NULL){
-    ags_lv2_bridge_load_preset(lv2_bridge);
+    ags_live_lv2_bridge_load_preset(live_lv2_bridge);
   }
 
   /* load gui */
-  ags_lv2_bridge_load_gui(lv2_bridge);
+  ags_live_lv2_bridge_load_gui(live_lv2_bridge);
 }
 
 /**
- * ags_lv2_bridge_lv2ui_idle_timeout:
- * @widget: the #AgsLv2Bridge
+ * ags_live_lv2_bridge_lv2ui_idle_timeout:
+ * @widget: the #AgsLiveLv2Bridge
  *
  * Idle lv2 ui.
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 0.7.127
+ * Since: 0.7.134
  */
 gboolean
-ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
+ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
 {
-  if(g_hash_table_lookup(ags_lv2_bridge_lv2ui_idle,
+  if(g_hash_table_lookup(ags_live_lv2_bridge_lv2ui_idle,
 			 widget) != NULL){
-    AgsLv2Bridge *lv2_bridge;
+    AgsLiveLv2Bridge *live_lv2_bridge;
     
-    lv2_bridge = AGS_LV2_BRIDGE(widget);
+    live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(widget);
     
-    if(lv2_bridge->ui_feature != NULL &&
-       lv2_bridge->ui_feature[0]->data != NULL){
-      ((struct _LV2UI_Idle_Interface *) lv2_bridge->ui_feature[0]->data)->idle(lv2_bridge->ui_handle);
+    if(live_lv2_bridge->ui_feature != NULL &&
+       live_lv2_bridge->ui_feature[0]->data != NULL){
+      ((struct _LV2UI_Idle_Interface *) live_lv2_bridge->ui_feature[0]->data)->idle(live_lv2_bridge->ui_handle);
     }
     
     return(TRUE);
@@ -1637,40 +1603,40 @@ ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
 }
 
 /**
- * ags_lv2_bridge_new:
+ * ags_live_lv2_bridge_new:
  * @soundcard: the assigned soundcard.
  * @filename: the plugin.so
  * @effect: the effect
  *
- * Creates an #AgsLv2Bridge
+ * Creates an #AgsLiveLv2Bridge
  *
- * Returns: a new #AgsLv2Bridge
+ * Returns: a new #AgsLiveLv2Bridge
  *
- * Since: 0.4.3
+ * Since: 0.7.134
  */
-AgsLv2Bridge*
-ags_lv2_bridge_new(GObject *soundcard,
-		   gchar *filename,
-		   gchar *effect)
+AgsLiveLv2Bridge*
+ags_live_lv2_bridge_new(GObject *soundcard,
+			gchar *filename,
+			gchar *effect)
 {
-  AgsLv2Bridge *lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
   GValue value = {0,};
 
-  lv2_bridge = (AgsLv2Bridge *) g_object_new(AGS_TYPE_LV2_BRIDGE,
-					     NULL);
+  live_lv2_bridge = (AgsLiveLv2Bridge *) g_object_new(AGS_TYPE_LIVE_LV2_BRIDGE,
+						      NULL);
 
   if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(lv2_bridge)->audio),
+    g_object_set_property(G_OBJECT(AGS_MACHINE(live_lv2_bridge)->audio),
 			  "soundcard\0", &value);
     g_value_unset(&value);
   }
 
-  g_object_set(lv2_bridge,
+  g_object_set(live_lv2_bridge,
 	       "filename\0", filename,
 	       "effect\0", effect,
 	       NULL);
 
-  return(lv2_bridge);
+  return(live_lv2_bridge);
 }

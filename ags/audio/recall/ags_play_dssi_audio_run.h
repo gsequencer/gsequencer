@@ -50,6 +50,18 @@ struct _AgsPlayDssiAudioRun
 
   guint flags;
 
+  LADSPA_Handle *ladspa_handle;
+
+  unsigned long audio_channels;
+  
+  LADSPA_Data *input;
+  LADSPA_Data *output;
+
+  long delta_time;
+  
+  snd_seq_event_t **event_buffer;
+  unsigned long *event_count;
+
   AgsDelayAudioRun *delay_audio_run;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;

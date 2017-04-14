@@ -270,6 +270,18 @@ ags_play_dssi_audio_run_init(AgsPlayDssiAudioRun *play_dssi_audio_run)
   AGS_RECALL(play_dssi_audio_run)->xml_type = "ags-play-dssi-audio-run\0";
   AGS_RECALL(play_dssi_audio_run)->port = NULL;
 
+  play_dssi_audio_run->audio_channels = 0;
+  
+  play_dssi_audio_run->ladspa_handle = NULL;
+
+  play_dssi_audio_run->input = NULL;
+  play_dssi_audio_run->output = NULL;
+
+  play_dssi_audio_run->delta_time = 0;
+  
+  play_dssi_audio_run->event_buffer = NULL;
+  play_dssi_audio_run->event_count = NULL;
+
   play_dssi_audio_run->delay_audio_run = NULL;
   play_dssi_audio_run->count_beats_audio_run = NULL;
 

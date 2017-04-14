@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <lv2.h>
+
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_notation.h>
 
@@ -50,12 +52,28 @@ struct _AgsPlayLv2AudioRun
 
   guint flags;
 
+  LV2_Handle *lv2_handle;
+  LV2_Feature **feature;
+  
+  float *input;
+  float *output;
+
+  void *event_port;
+  void *atom_port;
+
+  long delta_time;
+  
+  snd_seq_event_t **event_buffer;
+  unsigned long *event_count;
+
   AgsDelayAudioRun *delay_audio_run;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   AgsNotation *notation;
   GList *offset;
+
+  GObject *worker_handle;
 };
 
 struct _AgsPlayLv2AudioRunClass

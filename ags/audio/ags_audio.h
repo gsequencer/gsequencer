@@ -53,6 +53,8 @@ typedef enum{
   AGS_AUDIO_PLAYING                     = 1 << 11,
   AGS_AUDIO_CONNECTED                   = 1 << 12,
   AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 13,
+  AGS_AUDIO_NO_OUTPUT                   = 1 << 14,
+  AGS_AUDIO_NO_INPUT                    = 1 << 15,
 }AgsAudioFlags;
 
 struct _AgsAudio
