@@ -1179,8 +1179,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   /*
    * feed midi
-   */
-
+   */  
   while(current_position != NULL){
     pthread_mutex_lock(audio_mutex);
       
@@ -1207,7 +1206,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       seq_event->type = SND_SEQ_EVENT_NOTEON;
 
       seq_event->data.note.channel = 0;
-      seq_event->data.note.note = 0x7f & (selected_channel->pad - audio_start_mapping + midi_start_mapping);
+      seq_event->data.note.note = 0x7f & (selected_key - audio_start_mapping + midi_start_mapping);
       seq_event->data.note.velocity = 127;
 
       /* find end */
@@ -1221,16 +1220,16 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	  event_count++;
 	  i++;
 	}
+
+	if(i + 1 < AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT){
+	  play_dssi_audio_run->event_buffer[i] = seq_event;
+	  play_dssi_audio_run->event_buffer[i + 1] = NULL;
+		  
+	  play_dssi_audio_run->event_count[i] = 1;
+	  play_dssi_audio_run->event_count[i + 1] = 0;
+	}
       }
 
-      if(event_count + 1 < AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT){
-	play_dssi_audio_run->event_buffer[i] = seq_event;
-	play_dssi_audio_run->event_buffer[i + 1] = NULL;
-		  
-	play_dssi_audio_run->event_count[i] = 1;
-	play_dssi_audio_run->event_count[i + 1] = 0;
-      }
-      
       //fixme:jk: remove notes
     }else if(note_x1 == notation_counter){
       gint match_index;
@@ -1250,9 +1249,9 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	event_buffer = play_dssi_audio_run->event_buffer;
       
 	while(*event_buffer != NULL){
-	  if(event_buffer[0]->data.note.note == (0x7f & (selected_channel->pad - audio_start_mapping + midi_start_mapping))){
-	    match_index = event_count;
-	    free(event_buffer[0]);
+	  if(event_buffer[0]->data.note.note == (0x7f & (selected_key - audio_start_mapping + midi_start_mapping))){
+	    match_index = i;
+	    //	    free(event_buffer[0]);
 	  }
 	  
 	  event_buffer++;
@@ -1262,11 +1261,15 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       }
 
       /* clear note */
-      if(event_count > 0 &&
+      if(i > 0 &&
 	 match_index != -1){
-	memmove(&(play_dssi_audio_run->event_buffer[match_index]),
-		&(play_dssi_audio_run->event_buffer[match_index + 1]),
-		i - 1);
+	if(match_index + 1 != i){
+	  memmove(&(play_dssi_audio_run->event_buffer[match_index]),
+		  &(play_dssi_audio_run->event_buffer[match_index + 1]),
+		  i - 1);
+	}
+	
+	play_dssi_audio_run->event_buffer[i - 1] = NULL;
 	
 	play_dssi_audio_run->event_buffer[i] = NULL;
       }
@@ -1337,9 +1340,11 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       event_count = play_dssi_audio_run->event_count;
       
       while(*event_buffer != NULL){
+	seq_event = event_buffer[0];
+	
 	play_dssi_audio->plugin_descriptor->run_synth(play_dssi_audio_run->ladspa_handle[0],
 						      play_dssi_audio->output_lines * buffer_size,
-						      event_buffer[0],
+						      seq_event,
 						      event_count[0]);
 	  
 	event_buffer++;

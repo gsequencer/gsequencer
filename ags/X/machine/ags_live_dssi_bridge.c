@@ -298,8 +298,9 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_HAS_NOTATION | 
-		   AGS_AUDIO_NO_INPUT |
+		   //		   AGS_AUDIO_NO_INPUT |
 		   AGS_AUDIO_REVERSE_MAPPING);
+  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   g_object_set(audio,
 	       "audio-start-mapping\0", 0,
 	       "audio-end-mapping\0", 128,
@@ -1083,7 +1084,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     ags_play_dssi_audio_load_ports(play_dssi_audio);
   }
 
-  list = ags_recall_find_type(audio->recall,
+  list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_PLAY_DSSI_AUDIO_RUN);
 
   if(list != NULL){

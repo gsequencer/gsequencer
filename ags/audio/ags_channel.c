@@ -7669,7 +7669,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     AgsAudio *audio;
     AgsChannel *current;
 
-    if(channel == NULL){
+    if(channel == NULL ||
+       recall_id == NULL){
       return;
     }
 
@@ -7963,7 +7964,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	}
 
 	/* input recall id */
-	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+ 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				 "recycling-context\0", default_recall_id->recycling_context,
 				 "recycling\0", input->first_recycling,
 				 NULL);
@@ -8042,7 +8043,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }
     }
   }
-
+  
   /* duplicate AgsRecall templates */
   if(duplicate_templates){
     if(AGS_IS_OUTPUT(channel)){
