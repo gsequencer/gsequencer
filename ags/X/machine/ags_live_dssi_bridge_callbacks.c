@@ -25,7 +25,7 @@
 #include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
 
-#include <ags/audio/ags_recall_live_dssi.h>
+#include <ags/audio/recall/ags_play_dssi_audio.h>
 
 #include <ags/widget/ags_dial.h>
 

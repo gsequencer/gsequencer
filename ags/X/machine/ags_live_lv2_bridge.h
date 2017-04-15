@@ -106,7 +106,7 @@ void ags_live_lv2_bridge_load_midi(AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_live_lv2_bridge_load_gui(AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge);
 
-gboolean ags_live_lv2_bridge_live_lv2ui_idle_timeout(GtkWidget *widget);
+gboolean ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget);
 
 AgsLiveLv2Bridge* ags_live_lv2_bridge_new(GObject *soundcard,
 					  gchar *filename,

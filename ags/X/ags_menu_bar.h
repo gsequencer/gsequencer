@@ -20,6 +20,9 @@
 #ifndef __AGS_MENU_BAR_H__
 #define __AGS_MENU_BAR_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_MENU_BAR                (ags_menu_bar_get_type ())
@@ -40,8 +43,11 @@ struct _AgsMenuBar
   GtkMenuBar menu_bar;
 
   GtkMenu *file;
+
   GtkMenu *edit;
   GtkMenu *add;
+  GtkMenu *live;
+  
   GtkMenu *help;
 };
 
@@ -61,6 +67,9 @@ GtkComboBox* ags_tact_combo_box_new();
 GtkMenu* ags_ladspa_bridge_menu_new();
 GtkMenu* ags_dssi_bridge_menu_new();
 GtkMenu* ags_lv2_bridge_menu_new();
+
+GtkMenu* ags_live_dssi_bridge_menu_new();
+GtkMenu* ags_live_lv2_bridge_menu_new();
 
 AgsMenuBar* ags_menu_bar_new();
 

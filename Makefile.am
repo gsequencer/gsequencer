@@ -1466,6 +1466,10 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
+	ags/X/machine/ags_live_dssi_bridge.c \
+	ags/X/machine/ags_live_dssi_bridge_callbacks.c \
+	ags/X/machine/ags_live_lv2_bridge.c \
+	ags/X/machine/ags_live_lv2_bridge_callbacks.c \
 	ags/X/machine/ags_lv2_bridge.c \
 	ags/X/machine/ags_lv2_bridge_callbacks.c \
 	ags/X/machine/ags_matrix.c \

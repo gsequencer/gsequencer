@@ -370,10 +370,10 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   AgsAudio *audio;
 
-  if(ags_live_lv2_bridge_live_lv2ui_idle == NULL){
-    ags_live_lv2_bridge_live_lv2ui_idle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								NULL,
-								NULL);
+  if(ags_live_lv2_bridge_lv2ui_idle == NULL){
+    ags_live_lv2_bridge_lv2ui_idle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							   NULL,
+							   NULL);
   }
 
   audio = AGS_MACHINE(live_lv2_bridge)->audio;
@@ -445,7 +445,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   /* lv2 menu */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Lv2\0");
-  gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(lv2_bridge)->popup,
+  gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(live_lv2_bridge)->popup,
 			(GtkWidget *) item);
   gtk_widget_show((GtkWidget *) item);
   
@@ -813,7 +813,7 @@ ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *li
   if(AGS_MACHINE(live_lv2_bridge)->audio->input != NULL){
     recall = AGS_MACHINE(live_lv2_bridge)->audio->input->recall;
     
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LIVE_LV2)) != NULL){
+    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_LV2_AUDIO)) != NULL){
       if(!g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->filename,
 		    live_lv2_bridge->filename) &&
 	 !g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->effect,
@@ -1089,8 +1089,8 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsRecordMidiAudio *recall_record_midi_audio;
   AgsRecordMidiAudioRun *recall_record_midi_audio_run;
-  AgsPlayLv2Audio *recall_lv2_audio;
-  AgsPlayLv2AudioRun *recall_lv2_audio_run;
+  AgsPlayLv2Audio *play_lv2_audio;
+  AgsPlayLv2AudioRun *play_lv2_audio_run;
 
   GList *list;
   
@@ -1196,18 +1196,18 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			      0);
 
     list = ags_recall_find_type(audio->recall,
-				AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+				AGS_TYPE_PLAY_LV2_AUDIO_RUN);
 
     if(list != NULL){
-      recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+      play_lv2_audio_run = AGS_PLAY_LV2_AUDIO_RUN(list->data);
 
       /* set dependency */
-      g_object_set(G_OBJECT(recall_notation_audio_run),
+      g_object_set(G_OBJECT(play_lv2_audio_run),
 		   "delay-audio-run\0", play_delay_audio_run,
 		   NULL);
 
       /* set dependency */
-      g_object_set(G_OBJECT(recall_notation_audio_run),
+      g_object_set(G_OBJECT(play_lv2_audio_run),
 		   "count-beats-audio-run\0", play_count_beats_audio_run,
 		   NULL);
     }
@@ -1486,7 +1486,7 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
   list = lv2_plugin->preset;
 
   while(list != NULL){
-    gtk_combo_box_text_append_text(lv2_bridge->preset,
+    gtk_combo_box_text_append_text(live_lv2_bridge->preset,
 				   AGS_LV2_PRESET(list->data)->preset_label);
 
     list = list->next;

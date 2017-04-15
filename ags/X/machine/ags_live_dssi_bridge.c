@@ -327,7 +327,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   live_dssi_bridge->effect_index = 0;
 
   live_dssi_bridge->port_values = NULL;
-  live_dssi_bridge->live_dssi_descriptor = NULL;
+  live_dssi_bridge->dssi_descriptor = NULL;
   
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) live_dssi_bridge),
@@ -650,10 +650,10 @@ ags_live_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveDssiBridge *
   if(AGS_MACHINE(live_dssi_bridge)->audio->input != NULL){
     recall = AGS_MACHINE(live_dssi_bridge)->audio->input->recall;
     
-    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LIVE_DSSI)) != NULL){
-      if(!g_strcmp0(AGS_RECALL_LIVE_DSSI(recall->data)->filename,
+    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_DSSI_AUDIO)) != NULL){
+      if(!g_strcmp0(AGS_PLAY_DSSI_AUDIO(recall->data)->filename,
 		    live_dssi_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL_LIVE_DSSI(recall->data)->effect,
+	 !g_strcmp0(AGS_PLAY_DSSI_AUDIO(recall->data)->effect,
 		    live_dssi_bridge->effect)){
 	break;
       }
@@ -954,8 +954,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsRecordMidiAudio *recall_record_midi_audio;
   AgsRecordMidiAudioRun *recall_record_midi_audio_run;
-  AgsPlayDssiAudio *recall_notation_audio;
-  AgsPlayDssiAudioRun *recall_notation_audio_run;
+  AgsPlayDssiAudio *play_dssi_audio;
+  AgsPlayDssiAudioRun *play_dssi_audio_run;
 
   GList *list;
   
@@ -1063,15 +1063,15 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			      AGS_TYPE_PLAY_DSSI_AUDIO_RUN);
 
   if(list != NULL){
-    recall_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(list->data);
+    play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(list->data);
 
     /* set dependency */
-    g_object_set(G_OBJECT(recall_dssi_audio_run),
+    g_object_set(G_OBJECT(play_dssi_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
 
     /* set dependency */
-    g_object_set(G_OBJECT(recall_dssi_audio_run),
+    g_object_set(G_OBJECT(play_dssi_audio_run),
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }
@@ -1140,7 +1140,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   GtkListStore *model;
   GtkTreeIter iter;
 
-  AgsLiveDssiPlugin *live_dssi_plugin;
+  AgsDssiPlugin *dssi_plugin;
 
   AgsConfig *config;
 
@@ -1183,7 +1183,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   g_message("ags_live_dssi_bridge.c - load %s %s\0", live_dssi_bridge->filename, live_dssi_bridge->effect);
  
   /* load plugin */
-  dssi_plugin = ags_dssi_manager_find_live_plugin(ags_dssi_manager_get_instance(),
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  live_dssi_bridge->filename,
 						  live_dssi_bridge->effect);
 
@@ -1227,8 +1227,8 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 
 	    gchar *specifier;
 	    
-	    dssi_plugin = ags_dssi_manager_find_plugin(ags_dssi_manager_get_instance(),
-						       live_dssi_bridge->filename, live_dssi_bridge->effect);
+	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+							    live_dssi_bridge->filename, live_dssi_bridge->effect);
 
 	    list = AGS_BASE_PLUGIN(dssi_plugin)->port;
  	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];

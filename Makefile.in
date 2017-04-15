@@ -705,6 +705,10 @@ am__objects_26 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo \
 	ags/X/machine/libgsequencer_la-ags_ladspa_bridge_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo \
+	ags/X/machine/libgsequencer_la-ags_live_dssi_bridge_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_live_lv2_bridge.lo \
+	ags/X/machine/libgsequencer_la-ags_live_lv2_bridge_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_lv2_bridge.lo \
 	ags/X/machine/libgsequencer_la-ags_lv2_bridge_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_matrix.lo \
@@ -3194,6 +3198,10 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
+	ags/X/machine/ags_live_dssi_bridge.c \
+	ags/X/machine/ags_live_dssi_bridge_callbacks.c \
+	ags/X/machine/ags_live_lv2_bridge.c \
+	ags/X/machine/ags_live_lv2_bridge_callbacks.c \
 	ags/X/machine/ags_lv2_bridge.c \
 	ags/X/machine/ags_lv2_bridge_callbacks.c \
 	ags/X/machine/ags_matrix.c \
@@ -4785,6 +4793,18 @@ ags/X/machine/libgsequencer_la-ags_ladspa_bridge.lo:  \
 ags/X/machine/libgsequencer_la-ags_ladspa_bridge_callbacks.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_live_dssi_bridge_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_live_lv2_bridge.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_live_lv2_bridge_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_lv2_bridge.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -5487,6 +5507,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_ladspa_bridge_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_lv2_bridge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_lv2_bridge_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_matrix.Plo@am__quote@
@@ -9100,6 +9124,34 @@ ags/X/machine/libgsequencer_la-ags_ladspa_bridge_callbacks.lo: ags/X/machine/ags
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_ladspa_bridge_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_ladspa_bridge_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_ladspa_bridge_callbacks.lo `test -f 'ags/X/machine/ags_ladspa_bridge_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_ladspa_bridge_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo: ags/X/machine/ags_live_dssi_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Tpo -c -o ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo `test -f 'ags/X/machine/ags_live_dssi_bridge.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_dssi_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_live_dssi_bridge.c' object='ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_live_dssi_bridge.lo `test -f 'ags/X/machine/ags_live_dssi_bridge.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_dssi_bridge.c
+
+ags/X/machine/libgsequencer_la-ags_live_dssi_bridge_callbacks.lo: ags/X/machine/ags_live_dssi_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_live_dssi_bridge_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_live_dssi_bridge_callbacks.lo `test -f 'ags/X/machine/ags_live_dssi_bridge_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_dssi_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_dssi_bridge_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_live_dssi_bridge_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_live_dssi_bridge_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_live_dssi_bridge_callbacks.lo `test -f 'ags/X/machine/ags_live_dssi_bridge_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_dssi_bridge_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_live_lv2_bridge.lo: ags/X/machine/ags_live_lv2_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_live_lv2_bridge.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge.Tpo -c -o ags/X/machine/libgsequencer_la-ags_live_lv2_bridge.lo `test -f 'ags/X/machine/ags_live_lv2_bridge.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_lv2_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_live_lv2_bridge.c' object='ags/X/machine/libgsequencer_la-ags_live_lv2_bridge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_live_lv2_bridge.lo `test -f 'ags/X/machine/ags_live_lv2_bridge.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_lv2_bridge.c
+
+ags/X/machine/libgsequencer_la-ags_live_lv2_bridge_callbacks.lo: ags/X/machine/ags_live_lv2_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_live_lv2_bridge_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_live_lv2_bridge_callbacks.lo `test -f 'ags/X/machine/ags_live_lv2_bridge_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_lv2_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_live_lv2_bridge_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_live_lv2_bridge_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_live_lv2_bridge_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_live_lv2_bridge_callbacks.lo `test -f 'ags/X/machine/ags_live_lv2_bridge_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_live_lv2_bridge_callbacks.c
 
 ags/X/machine/libgsequencer_la-ags_lv2_bridge.lo: ags/X/machine/ags_lv2_bridge.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_lv2_bridge.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_lv2_bridge.Tpo -c -o ags/X/machine/libgsequencer_la-ags_lv2_bridge.lo `test -f 'ags/X/machine/ags_lv2_bridge.c' || echo '$(srcdir)/'`ags/X/machine/ags_lv2_bridge.c
