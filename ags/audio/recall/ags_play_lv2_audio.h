@@ -44,7 +44,7 @@ typedef enum{
   AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT   = 1,
   AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT    = 1 <<  1,
   AGS_PLAY_LV2_AUDIO_HAS_WORKER       = 1 <<  2,
-}AgsRecallLv2FLags;
+}AgsPlayLv2AudioFLags;
 
 struct _AgsPlayLv2Audio
 {
