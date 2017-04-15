@@ -600,7 +600,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
     AGS_RECALL(play_dssi_audio)->port = g_list_reverse(port);
   }
 
-  //  g_message("output lines: %d\0", play_dssi_audio->output_lines);
+  g_message("output lines: %d\0", play_dssi_audio->output_lines);
 
   return(g_list_copy(AGS_RECALL(play_dssi_audio)->port));
 }

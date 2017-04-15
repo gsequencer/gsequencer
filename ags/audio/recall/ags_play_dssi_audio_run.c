@@ -35,6 +35,8 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_dssi_plugin.h>
 
 #include <ags/audio/ags_recall_id.h>
@@ -47,6 +49,15 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
 
 void ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run);
 void ags_play_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -71,6 +82,7 @@ void ags_play_dssi_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugi
 xmlNode* ags_play_dssi_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall);
+void ags_play_dssi_audio_run_run_pre(AgsRecall *recall);
 
 void ags_play_dssi_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_play_dssi_audio_run_duplicate(AgsRecall *recall,
@@ -240,6 +252,7 @@ ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run
   recall->duplicate = ags_play_dssi_audio_run_duplicate;
 
   recall->run_init_pre = ags_play_dssi_audio_run_run_init_pre;
+  recall->run_pre = ags_play_dssi_audio_run_run_pre;
 }
 
 void
@@ -773,144 +786,42 @@ ags_play_dssi_audio_run_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
-
 void
 ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
-{
-  GObject *soundcard;
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsChannel *selected_channel;
-  AgsRecycling *recycling;
-  AgsAudioSignal *destination;
-  AgsRecyclingContext *recycling_context;
-  
+{  
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
 
-  AgsMutexManager *mutex_manager;
-  
-  GList *stream;
+  GObject *soundcard;
 
-  gdouble delay;
-  guint attack;
-  guint length;
-  guint audio_channel;
-  unsigned long samplerate;
-  unsigned long buffer_size;
+  guint samplerate;
+  guint buffer_size;
   unsigned long i, i_stop;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
-  
+    
   play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(recall);
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
 
-  audio = AGS_RECALL_AUDIO(play_dssi_audio)->audio;
-
+  /* set up buffer */
   soundcard = recall->soundcard;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    &buffer_size,
+			    NULL);
 
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-	
-  pthread_mutex_unlock(application_mutex);
-
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-	
-  pthread_mutex_unlock(application_mutex);
-
-  /* get audio channel */
-  pthread_mutex_lock(channel_mutex);
-  
-  audio_channel = channel->audio_channel;
-
-  pthread_mutex_unlock(channel_mutex);
-  
-  /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    selected_channel = ags_channel_nth(audio->input,
-				       audio_channel);
-  }else{
-    selected_channel = ags_channel_nth(audio->output,
-				       audio_channel);
-  }
-
-  /* recycling */
-  recycling = selected_channel->first_recycling;
-  recall->flags &= (~AGS_RECALL_PERSISTENT);
-
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-	
-  pthread_mutex_unlock(application_mutex);
-
-  /* recycling context */
-  recycling_context = recall->recall_id->recycling_context;
-
-  //TODO:JK: unclear
-  attack = 0;
-  delay = 0.0;
-
-  /* create new audio signal */
-  play_dssi_audio_run->destination = 
-    destination = ags_audio_signal_new((GObject *) soundcard,
-				       (GObject *) recycling,
-				       (GObject *) recall->recall_id);
-  //TODO:JK: create property
-  g_object_ref(play_dssi_audio_run->destination);
-  
-  ags_recycling_create_audio_signal_with_defaults(recycling,
-						  destination,
-						  delay, attack);
-  length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
-  ags_audio_signal_stream_resize(destination,
-				 length);
-
-  ags_connectable_connect(AGS_CONNECTABLE(destination));
-  
-  destination->stream_current = destination->stream_beginning;
-
-  pthread_mutex_lock(recycling_mutex);
-
-  ags_recycling_add_audio_signal(recycling,
-				 destination);
-
-  pthread_mutex_unlock(recycling_mutex);
-
-#ifdef AGS_DEBUG
-  g_message("play %x to %x\0", destination, recall_id);
-  g_message("creating destination\0");
-#endif  
-
-  /* set up buffer */ 
-  samplerate = destination->samplerate;
-  buffer_size = destination->buffer_size;
-
+  g_message("do %d, %d, %d", play_dssi_audio->output_lines, samplerate, buffer_size);
+    
   if(play_dssi_audio->input_lines > 0){
     play_dssi_audio_run->input = (LADSPA_Data *) malloc(play_dssi_audio->input_lines *
 							buffer_size *
 							sizeof(LADSPA_Data));
   }
 
-  play_dssi_audio_run->output = (LADSPA_Data *) malloc(play_dssi_audio->output_lines *
+  play_dssi_audio_run->output = (float *) malloc(play_dssi_audio->output_lines *
 						       buffer_size *
 						       sizeof(LADSPA_Data));
+  g_message("do 0x%x", play_dssi_audio_run->output);
 
   if(play_dssi_audio->input_lines < play_dssi_audio->output_lines){
     i_stop = play_dssi_audio->output_lines;
@@ -952,6 +863,141 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
 
   }
 
+  /* call parent */
+  AGS_RECALL_CLASS(ags_play_dssi_audio_run_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
+{  
+  AgsPlayDssiAudio *play_dssi_audio;
+  AgsPlayDssiAudioRun *play_dssi_audio_run;
+
+  GObject *soundcard;
+
+  guint buffer_size;
+  unsigned long i, i_stop;
+  
+  play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(recall);
+  play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
+
+  soundcard = recall->soundcard;
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
+
+  if(play_dssi_audio_run->destination == NULL){
+    AgsAudio *audio;
+    AgsChannel *channel;
+    AgsChannel *selected_channel;
+    AgsRecycling *recycling;
+    AgsAudioSignal *destination;
+    AgsRecyclingContext *recycling_context;
+
+    AgsMutexManager *mutex_manager;
+
+    gdouble delay;
+    guint attack;
+    guint length;
+    guint audio_channel;
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *channel_mutex;
+    pthread_mutex_t *recycling_mutex;
+    
+    audio = AGS_RECALL_AUDIO(play_dssi_audio)->audio;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+	
+    pthread_mutex_unlock(application_mutex);
+
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+	
+    pthread_mutex_unlock(application_mutex);
+
+    /* get audio channel */
+    pthread_mutex_lock(channel_mutex);
+  
+    audio_channel = channel->audio_channel;
+
+    pthread_mutex_unlock(channel_mutex);
+  
+    /* get channel */
+    if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+      selected_channel = ags_channel_nth(audio->input,
+					 audio_channel);
+    }else{
+      selected_channel = ags_channel_nth(audio->output,
+					 audio_channel);
+    }
+
+    /* recycling */
+    recycling = selected_channel->first_recycling;
+    recall->flags &= (~AGS_RECALL_PERSISTENT);
+
+    pthread_mutex_lock(application_mutex);
+
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) recycling);
+	
+    pthread_mutex_unlock(application_mutex);
+
+    /* recycling context */
+    recycling_context = recall->recall_id->recycling_context;
+
+    //TODO:JK: unclear
+    attack = 0;
+    delay = 0.0;
+
+    /* create new audio signal */
+    play_dssi_audio_run->destination = 
+      destination = ags_audio_signal_new((GObject *) soundcard,
+					 (GObject *) recycling,
+					 (GObject *) recall->recall_id);
+    //TODO:JK: create property
+    g_object_ref(play_dssi_audio_run->destination);
+  
+    ags_recycling_create_audio_signal_with_defaults(recycling,
+						    destination,
+						    delay, attack);
+    length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
+    ags_audio_signal_stream_resize(destination,
+				   length);
+
+    ags_connectable_connect(AGS_CONNECTABLE(destination));
+  
+    destination->stream_current = destination->stream_beginning;
+
+    pthread_mutex_lock(recycling_mutex);
+
+    ags_recycling_add_audio_signal(recycling,
+				   destination);
+
+    pthread_mutex_unlock(recycling_mutex);
+
+#ifdef AGS_DEBUG
+    g_message("play %x to %x\0", destination, recall_id);
+    g_message("creating destination\0");
+#endif  
+  }
+
   /* select program */
   if(play_dssi_audio->plugin_descriptor->select_program != NULL){
     AgsPort *current;
@@ -968,7 +1014,8 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
 
     port_count = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->PortCount;
     port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
-  
+
+    /* update port */
     for(i = 0; i < port_count; i++){
       specifier = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->PortNames[i];
       list = port;
@@ -992,7 +1039,8 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
 	port_data[i] = current->port_value.ags_port_ladspa;
       }
     }
-    
+
+    /* select program */
     for(i = 0; i < i_stop; i++){
       play_dssi_audio->plugin_descriptor->select_program(play_dssi_audio_run->ladspa_handle[i],
 							 play_dssi_audio->bank,
@@ -1025,7 +1073,7 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   }
 
   /* call parent */
-  AGS_RECALL_CLASS(ags_play_dssi_audio_run_parent_class)->run_init_pre(recall);
+  AGS_RECALL_CLASS(ags_play_dssi_audio_run_parent_class)->run_pre(recall);
 }
 
 void
@@ -1308,6 +1356,9 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   
   audio_signal = play_dssi_audio_run->destination;
   buffer_size = audio_signal->buffer_size;
+  
+  ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+				     buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
 
   /* get copy mode and clear buffer */
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
@@ -1496,9 +1547,13 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
   }
   
   for(j = 0; j < play_dssi_audio->output_lines; j++){
+    g_message("do");
+    
     play_dssi_audio->plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
 								    play_dssi_audio->output_port[j],
 								    &(play_dssi_audio_run->output[j]));
+    g_message("do 0x%x", play_dssi_audio_run->output);
+
   }
 }
 

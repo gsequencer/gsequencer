@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ladspa.h>
+#include <dssi.h>
+
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_notation.h>
 
