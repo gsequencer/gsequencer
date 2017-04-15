@@ -1410,7 +1410,7 @@ ags_play_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
  *
  * Set up DSSI ports.
  *
- * Since: 0.7.0
+ * Since: 0.7.134
  */
 void
 ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)

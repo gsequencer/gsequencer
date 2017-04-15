@@ -3,6 +3,7 @@ ags (0.7.134)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags-play-dssi and ags-play-lv2 recall
 	* implemented AgsLiveDssiBridge and AgsLiveLv2Bridge
+	* support NULL input
 
 ags (0.7.133)
 

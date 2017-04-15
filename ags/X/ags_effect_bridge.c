@@ -780,7 +780,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 				old_size * audio->audio_channels);
     }
     
-    for(i = 0; i < new_size - old_size; i++){
+    for(i = 0; i < new_size - old_size && current != NULL; i++){
       if(channel_type == AGS_TYPE_OUTPUT){
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
 	  effect_pad = g_object_new(effect_bridge->output_pad_type,
