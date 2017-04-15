@@ -37,6 +37,8 @@
 #define AGS_IS_PLAY_DSSI_AUDIO_RUN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLAY_DSSI_AUDIO_RUN))
 #define AGS_PLAY_DSSI_AUDIO_RUN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PLAY_DSSI_AUDIO_RUN, AgsPlayDssiAudioRunClass))
 
+#define AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
+
 typedef struct _AgsPlayDssiAudioRun AgsPlayDssiAudioRun;
 typedef struct _AgsPlayDssiAudioRunClass AgsPlayDssiAudioRunClass;
 
@@ -66,6 +68,8 @@ struct _AgsPlayDssiAudioRun
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  GObject *destination;
+  
   AgsNotation *notation;
   GList *offset;
 };

@@ -35,14 +35,49 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_event_manager.h>
+#include <ags/plugin/ags_lv2_uri_map_manager.h>
+#include <ags/plugin/ags_lv2_log_manager.h>
+#include <ags/plugin/ags_lv2_worker_manager.h>
+#include <ags/plugin/ags_lv2_worker.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
+#include <ags/plugin/ags_lv2_option_manager.h>
+
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/ext/event/event.h>
+#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
+#include <lv2/lv2plug.in/ns/ext/atom/forge.h>
+#include <lv2/lv2plug.in/ns/ext/atom/util.h>
+#include <lv2/lv2plug.in/ns/ext/midi/midi.h>
+#include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
+#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
+#include <lv2/lv2plug.in/ns/ext/log/log.h>
+#include <lv2/lv2plug.in/ns/ext/event/event.h>
+#include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
+#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
+#include <lv2/lv2plug.in/ns/ext/options/options.h>
 
 void ags_play_lv2_audio_run_class_init(AgsPlayLv2AudioRunClass *play_lv2_audio_run);
 void ags_play_lv2_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -65,6 +100,8 @@ void ags_play_lv2_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
 void ags_play_lv2_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable); 
 void ags_play_lv2_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_play_lv2_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+
+void ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall);
 
 void ags_play_lv2_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_play_lv2_audio_run_duplicate(AgsRecall *recall,
@@ -232,6 +269,8 @@ ags_play_lv2_audio_run_class_init(AgsPlayLv2AudioRunClass *play_lv2_audio_run)
 
   recall->resolve_dependencies = ags_play_lv2_audio_run_resolve_dependencies;
   recall->duplicate = ags_play_lv2_audio_run_duplicate;
+
+  recall->run_init_pre = ags_play_lv2_audio_run_run_init_pre;
 }
 
 void
@@ -288,6 +327,8 @@ ags_play_lv2_audio_run_init(AgsPlayLv2AudioRun *play_lv2_audio_run)
   play_lv2_audio_run->delay_audio_run = NULL;
   play_lv2_audio_run->count_beats_audio_run = NULL;
 
+  play_lv2_audio_run->destination = NULL;  
+  
   play_lv2_audio_run->notation = NULL;
   play_lv2_audio_run->offset = NULL;
 }
@@ -764,6 +805,386 @@ ags_play_lv2_audio_run_duplicate(AgsRecall *recall,
 }
 
 void
+ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
+{
+  GObject *soundcard;
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsChannel *selected_channel;
+  AgsRecycling *recycling;
+  AgsAudioSignal *destination;
+  AgsRecyclingContext *recycling_context;
+  
+  AgsPlayLv2Audio *play_lv2_audio;
+  AgsPlayLv2AudioRun *play_lv2_audio_run;
+
+  AgsMutexManager *mutex_manager;
+  
+  GList *stream;
+
+  gchar *path;
+
+  gdouble delay;
+  guint attack;
+  guint length;
+  guint total_feature;
+  guint nth;
+  guint audio_channel;
+  double samplerate;
+  uint32_t buffer_size;
+  uint32_t i;
+
+  LV2_URI_Map_Feature *uri_map_feature;
+  
+  LV2_Worker_Schedule_Handle worker_handle;
+  LV2_Worker_Schedule *worker_schedule;
+
+  LV2_Log_Log *log_feature;
+
+  LV2_Event_Feature *event_feature;
+
+  LV2_URID_Map *urid_map;
+  LV2_URID_Unmap *urid_unmap;
+
+  LV2_Options_Interface *options_interface;
+  LV2_Options_Option *options;
+  
+  LV2_Feature **feature;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+  
+  play_lv2_audio_run = AGS_PLAY_LV2_AUDIO_RUN(recall);
+  play_lv2_audio = AGS_PLAY_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(play_lv2_audio_run)->recall_audio);
+
+  audio = AGS_RECALL_AUDIO(play_lv2_audio)->audio;
+
+  soundcard = recall->soundcard;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_lv2_audio_run)->recall_id->recycling)->channel;
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_lv2_audio_run)->recall_id->recycling)->channel;
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get audio channel */
+  pthread_mutex_lock(channel_mutex);
+  
+  audio_channel = channel->audio_channel;
+
+  pthread_mutex_unlock(channel_mutex);
+  
+  /* get channel */
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+    selected_channel = ags_channel_nth(audio->input,
+				       audio_channel);
+  }else{
+    selected_channel = ags_channel_nth(audio->output,
+				       audio_channel);
+  }
+
+  /* recycling */
+  recycling = selected_channel->first_recycling;
+  recall->flags &= (~AGS_RECALL_PERSISTENT);
+
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* recycling context */
+  recycling_context = recall->recall_id->recycling_context;
+
+  //TODO:JK: unclear
+  attack = 0;
+  delay = 0.0;
+
+  /* create new audio signal */
+  play_lv2_audio_run->destination = 
+    destination = ags_audio_signal_new((GObject *) soundcard,
+				       (GObject *) recycling,
+				       (GObject *) recall->recall_id);
+  //TODO:JK: create property
+  g_object_ref(play_lv2_audio_run->destination);
+  
+  ags_recycling_create_audio_signal_with_defaults(recycling,
+						  destination,
+						  delay, attack);
+  length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
+  ags_audio_signal_stream_resize(destination,
+				 length);
+
+  ags_connectable_connect(AGS_CONNECTABLE(destination));
+  
+  destination->stream_current = destination->stream_beginning;
+
+  pthread_mutex_lock(recycling_mutex);
+
+  ags_recycling_add_audio_signal(recycling,
+				 destination);
+
+  pthread_mutex_unlock(recycling_mutex);
+
+#ifdef AGS_DEBUG
+  g_message("play %x to %x\0", destination, recall_id);
+  g_message("creating destination\0");
+#endif
+  
+  path = g_strndup(play_lv2_audio->filename,
+		   rindex(play_lv2_audio->filename, '/') - play_lv2_audio->filename + 1);
+
+  /**/
+  total_feature = 8;
+  nth = 0;
+    
+  play_lv2_audio_run->feature = 
+    feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
+  
+  /* URI map feature */  
+  uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
+  uri_map_feature->callback_data = NULL;
+  uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
+  
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_URI_MAP_URI;
+  feature[nth]->data = uri_map_feature;
+
+  nth++;
+  
+  /* worker feature */
+  if((AGS_PLAY_LV2_AUDIO_HAS_WORKER & (play_lv2_audio->flags)) != 0){
+    play_lv2_audio_run->worker_handle = 
+      worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
+  
+    worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
+    worker_schedule->handle = worker_handle;
+    worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_WORKER__schedule;
+    feature[nth]->data = worker_schedule;
+
+    nth++;
+  }else{
+    worker_handle = NULL;
+  }
+  
+  /* log feature */
+  log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
+  
+  log_feature->handle = NULL;
+  log_feature->printf = ags_lv2_log_manager_printf;
+  log_feature->vprintf = ags_lv2_log_manager_vprintf;
+
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_LOG__log;
+  feature[nth]->data = log_feature;
+
+  nth++;
+  
+  /* event feature */
+  event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
+  
+  event_feature->callback_data = NULL;
+  event_feature->lv2_event_ref = ags_lv2_event_manager_lv2_event_ref;
+  event_feature->lv2_event_unref = ags_lv2_event_manager_lv2_event_unref;
+  
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_EVENT_URI;
+  feature[nth]->data = event_feature;
+
+  nth++;
+    
+  /* URID map feature */
+  urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
+  urid_map->handle = NULL;
+  urid_map->map = ags_lv2_urid_manager_map;
+  
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_URID_MAP_URI;
+  feature[nth]->data = urid_map;
+
+  nth++;
+  
+  /* URID unmap feature */
+  urid_unmap = (LV2_URID_Unmap *) malloc(sizeof(LV2_URID_Unmap));
+  urid_unmap->handle = NULL;
+  urid_unmap->unmap = ags_lv2_urid_manager_unmap;
+  
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_URID_UNMAP_URI;
+  feature[nth]->data = urid_unmap;
+
+  nth++;
+
+  /* Options interface */
+  options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
+  options_interface->set = ags_lv2_option_manager_lv2_options_set;
+  options_interface->get = ags_lv2_option_manager_lv2_options_get;
+  
+  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[nth]->URI = LV2_OPTIONS_URI;
+  feature[nth]->data = options_interface;
+
+  nth++;
+
+  /* terminate */
+  for(; nth < total_feature; nth++){
+    feature[nth] = NULL;
+  }
+  
+  /* set up buffer */ 
+  samplerate = destination->samplerate;
+  buffer_size = destination->buffer_size;
+  
+  play_lv2_audio_run->input = (float *) malloc(play_lv2_audio->input_lines *
+					       buffer_size *
+					       sizeof(float));
+  play_lv2_audio_run->output = (float *) malloc(play_lv2_audio->output_lines *
+						buffer_size *
+						sizeof(float));
+
+  play_lv2_audio_run->lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
+
+  
+  /* instantiate lv2 */
+  play_lv2_audio_run->lv2_handle[0] = (LV2_Handle) play_lv2_audio->plugin_descriptor->instantiate(play_lv2_audio->plugin_descriptor,
+												  samplerate,
+												  path,
+												  feature);
+  AGS_LV2_WORKER(worker_handle)->handle = play_lv2_audio_run->lv2_handle[0];
+
+  /* some options */
+  options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
+
+  /* samplerate */
+  options[0].context = LV2_OPTIONS_INSTANCE;
+  options[0].subject = 0;
+  options[0].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_PARAMETERS__sampleRate);
+
+  options[0].size = sizeof(float);
+  options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						LV2_ATOM__Float);
+  options[0].value = &(destination->samplerate);
+  
+  /* min-block-length */
+  options[1].context = LV2_OPTIONS_INSTANCE;
+  options[1].subject = 0;
+  options[1].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_BUF_SIZE__minBlockLength);
+
+  options[1].size = sizeof(float);
+  options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						LV2_ATOM__Int);
+  options[1].value = &(destination->buffer_size);
+
+  /* max-block-length */
+  options[2].context = LV2_OPTIONS_INSTANCE;
+  options[2].subject = 0;
+  options[2].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+					       LV2_BUF_SIZE__maxBlockLength);
+
+  options[2].size = sizeof(float);
+  options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						LV2_ATOM__Int);
+  options[2].value = &(destination->buffer_size);
+
+  /* terminate */
+  options[3].context = LV2_OPTIONS_INSTANCE;
+  options[3].subject = 0;
+  options[3].key = 0;
+
+  options[3].size = 0;
+  options[3].type = 0;
+  options[3].value = NULL;
+
+  /* set options */
+  ags_lv2_option_manager_lv2_options_set(play_lv2_audio_run->lv2_handle[0],
+					 options);
+
+  /*  */  
+  if(worker_handle != NULL){
+    AGS_LV2_WORKER(worker_handle)->handle = play_lv2_audio_run->lv2_handle[0];
+  }
+  
+  free(path);
+  
+#ifdef AGS_DEBUG
+  g_message("instantiate LV2 handle\0");
+#endif
+
+  ags_play_lv2_audio_run_load_ports(play_lv2_audio_run);
+
+  /* can't be done in ags_play_lv2_audio_run_run_init_inter since possebility of overlapping buffers */
+  /* connect audio port */
+  for(i = 0; i < play_lv2_audio->input_lines; i++){
+#ifdef AGS_DEBUG
+    g_message("connect port: %d\0", play_lv2_audio->input_port[i]);
+#endif
+    
+    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
+						    play_lv2_audio->input_port[i],
+						    play_lv2_audio_run->input);
+  }
+
+  for(i = 0; i < play_lv2_audio->output_lines; i++){
+#ifdef AGS_DEBUG
+    g_message("connect port: %d\0", play_lv2_audio->output_port[i]);
+#endif
+    
+    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
+						    play_lv2_audio->output_port[i],
+						    play_lv2_audio_run->output);
+  }
+
+  /* connect event port */
+  if((AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT & (play_lv2_audio->flags)) != 0){
+    play_lv2_audio_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+    
+    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
+						    play_lv2_audio->event_port,
+						    play_lv2_audio_run->event_port);
+  }
+  
+  /* connect atom port */
+  if((AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT & (play_lv2_audio->flags)) != 0){
+    play_lv2_audio_run->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
+    
+    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
+						    play_lv2_audio->atom_port,
+						    play_lv2_audio_run->atom_port);   
+  }
+
+  /* activate */
+  if(play_lv2_audio->plugin_descriptor->activate != NULL){
+    play_lv2_audio->plugin_descriptor->activate(play_lv2_audio_run->lv2_handle[0]);
+  }
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_play_lv2_audio_run_parent_class)->run_init_pre(recall);
+}
+
+void
 ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 					    guint nth_run,
 					    gdouble delay, guint attack,
@@ -771,30 +1192,39 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 {
   GObject *soundcard;
   AgsAudio *audio;
+  AgsChannel *channel;
   AgsChannel *selected_channel;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
   AgsNotation *notation;
   AgsNote *note;
 
-  AgsPlayNotationAudio *play_notation_audio;
+  AgsPlayLv2Audio *play_lv2_audio;
   AgsDelayAudio *delay_audio;
   
   AgsMutexManager *mutex_manager;
 
   AgsConfig *config;
   
+  snd_seq_event_t *seq_event;
+
   GList *current_position;
   GList *list;
 
   gchar *str;
 
+  guint audio_start_mapping;
+  guint midi_start_mapping, midi_end_mapping;
   guint notation_counter;
+  guint note_x0, note_x1;
+  guint note_y;  
   guint input_pads;
   guint selected_key;
   guint audio_channel;
   guint samplerate;
-  guint i;
+  guint copy_mode_in, copy_mode_out;
+  uint32_t buffer_size;
+  uint32_t i;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
@@ -806,11 +1236,11 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     return;
   }
 
-  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
+  play_lv2_audio = AGS_PLAY_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(play_lv2_audio_run)->recall_audio);
 
   delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
   
-  audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
+  audio = AGS_RECALL_AUDIO(play_lv2_audio)->audio;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -887,23 +1317,25 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
-    //						   timestamp_thread->timestamp)->data);
+  //						   timestamp_thread->timestamp)->data);
 
   current_position = notation->notes; // start_loop
-  notation_counter = play_notation_audio_run->count_beats_audio_run->notation_counter;
+  notation_counter = play_lv2_audio_run->count_beats_audio_run->notation_counter;
   
   input_pads = audio->input_pads;
-  
+
+  audio_start_mapping = audio->audio_start_mapping;
+
+  midi_start_mapping = audio->midi_start_mapping;
+  midi_end_mapping = audio->midi_end_mapping;
+
   pthread_mutex_unlock(audio_mutex);
 
-  /* feed midi */
+  /*
+   * feed midi
+   */
+  
   while(current_position != NULL){
-    AgsRecallID *child_recall_id;
-    GList *list;
-
-    guint note_x0, note_x1;
-    guint note_y;
-    
     pthread_mutex_lock(audio_mutex);
       
     note = AGS_NOTE(current_position->data);
@@ -920,8 +1352,31 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       }else{
 	selected_key = note->y;
       }
-      
-      //TODO:JK: implement me
+
+      /* key on */
+      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
+      memset(seq_event, 0, sizeof(snd_seq_event_t));
+
+      seq_event->type = SND_SEQ_EVENT_NOTEON;
+
+      seq_event->data.note.channel = 0;
+      seq_event->data.note.note = 0x7f & (selected_key - audio_start_mapping + midi_start_mapping);
+      seq_event->data.note.velocity = 127;
+
+      /* write to port */
+      if((AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT & (play_lv2_audio->flags)) != 0){
+	ags_lv2_plugin_atom_sequence_append_midi(play_lv2_audio_run->atom_port,
+						 AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						 seq_event,
+						 1);
+      }else if((AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT & (play_lv2_audio->flags)) != 0){
+	ags_lv2_plugin_event_buffer_append_midi(play_lv2_audio_run->event_port,
+						AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						seq_event,
+						1);
+      }
+
+      free(seq_event);
     }else if(note_x1 == notation_counter){
       /* send key off */
       if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
@@ -930,7 +1385,18 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	selected_key = note->y;
       }
 
-      //TODO:JK: implement me
+      /* write to port */
+      if((AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT & (play_lv2_audio->flags)) != 0){
+	ags_lv2_plugin_atom_sequence_remove_midi(play_lv2_audio_run->atom_port,
+						 AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						 (0x7f & (selected_key - audio_start_mapping + midi_start_mapping)));
+      }else if((AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT & (play_lv2_audio->flags)) != 0){
+	ags_lv2_plugin_event_buffer_remove_midi(play_lv2_audio_run->event_port,
+						AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
+						(0x7f & (selected_key - audio_start_mapping + midi_start_mapping)));
+      }
+
+      free(seq_event);
     }else if(note_x0 > notation_counter){
       break;
     }
@@ -942,38 +1408,69 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     pthread_mutex_unlock(audio_mutex);
   }
 
+  /*
+   * process data
+   */
+  
   /* recycling */
   pthread_mutex_lock(channel_mutex);
 	
   recycling = selected_channel->first_recycling;
 
   pthread_mutex_unlock(channel_mutex);
+  	
+  /* lookup recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* create audio data */
+  pthread_mutex_lock(recycling_mutex);
   
-  while(recycling != selected_channel->last_recycling->next){
-    guint copy_mode_in, copy_mode_out;
-    uint32_t buffer_size;
-    uint32_t i;
-	
-    /* lookup recycling mutex */
-    pthread_mutex_lock(application_mutex);
+  audio_signal = play_lv2_audio_run->destination;
+  buffer_size = audio_signal->buffer_size;
 
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) recycling);
-	
-    pthread_mutex_unlock(application_mutex);
+  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
+						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
 
-    /* create audio data */
-    pthread_mutex_lock(recycling_mutex);
-
-    audio_signal = ;
-
-    buffer_size = audio_signal->buffer_size;
-	
-    /* iterate */
-    recycling = recycling->next;
-
-    pthread_mutex_unlock(recycling_mutex);
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(audio_signal->format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  
+  if(play_lv2_audio_run->output != NULL){
+    ags_audio_buffer_util_clear_float(play_lv2_audio_run->output, play_lv2_audio->output_lines,
+				      buffer_size);
   }
+
+  if(play_lv2_audio_run->input != NULL){
+    ags_audio_buffer_util_clear_float(play_lv2_audio_run->input, play_lv2_audio->input_lines,
+				      buffer_size);
+  }
+
+  /* copy data  */
+  if(play_lv2_audio_run->input != NULL){
+    ags_audio_buffer_util_copy_buffer_to_buffer(play_lv2_audio_run->input, (guint) play_lv2_audio->input_lines, 0,
+						audio_signal->stream_current->data, 1, 0,
+						(guint) buffer_size, copy_mode_in);
+  }
+  
+  /* process data */
+  play_lv2_audio->plugin_descriptor->run(play_lv2_audio_run->lv2_handle[0],
+					 buffer_size);
+
+  /* copy data */
+  if(play_lv2_audio_run->output != NULL){
+    ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
+						play_lv2_audio_run->output, (guint) play_lv2_audio->output_lines, 0,
+						(guint) buffer_size, copy_mode_out);
+  }
+
+  pthread_mutex_unlock(recycling_mutex);
 }
 
 void
@@ -1013,6 +1510,67 @@ ags_play_lv2_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
     g_object_set(G_OBJECT(recall),
 		 "count-beats-audio-run\0", id_ref->ref,
 		 NULL);
+  }
+}
+
+/**
+ * ags_play_lv2_audio_run_load_ports:
+ * @play_lv2_audio_run: an #AgsRecallLv2Run
+ *
+ * Set up LV2 ports.
+ *
+ * Since: 0.7.134
+ */
+void
+ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
+{
+  AgsPlayLv2Audio *play_lv2_audio;
+  AgsPort *current;
+  
+  AgsLv2Plugin *lv2_plugin;
+  
+  GList *port;
+  GList *port_descriptor;
+
+  gchar *specifier;
+  
+  uint32_t i, j;
+
+  play_lv2_audio = AGS_PLAY_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(play_lv2_audio_run)->recall_audio);
+
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       play_lv2_audio->filename, play_lv2_audio->effect);
+
+  if(AGS_BASE_PLUGIN(lv2_plugin)->port != NULL){
+    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+
+    for(i = 0; port_descriptor != NULL; i++){
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	port = AGS_RECALL(play_lv2_audio)->port;
+	current = NULL;
+	  
+	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	    
+	while(port != NULL){
+	  if(!g_strcmp0(specifier,
+			AGS_PORT(port->data)->specifier)){
+	    current = port->data;
+	    break;
+	  }
+
+	  port = port->next;
+	}
+
+#ifdef AGS_DEBUG
+	g_message("connect port: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+#endif
+	play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
+							(uint32_t) AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
+							(float *) &(current->port_value.ags_port_float));
+      }
+
+      port_descriptor = port_descriptor->next;
+    }
   }
 }
 

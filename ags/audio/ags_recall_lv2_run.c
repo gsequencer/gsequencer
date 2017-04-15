@@ -25,6 +25,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
@@ -549,13 +551,21 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   AgsCountBeatsAudioRun *count_beats_audio_run;
   AgsRouteLv2AudioRun *route_lv2_audio_run;
 
+  AgsMutexManager *mutex_manager;
+  
   guint copy_mode_in, copy_mode_out;
   uint32_t buffer_size;
   uint32_t i;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre(recall);
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
   
@@ -596,11 +606,21 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
     return;
   }
 
-  /* get copy mode and clear buffer */
+  //NOTE:JK: it is safe
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
 
-  buffer_size = audio_signal->buffer_size;
+  /* lookup recycling mutex */
+  pthread_mutex_lock(application_mutex);
 
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) audio_signal->recycling);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get copy mode and clear buffer */
+  pthread_mutex_lock(recycling_mutex);
+
+  buffer_size = audio_signal->buffer_size;
 
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
@@ -622,7 +642,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   if(recall_lv2_run->input != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(recall_lv2_run->input, (guint) recall_lv2->input_lines, 0,
 						audio_signal->stream_current->data, 1, 0,
-						(guint) audio_signal->buffer_size, copy_mode_in);
+						(guint) buffer_size, copy_mode_in);
   }
   
   /* process data */
@@ -636,8 +656,10 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
     
     ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
 						recall_lv2_run->output, (guint) recall_lv2->output_lines, 0,
-						(guint) audio_signal->buffer_size, copy_mode_out);
+						(guint) buffer_size, copy_mode_out);
   }
+
+  pthread_mutex_unlock(recycling_mutex);
 }
 
 void
@@ -729,7 +751,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
  *
  * Set up LV2 ports.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
@@ -792,7 +814,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
  *
  * Returns: a new #AgsRecallLv2Run
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsRecallLv2Run*
 ags_recall_lv2_run_new(AgsAudioSignal *audio_signal)

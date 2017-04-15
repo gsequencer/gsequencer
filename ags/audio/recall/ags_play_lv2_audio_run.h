@@ -39,6 +39,8 @@
 #define AGS_IS_PLAY_LV2_AUDIO_RUN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLAY_LV2_AUDIO_RUN))
 #define AGS_PLAY_LV2_AUDIO_RUN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PLAY_LV2_AUDIO_RUN, AgsPlayLv2AudioRunClass))
 
+#define AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
+
 typedef struct _AgsPlayLv2AudioRun AgsPlayLv2AudioRun;
 typedef struct _AgsPlayLv2AudioRunClass AgsPlayLv2AudioRunClass;
 
@@ -70,6 +72,8 @@ struct _AgsPlayLv2AudioRun
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  GObject *destination;
+  
   AgsNotation *notation;
   GList *offset;
 

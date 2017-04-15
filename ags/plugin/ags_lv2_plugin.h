@@ -94,6 +94,9 @@ gboolean ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 						 guint buffer_size,
 						 snd_seq_event_t *events,
 						 guint event_count);
+gboolean ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
+						 guint buffer_size,
+						 guint note);
 void ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 				       guint buffer_size);
 
@@ -104,6 +107,9 @@ gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 						  guint sequence_size,
 						  snd_seq_event_t *events,
 						  guint event_count);
+gboolean ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
+						  guint sequence_size,
+						  guint note);
 void ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 					guint sequence_size);
 

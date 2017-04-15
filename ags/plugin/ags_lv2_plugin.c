@@ -1199,6 +1199,75 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 }
 
 /**
+ * ags_lv2_plugin_event_buffer_remove_midi:
+ * @event_buffer: the event buffer
+ * @buffer_size: the event buffer size
+ * @note: the key to remove
+ *
+ * Remove MIDI data from event buffer.
+ *
+ * Returns: %TRUE on success otherwise %FALSE
+ *
+ * Since: 0.7.134
+ */
+gboolean
+ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
+					guint buffer_size,
+					guint note)
+{
+  void *offset;
+
+  guint padded_buffer_size;
+  guint count;
+  guint i;
+  gboolean success;
+
+  /* find offset */
+  offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
+  
+  /* append midi */
+  success = FALSE;
+
+  while(offset < offset + AGS_LV2_EVENT_BUFFER(event_buffer)->size){
+    if(((unsigned char *) offset + sizeof(LV2_Event))[2] == (0x7f & note)){
+      success = TRUE;
+      
+      break;
+    }
+    
+    count = AGS_LV2_EVENT(offset)->size;
+    
+    if(count < 8){
+      padded_buffer_size = 8;
+    }else{
+      padded_buffer_size = count;
+    }
+
+    offset += (padded_buffer_size + sizeof(LV2_Event));
+  }
+  
+  if(success){
+    count = AGS_LV2_EVENT(offset)->size;
+    
+    if(count < 8){
+      padded_buffer_size = 8;
+    }else{
+      padded_buffer_size = count;
+    }
+
+    memmove(offset,
+	    offset + (padded_buffer_size + sizeof(LV2_Event)),
+	    offset - ((void *) AGS_LV2_EVENT_BUFFER(event_buffer)->data) - (padded_buffer_size + sizeof(LV2_Event)));
+    
+    memset(AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size - (padded_buffer_size + sizeof(LV2_Event)),
+	   0,
+	   (padded_buffer_size + sizeof(LV2_Event)));
+  }
+  
+  return(success);
+}
+
+/**
  * ags_lv2_plugin_clear_event_buffer:
  * @event_buffer: the event buffer
  * @buffer_size: size of @event_buffer
@@ -1334,6 +1403,82 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   /* set last empty */
   aev->body.size = 0;  
   aev->body.type = 0;
+  
+  return(success);
+}
+
+/**
+ * ags_lv2_plugin_atom_sequence_remove_midi:
+ * @atom_sequence: the atom sequence
+ * @sequence_size: the atom sequence size
+ * @note: the key to remove
+ *
+ * Remove MIDI data from atom sequence.
+ *
+ * Returns: %TRUE on success otherwise %FALSE
+ *
+ * Since: 0.7.134
+ */
+gboolean
+ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
+					 guint sequence_size,
+					 guint note)
+{
+  AgsLv2UriMapManager *uri_map_manager;
+  
+  LV2_Atom_Sequence *aseq;
+  LV2_Atom_Event *aev;
+  
+  unsigned char midi_buffer[8];
+
+  guint count, size;
+  guint padded_size;
+  guint i;
+  gboolean success;
+
+  aseq = (LV2_Atom_Sequence *) atom_sequence;
+  
+  /* find offset */
+  aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+
+  success = FALSE;
+  
+  while((void *) aev < atom_sequence + sequence_size){
+    if(aev->body.size == 0){
+      break;
+    }
+
+    if(((unsigned char *) LV2_ATOM_BODY(&(aev->body)))[2] == (0x7f & note)){
+      success = TRUE;
+
+      break;
+    }
+    
+    size = aev->body.size;
+    aev += ((size + 7) & (~7));
+  }
+  
+  /* remove midi */
+  if(success){
+    memmove(aev,
+	    aev + ((size + 7) & (~7)),
+	    ((void *) aev) - atom_sequence - ((size + 7) & (~7)));
+    
+    memset(atom_sequence + sequence_size - ((size + 7) & (~7)),
+	   0,
+	   ((size + 7) & (~7)));
+
+    
+    while((void *) aev < atom_sequence + sequence_size){
+      if(aev->body.size == 0){
+	break;
+      }
+    }
+    
+    /* set last empty */
+    aev->body.size = 0;  
+    aev->body.type = 0;
+  }
   
   return(success);
 }

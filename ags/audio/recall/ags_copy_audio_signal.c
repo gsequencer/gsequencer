@@ -237,7 +237,7 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
   copy_recycling = AGS_COPY_RECYCLING(recall->parent);
 
-  soundcard = AGS_RECALL(copy_audio_signal)->soundcard;
+  soundcard = recall->soundcard;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
