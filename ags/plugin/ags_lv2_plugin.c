@@ -1476,6 +1476,8 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
 	   0,
 	   ((current_size + 7) & (~7)));
 
+    aseq->atom.size -= ((current_size + 7) & (~7));
+    
     aev->body.size = 0;  
     aev->body.type = 0;
   }

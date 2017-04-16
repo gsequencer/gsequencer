@@ -387,8 +387,8 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION | 
-		   //		   AGS_AUDIO_NO_INPUT |
+		   AGS_AUDIO_HAS_NOTATION |  
+		   AGS_AUDIO_SKIP_INPUT |
 		   AGS_AUDIO_REVERSE_MAPPING);
   audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   g_object_set(audio,
@@ -1216,7 +1216,8 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_BULK),
 			    0);
 
   list = ags_recall_find_type(audio->play,

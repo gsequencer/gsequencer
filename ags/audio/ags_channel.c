@@ -9019,6 +9019,7 @@ ags_channel_recursive_play(AgsChannel *channel,
     guint flags;
     guint audio_channel, line;
     gboolean can_next_active;
+    gboolean skip_input;
     
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *mutex, *input_mutex;
@@ -9044,9 +9045,14 @@ ags_channel_recursive_play(AgsChannel *channel,
     line = output->line;
 
     can_next_active = ((AGS_AUDIO_CAN_NEXT_ACTIVE & (audio->flags)) != 0) ? TRUE: FALSE;
+    skip_input = ((AGS_AUDIO_SKIP_INPUT & (audio->flags)) != 0) ? TRUE: FALSE;
     
     pthread_mutex_unlock(mutex);
 
+    if(skip_input){
+      return;
+    }
+    
     /* lookup mutex */
     pthread_mutex_lock(application_mutex);
 

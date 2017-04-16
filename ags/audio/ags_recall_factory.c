@@ -2362,6 +2362,11 @@ ags_recall_factory_create_play_dssi(AgsAudio *audio,
     ags_recall_set_flags(AGS_RECALL(play_dssi_audio), (AGS_RECALL_TEMPLATE |
 						       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 						       AGS_RECALL_NOTATION));
+
+    if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
+      AGS_RECALL(play_dssi_audio)->flags |= AGS_RECALL_BULK_MODE;
+    }
+    
     ags_audio_add_recall(audio, (GObject *) play_dssi_audio, TRUE);
     recall = g_list_prepend(recall,
 			    play_dssi_audio);
@@ -2397,6 +2402,11 @@ ags_recall_factory_create_play_dssi(AgsAudio *audio,
     ags_recall_set_flags(AGS_RECALL(play_dssi_audio), (AGS_RECALL_TEMPLATE |
 						       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 						       AGS_RECALL_NOTATION));
+
+    if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
+      AGS_RECALL(play_dssi_audio)->flags |= AGS_RECALL_BULK_MODE;
+    }
+    
     ags_audio_add_recall(audio, (GObject *) play_dssi_audio, FALSE);
     recall = g_list_prepend(recall,
 			    play_dssi_audio);
@@ -2473,9 +2483,15 @@ ags_recall_factory_create_play_lv2(AgsAudio *audio,
 							     "recall_audio\0", play_lv2_audio,
 							     "recall_container\0", play_container,
 							     NULL);
+
     ags_recall_set_flags(AGS_RECALL(play_lv2_audio_run), (AGS_RECALL_TEMPLATE |
 							  (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							  AGS_RECALL_NOTATION));
+
+    if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
+      AGS_RECALL(play_lv2_audio)->flags |= AGS_RECALL_BULK_MODE;
+    }
+
     ags_audio_add_recall(audio, (GObject *) play_lv2_audio_run, TRUE);
     recall = g_list_prepend(recall,
 			    play_lv2_audio_run);
@@ -2495,9 +2511,15 @@ ags_recall_factory_create_play_lv2(AgsAudio *audio,
 						      "audio\0", audio,
 						      "recall_container\0", recall_container,
 						      NULL);
+
     ags_recall_set_flags(AGS_RECALL(play_lv2_audio), (AGS_RECALL_TEMPLATE |
 						      (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 						      AGS_RECALL_NOTATION));
+
+    if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
+      AGS_RECALL(play_lv2_audio)->flags |= AGS_RECALL_BULK_MODE;
+    }
+
     ags_audio_add_recall(audio, (GObject *) play_lv2_audio, FALSE);
     recall = g_list_prepend(recall,
 			    play_lv2_audio);

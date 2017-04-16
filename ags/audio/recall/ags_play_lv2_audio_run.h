@@ -63,6 +63,8 @@ struct _AgsPlayLv2AudioRun
   void *event_port;
   void *atom_port;
 
+  guint key_on;
+  
   long delta_time;
   
   snd_seq_event_t **event_buffer;

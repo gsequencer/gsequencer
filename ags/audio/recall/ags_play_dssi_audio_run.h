@@ -67,6 +67,8 @@ struct _AgsPlayDssiAudioRun
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
 
+  guint key_on;
+
   AgsDelayAudioRun *delay_audio_run;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
