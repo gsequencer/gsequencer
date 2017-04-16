@@ -819,7 +819,6 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   play_dssi_audio_run->output = (float *) malloc(play_dssi_audio->output_lines *
 						       buffer_size *
 						       sizeof(LADSPA_Data));
-  g_message("do 0x%x", play_dssi_audio_run->output);
 
   if(play_dssi_audio->input_lines < play_dssi_audio->output_lines){
     i_stop = play_dssi_audio->output_lines;
@@ -1544,14 +1543,10 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
 								    &(play_dssi_audio_run->input[j]));
   }
   
-  for(j = 0; j < play_dssi_audio->output_lines; j++){
-    g_message("do");
-    
+  for(j = 0; j < play_dssi_audio->output_lines; j++){    
     play_dssi_audio->plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
 								    play_dssi_audio->output_port[j],
 								    &(play_dssi_audio_run->output[j]));
-    g_message("do 0x%x", play_dssi_audio_run->output);
-
   }
 }
 

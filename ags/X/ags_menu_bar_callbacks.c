@@ -989,29 +989,6 @@ ags_menu_bar_add_live_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
   
-  if(lv2_plugin != NULL &&
-     (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
-    AGS_MACHINE(live_lv2_bridge)->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-						   AGS_AUDIO_INPUT_HAS_RECYCLING |
-						   AGS_AUDIO_SYNC |
-						   AGS_AUDIO_ASYNC |
-						   AGS_AUDIO_HAS_NOTATION | 
-						   AGS_AUDIO_NOTATION_DEFAULT |
-						   AGS_AUDIO_REVERSE_MAPPING);
-    g_object_set(AGS_MACHINE(live_lv2_bridge)->audio,
-		 "audio-start-mapping\0", 0,
-		 "audio-end-mapping\0", 128,
-		 "midi-start-mapping\0", 0,
-		 "midi-end-mapping\0", 128,
-		 NULL);
-    
-    AGS_MACHINE(live_lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
-					    AGS_MACHINE_REVERSE_NOTATION);
-
-    ags_machine_popup_add_connection_options((AgsMachine *) live_lv2_bridge,
-					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
-  }
-  
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 

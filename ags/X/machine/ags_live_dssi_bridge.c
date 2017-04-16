@@ -327,7 +327,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   live_dssi_bridge->version = AGS_LIVE_DSSI_BRIDGE_DEFAULT_VERSION;
   live_dssi_bridge->build_id = AGS_LIVE_DSSI_BRIDGE_DEFAULT_BUILD_ID;
 
-  live_dssi_bridge->xml_type = "ags-live_dssi-bridge\0";
+  live_dssi_bridge->xml_type = "ags-live-dssi-bridge\0";
   
   live_dssi_bridge->mapped_output_pad = 0;
   live_dssi_bridge->mapped_input_pad = 0;

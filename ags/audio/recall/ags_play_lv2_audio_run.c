@@ -972,11 +972,10 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
   
   /* instantiate lv2 */
   play_lv2_audio_run->lv2_handle[0] = (LV2_Handle) play_lv2_audio->plugin_descriptor->instantiate(play_lv2_audio->plugin_descriptor,
-												  samplerate,
+												  (float) samplerate,
 												  path,
 												  feature);
-  AGS_LV2_WORKER(worker_handle)->handle = play_lv2_audio_run->lv2_handle[0];
-
+  
   /* some options */
   options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
 
@@ -1101,128 +1100,133 @@ void
 ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
 {
   GObject *soundcard;
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsChannel *selected_channel;
-  AgsRecycling *recycling;
-  AgsAudioSignal *destination;
-  AgsRecyclingContext *recycling_context;
   
   AgsPlayLv2Audio *play_lv2_audio;
   AgsPlayLv2AudioRun *play_lv2_audio_run;
 
-  AgsMutexManager *mutex_manager;
-
-  gchar *path;
-
-  gdouble delay;
-  guint attack;
-  guint length;
-  guint total_feature;
-  guint nth;
-  guint audio_channel;
-  double samplerate;
-  uint32_t buffer_size;
+  guint buffer_size;
   uint32_t i;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
   
   play_lv2_audio_run = AGS_PLAY_LV2_AUDIO_RUN(recall);
   play_lv2_audio = AGS_PLAY_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(play_lv2_audio_run)->recall_audio);
 
-  audio = AGS_RECALL_AUDIO(play_lv2_audio)->audio;
-
   soundcard = recall->soundcard;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
 
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
+  if(play_lv2_audio_run->destination == NULL){
+    AgsAudio *audio;
+    AgsChannel *channel;
+    AgsChannel *selected_channel;
+    AgsRecycling *recycling;
+    AgsAudioSignal *destination;
+    AgsRecyclingContext *recycling_context;
 
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_lv2_audio_run)->recall_id->recycling)->channel;
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+    AgsMutexManager *mutex_manager;
+
+    gdouble delay;
+    guint attack;
+    guint length;
+    guint audio_channel;
+    
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *channel_mutex;
+    pthread_mutex_t *recycling_mutex;
+    
+    audio = AGS_RECALL_AUDIO(play_lv2_audio)->audio;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_lv2_audio_run)->recall_id->recycling)->channel;
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
 	
-  pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
 
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_lv2_audio_run)->recall_id->recycling)->channel;
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+    channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_lv2_audio_run)->recall_id->recycling)->channel;
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
 	
-  pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
-  /* get audio channel */
-  pthread_mutex_lock(channel_mutex);
+    /* get audio channel */
+    pthread_mutex_lock(channel_mutex);
   
-  audio_channel = channel->audio_channel;
+    audio_channel = channel->audio_channel;
 
-  pthread_mutex_unlock(channel_mutex);
+    pthread_mutex_unlock(channel_mutex);
   
-  /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    selected_channel = ags_channel_nth(audio->input,
-				       audio_channel);
-  }else{
-    selected_channel = ags_channel_nth(audio->output,
-				       audio_channel);
-  }
+    /* get channel */
+    if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+      selected_channel = ags_channel_nth(audio->input,
+					 audio_channel);
+    }else{
+      selected_channel = ags_channel_nth(audio->output,
+					 audio_channel);
+    }
 
-  /* recycling */
-  recycling = selected_channel->first_recycling;
-  recall->flags &= (~AGS_RECALL_PERSISTENT);
+    /* recycling */
+    recycling = selected_channel->first_recycling;
+    recall->flags &= (~AGS_RECALL_PERSISTENT);
 
-  pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(application_mutex);
 
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) recycling);
 	
-  pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
-  /* recycling context */
-  recycling_context = recall->recall_id->recycling_context;
+    /* recycling context */
+    recycling_context = recall->recall_id->recycling_context;
 
-  //TODO:JK: unclear
-  attack = 0;
-  delay = 0.0;
+    //TODO:JK: unclear
+    attack = 0;
+    delay = 0.0;
 
-  /* create new audio signal */
-  play_lv2_audio_run->destination = 
-    destination = ags_audio_signal_new((GObject *) soundcard,
-				       (GObject *) recycling,
-				       (GObject *) recall->recall_id);
-  //TODO:JK: create property
-  g_object_ref(play_lv2_audio_run->destination);
+    /* create new audio signal */
+    play_lv2_audio_run->destination = 
+      destination = ags_audio_signal_new((GObject *) soundcard,
+					 (GObject *) recycling,
+					 (GObject *) recall->recall_id);
+    //TODO:JK: create property
+    g_object_ref(play_lv2_audio_run->destination);
   
-  ags_recycling_create_audio_signal_with_defaults(recycling,
-						  destination,
-						  delay, attack);
-  length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
-  ags_audio_signal_stream_resize(destination,
-				 length);
+    ags_recycling_create_audio_signal_with_defaults(recycling,
+						    destination,
+						    delay, attack);
+    length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
+    ags_audio_signal_stream_resize(destination,
+				   length);
 
-  ags_connectable_connect(AGS_CONNECTABLE(destination));
+    ags_connectable_connect(AGS_CONNECTABLE(destination));
   
-  destination->stream_current = destination->stream_beginning;
+    destination->stream_current = destination->stream_beginning;
 
-  pthread_mutex_lock(recycling_mutex);
+    pthread_mutex_lock(recycling_mutex);
 
-  ags_recycling_add_audio_signal(recycling,
-				 destination);
+    ags_recycling_add_audio_signal(recycling,
+				   destination);
 
-  pthread_mutex_unlock(recycling_mutex);
+    pthread_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
-  g_message("play %x to %x\0", destination, recall_id);
-  g_message("creating destination\0");
+    g_message("play %x to %x\0", destination, recall_id);
+    g_message("creating destination\0");
 #endif  
-
+  }
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_play_lv2_audio_run_parent_class)->run_pre(recall);
 }
@@ -1246,8 +1250,6 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   AgsDelayAudio *delay_audio;
   
   AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
   
   snd_seq_event_t *seq_event;
 
@@ -1264,7 +1266,6 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   guint input_pads;
   guint selected_key;
   guint audio_channel;
-  guint samplerate;
   guint copy_mode_in, copy_mode_out;
   uint32_t buffer_size;
   uint32_t i;
@@ -1284,44 +1285,22 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
   
   audio = AGS_RECALL_AUDIO(play_lv2_audio)->audio;
+  soundcard = (GObject *) AGS_RECALL(play_lv2_audio_run)->soundcard;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  config = ags_config_get_instance();
-  
   /* read config and audio mutex */
   pthread_mutex_lock(application_mutex);
-  
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
 
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
-  }
-  
-  if(str != NULL){  
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
-
-  /*  */
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
   pthread_mutex_unlock(application_mutex);
 
+  /*  */
   pthread_mutex_lock(audio_mutex);
 
-  soundcard = (GObject *) audio->soundcard;
   list = audio->notation;//(GList *) g_value_get_pointer(&value);
 
   pthread_mutex_unlock(audio_mutex);
@@ -1438,8 +1417,6 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 						AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
 						(0x7f & (selected_key - audio_start_mapping + midi_start_mapping)));
       }
-
-      free(seq_event);
     }else if(note_x0 > notation_counter){
       break;
     }
@@ -1476,6 +1453,10 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   audio_signal = play_lv2_audio_run->destination;
   buffer_size = audio_signal->buffer_size;
 
+  ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
+				     buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+
+  /* get copy mode and clear buffer */
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
 
@@ -1501,7 +1482,7 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   
   /* process data */
   play_lv2_audio->plugin_descriptor->run(play_lv2_audio_run->lv2_handle[0],
-					 buffer_size);
+					 (uint32_t) buffer_size);
 
   /* copy data */
   if(play_lv2_audio_run->output != NULL){

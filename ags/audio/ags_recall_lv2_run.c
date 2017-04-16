@@ -431,8 +431,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 											  samplerate,
 											  path,
 											  feature);
-  AGS_LV2_WORKER(worker_handle)->handle = recall_lv2_run->lv2_handle[0];
-
+  
   /* some options */
   options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
 

@@ -383,7 +383,26 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   audio = AGS_MACHINE(live_lv2_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC);
+  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_SYNC |
+		   AGS_AUDIO_ASYNC |
+		   AGS_AUDIO_HAS_NOTATION | 
+		   //		   AGS_AUDIO_NO_INPUT |
+		   AGS_AUDIO_REVERSE_MAPPING);
+  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
+  g_object_set(audio,
+	       "audio-start-mapping\0", 0,
+	       "audio-end-mapping\0", 128,
+	       "midi-start-mapping\0", 0,
+	       "midi-end-mapping\0", 128,
+	       NULL);
+  
+  ags_machine_popup_add_connection_options((AgsMachine *) live_lv2_bridge,
+					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
+  
+  AGS_MACHINE(live_lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+					  AGS_MACHINE_REVERSE_NOTATION);
 
   g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_live_lv2_bridge_set_audio_channels), NULL);
@@ -1215,7 +1234,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     ags_play_lv2_audio_load_ports(play_lv2_audio);
   }
 
-  list = ags_recall_find_type(audio->recall,
+  list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_PLAY_LV2_AUDIO_RUN);
 
   if(list != NULL){
@@ -1231,7 +1250,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }
-  
+
   /* depending on destination */
   ags_live_lv2_bridge_input_map_recall(live_lv2_bridge, 0, 0);
 

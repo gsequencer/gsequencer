@@ -1229,7 +1229,7 @@ ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
   success = FALSE;
 
   while(offset < offset + AGS_LV2_EVENT_BUFFER(event_buffer)->size){
-    if(((unsigned char *) offset + sizeof(LV2_Event))[2] == (0x7f & note)){
+    if(((unsigned char *) (offset + sizeof(LV2_Event)))[1] == (0x7f & note)){
       success = TRUE;
       
       break;
@@ -1262,6 +1262,9 @@ ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
     memset(AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size - (padded_buffer_size + sizeof(LV2_Event)),
 	   0,
 	   (padded_buffer_size + sizeof(LV2_Event)));
+
+    AGS_LV2_EVENT_BUFFER(event_buffer)->size -= (padded_buffer_size + sizeof(LV2_Event));
+    AGS_LV2_EVENT_BUFFER(event_buffer)->event_count -= 1;
   }
   
   return(success);
@@ -1427,11 +1430,11 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
   AgsLv2UriMapManager *uri_map_manager;
   
   LV2_Atom_Sequence *aseq;
-  LV2_Atom_Event *aev;
+  LV2_Atom_Event *aev, *current_aev;
   
   unsigned char midi_buffer[8];
 
-  guint count, size;
+  guint count, size, current_size;
   guint padded_size;
   guint i;
   gboolean success;
@@ -1448,10 +1451,11 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
       break;
     }
 
-    if(((unsigned char *) LV2_ATOM_BODY(&(aev->body)))[2] == (0x7f & note)){
+    if(((unsigned char *) LV2_ATOM_BODY(&(aev->body)))[1] == (0x7f & note)){
+      current_aev = aev;
+      current_size = aev->body.size;
+      
       success = TRUE;
-
-      break;
     }
     
     size = aev->body.size;
@@ -1460,22 +1464,18 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
   
   /* remove midi */
   if(success){
-    memmove(aev,
-	    aev + ((size + 7) & (~7)),
-	    ((void *) aev) - atom_sequence - ((size + 7) & (~7)));
-    
-    memset(atom_sequence + sequence_size - ((size + 7) & (~7)),
-	   0,
-	   ((size + 7) & (~7)));
+    /* set empty */
+    current_aev->body.size = 0;  
+    current_aev->body.type = 0;
 
+    memmove(current_aev,
+	    current_aev + ((current_size + 7) & (~7)),
+	    (atom_sequence + sequence_size) - ((void *) current_aev) - ((current_size + 7) & (~7)));
     
-    while((void *) aev < atom_sequence + sequence_size){
-      if(aev->body.size == 0){
-	break;
-      }
-    }
-    
-    /* set last empty */
+    memset(atom_sequence + sequence_size - ((current_size + 7) & (~7)),
+	   0,
+	   ((current_size + 7) & (~7)));
+
     aev->body.size = 0;  
     aev->body.type = 0;
   }
