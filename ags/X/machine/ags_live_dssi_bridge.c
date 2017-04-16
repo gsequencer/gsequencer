@@ -1129,26 +1129,12 @@ void
 ags_live_dssi_bridge_output_map_recall(AgsLiveDssiBridge *live_dssi_bridge, guint audio_channel_start, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *input, *current;
-
-  AgsDelayAudio *recall_delay_audio;
-  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-
-  AgsConfig *config;
-
-  GList *list;
-
-  gchar *str;
-
-  gboolean performance_mode;
 
   audio = AGS_MACHINE(live_dssi_bridge)->audio;
 
   if(live_dssi_bridge->mapped_output_pad > output_pad_start){
     return;
   }
-
-  config = ags_config_get_instance();
   
   live_dssi_bridge->mapped_output_pad = audio->output_pads;
 }

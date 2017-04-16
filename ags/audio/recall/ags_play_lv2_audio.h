@@ -78,6 +78,16 @@ struct _AgsPlayLv2AudioClass
 
 GType ags_play_lv2_audio_get_type();
 
+void ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio);
+
+GList* ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio);
+void ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
+					GObject *port,
+					gpointer port_descriptor);
+
+GList* ags_play_lv2_audio_find(GList *recall,
+			       gchar *filename, gchar *effect);
+
 AgsPlayLv2Audio* ags_play_lv2_audio_new();
 
 #endif /*__AGS_PLAY_LV2_AUDIO_H__*/

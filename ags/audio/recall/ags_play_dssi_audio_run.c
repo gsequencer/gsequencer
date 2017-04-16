@@ -809,8 +809,6 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
 			    &samplerate,
 			    &buffer_size,
 			    NULL);
-
-  g_message("do %d, %d, %d", play_dssi_audio->output_lines, samplerate, buffer_size);
     
   if(play_dssi_audio->input_lines > 0){
     play_dssi_audio_run->input = (LADSPA_Data *) malloc(play_dssi_audio->input_lines *
