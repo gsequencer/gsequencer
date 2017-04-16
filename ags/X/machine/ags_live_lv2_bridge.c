@@ -48,6 +48,7 @@
 #include <ags/plugin/ags_lv2ui_plugin.h>
 #include <ags/plugin/ags_lv2_conversion.h>
 
+#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
@@ -428,13 +429,13 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input = (GtkWidget *) ags_effect_bulk_new(audio,
-													  AGS_TYPE_INPUT);
-  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
-												  AGS_EFFECT_BULK_HIDE_ENTRIES |
-												  AGS_EFFECT_BULK_SHOW_LABELS);
+  AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output = (GtkWidget *) ags_effect_bulk_new(audio,
+													   AGS_TYPE_OUTPUT);
+  AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->flags |= (AGS_EFFECT_BULK_HIDE_BUTTONS |
+												   AGS_EFFECT_BULK_HIDE_ENTRIES |
+												   AGS_EFFECT_BULK_SHOW_LABELS);
   gtk_table_attach(table,
-		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input,
+		   (GtkWidget *) AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL, GTK_FILL,

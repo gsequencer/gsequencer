@@ -7000,6 +7000,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     return(recall_id);
   }
+
   AgsRecallID* ags_channel_recursive_play_init_arrange_recall_id_down(AgsChannel *output,
 								      AgsRecallID *recall_id,
 								      gboolean initially_unowned)
