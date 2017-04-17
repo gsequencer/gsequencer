@@ -26,6 +26,7 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_conversion.h>
 
 #include <ags/file/ags_file.h>
@@ -283,6 +284,9 @@ ags_recall_lv2_init(AgsRecallLv2 *recall_lv2)
 
   recall_lv2->event_port = 0;
   recall_lv2->atom_port = 0;
+
+  recall_lv2->bank = 0;
+  recall_lv2->program = 0;
 }
 
 void

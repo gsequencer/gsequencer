@@ -73,6 +73,9 @@ struct _AgsRecallLv2
 
   uint32_t event_port;
   uint32_t atom_port;
+
+  uint32_t bank;
+  uint32_t program;
 };
 
 struct _AgsRecallLv2Class
