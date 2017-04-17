@@ -291,6 +291,9 @@ ags_play_lv2_audio_init(AgsPlayLv2Audio *play_lv2_audio)
 
   play_lv2_audio->event_port = 0;
   play_lv2_audio->atom_port = 0;
+
+  play_lv2_audio->bank = 0;
+  play_lv2_audio->program = 0;
 }
 
 void

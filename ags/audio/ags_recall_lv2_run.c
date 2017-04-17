@@ -324,10 +324,86 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 						recall_lv2->atom_port,
 						recall_lv2_run->atom_port);   
   }
-
+  
   /* activate */
   if(recall_lv2->plugin_descriptor->activate != NULL){
     recall_lv2->plugin_descriptor->activate(recall_lv2_run->lv2_handle[0]);
+  }
+
+  /* set program */
+  if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
+    AgsPort *current;
+    
+    GList *list, *port, *port_descriptor;
+    
+    gchar *specifier;
+
+    float *port_data;
+    
+    guint port_count;
+    
+    port = AGS_RECALL(recall_lv2)->port;
+    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+    
+    port_count = g_list_length(port);
+    port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+  
+    for(i = 0; port_descriptor != NULL; ){
+      specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+      list = port;
+
+      while(list != NULL){
+	current = list->data;
+
+	if(!g_strcmp0(specifier,
+		      current->specifier)){
+	  i++;
+	  
+	  break;
+	}
+
+	list = list->next;
+      }
+
+      if(list != NULL){
+	port_data[i] = current->port_value.ags_port_float;
+      }
+
+      port_descriptor = port_descriptor->next;
+    }
+
+    ags_lv2_plugin_change_program(lv2_plugin,
+				  recall_lv2_run->lv2_handle[0],
+				  recall_lv2->bank,
+				  recall_lv2->program);
+
+    /* reset port data */    
+    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+
+    for(i = 0; i < port_count;){
+      specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+      list = port;
+
+      while(list != NULL){
+	current = list->data;
+
+	if(!g_strcmp0(specifier,
+		      current->specifier)){
+	  current->port_value.ags_port_ladspa = port_data[i];
+	  i++;
+	  
+	  //	  g_message("%s %f\0", current->specifier, port_data[i]);
+	
+	  break;
+	}
+
+	list = list->next;
+      }
+
+      port_descriptor = port_descriptor->next;
+    }
+
+    free(port_data);
   }
 }
 

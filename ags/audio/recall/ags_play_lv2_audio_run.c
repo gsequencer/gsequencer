@@ -870,6 +870,82 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
     play_lv2_audio->plugin_descriptor->activate(play_lv2_audio_run->lv2_handle[0]);
   }
 
+  /* set program */
+  if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
+    AgsPort *current;
+    
+    GList *list, *port, *port_descriptor;
+    
+    gchar *specifier;
+
+    float *port_data;
+    
+    guint port_count;
+    
+    port = AGS_RECALL(play_lv2_audio)->port;
+    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+    
+    port_count = g_list_length(port);
+    port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+  
+    for(i = 0; port_descriptor != NULL; ){
+      specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+      list = port;
+
+      while(list != NULL){
+	current = list->data;
+
+	if(!g_strcmp0(specifier,
+		      current->specifier)){
+	  i++;
+	  
+	  break;
+	}
+
+	list = list->next;
+      }
+
+      if(list != NULL){
+	port_data[i] = current->port_value.ags_port_float;
+      }
+
+      port_descriptor = port_descriptor->next;
+    }
+
+    ags_lv2_plugin_change_program(lv2_plugin,
+				  play_lv2_audio_run->lv2_handle[0],
+				  play_lv2_audio->bank,
+				  play_lv2_audio->program);
+
+    /* reset port data */    
+    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+
+    for(i = 0; i < port_count;){
+      specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+      list = port;
+
+      while(list != NULL){
+	current = list->data;
+
+	if(!g_strcmp0(specifier,
+		      current->specifier)){
+	  current->port_value.ags_port_ladspa = port_data[i];
+	  i++;
+	  
+	  //	  g_message("%s %f\0", current->specifier, port_data[i]);
+	
+	  break;
+	}
+
+	list = list->next;
+      }
+
+      port_descriptor = port_descriptor->next;
+    }
+
+    free(port_data);
+  }
+
   /* call parent */
   AGS_RECALL_CLASS(ags_play_lv2_audio_run_parent_class)->run_init_pre(recall);
 }

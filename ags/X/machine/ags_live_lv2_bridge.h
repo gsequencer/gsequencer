@@ -82,7 +82,8 @@ struct _AgsLiveLv2Bridge
   
   LV2_Descriptor *lv2_descriptor;
   LV2_Handle lv2_handle;
-
+  float *port_value;
+  
   GtkComboBoxText *program;
   GtkComboBoxText *preset;
 

@@ -71,6 +71,9 @@ struct _AgsPlayLv2Audio
 
   uint32_t event_port;
   uint32_t atom_port;
+
+  guint bank;
+  guint program;
 };
 
 struct _AgsPlayLv2AudioClass

@@ -435,6 +435,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   live_lv2_bridge->lv2_descriptor = NULL;
   live_lv2_bridge->lv2_handle = NULL;
+  live_lv2_bridge->port_value = NULL;
   
   live_lv2_bridge->program = NULL;
   live_lv2_bridge->preset = NULL;
@@ -1298,24 +1299,58 @@ void
 ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
-    
+
+  LV2_Descriptor *plugin_descriptor;
   LV2_Programs_Interface *program_interface;
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       live_lv2_bridge->filename,
 					       live_lv2_bridge->effect);
-
-  if(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor != NULL &&
-     AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data != NULL &&
-     (program_interface = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data(LV2_PROGRAMS__Interface)) != NULL){
+  plugin_descriptor = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor);
+  
+  if(plugin_descriptor != NULL &&
+     plugin_descriptor->extension_data != NULL &&
+     (program_interface = plugin_descriptor->extension_data(LV2_PROGRAMS__Interface)) != NULL){
     GtkListStore *model;
     
     GtkTreeIter iter;
     
     LV2_Program_Descriptor *program_descriptor;
-    
+
     uint32_t i;
 
+    if(live_lv2_bridge->lv2_handle == NULL){
+      live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+								AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+    }
+
+    if(live_lv2_bridge->port_value == NULL){
+      GList *port_descriptor;
+      
+      guint port_count;
+
+      port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->port);
+
+      if(port_count > 0){
+	live_lv2_bridge->port_value = (float *) malloc(port_count * sizeof(float));
+      }
+
+      port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+      
+      for(i = 0; port_descriptor != NULL;){
+	if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	    plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle,
+					    i,
+					    &(live_lv2_bridge->port_value[i]));
+	    i++;
+	  }
+	}
+
+	port_descriptor = port_descriptor->next;
+      }
+    }
+    
     if(live_lv2_bridge->program == NULL){
       GtkHBox *hbox;
       GtkLabel *label;
@@ -1353,11 +1388,6 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
       model = gtk_combo_box_get_model(GTK_COMBO_BOX(live_lv2_bridge->program));
       
       gtk_list_store_clear(GTK_LIST_STORE(model));
-    }
-    
-    if(live_lv2_bridge->lv2_handle == NULL){
-      live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
-								AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
     }
     
     for(i = 0; (program_descriptor = program_interface->get_program(live_lv2_bridge->lv2_handle, i)) != NULL; i++){
