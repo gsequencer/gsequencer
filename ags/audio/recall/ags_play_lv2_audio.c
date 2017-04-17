@@ -280,6 +280,7 @@ ags_play_lv2_audio_init(AgsPlayLv2Audio *play_lv2_audio)
   play_lv2_audio->uri = NULL;
   play_lv2_audio->index = 0;
 
+  play_lv2_audio->plugin = NULL;
   play_lv2_audio->plugin_descriptor = NULL;
 
   play_lv2_audio->input_port = NULL;
@@ -703,8 +704,9 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
   LV2_Descriptor *plugin_descriptor;
 
   /*  */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       play_lv2_audio->filename, play_lv2_audio->effect);
+  play_lv2_audio->plugin = 
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 play_lv2_audio->filename, play_lv2_audio->effect);
   plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   if(plugin_so != NULL){

@@ -27,8 +27,9 @@
 
 #include <ags/lib/ags_turtle.h>
 
-#include <ags/audio/ags_recall_audio.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 
+#include <ags/audio/ags_recall_audio.h>
 
 #define AGS_TYPE_PLAY_LV2_AUDIO                (ags_play_lv2_audio_get_type())
 #define AGS_PLAY_LV2_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_LV2_AUDIO, AgsPlayLv2Audio))
@@ -59,6 +60,7 @@ struct _AgsPlayLv2Audio
   gchar *uri;
   uint32_t index;
 
+  AgsLv2Plugin *plugin;
   LV2_Descriptor *plugin_descriptor;
 
   uint32_t *input_port;

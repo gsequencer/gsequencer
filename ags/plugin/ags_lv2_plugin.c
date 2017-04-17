@@ -21,8 +21,19 @@
 
 #include <ags/lib/ags_string_util.h>
 
+#include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_marshal.h>
+
+#include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
+#include <ags/plugin/ags_lv2_log_manager.h>
+#include <ags/plugin/ags_lv2_worker_manager.h>
+#include <ags/plugin/ags_lv2_worker.h>
 #include <ags/plugin/ags_lv2_urid_manager.h>
+#include <ags/plugin/ags_lv2_option_manager.h>
 
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
@@ -64,6 +75,11 @@ void ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
 			guint frame_count);
 void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
+void ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
+					gpointer ladspa_handle,
+					guint bank_index,
+					guint program_index);
+
 /**
  * SECTION:ags_lv2_plugin
  * @short_description: The lv2 plugin class
@@ -83,7 +99,13 @@ enum{
   PROP_TURTLE,
 };
 
+enum{
+  CHANGE_PROGRAM,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_lv2_plugin_parent_class = NULL;
+static guint lv2_plugin_signals[LAST_SIGNAL];
 
 GType
 ags_lv2_plugin_get_type (void)
@@ -225,6 +247,32 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
   base_plugin->run = ags_lv2_plugin_run;
 
   base_plugin->load_plugin = ags_lv2_plugin_load_plugin;
+
+  /* AgsLv2PluginClass */
+  lv2_plugin->change_program = ags_lv2_plugin_real_change_program;
+  
+  /**
+   * AgsLv2Plugin::change-program:
+   * @lv2_plugin: the plugin to change-program
+   * @lv2_handle: the Lv2 handle
+   * @bank: the bank number
+   * @program: the program number
+   *
+   * The ::change-program signal creates a new instance of plugin.
+   *
+   * Since: 0.7.134
+   */
+  lv2_plugin_signals[CHANGE_PROGRAM] =
+    g_signal_new("change-program\0",
+		 G_TYPE_FROM_CLASS (lv2_plugin),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsLv2PluginClass, change_program),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
 }
 
 void
@@ -243,6 +291,10 @@ ags_lv2_plugin_init(AgsLv2Plugin *lv2_plugin)
   lv2_plugin->foaf_name = NULL;
   lv2_plugin->foaf_homepage = NULL;
   lv2_plugin->foaf_mbox = NULL;
+
+  lv2_plugin->feature = NULL;
+
+  lv2_plugin->program = NULL;
 
   lv2_plugin->preset = NULL;
 }
@@ -440,6 +492,17 @@ ags_lv2_plugin_finalize(GObject *gobject)
     g_object_unref(lv2_plugin->turtle);
   }
 
+  if(lv2_plugin->feature != NULL){
+    guint i;
+
+    for(i = 0; lv2_plugin->feature[i] != NULL; i++){
+      free(lv2_plugin->feature[i]->data);
+      free(lv2_plugin->feature[i]);
+    }
+    
+    free(lv2_plugin->feature);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_plugin_parent_class)->finalize(gobject);
 }
@@ -448,23 +511,284 @@ gpointer
 ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 			   guint samplerate)
 {
-  gpointer lv2_handle;
+  AgsLv2Plugin *lv2_plugin;
   
-  char *path;
+  AgsConfig *config;
   
-  static const LV2_Feature **feature = {
-    NULL,
-  };
+  void *plugin_so;
+  LV2_Descriptor_Function lv2_descriptor;
+  LV2_Descriptor *plugin_descriptor;
 
-  path = g_strndup(base_plugin->filename,
-		   rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
+  LV2_Handle *lv2_handle;
   
+  LV2_URI_Map_Feature *uri_map_feature;
+  
+  LV2_Worker_Schedule_Handle worker_handle;
+  LV2_Worker_Schedule *worker_schedule;
+
+  LV2_Log_Log *log_feature;
+
+  LV2_Event_Feature *event_feature;
+
+  LV2_URID_Map *urid_map;
+  LV2_URID_Unmap *urid_unmap;
+
+  LV2_Options_Interface *options_interface;
+  LV2_Options_Option *options;
+  
+  LV2_Feature **feature;
+
+  char *path;  
+  gchar *str;
+  
+  float *ptr_samplerate;
+  float *ptr_buffer_size;
+
+  guint conf_buffer_size;
+  guint conf_samplerate;
+  guint total_feature;
+  guint nth;
+
+  lv2_plugin = base_plugin;
+
+  //  xmlSaveFormatFileEnc("-\0", lv2_plugin->turtle->doc, "UTF-8\0", 1);
+  
+  feature = NULL;
+  config = ags_config_get_instance();
+
+  if(lv2_plugin->feature == NULL){
+    /* samplerate */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "samplerate\0");
+  
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "samplerate\0");
+    }  
+
+    if(str != NULL){
+      conf_samplerate = g_ascii_strtoull(str,
+					 NULL,
+					 10);
+      free(str);
+    }else{
+      conf_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    }
+
+    /* buffer-size */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "buffer-size\0");
+
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "buffer-size\0");
+    }
+  
+    if(str != NULL){
+      conf_buffer_size = g_ascii_strtoull(str,
+					  NULL,
+					  10);
+      free(str);
+    }else{
+      conf_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    }
+
+    /* alloc handle and path */
+    lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
+    path = g_strndup(base_plugin->filename,
+		     rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
+
+    /**/
+    total_feature = 8;
+    nth = 0;
+  
+    lv2_plugin->feature = 
+      feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
+  
+    /* URI map feature */  
+    uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
+    uri_map_feature->callback_data = NULL;
+    uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_URI_MAP_URI;
+    feature[nth]->data = uri_map_feature;
+
+    nth++;
+  
+    /* worker feature */
+    if((AGS_LV2_PLUGIN_NEEDS_WORKER & (lv2_plugin->flags)) != 0){
+      worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
+  
+      worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
+      worker_schedule->handle = worker_handle;
+      worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
+  
+      feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+      feature[nth]->URI = LV2_WORKER__schedule;
+      feature[nth]->data = worker_schedule;
+
+      nth++;
+    }else{
+      worker_handle = NULL;
+    }
+  
+    /* log feature */
+    log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
+  
+    log_feature->handle = NULL;
+    log_feature->printf = ags_lv2_log_manager_printf;
+    log_feature->vprintf = ags_lv2_log_manager_vprintf;
+
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_LOG__log;
+    feature[nth]->data = log_feature;
+
+    nth++;
+  
+    /* event feature */
+    event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
+  
+    event_feature->callback_data = NULL;
+    event_feature->lv2_event_ref = ags_lv2_event_manager_lv2_event_ref;
+    event_feature->lv2_event_unref = ags_lv2_event_manager_lv2_event_unref;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_EVENT_URI;
+    feature[nth]->data = event_feature;
+
+    nth++;
+    
+    /* URID map feature */
+    urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
+    urid_map->handle = NULL;
+    urid_map->map = ags_lv2_urid_manager_map;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_URID_MAP_URI;
+    feature[nth]->data = urid_map;
+
+    nth++;
+  
+    /* URID unmap feature */
+    urid_unmap = (LV2_URID_Unmap *) malloc(sizeof(LV2_URID_Unmap));
+    urid_unmap->handle = NULL;
+    urid_unmap->unmap = ags_lv2_urid_manager_unmap;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_URID_UNMAP_URI;
+    feature[nth]->data = urid_unmap;
+
+    nth++;
+
+    /* Options interface */
+    options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
+    options_interface->set = ags_lv2_option_manager_lv2_options_set;
+    options_interface->get = ags_lv2_option_manager_lv2_options_get;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_OPTIONS_URI;
+    feature[nth]->data = options_interface;
+
+    nth++;
+
+    /* terminate */
+    for(; nth < total_feature; nth++){
+      feature[nth] = NULL;
+    }
+  }
+
+  plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
+  
+  if(plugin_so != NULL){
+    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						     "lv2_descriptor\0");
+
+    if(dlerror() == NULL && lv2_descriptor){
+      base_plugin->plugin_descriptor = 
+	plugin_descriptor = lv2_descriptor(AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
+    }
+  }
+  
+  /* instantiate */  
   lv2_handle = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->instantiate(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor),
 										      (double) samplerate,
 										      path,
-										      feature);
+										      lv2_plugin->feature);
 
-  return(lv2_handle);
+  if(feature != NULL){
+    /* some options */
+    options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
+
+
+    /* samplerate */
+    options[0].context = LV2_OPTIONS_INSTANCE;
+    options[0].subject = 0;
+    options[0].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_PARAMETERS__sampleRate);
+
+    ptr_samplerate = (float *) malloc(sizeof(float));
+    ptr_samplerate[0] = conf_samplerate;
+  
+    options[0].size = sizeof(float);
+    options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Float);
+    options[0].value = ptr_samplerate;
+  
+    /* min-block-length */
+    options[1].context = LV2_OPTIONS_INSTANCE;
+    options[1].subject = 0;
+    options[1].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__minBlockLength);
+
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+  
+    options[1].size = sizeof(float);
+    options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[1].value = ptr_buffer_size;
+
+    /* max-block-length */
+    options[2].context = LV2_OPTIONS_INSTANCE;
+    options[2].subject = 0;
+    options[2].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__maxBlockLength);
+
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+
+    options[2].size = sizeof(float);
+    options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[2].value = ptr_buffer_size;
+
+    /* terminate */
+    options[3].context = LV2_OPTIONS_INSTANCE;
+    options[3].subject = 0;
+    options[3].key = 0;
+
+    options[3].size = 0;
+    options[3].type = 0;
+    options[3].value = NULL;
+
+    /* set options */
+    ags_lv2_option_manager_lv2_options_set(*lv2_handle,
+					   options);
+  }
+  
+  /*  */  
+  if(worker_handle != NULL){
+    AGS_LV2_WORKER(worker_handle)->handle = *lv2_handle;
+  }
+  
+  free(path);
+
+  return((gpointer) lv2_handle);
 }
 
 void
@@ -515,6 +839,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   GList *metadata_list;
   GList *instrument_list;
+  GList *extension_list;
   GList *feature_list;
   GList *ui_list;
   GList *port_list;
@@ -532,11 +857,11 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
   LV2_Descriptor *plugin_descriptor;
 
   uint32_t effect_index;
-
+  
   lv2_plugin = AGS_LV2_PLUGIN(base_plugin);  
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);
-  
+
   if(base_plugin->plugin_so == NULL){
     g_warning("ags_lv2_plugin.c - failed to load static object file\0");
     
@@ -624,8 +949,21 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       g_list_free(metadata_list);
     }
 
+    /* check programs interface */
+    xpath = ".//rdf-pname-ln[text()='lv2:extensiondata']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[text()='<http://kxstudio.sf.net/ns/lv2ext/programs#Interface>']";
+
+    extension_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+							     xpath,
+							     triple_node);
+
+    if(extension_list != NULL){
+      lv2_plugin->flags |= AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE;
+      
+      g_list_free(extension_list);
+    }
+    
     /* check needs worker */
-    xpath = ".//rdf-pname-ln[text()='lv2:requiredFeature']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln[text()=lv2worker:schedule]";
+    xpath = ".//rdf-pname-ln[text()='lv2:requiredFeature']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln[text()='lv2worker:schedule']";
 
     feature_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
 							   xpath,
@@ -1538,6 +1876,39 @@ ags_lv2_plugin_find_pname(GList *lv2_plugin,
   }
 
   return(NULL);
+}
+
+void
+ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
+				   gpointer lv2_handle,
+				   guint bank_index,
+				   guint program_index)
+{
+  LV2_Programs_Interface *program_interface;
+  
+  if(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor != NULL &&
+     AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data != NULL &&
+     (program_interface = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data(LV2_PROGRAMS__Interface)) != NULL){
+    program_interface->select_program((void *) lv2_handle,
+				      (unsigned long) bank_index,
+				      (unsigned long) program_index);
+  }
+}
+
+void
+ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
+			      gpointer ladspa_handle,
+			      guint bank_index,
+			      guint program_index)
+{
+  g_return_if_fail(AGS_IS_LV2_PLUGIN(lv2_plugin));
+  g_object_ref(G_OBJECT(lv2_plugin));
+  g_signal_emit(G_OBJECT(lv2_plugin),
+		lv2_plugin_signals[CHANGE_PROGRAM], 0,
+		ladspa_handle,
+		bank_index,
+		program_index);
+  g_object_unref(G_OBJECT(lv2_plugin));
 }
 
 /**

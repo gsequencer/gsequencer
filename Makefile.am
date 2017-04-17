@@ -46,6 +46,9 @@ EXTRA_DIST += \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types
 
+EXTRA_DIST += \
+	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
+
 man1_MANS = gsequencer.1 midi2xml.1
 
 CLEANFILES = functional-system-tests.mk

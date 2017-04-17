@@ -55,7 +55,6 @@ struct _AgsPlayLv2AudioRun
   guint flags;
 
   LV2_Handle *lv2_handle;
-  LV2_Feature **feature;
   
   float *input;
   float *output;

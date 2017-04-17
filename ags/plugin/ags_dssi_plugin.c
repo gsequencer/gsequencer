@@ -187,8 +187,13 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
   /**
    * AgsDssiPlugin::change-program:
    * @dssi_plugin: the plugin to change-program
+   * @ladspa_handle: the LADSPA handle
+   * @bank: the bank number
+   * @program: the program number
    *
    * The ::change-program signal creates a new instance of plugin.
+   *
+   * Since: 0.7.122
    */
   dssi_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program\0",
@@ -201,7 +206,6 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
-
 }
 
 void
@@ -532,9 +536,11 @@ ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
 				    guint bank_index,
 				    guint program_index)
 {
-  AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program((void *) ladspa_handle,
-											      (unsigned long) bank_index,
-											      (unsigned long) program_index);
+  if(AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program != NULL){
+    AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program((void *) ladspa_handle,
+												(unsigned long) bank_index,
+												(unsigned long) program_index);
+  }
 }
 
 void

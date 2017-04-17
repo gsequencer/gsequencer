@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,15 +142,10 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
   AgsWindow *window;
   AgsEditor *editor;
 
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-      return;
-    }
-  }else{
-    if(!g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
-      return;
-    }
+  if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    return;
   }
+
   /*  */
   gdk_threads_enter();
   

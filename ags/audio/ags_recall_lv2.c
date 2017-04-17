@@ -21,8 +21,6 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/plugin/ags_lv2_manager.h>
-
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
@@ -274,6 +272,7 @@ ags_recall_lv2_init(AgsRecallLv2 *recall_lv2)
   recall_lv2->uri = NULL;
   recall_lv2->index = 0;
 
+  recall_lv2->plugin = NULL;
   recall_lv2->plugin_descriptor = NULL;
 
   recall_lv2->input_port = NULL;
@@ -696,9 +695,15 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
 
+  if(recall_lv2 == NULL ||
+     !AGS_RECALL_LV2(recall_lv2)){
+    return;
+  }
+  
   /*  */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       recall_lv2->filename, recall_lv2->effect);
+  recall_lv2->plugin = 
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 recall_lv2->filename, recall_lv2->effect);
   plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   if(plugin_so != NULL){

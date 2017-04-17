@@ -1342,6 +1342,7 @@ void
 ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 {
   GtkListStore *model;
+
   GtkTreeIter iter;
 
   AgsDssiPlugin *dssi_plugin;

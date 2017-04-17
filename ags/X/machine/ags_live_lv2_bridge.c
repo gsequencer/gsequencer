@@ -433,6 +433,10 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) live_lv2_bridge),
 		    (GtkWidget *) live_lv2_bridge->vbox);
 
+  live_lv2_bridge->lv2_descriptor = NULL;
+  live_lv2_bridge->lv2_handle = NULL;
+  
+  live_lv2_bridge->program = NULL;
   live_lv2_bridge->preset = NULL;
   
   /* effect bridge */  
@@ -1291,6 +1295,83 @@ ags_live_lv2_bridge_output_map_recall(AgsLiveLv2Bridge *live_lv2_bridge, guint a
 }
 
 void
+ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsLv2Plugin *lv2_plugin;
+    
+  LV2_Programs_Interface *program_interface;
+
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       live_lv2_bridge->filename,
+					       live_lv2_bridge->effect);
+
+  if(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor != NULL &&
+     AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data != NULL &&
+     (program_interface = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data(LV2_PROGRAMS__Interface)) != NULL){
+    GtkListStore *model;
+    
+    GtkTreeIter iter;
+    
+    LV2_Program_Descriptor *program_descriptor;
+    
+    uint32_t i;
+
+    if(live_lv2_bridge->program == NULL){
+      GtkHBox *hbox;
+      GtkLabel *label;
+      
+      /* program */
+      hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start((GtkBox *) live_lv2_bridge->vbox,
+			 (GtkWidget *) hbox,
+			 FALSE, FALSE,
+			 0);
+      gtk_box_reorder_child(GTK_BOX(live_lv2_bridge->vbox),
+			    GTK_WIDGET(hbox),
+			    0);
+  
+      label = (GtkLabel *) gtk_label_new("program\0");
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) label,
+			 FALSE, FALSE,
+			 0);
+
+      live_lv2_bridge->program = gtk_combo_box_text_new();
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) live_lv2_bridge->program,
+			 FALSE, FALSE,
+			 0);
+      
+      model = gtk_list_store_new(3,
+				 G_TYPE_STRING,
+				 G_TYPE_ULONG,
+				 G_TYPE_ULONG);
+      
+      gtk_combo_box_set_model(GTK_COMBO_BOX(live_lv2_bridge->program),
+			      GTK_TREE_MODEL(model));
+    }else{
+      model = gtk_combo_box_get_model(GTK_COMBO_BOX(live_lv2_bridge->program));
+      
+      gtk_list_store_clear(GTK_LIST_STORE(model));
+    }
+    
+    if(live_lv2_bridge->lv2_handle == NULL){
+      live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+								AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+    }
+    
+    for(i = 0; (program_descriptor = program_interface->get_program(live_lv2_bridge->lv2_handle, i)) != NULL; i++){
+      gtk_list_store_append(model, &iter);
+      gtk_list_store_set(model, &iter,
+			 0, program_descriptor->name,
+			 1, program_descriptor->bank,
+			 2, program_descriptor->program,
+			 -1);
+    }
+  }
+}
+
+void
 ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
 {
   GtkHBox *hbox;
@@ -1628,6 +1709,14 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
     port = port->next;    
     k++;
+  }
+
+  live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+							    AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+
+  /* program */
+  if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
+    ags_live_lv2_bridge_load_program(live_lv2_bridge);
   }
   
   /* preset */

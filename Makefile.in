@@ -1624,7 +1624,8 @@ EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make \
 	docs/reference/libags-audio/libags_audio-sections.txt \
 	docs/reference/libags-audio/libags_audio.types \
 	docs/reference/libags-gui/libags_gui-sections.txt \
-	docs/reference/libags-gui/libags_gui.types libags.pc.in \
+	docs/reference/libags-gui/libags_gui.types \
+	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h libags.pc.in \
 	libags_audio.pc.in libags_gui.pc.in libgsequencer.pc.in \
 	gsequencer.desktop.in libags.sym libags_thread.sym \
 	libags_server.sym libags_audio.sym libags_gui.sym \

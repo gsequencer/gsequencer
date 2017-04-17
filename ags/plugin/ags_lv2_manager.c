@@ -26,6 +26,7 @@
 #include <ags/object/ags_marshal.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_preset.h>
 
 #include <dlfcn.h>
@@ -320,7 +321,9 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
   
   GList *list;
 
-  if(filename == NULL ||
+  if(lv2_manager == NULL ||
+     !AGS_IS_LV2_MANAGER(lv2_manager) ||
+     filename == NULL ||
      effect == NULL){
     return(NULL);
   }

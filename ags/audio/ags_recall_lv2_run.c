@@ -27,14 +27,7 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_event_manager.h>
-#include <ags/plugin/ags_lv2_uri_map_manager.h>
-#include <ags/plugin/ags_lv2_log_manager.h>
-#include <ags/plugin/ags_lv2_worker_manager.h>
 #include <ags/plugin/ags_lv2_worker.h>
-#include <ags/plugin/ags_lv2_urid_manager.h>
-#include <ags/plugin/ags_lv2_option_manager.h>
 
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -48,14 +41,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
-#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
-#include <lv2/lv2plug.in/ns/ext/log/log.h>
-#include <lv2/lv2plug.in/ns/ext/event/event.h>
-#include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
-#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
-#include <lv2/lv2plug.in/ns/ext/options/options.h>
 
 void ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run_class);
 void ags_recall_lv2_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -170,8 +155,6 @@ ags_recall_lv2_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_lv2_run_init(AgsRecallLv2Run *recall_lv2_run)
 {
-  recall_lv2_run->feature = NULL;
-  
   recall_lv2_run->input = NULL;
   recall_lv2_run->output = NULL;
 
@@ -211,17 +194,6 @@ ags_recall_lv2_run_finalize(GObject *gobject)
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
   
   free(recall_lv2_run->lv2_handle);
-
-  if(recall_lv2_run->feature != NULL){
-    guint i;
-
-    for(i = 0; recall_lv2_run->feature[i] != NULL; i++){
-      free(recall_lv2_run->feature[i]->data);
-      free(recall_lv2_run->feature[i]);
-    }
-    
-    free(recall_lv2_run->feature);
-  }
 
   if(recall_lv2_run->output != NULL){
     free(recall_lv2_run->output);
@@ -272,142 +244,20 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   AgsRecallLv2 *recall_lv2;
   AgsRecallLv2Run *recall_lv2_run;
   AgsAudioSignal *audio_signal;
+
+  AgsLv2Plugin *lv2_plugin;
   
   AgsConfig *config;
 
-  gchar *path;
-
-  guint total_feature;
-  guint nth;
   double samplerate;
   uint32_t buffer_size;
   uint32_t i;
-
-  LV2_URI_Map_Feature *uri_map_feature;
-  
-  LV2_Worker_Schedule_Handle worker_handle;
-  LV2_Worker_Schedule *worker_schedule;
-
-  LV2_Log_Log *log_feature;
-
-  LV2_Event_Feature *event_feature;
-
-  LV2_URID_Map *urid_map;
-  LV2_URID_Unmap *urid_unmap;
-
-  LV2_Options_Interface *options_interface;
-  LV2_Options_Option *options;
-  
-  LV2_Feature **feature;
   
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_init_pre(recall);
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
-
-  path = g_strndup(recall_lv2->filename,
-		   rindex(recall_lv2->filename, '/') - recall_lv2->filename + 1);
-
-  /**/
-  total_feature = 8;
-  nth = 0;
-    
-  recall_lv2_run->feature = 
-    feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
-  
-  /* URI map feature */  
-  uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
-  uri_map_feature->callback_data = NULL;
-  uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
-  
-  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[nth]->URI = LV2_URI_MAP_URI;
-  feature[nth]->data = uri_map_feature;
-
-  nth++;
-  
-  /* worker feature */
-  if((AGS_RECALL_LV2_HAS_WORKER & (recall_lv2->flags)) != 0){
-    recall_lv2_run->worker_handle = 
-      worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
-  
-    worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
-    worker_schedule->handle = worker_handle;
-    worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
-  
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-    feature[nth]->URI = LV2_WORKER__schedule;
-    feature[nth]->data = worker_schedule;
-
-    nth++;
-  }else{
-    worker_handle = NULL;
-  }
-  
-  /* log feature */
-  log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
-  
-  log_feature->handle = NULL;
-  log_feature->printf = ags_lv2_log_manager_printf;
-  log_feature->vprintf = ags_lv2_log_manager_vprintf;
-
-  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[nth]->URI = LV2_LOG__log;
-  feature[nth]->data = log_feature;
-
-  nth++;
-  
-  /* event feature */
-  event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
-  
-  event_feature->callback_data = NULL;
-  event_feature->lv2_event_ref = ags_lv2_event_manager_lv2_event_ref;
-  event_feature->lv2_event_unref = ags_lv2_event_manager_lv2_event_unref;
-  
-  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[nth]->URI = LV2_EVENT_URI;
-  feature[nth]->data = event_feature;
-
-  nth++;
-    
-  /* URID map feature */
-  urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
-  urid_map->handle = NULL;
-  urid_map->map = ags_lv2_urid_manager_map;
-  
-  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[nth]->URI = LV2_URID_MAP_URI;
-  feature[nth]->data = urid_map;
-
-  nth++;
-  
-  /* URID unmap feature */
-  urid_unmap = (LV2_URID_Unmap *) malloc(sizeof(LV2_URID_Unmap));
-  urid_unmap->handle = NULL;
-  urid_unmap->unmap = ags_lv2_urid_manager_unmap;
-  
-  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[nth]->URI = LV2_URID_UNMAP_URI;
-  feature[nth]->data = urid_unmap;
-
-  nth++;
-
-  /* Options interface */
-  options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
-  options_interface->set = ags_lv2_option_manager_lv2_options_set;
-  options_interface->get = ags_lv2_option_manager_lv2_options_get;
-  
-  feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-  feature[nth]->URI = LV2_OPTIONS_URI;
-  feature[nth]->data = options_interface;
-
-  nth++;
-
-  /* terminate */
-  for(; nth < total_feature; nth++){
-    feature[nth] = NULL;
-  }
 
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
@@ -422,71 +272,12 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   recall_lv2_run->output = (float *) malloc(recall_lv2->output_lines *
 					    buffer_size *
 					    sizeof(float));
-
-  recall_lv2_run->lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
-
   
   /* instantiate lv2 */
-  recall_lv2_run->lv2_handle[0] = (LV2_Handle) recall_lv2->plugin_descriptor->instantiate(recall_lv2->plugin_descriptor,
-											  samplerate,
-											  path,
-											  feature);
+  lv2_plugin = recall_lv2->plugin;
   
-  /* some options */
-  options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
-
-  /* samplerate */
-  options[0].context = LV2_OPTIONS_INSTANCE;
-  options[0].subject = 0;
-  options[0].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-					       LV2_PARAMETERS__sampleRate);
-
-  options[0].size = sizeof(float);
-  options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-					       LV2_ATOM__Float);
-  options[0].value = &(audio_signal->samplerate);
-  
-  /* min-block-length */
-  options[1].context = LV2_OPTIONS_INSTANCE;
-  options[1].subject = 0;
-  options[1].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-					       LV2_BUF_SIZE__minBlockLength);
-
-  options[1].size = sizeof(float);
-  options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-					       LV2_ATOM__Int);
-  options[1].value = &(audio_signal->buffer_size);
-
-  /* max-block-length */
-  options[2].context = LV2_OPTIONS_INSTANCE;
-  options[2].subject = 0;
-  options[2].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-					       LV2_BUF_SIZE__maxBlockLength);
-
-  options[2].size = sizeof(float);
-  options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-					       LV2_ATOM__Int);
-  options[2].value = &(audio_signal->buffer_size);
-
-  /* terminate */
-  options[3].context = LV2_OPTIONS_INSTANCE;
-  options[3].subject = 0;
-  options[3].key = 0;
-
-  options[3].size = 0;
-  options[3].type = 0;
-  options[3].value = NULL;
-
-  /* set options */
-  ags_lv2_option_manager_lv2_options_set(recall_lv2_run->lv2_handle[0],
-					 options);
-
-  /*  */  
-  if(worker_handle != NULL){
-    AGS_LV2_WORKER(worker_handle)->handle = recall_lv2_run->lv2_handle[0];
-  }
-  
-  free(path);
+  recall_lv2_run->lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(AGS_BASE_PLUGIN(lv2_plugin),
+									  samplerate);
   
 #ifdef AGS_DEBUG
   g_message("instantiate LV2 handle\0");
