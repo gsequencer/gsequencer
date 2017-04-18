@@ -735,6 +735,12 @@ ags_live_lv2_bridge_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_live_lv2_bridge_show_gui_callback), live_lv2_bridge);
+
+  /* program */
+  if(live_lv2_bridge->program != NULL){
+    g_signal_connect_after(G_OBJECT(live_lv2_bridge->program), "changed\0",
+			   G_CALLBACK(ags_live_lv2_bridge_program_changed_callback), live_lv2_bridge);
+  }
 }
 
 void
@@ -1306,7 +1312,8 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       live_lv2_bridge->filename,
 					       live_lv2_bridge->effect);
-  plugin_descriptor = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor);
+  live_lv2_bridge->lv2_descriptor = 
+    plugin_descriptor = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor);
   
   if(plugin_descriptor != NULL &&
      plugin_descriptor->extension_data != NULL &&
@@ -1320,8 +1327,8 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
     uint32_t i;
 
     if(live_lv2_bridge->lv2_handle == NULL){
-      live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
-								AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+      live_lv2_bridge->lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
+									       AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
     }
 
     if(live_lv2_bridge->port_value == NULL){
@@ -1340,8 +1347,8 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
       for(i = 0; port_descriptor != NULL;){
 	if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	    plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle,
-					    i,
+	    plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle[0],
+					    AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
 					    &(live_lv2_bridge->port_value[i]));
 	    i++;
 	  }
@@ -1376,6 +1383,11 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
 			 (GtkWidget *) live_lv2_bridge->program,
 			 FALSE, FALSE,
 			 0);
+
+      if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(live_lv2_bridge)->flags)) != 0){
+	g_signal_connect_after(G_OBJECT(live_lv2_bridge->program), "changed\0",
+			       G_CALLBACK(ags_live_lv2_bridge_program_changed_callback), live_lv2_bridge);
+      }
       
       model = gtk_list_store_new(3,
 				 G_TYPE_STRING,
@@ -1390,7 +1402,7 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
       gtk_list_store_clear(GTK_LIST_STORE(model));
     }
     
-    for(i = 0; (program_descriptor = program_interface->get_program(live_lv2_bridge->lv2_handle, i)) != NULL; i++){
+    for(i = 0; (program_descriptor = program_interface->get_program(live_lv2_bridge->lv2_handle[0], i)) != NULL; i++){
       gtk_list_store_append(model, &iter);
       gtk_list_store_set(model, &iter,
 			 0, program_descriptor->name,
@@ -1411,7 +1423,7 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
 
   GList *list;  
   
-  /* program */
+  /* preset */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) live_lv2_bridge->vbox,
 		     (GtkWidget *) hbox,
@@ -1741,10 +1753,10 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
     k++;
   }
 
+  /* program */
   live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
 							    AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
-
-  /* program */
+  
   if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
     ags_live_lv2_bridge_load_program(live_lv2_bridge);
   }

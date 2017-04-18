@@ -276,7 +276,7 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 #endif
     
     program_interface = lv2_bridge->lv2_descriptor->extension_data(LV2_PROGRAMS__Interface);
-    program_interface->select_program(lv2_bridge->lv2_handle,
+    program_interface->select_program(lv2_bridge->lv2_handle[0],
 				      bank,
 				      program);
 

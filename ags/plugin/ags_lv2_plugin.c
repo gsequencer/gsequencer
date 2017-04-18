@@ -546,6 +546,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   guint conf_buffer_size;
   guint conf_samplerate;
+  double rate;
   guint total_feature;
   guint nth;
 
@@ -556,6 +557,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   feature = NULL;
   config = ags_config_get_instance();
 
+  worker_handle = NULL;
+  
   if(lv2_plugin->feature == NULL){
     /* samplerate */
     str = ags_config_get_value(config,
@@ -597,11 +600,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
       conf_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     }
 
-    /* alloc handle and path */
-    lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
-    path = g_strndup(base_plugin->filename,
-		     rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
-
     /**/
     total_feature = 8;
     nth = 0;
@@ -633,8 +631,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
       feature[nth]->data = worker_schedule;
 
       nth++;
-    }else{
-      worker_handle = NULL;
     }
   
     /* log feature */
@@ -713,13 +709,20 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 	plugin_descriptor = lv2_descriptor(AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
     }
   }
-  
-  /* instantiate */  
-  lv2_handle = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->instantiate(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor),
-										      (double) samplerate,
-										      path,
-										      lv2_plugin->feature);
 
+  /* alloc handle and path */
+  lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
+
+  path = g_strndup(base_plugin->filename,
+		   rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
+  
+  /* instantiate */
+  rate = (double) samplerate;
+  lv2_handle[0] = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->instantiate(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor),
+											 rate,
+											 path,
+											 lv2_plugin->feature);
+  
   if(feature != NULL){
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
@@ -785,10 +788,10 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   if(worker_handle != NULL){
     AGS_LV2_WORKER(worker_handle)->handle = *lv2_handle;
   }
-  
-  free(path);
 
-  return((gpointer) lv2_handle);
+  free(path);
+  
+  return(lv2_handle);
 }
 
 void
@@ -1794,6 +1797,8 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
       current_size = aev->body.size;
       
       success = TRUE;
+
+      break;
     }
     
     size = aev->body.size;
@@ -1808,16 +1813,13 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
 
     memmove(current_aev,
 	    current_aev + ((current_size + 7) & (~7)),
-	    (atom_sequence + sequence_size) - ((void *) current_aev) - ((current_size + 7) & (~7)));
+	    (atom_sequence + sequence_size) - (((void *) current_aev) + ((current_size + 7) & (~7))));
     
     memset(atom_sequence + sequence_size - ((current_size + 7) & (~7)),
 	   0,
 	   ((current_size + 7) & (~7)));
 
-    aseq->atom.size -= ((current_size + 7) & (~7));
-    
-    aev->body.size = 0;  
-    aev->body.type = 0;
+    aseq->atom.size -= ((current_size + 7) & (~7));    
   }
   
   return(success);
@@ -1884,14 +1886,17 @@ ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
 				   guint bank_index,
 				   guint program_index)
 {
+  LV2_Descriptor *plugin_descriptor;
   LV2_Programs_Interface *program_interface;
+
+  plugin_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
   
-  if(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor != NULL &&
-     AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data != NULL &&
-     (program_interface = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor)->extension_data(LV2_PROGRAMS__Interface)) != NULL){
-    program_interface->select_program((void *) lv2_handle,
-				      (unsigned long) bank_index,
-				      (unsigned long) program_index);
+  if(plugin_descriptor != NULL &&
+     plugin_descriptor->extension_data != NULL &&
+     (program_interface = plugin_descriptor->extension_data(LV2_PROGRAMS__Interface)) != NULL){
+    program_interface->select_program(((LV2_Handle *) lv2_handle)[0],
+				      (uint32_t) bank_index,
+				      (uint32_t) program_index);
   }
 }
 

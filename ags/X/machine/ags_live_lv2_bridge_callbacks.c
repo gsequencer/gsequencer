@@ -274,14 +274,14 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 #endif
     
     program_interface = live_lv2_bridge->lv2_descriptor->extension_data(LV2_PROGRAMS__Interface);
-    program_interface->select_program(live_lv2_bridge->lv2_handle,
+    program_interface->select_program(live_lv2_bridge->lv2_handle[0],
 				      bank,
 				      program);
-
     /* update ports */
     audio = AGS_MACHINE(live_lv2_bridge)->audio;
     port_descriptor_start = AGS_BASE_PLUGIN(lv2_plugin)->port;
     
+
     recall = audio->play;
 
     while((recall = ags_recall_find_type(recall, AGS_TYPE_PLAY_LV2_AUDIO)) != NULL){
@@ -311,13 +311,13 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 				  live_lv2_bridge->port_value[i]);
 		ags_port_safe_write_raw(port->data,
 					&value);
-		
+	
 		break;
 	      }
 	
 	      port = port->next;
 	    }
-	      
+	    
 	    i++;
 	  }
 	}
@@ -329,7 +329,7 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
     }
 
     /* update UI */
-    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->table);
+    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->table);
 
     port_descriptor = port_descriptor_start;
   
@@ -354,7 +354,7 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 	      AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
 
 	      child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(bulk_member->data));
-	  	  
+	      
 	      if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 		if(live_lv2_bridge->port_value[i] == 0.0){
 		  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
@@ -378,13 +378,13 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 	
 	      AGS_BULK_MEMBER(bulk_member->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
 
-	      i++;
-
 	      break;
 	    }
 	  
 	    bulk_member = bulk_member->next;
 	  }	
+
+	  i++;
 	}
       }
       

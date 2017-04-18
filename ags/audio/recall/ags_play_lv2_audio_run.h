@@ -88,6 +88,8 @@ struct _AgsPlayLv2AudioRunClass
 
 GType ags_play_lv2_audio_run_get_type();
 
+void ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run);
+
 AgsPlayLv2AudioRun* ags_play_lv2_audio_run_new();
 
 #endif /*__AGS_PLAY_LV2_AUDIO_RUN_H__*/

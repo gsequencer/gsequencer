@@ -27,6 +27,8 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_worker.h>
 
 #include <ags/audio/ags_port.h>
@@ -34,6 +36,8 @@
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_route_lv2_audio_run.h>
+
+#include <lv2.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -345,10 +349,10 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     port = AGS_RECALL(recall_lv2)->port;
     port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
     
-    port_count = g_list_length(port);
-    port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+    port_count = g_list_length(port_descriptor);
+    port_data = (float *) malloc(port_count * sizeof(float));
   
-    for(i = 0; port_descriptor != NULL; ){
+    for(i = 0; i < port_count && port_descriptor != NULL; ){
       specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
       list = port;
 
@@ -380,7 +384,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     /* reset port data */    
     port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
-    for(i = 0; i < port_count;){
+    for(i = 0; i < port_count && port_descriptor != NULL;){
       specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
       list = port;
 
@@ -389,7 +393,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
 	if(!g_strcmp0(specifier,
 		      current->specifier)){
-	  current->port_value.ags_port_ladspa = port_data[i];
+	  current->port_value.ags_port_float = port_data[i];
 	  i++;
 	  
 	  //	  g_message("%s %f\0", current->specifier, port_data[i]);

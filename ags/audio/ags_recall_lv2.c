@@ -27,6 +27,7 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_conversion.h>
 
 #include <ags/file/ags_file.h>
