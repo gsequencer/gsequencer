@@ -674,15 +674,15 @@ $(srcdir)/functional-system-tests.mk.in:  $(srcdir)/functional-system-tests.mk.a
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign functional-system-tests.mk'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu functional-system-tests.mk'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign functional-system-tests.mk
+	  $(AUTOMAKE) --gnu functional-system-tests.mk
 functional-system-tests.mk: $(srcdir)/functional-system-tests.mk.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
