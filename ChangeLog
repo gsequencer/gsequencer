@@ -1,4 +1,4 @@
-ags (0.7.134)
+ags (0.7.135)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented Lv2 program interface
@@ -6,6 +6,12 @@ ags (0.7.134)
 	* implemented AgsLiveDssiBridge and AgsLiveLv2Bridge
 	* fixed non-interleave lv2 audio data processing
 	* support NULL input
+
+ags (0.7.134)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* merge stable
+	* ?
 
 ags (0.7.133)
 
