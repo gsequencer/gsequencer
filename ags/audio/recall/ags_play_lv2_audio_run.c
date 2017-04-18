@@ -836,7 +836,6 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
   play_lv2_audio_run->lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(AGS_BASE_PLUGIN(lv2_plugin),
   									      samplerate);
   
-  g_message("0x%x",play_lv2_audio_run->lv2_handle);
 #ifdef AGS_DEBUG
   g_message("instantiate LV2 handle\0");
 #endif
@@ -951,7 +950,7 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   GObject *soundcard;
 
   guint audio_channel;
-  guint copy_mode_in, copy_mode_out;
+  guint copy_mode_out;
   guint buffer_size;
   uint32_t i;
   
@@ -1096,30 +1095,20 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   ags_audio_buffer_util_clear_buffer(destination->stream_current->data, 1,
 				     buffer_size, ags_audio_buffer_util_format_from_soundcard(destination->format));
 
-  /* get copy mode and clear buffer */
-  copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						     ags_audio_buffer_util_format_from_soundcard(destination->format));
+  if(play_lv2_audio_run->input != NULL){
+    ags_audio_buffer_util_clear_float(play_lv2_audio_run->input, play_lv2_audio->input_lines,
+				      play_lv2_audio->input_lines * buffer_size);
+  }
 
+  /* get copy mode and clear buffer */
   copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination->format),
 						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
   
   if(play_lv2_audio_run->output != NULL){
-    ags_audio_buffer_util_clear_float(play_lv2_audio_run->output, play_lv2_audio->output_lines,
-				      buffer_size);
+    ags_audio_buffer_util_clear_float(play_lv2_audio_run->output, 1,
+				      play_lv2_audio->output_lines * buffer_size);
   }
 
-  if(play_lv2_audio_run->input != NULL){
-    ags_audio_buffer_util_clear_float(play_lv2_audio_run->input, play_lv2_audio->input_lines,
-				      buffer_size);
-  }
-
-  /* copy data  */
-  if(play_lv2_audio_run->input != NULL){
-    ags_audio_buffer_util_copy_buffer_to_buffer(play_lv2_audio_run->input, (guint) play_lv2_audio->input_lines, 0,
-						destination->stream_current->data, 1, 0,
-						(guint) buffer_size, copy_mode_in);
-  }
-  
   /* process data */
   if(play_lv2_audio_run->key_on != 0 &&
      play_lv2_audio_run->lv2_handle != NULL){
@@ -1133,7 +1122,7 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   /* copy data */
   if(play_lv2_audio_run->output != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(destination->stream_current->data, 1, 0,
-						play_lv2_audio_run->output, (guint) play_lv2_audio->output_lines, 0,
+						play_lv2_audio_run->output, (guint) 1, 0,
 						(guint) buffer_size, copy_mode_out);
   }
 
