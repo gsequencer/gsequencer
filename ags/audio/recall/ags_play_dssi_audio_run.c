@@ -1201,7 +1201,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   guint input_pads;
   guint selected_key;
   guint audio_channel;
-  uint32_t i;
+  guint i;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
