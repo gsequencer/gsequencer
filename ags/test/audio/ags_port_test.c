@@ -63,27 +63,104 @@ ags_port_test_safe_read()
 
   GValue *value;
 
-  /* check unsigned int */
+  /*
+   * check boolean
+   */
   port = ags_port_new();
 
   port->port_value_is_pointer = FALSE;
-  port->port_value_type = G_TYPE_UINT;
+  port->port_value_type = G_TYPE_BOOLEAN;
 
-  port->port_value_size = sizeof(guint);
+  port->port_value_size = sizeof(gboolean);
   port->port_value_length = 1;
   
-  port->port_value.ags_port_uint = 0;
+  /* assert false */
+  port->port_value.ags_port_boolean = FALSE;
 
-  /* assert 0 */
   value = g_new0(GValue,
 		 1);
   
   g_value_init(value,
-	       G_TYPE_UINT);
+	       G_TYPE_BOOLEAN);
   ags_port_safe_read(port,
 		     value);
 
-  CU_ASSERT(g_value_get_uint(value) == 0);
+  CU_ASSERT(g_value_get_boolean(value) == FALSE);
+
+  /* assert true */
+  port->port_value.ags_port_boolean = TRUE;
+
+  g_value_reset(value);
+  ags_port_safe_read(port,
+		     value);
+
+  CU_ASSERT(g_value_get_boolean(value) == TRUE);
+
+  /*
+   * check unsigned int 64
+   */
+  port = ags_port_new();
+
+  port->port_value_is_pointer = FALSE;
+  port->port_value_type = G_TYPE_UINT64;
+
+  port->port_value_size = sizeof(guint64);
+  port->port_value_length = 1;
+  
+  /* assert 0 */
+  port->port_value.ags_port_uint = 0;
+
+  value = g_new0(GValue,
+		 1);
+  
+  g_value_init(value,
+	       G_TYPE_UINT64);
+  ags_port_safe_read(port,
+		     value);
+
+  CU_ASSERT(g_value_get_uint64(value) == 0);
+
+  /* assert max unsigned int 64 */
+  port->port_value.ags_port_uint = G_MAXUINT64;
+
+  g_value_reset(value);
+  ags_port_safe_read(port,
+		     value);
+
+  CU_ASSERT(g_value_get_uint64(value) == G_MAXUINT64);
+
+  /*
+   * check double
+   */
+  port = ags_port_new();
+
+  port->port_value_is_pointer = FALSE;
+  port->port_value_type = G_TYPE_DOUBLE;
+
+  port->port_value_size = sizeof(gdouble);
+  port->port_value_length = 1;
+  
+  /* assert 0.0 */
+  port->port_value.ags_port_double = 0.0;
+
+  value = g_new0(GValue,
+		 1);
+  
+  g_value_init(value,
+	       G_TYPE_DOUBLE);
+  ags_port_safe_read(port,
+		     value);
+
+  CU_ASSERT(g_value_get_double(value) == 0.0);
+
+  /* assert 1.0 */
+  port->port_value.ags_port_double = 1.0;
+
+  g_value_reset(value);
+  ags_port_safe_read(port,
+		     value);
+
+  CU_ASSERT(g_value_get_double(value) == 1.0);
 }
 
 void
