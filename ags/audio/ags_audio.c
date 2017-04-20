@@ -2831,14 +2831,16 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       ags_audio_set_audio_channels_grow_notation();
     }
 
-    if(audio->input_pads > 0){
+    if(audio->input_pads > 0 &&
+       (AGS_AUDIO_NO_INPUT & (audio->flags)) == 0){
       ags_audio_set_audio_channels_init_parameters(AGS_TYPE_INPUT);
       ags_audio_set_audio_channels_grow(AGS_TYPE_INPUT);
     }
 
     audio->input_lines = audio_channels * audio->input_pads;
 
-    if(audio->output_pads > 0){
+    if(audio->output_pads > 0 &&
+       (AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
       ags_audio_set_audio_channels_init_parameters(AGS_TYPE_OUTPUT);
       ags_audio_set_audio_channels_grow(AGS_TYPE_OUTPUT);
     }
@@ -3358,55 +3360,59 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}
       }
 
-      /* grow channels */
-      ags_audio_set_pads_grow();
+      if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
+	/* grow channels */
+	ags_audio_set_pads_grow();
+      
+	/* alloc playback domain */
+	playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+	current = audio->output;
 
-      /* alloc playback domain */
-      playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
-      current = audio->output;
+	current = ags_channel_pad_nth(current,
+				      pads_old);
 
-      current = ags_channel_pad_nth(current,
-				    pads_old);
-
-      for(j = pads_old; j < pads; j++){
-	for(i = 0; i < audio->audio_channels; i++){
-	  playback_domain->playback = g_list_append(playback_domain->playback,
-						    current->playback);
+	for(j = pads_old; j < pads; j++){
+	  for(i = 0; i < audio->audio_channels; i++){
+	    playback_domain->playback = g_list_append(playback_domain->playback,
+						      current->playback);
 	
-	  current = current->next;
+	    current = current->next;
+	  }
 	}
       }
     }else if(pads == 0){
       GList *list;
       
-      ags_audio_set_pads_shrink_automation();      
+      if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
+	ags_audio_set_pads_shrink_automation();      
 
-      if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
-	 audio->notation != NULL){
-	ags_audio_set_pads_free_notation();
+	if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
+	   audio->notation != NULL){
+	  ags_audio_set_pads_free_notation();
+	}
+
+	channel = audio->output;
+      
+	/* unlink and remove */
+	ags_audio_set_pads_unlink_all(channel);
+	ags_audio_set_pads_shrink_zero(channel);
+      
+	audio->output = NULL;
+
+	/* remove playback domain */
+	list = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+
+	while(list != NULL){
+	  g_object_run_dispose(list->data);
+
+	  list = list->next;
+	}
+      
+	g_list_free_full(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback,
+			 g_object_unref);
+
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback = NULL;
       }
-
-      channel = audio->output;
-      
-      /* unlink and remove */
-      ags_audio_set_pads_unlink_all(channel);
-      ags_audio_set_pads_shrink_zero(channel);
-      
-      audio->output = NULL;
-
-      /* remove playback domain */
-      list = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-
-      while(list != NULL){
-	g_object_run_dispose(list->data);
-
-	list = list->next;
-      }
-      
-      g_list_free_full(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback,
-		       g_object_unref);
-
-      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback = NULL;
     }else if(pads < audio->output_pads){
       AgsPlaybackDomain *playback_domain;
 
@@ -3414,29 +3420,31 @@ ags_audio_real_set_pads(AgsAudio *audio,
       
       channel = audio->output;
 
-      ags_audio_set_pads_shrink_automation();      
-      ags_audio_set_pads_remove_notes();
+      if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
+	ags_audio_set_pads_shrink_automation();      
+	ags_audio_set_pads_remove_notes();
 
-      channel = ags_channel_pad_nth(channel,
-				    pads);
+	channel = ags_channel_pad_nth(channel,
+				      pads);
       
-      ags_audio_set_pads_unlink_all(channel);
-      ags_audio_set_pads_shrink(channel);
+	ags_audio_set_pads_unlink_all(channel);
+	ags_audio_set_pads_shrink(channel);
 
-      playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+	playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
 
-      for(i = 0; i < audio->output_pads - pads; i++){
-	AgsPlayback *playback;
-	GList *list;
+	for(i = 0; i < audio->output_pads - pads; i++){
+	  AgsPlayback *playback;
+	  GList *list;
 
-	list = g_list_last(playback_domain->playback);
+	  list = g_list_last(playback_domain->playback);
 
-	if(list != NULL){
-	  playback = list->data;
-	  playback_domain->playback = g_list_remove(playback_domain->playback,
-						    playback);
-	  g_object_run_dispose(playback);
-	  g_object_unref(playback);
+	  if(list != NULL){
+	    playback = list->data;
+	    playback_domain->playback = g_list_remove(playback_domain->playback,
+						      playback);
+	    g_object_run_dispose(playback);
+	    g_object_unref(playback);
+	  }
 	}
       }
     }
@@ -3471,25 +3479,29 @@ ags_audio_real_set_pads(AgsAudio *audio,
       }
 
       /* grow channels */
-      ags_audio_set_pads_grow();
+      if((AGS_AUDIO_NO_INPUT & (audio->flags)) == 0){
+	ags_audio_set_pads_grow();
+      }
     }else if(pads < pads_old){
       channel = audio->input;
 	
-      ags_audio_set_pads_shrink_automation();
+      if((AGS_AUDIO_NO_INPUT & (audio->flags)) == 0){
+	ags_audio_set_pads_shrink_automation();
       
-      if(pads == 0){
-	/* shrink channels */
-	ags_audio_set_pads_unlink_all(channel);
-	ags_audio_set_pads_shrink_zero(channel);
+	if(pads == 0){
+	  /* shrink channels */
+	  ags_audio_set_pads_unlink_all(channel);
+	  ags_audio_set_pads_shrink_zero(channel);
 	
-	audio->input = NULL;  
-      }else{
-	channel = ags_channel_pad_nth(channel,
-				      pads);
+	  audio->input = NULL;  
+	}else{
+	  channel = ags_channel_pad_nth(channel,
+					pads);
 	
-	/* shrink channels */
-	ags_audio_set_pads_unlink_all(channel);
-	ags_audio_set_pads_shrink(channel);
+	  /* shrink channels */
+	  ags_audio_set_pads_unlink_all(channel);
+	  ags_audio_set_pads_shrink(channel);
+	}
       }
     }
 

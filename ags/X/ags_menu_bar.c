@@ -22,6 +22,7 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
@@ -197,6 +198,21 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  /* live */
+  menu_bar->live = (GtkMenu *) gtk_menu_new();
+  
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!\0");
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, menu_bar->live);
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Lv2\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
+
   /* edit */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation\0"));
   //  gtk_widget_set_sensitive(item,
@@ -225,8 +241,8 @@ void
 ags_menu_bar_connect(AgsConnectable *connectable)
 {
   AgsMenuBar *menu_bar;
-  GList *list0, *list1, *list2, *list3;
-  GList *list1_start, *list2_start, *list3_start;
+  GList *list0, *list1, *list2, *list3, *list4;
+  GList *list1_start, *list2_start, *list3_start, *list4_start;
 
   menu_bar = AGS_MENU_BAR(connectable);
 
@@ -325,7 +341,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   /* lv2 */
   list3_start = 
     list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
-  //  list2 = list2->next;
+  list2 = list2->next;
   
   while(list3 != NULL){
     g_signal_connect(G_OBJECT(list3->data), "activate\0",
@@ -333,7 +349,40 @@ ags_menu_bar_connect(AgsConnectable *connectable)
     
     list3 = list3->next;
   }
+
+  g_list_free(list3_start);
+
+  /* live! */
+  list3 =
+    list3_start = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
   
+  /* dssi */
+  list4_start = 
+    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
+  list3 = list3->next;
+
+  while(list4 != NULL){
+    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+		     G_CALLBACK(ags_menu_bar_add_live_dssi_bridge_callback), (gpointer) menu_bar);
+
+    list4 = list4->next;
+  }
+  
+  g_list_free(list4_start);
+  
+  /* lv2 */
+  list4_start = 
+    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
+  //  list3 = list3->next;
+  
+  while(list4 != NULL){
+    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+		     G_CALLBACK(ags_menu_bar_add_live_lv2_bridge_callback), (gpointer) menu_bar);
+    
+    list4 = list4->next;
+  }
+
+  g_list_free(list4_start);
   g_list_free(list3_start);
   g_list_free(list2_start);
 
@@ -652,7 +701,6 @@ ags_lv2_bridge_menu_new()
 		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
     g_object_set_data((GObject *) item,
 		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
-    g_message("%s %s\0", AGS_BASE_PLUGIN(list->data)->filename, AGS_BASE_PLUGIN(list->data)->effect);
     
     gtk_menu_shell_append((GtkMenuShell *) menu,
 			  (GtkWidget *) item);
@@ -661,6 +709,76 @@ ags_lv2_bridge_menu_new()
   }
 
   g_list_free(start);
+  
+  return(menu);
+}
+
+GtkMenu*
+ags_live_dssi_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsDssiManager *dssi_manager;
+
+  GList *list, *start;
+  
+  menu = (GtkMenu *) gtk_menu_new();
+
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  start = 
+    list = ags_base_plugin_sort(dssi_manager->dssi_plugin);
+
+  while(list != NULL){
+    item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
+    g_object_set_data((GObject *) item,
+		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
+    g_object_set_data((GObject *) item,
+		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
+    gtk_menu_shell_append((GtkMenuShell *) menu,
+			  (GtkWidget *) item);
+
+    list = list->next;
+  }
+
+  g_list_free(start);
+  
+  return(menu);
+}
+
+GtkMenu*
+ags_live_lv2_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsLv2Manager *lv2_manager;
+
+  GList *list, *start;
+  
+  menu = (GtkMenu *) gtk_menu_new();
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  start = 
+    list = ags_base_plugin_sort(lv2_manager->lv2_plugin);
+
+  while(list != NULL){
+    if((AGS_LV2_PLUGIN_IS_SYNTHESIZER & (AGS_LV2_PLUGIN(list->data)->flags)) != 0){
+      item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
+      g_object_set_data((GObject *) item,
+			AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
+      g_object_set_data((GObject *) item,
+			AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
+      g_message("%s %s\0", AGS_BASE_PLUGIN(list->data)->filename, AGS_BASE_PLUGIN(list->data)->effect);
+    
+      gtk_menu_shell_append((GtkMenuShell *) menu,
+			    (GtkWidget *) item);
+    }
+    
+    list = list->next;
+  }
   
   return(menu);
 }

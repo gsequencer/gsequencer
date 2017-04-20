@@ -23,7 +23,7 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
-#include <X11/Xlib.h>
+//#include <X11/Xlib.h>
 
 #include <libinstpatch/libinstpatch.h>
 

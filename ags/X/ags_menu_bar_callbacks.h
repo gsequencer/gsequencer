@@ -46,6 +46,9 @@ void ags_menu_bar_add_ladspa_bridge_callback(GtkWidget *menu_item, AgsMenuBar *m
 void ags_menu_bar_add_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
+void ags_menu_bar_add_live_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_add_live_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+
 void ags_menu_bar_automation_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 

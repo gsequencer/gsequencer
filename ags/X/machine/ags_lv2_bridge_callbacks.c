@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -233,6 +233,171 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 
     g_list_free(recall);
     channel = channel->next;
+  }
+}
+
+void
+ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2_bridge)
+{
+  GtkTreeIter iter;
+
+  if(gtk_combo_box_get_active_iter(combo_box,
+				   &iter)){
+    AgsChannel *channel;
+
+    AgsLv2Plugin *lv2_plugin;
+    
+    LV2_Programs_Interface *program_interface;
+
+    GList *port_descriptor_start, *port_descriptor;
+    GList *bulk_member, *bulk_member_start;
+    GList *recall;
+    GList *port;
+  
+    gchar *name;
+    gchar *specifier;
+    
+    guint bank, program;
+    guint i;
+
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 lv2_bridge->filename,
+						 lv2_bridge->effect);
+
+    /* get program */
+    gtk_tree_model_get(gtk_combo_box_get_model(combo_box), &iter,
+		       0, &name,
+		       1, &bank,
+		       2, &program,
+		       -1);    
+    
+#ifdef AGS_DEBUG
+    g_message("%d %d\0", bank, program);
+#endif
+    
+    program_interface = lv2_bridge->lv2_descriptor->extension_data(LV2_PROGRAMS__Interface);
+    program_interface->select_program(lv2_bridge->lv2_handle[0],
+				      bank,
+				      program);
+
+    /* update ports */
+    channel = AGS_MACHINE(lv2_bridge)->audio->input;
+    port_descriptor_start = AGS_BASE_PLUGIN(lv2_plugin)->port;
+    
+    while(channel != NULL){
+      recall = channel->recall;
+
+      while((recall = ags_recall_find_type(recall, AGS_TYPE_RECALL_LV2)) != NULL){
+	AGS_RECALL_LV2(recall->data)->bank = (uint32_t) bank;
+	AGS_RECALL_LV2(recall->data)->program = (uint32_t) program;
+
+	port_descriptor = port_descriptor_start;
+      
+	for(i = 0; port_descriptor != NULL;){
+	  if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	    if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	      specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	      port = AGS_RECALL(recall->data)->port;
+
+	      while(port != NULL){
+		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+			      specifier)){
+		  GValue value = {0,};
+
+#ifdef AGS_DEBUG
+		  g_message("%s %f\0", specifier, lv2_bridge->port_value[i]);
+#endif
+		  
+		  g_value_init(&value,
+			       G_TYPE_FLOAT);
+		  g_value_set_float(&value,
+				    lv2_bridge->port_value[i]);
+		  ags_port_safe_write_raw(port->data,
+					  &value);
+		
+		  break;
+		}
+	
+		port = port->next;
+	      }
+	      
+	      i++;
+	    }
+	  }
+
+	  port_descriptor = port_descriptor->next;
+	}
+      
+	recall = recall->next;
+      }
+
+      channel = channel->next;
+    }
+
+    /* update UI */
+    bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
+
+    port_descriptor = port_descriptor_start;
+  
+    for(i = 0; port_descriptor != NULL;){
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  /* find bulk member */
+	  bulk_member = bulk_member_start;
+
+	  specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+
+#ifdef AGS_DEBUG
+	  g_message("%s\0", specifier);
+#endif
+      
+	  while(bulk_member != NULL){
+	    if(AGS_IS_BULK_MEMBER(bulk_member->data) &&
+	       !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier,
+			  specifier)){
+	      GtkWidget *child_widget;
+
+	      AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
+
+	      child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(bulk_member->data));
+	  	  
+	      if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+		if(lv2_bridge->port_value[i] == 0.0){
+		  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+					       FALSE);
+		}else{
+		  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+					       TRUE);
+		}
+	      }else if(AGS_IS_DIAL(child_widget)){
+		gdouble val;
+
+		val = lv2_bridge->port_value[i];
+		
+		AGS_DIAL(child_widget)->adjustment->value = val;
+		ags_dial_draw((AgsDial *) child_widget);
+
+#ifdef AGS_DEBUG
+		g_message(" --- %f\0", lv2_bridge->port_value[i]);
+#endif
+	      }
+	
+	      AGS_BULK_MEMBER(bulk_member->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
+
+	      i++;
+
+	      break;
+	    }
+	  
+	    bulk_member = bulk_member->next;
+	  }	
+	}
+      }
+      
+      port_descriptor = port_descriptor->next;
+    }
+
+    g_list_free(bulk_member_start);
   }
 }
 

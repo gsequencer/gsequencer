@@ -46,6 +46,9 @@ EXTRA_DIST += \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types
 
+EXTRA_DIST += \
+	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
+
 man1_MANS = gsequencer.1 midi2xml.1
 
 CLEANFILES = functional-system-tests.mk
@@ -806,6 +809,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_play_channel.h \
 	ags/audio/recall/ags_play_channel_run.h \
 	ags/audio/recall/ags_play_channel_run_master.h \
+	ags/audio/recall/ags_play_dssi_audio.h \
+	ags/audio/recall/ags_play_dssi_audio_run.h \
+	ags/audio/recall/ags_play_lv2_audio.h \
+	ags/audio/recall/ags_play_lv2_audio_run.h \
 	ags/audio/recall/ags_play_notation_audio.h \
 	ags/audio/recall/ags_play_notation_audio_run.h \
 	ags/audio/recall/ags_play_note.h \
@@ -878,6 +885,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_play_channel.c \
 	ags/audio/recall/ags_play_channel_run.c \
 	ags/audio/recall/ags_play_channel_run_master.c \
+	ags/audio/recall/ags_play_dssi_audio.c \
+	ags/audio/recall/ags_play_dssi_audio_run.c \
+	ags/audio/recall/ags_play_lv2_audio.c \
+	ags/audio/recall/ags_play_lv2_audio_run.c \
 	ags/audio/recall/ags_play_notation_audio.c \
 	ags/audio/recall/ags_play_notation_audio_run.c \
 	ags/audio/recall/ags_play_note.c \
@@ -1398,6 +1409,10 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_ffplayer_input_pad.h \
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
+	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
+	ags/X/machine/ags_live_dssi_bridge.h \
+	ags/X/machine/ags_live_lv2_bridge_callbacks.h \
+	ags/X/machine/ags_live_lv2_bridge.h \
 	ags/X/machine/ags_lv2_bridge_callbacks.h \
 	ags/X/machine/ags_lv2_bridge.h \
 	ags/X/machine/ags_matrix_callbacks.h \
@@ -1454,6 +1469,10 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
+	ags/X/machine/ags_live_dssi_bridge.c \
+	ags/X/machine/ags_live_dssi_bridge_callbacks.c \
+	ags/X/machine/ags_live_lv2_bridge.c \
+	ags/X/machine/ags_live_lv2_bridge_callbacks.c \
 	ags/X/machine/ags_lv2_bridge.c \
 	ags/X/machine/ags_lv2_bridge_callbacks.c \
 	ags/X/machine/ags_matrix.c \

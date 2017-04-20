@@ -427,7 +427,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   if(recall_dssi_run->input != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(recall_dssi_run->input, (guint) recall_dssi->input_lines, 0,
 						audio_signal->stream_current->data, 1, 0,
-						(guint) audio_signal->buffer_size, copy_mode_in);
+						(guint) buffer_size, copy_mode_in);
   }
   
   /* process data */
@@ -458,7 +458,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     
     ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
 						recall_dssi_run->output, (guint) recall_dssi->output_lines, 0,
-						(guint) audio_signal->buffer_size, copy_mode_out);
+						(guint) buffer_size, copy_mode_out);
   }
 }
 

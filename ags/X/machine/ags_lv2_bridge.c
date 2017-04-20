@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -410,6 +410,11 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) lv2_bridge),
 		    (GtkWidget *) lv2_bridge->vbox);
 
+  lv2_bridge->lv2_descriptor = NULL;
+  lv2_bridge->lv2_handle = NULL;
+  lv2_bridge->port_value = NULL;
+  
+  lv2_bridge->program = NULL;
   lv2_bridge->preset = NULL;
   
   /* effect bridge */  
@@ -707,6 +712,12 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_lv2_bridge_show_gui_callback), lv2_bridge);
+
+  /* program */
+  if(lv2_bridge->program != NULL){
+    g_signal_connect_after(G_OBJECT(lv2_bridge->program), "changed\0",
+			   G_CALLBACK(ags_lv2_bridge_program_changed_callback), lv2_bridge);
+  }
 }
 
 void
@@ -1480,6 +1491,118 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
 }
 
 void
+ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
+{
+  AgsLv2Plugin *lv2_plugin;
+    
+  LV2_Descriptor *plugin_descriptor;
+  LV2_Programs_Interface *program_interface;
+
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+					       lv2_bridge->filename,
+					       lv2_bridge->effect);
+  lv2_bridge->lv2_descriptor = 
+    plugin_descriptor = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor);
+
+  if(plugin_descriptor != NULL &&
+     plugin_descriptor->extension_data != NULL &&
+     (program_interface = plugin_descriptor->extension_data(LV2_PROGRAMS__Interface)) != NULL){
+    GtkListStore *model;
+    
+    GtkTreeIter iter;
+    
+    LV2_Program_Descriptor *program_descriptor;
+    
+    uint32_t i;
+
+    if(lv2_bridge->lv2_handle == NULL){
+      lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+							   AGS_MACHINE(lv2_bridge)->audio->samplerate);
+    }
+    
+    if(lv2_bridge->port_value == NULL){
+      GList *port_descriptor;
+      
+      guint port_count;
+
+      port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->port);
+
+      if(port_count > 0){
+	lv2_bridge->port_value = (float *) malloc(port_count * sizeof(float));
+      }
+
+      port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+      
+      for(i = 0; port_descriptor != NULL;){
+	if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	    plugin_descriptor->connect_port(lv2_bridge->lv2_handle[0],
+					    AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
+					    &(lv2_bridge->port_value[i]));
+	    i++;
+	  }
+	}
+
+	port_descriptor = port_descriptor->next;
+      }
+    }
+
+    if(lv2_bridge->program == NULL){
+      GtkHBox *hbox;
+      GtkLabel *label;
+
+      /* program */
+      hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
+			 (GtkWidget *) hbox,
+			 FALSE, FALSE,
+			 0);
+      gtk_box_reorder_child(GTK_BOX(lv2_bridge->vbox),
+			    GTK_WIDGET(hbox),
+			    0);
+  
+      label = (GtkLabel *) gtk_label_new("program\0");
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) label,
+			 FALSE, FALSE,
+			 0);
+
+      lv2_bridge->program = gtk_combo_box_text_new();
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) lv2_bridge->program,
+			 FALSE, FALSE,
+			 0);
+
+      if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+	g_signal_connect_after(G_OBJECT(lv2_bridge->program), "changed\0",
+			       G_CALLBACK(ags_lv2_bridge_program_changed_callback), lv2_bridge);
+      }
+      
+      model = gtk_list_store_new(3,
+				 G_TYPE_STRING,
+				 G_TYPE_ULONG,
+				 G_TYPE_ULONG);
+      
+      gtk_combo_box_set_model(GTK_COMBO_BOX(lv2_bridge->program),
+			      GTK_TREE_MODEL(model));
+    }else{
+      model = gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_bridge->program));
+      
+      gtk_list_store_clear(GTK_LIST_STORE(model));
+    }
+
+    for(i = 0; (program_descriptor = program_interface->get_program(lv2_bridge->lv2_handle[0], i)) != NULL; i++){
+      gtk_list_store_append(model, &iter);
+      gtk_list_store_set(model, &iter,
+			 0, program_descriptor->name,
+			 1, program_descriptor->bank,
+			 2, program_descriptor->program,
+			 -1);
+    }
+  }
+}
+
+void
 ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
 {
   GtkHBox *hbox;
@@ -1489,7 +1612,7 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
 
   GList *list;  
   
-  /* program */
+  /* preset */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) lv2_bridge->vbox,
 		     (GtkWidget *) hbox,
@@ -1597,6 +1720,14 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 	       "uri\0", lv2_plugin->uri,
 	       NULL);
 
+  /* program */
+  lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+						       AGS_MACHINE(lv2_bridge)->audio->samplerate);
+
+  if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
+    ags_lv2_bridge_load_program(lv2_bridge);
+  }
+  
   /* preset */
   if(lv2_plugin->preset != NULL){
     ags_lv2_bridge_load_preset(lv2_bridge);

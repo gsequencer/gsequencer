@@ -30,6 +30,8 @@
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
+#include <ags/X/machine/ags_live_dssi_bridge.h>
+#include <ags/X/machine/ags_live_lv2_bridge.h>
 
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
 void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -167,7 +169,9 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	 AGS_IS_DRUM(list->data) ||
 	 AGS_IS_MATRIX(list->data)  ||
 	 AGS_IS_DSSI_BRIDGE(list->data) ||
-	 (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0)){
+	 (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0) ||
+	 AGS_IS_LIVE_DSSI_BRIDGE(list->data) ||
+	 AGS_IS_LIVE_LV2_BRIDGE(list->data)){
 	radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										      g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
 	g_object_set_data((GObject *) radio_button,

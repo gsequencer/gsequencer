@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -776,6 +776,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   gboolean reset_current;
   guint notation_counter;
+  guint input_pads;
   guint audio_channel;
   guint samplerate;
   guint i;
@@ -876,11 +877,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   current_position = notation->notes; // start_loop
   notation_counter = play_notation_audio_run->count_beats_audio_run->notation_counter;
 
-  //  if(play_notation_audio_run->offset != NULL &&
-  //     notation_counter > AGS_NOTE(play_notation_audio_run->offset->data)->x[0]){
-  //    current_position = play_notation_audio_run->offset;
-  //  }
-  
+  input_pads = audio->input_pads;
+
   pthread_mutex_unlock(audio_mutex);
 
   reset_current = FALSE;
@@ -902,7 +900,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       reset_current = TRUE;
       
       if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-	selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
+	selected_channel = ags_channel_pad_nth(channel, input_pads - note->y - 1);
       }else{
 	selected_channel = ags_channel_pad_nth(channel, note->y);
       }
@@ -1026,15 +1024,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
     pthread_mutex_unlock(audio_mutex);
   }
-
-  pthread_mutex_lock(audio_mutex);
-
-  //  if(reset_current &&
-  //     current_position != NULL){
-  //    play_notation_audio_run->offset = current_position->prev;
-  //  }
-  
-  pthread_mutex_unlock(audio_mutex);
 }
 
 void

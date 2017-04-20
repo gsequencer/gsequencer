@@ -1,3 +1,18 @@
+ags (0.7.135)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented Lv2 program interface
+	* implemented ags-play-dssi and ags-play-lv2 recall
+	* implemented AgsLiveDssiBridge and AgsLiveLv2Bridge
+	* fixed non-interleave lv2 audio data processing
+	* support NULL input
+
+ags (0.7.134)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* merge stable
+	* ?
+
 ags (0.7.133)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -73,6 +88,12 @@ ags (0.7.123)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
+
+ags (0.7.122.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL input
+	* fixed non-interleaved Lv2 audio data
 
 ags (0.7.122.23)
 

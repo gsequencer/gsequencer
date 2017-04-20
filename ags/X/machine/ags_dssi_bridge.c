@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -197,7 +197,7 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("filename\0",
 				    "the object file\0",
@@ -213,7 +213,7 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
    *
    * The effect's name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("effect\0",
 				    "the effect\0",
@@ -229,7 +229,7 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
    *
    * The effect's index.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_uint("index\0",
 				  "index of effect\0",
@@ -1342,6 +1342,7 @@ void
 ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 {
   GtkListStore *model;
+
   GtkTreeIter iter;
 
   AgsDssiPlugin *dssi_plugin;
@@ -1481,7 +1482,7 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
  *
  * Returns: a new #AgsDssiBridge
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsDssiBridge*
 ags_dssi_bridge_new(GObject *soundcard,

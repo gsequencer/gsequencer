@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,7 +79,12 @@ struct _AgsLv2Bridge
   gchar *gui_uri;
 
   GtkVBox *vbox;
+
+  LV2_Descriptor *lv2_descriptor;
+  LV2_Handle *lv2_handle;
+  float *port_value;
   
+  GtkComboBoxText *program;
   GtkComboBoxText *preset;
 
   LV2_Feature **ui_feature;
@@ -101,6 +106,7 @@ GType ags_lv2_bridge_get_type(void);
 void ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_start, guint input_pad_start);
 void ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_start, guint output_pad_start);
 
+void ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge);

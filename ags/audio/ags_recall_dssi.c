@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,7 +170,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
 				  param_spec);
 
   /**
-   * AgsRecallDssi:recycling:
+   * AgsRecallDssi:effect:
    *
    * The effect's name.
    * 
@@ -186,7 +186,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
 				  param_spec);
 
   /**
-   * AgsRecallDssi:recycling:
+   * AgsRecallDssi:index:
    *
    * The effect's index.
    * 
@@ -203,7 +203,6 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
 				  PROP_INDEX,
 				  param_spec);
 }
-
 
 void
 ags_recall_dssi_connectable_interface_init(AgsConnectableInterface *connectable)

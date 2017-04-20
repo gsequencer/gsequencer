@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,6 +58,8 @@
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
+#include <ags/X/machine/ags_live_dssi_bridge.h>
+#include <ags/X/machine/ags_live_lv2_bridge.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
@@ -140,15 +142,10 @@ ags_note_edit_set_pads_callback(AgsAudio *audio,
   AgsWindow *window;
   AgsEditor *editor;
 
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-      return;
-    }
-  }else{
-    if(!g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
-      return;
-    }
+  if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    return;
   }
+
   /*  */
   gdk_threads_enter();
   
@@ -247,6 +244,12 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }else if((AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
+	ags_note_edit_draw_segment(note_edit, cr);
+	ags_note_edit_draw_notation(note_edit, cr);
+      }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
+	ags_note_edit_draw_segment(note_edit, cr);
+	ags_note_edit_draw_notation(note_edit, cr);
+      }else if((AGS_IS_LIVE_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
       }
@@ -374,6 +377,10 @@ ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
       }else if(AGS_IS_DSSI_BRIDGE(machine)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
       }else if((AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
+	ags_note_edit_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
+	ags_note_edit_drawing_area_button_press_event_set_control();
+      }else if((AGS_IS_LIVE_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
       }
     }
@@ -791,6 +798,10 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	ags_note_edit_draw_position(note_edit, cr);
       }else if((AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
 	ags_note_edit_draw_position(note_edit, cr);
+      }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
+	ags_note_edit_draw_position(note_edit, cr);
+      }else if((AGS_IS_LIVE_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
+	ags_note_edit_draw_position(note_edit, cr);
       }
     }else if((AGS_NOTE_EDIT_ADDING_NOTE & (note_edit->flags)) != 0){
       note_edit->flags &= (~AGS_NOTE_EDIT_ADDING_NOTE);
@@ -814,6 +825,10 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	ags_note_edit_drawing_area_button_release_event_set_control();
       }else if((AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
 	ags_note_edit_drawing_area_button_release_event_set_control();
+      }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
+	ags_note_edit_drawing_area_button_release_event_set_control();
+      }else if((AGS_IS_LIVE_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
+	ags_note_edit_drawing_area_button_release_event_set_control();
       }
 
       pthread_mutex_unlock(audio_mutex);
@@ -831,6 +846,10 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       }else if(AGS_IS_DSSI_BRIDGE(machine)){
 	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }else if((AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if((AGS_IS_LIVE_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
 	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }
     }else if((AGS_NOTE_EDIT_DELETING_NOTE & (note_edit->flags)) != 0){
@@ -1101,6 +1120,12 @@ ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
 	ags_note_edit_drawing_area_motion_notify_event_set_control();
 	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
       }else if((AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
+	ags_note_edit_drawing_area_motion_notify_event_set_control();
+	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
+	ags_note_edit_drawing_area_motion_notify_event_set_control();
+	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }else if((AGS_IS_LIVE_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)){
 	ags_note_edit_drawing_area_motion_notify_event_set_control();
 	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
       }
