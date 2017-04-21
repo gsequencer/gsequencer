@@ -1163,6 +1163,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_pad.h \
 	ags/X/ags_performance_preferences_callbacks.h \
 	ags/X/ags_performance_preferences.h \
+	ags/X/ags_playback_window_callbacks.h \
+	ags/X/ags_playback_window.h \
 	ags/X/ags_plugin_browser_callbacks.h \
 	ags/X/ags_plugin_browser.h \
 	ags/X/ags_plugin_preferences_callbacks.h \
@@ -1262,6 +1264,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_pad_editor_callbacks.c \
 	ags/X/ags_performance_preferences.c \
 	ags/X/ags_performance_preferences_callbacks.c \
+	ags/X/ags_playback_window.c \
+	ags/X/ags_playback_window_callbacks.c \
 	ags/X/ags_plugin_browser.c \
 	ags/X/ags_plugin_browser_callbacks.c \
 	ags/X/ags_plugin_preferences.c \

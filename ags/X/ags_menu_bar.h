@@ -47,6 +47,8 @@ struct _AgsMenuBar
   GtkMenu *edit;
   GtkMenu *add;
   GtkMenu *live;
+
+  GtkMenu *midi;
   
   GtkMenu *help;
 };

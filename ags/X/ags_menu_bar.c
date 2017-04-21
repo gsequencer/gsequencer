@@ -148,10 +148,10 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
+  /* Edit */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_EDIT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
-  /* Edit */
   menu_bar->edit = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->edit);
 
@@ -213,18 +213,40 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
 
-  /* edit */
+  /* automation */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation\0"));
   //  gtk_widget_set_sensitive(item,
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
-  /*  */
+  /* preferences */
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
+  
+  /* MIDI */
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("MIDI\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
+
+  menu_bar->midi = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->midi);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("import\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("export track\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("export all\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
+
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi,
+			(GtkWidget*) gtk_separator_menu_item_new());
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("playback\0");
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
 
   /* Help */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, accel_group);
@@ -396,6 +418,9 @@ ags_menu_bar_connect(AgsConnectable *connectable)
                     G_CALLBACK (ags_menu_bar_preferences_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
+
+  /* MIDI */
+  list0 = list0->next;
 
   /* Help */
   list0 = list0->next;

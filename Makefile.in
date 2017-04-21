@@ -628,6 +628,8 @@ am__objects_21 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_pad_editor_callbacks.lo \
 	ags/X/libgsequencer_la-ags_performance_preferences.lo \
 	ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo \
+	ags/X/libgsequencer_la-ags_playback_window.lo \
+	ags/X/libgsequencer_la-ags_playback_window_callbacks.lo \
 	ags/X/libgsequencer_la-ags_plugin_browser.lo \
 	ags/X/libgsequencer_la-ags_plugin_browser_callbacks.lo \
 	ags/X/libgsequencer_la-ags_plugin_preferences.lo \
@@ -2918,6 +2920,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_pad.h \
 	ags/X/ags_performance_preferences_callbacks.h \
 	ags/X/ags_performance_preferences.h \
+	ags/X/ags_playback_window_callbacks.h \
+	ags/X/ags_playback_window.h \
 	ags/X/ags_plugin_browser_callbacks.h \
 	ags/X/ags_plugin_browser.h \
 	ags/X/ags_plugin_preferences_callbacks.h \
@@ -3016,6 +3020,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_pad_editor_callbacks.c \
 	ags/X/ags_performance_preferences.c \
 	ags/X/ags_performance_preferences_callbacks.c \
+	ags/X/ags_playback_window.c \
+	ags/X/ags_playback_window_callbacks.c \
 	ags/X/ags_plugin_browser.c \
 	ags/X/ags_plugin_browser_callbacks.c \
 	ags/X/ags_plugin_preferences.c \
@@ -4588,6 +4594,10 @@ ags/X/libgsequencer_la-ags_performance_preferences.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_playback_window.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_playback_window_callbacks.lo:  \
+	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_plugin_browser.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_plugin_browser_callbacks.lo:  \
@@ -5449,6 +5459,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_pad_editor_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_performance_preferences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_performance_preferences_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_preferences.Plo@am__quote@
@@ -8648,6 +8660,20 @@ ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo: ags/X/ags_perfo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_performance_preferences_callbacks.c' object='ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo `test -f 'ags/X/ags_performance_preferences_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_performance_preferences_callbacks.c
+
+ags/X/libgsequencer_la-ags_playback_window.lo: ags/X/ags_playback_window.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_playback_window.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Tpo -c -o ags/X/libgsequencer_la-ags_playback_window.lo `test -f 'ags/X/ags_playback_window.c' || echo '$(srcdir)/'`ags/X/ags_playback_window.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_playback_window.c' object='ags/X/libgsequencer_la-ags_playback_window.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_playback_window.lo `test -f 'ags/X/ags_playback_window.c' || echo '$(srcdir)/'`ags/X/ags_playback_window.c
+
+ags/X/libgsequencer_la-ags_playback_window_callbacks.lo: ags/X/ags_playback_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_playback_window_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_playback_window_callbacks.lo `test -f 'ags/X/ags_playback_window_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_playback_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_playback_window_callbacks.c' object='ags/X/libgsequencer_la-ags_playback_window_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_playback_window_callbacks.lo `test -f 'ags/X/ags_playback_window_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_playback_window_callbacks.c
 
 ags/X/libgsequencer_la-ags_plugin_browser.lo: ags/X/ags_plugin_browser.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_plugin_browser.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser.Tpo -c -o ags/X/libgsequencer_la-ags_plugin_browser.lo `test -f 'ags/X/ags_plugin_browser.c' || echo '$(srcdir)/'`ags/X/ags_plugin_browser.c
