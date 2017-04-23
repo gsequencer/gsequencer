@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_export_window.h>
+
+#include <ags/X/import/ags_midi_import_wizard.h>
 
 #include <ags/X/file/ags_simple_file.h>
 
@@ -1062,6 +1064,44 @@ ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_applicable_reset(AGS_APPLICABLE(window->preferences));
 
   gtk_widget_show_all(GTK_WIDGET(window->preferences));
+}
+
+void
+ags_menu_bar_midi_import_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+
+  if(window->midi_import_wizard != NULL){
+    return;
+  }
+
+  window->midi_import_wizard = ags_midi_import_wizard_new();
+  g_object_set(window->midi_import_wizard,
+	       "application-context\0", window->application_context,
+	       "main-window\0", window,
+	       NULL);
+
+  ags_connectable_connect(AGS_CONNECTABLE(window->midi_import_wizard));
+  ags_applicable_reset(AGS_APPLICABLE(window->midi_import_wizard));
+
+  gtk_widget_show_all(GTK_WIDGET(window->midi_import_wizard));
+}
+
+void
+ags_menu_bar_midi_export_track_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+}
+
+void
+ags_menu_bar_midi_export_all_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+}
+
+void
+ags_menu_bar_midi_playback_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
 }
 
 void

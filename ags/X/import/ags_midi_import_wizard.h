@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,8 +35,9 @@ typedef struct _AgsMidiImportWizard AgsMidiImportWizard;
 typedef struct _AgsMidiImportWizardClass AgsMidiImportWizardClass;
 
 typedef enum{
-  AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER       = 1,
-  AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION   = 1 << 1,
+  AGS_MIDI_IMPORT_WIZARD_CONNECTED               = 1,
+  AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER       = 1 << 1,
+  AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION   = 1 << 2,
 }AgsMidiImportWizardFlags;
 
 struct _AgsMidiImportWizard
@@ -44,8 +45,10 @@ struct _AgsMidiImportWizard
   GtkDialog dialog;
 
   guint flags;
-  
-  GtkWidget *parent;
+
+  GObject *application_context;
+
+  GtkWidget *main_window;
   
   GtkWidget *file_chooser;
   GtkWidget *track_collection;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,6 +119,8 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   GtkAccelGroup *accel_group;
   
   accel_group = gtk_accel_group_new();
+
+  menu_bar->flags = 0;
   
   /* File */
   item = (GtkImageMenuItem *) gtk_menu_item_new_with_mnemonic("_File\0");
@@ -268,6 +270,12 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   menu_bar = AGS_MENU_BAR(connectable);
 
+  if((AGS_MENU_BAR_CONNECTED & (menu_bar->flags)) != 0){
+    return;
+  }
+
+  menu_bar->flags |= AGS_MENU_BAR_CONNECTED;
+  
   /* File */
   list0 = GTK_MENU_SHELL(menu_bar)->children;
 
@@ -421,7 +429,27 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   /* MIDI */
   list0 = list0->next;
+  list1_start = 
+    list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
+  g_signal_connect(G_OBJECT(list1->data), "activate\0",
+		   G_CALLBACK(ags_menu_bar_midi_import_callback), (gpointer) menu_bar);
+  list1 = list1->next;
+
+  g_signal_connect(G_OBJECT(list1->data), "activate\0",
+		   G_CALLBACK(ags_menu_bar_midi_export_track_callback), (gpointer) menu_bar);
+  list1 = list1->next;
+  
+  g_signal_connect(G_OBJECT(list1->data), "activate\0",
+		   G_CALLBACK(ags_menu_bar_midi_export_all_callback), (gpointer) menu_bar);
+  list1 = list1->next;
+  list1 = list1->next;
+
+  g_signal_connect(G_OBJECT(list1->data), "activate\0",
+		   G_CALLBACK(ags_menu_bar_midi_playback_callback), (gpointer) menu_bar);
+  
+  g_list_free(list1_start);
+  
   /* Help */
   list0 = list0->next;
   list1_start = 
@@ -436,6 +464,16 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 void
 ags_menu_bar_disconnect(AgsConnectable *connectable)
 {
+  AgsMenuBar *menu_bar;
+  
+  menu_bar = AGS_MENU_BAR(connectable);
+
+  if((AGS_MENU_BAR_CONNECTED & (menu_bar->flags)) == 0){
+    return;
+  }
+
+  menu_bar->flags &= (~AGS_MENU_BAR_CONNECTED);
+
   /* empty */
 }
 

@@ -23,6 +23,8 @@
 
 #include <ags/audio/midi/ags_midi_parser.h>
 
+#include <ags/X/ags_window.h>
+
 #include <ags/X/import/ags_track_collection.h>
 
 #include <libxml/tree.h>
@@ -83,9 +85,12 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
     {
       ags_applicable_apply(AGS_APPLICABLE(wizard));
     }
+  case GTK_RESPONSE_DELETE_EVENT:
+  case GTK_RESPONSE_CLOSE:
   case GTK_RESPONSE_CANCEL:
     {
-      gtk_widget_hide(wizard);
+      AGS_WINDOW(midi_import_wizard->main_window)->midi_import_wizard = NULL;
+      gtk_widget_destroy(wizard);
     }
     break;
   default:

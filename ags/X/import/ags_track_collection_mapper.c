@@ -436,7 +436,7 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   
   midi_import_wizard = (AgsMidiImportWizard *) gtk_widget_get_ancestor((GtkWidget *) track_collection_mapper,
 								       AGS_TYPE_MIDI_IMPORT_WIZARD);
-  window = (AgsWindow *) midi_import_wizard->parent;
+  window = (AgsWindow *) midi_import_wizard->main_window;
 
   application_context = (AgsApplicationContext *) window->application_context;
   

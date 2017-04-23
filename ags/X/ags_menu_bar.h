@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,10 +38,16 @@
 typedef struct _AgsMenuBar AgsMenuBar;
 typedef struct _AgsMenuBarClass AgsMenuBarClass;
 
+typedef enum{
+  AGS_MENU_BAR_CONNECTED        = 1,
+};
+
 struct _AgsMenuBar
 {
   GtkMenuBar menu_bar;
 
+  guint flags;
+  
   GtkMenu *file;
 
   GtkMenu *edit;

@@ -83,7 +83,7 @@ struct _AgsWindow
   AgsAutomationWindow *automation_window;
 
   AgsExportWindow *export_window;
-  GtkWidget *import_window;
+  GtkWidget *midi_import_wizard;
 
   AgsPreferences *preferences;
   AgsHistoryBrowser *history_browser;

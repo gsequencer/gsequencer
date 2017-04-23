@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_midi_import_wizard_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
@@ -35,6 +36,14 @@ void ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wiz
 void ags_midi_import_wizard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_midi_import_wizard_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard);
+void ags_midi_import_wizard_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+void ags_midi_import_wizard_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
 void ags_midi_import_wizard_connect(AgsConnectable *connectable);
 void ags_midi_import_wizard_disconnect(AgsConnectable *connectable);
 void ags_midi_import_wizard_set_update(AgsApplicable *applicable, gboolean update);
@@ -54,6 +63,12 @@ void ags_midi_import_wizard_show(GtkWidget *widget);
  */
 
 static gpointer ags_midi_import_wizard_parent_class = NULL;
+
+enum{
+  PROP_0,
+  PROP_APPLICATION_CONTEXT,
+  PROP_MAIN_WINDOW,
+};
 
 GType
 ags_midi_import_wizard_get_type(void)
@@ -116,6 +131,43 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) midi_import_wizard;
 
+  gobject->set_property = ags_midi_import_wizard_set_property;
+  gobject->get_property = ags_midi_import_wizard_get_property;
+
+  /* properties */
+  /**
+   * AgsMidiImportWizard:application-context:
+   *
+   * The assigned #AgsApplicationContext to give control of application.
+   * 
+   * Since: 0.8.0
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "assigned application context\0",
+				   "The AgsApplicationContext it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsMidiImportWizard:main-window:
+   *
+   * The assigned #AgsWindow.
+   * 
+   * Since: 0.8.0
+   */
+  param_spec = g_param_spec_object("main-window\0",
+				   "assigned main window\0",
+				   "The assigned main window\0",
+				   AGS_TYPE_WINDOW,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAIN_WINDOW,
+				  param_spec);
+
+  /* GtkWidget */
   widget->delete_event = ags_midi_import_wizard_delete_event;
   widget->show = ags_midi_import_wizard_show;
 }
@@ -143,6 +195,10 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   GtkAlignment *alignment;
 
   midi_import_wizard->flags = AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
+
+  midi_import_wizard->application_context = NULL;
+
+  midi_import_wizard->main_window = NULL;
   
   alignment = g_object_new(GTK_TYPE_ALIGNMENT,
 			   NULL);
@@ -169,7 +225,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 
   midi_import_wizard->track_collection = (GtkWidget *) ags_track_collection_new(AGS_TYPE_TRACK_COLLECTION_MAPPER,
 										0,
-								  NULL);
+										NULL);
   gtk_container_add((GtkContainer *) alignment,
 		    midi_import_wizard->track_collection);
   
@@ -182,12 +238,104 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 }
 
 void
+ags_midi_import_wizard_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec)
+{
+  AgsMidiImportWizard *midi_import_wizard;
+
+  midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if((AgsApplicationContext *) midi_import_wizard->application_context == application_context){
+	return;
+      }
+      
+      if(midi_import_wizard->application_context != NULL){
+	g_object_unref(midi_import_wizard->application_context);
+      }
+
+      if(application_context != NULL){
+	g_object_ref(application_context);
+      }
+
+      midi_import_wizard->application_context = (GObject *) application_context;
+    }
+    break;
+  case PROP_MAIN_WINDOW:
+    {
+      AgsWindow *main_window;
+
+      main_window = (AgsWindow *) g_value_get_object(value);
+
+      if((AgsWindow *) midi_import_wizard->main_window == main_window){
+	return;
+      }
+
+      if(midi_import_wizard->main_window != NULL){
+	g_object_unref(midi_import_wizard->main_window);
+      }
+
+      if(main_window != NULL){
+	g_object_ref(main_window);
+      }
+
+      midi_import_wizard->main_window = (GObject *) main_window;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_midi_import_wizard_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec)
+{
+  AgsMidiImportWizard *midi_import_wizard;
+
+  midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, midi_import_wizard->application_context);
+    }
+    break;
+  case PROP_MAIN_WINDOW:
+    {
+      g_value_set_object(value, midi_import_wizard->main_window);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_midi_import_wizard_connect(AgsConnectable *connectable)
 {
   AgsMidiImportWizard *midi_import_wizard;
 
   midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
 
+  if((AGS_MIDI_IMPORT_WIZARD_CONNECTED & (midi_import_wizard->flags)) != 0){
+    return;
+  }
+
+  midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_CONNECTED;
+  
   g_signal_connect(midi_import_wizard, "response\0",
 		   G_CALLBACK(ags_midi_import_wizard_response_callback), NULL);
 
@@ -200,6 +348,12 @@ ags_midi_import_wizard_disconnect(AgsConnectable *connectable)
   AgsMidiImportWizard *midi_import_wizard;
 
   midi_import_wizard = AGS_MIDI_IMPORT_WIZARD(connectable);
+
+  if((AGS_MIDI_IMPORT_WIZARD_CONNECTED & (midi_import_wizard->flags)) == 0){
+    return;
+  }
+
+  midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(midi_import_wizard->track_collection));
 }
@@ -269,7 +423,7 @@ ags_midi_import_wizard_show(GtkWidget *widget)
  *
  * Returns: a new #AgsMidiImportWizard
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsMidiImportWizard*
 ags_midi_import_wizard_new()
