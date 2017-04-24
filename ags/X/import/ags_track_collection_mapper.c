@@ -153,7 +153,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The tracks as xmlNode to parse.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("track\0",
 				    "assigned track\0",
@@ -168,7 +168,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The instruments as xmlNode to parse.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_string("instrument\0",
 				   "assigned instrument\0",
@@ -184,7 +184,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The sequences as xmlNode to parse.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_string("sequence\0",
 				   "assigned sequence\0",
@@ -379,13 +379,19 @@ ags_track_collection_mapper_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_TRACK:
-    g_value_set_pointer(value, g_list_copy(track_collection_mapper->track));
+    {
+      g_value_set_pointer(value, g_list_copy(track_collection_mapper->track));
+    }
     break;
   case PROP_INSTRUMENT:
-    g_value_set_string(value, track_collection_mapper->instrument);
+    {
+      g_value_set_string(value, track_collection_mapper->instrument);
+    }
     break;
   case PROP_SEQUENCE:
-    g_value_set_string(value, track_collection_mapper->sequence);
+    {
+      g_value_set_string(value, track_collection_mapper->sequence);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -447,22 +453,29 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   /* create machine */
   machine_type = gtk_combo_box_text_get_active_text(track_collection_mapper->machine_type);
   
-  if(g_ascii_strcasecmp(machine_type,
-			g_type_name(AGS_TYPE_DRUM))){
+  if(!g_ascii_strcasecmp(machine_type,
+			 g_type_name(AGS_TYPE_DRUM))){
     machine = (AgsMachine *) ags_drum_new(window->soundcard);
-  }else if(g_ascii_strcasecmp(machine_type,
-			      g_type_name(AGS_TYPE_MATRIX))){
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_MATRIX))){
     machine = (AgsMachine *) ags_matrix_new(window->soundcard);
-  }else if(g_ascii_strcasecmp(machine_type,
-			      g_type_name(AGS_TYPE_FFPLAYER))){
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_FFPLAYER))){
     machine = (AgsMachine *) ags_ffplayer_new(window->soundcard);
-  }else if(g_ascii_strcasecmp(machine_type,
-			      g_type_name(AGS_TYPE_SYNTH))){
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_SYNTH))){
     machine = (AgsMachine *) ags_synth_new(window->soundcard);
   }else{
     g_warning("unknown machine type\0");
   }
 
+  ags_audio_set_audio_channels(machine->audio,
+			       gtk_spin_button_get_value_as_int(track_collection_mapper->audio_channels));
+  ags_audio_set_pads(machine->audio,
+		     AGS_TYPE_OUTPUT, 1);
+  ags_audio_set_pads(machine->audio,
+		     AGS_TYPE_INPUT, 128);
+  
   add_audio = ags_add_audio_new(window->soundcard,
 				machine->audio);
   ags_task_thread_append_task(task_thread,
@@ -497,7 +510,7 @@ ags_track_collection_mapper_reset(AgsApplicable *applicable)
  *
  * Returns: the next matching #GList
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
@@ -528,7 +541,7 @@ ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collectio
  *
  * Maps XML tracks to #AgsNotation
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper)
@@ -611,7 +624,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    notation = notation->next;
 	  }
 
-	  g_object_unref(note);
+	  //	  g_object_unref(note);
 	  n_key_on++;
 	}else if(!xmlStrncmp(xmlGetProp(child,
 					"event\0"),
@@ -682,7 +695,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
  *
  * Returns: a new #AgsTrackCollectionMapper
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsTrackCollectionMapper*
 ags_track_collection_mapper_new()

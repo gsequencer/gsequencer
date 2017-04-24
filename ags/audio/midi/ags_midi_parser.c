@@ -115,6 +115,8 @@ enum{
 static gpointer ags_midi_parser_parent_class = NULL;
 static guint midi_parser_signals[LAST_SIGNAL];
 
+#define AGS_DEBUG  1
+
 GType
 ags_midi_parser_get_type(void)
 {
@@ -715,6 +717,7 @@ ags_midi_parser_init(AgsMidiParser *midi_parser)
   midi_parser->offset = 0;
 
   midi_parser->current_time = 0;
+  midi_parser->current_status = 0x0;
 
   midi_parser->doc = NULL;
 }
@@ -732,7 +735,17 @@ ags_midi_parser_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE:
     {
+      struct stat sb;
+      
       midi_parser->file = g_value_get_pointer(value);
+
+      fstat(fileno(midi_parser->file), &sb);
+      
+      midi_parser->file_length = sb.st_size;
+
+      midi_parser->buffer = (unsigned char *) malloc(midi_parser->file_length * sizeof(unsigned char));
+
+      fread(midi_parser->buffer, sizeof(unsigned char), midi_parser->file_length, midi_parser->file);
     }
     break;
   default:
@@ -866,21 +879,22 @@ ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
 {
   long value;
   guint i;
-  char c;
-  
+  unsigned char c;
+
   c = ags_midi_parser_midi_getc(midi_parser);
   value = c;
   i = 1;
   
-  if(c & 0x80){
+  if(0x80 & c){
     value &= 0x7F;
    
     do{
-      value = (value << 7) + ((c = ags_midi_parser_midi_getc(midi_parser)) & 0x7F);
+      c = ags_midi_parser_midi_getc(midi_parser);
+      value = (value << 7) + (0x7F & (c));
       i++;
-    }while(c & 0x80);
+    }while(0x80 & c);
   }
-  
+
   return(value);
 }
 
@@ -902,12 +916,15 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
   gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH + 1];
   gchar c;
   guint i;
-
+  
   memset(text, 0, AGS_MIDI_PARSER_MAX_TEXT_LENGTH * sizeof(char));
   i = 0;
   
   while((length <= 0 ||
-	 i < length) && (c = (char) 0xff & (ags_midi_parser_midi_getc(midi_parser))) != EOF){
+	 i < length) &&
+	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0){
+    (c = (char) 0xff & (ags_midi_parser_midi_getc(midi_parser)));
+    
     if(c == '\0' || !(g_ascii_isalnum(c) ||
 		      g_ascii_ispunct(c) ||
 		      c == ' ')){
@@ -967,13 +984,15 @@ ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser)
   if(midi_parser->file == NULL){
     return(-1);
   }
-
-  c = fgetc(midi_parser->file);
   
-  if(c == EOF){
-    g_warning("reached end of file\0");
+  if(midi_parser->offset >= midi_parser->file_length){
     midi_parser->flags |= AGS_MIDI_PARSER_EOF;
+
+    return(-1);
   }
+
+  c = (int) midi_parser->buffer[midi_parser->offset];
+  midi_parser->offset += 1;
 
   return(c);
 }
@@ -1230,7 +1249,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 
   static gchar track[] = "MTrk";
 
-  gint offset, start_offset;
+  gint offset;
   long delta_time;
   guint status;
   guint n;
@@ -1261,39 +1280,39 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
   g_message("n = %d\noffset = %d\0", n, offset);
 #endif
   
-  start_offset = ftell(midi_parser->file);
-
   if(offset < 0){
     return(NULL);
   }
 
   midi_parser->current_time = 0;
   
-  for(; ftell(midi_parser->file) < start_offset + offset; ){
+  for(; midi_parser->offset < midi_parser->file_length; ){
     delta_time = ags_midi_parser_read_varlength(midi_parser);
-    midi_parser->current_time += delta_time;
+    midi_parser->current_time += (guint) delta_time;
     
     status = ags_midi_parser_midi_getc(midi_parser);
     
-    if((0xf0 & (0xf0 & status)) != 0xf0){
+    if((0xf0 & status) != 0xf0){
       current = ags_midi_parser_channel_message(midi_parser,
 						status);
 
       if(current != NULL){
 	xmlNewProp(current,
 		   "delta-time\0",
-		   g_strdup_printf("%d\0", midi_parser->current_time));
+		   g_strdup_printf("%u\0", midi_parser->current_time));
 	
 	xmlAddChild(node,
 		    current);
+      }else{
+	g_message("unknown channel message 0x%x\0", status);
       }
       
 #ifdef AGS_DEBUG
-      g_message("channel message");
+      g_message("channel message\0");
 #endif
     }else{
 #ifdef AGS_DEBUG
-      g_message("status message");
+      g_message("status message\0");
 #endif
       
       switch(status){
@@ -1304,6 +1323,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 				status);
 
 	}
+	break;
       case 0xf1:
       case 0xf2:
       case 0xf3:
@@ -1330,18 +1350,28 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 					       status);
 
 	  if(current != NULL){
+	    xmlChar *str;
+	    
 	    xmlNewProp(current,
 		       "delta-time\0",
 		       g_strdup_printf("%d\0", midi_parser->current_time));
 	    
 	    xmlAddChild(node,
 			current);
+
+	    str = xmlGetProp(current,
+			     AGS_MIDI_EVENT);
+	    
+	    if(str != NULL &&
+	       !g_ascii_strcasecmp(str,
+				   "end-of-track\0")){
+	      return(node);
+	    }
 	  }
 	}
 	break;
       default:
 	g_warning("bad byte\0");
-	break;
       }
     }
   }
@@ -1391,43 +1421,76 @@ ags_midi_parser_channel_message(AgsMidiParser *midi_parser, guint status)
   xmlNode *node;
 
   node = NULL;
+
+#ifdef AGS_DEBUG
+  g_message("channel message\0");
+#endif
+
+ ags_midi_parser_channel_message_CHECK:
   
   switch(status & 0xf0){
   case 0x80:
     {
       node = ags_midi_parser_key_off(midi_parser, status);
+
+      midi_parser->current_status = status;
     }
     break;
   case 0x90:
     {
       node = ags_midi_parser_key_on(midi_parser, status);
+
+      midi_parser->current_status = status;
     }
     break;
   case 0xa0:
     {
       node = ags_midi_parser_key_pressure(midi_parser, status);
+
+      midi_parser->current_status = status;
     }
     break;
   case 0xb0:
     {
       node = ags_midi_parser_change_parameter(midi_parser, status);
+
+      midi_parser->current_status = status;
     }
     break;
   case 0xc0:
     {
       node = ags_midi_parser_change_program(midi_parser, status);
+
+      midi_parser->current_status = status;
     }
     break;
   case 0xd0:
     {
       node = ags_midi_parser_change_channel_pressure(midi_parser, status);
+
+      midi_parser->current_status = status;
     }
     break;
   case 0xe0:
     {
       node = ags_midi_parser_change_pitch_bend(midi_parser, status);
+
+      midi_parser->current_status = status;
     }
     break;
+  default:
+    {
+      if(midi_parser->current_status != 0x0){
+#ifdef AGS_DEBUG
+	g_message("repeat status=0x%x\0", midi_parser->current_status);
+#endif
+
+	midi_parser->offset -= 1;
+	status = midi_parser->current_status;
+	
+	goto ags_midi_parser_channel_message_CHECK;
+      }
+    }
   }
 
   return(node);
@@ -1438,6 +1501,10 @@ ags_midi_parser_real_key_on(AgsMidiParser *midi_parser, guint status)
 {
   xmlNode *node;
   int channel, note, velocity;
+
+#ifdef AGS_DEBUG
+  g_message("key on\0");
+#endif
 
   channel = 0xf & status;
   note = (0x7f) & ags_midi_parser_midi_getc(midi_parser);
@@ -1498,6 +1565,10 @@ ags_midi_parser_real_key_off(AgsMidiParser *midi_parser, guint status)
 {
   xmlNode *node;
   int channel, note, velocity;
+
+#ifdef AGS_DEBUG
+  g_message("key off\0");
+#endif
 
   channel = 0xf & status;
   note = (0x7f) & ags_midi_parser_midi_getc(midi_parser);
@@ -1560,6 +1631,10 @@ ags_midi_parser_real_key_pressure(AgsMidiParser *midi_parser, guint status)
   xmlNode *node;
   int channel, note, pressure;
 
+#ifdef AGS_DEBUG
+  g_message("key pressure\0");
+#endif
+
   channel = 0xf & status;
   note = 0x7f & ags_midi_parser_midi_getc(midi_parser);
   pressure = 0x7f & ags_midi_parser_midi_getc(midi_parser);
@@ -1619,6 +1694,10 @@ ags_midi_parser_real_change_parameter(AgsMidiParser *midi_parser, guint status)
 {
   xmlNode *node;
   int channel, control, value;
+
+#ifdef AGS_DEBUG
+  g_message("change parameter\0");
+#endif
 
   channel = 0xf & status;
   control = 0x7f & ags_midi_parser_midi_getc(midi_parser);
@@ -1763,6 +1842,10 @@ ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
   xmlNode *node;
   int channel, pitch, transmitter;
 
+#ifdef AGS_DEBUG
+  g_message("change pitch bend\0");
+#endif
+
   channel = 0xf & status;
   pitch = 0x7f & ags_midi_parser_midi_getc(midi_parser);
   transmitter = 0x7f & ags_midi_parser_midi_getc(midi_parser);
@@ -1823,6 +1906,10 @@ ags_midi_parser_real_change_program(AgsMidiParser *midi_parser, guint status)
   xmlNode *node;
   int channel, program;
 
+#ifdef AGS_DEBUG
+  g_message("change program\0");
+#endif
+
   channel = 0xf & status;
   program = 0x7f & ags_midi_parser_midi_getc(midi_parser);
   
@@ -1877,6 +1964,10 @@ ags_midi_parser_real_change_channel_pressure(AgsMidiParser *midi_parser, guint s
 {
   xmlNode *node;
   int channel, pressure;
+  
+#ifdef AGS_DEBUG
+  g_message("change channel pressure\0");
+#endif
 
   channel = 0xf & status;
   pressure = 0x7f & ags_midi_parser_midi_getc(midi_parser);
@@ -1931,6 +2022,10 @@ ags_midi_parser_change_channel_pressure(AgsMidiParser *midi_parser, guint status
 xmlNode*  
 ags_midi_parser_real_not_defined(AgsMidiParser *midi_parser, guint status)
 {
+#ifdef AGS_DEBUG
+  g_message("not defined\0");
+#endif
+
   return(NULL);
 }
 
@@ -1969,9 +2064,9 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
   gchar c;
   
   while((c = ags_midi_parser_midi_getc(midi_parser)) != 0xf7 &&
-	c != EOF);
+	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0);
 
-#ifdef DEBUG
+#ifdef AGS_DEBUG
   g_message("discarded sysex\0");
 #endif
 }
@@ -2011,7 +2106,11 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
   int c;
 
   node = NULL;
-  
+
+#ifdef AGS_DEBUG
+  g_message("system common\0");
+#endif
+
   switch(status){
   case 0xf1:
     {
@@ -2055,21 +2154,21 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
     break;
   case 0xf4:
     {
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("undefined\0");
 #endif
     }
     break;
   case 0xf5:
     {
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("undefined\0");
 #endif
     }
     break;
   case 0xf6:
     {
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("tune request\0");
 #endif
     }
@@ -2114,6 +2213,10 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
   char chunk_meta_length[4];
   guint meta_type;
   
+#ifdef AGS_DEBUG
+  g_message("meta event\0");
+#endif
+
   meta_type = 0xff & (ags_midi_parser_midi_getc(midi_parser));
   midi_parser->offset += 1;
 
@@ -2155,57 +2258,62 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
     {
       int c;
 
-      c = ags_midi_parser_midi_getc(midi_parser);
+      /* End of Track */
+      node = ags_midi_parser_end_of_track(midi_parser, meta_type);
 
-      if(c == 0x0){
-	/* End of Track */
-	node = ags_midi_parser_end_of_track(midi_parser, meta_type);
-      }
+      //      c = ags_midi_parser_midi_getc(midi_parser);
+
+      //      if(c == 0x0){
+      //      }
     }
     break;
   case 0x51:
     {
       int c;
 
-      c = ags_midi_parser_midi_getc(midi_parser);
+      //      c = ags_midi_parser_midi_getc(midi_parser);
 
-      if(c == 0x03){
-	/* Set tempo */
-	node = ags_midi_parser_tempo(midi_parser, meta_type);
-      }
+      /* Set tempo */
+      node = ags_midi_parser_tempo(midi_parser, meta_type);
+
+      //      if(c == 0x03){
+      //      }
     }
     break;
   case 0x54:
     {
       int c;
 
-      c = ags_midi_parser_midi_getc(midi_parser);
+      //      c = ags_midi_parser_midi_getc(midi_parser);
 
-      if(c == 0x05){
-	node = ags_midi_parser_smtpe(midi_parser, meta_type);
-      }
+      node = ags_midi_parser_smtpe(midi_parser, meta_type);
+
+      //      if(c == 0x05){
+      //      }
     }
     break;
   case 0x58:
     {
       int c;
 
-      c = ags_midi_parser_midi_getc(midi_parser);
+      //      c = ags_midi_parser_midi_getc(midi_parser);
       
-      if(c == 0x04){
-	node = ags_midi_parser_time_signature(midi_parser, meta_type);
-      }
+      node = ags_midi_parser_time_signature(midi_parser, meta_type);
+      
+      //      if(c == 0x04){
+      //      }
     }
     break;
   case 0x59:
     {
       int c;
 
-      c = ags_midi_parser_midi_getc(midi_parser);
+      //      c = ags_midi_parser_midi_getc(midi_parser);
 
-      if(c == 0x02){
-	node = ags_midi_parser_key_signature(midi_parser, meta_type);
-      }
+      node = ags_midi_parser_key_signature(midi_parser, meta_type);
+
+      //      if(c == 0x02){
+      //      }
     }
     break;
   case 0x7f:
@@ -2215,6 +2323,8 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
     break;
   default:
     {
+      midi_parser->offset += 5;
+      
       node = xmlNewNode(NULL,
 			"midi-message\0");
       xmlNewProp(node,
@@ -2264,6 +2374,10 @@ ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type
   xmlNode *node;
   guint sequence;
   
+#ifdef AGS_DEBUG
+  g_message("sequence number\0");
+#endif
+
   node = xmlNewNode(NULL,
 		    "midi-message\0");
 
@@ -2313,6 +2427,10 @@ ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
 
+#ifdef AGS_DEBUG
+  g_message("EOT\0");
+#endif
+
   node = xmlNewNode(NULL,
 		    "midi-message\0");
 
@@ -2356,6 +2474,10 @@ ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   int rr, hr, mn, se, fr, ff;
+
+#ifdef AGS_DEBUG
+  g_message("SMTPE\0");
+#endif
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
@@ -2366,10 +2488,10 @@ ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
   rr = (0x60 & rr) >> 5;
   hr = (0x1f & hr);
   
-  mn = ags_midi_parser_midi_getc(midi_parser);
-  se = ags_midi_parser_midi_getc(midi_parser);
-  fr = ags_midi_parser_midi_getc(midi_parser);
-  ff = ags_midi_parser_midi_getc(midi_parser);
+  mn = 0xff & ags_midi_parser_midi_getc(midi_parser);
+  se = 0xff & ags_midi_parser_midi_getc(midi_parser);
+  fr = 0xff & ags_midi_parser_midi_getc(midi_parser);
+  ff = 0xff & ags_midi_parser_midi_getc(midi_parser);
   
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
@@ -2419,6 +2541,10 @@ ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   gint tempo;
+
+#ifdef AGS_DEBUG
+  g_message("tempo\0");
+#endif
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
@@ -2470,17 +2596,22 @@ ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type)
   xmlNode *node;
   int nn, dd, cc, bb;
   int denom = 1;
+
+#ifdef AGS_DEBUG
+  g_message("time signature\0");
+#endif
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
 
-  nn = ags_midi_parser_midi_getc(midi_parser);
-  dd = ags_midi_parser_midi_getc(midi_parser);
-  cc = ags_midi_parser_midi_getc(midi_parser);
-  bb = ags_midi_parser_midi_getc(midi_parser);
+  nn = 0xff & ags_midi_parser_midi_getc(midi_parser);
+  dd = 0xff & ags_midi_parser_midi_getc(midi_parser);
+  cc = 0xff & ags_midi_parser_midi_getc(midi_parser);
+  bb = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
-  while(dd-- > 0){
+  while(dd > 0){
     denom *= 2;
+    dd--;
   }
 
   xmlNewProp(node,
@@ -2527,6 +2658,10 @@ ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   int sf, mi;
+
+#ifdef AGS_DEBUG
+  g_message("key signature\0");
+#endif
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
@@ -2579,6 +2714,10 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
   xmlNode *node;
   guint len, id, data;
 
+#ifdef AGS_DEBUG
+  g_message("sequencer meta event\0");
+#endif
+
   node = xmlNewNode(NULL,
 		    "midi-meta-event\0");
 
@@ -2624,6 +2763,10 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
   xmlNode *node;
   gchar *text;
   guint text_length;
+
+#ifdef AGS_DEBUG
+  g_message("text event\0");
+#endif
 
   node = xmlNewNode(NULL,
 		    "midi-message\0");

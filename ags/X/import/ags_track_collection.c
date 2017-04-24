@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -450,6 +450,15 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  }
 	}
 
+	if(instrument == NULL){
+	  instrument = g_strdup("GSequencer - instrument default\0");
+	}
+	
+	if(sequence == NULL){
+	  sequence = g_strdup("GSequencer - sequence default\0");
+	}
+
+	
 	list = gtk_container_get_children((GtkContainer *) track_collection->child);
 	track_collection_mapper = ags_track_collection_mapper_find_instrument_with_sequence(list,
 											    instrument, sequence);
@@ -459,8 +468,6 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 					  node[i],
 					  instrument, sequence);
 	}else{
-	  g_message("%s\0", instrument);
-	  g_message("%s\0", sequence);
 	  g_object_set(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data),
 		       "track\0", node[i],
 		       NULL);
@@ -494,12 +501,13 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
-  if(track == NULL ||
-     instrument == NULL ||
-     sequence == NULL){
+  if(track == NULL){
     return;
   }
-  
+
+  g_message("%s\0", instrument);
+  g_message("%s\0", sequence);
+
   track_collection_mapper = (AgsTrackCollectionMapper *) g_object_newv(track_collection->child_type,
 								       track_collection->child_parameter_count,
 								       track_collection->child_parameter);
