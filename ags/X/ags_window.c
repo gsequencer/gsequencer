@@ -225,7 +225,10 @@ ags_window_init(AgsWindow *window)
   window->export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
 							   "main-window\0", window,
 							   NULL);
+
   window->midi_import_wizard = NULL;
+  window->midi_export_wizard = NULL;
+  window->midi_file_chooser = NULL;
   
   window->preferences = NULL;
   window->history_browser = NULL;

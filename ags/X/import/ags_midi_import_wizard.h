@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_MIDI_IMPORT_WIZARD                (ags_midi_import_wizard_get_type())

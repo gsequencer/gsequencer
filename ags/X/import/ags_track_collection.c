@@ -133,7 +133,7 @@ ags_track_collection_class_init(AgsTrackCollectionClass *track_collection)
    *
    * The assigned midi document.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("midi-document\0",
 				    "midi document of track collection\0",
@@ -228,7 +228,9 @@ ags_track_collection_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MIDI_DOCUMENT:
-    g_value_set_pointer(value, track_collection->midi_doc);
+    {
+      g_value_set_pointer(value, track_collection->midi_doc);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -572,7 +574,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
  *
  * Returns: a new #AgsTrackCollection
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsTrackCollection*
 ags_track_collection_new(GType child_type,

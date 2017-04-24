@@ -209,8 +209,8 @@ libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libag
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 
-libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -1381,6 +1381,29 @@ libgsequencer_import_c_sources = \
 	ags/X/import/ags_track_collection_callbacks.c \
 	ags/X/import/ags_track_collection_mapper.c \
 	ags/X/import/ags_track_collection_mapper_callbacks.c
+
+# libgsequencer - export
+deprecated_libgsequencer_export_h_sources =
+
+libgsequencer_export_h_sources = \
+	$(deprecated_libgsequencer_export_h_sources) \
+	ags/X/export/ags_midi_export_wizard.h \
+	ags/X/export/ags_midi_export_wizard_callbacks.h \
+	ags/X/export/ags_machine_collection.h \
+	ags/X/export/ags_machine_collection_callbacks.h \
+	ags/X/export/ags_machine_collection_entry.h \
+	ags/X/export/ags_machine_collection_entry_callbacks.h
+
+deprecated_libgsequencer_export_c_sources =
+
+libgsequencer_export_c_sources = \
+	$(deprecated_libgsequencer_export_c_sources) \
+	ags/X/export/ags_midi_export_wizard.c \
+	ags/X/export/ags_midi_export_wizard_callbacks.c \
+	ags/X/export/ags_machine_collection.c \
+	ags/X/export/ags_machine_collection_callbacks.c \
+	ags/X/export/ags_machine_collection_entry.c \
+	ags/X/export/ags_machine_collection_entry_callbacks.c
 
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =

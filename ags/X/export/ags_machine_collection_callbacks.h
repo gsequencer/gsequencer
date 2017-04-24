@@ -17,15 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__
-#define __AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__
+#ifndef __AGS_MACHINE_COLLECTION_CALLBACKS_H__
+#define __AGS_MACHINE_COLLECTION_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/X/import/ags_midi_import_wizard.h>
-
-void ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpointer data);
-
-#endif /*__AGS_MIDI_IMPORT_WIZARD_CALLBACKS_H__*/
+#endif /*__AGS_MACHINE_COLLECTION_CALLBACKS_H__*/

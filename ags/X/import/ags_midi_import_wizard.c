@@ -24,9 +24,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-
 #include <ags/X/ags_window.h>
 
 #include <ags/X/import/ags_track_collection.h>
