@@ -115,8 +115,6 @@ enum{
 static gpointer ags_midi_parser_parent_class = NULL;
 static guint midi_parser_signals[LAST_SIGNAL];
 
-#define AGS_DEBUG  1
-
 GType
 ags_midi_parser_get_type(void)
 {

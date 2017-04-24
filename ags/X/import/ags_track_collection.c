@@ -168,6 +168,11 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 
   track_collection->midi_doc = NULL;
 
+  track_collection->first_offset = 0;
+  track_collection->bpm = 120.0;
+  
+  track_collection->default_length = 4;
+  
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 								  NULL);
   gtk_box_pack_start(GTK_BOX(track_collection),
@@ -339,11 +344,13 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   xmlXPathContext *xpath_context;
   xmlXPathObject *xpath_object;
   xmlNode *header_node, *tempo_node;
+  xmlNode *time_signature_node;
   xmlNode **node, **instrument_node, **sequence_node;
   GList *list, *list_start;
   
   gchar *instrument, *sequence;
   gdouble sec_val;
+  guint denominator, numerator;
   guint i, j;
 
   /* bpm and first_offset */
@@ -392,6 +399,39 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   //  g_message("", sec_val);
   track_collection->bpm = 60.0 / sec_val;
   g_message("bpm %f\0\0", track_collection->bpm);
+
+  /* default length */
+  time_signature_node = NULL;
+  
+  denominator = 4;
+  numerator = 4;
+
+  xpath_context = xmlXPathNewContext(track_collection->midi_doc);
+  xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track/midi-message[@event=\"time-signature\"]\0",
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+    
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	time_signature_node = node[i];	
+      }
+    }
+
+    if(time_signature_node != NULL){
+      xmlChar *str;
+
+      str = xmlGetProp(time_signature_node,
+		       "timesig\0");
+
+      if(str != NULL){
+	sscanf(str, "%d/%d\0", &numerator, &denominator);
+      }
+    }
+  }
+  
+  track_collection->default_length = numerator * (numerator / denominator);
   
   /* collect */
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);

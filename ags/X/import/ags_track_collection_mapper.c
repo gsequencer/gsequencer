@@ -436,6 +436,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   AgsApplicationContext *application_context;
 
+  GList *notation;
+  
   gchar *machine_type;
   
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
@@ -475,7 +477,32 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 		     AGS_TYPE_OUTPUT, 1);
   ags_audio_set_pads(machine->audio,
 		     AGS_TYPE_INPUT, 128);
-  
+
+  /* apply notation */
+  notation = track_collection_mapper->notation;
+
+  while(notation != NULL){
+    g_object_set(notation->data,
+		 "audio\0", machine->audio,
+		 NULL);
+
+    notation = notation->next;
+  }
+
+  notation = machine->audio->notation;
+
+  while(notation != NULL){
+    g_object_run_dispose(notation->data);
+    g_object_unref(notation->data);
+    
+    notation = notation->next;
+  }
+
+  g_list_free(machine->audio->notation);
+
+  machine->audio->notation = track_collection_mapper->notation;
+
+  /* add audio */  
   add_audio = ags_add_audio_new(window->soundcard,
 				machine->audio);
   ags_task_thread_append_task(task_thread,
@@ -558,6 +585,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
+  guint default_length;
   guint i;
   gboolean pattern;
   
@@ -582,6 +610,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   
   n_key_on = 0;
   n_key_off = 0;
+
+  default_length = track_collection->default_length;
   
   while(track != NULL){
     current = track->data;
@@ -608,11 +638,13 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 							 "velocity\0"),
 					      NULL,
 					      10);
+
+	  notation = notation_start;
 	  
 	  while(notation != NULL){
 	    note = ags_note_new();
 	    note->x[0] = x;
-	    note->x[1] = x + 1;
+	    note->x[1] = x + default_length;
 	    note->y = y;
 	    ags_complex_set(&(note->attack),
 			    velocity);
@@ -670,19 +702,14 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   }
 
   /* populate machine_type */
-  if(n_key_off > 0){
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_FFPLAYER));
+  gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				 g_type_name(AGS_TYPE_FFPLAYER));
 
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_SYNTH));
-  }else{
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_DRUM));
+  gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				 g_type_name(AGS_TYPE_DRUM));
     
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_MATRIX));
-  }
+  gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				 g_type_name(AGS_TYPE_MATRIX));
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(track_collection_mapper->machine_type),
 			   0);

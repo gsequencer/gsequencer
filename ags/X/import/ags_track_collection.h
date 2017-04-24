@@ -44,6 +44,8 @@ struct _AgsTrackCollection
 
   guint first_offset;
   gdouble bpm;
+
+  guint default_length;
   
   GType child_type;
   guint child_parameter_count;
