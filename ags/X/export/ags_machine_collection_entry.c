@@ -121,7 +121,7 @@ ags_machine_collection_entry_class_init(AgsMachineCollectionEntryClass *machine_
   /**
    * AgsMachineCollectionEntry:machine:
    *
-   * The machines as xmlNode to parse.
+   * The assigned #AgsMachine.
    * 
    * Since: 0.8.0
    */
@@ -155,6 +155,72 @@ ags_machine_collection_entry_applicable_interface_init(AgsApplicableInterface *a
 void
 ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_entry)
 {
+  GtkLabel *label;
+
+  gtk_table_resize((GtkTable *) machine_collection_entry,
+		   4, 4);
+
+  machine_collection_entry->machine = NULL;
+
+  /* enabled */
+  machine_collection_entry->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled\0");
+  gtk_table_attach((GtkTable *) machine_collection_entry,
+		   (GtkWidget *) machine_collection_entry->enabled,
+		   0, 4,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* machine label */
+  machine_collection_entry->label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+							      "xalign\0", 0.0,
+							      NULL);
+  gtk_table_attach((GtkTable *) machine_collection_entry,
+		   (GtkWidget *) machine_collection_entry->label,
+		   0, 4,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* instrument */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "instrument: \0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach((GtkTable *) machine_collection_entry,
+		   (GtkWidget *) label,
+		   0, 2,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  machine_collection_entry->instrument = (GtkEntry *) gtk_entry_new();
+  gtk_table_attach((GtkTable *) machine_collection_entry,
+		   (GtkWidget *) machine_collection_entry->instrument,
+		   2, 4,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* sequence */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "sequence: \0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach((GtkTable *) machine_collection_entry,
+		   (GtkWidget *) label,
+		   0, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  machine_collection_entry->sequence = (GtkEntry *) gtk_entry_new();
+  gtk_table_attach((GtkTable *) machine_collection_entry,
+		   (GtkWidget *) machine_collection_entry->sequence,
+		   2, 4,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -184,6 +250,18 @@ ags_machine_collection_entry_set_property(GObject *gobject,
       
       if(machine != NULL){
 	g_object_ref(machine);
+
+	/* fill in some fields */
+	gtk_label_set_text(machine_collection_entry->label,
+			   g_strdup_printf("%s: %s\0",
+					   G_OBJECT_TYPE_NAME(machine),
+					   AGS_MACHINE(machine)->name));
+	
+	gtk_entry_set_text(machine_collection_entry->instrument,
+			   G_OBJECT_TYPE_NAME(machine));
+
+      	gtk_entry_set_text(machine_collection_entry->sequence,
+			   AGS_MACHINE(machine)->name);
       }
 
       machine_collection_entry->machine = machine;
@@ -228,6 +306,10 @@ ags_machine_collection_entry_connect(AgsConnectable *connectable)
 void
 ags_machine_collection_entry_disconnect(AgsConnectable *connectable)
 {
+  AgsMachineCollectionEntry *machine_collection_entry;
+
+  machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(connectable);
+
   /* empty */
 }
 

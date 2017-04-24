@@ -36,9 +36,9 @@ typedef struct _AgsMidiExportWizard AgsMidiExportWizard;
 typedef struct _AgsMidiExportWizardClass AgsMidiExportWizardClass;
 
 typedef enum{
-  AGS_MIDI_EXPORT_WIZARD_CONNECTED               = 1,
-  AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER       = 1 << 1,
-  AGS_MIDI_EXPORT_WIZARD_SHOW_TRACK_COLLECTION   = 1 << 2,
+  AGS_MIDI_EXPORT_WIZARD_CONNECTED                 = 1,
+  AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION   = 1 << 1,
+  AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER         = 1 << 2,
 }AgsMidiExportWizardFlags;
 
 struct _AgsMidiExportWizard
@@ -51,8 +51,8 @@ struct _AgsMidiExportWizard
 
   GtkWidget *main_window;
   
-  GtkWidget *file_chooser;
   GtkWidget *machine_collection;
+  GtkWidget *file_chooser;
 };
 
 struct _AgsMidiExportWizardClass

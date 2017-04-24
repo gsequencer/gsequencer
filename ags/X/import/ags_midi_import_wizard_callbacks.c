@@ -40,6 +40,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   case GTK_RESPONSE_REJECT:
     {
       if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION  & (midi_import_wizard->flags)) != 0){
+	/* show/hide */
 	midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
 	midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION);
 

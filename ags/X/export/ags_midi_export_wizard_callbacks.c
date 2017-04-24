@@ -33,12 +33,30 @@ ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   switch(response){
   case GTK_RESPONSE_REJECT:
     {
-      //TODO:JK: implement me
+      if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_export_wizard->flags)) != 0){
+	/* show/hide */
+	gtk_widget_hide(midi_export_wizard->file_chooser->parent);
+
+	gtk_widget_show(midi_export_wizard->machine_collection->parent);
+	gtk_widget_show_all(midi_export_wizard->machine_collection);
+
+	midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
+	midi_export_wizard->flags &= (~AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER);
+      }
     }
     break;
   case GTK_RESPONSE_ACCEPT:
     {
-      //TODO:JK: implement me      
+      if((AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION  & (midi_export_wizard->flags)) != 0){
+	/* show/hide */
+	midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER;
+	midi_export_wizard->flags &= (~AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION);
+
+	gtk_widget_hide(midi_export_wizard->machine_collection->parent);
+
+	gtk_widget_show(midi_export_wizard->file_chooser->parent);
+	gtk_widget_show_all(midi_export_wizard->file_chooser);
+      }
     }
     break;
   case GTK_RESPONSE_OK:

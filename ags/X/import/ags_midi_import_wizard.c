@@ -196,7 +196,8 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   midi_import_wizard->application_context = NULL;
 
   midi_import_wizard->main_window = NULL;
-  
+
+  /* file chooser */
   alignment = g_object_new(GTK_TYPE_ALIGNMENT,
 			   NULL);
   gtk_widget_set_no_show_all((GtkWidget *) alignment,
@@ -210,7 +211,7 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
   gtk_container_add((GtkContainer *) alignment,
 		    midi_import_wizard->file_chooser);
 
-  /**/
+  /* track collection */
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.0,
 						 1.0, 1.0);
   gtk_widget_set_no_show_all((GtkWidget *) alignment,

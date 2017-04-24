@@ -53,6 +53,7 @@ struct _AgsMachineCollectionClass
 
 GType ags_machine_collection_get_type();
 
+void ags_machine_collection_reload(AgsMachineCollection *machine_collection);
 void ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
 				      GtkWidget *machine);
 

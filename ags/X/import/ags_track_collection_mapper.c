@@ -166,7 +166,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
   /**
    * AgsTrackCollectionMapper:instrument:
    *
-   * The instruments as xmlNode to parse.
+   * The instruments as string to parse.
    * 
    * Since: 0.7.0
    */
@@ -182,7 +182,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
   /**
    * AgsTrackCollectionMapper:sequence:
    *
-   * The sequences as xmlNode to parse.
+   * The sequences as string to parse.
    * 
    * Since: 0.7.0
    */
@@ -227,7 +227,8 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
   track_collection_mapper->track = NULL;
 
   track_collection_mapper->notation = NULL;
-  
+
+  /* enabled */
   track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled\0");
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->enabled,
@@ -236,6 +237,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* info box */
   track_collection_mapper->info = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->info,
@@ -244,6 +246,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* instrument */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "instrument: \0",
 				    "xalign\0", 0.0,
@@ -253,6 +256,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		     TRUE, TRUE,
 		     0);
 
+  /* sequence */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "sequence: \0",
 				    "xalign\0", 0.0,
@@ -261,7 +265,8 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		     GTK_WIDGET(label),
 		     TRUE, TRUE,
 		     0);
-    
+
+  /* machine type */
   track_collection_mapper->machine_type = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->machine_type,
@@ -270,6 +275,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* audio channels */
   track_collection_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_collection_mapper->audio_channels,
 			    2.0);
@@ -280,6 +286,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* offset */
   track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 256.0 * (gdouble) AGS_NOTE_EDIT_MAX_CONTROLS, 1.0);
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->offset,

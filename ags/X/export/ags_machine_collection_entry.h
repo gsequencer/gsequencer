@@ -40,6 +40,13 @@ struct _AgsMachineCollectionEntry
   GtkTable table;
 
   GtkWidget *machine;
+
+  GtkCheckButton *enabled;
+
+  GtkLabel *label;
+
+  GtkEntry *instrument;
+  GtkEntry *sequence;
 };
 
 struct _AgsMachineCollectionEntryClass

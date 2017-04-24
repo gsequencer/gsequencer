@@ -23,8 +23,11 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
-#include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/audio/ags_audio.h>
 
+#include <ags/X/ags_window.h>
+
+#include <ags/X/export/ags_midi_export_wizard.h>
 #include <ags/X/export/ags_machine_collection_entry.h>
 
 #include <libxml/parser.h>
@@ -284,6 +287,7 @@ void
 ags_machine_collection_reset(AgsApplicable *applicable)
 {
   AgsMachineCollection *machine_collection;
+
   GList *list, *list_start;
   
   machine_collection = AGS_MACHINE_COLLECTION(applicable);
@@ -298,6 +302,45 @@ ags_machine_collection_reset(AgsApplicable *applicable)
   }
 
   g_list_free(list_start);
+}
+
+void
+ags_machine_collection_reload(AgsMachineCollection *machine_collection)
+{
+  AgsWindow *window;
+  AgsMidiExportWizard *midi_export_wizard;
+  GtkWidget *parent;
+  
+  GList *machine, *machine_start;
+
+  midi_export_wizard = gtk_widget_get_ancestor(machine_collection,
+					       AGS_TYPE_MIDI_EXPORT_WIZARD);
+  window = midi_export_wizard->main_window;
+
+  /* destroy old */
+  parent = GTK_WIDGET(machine_collection->child)->parent;
+  gtk_widget_destroy(machine_collection->child);
+  
+  machine_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
+						       0);
+  gtk_container_add(parent,
+		    machine_collection->child);
+  
+  /* add entry */
+  machine =
+    machine_start = gtk_container_get_children(window->machines);
+  
+  while(machine != NULL){
+    if(AGS_MACHINE(machine->data)->audio != NULL &&
+       (AGS_AUDIO_HAS_NOTATION & (AGS_MACHINE(machine->data)->audio->flags)) != 0){
+      ags_machine_collection_add_entry(machine_collection,
+				       machine->data);
+    }
+    
+    machine = machine->next;
+  }
+
+  g_list_free(machine_start);
 }
 
 void

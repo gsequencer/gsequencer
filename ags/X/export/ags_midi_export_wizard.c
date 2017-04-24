@@ -190,13 +190,41 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 {
   GtkAlignment *alignment;
 
-  midi_export_wizard->flags = AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER;
+  midi_export_wizard->flags = AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION;
 
   midi_export_wizard->application_context = NULL;
 
   midi_export_wizard->main_window = NULL;
 
-  //TODO:JK: implement me
+  /* machine collection */
+  alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.0,
+						 1.0, 1.0);
+  gtk_widget_set_no_show_all((GtkWidget *) alignment,
+			     TRUE);
+  gtk_box_pack_start((GtkBox *) midi_export_wizard->dialog.vbox,
+		     (GtkWidget*) alignment,
+		     TRUE, TRUE,
+		     0);
+
+  midi_export_wizard->machine_collection = (GtkWidget *) ags_machine_collection_new(AGS_TYPE_MACHINE_COLLECTION_ENTRY,
+										    0,
+										    NULL);
+  gtk_container_add((GtkContainer *) alignment,
+		    midi_export_wizard->machine_collection);
+  
+  /* file chooser */
+  alignment = g_object_new(GTK_TYPE_ALIGNMENT,
+			   NULL);
+  gtk_widget_set_no_show_all((GtkWidget *) alignment,
+			     TRUE);
+  gtk_box_pack_start((GtkBox *) midi_export_wizard->dialog.vbox,
+		     (GtkWidget*) alignment,
+		     TRUE, TRUE,
+		     0);
+  
+  midi_export_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
+  gtk_container_add((GtkContainer *) alignment,
+		    midi_export_wizard->file_chooser);
   
   gtk_dialog_add_buttons((GtkDialog *) midi_export_wizard,
 			 GTK_STOCK_GO_BACK, GTK_RESPONSE_REJECT,
@@ -354,13 +382,29 @@ ags_midi_export_wizard_reset(AgsApplicable *applicable)
 
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(applicable);
 
+  ags_machine_collection_reload(midi_export_wizard->machine_collection);
+  
   ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard->machine_collection));
 }
 
 void
 ags_midi_export_wizard_show(GtkWidget *widget)
 {
-  //TODO:JK: implement me
+  AgsMidiExportWizard *midi_export_wizard;
+
+  midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(widget);
+
+  GTK_WIDGET_CLASS(ags_midi_export_wizard_parent_class)->show(widget);
+
+  if((AGS_MIDI_EXPORT_WIZARD_SHOW_FILE_CHOOSER & (midi_export_wizard->flags)) != 0){
+    gtk_widget_show(midi_export_wizard->file_chooser->parent);
+    gtk_widget_show_all(midi_export_wizard->file_chooser);
+  }
+
+  if((AGS_MIDI_EXPORT_WIZARD_SHOW_MACHINE_COLLECTION & (midi_export_wizard->flags)) != 0){
+    gtk_widget_show(midi_export_wizard->machine_collection->parent);
+    gtk_widget_show_all(midi_export_wizard->machine_collection);
+  }
 }
 
 /**
