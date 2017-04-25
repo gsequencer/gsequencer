@@ -25,12 +25,24 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/midi/ags_midi_builder.h>
+
 #define AGS_TYPE_MIDI_EXPORT_WIZARD                (ags_midi_export_wizard_get_type())
 #define AGS_MIDI_EXPORT_WIZARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizard))
 #define AGS_MIDI_EXPORT_WIZARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizardClass))
 #define AGS_IS_MIDI_EXPORT_WIZARD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MIDI_EXPORT_WIZARD))
 #define AGS_IS_MIDI_EXPORT_WIZARD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_EXPORT_WIZARD))
 #define AGS_MIDI_EXPORT_WIZARD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizardClass))
+
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME "out.mid\0"
+
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_TIMES (30)
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_CLICKS (4)
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION (0xe250)
+
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_PULSE_UNIT (16.0 * AGS_SOUNDCARD_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION) * 1000000.0)
 
 typedef struct _AgsMidiExportWizard AgsMidiExportWizard;
 typedef struct _AgsMidiExportWizardClass AgsMidiExportWizardClass;
@@ -50,6 +62,9 @@ struct _AgsMidiExportWizard
   GObject *application_context;
 
   GtkWidget *main_window;
+
+  AgsMidiBuilder *midi_builder;
+  guint pulse_unit;
   
   GtkWidget *machine_collection;
   GtkWidget *file_chooser;

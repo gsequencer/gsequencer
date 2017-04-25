@@ -264,9 +264,6 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::midi-putc signal is emited during putting char to file.
    *
-<<<<<<< HEAD
-   * Since: 1.0.0
-=======
    * Since: 0.7.90
    */
   midi_builder_signals[MIDI_PUTC] =
@@ -3074,8 +3071,12 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   
   if(length > 0){
     midi_builder->data = (unsigned char *) malloc(length * sizeof(unsigned char));
+
+    midi_builder->length = length;
   }else{
     midi_builder->data = NULL;
+    
+    midi_builder->length = 0;
   }
 
   /* fill */

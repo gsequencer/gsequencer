@@ -196,6 +196,10 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 
   midi_export_wizard->main_window = NULL;
 
+  /* midi builder */
+  midi_export_wizard->midi_builder = ags_midi_builder_new(NULL);
+  midi_export_wizard->pulse_unit = AGS_MIDI_EXPORT_WIZARD_DEFAULT_PULSE_UNIT;
+  
   /* machine collection */
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.0,
 						 1.0, 1.0);
@@ -223,6 +227,8 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 		     0);
   
   midi_export_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
+  gtk_file_chooser_set_filename(midi_export_wizard->file_chooser,
+				AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME);
   gtk_container_add((GtkContainer *) alignment,
 		    midi_export_wizard->file_chooser);
   
@@ -368,11 +374,80 @@ ags_midi_export_wizard_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_midi_export_wizard_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsMidiExportWizard *midi_export_wizard;
+
+  FILE *file;
+
+  GList *list, *list_start;
+  
+  gchar *filename;
+
+  guint track_count;
+  guint division;
+  guint times;
+  guint bpm;
+  guint clicks;
 
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(applicable);
 
+  window = midi_export_wizard->main_window;
+  
+  /* retrieve BPM */
+  bpm = gtk_spin_button_get_value_as_int(window->navigation->bpm);
+  
+  /* find tracks */
+  list =
+    list_start = gtk_container_get_children(AGS_MACHINE_COLLECTION(midi_export_wizard->machine_collection)->child);
+
+  while(list != NULL){
+    if(gtk_toggle_button_get_active(AGS_MACHINE_COLLECTION_ENTRY(list->data)->enabled)){
+      track_count++;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  if(track_count == 0){
+    return;
+  }
+
+  /* set division, times and clicks */
+  division = AGS_MIDI_EXPORT_WIZARD_DEFAULT_DIVISION;
+
+  times = AGS_MIDI_EXPORT_WIZARD_DEFAULT_TIMES;
+  clicks = AGS_MIDI_EXPORT_WIZARD_DEFAULT_CLICKS;  
+
+  /* set pulse unit */
+  midi_export_wizard->pulse_unit = (16.0 * bpm / 60.0 * 1.0 / (division >> 8) / (0xff & division) * 1000000.0);
+  
+  /* open file */
+  filename = gtk_file_chooser_get_filename(midi_export_wizard->file_chooser);
+  
+  file = fopen(filename, "w\0");
+  g_object_set(midi_export_wizard->midi_builder,
+	       "file\0", file,
+	       NULL);
+
+  /* add header */
+  ags_midi_builder_append_header(midi_export_wizard->midi_builder,
+				 0, 1,
+				 track_count, division,
+				 times, bpm,
+				 clicks);
+  
+  /* apply tracks */
   ags_applicable_apply(AGS_APPLICABLE(midi_export_wizard->machine_collection));
+
+  /* build and write */
+  ags_midi_builder_build(midi_export_wizard->midi_builder);
+
+  fwrite(midi_export_wizard->midi_builder->data,
+	 sizeof(unsigned char),
+	 midi_export_wizard->midi_builder->length,
+	 file);
 }
 
 void

@@ -22,7 +22,11 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/midi/ags_midi_builder.h>
+
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/export/ags_midi_export_wizard.h>
 
 #include <math.h>
 
@@ -182,7 +186,7 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  /* instrument */
+  /* instrument * /
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "instrument: \0",
 				    "xalign\0", 0.0,
@@ -201,7 +205,9 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
+  */
+  machine_collection_entry->instrument = NULL;
+  
   /* sequence */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "sequence: \0",
@@ -257,8 +263,8 @@ ags_machine_collection_entry_set_property(GObject *gobject,
 					   G_OBJECT_TYPE_NAME(machine),
 					   AGS_MACHINE(machine)->name));
 	
-	gtk_entry_set_text(machine_collection_entry->instrument,
-			   G_OBJECT_TYPE_NAME(machine));
+	//	gtk_entry_set_text(machine_collection_entry->instrument,
+	//		   G_OBJECT_TYPE_NAME(machine));
 
       	gtk_entry_set_text(machine_collection_entry->sequence,
 			   AGS_MACHINE(machine)->name);
@@ -324,9 +330,155 @@ ags_machine_collection_entry_set_update(AgsApplicable *applicable, gboolean upda
 void
 ags_machine_collection_entry_apply(AgsApplicable *applicable)
 {
+  AgsMachine *machine;
+
+  AgsMidiExportWizard *midi_export_wizard;
   AgsMachineCollectionEntry *machine_collection_entry;
 
+  AgsMidiBuilder *midi_builder;
+
+  AgsNote **check_match;
+  
+  GList *notation, *notation_start;
+  GList *note;
+  
+  gint key_on[128];
+  gint key_off[128];
+  gboolean key_active[128];
+
+  guint delta_time;
+  guint pulse_unit;
+  guint notation_count;
+  guint x, prev_x;
+  guint i;
+  gboolean success;
+  
   machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(applicable);
+
+  if(!gtk_toggle_button_get_active(machine_collection_entry->enabled)){
+    return;
+  }
+
+  midi_export_wizard = gtk_widget_get_ancestor(machine_collection_entry,
+					       AGS_TYPE_MIDI_EXPORT_WIZARD);
+  
+  machine = machine_collection_entry->machine;
+
+  notation_start = machine->audio->notation;
+  
+  midi_builder = midi_export_wizard->midi_builder;
+  pulse_unit = midi_export_wizard->pulse_unit;
+
+  notation_count = g_list_length(notation_start);
+
+  /* append track */
+  ags_midi_builder_append_track(midi_builder,
+				gtk_entry_get_text(machine_collection_entry->sequence));
+
+  /* put keys */
+  check_match = (AgsNote **) malloc(notation_count * sizeof(AgsNote *));
+  
+  memset(key_on, -1, 128 * sizeof(guint));
+  memset(key_off, -1, 128 * sizeof(guint));
+  
+  memset(key_active, FALSE, 128 * sizeof(gboolean));
+
+  prev_x = 0;
+  
+  success = TRUE;
+
+  while(success){
+    notation = notation_start;
+
+    for(i = 0; i < notation_count; i++){
+      check_match[i] = NULL;
+    }
+    
+    for(i = 0; notation != NULL; i++){
+      note = AGS_NOTATION(notation->data)->notes;
+
+      while(note != NULL){
+	if(AGS_NOTE(note->data)->y < 128){
+	  if(key_on[AGS_NOTE(note->data)->y] < AGS_NOTE(note->data)->x[0]){
+	    check_match[i] = AGS_NOTE(note->data);
+
+	    break;
+	  }else if(key_off[AGS_NOTE(note->data)->y] < AGS_NOTE(note->data)->x[1]){
+	    check_match[i] = AGS_NOTE(note->data);
+
+	    break;
+	  }
+	}
+	
+	note = note->next;
+      }
+      
+      notation = notation->next;
+    }
+
+    /* find next pulse */
+    x = G_MAXUINT;
+    success = FALSE;
+    
+    for(i = 0; i < notation_count; i++){
+      if(check_match[i] != NULL){
+	if(!key_active[check_match[i]->y]){
+	  /* check key-on */
+	  if(check_match[i]->x[0] < x){
+	    x = check_match[i]->x[0];
+
+	    success = TRUE;
+	  }
+	}else if(key_active[check_match[i]->y]){
+	  /* check key-off */
+	  if(check_match[i]->x[1] < x){
+	    x = check_match[i]->x[1];
+	    
+	    success = TRUE;
+	  }
+	}
+      }
+    }
+    
+    /* apply events matching pulse */
+    if(success){
+      for(i = 0; i < notation_count; i++){
+	if(check_match[i] != NULL){
+	  if(prev_x == x){
+	    delta_time = 0;
+	  }else if(x > prev_x){
+	    delta_time = (x - prev_x) * pulse_unit;
+	  }else{
+	    delta_time = 0;
+
+	    g_warning("incosistency of midi export - invalid delta-time\0");
+	  }
+	  
+	  if(check_match[i]->x[0] == x){
+	    /* append key-on */
+	    ags_midi_builder_append_key_on(midi_builder,
+					   delta_time,
+					   0,
+					   check_match[i]->y,
+					   127);
+	    
+	    key_active[check_match[i]->y] = TRUE;
+	  }else if(check_match[i]->x[1] == x){
+	    /* append key-off */
+	    ags_midi_builder_append_key_off(midi_builder,
+					    delta_time,
+					    0,
+					    check_match[i]->y,
+					    127);	    
+
+	    key_active[check_match[i]->y] = FALSE;
+	  }
+
+	  prev_x = x;
+	}
+      }
+    }
+  }
 }
 
 void

@@ -59,13 +59,13 @@ void ags_track_collection_mapper_connectable_interface_init(AgsConnectableInterf
 void ags_track_collection_mapper_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapper);
 void ags_track_collection_mapper_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
 void ags_track_collection_mapper_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
 void ags_track_collection_mapper_connect(AgsConnectable *connectable);
 void ags_track_collection_mapper_disconnect(AgsConnectable *connectable);
 void ags_track_collection_mapper_set_update(AgsApplicable *applicable, gboolean update);
@@ -298,9 +298,9 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 
 void
 ags_track_collection_mapper_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
@@ -376,9 +376,9 @@ ags_track_collection_mapper_set_property(GObject *gobject,
 
 void
 ags_track_collection_mapper_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec)
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
@@ -595,9 +595,14 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   guint default_length;
   guint i;
   gboolean pattern;
+
+  if(!gtk_toggle_button_get_active(track_collection_mapper->enabled)){
+    return;
+  }  
   
   track_collection = (AgsTrackCollection *) gtk_widget_get_ancestor((GtkWidget *) track_collection_mapper,
 								    AGS_TYPE_TRACK_COLLECTION);
+
   track = track_collection_mapper->track;
 
   /* map notation */
