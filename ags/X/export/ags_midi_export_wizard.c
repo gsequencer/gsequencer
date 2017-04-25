@@ -226,7 +226,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 		     TRUE, TRUE,
 		     0);
   
-  midi_export_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
+  midi_export_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_SAVE);
   gtk_file_chooser_set_filename(midi_export_wizard->file_chooser,
 				AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME);
   gtk_container_add((GtkContainer *) alignment,
@@ -448,6 +448,8 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
 	 sizeof(unsigned char),
 	 midi_export_wizard->midi_builder->length,
 	 file);
+  fflush(file);
+  fclose(file);
 }
 
 void

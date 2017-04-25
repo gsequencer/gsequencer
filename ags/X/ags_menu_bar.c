@@ -241,13 +241,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("export track\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("export all\0");
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
-
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("playback\0");
+  gtk_widget_set_sensitive(item,
+			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
 
   /* Help */
@@ -438,10 +437,6 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(list1->data), "activate\0",
 		   G_CALLBACK(ags_menu_bar_midi_export_track_callback), (gpointer) menu_bar);
-  list1 = list1->next;
-  
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_midi_export_all_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 

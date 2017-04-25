@@ -330,9 +330,13 @@ ags_midi_buffer_util_put_header(unsigned char *buffer,
   /* put MThd */
   memcpy(buffer, header, 4 * sizeof(unsigned char));
 
-  /* offset */
+  /* chunk length */
+  if(offset != 6){
+    g_warning("invalid chunk length");
+  }
+  
   ags_midi_buffer_util_put_int32(buffer + 4,
-				 offset);
+				 6);
 
   /* format */
   ags_midi_buffer_util_put_int16(buffer + 8,
@@ -2253,6 +2257,10 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
   unsigned char meta_type;
   guint n;
   guint i;
+
+  if(buffer == NULL){
+    return(NULL);
+  }
   
   /* check for header */
   if(!g_ascii_strncasecmp(buffer,

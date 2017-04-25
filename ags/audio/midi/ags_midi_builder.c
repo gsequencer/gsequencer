@@ -861,6 +861,9 @@ ags_midi_builder_header_alloc()
   midi_builder_header->times = 0;
   midi_builder_header->beat = 0;
   midi_builder_header->clicks = 0;
+
+  midi_builder_header->data = NULL;
+  midi_builder_header->length = 0;
   
   return(midi_builder_header);
 }
@@ -1027,7 +1030,7 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
   if(midi_builder_track->data != NULL){
     free(midi_builder_track->data);
   }
-  
+
   midi_builder_track->data = new_buffer;
   midi_builder_track->length += length;
 }
@@ -1061,7 +1064,8 @@ ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_t
 
   prev = NULL;
   
-  while(current < buffer + midi_builder_track->length){
+  while(current != NULL &&
+	current < buffer + midi_builder_track->length){
     current = ags_midi_buffer_util_seek_message(current,
 						1,
 						&current_delta_time);
@@ -1072,7 +1076,7 @@ ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_t
       }else{
 	current = buffer;
       }
-      
+
       break;
     }
 
@@ -1234,6 +1238,10 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
 
   if(track_name != NULL){
     length = strlen(track_name);
+
+    if(track_name[length - 1] == '\0'){
+      length--;
+    }
   }else{
     length = 0;
   }
@@ -2152,6 +2160,12 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
 
   guint delta_time_size;
 
+  if(length > 0){
+    if(text[length - 1] == '\0'){
+      length--;
+    }
+  }
+  
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
   buffer = (unsigned char *) malloc((delta_time_size + length + 3) * sizeof(unsigned char));
@@ -3060,6 +3074,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
 
   while(midi_track != NULL){
     length += AGS_MIDI_BUILDER_TRACK(midi_track->data)->length;
+    length += 4; //NOTE:JK: EOT
     
     midi_track = midi_track->next;
   }
@@ -3077,6 +3092,8 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
     midi_builder->data = NULL;
     
     midi_builder->length = 0;
+
+    return;
   }
 
   /* fill */
@@ -3085,6 +3102,7 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   if(midi_builder->midi_header != NULL &
      midi_builder->midi_header->data != NULL){
     memcpy(offset, midi_builder->midi_header->data, midi_builder->midi_header->length * sizeof(unsigned char));
+    offset += midi_builder->midi_header->length;
   }
   
   midi_track = midi_builder->midi_track;
@@ -3092,6 +3110,11 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
   while(midi_track != NULL){
     if(AGS_MIDI_BUILDER_TRACK(midi_track->data)->data != NULL){
       memcpy(offset, AGS_MIDI_BUILDER_TRACK(midi_track->data)->data, AGS_MIDI_BUILDER_TRACK(midi_track->data)->length * sizeof(unsigned char));
+      offset += AGS_MIDI_BUILDER_TRACK(midi_track->data)->length;
+      
+      ags_midi_buffer_util_put_end_of_track(offset,
+					    0);
+      offset += 4;
     }
   
     midi_track = midi_track->next;

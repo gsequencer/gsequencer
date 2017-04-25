@@ -378,11 +378,12 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   /* put keys */
   check_match = (AgsNote **) malloc(notation_count * sizeof(AgsNote *));
   
-  memset(key_on, -1, 128 * sizeof(guint));
-  memset(key_off, -1, 128 * sizeof(guint));
+  memset(key_on, -1, 128 * sizeof(gint));
+  memset(key_off, -1, 128 * sizeof(gint));
   
   memset(key_active, FALSE, 128 * sizeof(gboolean));
 
+  delta_time = 0;
   prev_x = 0;
   
   success = TRUE;
@@ -399,11 +400,11 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
       while(note != NULL){
 	if(AGS_NOTE(note->data)->y < 128){
-	  if(key_on[AGS_NOTE(note->data)->y] < AGS_NOTE(note->data)->x[0]){
+	  if(key_on[AGS_NOTE(note->data)->y] < (gint) AGS_NOTE(note->data)->x[0]){
 	    check_match[i] = AGS_NOTE(note->data);
 
 	    break;
-	  }else if(key_off[AGS_NOTE(note->data)->y] < AGS_NOTE(note->data)->x[1]){
+	  }else if(key_off[AGS_NOTE(note->data)->y] < (gint) AGS_NOTE(note->data)->x[1]){
 	    check_match[i] = AGS_NOTE(note->data);
 
 	    break;
@@ -444,14 +445,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
     if(success){
       for(i = 0; i < notation_count; i++){
 	if(check_match[i] != NULL){
-	  if(prev_x == x){
-	    delta_time = 0;
-	  }else if(x > prev_x){
-	    delta_time = (x - prev_x) * pulse_unit;
-	  }else{
-	    delta_time = 0;
-
-	    g_warning("incosistency of midi export - invalid delta-time\0");
+	  if(x > prev_x){
+	    delta_time += (x - prev_x) * pulse_unit;
 	  }
 	  
 	  if(check_match[i]->x[0] == x){
@@ -461,7 +456,9 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 					   0,
 					   check_match[i]->y,
 					   127);
+	    g_message("key-on %d,%d - %d", check_match[i]->x[0], check_match[i]->x[1], check_match[i]->y);
 	    
+	    key_on[check_match[i]->y] = check_match[i]->x[0];
 	    key_active[check_match[i]->y] = TRUE;
 	  }else if(check_match[i]->x[1] == x){
 	    /* append key-off */
@@ -471,6 +468,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 					    check_match[i]->y,
 					    127);	    
 
+	    key_off[check_match[i]->y] = check_match[i]->x[1];
 	    key_active[check_match[i]->y] = FALSE;
 	  }
 

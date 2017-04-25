@@ -1,7 +1,9 @@
 ags (0.8.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented MIDI export
+	* implemented MIDI import
+	* implemented MIDI export tracks
+	* implemented MIDI export all
 
 ags (0.7.135)
 
