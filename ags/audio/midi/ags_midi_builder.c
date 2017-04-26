@@ -25,6 +25,8 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <stdlib.h>
+#include <string.h>
 
 void ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder);
 void ags_midi_builder_init(AgsMidiBuilder *midi_builder);
@@ -984,7 +986,7 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
 {
   unsigned char *current, *new_buffer;
   
-  guint prefix_length, suffix_length;
+  gint prefix_length, suffix_length;
   glong delta_time;
   
   if(midi_builder_track == NULL ||
@@ -1007,18 +1009,22 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
     prefix_length = 0;
     suffix_length = 0;
   }else{
-    /* prefix */
-    prefix_length = current - buffer;
-
-    if(prefix_length > 0){
-      memcpy(new_buffer, buffer, prefix_length);
+    /* prefix */    
+    if(current > buffer &&
+       current <= buffer + midi_builder_track->length){
+      prefix_length = current - buffer;
+      
+      memcpy(new_buffer, midi_builder_track->data, prefix_length * sizeof(unsigned char));
+    }else{
+      prefix_length = 0;
     }
 
     /* suffix */
-    suffix_length = midi_builder_track->length - prefix_length;
+    if(prefix_length >= 0 &&
+       midi_builder_track->length > prefix_length){
+      suffix_length = midi_builder_track->length - prefix_length;
 
-    if(suffix_length > 0){
-      memcpy(new_buffer + prefix_length + length, buffer, suffix_length);
+      memcpy(new_buffer + prefix_length + length, midi_builder_track->data + prefix_length, suffix_length);
     }
 
     current = new_buffer;
@@ -1052,7 +1058,7 @@ ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_t
 {
   unsigned char *buffer, *prev, *current;
 
-  guint current_delta_time;
+  glong current_delta_time;
   
   if(midi_builder_track == NULL ||
      midi_builder_track->data == NULL){
@@ -1061,15 +1067,27 @@ ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_t
 
   buffer =
     current = midi_builder_track->data;
-
+  
   prev = NULL;
   
   while(current != NULL &&
-	current < buffer + midi_builder_track->length){
+	current - buffer < midi_builder_track->length){    
     current = ags_midi_buffer_util_seek_message(current,
 						1,
 						&current_delta_time);
 
+    if(current == NULL){
+      if(prev != NULL){
+	current = prev;
+      }
+      
+      break;
+    }
+
+    if(current == prev){
+      break;
+    }
+    
     if(current_delta_time > delta_time){
       if(prev != NULL){
 	current = prev;
@@ -1082,7 +1100,7 @@ ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_t
 
     prev = current;
   }
-  
+
   return(current);
 }
 
@@ -1231,23 +1249,19 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
 
   /* allocate struct */
   midi_builder_track = ags_midi_builder_track_alloc();
-  midi_builder_track->track_name = track_name;
-
+  midi_builder_track->track_name = g_strdup(track_name);
+  
   /* fill buffer */
   delta_time_size = ags_midi_buffer_util_get_varlength_size(0);
 
   if(track_name != NULL){
     length = strlen(track_name);
-
-    if(track_name[length - 1] == '\0'){
-      length--;
-    }
   }else{
     length = 0;
   }
   
   midi_builder_track->data = (unsigned char *) malloc((8 + delta_time_size + length + 3) * sizeof(unsigned char));
-  midi_builder_track->length = 8 + delta_time_size + length + 3;
+  midi_builder_track->length = (4 + 4) + delta_time_size + length + 3;
 
   ags_midi_buffer_util_put_track(midi_builder_track->data,
 				 0);
@@ -1298,7 +1312,7 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
   guint delta_time_size;
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
-  
+
   buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
   ags_midi_buffer_util_put_key_on(buffer,
 				  delta_time,
