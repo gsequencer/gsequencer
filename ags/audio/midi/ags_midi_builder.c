@@ -474,6 +474,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::change-program:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @channel: the audio channel
    * @program: the new programm
    *
@@ -496,6 +497,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::change-channel-pressure:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @channel: the audio channel
    * @pressure: the new pressure, aftertouch
    *
@@ -509,14 +511,16 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_pressure),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT,
-		 G_TYPE_NONE, 2,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
   /**
    * AgsMidiBuilder::sysex:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @sysex_data: the data array
    * @length: the length of the array
    *
@@ -530,8 +534,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_sysex),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_UINT,
-		 G_TYPE_NONE, 2,
+		 g_cclosure_user_marshal_VOID__UINT_POINTER_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_UINT,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT);
 
@@ -558,9 +563,10 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
-    /**
+  /**
    * AgsMidiBuilder::song-position:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @song_position: the current position from 0x0 to 0x3fff
    *
    * The ::song-position signal is emited during building of event.
@@ -573,13 +579,15 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_song_position),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
-    /**
+  /**
    * AgsMidiBuilder::song-select:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @song_select: the song or sequence
    *
    * The ::song-select signal is emited during building of event.
@@ -592,13 +600,15 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_song_select),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
-    /**
+  /**
    * AgsMidiBuilder::tune-request:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    *
    * The ::tune-request signal is emited during building of event.
    *
@@ -610,13 +620,15 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_tune_request),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
 
   /**
    * AgsMidiBuilder::sequence-number:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @sequence: the nth sequence
    *
    * The ::sequence-number signal is emited during building of event.
@@ -629,13 +641,15 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_sequence_number),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT);
   
   /**
    * AgsMidiBuilder::smtpe:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @hr: hours
    * @mn: minutes
    * @se: seconds
@@ -664,6 +678,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::tempo:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @tempo: the tempo number as 24-bit quantifier
    *
    * The ::tempo signal is emited during building of event.
@@ -734,6 +749,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::sequencer-meta-event:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @len: length
    * @id: identifier
    * @data: buffer
@@ -748,8 +764,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_sequencer_meta_event),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
-		 G_TYPE_NONE, 3,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -757,6 +774,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::text-event:
    * @midi_builder: the builder
+   * @delta_time: delta-time
    * @text: the text
    * @length: length
    *
@@ -770,9 +788,10 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_text_event),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT,
-		 G_TYPE_NONE, 2,
+		 g_cclosure_user_marshal_VOID__UINT_STRING_UINT,
+		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
+		 G_TYPE_STRING,
 		 G_TYPE_UINT);
 }
 

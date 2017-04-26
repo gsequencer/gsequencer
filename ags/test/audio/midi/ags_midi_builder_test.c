@@ -107,6 +107,11 @@ void ags_midi_builder_test_append_text_event();
 #define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
 #define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_CHANNEL (0)
 
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_TRACK_COUNT (7)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PRESSURE_COUNT (64)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_CHANNEL (0)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -739,7 +744,6 @@ ags_midi_builder_test_append_change_program()
   glong delta_time;
   glong channel;
   glong program;
-  glong transmitter;
   guint i, j;
   gboolean success;
   
@@ -812,7 +816,85 @@ ags_midi_builder_test_append_change_program()
 void
 ags_midi_builder_test_append_change_pressure()
 {
-  //TODO:JK: implement me
+  AgsMidiBuilder *midi_builder;
+
+  GList *current_midi_track;
+
+  unsigned char *offset;
+
+  guint pressures[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PRESSURE_COUNT];
+
+  guint ret_size;
+  glong delta_time;
+  glong channel;
+  glong pressure;
+  guint i, j;
+  gboolean success;
+  
+  midi_builder = ags_midi_builder_test_create_default(AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_TRACK_COUNT);
+
+  current_midi_track = midi_builder->midi_track;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_TRACK_COUNT; i++){
+    midi_builder->current_midi_track = current_midi_track->data;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PRESSURE_COUNT; j++){
+      pressures[i][j] = rand() % 128;
+      
+      ags_midi_builder_append_change_pressure(midi_builder,
+					      AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PULSE_UNIT,
+					      AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_CHANNEL,
+					      pressures[i][j]);
+    }
+
+    current_midi_track = current_midi_track->next;
+  }
+
+  /* build */
+  ags_midi_builder_build(midi_builder);
+
+  /* assert */
+  offset = midi_builder->data;
+  offset += 14;
+  
+  success = TRUE;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_TRACK_COUNT; i++){
+    offset += 8;
+
+    ret_size = ags_midi_buffer_util_get_text_event(offset,
+						   &delta_time,
+						   NULL, NULL);
+
+    if(delta_time != 0){
+      success = FALSE;
+      
+      break;
+    }
+    
+    offset += ret_size;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PRESSURE_PRESSURE_COUNT; j++){
+      ret_size = ags_midi_buffer_util_get_change_pressure(offset,
+							  &delta_time,
+							  &channel,
+							  &pressure);
+
+      if(pressure != pressures[i][j]){
+	success = FALSE;
+
+	break;
+      }
+
+      offset += ret_size;
+    }
+    
+    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
+						     NULL);
+    offset += ret_size;
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void

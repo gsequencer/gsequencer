@@ -421,7 +421,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   clicks = AGS_MIDI_EXPORT_WIZARD_DEFAULT_CLICKS;  
 
   /* set pulse unit */
-  midi_export_wizard->pulse_unit = (16.0 * bpm / 60.0 * 1.0 / (division >> 8) / (0xff & division) * 1000000.0);
+  midi_export_wizard->pulse_unit = division / 16.0;
   
   /* open file */
   filename = gtk_file_chooser_get_filename(midi_export_wizard->file_chooser);

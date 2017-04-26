@@ -448,6 +448,10 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   gchar *machine_type;
   
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
+
+  if(!gtk_toggle_button_get_active(track_collection_mapper->enabled)){
+    return;
+  }  
   
   midi_import_wizard = (AgsMidiImportWizard *) gtk_widget_get_ancestor((GtkWidget *) track_collection_mapper,
 								       AGS_TYPE_MIDI_IMPORT_WIZARD);
@@ -595,10 +599,6 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   guint default_length;
   guint i;
   gboolean pattern;
-
-  if(!gtk_toggle_button_get_active(track_collection_mapper->enabled)){
-    return;
-  }  
   
   track_collection = (AgsTrackCollection *) gtk_widget_get_ancestor((GtkWidget *) track_collection_mapper,
 								    AGS_TYPE_TRACK_COLLECTION);

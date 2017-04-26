@@ -475,6 +475,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 	if(check_match[i] != NULL){
 	  if(x > prev_x){
 	    delta_time += (x - prev_x) * pulse_unit;
+	  }else{
+	    delta_time = 0;
 	  }
 
 	  if(check_match[i]->x[0] == x){
