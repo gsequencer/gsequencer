@@ -4,6 +4,8 @@ ags (0.8.0)
 	* implemented MIDI import
 	* implemented MIDI export tracks
 	* implemented MIDI export all
+	* fixed AgsMidiBuilder serious problems
+	* fixed ags_midi_buffer_util_seek()
 
 ags (0.7.135)
 

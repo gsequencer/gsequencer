@@ -675,8 +675,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_tempo),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
   /**
@@ -698,7 +699,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_time_signature),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT,
 		 G_TYPE_NONE, 5,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
@@ -781,7 +782,7 @@ ags_midi_builder_init(AgsMidiBuilder *midi_builder)
 
   midi_builder->data = NULL;
   midi_builder->length = 0;
-  
+
   midi_builder->file = NULL;
   
   midi_builder->midi_header = NULL;
@@ -907,7 +908,7 @@ ags_midi_builder_track_alloc()
   midi_builder_track->offset = 0;
   midi_builder_track->track_name = NULL;
   
-  midi_builder_track->delta_time = 0;
+  midi_builder_track->absolute_time = 0;
   
   midi_builder_track->data = NULL;
   midi_builder_track->length = 0;
@@ -944,7 +945,7 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
 /**
  * ags_midi_builder_track_find_track_name_with_delta_time:
  * @midi_builder_track: the #AgsMidiBuilderTrack
- * @delta_time: the delta time
+ * @absolute_time: the absolute time
  * @track_name: the track's string representation
  * 
  * Finds matching #AgsMidiBuilderTrack-struct within @midi_builder_track #GList-struct.
@@ -955,11 +956,11 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
  */
 GList*
 ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
-						       guint delta_time,
+						       guint64 absolute_time,
 						       gchar *track_name)
 {
   while(midi_builder_track != NULL){
-    if(AGS_MIDI_BUILDER_TRACK(midi_builder_track->data)->delta_time == delta_time &&
+    if(AGS_MIDI_BUILDER_TRACK(midi_builder_track->data)->absolute_time == absolute_time &&
        !g_ascii_strcasecmp(AGS_MIDI_BUILDER_TRACK(midi_builder_track->data)->track_name,
 			   track_name)){
       break;
@@ -984,9 +985,10 @@ void
 ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
 					   unsigned char *buffer, guint length)
 {
-  unsigned char *current, *new_buffer;
+  unsigned char *current;
   
   gint prefix_length, suffix_length;
+  guint64 absolute_time;
   glong delta_time;
   
   if(midi_builder_track == NULL ||
@@ -999,52 +1001,45 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
   ags_midi_buffer_util_get_varlength(buffer,
 				     &delta_time);
 
+  midi_builder_track->absolute_time += delta_time;
+  
   /* get offset */
-  //TODO:JK: probably you should use realloc
-  current = ags_midi_builder_track_get_delta_time_offset(midi_builder_track,
-							 delta_time);
-  new_buffer = (unsigned char *) malloc((midi_builder_track->length + length) * sizeof(unsigned char));
+  midi_builder_track->data = (unsigned char *) realloc(midi_builder_track->data,
+						       (midi_builder_track->length + length) * sizeof(unsigned char));
+
+  current = midi_builder_track->data + midi_builder_track->length;
   
   if(current == NULL){
     prefix_length = 0;
     suffix_length = 0;
   }else{
     /* prefix */    
-    if(current > buffer &&
-       current <= buffer + midi_builder_track->length){
-      prefix_length = current - buffer;
-      
-      memcpy(new_buffer, midi_builder_track->data, prefix_length * sizeof(unsigned char));
+    if(current <= midi_builder_track->data + midi_builder_track->length){
+      prefix_length = current - midi_builder_track->data;
     }else{
       prefix_length = 0;
     }
 
     /* suffix */
-    if(prefix_length >= 0 &&
-       midi_builder_track->length > prefix_length){
+    if(midi_builder_track->length > prefix_length){
       suffix_length = midi_builder_track->length - prefix_length;
 
-      memcpy(new_buffer + prefix_length + length, midi_builder_track->data + prefix_length, suffix_length);
+      memmove(midi_builder_track->data + prefix_length + length, midi_builder_track->data + prefix_length, suffix_length);
     }
-
-    current = new_buffer;
   }
 
-  memcpy(new_buffer + prefix_length, buffer, length);
+  memcpy(midi_builder_track->data + prefix_length, buffer, length);
 
   /* set data */
-  if(midi_builder_track->data != NULL){
-    free(midi_builder_track->data);
-  }
-
-  midi_builder_track->data = new_buffer;
   midi_builder_track->length += length;
+  ags_midi_buffer_util_put_int32(midi_builder_track->data + 4,
+				 midi_builder_track->length);
 }
 
 /**
  * ags_midi_builder_track_get_delta_time_offset:
  * @midi_builder_track: the #AgsMidiBuilderTrack-struct
- * @delta_time: the delta-time
+ * @absolute_time: the absolute time
  * 
  * Get offset by delta time.
  * 
@@ -1054,10 +1049,11 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
  */
 unsigned char*
 ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
-					     guint delta_time)
+					     guint64 absolute_time)
 {
-  unsigned char *buffer, *prev, *current;
+  unsigned char *prev, *current;
 
+  guint64 time_counter;
   glong current_delta_time;
   
   if(midi_builder_track == NULL ||
@@ -1065,42 +1061,32 @@ ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_t
     return(NULL);
   }
 
-  buffer =
-    current = midi_builder_track->data;
+  current = midi_builder_track->data;
   
   prev = NULL;
+  time_counter = 0;
   
-  while(current != NULL &&
-	current - buffer < midi_builder_track->length){    
+  while(current != NULL){
     current = ags_midi_buffer_util_seek_message(current,
 						1,
 						&current_delta_time);
-
-    if(current == NULL){
-      if(prev != NULL){
-	current = prev;
-      }
-      
-      break;
-    }
-
-    if(current == prev){
-      break;
-    }
+    time_counter += current_delta_time;
     
-    if(current_delta_time > delta_time){
-      if(prev != NULL){
-	current = prev;
-      }else{
-	current = buffer;
-      }
-
+    if(time_counter > absolute_time){
+      break;
+    }
+   
+    if(current >= midi_builder_track->data + midi_builder_track->length){
       break;
     }
 
     prev = current;
   }
 
+  if(current == NULL){
+    current = midi_builder_track->data + midi_builder_track->length;
+  }
+  
   return(current);
 }
 
@@ -1993,12 +1979,12 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
 
   delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
   
-  buffer = (unsigned char *) malloc((delta_time_size + 3) * sizeof(unsigned char));
+  buffer = (unsigned char *) malloc((delta_time_size + 6) * sizeof(unsigned char));
   ags_midi_buffer_util_put_tempo(buffer,
 				 delta_time,
 				 tempo);
   ags_midi_builder_track_insert_midi_message(midi_builder->current_midi_track,
-					     buffer, delta_time_size + 3);
+					     buffer, delta_time_size + 6);
 }
 
 

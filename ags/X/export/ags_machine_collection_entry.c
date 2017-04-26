@@ -24,6 +24,7 @@
 
 #include <ags/audio/midi/ags_midi_builder.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/export/ags_midi_export_wizard.h>
@@ -330,6 +331,7 @@ ags_machine_collection_entry_set_update(AgsApplicable *applicable, gboolean upda
 void
 ags_machine_collection_entry_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsMachine *machine;
 
   AgsMidiExportWizard *midi_export_wizard;
@@ -346,11 +348,14 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   gint key_off[128];
   gboolean key_active[128];
 
+  gdouble bpm;
+  guint division;
   guint delta_time;
   guint pulse_unit;
   guint notation_count;
   guint x, prev_x;
   guint i;
+  gboolean initial_track;
   gboolean success;
   
   machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(applicable);
@@ -361,7 +366,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
   midi_export_wizard = gtk_widget_get_ancestor(machine_collection_entry,
 					       AGS_TYPE_MIDI_EXPORT_WIZARD);
-  
+
+  window = midi_export_wizard->main_window;
   machine = machine_collection_entry->machine;
 
   notation_start = machine->audio->notation;
@@ -369,12 +375,33 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   midi_builder = midi_export_wizard->midi_builder;
   pulse_unit = midi_export_wizard->pulse_unit;
 
+  bpm = midi_builder->midi_header->beat;
+  division = midi_builder->midi_header->division;
+  
   notation_count = g_list_length(notation_start);
 
+  if(midi_builder->current_midi_track == NULL){
+    initial_track = TRUE;
+  }else{
+    initial_track = FALSE;
+  }
+  
   /* append track */
   ags_midi_builder_append_track(midi_builder,
 				gtk_entry_get_text(machine_collection_entry->sequence));
 
+  /* append tempo */
+  if(initial_track){
+    ags_midi_builder_append_time_signature(midi_builder,
+					   0,
+					   4, 4,
+					   4, 16);
+    
+    ags_midi_builder_append_tempo(midi_builder,
+				  0,
+				  (guint) round(60.0 * 1000000.0 / bpm));
+  }
+  
   /* put keys */
   check_match = (AgsNote **) malloc(notation_count * sizeof(AgsNote *));
   
@@ -448,28 +475,35 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 	  if(x > prev_x){
 	    delta_time += (x - prev_x) * pulse_unit;
 	  }
-	  
-	  if(check_match[i]->x[0] == x){
-	    /* append key-on */
-	    ags_midi_builder_append_key_on(midi_builder,
-					   delta_time,
-					   0,
-					   check_match[i]->y,
-					   127);
-	    g_message("key-on %d,%d - %d", check_match[i]->x[0], check_match[i]->x[1], check_match[i]->y);
-	    
-	    key_on[check_match[i]->y] = check_match[i]->x[0];
-	    key_active[check_match[i]->y] = TRUE;
-	  }else if(check_match[i]->x[1] == x){
-	    /* append key-off */
-	    ags_midi_builder_append_key_off(midi_builder,
-					    delta_time,
-					    0,
-					    check_match[i]->y,
-					    127);	    
 
-	    key_off[check_match[i]->y] = check_match[i]->x[1];
-	    key_active[check_match[i]->y] = FALSE;
+	  if(check_match[i]->x[0] == x){
+	    if(key_on[check_match[i]->y] != check_match[i]->x[0]){
+	      /* append key-on */
+	      ags_midi_builder_append_key_on(midi_builder,
+					     delta_time,
+					     0,
+					     check_match[i]->y,
+					     127);
+	      
+#ifdef AGS_DEBUG
+	      g_message("key-on %d,%d - %d", check_match[i]->x[0], check_match[i]->x[1], check_match[i]->y);
+#endif
+	    
+	      key_on[check_match[i]->y] = check_match[i]->x[0];
+	      key_active[check_match[i]->y] = TRUE;
+	    }
+	  }else if(check_match[i]->x[1] == x){
+	    if(key_off[check_match[i]->y] != check_match[i]->x[1]){
+	      /* append key-off */
+	      ags_midi_builder_append_key_off(midi_builder,
+					      delta_time,
+					      0,
+					      check_match[i]->y,
+					      127);	    
+
+	      key_off[check_match[i]->y] = check_match[i]->x[1];
+	      key_active[check_match[i]->y] = FALSE;
+	    }
 	  }
 
 	  prev_x = x;

@@ -1715,7 +1715,7 @@ ags_midi_buffer_util_put_tempo(unsigned char *buffer,
   buffer[delta_time_size + 1] = 0x51;
 
   /* length */
-  buffer[delta_time_size + 2] = 3;
+  buffer[delta_time_size + 2] = 0x03;
   
   /* tempo */
   ags_midi_buffer_util_put_int24(buffer + delta_time_size + 3,
@@ -2254,6 +2254,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
   unsigned char *offset;
   
   glong current_delta_time;
+  glong next_delta_time;
   guint delta_time_size;
   unsigned char status, prev_status;
   unsigned char meta_type;
@@ -2299,7 +2300,6 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 
     n = 1;
   ags_midi_buffer_util_seek_message_REPEAT_STATUS:
-    
     
     if((0xf0 & status) != 0xf0){
       switch(status & 0xf0){
@@ -2367,7 +2367,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 
       /* check if status is omitted */
       delta_time_size = ags_midi_buffer_util_get_varlength(offset,
-							   &delta_time_size);
+							   &next_delta_time);
       
       if((0xf0 & offset[delta_time_size]) != 0xf0){
 	switch(status & 0xf0){
@@ -2382,6 +2382,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 	default:
 	  {
 	    n = 0;
+	    current_delta_time = next_delta_time;
 	    
 	    goto ags_midi_buffer_util_seek_message_REPEAT_STATUS;
 	  }

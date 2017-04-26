@@ -356,6 +356,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   guint i, j;
 
   /* bpm and first_offset */
+  header_node = NULL;
+  
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);
   xpath_object = xmlXPathEval((xmlChar *) "//midi-header\0",
 			      xpath_context);
@@ -370,6 +372,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     }
   }
 
+  tempo_node = NULL;
+  
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);
   xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track/midi-message[@event=\"tempo-number\"]\0",
 			      xpath_context);
@@ -382,6 +386,11 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	tempo_node = node[i];
       }
     }
+  }
+
+  if(header_node == NULL ||
+     tempo_node == NULL){
+    return;
   }
   
   track_collection->first_offset = 0;
@@ -400,7 +409,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 								  10));
   //  g_message("", sec_val);
   track_collection->bpm = 60.0 / sec_val;
-  g_message("bpm %f\0\0", track_collection->bpm);
+  //  g_message("bpm %f\0\0", track_collection->bpm);
 
   /* default length */
   time_signature_node = NULL;

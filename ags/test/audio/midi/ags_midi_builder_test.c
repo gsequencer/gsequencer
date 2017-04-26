@@ -72,10 +72,10 @@ void ags_midi_builder_test_append_text_event();
 #define AGS_MIDI_BUILDER_TEST_APPEND_TRACK_SEQUENCE_0 "ags-sequence-0\0"
 #define AGS_MIDI_BUILDER_TEST_APPEND_TRACK_SEQUENCE_1 "ags-sequence-1\0"
 
-#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT (1)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT (7)
 #define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_NOTE_COUNT (64)
 #define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
-#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_AUDIO_CHANNEL (0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_CHANNEL (0)
 #define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_VELOCITY (127)
 
 /* The suite initialization function.
@@ -270,15 +270,21 @@ ags_midi_builder_test_append_key_on()
 
   GList *current_midi_track;
 
+  unsigned char *offset;
   guint keys[AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_NOTE_COUNT];
 
+  guint ret_size;
+  glong delta_time;
+  glong channel;
+  glong key;
+  glong velocity;
   guint i, j;
   gboolean success;
   
   midi_builder = ags_midi_builder_test_create_default(AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT);
 
   current_midi_track = midi_builder->midi_track;
-  
+
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT; i++){
     midi_builder->current_midi_track = current_midi_track->data;
     
@@ -287,7 +293,7 @@ ags_midi_builder_test_append_key_on()
       
       ags_midi_builder_append_key_on(midi_builder,
 				     AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_PULSE_UNIT,
-				     AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_AUDIO_CHANNEL,
+				     AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_CHANNEL,
 				     keys[i][j],
 				     AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_VELOCITY);
     }
@@ -299,17 +305,45 @@ ags_midi_builder_test_append_key_on()
   ags_midi_builder_build(midi_builder);
 
   /* assert */
-  current_midi_track = midi_builder->midi_track;
-
+  offset = midi_builder->data;
+  offset += 14;
+  
   success = TRUE;
 
   for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT; i++){
-    midi_builder->current_midi_track = current_midi_track->data;
+    offset += 8;
+
+    ret_size = ags_midi_buffer_util_get_text_event(offset,
+						   &delta_time,
+						   NULL, NULL);
+
+    if(delta_time != 0){
+      success = FALSE;
+      
+      break;
+    }
+    
+    offset += ret_size;
     
     for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_NOTE_COUNT; j++){
-    }
+      ret_size = ags_midi_buffer_util_get_key_on(offset,
+						 &delta_time,
+						 &channel,
+						 &key,
+						 &velocity);
 
-    current_midi_track = current_midi_track->next;
+      if(key != keys[i][j]){
+	success = FALSE;
+
+	break;
+      }
+
+      offset += ret_size;
+    }
+    
+    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
+						     NULL);
+    offset += ret_size;
   }
   
   CU_ASSERT(success == TRUE);
