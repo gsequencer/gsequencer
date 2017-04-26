@@ -392,6 +392,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
   /* append tempo */
   if(initial_track){
+    //TODO:JK: improve hard-coded values
     ags_midi_builder_append_time_signature(midi_builder,
 					   0,
 					   4, 4,

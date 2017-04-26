@@ -78,6 +78,35 @@ void ags_midi_builder_test_append_text_event();
 #define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_CHANNEL (0)
 #define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_VELOCITY (127)
 
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_TRACK_COUNT (7)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_NOTE_COUNT (64)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_CHANNEL (0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_VELOCITY (127)
+
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_TRACK_COUNT (7)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_NOTE_COUNT (64)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_CHANNEL (0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_VELOCITY (127)
+
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_TRACK_COUNT (7)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CONTROL_COUNT (64)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CHANNEL (0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_VALUE (127)
+
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT (7)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT (64)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_CHANNEL (0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRANSMITTER (127)
+
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_TRACK_COUNT (7)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PROGRAM_COUNT (64)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PULSE_UNIT (16.0 * AGS_MIDI_BUILDER_TEST_DEFAULT_BPM / 60.0 * 1.0 / (AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION >> 8) / (0xff & AGS_MIDI_BUILDER_TEST_DEFAULT_DIVISION) * 1000000.0)
+#define AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_CHANNEL (0)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -354,33 +383,430 @@ ags_midi_builder_test_append_key_off()
 {
   AgsMidiBuilder *midi_builder;
 
-  midi_builder = ags_midi_builder_new(NULL);
+  GList *current_midi_track;
 
-  //TODO:JK: implement me
+  unsigned char *offset;
+  guint keys[AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_NOTE_COUNT];
+
+  guint ret_size;
+  glong delta_time;
+  glong channel;
+  glong key;
+  glong velocity;
+  guint i, j;
+  gboolean success;
+  
+  midi_builder = ags_midi_builder_test_create_default(AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_TRACK_COUNT);
+
+  current_midi_track = midi_builder->midi_track;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_TRACK_COUNT; i++){
+    midi_builder->current_midi_track = current_midi_track->data;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_NOTE_COUNT; j++){
+      keys[i][j] = rand() % 128;
+      
+      ags_midi_builder_append_key_off(midi_builder,
+				      AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_PULSE_UNIT,
+				      AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_CHANNEL,
+				      keys[i][j],
+				      AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_VELOCITY);
+    }
+
+    current_midi_track = current_midi_track->next;
+  }
+
+  /* build */
+  ags_midi_builder_build(midi_builder);
+
+  /* assert */
+  offset = midi_builder->data;
+  offset += 14;
+  
+  success = TRUE;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_TRACK_COUNT; i++){
+    offset += 8;
+
+    ret_size = ags_midi_buffer_util_get_text_event(offset,
+						   &delta_time,
+						   NULL, NULL);
+
+    if(delta_time != 0){
+      success = FALSE;
+      
+      break;
+    }
+    
+    offset += ret_size;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_OFF_NOTE_COUNT; j++){
+      ret_size = ags_midi_buffer_util_get_key_off(offset,
+						  &delta_time,
+						  &channel,
+						  &key,
+						  &velocity);
+
+      if(key != keys[i][j]){
+	success = FALSE;
+
+	break;
+      }
+
+      offset += ret_size;
+    }
+    
+    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
+						     NULL);
+    offset += ret_size;
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_builder_test_append_key_pressure()
 {
-  //TODO:JK: implement me
+  AgsMidiBuilder *midi_builder;
+
+  GList *current_midi_track;
+
+  unsigned char *offset;
+  guint keys[AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_NOTE_COUNT];
+
+  guint ret_size;
+  glong delta_time;
+  glong channel;
+  glong key;
+  glong velocity;
+  guint i, j;
+  gboolean success;
+  
+  midi_builder = ags_midi_builder_test_create_default(AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_TRACK_COUNT);
+
+  current_midi_track = midi_builder->midi_track;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_TRACK_COUNT; i++){
+    midi_builder->current_midi_track = current_midi_track->data;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_NOTE_COUNT; j++){
+      keys[i][j] = rand() % 128;
+      
+      ags_midi_builder_append_key_pressure(midi_builder,
+					   AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_PULSE_UNIT,
+					   AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_CHANNEL,
+					   keys[i][j],
+					   AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_VELOCITY);
+    }
+
+    current_midi_track = current_midi_track->next;
+  }
+
+  /* build */
+  ags_midi_builder_build(midi_builder);
+
+  /* assert */
+  offset = midi_builder->data;
+  offset += 14;
+  
+  success = TRUE;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_TRACK_COUNT; i++){
+    offset += 8;
+
+    ret_size = ags_midi_buffer_util_get_text_event(offset,
+						   &delta_time,
+						   NULL, NULL);
+
+    if(delta_time != 0){
+      success = FALSE;
+      
+      break;
+    }
+    
+    offset += ret_size;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_KEY_PRESSURE_NOTE_COUNT; j++){
+      ret_size = ags_midi_buffer_util_get_key_pressure(offset,
+						       &delta_time,
+						       &channel,
+						       &key,
+						       &velocity);
+
+      if(key != keys[i][j]){
+	success = FALSE;
+
+	break;
+      }
+
+      offset += ret_size;
+    }
+    
+    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
+						     NULL);
+    offset += ret_size;
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_builder_test_append_change_parameter()
 {
-  //TODO:JK: implement me
+  AgsMidiBuilder *midi_builder;
+
+  GList *current_midi_track;
+
+  unsigned char *offset;
+
+  guint controls[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CONTROL_COUNT];
+
+  guint ret_size;
+  glong delta_time;
+  glong channel;
+  glong control;
+  glong value;
+  guint i, j;
+  gboolean success;
+  
+  midi_builder = ags_midi_builder_test_create_default(AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_TRACK_COUNT);
+
+  current_midi_track = midi_builder->midi_track;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_TRACK_COUNT; i++){
+    midi_builder->current_midi_track = current_midi_track->data;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CONTROL_COUNT; j++){
+      controls[i][j] = rand() % 128;
+      
+      ags_midi_builder_append_change_parameter(midi_builder,
+					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_PULSE_UNIT,
+					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CHANNEL,
+					       controls[i][j],
+					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_VALUE);
+    }
+
+    current_midi_track = current_midi_track->next;
+  }
+
+  /* build */
+  ags_midi_builder_build(midi_builder);
+
+  /* assert */
+  offset = midi_builder->data;
+  offset += 14;
+  
+  success = TRUE;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_TRACK_COUNT; i++){
+    offset += 8;
+
+    ret_size = ags_midi_buffer_util_get_text_event(offset,
+						   &delta_time,
+						   NULL, NULL);
+
+    if(delta_time != 0){
+      success = FALSE;
+      
+      break;
+    }
+    
+    offset += ret_size;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PARAMETER_CONTROL_COUNT; j++){
+      ret_size = ags_midi_buffer_util_get_change_parameter(offset,
+							   &delta_time,
+							   &channel,
+							   &control,
+							   &value);
+
+      if(control != controls[i][j]){
+	success = FALSE;
+
+	break;
+      }
+
+      offset += ret_size;
+    }
+    
+    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
+						     NULL);
+    offset += ret_size;
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_builder_test_append_change_pitch_bend()
 {
-  //TODO:JK: implement me
+  AgsMidiBuilder *midi_builder;
+
+  GList *current_midi_track;
+
+  unsigned char *offset;
+
+  guint pitchs[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT];
+
+  guint ret_size;
+  glong delta_time;
+  glong channel;
+  glong pitch;
+  glong transmitter;
+  guint i, j;
+  gboolean success;
+  
+  midi_builder = ags_midi_builder_test_create_default(AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT);
+
+  current_midi_track = midi_builder->midi_track;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT; i++){
+    midi_builder->current_midi_track = current_midi_track->data;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT; j++){
+      pitchs[i][j] = rand() % 128;
+      
+      ags_midi_builder_append_change_pitch_bend(midi_builder,
+					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PULSE_UNIT,
+					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_CHANNEL,
+					       pitchs[i][j],
+					       AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRANSMITTER);
+    }
+
+    current_midi_track = current_midi_track->next;
+  }
+
+  /* build */
+  ags_midi_builder_build(midi_builder);
+
+  /* assert */
+  offset = midi_builder->data;
+  offset += 14;
+  
+  success = TRUE;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_TRACK_COUNT; i++){
+    offset += 8;
+
+    ret_size = ags_midi_buffer_util_get_text_event(offset,
+						   &delta_time,
+						   NULL, NULL);
+
+    if(delta_time != 0){
+      success = FALSE;
+      
+      break;
+    }
+    
+    offset += ret_size;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PITCH_BEND_PITCH_COUNT; j++){
+      ret_size = ags_midi_buffer_util_get_pitch_bend(offset,
+						     &delta_time,
+						     &channel,
+						     &pitch,
+						     &transmitter);
+
+      if(pitch != pitchs[i][j]){
+	success = FALSE;
+
+	break;
+      }
+
+      offset += ret_size;
+    }
+    
+    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
+						     NULL);
+    offset += ret_size;
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_midi_builder_test_append_change_program()
 {
-  //TODO:JK: implement me
+  AgsMidiBuilder *midi_builder;
+
+  GList *current_midi_track;
+
+  unsigned char *offset;
+
+  guint programs[AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_TRACK_COUNT][AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PROGRAM_COUNT];
+
+  guint ret_size;
+  glong delta_time;
+  glong channel;
+  glong program;
+  glong transmitter;
+  guint i, j;
+  gboolean success;
+  
+  midi_builder = ags_midi_builder_test_create_default(AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_TRACK_COUNT);
+
+  current_midi_track = midi_builder->midi_track;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_TRACK_COUNT; i++){
+    midi_builder->current_midi_track = current_midi_track->data;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PROGRAM_COUNT; j++){
+      programs[i][j] = rand() % 128;
+      
+      ags_midi_builder_append_change_program(midi_builder,
+					     AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PULSE_UNIT,
+					     AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_CHANNEL,
+					     programs[i][j]);
+    }
+
+    current_midi_track = current_midi_track->next;
+  }
+
+  /* build */
+  ags_midi_builder_build(midi_builder);
+
+  /* assert */
+  offset = midi_builder->data;
+  offset += 14;
+  
+  success = TRUE;
+
+  for(i = 0; i < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_TRACK_COUNT; i++){
+    offset += 8;
+
+    ret_size = ags_midi_buffer_util_get_text_event(offset,
+						   &delta_time,
+						   NULL, NULL);
+
+    if(delta_time != 0){
+      success = FALSE;
+      
+      break;
+    }
+    
+    offset += ret_size;
+    
+    for(j = 0; j < AGS_MIDI_BUILDER_TEST_APPEND_CHANGE_PROGRAM_PROGRAM_COUNT; j++){
+      ret_size = ags_midi_buffer_util_get_change_program(offset,
+							 &delta_time,
+							 &channel,
+							 &program);
+
+      if(program != programs[i][j]){
+	success = FALSE;
+
+	break;
+      }
+
+      offset += ret_size;
+    }
+    
+    ret_size = ags_midi_buffer_util_get_end_of_track(offset,
+						     NULL);
+    offset += ret_size;
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void

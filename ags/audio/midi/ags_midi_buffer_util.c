@@ -964,8 +964,6 @@ ags_midi_buffer_util_put_change_program(unsigned char *buffer,
 
   /* program */
   buffer[delta_time_size + 1] = 0x7f & program;
-
-  return(delta_time_size + 2);
 }
 
 /**
