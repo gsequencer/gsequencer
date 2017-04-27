@@ -224,7 +224,11 @@ ags_start_animation_thread(void *ptr)
     start = 
       list = ags_log_get_messages(log);
 
+    pthread_mutex_lock(log->mutex);
+    
     i = g_list_length(start);
+
+    pthread_mutex_unlock(log->mutex);
 
     if(i > nth){
       if(image_data != NULL){
@@ -247,9 +251,14 @@ ags_start_animation_thread(void *ptr)
 	cairo_move_to(cr,
 		      x0, y0);
 
+	pthread_mutex_lock(log->mutex);
+
 	cairo_show_text(cr, list->data);
 
 	list = list->next;
+
+	pthread_mutex_unlock(log->mutex);
+
 	y0 -= 12.0;
       }
 
