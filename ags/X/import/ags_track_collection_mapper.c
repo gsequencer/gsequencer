@@ -443,7 +443,9 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   AgsApplicationContext *application_context;
 
-  GList *notation;
+  xmlNode *clipboard;
+  
+  GList *notation, *imported_notation;
   
   gchar *machine_type;
   
@@ -490,28 +492,20 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 		     AGS_TYPE_INPUT, 128);
 
   /* apply notation */
-  notation = track_collection_mapper->notation;
-
-  while(notation != NULL){
-    g_object_set(notation->data,
-		 "audio\0", machine->audio,
-		 NULL);
-
-    notation = notation->next;
-  }
-
+  imported_notation = track_collection_mapper->notation;
   notation = machine->audio->notation;
 
+  ags_notation_add_all_to_selection(imported_notation->data);
+  clipboard = ags_notation_copy_selection(imported_notation->data);
+  
   while(notation != NULL){
-    g_object_run_dispose(notation->data);
-    g_object_unref(notation->data);
+    ags_notation_insert_from_clipboard(notation->data,
+				       clipboard,
+				       0, 0,
+				       0, 0);
     
     notation = notation->next;
   }
-
-  g_list_free(machine->audio->notation);
-
-  machine->audio->notation = track_collection_mapper->notation;
 
   /* add audio */  
   add_audio = ags_add_audio_new(window->soundcard,
@@ -609,7 +603,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   notation_start =
     notation = NULL;
 
-  audio_channels = (guint) gtk_spin_button_get_value(track_collection_mapper->audio_channels);
+  audio_channels = 1;
   
   for(i = 0; i < audio_channels; i++){
     current_notation = ags_notation_new(NULL,
@@ -624,6 +618,10 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   n_key_off = 0;
 
   default_length = track_collection->default_length;
+
+  if(default_length == 0){
+    default_length = 1;
+  }
   
   while(track != NULL){
     current = track->data;
@@ -662,7 +660,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 			    velocity);
 
 	    ags_notation_add_note(notation->data,
-				  ags_note_duplicate(note),
+				  note,
 				  FALSE);
 	    
 	    notation = notation->next;
@@ -694,7 +692,13 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
 	    if(list != NULL){
 	      note = list->data;
-	      note->x[1] = x;
+
+	      if(note->x[0] == x){
+		note->x[1] = x + 1;
+	      }else{
+		note->x[1] = x;
+	      }
+	      
 	      note->y = y;
 	      ags_complex_set(&(note->release),
 			      velocity);

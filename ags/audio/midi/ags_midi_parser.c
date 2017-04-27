@@ -2216,7 +2216,6 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
 #endif
 
   meta_type = 0xff & (ags_midi_parser_midi_getc(midi_parser));
-  midi_parser->offset += 1;
 
   node = NULL;
   
@@ -2320,17 +2319,15 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
     }
     break;
   default:
-    {
-      midi_parser->offset += 5;
+    midi_parser->offset += 5;
       
-      node = xmlNewNode(NULL,
-			"midi-message\0");
-      xmlNewProp(node,
-		 AGS_MIDI_EVENT,
-		 "misc\0");
-    }
+    node = xmlNewNode(NULL,
+		      "midi-message\0");
+    xmlNewProp(node,
+	       AGS_MIDI_EVENT,
+	       "misc\0");
   }
-	
+  
 #ifdef AGS_DEBUG
   g_message("meta type 0x%x\0", meta_type);
 #endif
@@ -2538,6 +2535,8 @@ xmlNode*
 ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
+
+  guint length;
   gint tempo;
 
 #ifdef AGS_DEBUG
@@ -2546,6 +2545,8 @@ ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type)
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
+
+  length = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
   tempo = ags_midi_parser_read_gint24(midi_parser);
   
@@ -2592,6 +2593,7 @@ xmlNode*
 ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
+  int length;
   int nn, dd, cc, bb;
   int denom = 1;
 
@@ -2601,6 +2603,8 @@ ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type)
   
   node = xmlNewNode(NULL,
 		    "midi-message\0");
+
+  length = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
   nn = 0xff & ags_midi_parser_midi_getc(midi_parser);
   dd = 0xff & ags_midi_parser_midi_getc(midi_parser);
@@ -2775,7 +2779,12 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
 				   text_length);
   
   switch(0x0f & meta_type){
-  case 0x01:      /* Text event */
+  case 0x01:
+    /* Text event */
+    xmlNewProp(node,
+	       "text\0",
+	       text);
+    
     break;
   case 0x02:
     {

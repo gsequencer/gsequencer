@@ -74,7 +74,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 	
 	midi_parser = ags_midi_parser_new(file);
 	midi_doc = ags_midi_parser_parse_full(midi_parser);
-	//	xmlSaveFormatFileEnc("-\0", midi_doc, "UTF-8\0", 1);
+	xmlSaveFormatFileEnc("-\0", midi_doc, "UTF-8\0", 1);
 	
 	g_object_set(midi_import_wizard->track_collection,
 		     "midi-document\0", midi_doc,

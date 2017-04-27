@@ -422,7 +422,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
     for(i = 0; i < notation_count; i++){
       check_match[i] = NULL;
     }
-    
+
+    /* check key-on */    
     for(i = 0; notation != NULL; i++){
       note = AGS_NOTATION(notation->data)->notes;
 
@@ -430,11 +431,31 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 	if(AGS_NOTE(note->data)->y < 128){
 	  if(key_on[AGS_NOTE(note->data)->y] < (gint) AGS_NOTE(note->data)->x[0]){
 	    check_match[i] = AGS_NOTE(note->data);
-
 	    break;
-	  }else if(key_off[AGS_NOTE(note->data)->y] < (gint) AGS_NOTE(note->data)->x[1]){
-	    check_match[i] = AGS_NOTE(note->data);
+	  }
+	}
+	
+	note = note->next;
+      }
+      
+      notation = notation->next;
+    }
 
+    /* check key-off */
+    notation = notation_start;
+
+    for(i = 0; notation != NULL; i++){
+      note = AGS_NOTATION(notation->data)->notes;
+
+      while(note != NULL){
+	if(AGS_NOTE(note->data)->y < 128){
+	  if(check_match[i] != NULL &&
+	     check_match[i]->x[0] < AGS_NOTE(note->data)->x[1]){
+	    break;
+	  }
+	  
+    	  if(key_off[AGS_NOTE(note->data)->y] < (gint) AGS_NOTE(note->data)->x[1]){
+	    check_match[i] = AGS_NOTE(note->data);
 	    break;
 	  }
 	}
