@@ -20,8 +20,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <libags.h>
-#include <libags-audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <CUnit/CUnit.h>
 #include <CUnit/Automated.h>

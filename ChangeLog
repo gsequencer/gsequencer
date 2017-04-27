@@ -1,11 +1,12 @@
 ags (0.8.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented MIDI import
+	* implemented MIDI import tracks
 	* implemented MIDI export tracks
-	* implemented MIDI export all
 	* fixed AgsMidiBuilder serious problems
 	* fixed ags_midi_buffer_util_seek()
+	* fixed AgsMidiParser using wrong tempo and time signature allocation
+	* fixed ags_midi_buffer_util.c same issue as above with tempo and time signature
 
 ags (0.7.136)
 
