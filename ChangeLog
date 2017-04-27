@@ -1,3 +1,10 @@
+ags (0.7.136)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved performance of AgsGuiThread to consume less power
+	* improved AgsMidiin to don't poll anymore in dedicated thread
+	* improved AgsLog to have a mutex and use it during splash-screen
+
 ags (0.7.135)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

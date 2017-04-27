@@ -275,7 +275,10 @@ ags_gui_thread_do_poll_loop(void *ptr)
   
   AgsXorgApplicationContext *xorg_application_context;
 
-  struct timespec start_current, current;
+  struct timespec idle = {
+    0,
+    4000000,
+  };
   
   guint i;
   
@@ -305,45 +308,16 @@ ags_gui_thread_do_poll_loop(void *ptr)
 				     AGS_TYPE_TASK_THREAD);
   
   /* poll */
-#if 0
-  clock_gettime(CLOCK_MONOTONIC,
-		&start_current);
-  i = 0;
-#endif
   
   while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
-#if 0
-    if(i == 60){
-      clock_gettime(CLOCK_MONOTONIC,
-		    &current);
-
-      current.tv_sec -= start_current.tv_sec;
-
-      if(current.tv_sec == 0){
-	current.tv_nsec = NSEC_PER_SEC - (current.tv_nsec - start_current.tv_nsec);
-      }else{
-	current.tv_sec == 0;
-	current.tv_nsec = NSEC_PER_SEC - (current.tv_nsec + (NSEC_PER_SEC - start_current.tv_nsec));
-      }
-      
-      nanosleep(&current,
-		NULL);
-
-      clock_gettime(CLOCK_MONOTONIC,
-		    &start_current);
-      i = 0;
-    }
-#endif
+    nanosleep(&idle,
+	      NULL);
     
     pthread_mutex_lock(task_thread->launch_mutex);
     
     AGS_THREAD_GET_CLASS(gui_thread)->run(gui_thread);
 
     pthread_mutex_unlock(task_thread->launch_mutex);
-
-#if 0
-    i++;
-#endif
   }
   
   pthread_exit(NULL);
