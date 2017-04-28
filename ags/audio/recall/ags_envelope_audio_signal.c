@@ -219,11 +219,26 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsEnvelopeChannel *envelope_channel;
   AgsEnvelopeAudioSignal *envelope_audio_signal;
+
   AgsAudioSignal *source;
+  AgsNote *note;
+  
+  AgsComplex *attack;
+  AgsComplex *decay;
+  AgsComplex *sustain;
+  AgsComplex *release;  
+  AgsComplex *ratio;
+
   GList *stream_source;
-  gboolean audio_enveloped, channel_enveloped;
+
+  gdouble current_volume[4], current_ratio[4];
+  guint buffer_length[4];
+  gboolean buffer_on[4];
+
   guint buffer_size;
-  guint i;
+
+  guint i, j;
+
   GValue audio_value = {0,};
   GValue channel_value = {0,};
 
@@ -232,24 +247,57 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
 
   source = AGS_RECALL_AUDIO_SIGNAL(envelope_audio_signal)->source;
+
   stream_source = source->stream_current;
-  buffer_size = source->buffer_size;
 
   if(stream_source == NULL){
     ags_recall_done(recall);
     return;
   }
 
-  /* check channel */
-  envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+  /* initialize some control values */
+  for(i = 0; i < 4; i++){
+    current_volume[i] = 1.0;
+    current_ratio[i] = 1.0;
+    
+    buffer_length[i] = 0;
+    buffer_on[i] = FALSE;
+  }
 
-  //FIXME:JK: access ports safe
-  ags_audio_signal_envelope(source,
-			    envelope_channel->attack->port_value.ags_port_double,
-			    envelope_channel->decay->port_value.ags_port_double,
-			    envelope_channel->sustain->port_value.ags_port_double,
-			    envelope_channel->release->port_value.ags_port_double,
-			    envelope_channel->ratio->port_value.ags_port_double);
+  buffer_size = source->buffer_size;
+
+  if(source->note != NULL){
+    gdouble x0, y0;
+    gdouble x1, y1;
+    
+    note = source->note;
+
+    attack = &(note->attack);
+    decay = &(note->decay);
+    sustain = &(note->sustain);
+    release = &(note->release);
+
+    ratio = &(note->ration);
+
+    //TODO:JK: implement me
+  }else{
+    note = NULL;
+
+    /* check channel */
+    envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+
+  }
+  
+  for(i = 0, j = 0; i < 4; i++){
+    if(buffer_on[i]){
+      ags_audio_buffer_util_envelope(stream_source->data + j, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_volume[i],
+				     current_ration[i]);
+
+      j += buffer_length[i];
+    }
+  }  
 }
 
 AgsRecall*
