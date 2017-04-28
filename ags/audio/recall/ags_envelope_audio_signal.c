@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,8 @@
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
 #include <ags/audio/recall/ags_envelope_channel.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
@@ -34,6 +36,7 @@
 #include <ags/audio/ags_recall_channel_run.h>
 
 #include <stdlib.h>
+#include <complex.h>
 
 void ags_envelope_audio_signal_class_init(AgsEnvelopeAudioSignalClass *envelope_audio_signal);
 void ags_envelope_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -214,6 +217,20 @@ ags_envelope_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_envelope_audio_signal_parent_class)->finalize(gobject);
 }
 
+AgsRecall*
+ags_envelope_audio_signal_duplicate(AgsRecall *recall,
+				    AgsRecallID *recall_id,
+				    guint *n_params, GParameter *parameter)
+{
+  AgsEnvelopeAudioSignal *envelope;
+
+  envelope = (AgsEnvelopeAudioSignal *) AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->duplicate(recall,
+													    recall_id,
+													    n_params, parameter);
+
+  return((AgsRecall *) envelope);
+}
+
 void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
@@ -269,6 +286,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   if(source->note != NULL){
     gdouble x0, y0;
     gdouble x1, y1;
+    gdouble current_x;
+    guint current_position;
+    guint current_frame, first_frame, buffer_size;
+    guint offset;
     
     note = source->note;
 
@@ -279,13 +300,157 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
     ratio = &(note->ration);
 
-    //TODO:JK: implement me
+    /* get offsets */
+    current_position = g_list_position(source->stream_beginning,
+				       source->stream_current);
+
+    if(current_position == 0){
+      current_frame = 0;
+      first_frame = source->first_frame;
+      buffer_size = source->buffer_size - source->first_frame;
+    }else{
+      current_frame = current_position * source->buffer_size - source->first_frame;
+      first_frame = 0;
+      buffer_size = source->buffer_size;
+    }
+
+    /* attack */
+    x0 = *attack[0];
+    y0 = *attack[1];
+
+    x1 = *decay[0];
+    y1 = *decay[1];
+
+    offset = (x1 - x0) * source->frame_count;
+    
+    if(offset < source->frame_count){
+      if(offset > current_frame){
+	buffer_on[0] = TRUE;
+
+	if(offset - current_frame > buffer_size){
+	  guint j;
+
+	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
+	  
+	  buffer_length[0] = offset - (j * source->buffer_size) - current_frame;
+
+	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	}else{
+	  buffer_length[0] = offset - current_frame;
+
+	  current_x = source->frame_count / current_frame;
+	}
+
+	current_volume[0] = (y1 - y0) / (x1 - current_x);
+	current_ration[0] = (y1 - y0) / (x1 - x0);
+      }
+    }else{
+      g_message("ags-envelope - invalid offset");
+    }
+    
+    /* decay */
+    x0 = *decay[0];
+    y0 = *decay[1];
+
+    x1 = *sustain[0];
+    y1 = *sustain[1];
+
+    offset += (x1 - x0) * source->frame_count;
+
+    if(offset < source->frame_count){
+      if(offset > current_frame){
+	buffer_on[1] = TRUE;
+
+	if(offset - current_frame > buffer_size){
+	  guint j;
+
+	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
+	  
+	  buffer_length[1] = offset - (j * source->buffer_size) - current_frame;
+
+	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	}else{
+	  buffer_length[1] = offset - current_frame;
+
+	  current_x = source->frame_count / current_frame;
+	}
+
+	current_volume[1] = (y1 - y0) / (x1 - current_x);
+	current_ration[1] = (y1 - y0) / (x1 - x0);
+      }
+    }else{
+      g_message("ags-envelope - invalid offset");
+    }
+
+    /* sustain */
+    x0 = *sustain[0];
+    y0 = *sustain[1];
+
+    x1 = *release[0];
+    y1 = *release[1];
+
+    offset += (x1 - x0) * source->frame_count;
+
+    if(offset < source->frame_count){
+      if(offset > current_frame){
+	buffer_on[2] = TRUE;
+
+	if(offset - current_frame > buffer_size){
+	  guint j;
+
+	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
+	  
+	  buffer_length[2] = offset - (j * source->buffer_size) - current_frame;
+
+	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	}else{
+	  buffer_length[2] = offset - current_frame;
+
+	  current_x = source->frame_count / current_frame;
+	}
+
+	current_volume[2] = (y1 - y0) / (x1 - current_x);
+	current_ration[2] = (y1 - y0) / (x1 - x0);
+      }
+    }else{
+      g_message("ags-envelope - invalid offset");
+    }
+    
+    /* release */
+    x0 = *release[0];
+    y0 = *release[1];
+
+    x1 = 1.0;
+    y1 = 0.0;
+    
+    if(offset < source->frame_count){
+      if(offset > current_frame){
+	buffer_on[3] = TRUE;
+
+	if(offset - current_frame > buffer_size){
+	  guint j;
+
+	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
+	  
+	  buffer_length[0] = offset - (j * source->buffer_size) - current_frame;
+
+	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	}else{
+	  buffer_length[0] = offset - current_frame;
+
+	  current_x = source->frame_count / current_frame;
+	}
+
+	current_volume[0] = (y1 - y0) / (x1 - current_x);
+	current_ration[0] = (y1 - y0) / (x1 - x0);
+      }
+    }else{
+      g_message("ags-envelope - invalid offset");
+    }
   }else{
-    note = NULL;
-
-    /* check channel */
-    envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
-
+    //TODO:JK: implement me
+    
+    return;
   }
   
   for(i = 0, j = 0; i < 4; i++){
@@ -298,20 +463,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       j += buffer_length[i];
     }
   }  
-}
-
-AgsRecall*
-ags_envelope_audio_signal_duplicate(AgsRecall *recall,
-				    AgsRecallID *recall_id,
-				    guint *n_params, GParameter *parameter)
-{
-  AgsEnvelopeAudioSignal *envelope;
-
-  envelope = (AgsEnvelopeAudioSignal *) AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->duplicate(recall,
-													    recall_id,
-													    n_params, parameter);
-
-  return((AgsRecall *) envelope);
 }
 
 /**
