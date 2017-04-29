@@ -622,22 +622,22 @@ ags_envelope_dialog_plot(AgsEnvelopeDialog *envelope_dialog)
 
   /* reset plot points */
   plot->point[0][0] = default_width * (creal(attack)) * cabs(ratio);
-  plot->point[0][1] = -1.0 * default_height * cabs(attack) + cimag(ratio) * default_height;
+  plot->point[0][1] = default_height * cabs(attack) - default_height / cabs(ratio);
     
   offset = creal(attack);
   
   plot->point[1][0] = default_width * (creal(decay) + offset) * cabs(ratio);
-  plot->point[1][1] = -1.0 * default_height * cabs(decay) + cimag(ratio) * default_height;
+  plot->point[1][1] = default_height * cabs(decay) - default_height / cabs(ratio);
   
   offset += creal(decay);
   
   plot->point[2][0] = default_width * (creal(sustain) + offset) * cabs(ratio);
-  plot->point[2][1] = -1.0 * default_height * cabs(sustain) + cimag(ratio) * default_height;
+  plot->point[2][1] = default_height * cabs(sustain) - default_height / cabs(ratio);
   
   offset += creal(sustain);
 
   plot->point[3][0] = default_width * (creal(release) + offset) * cabs(ratio);
-  plot->point[3][1] = -1.0 * default_height * cabs(release) + cimag(ratio) * default_height;
+  plot->point[3][1] = default_height * cabs(release) - default_height / cabs(ratio);
   
   /* redraw */
   gtk_widget_queue_draw(cartesian);
