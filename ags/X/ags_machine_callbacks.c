@@ -45,6 +45,7 @@
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_midi_dialog.h>
 
+#include <ags/X/editor/ags_envelope_dialog.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
 
@@ -425,6 +426,15 @@ ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine)
   //TODO:JK: implement me
   
   return(0);
+}
+
+void
+ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  if(machine->envelope_dialog == NULL){
+    machine->envelope_dialog = ags_envelope_dialog_new(machine);
+    gtk_widget_show_all(machine->envelope_dialog);
+  }
 }
 
 int

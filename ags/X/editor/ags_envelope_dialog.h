@@ -59,19 +59,11 @@ struct _AgsEnvelopeDialog
 
   AgsCartesian *cartesian;
   
-  GtkLabel *attack_label;
   GtkHScale *attack;
-
-  GtkLabel *decay_label;
   GtkHScale *decay;
-
-  GtkLabel *sustain_label;
   GtkHScale *sustain;
-
-  GtkLabel *release_label;
   GtkHScale *release;
 
-  GtkLabel *ratio_label;
   GtkHScale *ratio;
   
   GtkButton *apply;

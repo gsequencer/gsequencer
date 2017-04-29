@@ -2205,6 +2205,16 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
     gtk_widget_show((GtkWidget *) item);
   }
 
+  if((AGS_MACHINE_POPUP_ENVELOPE & edit_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("envelope\0"));
+    gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_envelope_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
   gtk_widget_show_all(machine->popup);
 }
 

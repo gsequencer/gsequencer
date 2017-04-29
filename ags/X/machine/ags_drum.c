@@ -252,8 +252,8 @@ ags_drum_init(AgsDrum *drum)
 	       "midi-end-mapping\0", 128,
 	       NULL);
 
-  AGS_MACHINE(drum)->flags |= (AGS_MACHINE_IS_SEQUENCER
-			       | AGS_MACHINE_TAKES_FILE_INPUT);
+  AGS_MACHINE(drum)->flags |= (AGS_MACHINE_IS_SEQUENCER |
+			       AGS_MACHINE_TAKES_FILE_INPUT);
   AGS_MACHINE(drum)->file_input_flags |= (AGS_MACHINE_ACCEPT_WAV);
   AGS_MACHINE(drum)->input_pad_type = AGS_TYPE_DRUM_INPUT_PAD;
   AGS_MACHINE(drum)->input_line_type = AGS_TYPE_DRUM_INPUT_LINE;
@@ -261,7 +261,8 @@ ags_drum_init(AgsDrum *drum)
   AGS_MACHINE(drum)->output_line_type = AGS_TYPE_DRUM_OUTPUT_LINE;
 
   ags_machine_popup_add_edit_options((AgsMachine *) drum,
-				     (AGS_MACHINE_POPUP_COPY_PATTERN));
+				     (AGS_MACHINE_POPUP_COPY_PATTERN |
+				      AGS_MACHINE_POPUP_ENVELOPE));
   ags_machine_popup_add_connection_options(drum,
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
   
