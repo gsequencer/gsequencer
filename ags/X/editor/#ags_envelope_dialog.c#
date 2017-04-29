@@ -664,3 +664,4 @@ ags_envelope_dialog_new(AgsMachine *machine)
 
   return(envelope_dialog);
 }
+>

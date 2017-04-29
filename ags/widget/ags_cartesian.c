@@ -1366,8 +1366,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 			       plot->point_color[i][1],
 			       plot->point_color[i][2]);
 	}
-
+	
+#ifdef AGS_DEBUG
 	g_message("%f %f\0", plot->point[i][0], plot->point[i][1]);
+#endif
 	
 	cairo_arc(cr,
 		  x_offset + plot->point[i][0] - cartesian->point_radius,
