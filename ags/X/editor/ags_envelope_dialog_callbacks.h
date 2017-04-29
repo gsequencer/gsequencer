@@ -26,6 +26,13 @@
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
+void ags_envelope_dialog_attack_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog);
+void ags_envelope_dialog_decay_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog);
+void ags_envelope_dialog_sustain_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog);
+void ags_envelope_dialog_release_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog);
+
+void ags_envelope_dialog_ratio_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog);
+
 int ags_envelope_dialog_apply_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
 int ags_envelope_dialog_ok_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
 int ags_envelope_dialog_cancel_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);

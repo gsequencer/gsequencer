@@ -78,6 +78,8 @@ struct _AgsEnvelopeDialogClass
 
 GType ags_envelope_dialog_get_type(void);
 
+void ags_envelope_dialog_plot(AgsEnvelopeDialog *envelope_dialog);
+
 AgsEnvelopeDialog* ags_envelope_dialog_new(AgsMachine *machine);
 
 #endif /*__AGS_ENVELOPE_DIALOG_H__*/

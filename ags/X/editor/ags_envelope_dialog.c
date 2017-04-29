@@ -428,7 +428,22 @@ ags_envelope_dialog_connect(AgsConnectable *connectable)
   }
 
   envelope_dialog->flags |= AGS_ENVELOPE_DIALOG_CONNECTED;
-  
+
+  g_signal_connect((GObject *) envelope_dialog->attack, "value-changed\0",
+		   G_CALLBACK(ags_envelope_dialog_attack_callback), (gpointer) envelope_dialog);
+
+  g_signal_connect((GObject *) envelope_dialog->decay, "value-changed\0",
+		   G_CALLBACK(ags_envelope_dialog_decay_callback), (gpointer) envelope_dialog);
+
+  g_signal_connect((GObject *) envelope_dialog->sustain, "value-changed\0",
+		   G_CALLBACK(ags_envelope_dialog_sustain_callback), (gpointer) envelope_dialog);
+
+  g_signal_connect((GObject *) envelope_dialog->release, "value-changed\0",
+		   G_CALLBACK(ags_envelope_dialog_release_callback), (gpointer) envelope_dialog);
+
+  g_signal_connect((GObject *) envelope_dialog->ratio, "value-changed\0",
+		   G_CALLBACK(ags_envelope_dialog_ratio_callback), (gpointer) envelope_dialog);
+
   /* applicable */
   g_signal_connect((GObject *) envelope_dialog->apply, "clicked\0",
 		   G_CALLBACK(ags_envelope_dialog_apply_callback), (gpointer) envelope_dialog);
@@ -521,6 +536,12 @@ ags_envelope_dialog_apply(AgsApplicable *applicable)
 
 void
 ags_envelope_dialog_reset(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_envelope_dialog_plot(AgsEnvelopeDialog *envelope_dialog)
 {
   //TODO:JK: implement me
 }
