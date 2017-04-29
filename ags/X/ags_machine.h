@@ -124,7 +124,8 @@ struct _AgsMachine
   GtkDialog *rename;
   GtkDialog *connection_editor;
   GtkDialog *midi_dialog;
-
+  GtkDialog *envelope_dialog;
+  
   GObject *application_context;
 };
 

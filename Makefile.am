@@ -1537,6 +1537,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_toolbar.h \
 	ags/X/editor/ags_automation_area_callbacks.h \
 	ags/X/editor/ags_automation_area.h \
+	ags/X/editor/ags_envelope_dialog_callbacks.h \
+	ags/X/editor/ags_envelope_dialog.h \
 	ags/X/editor/ags_file_selection_callbacks.h \
 	ags/X/editor/ags_file_selection.h \
 	ags/X/editor/ags_inline_player_callbacks.h \
@@ -1573,6 +1575,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
 	ags/X/editor/ags_automation_area.c \
 	ags/X/editor/ags_automation_area_callbacks.c \
+	ags/X/editor/ags_envelope_dialog_callbacks.c \
+	ags/X/editor/ags_envelope_dialog.c \
 	ags/X/editor/ags_file_selection_callbacks.c \
 	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \

@@ -17,17 +17,17 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_MIDI_DIALOG_CALLBACKS_H__
-#define __AGS_MIDI_DIALOG_CALLBACKS_H__
+#ifndef __AGS_ENVELOPE_DIALOG_CALLBACKS_H__
+#define __AGS_ENVELOPE_DIALOG_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_midi_dialog.h>
+#include <ags/X/editor/ags_envelope_dialog.h>
 
-int ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
-int ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
+int ags_envelope_dialog_apply_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
+int ags_envelope_dialog_ok_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
+int ags_envelope_dialog_cancel_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
 
-#endif /*__AGS_MIDI_DIALOG_CALLBACKS_H__*/
+#endif /*__AGS_ENVELOPE_DIALOG_CALLBACKS_H__*/

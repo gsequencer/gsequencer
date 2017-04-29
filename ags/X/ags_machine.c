@@ -376,6 +376,7 @@ ags_machine_init(AgsMachine *machine)
   machine->rename = NULL;
   machine->connection_editor = NULL;
   machine->midi_dialog = NULL;
+  machine->envelope_dialog = NULL;
 
   machine->application_context = NULL;
 }

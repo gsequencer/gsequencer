@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -447,7 +447,9 @@ ags_midi_dialog_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MACHINE:
-    g_value_set_object(value, midi_dialog->machine);
+    {
+      g_value_set_object(value, midi_dialog->machine);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

@@ -287,6 +287,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     gdouble x0, y0;
     gdouble x1, y1;
     gdouble current_x;
+    gdouble base_y;
     guint current_position;
     guint current_frame, first_frame, buffer_size;
     guint offset;
@@ -298,7 +299,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     sustain = &(note->sustain);
     release = &(note->release);
 
-    ratio = &(note->ration);
+    ratio = &(note->ratio);
 
     /* get offsets */
     current_position = g_list_position(source->stream_beginning,
@@ -314,12 +315,15 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       buffer_size = source->buffer_size;
     }
 
+    /* ratio - base y */
+    base_y = *ratio[1];
+    
     /* attack */
     x0 = *attack[0];
-    y0 = *attack[1];
+    y0 = base_y + *attack[1];
 
     x1 = *decay[0];
-    y1 = *decay[1];
+    y1 = base_y + *decay[1];
 
     offset = (x1 - x0) * source->frame_count;
     
@@ -342,7 +346,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	}
 
 	current_volume[0] = (y1 - y0) / (x1 - current_x);
-	current_ration[0] = (y1 - y0) / (x1 - x0);
+	current_ratio[0] = (y1 - y0) / (x1 - x0);
       }
     }else{
       g_message("ags-envelope - invalid offset");
@@ -350,10 +354,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     
     /* decay */
     x0 = *decay[0];
-    y0 = *decay[1];
+    y0 = base_y + *decay[1];
 
     x1 = *sustain[0];
-    y1 = *sustain[1];
+    y1 = base_y + *sustain[1];
 
     offset += (x1 - x0) * source->frame_count;
 
@@ -376,7 +380,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	}
 
 	current_volume[1] = (y1 - y0) / (x1 - current_x);
-	current_ration[1] = (y1 - y0) / (x1 - x0);
+	current_ratio[1] = (y1 - y0) / (x1 - x0);
       }
     }else{
       g_message("ags-envelope - invalid offset");
@@ -384,10 +388,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
     /* sustain */
     x0 = *sustain[0];
-    y0 = *sustain[1];
+    y0 = base_y + *sustain[1];
 
     x1 = *release[0];
-    y1 = *release[1];
+    y1 = base_y + *release[1];
 
     offset += (x1 - x0) * source->frame_count;
 
@@ -410,7 +414,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	}
 
 	current_volume[2] = (y1 - y0) / (x1 - current_x);
-	current_ration[2] = (y1 - y0) / (x1 - x0);
+	current_ratio[2] = (y1 - y0) / (x1 - x0);
       }
     }else{
       g_message("ags-envelope - invalid offset");
@@ -418,10 +422,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     
     /* release */
     x0 = *release[0];
-    y0 = *release[1];
+    y0 = base_y + *release[1];
 
     x1 = 1.0;
-    y1 = 0.0;
+    y1 = base_y;
     
     if(offset < source->frame_count){
       if(offset > current_frame){
@@ -442,7 +446,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	}
 
 	current_volume[0] = (y1 - y0) / (x1 - current_x);
-	current_ration[0] = (y1 - y0) / (x1 - x0);
+	current_ratio[0] = (y1 - y0) / (x1 - x0);
       }
     }else{
       g_message("ags-envelope - invalid offset");
@@ -458,7 +462,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       ags_audio_buffer_util_envelope(stream_source->data + j, 1,
 				     ags_audio_buffer_util_format_from_soundcard(source->format),
 				     current_volume[i],
-				     current_ration[i]);
+				     current_ratio[i]);
 
       j += buffer_length[i];
     }
