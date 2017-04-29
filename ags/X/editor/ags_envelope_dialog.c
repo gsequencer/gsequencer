@@ -228,18 +228,18 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   
   default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
   default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
-  
+
   plot->point[0][0] = default_width * (creal(0.25)) * cabs(0.0);
-  plot->point[0][1] = -1.0 * default_height * cabs(0.25) + cimag(0.0) * default_height;
+  plot->point[0][1] = -1.0 * default_height * cabs(0.25) + default_height / cabs(0.0);
 
   plot->point[1][0] = default_width * (creal(0.5) + offset) * cabs(0.0);
-  plot->point[1][1] = -1.0 * default_height * cabs(0.5) + cimag(0.0) * default_height;
+  plot->point[1][1] = -1.0 * default_height * cabs(0.5) + default_height / cabs(0.0);
 
   plot->point[2][0] = default_width * (creal(0.75) + offset) * cabs(0.0);
-  plot->point[2][1] = -1.0 * default_height * cabs(0.75) + cimag(0.0) * default_height;
+  plot->point[2][1] = -1.0 * default_height * cabs(0.75) + default_height / cabs(0.0);
 
   plot->point[3][0] = default_width * (creal(1.0) + offset) * cabs(0.0);
-  plot->point[3][1] = -1.0 * default_height * cabs(1.0) + cimag(0.0) * default_height;
+  plot->point[3][1] = -1.0 * default_height * cabs(1.0) + default_height / cabs(0.0);
 
   ags_cartesian_add_plot(cartesian,
 			 plot);
@@ -374,7 +374,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   gtk_scale_set_draw_value(envelope_dialog->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_dialog->ratio,
-		      0.0);
+		      -1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(envelope_dialog->ratio),
 		   1, 2,
