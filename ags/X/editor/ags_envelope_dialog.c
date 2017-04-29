@@ -228,18 +228,24 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   
   default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
   default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
+  
+  plot->point[0][0] = default_width * (creal(0.25) * cabs(-1.0));
+  plot->point[0][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
 
-  plot->point[0][0] = default_width * (creal(0.25)) * cabs(0.0);
-  plot->point[0][1] = -1.0 * default_height * cabs(0.25) + default_height / cabs(0.0);
+  offset = default_width * (creal(0.25) * cabs(-1.0));
+  
+  plot->point[1][0] = offset + default_width * (creal(0.25) * cabs(-1.0));
+  plot->point[1][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
 
-  plot->point[1][0] = default_width * (creal(0.5) + offset) * cabs(0.0);
-  plot->point[1][1] = -1.0 * default_height * cabs(0.5) + default_height / cabs(0.0);
+  offset += default_width * (creal(0.25) * cabs(-1.0));
 
-  plot->point[2][0] = default_width * (creal(0.75) + offset) * cabs(0.0);
-  plot->point[2][1] = -1.0 * default_height * cabs(0.75) + default_height / cabs(0.0);
+  plot->point[2][0] = offset + default_width * (creal(0.25) * cabs(-1.0));
+  plot->point[2][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
 
-  plot->point[3][0] = default_width * (creal(1.0) + offset) * cabs(0.0);
-  plot->point[3][1] = -1.0 * default_height * cabs(1.0) + default_height / cabs(0.0);
+  offset += default_width * (creal(0.25) * cabs(-1.0));
+
+  plot->point[3][0] = offset + default_width * (creal(0.25) * cabs(-1.0));
+  plot->point[3][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
 
   ags_cartesian_add_plot(cartesian,
 			 plot);
@@ -543,7 +549,54 @@ ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_envelope_dialog_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+
+  GList *notation;
+  GList *selection;
+
+  complex attack, decay, sustain, release;
+  
+  envelope_dialog = AGS_ENVELOPE_DIALOG(applicable);
+
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+
+  notation = audio->notation;
+
+  /* get z */
+  attack = gtk_range_get_value(GTK_RANGE(envelope_dialog->attack));
+
+  decay = gtk_range_get_value(GTK_RANGE(envelope_dialog->decay));
+
+  sustain = gtk_range_get_value(GTK_RANGE(envelope_dialog->sustain));
+
+  release = gtk_range_get_value(GTK_RANGE(envelope_dialog->release));
+
+  /* set attack, decay, sustain and release */
+  while(notation != NULL){
+    selection = AGS_NOTATION(notation->data);
+
+    while(selection != NULL){
+      ags_complex_set(&(AGS_NOTE(selection->data)->attack),
+		      attack);
+
+      ags_complex_set(&(AGS_NOTE(selection->data)->decay),
+		      decay);
+
+      ags_complex_set(&(AGS_NOTE(selection->data)->sustain),
+		      sustain);
+
+      ags_complex_set(&(AGS_NOTE(selection->data)->release),
+		      release);
+    }
+    
+    notation = notation->next;
+  }
 }
 
 void
@@ -621,22 +674,22 @@ ags_envelope_dialog_plot(AgsEnvelopeDialog *envelope_dialog)
   ratio = gtk_range_get_value(envelope_dialog->ratio);
 
   /* reset plot points */
-  plot->point[0][0] = default_width * (creal(attack)) * cabs(ratio);
+  plot->point[0][0] = default_width * (creal(attack) * cabs(ratio));
   plot->point[0][1] = default_height * cabs(attack) - default_height / cabs(ratio);
     
-  offset = creal(attack);
+  offset = default_width * (creal(attack) * cabs(ratio));
   
-  plot->point[1][0] = default_width * (creal(decay) + offset) * cabs(ratio);
+  plot->point[1][0] = offset + default_width * (creal(decay) * cabs(ratio));
   plot->point[1][1] = default_height * cabs(decay) - default_height / cabs(ratio);
   
-  offset += creal(decay);
+  offset += default_width * (creal(decay) * cabs(ratio));
   
-  plot->point[2][0] = default_width * (creal(sustain) + offset) * cabs(ratio);
+  plot->point[2][0] = offset + default_width * (creal(sustain) * cabs(ratio));
   plot->point[2][1] = default_height * cabs(sustain) - default_height / cabs(ratio);
   
-  offset += creal(sustain);
+  offset += default_width * (creal(sustain) * cabs(ratio));
 
-  plot->point[3][0] = default_width * (creal(release) + offset) * cabs(ratio);
+  plot->point[3][0] = offset + default_width * (creal(release) * cabs(ratio));
   plot->point[3][1] = default_height * cabs(release) - default_height / cabs(ratio);
   
   /* redraw */

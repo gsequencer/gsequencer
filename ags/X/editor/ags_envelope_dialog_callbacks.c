@@ -25,40 +25,30 @@
 void
 ags_envelope_dialog_attack_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
 {
-  //TODO:JK: implement me
-
   ags_envelope_dialog_plot(envelope_dialog);
 }
 
 void
 ags_envelope_dialog_decay_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
 {
-  //TODO:JK: implement me
-
   ags_envelope_dialog_plot(envelope_dialog);
 }
 
 void
 ags_envelope_dialog_sustain_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
 {
-  //TODO:JK: implement me
-
   ags_envelope_dialog_plot(envelope_dialog);
 }
 
 void
 ags_envelope_dialog_release_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
 {
-  //TODO:JK: implement me
-
   ags_envelope_dialog_plot(envelope_dialog);
 }
 
 void
 ags_envelope_dialog_ratio_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
 {
-  //TODO:JK: implement me
-
   ags_envelope_dialog_plot(envelope_dialog);
 }
 
