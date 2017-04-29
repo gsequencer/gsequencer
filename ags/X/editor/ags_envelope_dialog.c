@@ -28,6 +28,8 @@
 
 #include <ags/X/ags_window.h>
 
+#include <complex.h>
+
 void ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog);
 void ags_envelope_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_envelope_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -42,13 +44,14 @@ void ags_envelope_dialog_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_envelope_dialog_connect(AgsConnectable *connectable);
 void ags_envelope_dialog_disconnect(AgsConnectable *connectable);
+void ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update);
+void ags_envelope_dialog_apply(AgsApplicable *applicable);
+void ags_envelope_dialog_reset(AgsApplicable *applicable);
+
 gchar* ags_envelope_dialog_x_label_func(gdouble value,
 					gpointer data);
 gchar* ags_envelope_dialog_y_label_func(gdouble value,
 					gpointer data);
-void ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update);
-void ags_envelope_dialog_apply(AgsApplicable *applicable);
-void ags_envelope_dialog_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_envelope_dialog
@@ -173,6 +176,10 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   GtkVBox *vbox;
   GtkTable *table;
   GtkLabel *label;
+
+  AgsPlot *plot;
+
+  gdouble default_width, default_height;
   
   gtk_window_set_title((GtkWindow *) envelope_dialog,
 		       g_strdup("Envelope\0"));
@@ -194,19 +201,51 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   /* cartesian */
   envelope_dialog->cartesian = ags_cartesian_new();
+
   envelope_dialog->cartesian->x_label_func = ags_envelope_dialog_x_label_func;
   envelope_dialog->cartesian->y_label_func = ags_envelope_dialog_y_label_func;
+
   ags_cartesian_fill_label(envelope_dialog->cartesian,
 			   TRUE);
   ags_cartesian_fill_label(envelope_dialog->cartesian,
 			   FALSE);  
 
+  /* cartesian - plot */
+  plot = ags_plot_alloc(4, 0, 0);
+  plot->join_points = TRUE;
+
+  plot->point_color[0][0] = 1.0;
+  plot->point_color[1][0] = 1.0;
+  plot->point_color[2][0] = 1.0;
+  plot->point_color[3][0] = 1.0;
+
+  default_width = envelope_dialog->cartesian->x_step_width * envelope_dialog->cartesian->x_scale_step_width;
+  default_height = envelope_dialog->cartesian->y_step_height * envelope_dialog->cartesian->y_scale_step_height;
+  
+  plot->point[0][0] = default_width * creal(0.25);
+  plot->point[0][1] = -1.0 * default_height * cimag(0.25 * I);
+
+  plot->point[1][0] = default_width * (creal(0.25) + creal(0.25));
+  plot->point[1][1] = -1.0 * default_height * cimag(0.25 * I);
+
+  plot->point[2][0] = default_width * (creal(0.25) + creal(0.5));
+  plot->point[2][1] = -1.0 * default_height * cimag(0.25 * I);
+
+  plot->point[3][0] = default_width * (creal(0.25) + creal(0.75));
+  plot->point[3][1] = -1.0 * default_height * cimag(0.25 * I);
+
+  ags_cartesian_add_plot(envelope_dialog->cartesian,
+			 plot);
+
+  /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request(envelope_dialog->cartesian,
 			      200, 200);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(envelope_dialog->cartesian),
 		     FALSE, FALSE,
 		     0);
+
+  gtk_widget_queue_draw(envelope_dialog->cartesian);
 
   /* table */
   table = (GtkTable *) gtk_table_new(5, 2,
@@ -488,6 +527,24 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
+void
+ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update)
+{
+  /* empty */
+}
+
+void
+ags_envelope_dialog_apply(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_envelope_dialog_reset(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
 gchar*
 ags_envelope_dialog_x_label_func(gdouble value,
 				 gpointer data)
@@ -523,27 +580,49 @@ ags_envelope_dialog_y_label_func(gdouble value,
 }
 
 void
-ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update)
-{
-  /* empty */
-}
-
-void
-ags_envelope_dialog_apply(AgsApplicable *applicable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_envelope_dialog_reset(AgsApplicable *applicable)
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_envelope_dialog_plot(AgsEnvelopeDialog *envelope_dialog)
 {
-  //TODO:JK: implement me
+  AgsPlot *plot;
+
+  gdouble default_width, default_height;
+  gdouble attack, decay, sustain, release;
+  gdouble ratio;
+  gdouble offset;
+  
+  if(!AGS_IS_ENVELOPE_DIALOG(envelope_dialog)){
+    return;
+  }
+  
+  plot = envelope_dialog->cartesian->plot->data;
+
+  default_width = envelope_dialog->cartesian->x_step_width * envelope_dialog->cartesian->x_scale_step_width;
+  default_height = envelope_dialog->cartesian->y_step_height * envelope_dialog->cartesian->y_scale_step_height;
+
+  attack = gtk_range_get_value(envelope_dialog->attack);
+  decay = gtk_range_get_value(envelope_dialog->decay);
+  sustain = gtk_range_get_value(envelope_dialog->sustain);
+  release = gtk_range_get_value(envelope_dialog->release);
+
+  ratio = gtk_range_get_value(envelope_dialog->ratio);
+
+  /* reset plot points */
+  plot->point[0][0] = default_width * creal(attack);
+  plot->point[0][1] = -1.0 * default_height * cimag(attack * I);
+  offset = creal(attack);
+  
+  plot->point[1][0] = default_width * (creal(decay) + offset);
+  plot->point[1][1] = -1.0 * default_height * cimag(decay * I);
+  offset += creal(decay);
+
+  plot->point[2][0] = default_width * (creal(sustain) + offset);
+  plot->point[2][1] = -1.0 * default_height * cimag(sustain * I);
+  offset += creal(sustain);
+  
+  plot->point[3][0] = default_width * (creal(release) + offset);
+  plot->point[3][1] = -1.0 * default_height * cimag(release * I);
+
+  /* redraw */
+  gtk_widget_queue_draw(envelope_dialog->cartesian);
 }
 
 /**

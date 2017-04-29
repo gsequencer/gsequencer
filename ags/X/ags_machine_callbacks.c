@@ -433,6 +433,7 @@ ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
 {
   if(machine->envelope_dialog == NULL){
     machine->envelope_dialog = ags_envelope_dialog_new(machine);
+    ags_connectable_connect(AGS_CONNECTABLE(machine->envelope_dialog));
     gtk_widget_show_all(machine->envelope_dialog);
   }
 }

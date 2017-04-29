@@ -1367,21 +1367,32 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 			       plot->point_color[i][2]);
 	}
 
+	g_message("%f %f\0", plot->point[i][0], plot->point[i][1]);
+	
 	cairo_arc(cr,
-		  plot->point[i][0] - cartesian->point_radius,
-		  plot->point[i][1] - cartesian->point_radius,
+		  x_offset + plot->point[i][0] - cartesian->point_radius,
+		  y_offset + plot->point[i][1] - cartesian->point_radius,
 		  cartesian->point_radius,
 		  -1.0 * M_PI,
 		  1.0 * M_PI);
 
 	if(plot->join_points){
-	  cairo_line_to(cr,
-			plot->point[i][0], plot->point[i][1]);
+	  if(i == 0){
+	    cairo_move_to(cr,
+			  x_offset, y_offset);
+	    
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset + plot->point[i][1]);
+	  }else{
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset + plot->point[i][1]);
+	  }
 	}
       }
     }
 
     cairo_stroke(cr);
+    cairo_fill(cr);
     
     /* bitmaps */
     for(i = 0; i < plot->n_bitmaps; i++){
@@ -1460,8 +1471,17 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   data = cairo_image_surface_get_data(cartesian->surface);
   stride = cairo_image_surface_get_stride(cartesian->surface);
   
-  memset(data, 0xaf, (4 * width * height * sizeof(unsigned char)));
-  
+  memset(data, 0xaf, (4 * width * height * sizeof(unsigned char)));    
+  cairo_surface_flush(cartesian->surface);
+
+  /* surface */
+  cairo_set_source_surface(cr,
+  			   cartesian->surface,
+  			   cartesian->x_margin, cartesian->y_margin);
+  cairo_surface_mark_dirty(cartesian->surface);
+
+  cairo_paint(cr);
+
   /* draw plot */
   list = cartesian->plot;
 
@@ -1470,16 +1490,6 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 
     list = list->next;
   }
-  
-  cairo_surface_flush(cartesian->surface);
-  
-  /* surface */
-  cairo_set_source_surface(cr,
-			   cartesian->surface,
-  			   cartesian->x_margin, cartesian->y_margin);
-  cairo_surface_mark_dirty(cartesian->surface);
-
-  cairo_paint(cr);
 
   /* push group */
   cairo_push_group(cr);
@@ -1646,8 +1656,7 @@ void
 ags_cartesian_add_plot(AgsCartesian *cartesian,
 		       AgsPlot *plot)
 {
-  if(cartesian != NULL ||
-     !AGS_IS_CARTESIAN(cartesian)){
+  if(!AGS_IS_CARTESIAN(cartesian)){
     return;
   }
 
@@ -1659,8 +1668,7 @@ void
 ags_cartesian_remove_plot(AgsCartesian *cartesian,
 			  AgsPlot *plot)
 {
-  if(cartesian != NULL ||
-     !AGS_IS_CARTESIAN(cartesian)){
+  if(!AGS_IS_CARTESIAN(cartesian)){
     return;
   }
 
