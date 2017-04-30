@@ -47,6 +47,7 @@ void ags_envelope_dialog_disconnect(AgsConnectable *connectable);
 void ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_envelope_dialog_apply(AgsApplicable *applicable);
 void ags_envelope_dialog_reset(AgsApplicable *applicable);
+gboolean ags_envelope_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 gchar* ags_envelope_dialog_x_label_func(gdouble value,
 					gpointer data);
@@ -75,6 +76,7 @@ enum{
 };
 
 static guint envelope_dialog_signals[LAST_SIGNAL];
+static gpointer ags_envelope_dialog_parent_class = NULL;
 
 GType
 ags_envelope_dialog_get_type(void)
@@ -129,6 +131,8 @@ ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
   GtkWidgetClass *widget;
   GParamSpec *param_spec;
 
+  ags_envelope_dialog_parent_class = g_type_class_peek_parent(envelope_dialog);
+
   /* GObjectClass */
   gobject = (GObjectClass *) envelope_dialog;
 
@@ -151,6 +155,12 @@ ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
   g_object_class_install_property(gobject,
 				  PROP_MACHINE,
 				  param_spec);
+
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) envelope_dialog;
+
+  widget->delete_event = ags_envelope_dialog_delete_event;
 }
 
 void
@@ -603,6 +613,16 @@ void
 ags_envelope_dialog_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
+}
+
+gboolean
+ags_envelope_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
+{
+  AGS_ENVELOPE_DIALOG(widget)->machine->envelope_dialog = NULL;
+  
+  GTK_WIDGET_CLASS(ags_envelope_dialog_parent_class)->delete_event(widget, event);
+
+  return(TRUE);
 }
 
 gchar*

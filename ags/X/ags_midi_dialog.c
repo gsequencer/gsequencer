@@ -54,6 +54,7 @@ void ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_dialog_apply(AgsApplicable *applicable);
 void ags_midi_dialog_reset(AgsApplicable *applicable);
 void ags_midi_dialog_show_all(GtkWidget *widget);
+gboolean ags_midi_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_midi_dialog
@@ -77,6 +78,7 @@ enum{
 };
 
 static guint midi_dialog_signals[LAST_SIGNAL];
+static gpointer ags_midi_dialog_parent_class = NULL;
 
 GType
 ags_midi_dialog_get_type(void)
@@ -131,6 +133,8 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
   GtkWidgetClass *widget;
   GParamSpec *param_spec;
 
+  ags_midi_dialog_parent_class = g_type_class_peek_parent(midi_dialog);
+
   /* GObjectClass */
   gobject = (GObjectClass *) midi_dialog;
 
@@ -158,6 +162,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
   widget = (GtkWidgetClass *) midi_dialog;
 
   widget->show_all = ags_midi_dialog_show_all;
+  widget->delete_event = ags_midi_dialog_delete_event;
 }
 
 void
@@ -744,6 +749,16 @@ ags_midi_dialog_show_all(GtkWidget *widget)
   gtk_widget_show((GtkWidget *) midi_dialog->apply);
   gtk_widget_show((GtkWidget *) midi_dialog->ok);
   gtk_widget_show((GtkWidget *) midi_dialog->cancel);
+}
+
+gboolean
+ags_midi_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
+{
+  AGS_MIDI_DIALOG(widget)->machine->midi_dialog = NULL;
+  
+  GTK_WIDGET_CLASS(ags_midi_dialog_parent_class)->delete_event(widget, event);
+
+  return(TRUE);
 }
 
 /**

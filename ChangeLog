@@ -1,3 +1,11 @@
+ags (0.8.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsEnvelopeDialog
+	* refactored ags-envelope recall
+	* added AgsEnvelopeDialog to AgsDrum, AgsMatrix, AgsDssiBridge and AgsLv2Bridge
+	* fixed unavailable AgsMidiDialog as doing delete-event
+
 ags (0.8.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
