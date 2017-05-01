@@ -1539,6 +1539,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_area.h \
 	ags/X/editor/ags_envelope_dialog_callbacks.h \
 	ags/X/editor/ags_envelope_dialog.h \
+	ags/X/editor/ags_envelope_info_callbacks.h \
+	ags/X/editor/ags_envelope_info.h \
 	ags/X/editor/ags_file_selection_callbacks.h \
 	ags/X/editor/ags_file_selection.h \
 	ags/X/editor/ags_inline_player_callbacks.h \
@@ -1577,6 +1579,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_area_callbacks.c \
 	ags/X/editor/ags_envelope_dialog_callbacks.c \
 	ags/X/editor/ags_envelope_dialog.c \
+	ags/X/editor/ags_envelope_info_callbacks.c \
+	ags/X/editor/ags_envelope_info.c \
 	ags/X/editor/ags_file_selection_callbacks.c \
 	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \
@@ -1679,14 +1683,18 @@ install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
-	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
-	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
+	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
+	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
@@ -1696,9 +1704,9 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-gui-doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc

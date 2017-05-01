@@ -61,14 +61,9 @@ gchar* ags_envelope_dialog_y_label_func(gdouble value,
  * @section_id:
  * @include: ags/X/ags_envelope_dialog.h
  *
- * #AgsEnvelopeDialog is a composite widget to edit all aspects of #AgsAudio.
- * It consists of multiple child editors.
+ * #AgsEnvelopeDialog is a composite widget to edit envelope controls
+ * of selected AgsNote.
  */
-
-enum{
-  SET_MACHINE,
-  LAST_SIGNAL,
-};
 
 enum{
   PROP_0,
