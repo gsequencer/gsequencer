@@ -1692,8 +1692,8 @@ install-ags-docs: ags-docs
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	ln -s ../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	ln -s ../../gtk-doc/html/libags-audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	ln -s ../../gtk-doc/html/libags-gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	ln -s ../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	ln -s ../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	ln -s ../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 
 uninstall-hook:
