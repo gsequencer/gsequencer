@@ -566,7 +566,10 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   }
   
   /* show */
-  gtk_widget_show_all((GtkWidget *) keys);
+  if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
+    gtk_widget_show_all((GtkWidget *) keys);
+  }
+  
   gtk_widget_show_all((GtkWidget *) popup);
 
   return(popup);
