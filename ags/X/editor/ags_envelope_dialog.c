@@ -70,7 +70,6 @@ enum{
   PROP_MACHINE,
 };
 
-static guint envelope_dialog_signals[LAST_SIGNAL];
 static gpointer ags_envelope_dialog_parent_class = NULL;
 
 GType

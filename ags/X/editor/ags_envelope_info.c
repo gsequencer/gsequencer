@@ -70,7 +70,6 @@ enum{
   PROP_MACHINE,
 };
 
-static guint envelope_info_signals[LAST_SIGNAL];
 static gpointer ags_envelope_info_parent_class = NULL;
 
 GType
@@ -190,7 +189,7 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 
   /* GtkButton's in GtkInfo->action_area  */
   envelope_info->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) GTK_INFO(envelope_info)->action_area,
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(envelope_info)->action_area,
 		     (GtkWidget *) envelope_info->ok,
 		     FALSE, FALSE,
 		     0);

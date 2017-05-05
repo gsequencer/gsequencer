@@ -27,12 +27,17 @@
 
 #include <ags/widget/ags_cartesian.h>
 
+#include <ags/X/ags_machine.h>
+
 #define AGS_TYPE_ENVELOPE_INFO                (ags_envelope_info_get_type())
 #define AGS_ENVELOPE_INFO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ENVELOPE_INFO, AgsEnvelopeInfo))
 #define AGS_ENVELOPE_INFO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ENVELOPE_INFO, AgsEnvelopeInfoClass))
 #define AGS_IS_ENVELOPE_INFO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ENVELOPE_INFO))
 #define AGS_IS_ENVELOPE_INFO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ENVELOPE_INFO))
 #define AGS_ENVELOPE_INFO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ENVELOPE_INFO, AgsEnvelopeInfoClass))
+
+#define AGS_ENVELOPE_INFO_DEFAULT_VERSION "0.8.1\0"
+#define AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID "CEST 29-04-2017 09:55\0"
 
 typedef struct _AgsEnvelopeInfo AgsEnvelopeInfo;
 typedef struct _AgsEnvelopeInfoClass AgsEnvelopeInfoClass;
@@ -47,6 +52,11 @@ struct _AgsEnvelopeInfo
   GtkDialog dialog;
 
   guint flags;
+
+  gchar *version;
+  gchar *build_id;
+
+  AgsMachine *machine;
   
   GtkVBox *note_info;
   GList *children;
