@@ -1828,7 +1828,7 @@ ags_midi_buffer_util_test_get_song_position()
   glong delta_time, song_position;
   gboolean success;
 
-  buffer = (unsigned char *) malloc(6 * sizeof(unsigned char));
+  buffer = (unsigned char *) malloc(12 * sizeof(unsigned char));
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);

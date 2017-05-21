@@ -77,10 +77,13 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#include <pthread.h>
 #include <string.h>
 
 #include <unistd.h>
 #include <sys/types.h>
+
+#include <stdlib.h>
 
 #include "config.h"
 
@@ -200,9 +203,13 @@ ags_start_animation_thread(void *ptr)
 
   surface = cairo_image_surface_create_from_png(filename);
   image_data = cairo_image_surface_get_data(surface);
-  
-  bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
 
+  if(image_size > 0){
+    bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
+  }else{
+    bg_data = NULL;
+  }
+  
   if(image_data != NULL){
     memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
   }
