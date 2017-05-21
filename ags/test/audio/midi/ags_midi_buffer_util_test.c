@@ -1034,7 +1034,7 @@ ags_midi_buffer_util_test_put_change_program()
 					    0);
 
     if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
-       memcmp(buffer + varlength[i][2], change_program, 3)){
+       memcmp(buffer + varlength[i][2], change_program, 2)){
       success = FALSE;
 
       break;
@@ -1058,7 +1058,7 @@ ags_midi_buffer_util_test_get_change_program()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], change_program, 3);
+  memcpy(buffer + varlength[0][2], change_program, 2);
   
   ags_midi_buffer_util_get_change_program(buffer,
 					  NULL,
@@ -1070,7 +1070,7 @@ ags_midi_buffer_util_test_get_change_program()
 
   for(i = 0; i < 12; i++){
     memcpy(buffer, varlength_buffer[i], varlength[i][2]);
-    memcpy(buffer + varlength[i][2], change_program, 3);
+    memcpy(buffer + varlength[i][2], change_program, 2);
     
     ags_midi_buffer_util_get_change_program(buffer,
 					    &delta_time,
@@ -1110,7 +1110,7 @@ ags_midi_buffer_util_test_put_change_pressure()
 					    127);
 
     if(memcmp(buffer, varlength_buffer[i], varlength[i][2]) ||
-       memcmp(buffer + varlength[i][2], change_pressure, 3)){
+       memcmp(buffer + varlength[i][2], change_pressure, 2)){
       success = FALSE;
 
       break;
@@ -1134,7 +1134,7 @@ ags_midi_buffer_util_test_get_change_pressure()
 
   /* invoke without return location */
   memcpy(buffer, varlength_buffer[0], varlength[0][2]);
-  memcpy(buffer + varlength[0][2], change_pressure, 3);
+  memcpy(buffer + varlength[0][2], change_pressure, 2);
   
   ags_midi_buffer_util_get_change_pressure(buffer,
 					  NULL,
@@ -1146,7 +1146,7 @@ ags_midi_buffer_util_test_get_change_pressure()
 
   for(i = 0; i < 12; i++){
     memcpy(buffer, varlength_buffer[i], varlength[i][2]);
-    memcpy(buffer + varlength[i][2], change_pressure, 3);
+    memcpy(buffer + varlength[i][2], change_pressure, 2);
     
     ags_midi_buffer_util_get_change_pressure(buffer,
 					    &delta_time,
