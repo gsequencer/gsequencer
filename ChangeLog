@@ -1,11 +1,13 @@
 ags (0.8.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* optional libinstpatch dependency
 	* implemented AgsEnvelopeDialog
 	* refactored ags-envelope recall to use AgsComplex fields of AgsNote
 	* added AgsEnvelopeDialog to AgsDrum, AgsMatrix, AgsDssiBridge and AgsLv2Bridge
 	* added ags-envelope recall to ags_recall_factory.c
 	* fixed unavailable AgsMidiDialog as doing delete-event
+	* fixed functional test timed access to widget
 
 ags (0.8.0)
 

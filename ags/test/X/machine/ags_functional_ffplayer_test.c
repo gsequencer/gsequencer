@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/config.h>
+
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/X/libgsequencer.h>
@@ -36,9 +38,11 @@
 int ags_functional_ffplayer_test_init_suite();
 int ags_functional_ffplayer_test_clean_suite();
 
+#ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_ffplayer_test_open_sf2();
 void ags_functional_ffplayer_test_resize_pads();
 void ags_functional_ffplayer_test_resize_audio_channels();
+#endif
 
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH "/usr/share/sounds/sf2"
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_FILENAME "/usr/share/sounds/sf2/FluidR3_GM.sf2"
@@ -368,8 +372,10 @@ main(int argc, char **argv)
 #ifdef AGS_USE_TIMER
   timer_t *timer_id
 #endif
-  
-    putenv("LC_ALL=C\0");
+
+    
+#ifdef AGS_WITH_LIBINSTPATCH
+  putenv("LC_ALL=C\0");
   putenv("LANG=C\0");
 
   //  mtrace();
@@ -488,4 +494,7 @@ main(int argc, char **argv)
   CU_cleanup_registry();
   
   return(CU_get_error());
+#else
+  return(0);
+#endif
 }

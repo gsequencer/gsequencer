@@ -23,8 +23,6 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
-#include <libinstpatch/libinstpatch.h>
-
 #include "gsequencer_main.h"
 
 #include <ags/lib/ags_log.h>
@@ -68,6 +66,12 @@
 #include <ags/X/thread/ags_simple_autosave_thread.h>
 
 #include <ags/X/task/ags_simple_file_read.h>
+
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -1380,7 +1384,9 @@ main(int argc, char **argv)
 				    NULL);
   }
   
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
+#endif
   //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
 		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 

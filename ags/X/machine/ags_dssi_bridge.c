@@ -325,9 +325,11 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->mapped_output_pad = 0;
   dssi_bridge->mapped_input_pad = 0;
 
+#if 0
   ags_machine_popup_add_edit_options((AgsMachine *) dssi_bridge,
 				     (AGS_MACHINE_POPUP_ENVELOPE));
-  
+#endif
+				     
   dssi_bridge->filename = NULL;
   dssi_bridge->effect = NULL;
   dssi_bridge->effect_index = 0;

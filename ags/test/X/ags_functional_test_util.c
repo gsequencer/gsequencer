@@ -33,7 +33,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
-#define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (4000)
+#define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (500000)
 
 extern AgsApplicationContext *ags_application_context;
@@ -354,11 +354,15 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	
 	widget = GTK_WIDGET(list->data);
 
+	if(!GTK_WIDGET_REALIZED(widget)){
+	  ags_functional_test_util_reaction_time_long();
+	}
+
 	/*  */
 	pthread_mutex_lock(task_thread->launch_mutex);
 
-	x = widget->allocation.x;
-	y = widget->allocation.y;
+	x = widget->allocation.x + widget->allocation.width / 2.0;
+	y = widget->allocation.y + widget->allocation.height / 2.0;
 
 	window = gtk_widget_get_window(widget);
 
@@ -460,13 +464,17 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 	
 	widget = GTK_WIDGET(list->data);
 
+	if(!GTK_WIDGET_REALIZED(widget)){
+	  ags_functional_test_util_reaction_time_long();
+	}
+
 	/*  */
 	pthread_mutex_lock(task_thread->launch_mutex);
 
 	window = gtk_widget_get_window(widget);
 
-	x = widget->allocation.x;
-	y = widget->allocation.y;
+	x = widget->allocation.x + widget->allocation.width / 2.0;
+	y = widget->allocation.y + widget->allocation.height / 2.0;
 
 	gdk_window_get_origin(window, &origin_x, &origin_y);
 
@@ -538,14 +546,18 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
   }
 
   widget = combo_box;
+
+  if(!GTK_WIDGET_REALIZED(widget)){
+    ags_functional_test_util_reaction_time_long();
+  }
   
   /*  */
   pthread_mutex_lock(task_thread->launch_mutex);
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x;
-  y = widget->allocation.y;
+  x = widget->allocation.x + widget->allocation.width / 2.0;
+  y = widget->allocation.y + widget->allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
@@ -608,13 +620,17 @@ ags_functional_test_util_button_click(GtkButton *button)
   
   widget = button;
 
+  if(!GTK_WIDGET_REALIZED(widget)){
+    ags_functional_test_util_reaction_time_long();
+  }
+  
   /*  */
   pthread_mutex_lock(task_thread->launch_mutex);
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x;
-  y = widget->allocation.y;
+  x = widget->allocation.x + widget->allocation.width / 2.0;
+  y = widget->allocation.y + widget->allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
@@ -667,13 +683,17 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   }
   
   widget = button;
+
+  if(!GTK_WIDGET_REALIZED(widget)){
+    ags_functional_test_util_reaction_time_long();
+  }
   
   pthread_mutex_lock(task_thread->launch_mutex);
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x;
-  y = widget->allocation.y;
+  x = widget->allocation.x + widget->allocation.width / 2.0;
+  y = widget->allocation.y + widget->allocation.height / 2.0;
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 

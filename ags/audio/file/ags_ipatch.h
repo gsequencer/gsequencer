@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <ags/object/ags_soundcard.h>
 
@@ -57,17 +61,37 @@ struct _AgsIpatch
   GObject *soundcard;
   GList *audio_signal;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchFile *file;
+#else
+  gpointer file;
+#endif
+  
   char *filename;
   char *mode;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchFileHandle *handle;
+#else
+  gpointer handle;
+#endif
+  
   GError *error;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchBase *base;
+#else
+  gpointer base;
+#endif
+  
   GObject *reader;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchList *samples;
+#else
+  gpointer samples;
+#endif
+
   GList *iter;
 
   guint nth_level;

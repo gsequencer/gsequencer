@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.8.0],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.8.1],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -22,6 +22,11 @@ AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
 				   [enable oss (default is yes)])],
 	      [],
 	      [enable_oss=yes])
+
+AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
+			    		      [enable libinstpatch (default is no)])],
+	      [],
+	      [enable_libinstpatch=no])
 
 AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],
@@ -138,9 +143,12 @@ AC_SUBST(GIO_LIBS)
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
 
-PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
-AC_SUBST(LIBINSTPATCH_CFLAGS)
-AC_SUBST(LIBINSTPATCH_LIBS)
+AS_IF([test "x$enable_libinstpatch" != xno],
+      [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
+      AC_SUBST(LIBINSTPATCH_CFLAGS)
+      AC_SUBST(LIBINSTPATCH_LIBS)
+      AC_DEFINE([AGS_WITH_LIBINSTPATCH], [1], [Disable if you don't want libinstpatch])],
+      AC_MSG_NOTICE([libinstpatch disabled]))
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)

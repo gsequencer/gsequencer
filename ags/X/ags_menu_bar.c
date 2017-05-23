@@ -38,6 +38,8 @@
 #include <lv2.h>
 #include <dssi.h>
 
+#include <ags/config.h>
+
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_menu_bar_init(AgsMenuBar *menu_bar);
@@ -184,9 +186,11 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Synth\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+#ifdef AGS_WITH_LIBINSTPATCH
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
-
+#endif
+  
   /* bridge */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("LADSPA\0"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
@@ -335,10 +339,12 @@ ags_menu_bar_connect(AgsConnectable *connectable)
                     G_CALLBACK (ags_menu_bar_add_synth_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
   list2 = list2->next;
-
+#endif
+  
   /* ladspa */
   list3_start = 
     list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));

@@ -596,6 +596,10 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
   gint position;
   guint i;
 
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
+    return;
+  }
+
   polling_thread = (AgsPollingThread *) thread;
   
   fds = gui_thread->cached_poll_array;

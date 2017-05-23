@@ -45,7 +45,9 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <math.h>
 
@@ -264,6 +266,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   n_pads = 0;
   n_audio_channels = 2;
   
+#ifdef AGS_WITH_LIBINSTPATCH
   for(sample_iter = sample; *sample_iter != NULL; sample_iter++){
     IpatchSF2Sample *sf2_sample;
     
@@ -281,6 +284,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
       n_pads++;
     }
   }
+#endif
 
   resize_audio = ags_resize_audio_new(audio,
 				      audio->output_pads,
@@ -300,6 +304,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   i = 0;
   
+#ifdef AGS_WITH_LIBINSTPATCH
   while(*sample_iter != NULL){
     IpatchSF2Sample *sf2_sample;
     
@@ -352,6 +357,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   task = g_list_reverse(task);
   ags_task_thread_append_tasks(task_thread,
 			       task);
+#endif
 }
 
 gboolean

@@ -302,6 +302,7 @@ ags_ipatch_set_property(GObject *gobject,
       
       ipatch->mode = mode;
 
+#ifdef AGS_WITH_LIBINSTPATCH      
       if(ipatch->handle != NULL){
 	GError *error;
 
@@ -315,6 +316,7 @@ ags_ipatch_set_property(GObject *gobject,
 	  g_warning("%s\0", error->message);
 	}
       }
+#endif
     }
     break;
   default:
@@ -387,7 +389,9 @@ gboolean
 ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 {
   AgsIpatch *ipatch;
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchFileIOFuncs *io_funcs;
+#endif
   GError *error;
   
 #ifdef AGS_DEBUG
@@ -397,8 +401,9 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
   ipatch = AGS_IPATCH(playable);
 
   ipatch->filename = filename;
-
   error = NULL;
+
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch->handle = ipatch_file_identify_open(ipatch->filename,
 					     &error);
 
@@ -447,6 +452,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 
     //TODO:JK: implement me
   }
+#endif
 
   if(error == NULL){
     return(TRUE);
@@ -488,8 +494,10 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
 {
   AgsIpatch *ipatch;
   AgsIpatchSF2Reader *ipatch_sf2_reader;
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
+#endif
   GList *list;
   gchar **names;
   gchar *name;
@@ -502,6 +510,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
   names = (gchar **) malloc(1 * sizeof(gchar*));
   names[0] = NULL;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
     
@@ -604,6 +613,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
     
     list = list->next;
   }
+#endif
   
   if(i > 0){
     names[i] = NULL;
@@ -625,6 +635,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 
   ipatch = AGS_IPATCH(playable);
 
+#ifdef AGS_WITH_LIBINSTPATCH
   if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
 
@@ -771,6 +782,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
       }
     }
   }
+#endif
 }
 
 void
@@ -836,8 +848,11 @@ ags_ipatch_info(AgsPlayable *playable,
 		GError **error)
 {
   AgsIpatch *ipatch;
-  IpatchSample *sample;
 
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSample *sample;
+#endif
+  
   ipatch = AGS_IPATCH(playable);
 
   if(ipatch->iter == NULL){
@@ -868,13 +883,15 @@ ags_ipatch_info(AgsPlayable *playable,
     return;
   }
 
+#ifdef AGS_WITH_LIBINSTPATCH
   sample = IPATCH_SAMPLE(ipatch->iter->data);
   g_object_get(G_OBJECT(sample),
 	       "sample-size\0", frames,
 	       "loop-start\0", loop_start,
 	       "loop-end\0", loop_end,
 	       NULL);
-
+#endif
+  
   //TODO:JK: verify me
   if(channels != NULL){
     *channels = AGS_IPATCH_DEFAULT_CHANNELS;
@@ -885,12 +902,18 @@ guint
 ags_ipatch_get_samplerate(AgsPlayable *playable)
 {
   AgsIpatch *ipatch;
-  IpatchSample *sample;
 
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSample *sample;
+#endif
+  
   guint samplerate;
   
   ipatch = AGS_IPATCH(playable);
 
+  samplerate = 0;
+  
+#ifdef AGS_WITH_LIBINSTPATCH
   if(ipatch->nth_level == 3){
     if(ipatch->iter != NULL){
       sample = IPATCH_SAMPLE(ipatch->iter->data);
@@ -917,6 +940,7 @@ ags_ipatch_get_samplerate(AgsPlayable *playable)
   g_object_get(sample,
 	       "sample-rate\0", &samplerate,
 	       NULL);
+#endif
   
   return(samplerate);
 }
@@ -925,11 +949,16 @@ guint
 ags_ipatch_get_format(AgsPlayable *playable)
 {
   AgsIpatch *ipatch;
-  IpatchSample *sample;
 
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSample *sample;
+#endif
+  
   guint format;
   
   ipatch = AGS_IPATCH(playable);
+
+#ifdef AGS_WITH_LIBINSTPATCH
   sample = NULL;
 
   if(ipatch->nth_level == 3){
@@ -976,6 +1005,9 @@ ags_ipatch_get_format(AgsPlayable *playable)
     g_warning("ags_ipatch_get_format() - unknown format");
     return(0);
   }
+#else
+  return(0);
+#endif
 }
 
 double*
@@ -984,7 +1016,9 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 {
   AgsIpatch *ipatch;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchSample *sample;
+#endif
   
   double *buffer, *source;
   guint channels, frames;
@@ -1005,8 +1039,14 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
     g_warning("%s\0", this_error->message);
   }
 
-  buffer = (double *) malloc(channels * frames * sizeof(double));
+  if(channels == 0 ||
+     frames == 0){
+    buffer = NULL;
+  }else{
+    buffer = (double *) malloc(channels * frames * sizeof(double));
+  }
   
+#ifdef AGS_WITH_LIBINSTPATCH
   if(ipatch->nth_level == 3){
     if(AGS_IPATCH_SF2_READER(ipatch->reader)->sample != NULL){
       sample = AGS_IPATCH_SF2_READER(ipatch->reader)->sample;
@@ -1048,7 +1088,8 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   if(this_error != NULL){
     g_warning("%s\0", this_error->message);
   }
-
+#endif
+  
   return(buffer);
 }
 

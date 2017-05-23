@@ -840,8 +840,10 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     ags_machine_popup_add_connection_options((AgsMachine *) lv2_bridge,
 					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
+#if 0
     ags_machine_popup_add_edit_options((AgsMachine *) lv2_bridge,
 				       (AGS_MACHINE_POPUP_ENVELOPE));
+#endif
   }
   
   /* get audio loop */

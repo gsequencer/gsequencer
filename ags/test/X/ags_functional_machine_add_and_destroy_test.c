@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/config.h>
+
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/X/libgsequencer.h>
@@ -41,7 +43,10 @@ void ags_functional_machine_add_and_destroy_test_mixer();
 void ags_functional_machine_add_and_destroy_test_drum();
 void ags_functional_machine_add_and_destroy_test_matrix();
 void ags_functional_machine_add_and_destroy_test_synth();
+
+#ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_machine_add_and_destroy_test_ffplayer();
+#endif
 
 #define AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -312,7 +317,9 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL);
   
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
+#endif
   //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
 		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
@@ -347,8 +354,12 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMixer\0", ags_functional_machine_add_and_destroy_test_mixer) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsDrum\0", ags_functional_machine_add_and_destroy_test_drum) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMatrix\0", ags_functional_machine_add_and_destroy_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth\0", ags_functional_machine_add_and_destroy_test_synth) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer\0", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)){
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth\0", ags_functional_machine_add_and_destroy_test_synth) == NULL)
+#ifdef AGS_WITH_LIBINSTPATCH
+     ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer\0", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)
+#endif
+     ){
     CU_cleanup_registry();
       
     return CU_get_error();

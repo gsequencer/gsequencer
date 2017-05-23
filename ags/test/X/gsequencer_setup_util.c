@@ -25,8 +25,6 @@
 
 //#include <X11/Xlib.h>
 
-#include <libinstpatch/libinstpatch.h>
-
 #include "gsequencer_setup_util.h"
 
 #include <ags/libags.h>
@@ -42,6 +40,12 @@
 #include <ags/X/thread/ags_simple_autosave_thread.h>
 
 #include <ags/X/task/ags_simple_file_read.h>
+
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH      
+#include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>

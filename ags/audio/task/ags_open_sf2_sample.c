@@ -30,6 +30,12 @@
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_ipatch.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 void ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample);
 void ags_open_sf2_sample_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample);
@@ -415,8 +421,10 @@ ags_open_sf2_sample_launch(AgsTask *task)
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
   
+#ifdef AGS_WITH_LIBINSTPATCH
   AgsIpatch *ipatch;
-
+#endif
+  
   AgsPlayable *playable;
 
   GList *list;
@@ -425,6 +433,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(task);
 
+#ifdef AGS_WITH_LIBINSTPATCH
   g_message("Open Soundfont2 [%s] - %s %s %s\0",
 	    open_sf2_sample->filename,
 	    open_sf2_sample->preset,
@@ -520,6 +529,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
 				 audio_signal); 
 
   g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex);
+
+  #endif
 }
 
 /**

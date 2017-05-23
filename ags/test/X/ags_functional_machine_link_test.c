@@ -26,6 +26,12 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/X/libgsequencer.h>
@@ -41,8 +47,10 @@ void ags_functional_machine_link_test_slave_mixer();
 void ags_functional_machine_link_test_drum();
 void ags_functional_machine_link_test_matrix();
 void ags_functional_machine_link_test_synth();
+#ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_machine_link_test_ffplayer_0();
 void ags_functional_machine_link_test_ffplayer_1();
+#endif
 
 void ags_functional_machine_link_test_relink_all();
 void ags_functional_machine_link_test_reset_link_all();
@@ -95,8 +103,11 @@ AgsMachine *slave_mixer;
 AgsMachine *drum;
 AgsMachine *matrix;
 AgsMachine *synth;
+
+#ifdef AGS_WITH_LIBINSTPATCH
 AgsMachine *ffplayer_0;
 AgsMachine *ffplayer_1;
+#endif
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -759,6 +770,7 @@ ags_functional_machine_link_test_synth()
   CU_ASSERT(success == TRUE);
 }
 
+#ifdef AGS_WITH_LIBINSTPATCH
 void
 ags_functional_machine_link_test_ffplayer_0()
 {
@@ -964,6 +976,7 @@ ags_functional_machine_link_test_ffplayer_1()
 
   CU_ASSERT(success == TRUE);
 }
+#endif
 
 void
 ags_functional_machine_link_test_relink_all()
@@ -980,6 +993,7 @@ ags_functional_machine_link_test_relink_all()
   guint nth_machine;
   gboolean success;  
 
+#ifdef AGS_WITH_LIBINSTPATCH
   /*
    * relink slave mixer with ffplayer #0
    */
@@ -1037,7 +1051,8 @@ ags_functional_machine_link_test_relink_all()
   success = ags_functional_test_util_dialog_ok(properties);
 
   CU_ASSERT(success == TRUE);
-
+#endif
+  
   /*
    * relink slave mixer with drum
    */
@@ -1170,6 +1185,7 @@ ags_functional_machine_link_test_reset_link_all()
   guint nth_machine;
   gboolean success;  
 
+#ifdef AGS_WITH_LIBINSTPATCH
   /*
    * reset link slave mixer with ffplayer #0
    */
@@ -1227,7 +1243,8 @@ ags_functional_machine_link_test_reset_link_all()
   success = ags_functional_test_util_dialog_ok(properties);
 
   CU_ASSERT(success == TRUE);
-
+#endif
+  
   /*
    * reset link slave mixer with drum
    */
@@ -1438,6 +1455,7 @@ ags_functional_machine_link_test_destroy_all()
 
   CU_ASSERT(success == TRUE);
 
+#ifdef AGS_WITH_LIBINSTPATCH
   /* destroy ffplayer #0 */
   success = ags_functional_test_util_machine_destroy(0);
 
@@ -1447,6 +1465,7 @@ ags_functional_machine_link_test_destroy_all()
   success = ags_functional_test_util_machine_destroy(0);
 
   CU_ASSERT(success == TRUE);
+#endif
 }
 
 int
@@ -1545,7 +1564,9 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL);
   
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
+#endif
   //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
   //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
@@ -1581,8 +1602,10 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "functional test of GSequencer machine link drum\0", ags_functional_machine_link_test_drum) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine link matrix\0", ags_functional_machine_link_test_matrix) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine link synth\0", ags_functional_machine_link_test_synth) == NULL) ||
+#ifdef AGS_WITH_LIBINSTPATCH
      (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #0\0", ags_functional_machine_link_test_ffplayer_0) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #1\0", ags_functional_machine_link_test_ffplayer_1) == NULL) ||
+#endif
      (CU_add_test(pSuite, "functional test of GSequencer machine relink all\0", ags_functional_machine_link_test_relink_all) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine reset link all\0", ags_functional_machine_link_test_reset_link_all) == NULL) ||
     (CU_add_test(pSuite, "functional test of GSequencer machine link destroy all\0", ags_functional_machine_link_test_destroy_all) == NULL)){

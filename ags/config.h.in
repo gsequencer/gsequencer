@@ -3,6 +3,9 @@
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
 
+/* Disable if you don't want libinstpatch */
+#undef AGS_WITH_LIBINSTPATCH
+
 /* OSS enabled */
 #undef AGS_WITH_OSS
 

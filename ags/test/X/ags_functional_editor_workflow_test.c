@@ -26,6 +26,12 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/X/libgsequencer.h>
@@ -38,7 +44,9 @@ int ags_functional_editor_workflow_test_clean_suite();
 
 void ags_functional_editor_workflow_test_drum();
 void ags_functional_editor_workflow_test_matrix();
+#ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_editor_workflow_test_ffplayer();
+#endif
 void ags_functional_editor_workflow_test_edit_all();
 void ags_functional_editor_workflow_test_fill_all();
 
@@ -304,6 +312,7 @@ ags_functional_editor_workflow_test_matrix()
   CU_ASSERT(success == TRUE);
 }
 
+#ifdef AGS_WITH_LIBINSTPATCH
 void
 ags_functional_editor_workflow_test_ffplayer()
 {
@@ -395,6 +404,7 @@ ags_functional_editor_workflow_test_ffplayer()
 
   CU_ASSERT(success == TRUE);
 }
+#endif
 
 void
 ags_functional_editor_workflow_test_edit_all()
@@ -478,6 +488,7 @@ ags_functional_editor_workflow_test_edit_all()
 
   CU_ASSERT(success == TRUE);
 
+#ifdef AGS_WITH_LIBINSTPATCH
   /*
    * edit ffplayer
    */
@@ -494,7 +505,7 @@ ags_functional_editor_workflow_test_edit_all()
 
   CU_ASSERT(success == TRUE);
 
-  /* add matrix baseline pattern 4/4 */
+  /* add ffplayer note 4/4 */
   success = TRUE;
   
   for(i = 0; i < 64 && success;){
@@ -505,6 +516,7 @@ ags_functional_editor_workflow_test_edit_all()
   }
 
   CU_ASSERT(success == TRUE);
+#endif
 }
 
 void
@@ -609,7 +621,9 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL);
   
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
+#endif
   //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
 		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
@@ -642,7 +656,9 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsDrum\0", ags_functional_editor_workflow_test_drum) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsMatrix\0", ags_functional_editor_workflow_test_matrix) == NULL) ||
+#ifdef AGS_WITH_LIBINSTPATCH
      (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsFFPlayer\0", ags_functional_editor_workflow_test_ffplayer) == NULL) ||
+#endif
      (CU_add_test(pSuite, "functional test of GSequencer editor workflow edit all\0", ags_functional_editor_workflow_test_edit_all) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer editor workflow fill all\0", ags_functional_editor_workflow_test_fill_all) == NULL)){
     CU_cleanup_registry();

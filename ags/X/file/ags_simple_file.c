@@ -95,6 +95,12 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -1807,8 +1813,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       ags_machine_popup_add_connection_options((AgsMachine *) gobject,
 					       (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
+#if 0
       ags_machine_popup_add_edit_options((AgsMachine *) gobject,
 					 (AGS_MACHINE_POPUP_ENVELOPE));
+#endif
     }
 
     g_object_set(gobject,
@@ -2287,8 +2295,10 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
        ffplayer->ipatch->base == NULL){
       return;
     }
-    
+
+#ifdef AGS_WITH_LIBINSTPATCH
     while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);    
+#endif
     
     /* preset */
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
@@ -2312,8 +2322,10 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 				      &iter));
     }
 
+#ifdef AGS_WITH_LIBINSTPATCH
     while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
-
+#endif
+    
     /* instrument */
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
 
@@ -2336,7 +2348,9 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 				      &iter));
     }
 
+#ifdef AGS_WITH_LIBINSTPATCH
     while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
+#endif
   }
 
   void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge){
