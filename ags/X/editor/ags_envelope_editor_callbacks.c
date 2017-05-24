@@ -23,25 +23,49 @@
 #include <ags/object/ags_applicable.h>
 
 void
-ags_envelope_editor_attack_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_attack_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
 {
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
-ags_envelope_editor_decay_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_attack_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
 {
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
-ags_envelope_editor_sustain_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_decay_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
 {
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
-ags_envelope_editor_release_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+ags_envelope_editor_decay_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+{
+  ags_envelope_editor_plot(envelope_editor);
+}
+
+void
+ags_envelope_editor_sustain_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+{
+  ags_envelope_editor_plot(envelope_editor);
+}
+
+void
+ags_envelope_editor_sustain_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+{
+  ags_envelope_editor_plot(envelope_editor);
+}
+
+void
+ags_envelope_editor_release_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
+{
+  ags_envelope_editor_plot(envelope_editor);
+}
+
+void
+ags_envelope_editor_release_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor)
 {
   ags_envelope_editor_plot(envelope_editor);
 }

@@ -144,6 +144,7 @@ void
 ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 {
   GtkVBox *vbox;
+  GtkVBox *control;
   GtkTable *table;
   GtkLabel *label;
   AgsCartesian *cartesian;
@@ -240,17 +241,34 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  envelope_editor->attack = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->attack,
-			   TRUE);
-  gtk_range_set_value((GtkRange *) envelope_editor->attack,
-		      0.25);
+  control = (GtkVBox *) gtk_vbox_new(FALSE,
+				     0);
   gtk_table_attach(table,
-		   GTK_WIDGET(envelope_editor->attack),
+		   GTK_WIDGET(control),
 		   1, 2,
 		   0, 1,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+  
+  envelope_editor->attack_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->attack_x,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->attack_x,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->attack_x,
+		     FALSE, FALSE,
+		     0);
+
+  envelope_editor->attack_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->attack_y,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->attack_y,
+		     FALSE, FALSE,
+		     0);
 
   /* decay */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -264,17 +282,34 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  envelope_editor->decay = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->decay,
-			   TRUE);
-  gtk_range_set_value((GtkRange *) envelope_editor->decay,
-		      0.25);
+  control = (GtkVBox *) gtk_vbox_new(FALSE,
+				     0);
   gtk_table_attach(table,
-		   GTK_WIDGET(envelope_editor->decay),
+		   GTK_WIDGET(control),
 		   1, 2,
 		   1, 2,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+
+  envelope_editor->decay_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->decay_x,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->decay_x,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->decay_x,
+		     FALSE, FALSE,
+		     0);
+
+  envelope_editor->decay_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->decay_y,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->decay_y,
+		     FALSE, FALSE,
+		     0);
 
   /* sustain */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -288,17 +323,34 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  envelope_editor->sustain = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->sustain,
-			   TRUE);
-  gtk_range_set_value((GtkRange *) envelope_editor->sustain,
-		      0.25);
+  control = (GtkVBox *) gtk_vbox_new(FALSE,
+				     0);
   gtk_table_attach(table,
-		   GTK_WIDGET(envelope_editor->sustain),
+		   GTK_WIDGET(control),
 		   1, 2,
 		   2, 3,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+
+  envelope_editor->sustain_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->sustain_x,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->sustain_x,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->sustain_x,
+		     FALSE, FALSE,
+		     0);
+
+  envelope_editor->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->sustain_y,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->sustain_y,
+		     FALSE, FALSE,
+		     0);
 
   /* release */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -312,17 +364,34 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  envelope_editor->release = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->release,
-			   TRUE);
-  gtk_range_set_value((GtkRange *) envelope_editor->release,
-		      0.25);
+  control = (GtkVBox *) gtk_vbox_new(FALSE,
+				     0);
   gtk_table_attach(table,
-		   GTK_WIDGET(envelope_editor->release),
+		   GTK_WIDGET(control),
 		   1, 2,
 		   3, 4,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+
+  envelope_editor->release_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->release_x,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->release_x,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->release_x,
+		     FALSE, FALSE,
+		     0);
+
+  envelope_editor->release_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  gtk_scale_set_draw_value(envelope_editor->release_y,
+			   TRUE);
+  gtk_range_set_value((GtkRange *) envelope_editor->release_y,
+		      0.25);
+  gtk_box_pack_start((GtkBox *) control,
+		     (GtkWidget *) envelope_editor->release_y,
+		     FALSE, FALSE,
+		     0);
 
   /* ratio */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
@@ -362,17 +431,25 @@ ags_envelope_editor_connect(AgsConnectable *connectable)
 
   envelope_editor->flags |= AGS_ENVELOPE_EDITOR_CONNECTED;
 
-  g_signal_connect((GObject *) envelope_editor->attack, "value-changed\0",
-		   G_CALLBACK(ags_envelope_editor_attack_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->attack_x, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_attack_x_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->attack_y, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_attack_y_callback), (gpointer) envelope_editor);
 
-  g_signal_connect((GObject *) envelope_editor->decay, "value-changed\0",
-		   G_CALLBACK(ags_envelope_editor_decay_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->decay_x, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_decay_x_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->decay_y, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_decay_y_callback), (gpointer) envelope_editor);
 
-  g_signal_connect((GObject *) envelope_editor->sustain, "value-changed\0",
-		   G_CALLBACK(ags_envelope_editor_sustain_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->sustain_x, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_sustain_x_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->sustain_y, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_sustain_y_callback), (gpointer) envelope_editor);
 
-  g_signal_connect((GObject *) envelope_editor->release, "value-changed\0",
-		   G_CALLBACK(ags_envelope_editor_release_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->release_x, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_release_x_callback), (gpointer) envelope_editor);
+  g_signal_connect((GObject *) envelope_editor->release_y, "value-changed\0",
+		   G_CALLBACK(ags_envelope_editor_release_y_callback), (gpointer) envelope_editor);
 
   g_signal_connect((GObject *) envelope_editor->ratio, "value-changed\0",
 		   G_CALLBACK(ags_envelope_editor_ratio_callback), (gpointer) envelope_editor);
@@ -411,7 +488,12 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   GList *notation;
   GList *selection;
 
-  complex attack, decay, sustain, release;
+  double attack_x, attack_y;
+  double decay_x, decay_y;
+  double sustain_x, sustain_y;
+  double release_x, release_y;
+
+  complex z;
   
   envelope_editor = AGS_ENVELOPE_EDITOR(applicable);
   envelope_dialog = gtk_widget_get_ancestor(envelope_editor,
@@ -424,30 +506,38 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   notation = audio->notation;
 
   /* get z */
-  attack = gtk_range_get_value(GTK_RANGE(envelope_editor->attack));
+  attack_x = gtk_range_get_value(GTK_RANGE(envelope_editor->attack_x));
+  attack_y = gtk_range_get_value(GTK_RANGE(envelope_editor->attack_y));
 
-  decay = gtk_range_get_value(GTK_RANGE(envelope_editor->decay));
+  decay_x = gtk_range_get_value(GTK_RANGE(envelope_editor->decay_x));
+  decay_y = gtk_range_get_value(GTK_RANGE(envelope_editor->decay_y));
 
-  sustain = gtk_range_get_value(GTK_RANGE(envelope_editor->sustain));
+  sustain_x = gtk_range_get_value(GTK_RANGE(envelope_editor->sustain_x));
+  sustain_y = gtk_range_get_value(GTK_RANGE(envelope_editor->sustain_y));
 
-  release = gtk_range_get_value(GTK_RANGE(envelope_editor->release));
+  release_x = gtk_range_get_value(GTK_RANGE(envelope_editor->release_x));
+  release_y = gtk_range_get_value(GTK_RANGE(envelope_editor->release_y));
 
   /* set attack, decay, sustain and release */
   while(notation != NULL){
     selection = AGS_NOTATION(notation->data);
 
     while(selection != NULL){
+      z = attack_x + I * attack_y;
       ags_complex_set(&(AGS_NOTE(selection->data)->attack),
-		      attack);
+		      z);
 
+      z = decay_x + I * decay_y;
       ags_complex_set(&(AGS_NOTE(selection->data)->decay),
-		      decay);
+		      z);
 
+      z = sustain_x + I * sustain_y;
       ags_complex_set(&(AGS_NOTE(selection->data)->sustain),
-		      sustain);
+		      z);
 
+      z = release_x + I * release_y;
       ags_complex_set(&(AGS_NOTE(selection->data)->release),
-		      release);
+		      z);
     }
     
     notation = notation->next;
@@ -503,7 +593,10 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
 
   gdouble width, height;
   gdouble default_width, default_height;
-  gdouble attack, decay, sustain, release;
+  gdouble attack_x, attack_y;
+  gdouble decay_x, decay_y;
+  gdouble sustain_x, sustain_y;
+  gdouble release_x, release_y;
   gdouble ratio;
   gdouble offset;
   
@@ -521,31 +614,38 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
   default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
   default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
 
-  attack = gtk_range_get_value(envelope_editor->attack);
-  decay = gtk_range_get_value(envelope_editor->decay);
-  sustain = gtk_range_get_value(envelope_editor->sustain);
-  release = gtk_range_get_value(envelope_editor->release);
+  attack_x = gtk_range_get_value(envelope_editor->attack_x);
+  attack_y = gtk_range_get_value(envelope_editor->attack_y);
+
+  decay_x = gtk_range_get_value(envelope_editor->decay_x);
+  decay_y = gtk_range_get_value(envelope_editor->decay_y);
+
+  sustain_x = gtk_range_get_value(envelope_editor->sustain_x);
+  sustain_y = gtk_range_get_value(envelope_editor->sustain_y);
+
+  release_x = gtk_range_get_value(envelope_editor->release_x);
+  release_y = gtk_range_get_value(envelope_editor->release_y);
 
   ratio = gtk_range_get_value(envelope_editor->ratio);
 
   /* reset plot points */
-  plot->point[0][0] = default_width * (creal(attack) * cabs(ratio));
-  plot->point[0][1] = default_height * cabs(attack) - default_height / cabs(ratio);
+  plot->point[0][0] = default_width * attack_x;
+  plot->point[0][1] = default_height * (attack_y + ratio);
     
-  offset = default_width * (creal(attack) * cabs(ratio));
+  offset = default_width * attack_x;
   
-  plot->point[1][0] = offset + default_width * (creal(decay) * cabs(ratio));
-  plot->point[1][1] = default_height * cabs(decay) - default_height / cabs(ratio);
+  plot->point[1][0] = offset + default_width * decay_x;
+  plot->point[1][1] = default_height * (decay_y + ratio);
   
-  offset += default_width * (creal(decay) * cabs(ratio));
+  offset += default_width * decay_x;
   
-  plot->point[2][0] = offset + default_width * (creal(sustain) * cabs(ratio));
-  plot->point[2][1] = default_height * cabs(sustain) - default_height / cabs(ratio);
+  plot->point[2][0] = offset + default_width * sustain_x;
+  plot->point[2][1] = default_height * (sustain_y + ratio);
   
-  offset += default_width * (creal(sustain) * cabs(ratio));
+  offset += default_width * sustain_x;
 
-  plot->point[3][0] = offset + default_width * (creal(release) * cabs(ratio));
-  plot->point[3][1] = default_height * cabs(release) - default_height / cabs(ratio);
+  plot->point[3][0] = offset + default_width * release_x;
+  plot->point[3][1] = default_height * (release_y + ratio);
   
   /* redraw */
   gtk_widget_queue_draw(cartesian);

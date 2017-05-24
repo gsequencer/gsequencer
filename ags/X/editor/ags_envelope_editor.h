@@ -55,10 +55,17 @@ struct _AgsEnvelopeEditor
   
   AgsCartesian *cartesian;
   
-  GtkHScale *attack;
-  GtkHScale *decay;
-  GtkHScale *sustain;
-  GtkHScale *release;
+  GtkHScale *attack_x;
+  GtkHScale *attack_y;
+  
+  GtkHScale *decay_x;
+  GtkHScale *decay_y;
+
+  GtkHScale *sustain_x;
+  GtkHScale *sustain_y;
+
+  GtkHScale *release_x;
+  GtkHScale *release_y;
 
   GtkHScale *ratio;
 };
