@@ -25,9 +25,10 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_cartesian.h>
-
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/editor/ags_envelope_editor.h>
+#include <ags/X/editor/ags_envelope_info.h>
 
 #define AGS_TYPE_ENVELOPE_DIALOG                (ags_envelope_dialog_get_type())
 #define AGS_ENVELOPE_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ENVELOPE_DIALOG, AgsEnvelopeDialog))
@@ -57,14 +58,8 @@ struct _AgsEnvelopeDialog
   
   AgsMachine *machine;
 
-  AgsCartesian *cartesian;
-  
-  GtkHScale *attack;
-  GtkHScale *decay;
-  GtkHScale *sustain;
-  GtkHScale *release;
-
-  GtkHScale *ratio;
+  AgsEnvelopeEditor *envelope_editor;
+  AgsEnvelopeInfo *envelope_info;
   
   GtkButton *apply;
   GtkButton *ok;
@@ -77,8 +72,6 @@ struct _AgsEnvelopeDialogClass
 };
 
 GType ags_envelope_dialog_get_type(void);
-
-void ags_envelope_dialog_plot(AgsEnvelopeDialog *envelope_dialog);
 
 AgsEnvelopeDialog* ags_envelope_dialog_new(AgsMachine *machine);
 

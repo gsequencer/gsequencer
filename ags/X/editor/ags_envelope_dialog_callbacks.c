@@ -22,36 +22,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
-void
-ags_envelope_dialog_attack_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
-{
-  ags_envelope_dialog_plot(envelope_dialog);
-}
-
-void
-ags_envelope_dialog_decay_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
-{
-  ags_envelope_dialog_plot(envelope_dialog);
-}
-
-void
-ags_envelope_dialog_sustain_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
-{
-  ags_envelope_dialog_plot(envelope_dialog);
-}
-
-void
-ags_envelope_dialog_release_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
-{
-  ags_envelope_dialog_plot(envelope_dialog);
-}
-
-void
-ags_envelope_dialog_ratio_callback(GtkButton *button, AgsEnvelopeDialog *envelope_dialog)
-{
-  ags_envelope_dialog_plot(envelope_dialog);
-}
-
 int
 ags_envelope_dialog_apply_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog)
 {

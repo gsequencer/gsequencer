@@ -17,14 +17,20 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_ENVELOPE_INFO_CALLBACKS_H__
-#define __AGS_ENVELOPE_INFO_CALLBACKS_H__
+#ifndef __AGS_ENVELOPE_EDITOR_CALLBACKS_H__
+#define __AGS_ENVELOPE_EDITOR_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
-
 #include <gtk/gtk.h>
 
-#include <ags/X/editor/ags_envelope_info.h>
+#include <ags/X/editor/ags_envelope_editor.h>
 
-#endif /*__AGS_ENVELOPE_INFO_CALLBACKS_H__*/
+void ags_envelope_editor_attack_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_decay_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_sustain_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_release_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+
+void ags_envelope_editor_ratio_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+
+#endif /*__AGS_ENVELOPE_EDITOR_CALLBACKS_H__*/
