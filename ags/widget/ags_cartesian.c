@@ -1373,7 +1373,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 	
 	cairo_arc(cr,
 		  x_offset + plot->point[i][0] - cartesian->point_radius,
-		  y_offset + plot->point[i][1] - cartesian->point_radius,
+		  y_offset - (plot->point[i][1] - cartesian->point_radius),
 		  cartesian->point_radius,
 		  -1.0 * M_PI,
 		  1.0 * M_PI);
@@ -1384,10 +1384,10 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 			  x_offset, y_offset);
 	    
 	    cairo_line_to(cr,
-			  x_offset + plot->point[i][0], y_offset + plot->point[i][1]);
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
 	  }else{
 	    cairo_line_to(cr,
-			  x_offset + plot->point[i][0], y_offset + plot->point[i][1]);
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
 	  }
 	}
       }

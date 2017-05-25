@@ -172,6 +172,9 @@ ags_envelope_dialog_applicable_interface_init(AgsApplicableInterface *applicable
 void
 ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 {
+  GtkNotebook *notebook;
+  GtkScrolledWindow *scrolled_window;
+  
   gtk_window_set_title((GtkWindow *) envelope_dialog,
 		       g_strdup("Envelope\0"));
 
@@ -182,6 +185,35 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   envelope_dialog->machine = NULL;
 
+  envelope_dialog->notebook =
+    notebook = (GtkNotebook *) gtk_notebook_new();
+  gtk_box_pack_start((GtkBox *) envelope_dialog->dialog.vbox,
+		     (GtkWidget *) notebook,
+		     TRUE, TRUE,
+		     0);
+
+  /* envelope editor */
+  envelope_dialog->envelope_editor_scrolled_window =
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_notebook_append_page(notebook,
+			   (GtkWidget *) scrolled_window,
+			   (GtkWidget *) gtk_label_new(g_strdup("editor\0")));
+
+  envelope_dialog->envelope_editor = ags_envelope_editor_new();
+  gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_editor_scrolled_window,
+					(GtkWidget *) envelope_dialog->envelope_editor);
+
+  /* envelope info */
+  envelope_dialog->envelope_info_scrolled_window =
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_notebook_append_page(notebook,
+			   (GtkWidget *) scrolled_window,
+			   (GtkWidget *) gtk_label_new(g_strdup("info\0")));
+
+  envelope_dialog->envelope_info = ags_envelope_info_new();
+  gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_info_scrolled_window,
+					(GtkWidget *) envelope_dialog->envelope_info);
+  
   /* GtkButton's in GtkDialog->action_area  */
   envelope_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(envelope_dialog)->action_area,
@@ -275,6 +307,9 @@ ags_envelope_dialog_connect(AgsConnectable *connectable)
 
   envelope_dialog->flags |= AGS_ENVELOPE_DIALOG_CONNECTED;
 
+  ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->envelope_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->envelope_info));
+  
   /* applicable */
   g_signal_connect((GObject *) envelope_dialog->apply, "clicked\0",
 		   G_CALLBACK(ags_envelope_dialog_apply_callback), (gpointer) envelope_dialog);
@@ -299,9 +334,9 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
 
   envelope_dialog->flags &= (~AGS_ENVELOPE_DIALOG_CONNECTED);
 
-  envelope_dialog->envelope_editor = ags_envelope_editor_new();
-  envelope_dialog->envelope_info = ags_envelope_info_new();
-
+  ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->envelope_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->envelope_info));
+  
   /* Applicable */
   g_object_disconnect((GObject *) envelope_dialog->apply,
 		      "clicked\0",

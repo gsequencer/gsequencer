@@ -238,7 +238,6 @@ ags_envelope_info_y_label_func(gdouble value,
 
 /**
  * ags_envelope_info_new:
- * @machine: the assigned machine.
  *
  * Creates an #AgsEnvelopeInfo
  *
@@ -247,12 +246,11 @@ ags_envelope_info_y_label_func(gdouble value,
  * Since: 0.8.1
  */
 AgsEnvelopeInfo*
-ags_envelope_info_new(AgsMachine *machine)
+ags_envelope_info_new()
 {
   AgsEnvelopeInfo *envelope_info;
 
   envelope_info = (AgsEnvelopeInfo *) g_object_new(AGS_TYPE_ENVELOPE_INFO,
-						   "machine\0", machine,
 						   NULL);
 
   return(envelope_info);

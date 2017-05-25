@@ -176,37 +176,41 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 			   FALSE);  
 
   /* cartesian - plot */
-  plot = ags_plot_alloc(4, 0, 0);
+  plot = ags_plot_alloc(5, 0, 0);
   plot->join_points = TRUE;
 
   plot->point_color[0][0] = 1.0;
   plot->point_color[1][0] = 1.0;
   plot->point_color[2][0] = 1.0;
   plot->point_color[3][0] = 1.0;
+  plot->point_color[4][0] = 1.0;
 
   width = cartesian->x_end - cartesian->x_start;
   height = cartesian->y_end - cartesian->y_start;
   
   default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
   default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
+
+  plot->point[0][0] = 0.0;
+  plot->point[0][1] = default_height * 0.25;
+
+  plot->point[1][0] = default_width * 0.25;
+  plot->point[1][1] = default_height * 0.5;
+
+  offset = default_width * 0.25;
   
-  plot->point[0][0] = default_width * (creal(0.25) * cabs(-1.0));
-  plot->point[0][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
+  plot->point[2][0] = offset + default_width * 0.25;
+  plot->point[2][1] = default_height * 0.5;
 
-  offset = default_width * (creal(0.25) * cabs(-1.0));
-  
-  plot->point[1][0] = offset + default_width * (creal(0.25) * cabs(-1.0));
-  plot->point[1][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
+  offset += default_width * 0.25;
 
-  offset += default_width * (creal(0.25) * cabs(-1.0));
+  plot->point[3][0] = offset + default_width * 0.25;
+  plot->point[3][1] = default_height * 0.5;
 
-  plot->point[2][0] = offset + default_width * (creal(0.25) * cabs(-1.0));
-  plot->point[2][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
+  offset += default_width * 0.25;
 
-  offset += default_width * (creal(0.25) * cabs(-1.0));
-
-  plot->point[3][0] = offset + default_width * (creal(0.25) * cabs(-1.0));
-  plot->point[3][1] = default_height * cabs(0.25) - default_height / cabs(-1.0);
+  plot->point[4][0] = offset + default_width * 0.25;
+  plot->point[4][1] = default_height * 0.5;
 
   ags_cartesian_add_plot(cartesian,
 			 plot);
@@ -260,7 +264,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->attack_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->attack_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value(envelope_editor->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
@@ -301,7 +305,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->decay_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->decay_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value(envelope_editor->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
@@ -342,7 +346,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value(envelope_editor->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
@@ -383,7 +387,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
-  envelope_editor->release_y = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
+  envelope_editor->release_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
   gtk_scale_set_draw_value(envelope_editor->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_y,
@@ -405,11 +409,11 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  envelope_editor->ratio = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
+  envelope_editor->ratio = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
   gtk_scale_set_draw_value(envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,
-		      -1.0);
+		      0.25);
   gtk_table_attach(table,
 		   GTK_WIDGET(envelope_editor->ratio),
 		   1, 2,
@@ -629,23 +633,26 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
   ratio = gtk_range_get_value(envelope_editor->ratio);
 
   /* reset plot points */
-  plot->point[0][0] = default_width * attack_x;
-  plot->point[0][1] = default_height * (attack_y + ratio);
+  plot->point[0][0] = 0.0;
+  plot->point[0][1] = default_height * ratio;
+
+  plot->point[1][0] = default_width * attack_x;
+  plot->point[1][1] = default_height * (attack_y + ratio);
     
   offset = default_width * attack_x;
   
-  plot->point[1][0] = offset + default_width * decay_x;
-  plot->point[1][1] = default_height * (decay_y + ratio);
+  plot->point[2][0] = offset + default_width * decay_x;
+  plot->point[2][1] = default_height * (decay_y + ratio);
   
   offset += default_width * decay_x;
   
-  plot->point[2][0] = offset + default_width * sustain_x;
-  plot->point[2][1] = default_height * (sustain_y + ratio);
+  plot->point[3][0] = offset + default_width * sustain_x;
+  plot->point[3][1] = default_height * (sustain_y + ratio);
   
   offset += default_width * sustain_x;
 
-  plot->point[3][0] = offset + default_width * release_x;
-  plot->point[3][1] = default_height * (release_y + ratio);
+  plot->point[4][0] = offset + default_width * release_x;
+  plot->point[4][1] = default_height * (release_y + ratio);
   
   /* redraw */
   gtk_widget_queue_draw(cartesian);
@@ -653,7 +660,6 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
 
 /**
  * ags_envelope_editor_new:
- * @machine: the assigned machine.
  *
  * Creates an #AgsEnvelopeEditor
  *
@@ -662,12 +668,11 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
  * Since: 0.8.1
  */
 AgsEnvelopeEditor*
-ags_envelope_editor_new(AgsMachine *machine)
+ags_envelope_editor_new()
 {
   AgsEnvelopeEditor *envelope_editor;
 
   envelope_editor = (AgsEnvelopeEditor *) g_object_new(AGS_TYPE_ENVELOPE_EDITOR,
-						       "machine\0", machine,
 						       NULL);
 
   return(envelope_editor);

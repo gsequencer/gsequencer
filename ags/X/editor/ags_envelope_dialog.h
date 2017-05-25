@@ -58,7 +58,12 @@ struct _AgsEnvelopeDialog
   
   AgsMachine *machine;
 
+  GtkNotebook *notebook;
+
+  GtkScrolledWindow *envelope_editor_scrolled_window;
   AgsEnvelopeEditor *envelope_editor;
+
+  GtkScrolledWindow *envelope_info_scrolled_window;
   AgsEnvelopeInfo *envelope_info;
   
   GtkButton *apply;
