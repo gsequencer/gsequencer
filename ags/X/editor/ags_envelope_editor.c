@@ -496,7 +496,8 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   double decay_x, decay_y;
   double sustain_x, sustain_y;
   double release_x, release_y;
-
+  double ratio;
+  
   complex z;
   
   envelope_editor = AGS_ENVELOPE_EDITOR(applicable);
@@ -522,6 +523,8 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   release_x = gtk_range_get_value(GTK_RANGE(envelope_editor->release_x));
   release_y = gtk_range_get_value(GTK_RANGE(envelope_editor->release_y));
 
+  ratio = gtk_range_get_value(GTK_RANGE(envelope_editor->ratio));
+
   /* set attack, decay, sustain and release */
   while(notation != NULL){
     selection = AGS_NOTATION(notation->data);
@@ -541,6 +544,10 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
 
       z = release_x + I * release_y;
       ags_complex_set(&(AGS_NOTE(selection->data)->release),
+		      z);
+
+      z = I * ratio;
+      ags_complex_set(&(AGS_NOTE(selection->data)->ratio),
 		      z);
     }
     

@@ -140,20 +140,173 @@ ags_envelope_info_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 {
+  AgsCartesian *cartesian;
+
+  GtkCellRenderer *renderer;
+  GtkCellRenderer *toggle_renderer;
+  
+  GtkListStore  *model;
+  GtkTreeIter iter;
+  
+  gdouble width, height;
+
   envelope_info->flags = 0;
 
   envelope_info->version = AGS_ENVELOPE_INFO_DEFAULT_VERSION;
   envelope_info->build_id = AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID;
 
-  envelope_info->cartesian = ags_cartesian_new();
+  /* cartesian */
+  cartesian = 
+    envelope_info->cartesian = ags_cartesian_new();
 
-  envelope_info->cartesian->x_label_func = ags_envelope_info_x_label_func;
-  envelope_info->cartesian->y_label_func = ags_envelope_info_y_label_func;
+  cartesian->x_label_func = ags_envelope_info_x_label_func;
+  cartesian->y_label_func = ags_envelope_info_y_label_func;
 
-  ags_cartesian_fill_label(envelope_info->cartesian,
+  ags_cartesian_fill_label(cartesian,
 			   TRUE);
-  ags_cartesian_fill_label(envelope_info->cartesian,
-			   FALSE);  
+  ags_cartesian_fill_label(cartesian,
+			   FALSE);
+
+  /* cartesian - width and height */
+  width = cartesian->x_end - cartesian->x_start;
+  height = cartesian->y_end - cartesian->y_start;
+
+  /* cartesian - size, pack and redraw */
+  gtk_widget_set_size_request(cartesian,
+			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
+  gtk_box_pack_start((GtkBox *) envelope_info,
+		     (GtkWidget *) cartesian,
+		     FALSE, FALSE,
+		     0);
+
+  gtk_widget_queue_draw(cartesian);
+
+  /* tree view */
+  envelope_info->tree_view = (GtkTreeView *) gtk_tree_view_new();
+
+  renderer = gtk_cell_renderer_text_new();
+  toggle_renderer = gtk_cell_renderer_toggle_new();
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "plot",
+					      toggle_renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_X0,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "Note:x0",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_X0,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "Note:x1",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_X1,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "Note:y",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_Y,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "attack [x]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_ATTACK_X,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "attack [y]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_ATTACK_Y,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "decay [x]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_DECAY_X,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "decay [y]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_DECAY_Y,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "sustain [x]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_SUSTAIN_X,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "sustain [y]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_SUSTAIN_Y,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "release [x]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_RELEASE_X,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "release [y]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_RELEASE_Y,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "ratio [x]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_RATIO_X,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      "ratio [y]",
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_RATIO_Y,
+					      NULL);
+  
+  model = gtk_list_store_new(AGS_ENVELOPE_INFO_COLUMN_LAST,
+			     G_TYPE_BOOLEAN,
+			     G_TYPE_UINT,
+			     G_TYPE_UINT,
+			     G_TYPE_UINT,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE,
+			     G_TYPE_DOUBLE);
+  gtk_tree_view_set_model(envelope_info->tree_view,
+			  model);
+  
+  gtk_box_pack_start((GtkBox *) envelope_info,
+		     (GtkWidget *) envelope_info->tree_view,
+		     FALSE, FALSE,
+		     0);
 }
 
 void
