@@ -71,7 +71,7 @@ ags_mutex_manager_get_type()
     };
 
     ags_type_mutex_manager = g_type_register_static(G_TYPE_OBJECT,
-						    "AgsMutexManager\0",
+						    "AgsMutexManager",
 						    &ags_mutex_manager_info,
 						    0);
 

@@ -102,7 +102,7 @@ ags_task_thread_get_type()
     };
 
     ags_type_task_thread = g_type_register_static(AGS_TYPE_THREAD,
-						  "AgsTaskThread\0",
+						  "AgsTaskThread",
 						  &ags_task_thread_info,
 						  0);
     
@@ -145,10 +145,13 @@ ags_task_thread_class_init(AgsTaskThreadClass *task_thread)
    * AgsTaskThread::clear-cache:
    * @task_thread: the object playing.
    *
-   * The ::clear-cache signal is invoked to clear the cache libraries might have been allocated.
+   * The ::clear-cache signal is invoked to clear the cache libraries
+   * might have been allocated.
+   *
+   * Since: 0.7.122
    */
   task_thread_signals[CLEAR_CACHE] =
-    g_signal_new("clear-cache\0",
+    g_signal_new("clear-cache",
 		 G_TYPE_FROM_CLASS (task_thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsTaskThreadClass, clear_cache),
@@ -411,7 +414,7 @@ ags_task_thread_run(AgsThread *thread)
     param.sched_priority = AGS_TASK_THREAD_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -448,7 +451,7 @@ ags_task_thread_run(AgsThread *thread)
       task = AGS_TASK(list->data);
 
 #ifdef AGS_DEBUG
-      g_message("ags_task_thread - launching task: %s\0", G_OBJECT_TYPE_NAME(task));
+      g_message("ags_task_thread - launching task: %s", G_OBJECT_TYPE_NAME(task));
 #endif
 
       ags_task_launch(task);
@@ -482,7 +485,7 @@ ags_task_thread_run(AgsThread *thread)
       task = AGS_TASK(list->data);
 
 #ifdef AGS_DEBUG
-      g_message("ags_task_thread - launching cyclic task: %s\0", G_OBJECT_TYPE_NAME(task));
+      g_message("ags_task_thread - launching cyclic task: %s", G_OBJECT_TYPE_NAME(task));
 #endif
 
       ags_task_launch(task);
@@ -545,7 +548,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   /* unlock */
   pthread_mutex_unlock(task_thread->read_mutex);
   /*  */
-  //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
+  //  g_message("ags_task_thread_append_task_thread ------------------------- %d", devout->append_task_suspend);
 
   g_object_unref(returnable_thread);
 }
@@ -568,7 +571,7 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   guint flags;
   
 #ifdef AGS_DEBUG
-  g_message("append task\0");
+  g_message("append task");
 #endif
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
@@ -648,7 +651,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   guint flags;
   
 #ifdef AGS_DEBUG
-  g_message("append tasks\0");
+  g_message("append tasks");
 #endif
 
   /* pull */

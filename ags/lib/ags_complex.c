@@ -38,7 +38,7 @@ ags_complex_get_type(void)
 
   if(g_once_init_enter(&ags_define_type_id__volatile)){
     GType ags_define_type_id =
-      g_boxed_type_register_static(g_intern_static_string ("AgsComplex\0"),
+      g_boxed_type_register_static(g_intern_static_string ("AgsComplex"),
 				   (GBoxedCopyFunc) ags_complex_copy,
 				   (GBoxedFreeFunc) ags_complex_free);
     

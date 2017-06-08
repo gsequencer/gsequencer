@@ -61,7 +61,7 @@ ags_time_get_uptime_from_offset(guint offset,
   if(bpm <= 0.0 ||
      delay <= 0.0 ||
      delay_factor <= 0.0){
-    return(g_strdup_printf("-%s\0",
+    return(g_strdup_printf("-%s",
 			   AGS_TIME_ZERO));
   }
 
@@ -86,7 +86,7 @@ ags_time_get_uptime_from_offset(guint offset,
 
   msec = (guint) floor(tact_redux / delay_msec);
 
-  uptime = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
+  uptime = g_strdup_printf("%.4d:%.2d.%.3d", min, sec, msec);
 
   return(uptime);
 }

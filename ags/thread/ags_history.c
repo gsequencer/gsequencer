@@ -62,7 +62,7 @@ ags_history_get_type()
     };
 
     ags_type_history = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsHistory\0",
+					   "AgsHistory",
 					   &ags_history_info,
 					   0);
 

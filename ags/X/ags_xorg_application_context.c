@@ -147,7 +147,7 @@
 #include <jack/control.h>
 #include <stdbool.h>
 
-#include <libintl.h>
+#include <ags/i18n.h>
 
 void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context);
 void ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -456,7 +456,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
 	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
       }else{
-	g_warning(_("unknown soundcard backend - %s"), str);
+	g_warning(i18n("unknown soundcard backend - %s"), str);
 
 	g_free(soundcard_group);    
 	soundcard_group = g_strdup_printf("%s-%d",
@@ -466,7 +466,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 	continue;
       }
     }else{
-      g_warning(_("unknown soundcard backend - NULL"));
+      g_warning(i18n("unknown soundcard backend - NULL"));
 
       g_free(soundcard_group);    
       soundcard_group = g_strdup_printf("%s-%d",
@@ -609,7 +609,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 	AGS_MIDIIN(sequencer)->flags &= (~AGS_MIDIIN_ALSA);
 	AGS_MIDIIN(sequencer)->flags |= AGS_MIDIIN_OSS;
       }else{
-	g_warning(_("unknown sequencer backend - %s"), str);
+	g_warning(i18n("unknown sequencer backend - %s"), str);
 
 	g_free(sequencer_group);    
 	sequencer_group = g_strdup_printf("%s-%d",
@@ -619,7 +619,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 	continue;
       }
     }else{
-      g_warning(_("unknown sequencer backend - NULL"));
+      g_warning(i18n("unknown sequencer backend - NULL"));
 
       g_free(sequencer_group);    
       sequencer_group = g_strdup_printf("%s-%d",

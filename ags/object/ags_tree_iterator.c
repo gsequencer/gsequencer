@@ -46,7 +46,7 @@ ags_tree_iterator_get_type()
     };
 
     ags_type_tree_iterator = g_type_register_static(G_TYPE_INTERFACE,
-						 "AgsTreeIterator\0", &ags_tree_iterator_info,
+						 "AgsTreeIterator", &ags_tree_iterator_info,
 						 0);
   }
 

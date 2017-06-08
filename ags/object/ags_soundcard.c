@@ -49,7 +49,7 @@ ags_soundcard_get_type()
 
   if(!ags_type_soundcard){
     ags_type_soundcard = g_type_register_static_simple(G_TYPE_INTERFACE,
-						       "AgsSoundcard\0",
+						       "AgsSoundcard",
 						       sizeof(AgsSoundcardInterface),
 						       (GClassInitFunc) ags_soundcard_class_init,
 						       0, NULL, 0);
@@ -61,7 +61,7 @@ ags_soundcard_get_type()
 GQuark
 ags_soundcard_error_quark()
 {
-  return(g_quark_from_static_string("ags-soundcard-error-quark\0"));
+  return(g_quark_from_static_string("ags-soundcard-error-quark"));
 }
 
 void
@@ -73,9 +73,11 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    *
    * The ::tic signal is emitted every tic of the soundcard. This notifies
    * about a newly played buffer.
+   *
+   * Since: 0.7.122
    */
   soundcard_signals[TIC] =
-    g_signal_new("tic\0",
+    g_signal_new("tic",
 		 G_TYPE_FROM_INTERFACE(interface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, tic),
@@ -90,9 +92,11 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    *
    * The ::offset-changed signal notifies about changed position within
    * notation.
+   *
+   * Since: 0.7.122
    */
   soundcard_signals[OFFSET_CHANGED] =
-    g_signal_new("offset-changed\0",
+    g_signal_new("offset-changed",
 		 G_TYPE_FROM_INTERFACE(interface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, offset_changed),
@@ -107,9 +111,11 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    *
    * The ::stop signal is emitted every stop of the soundcard. This notifies
    * about a newly played buffer.
+   *
+   * Since: 0.7.122
    */
   soundcard_signals[STOP] =
-    g_signal_new("stop\0",
+    g_signal_new("stop",
 		 G_TYPE_FROM_INTERFACE(interface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, stop),

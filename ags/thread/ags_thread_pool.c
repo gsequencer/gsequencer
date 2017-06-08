@@ -98,7 +98,7 @@ ags_thread_pool_get_type()
     };
 
     ags_type_thread_pool = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsThreadPool\0",
+						  "AgsThreadPool",
 						  &ags_thread_pool_info,
 						  0);
 
@@ -127,9 +127,16 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
   gobject->finalize = ags_thread_pool_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("max-unused-threads\0",
-				 "maximum unused threads\0",
-				 "The maximum of unused threads.\0",
+  /**
+   * AgsThreadPool:max-unused-threads:
+   *
+   * The maximum amount of unused threads available.
+   * 
+   * Since: 0.7.0
+   */
+  param_spec = g_param_spec_uint("max-unused-threads",
+				 "maximum unused threads",
+				 "The maximum of unused threads.",
 				 1, 65535,
 				 24,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -137,9 +144,16 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 				  PROP_MAX_UNUSED_THREADS,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("max-threads\0",
-				 "maximum threads to use\0",
-				 "The maximum of threads to be created.\0",
+  /**
+   * AgsThreadPool:max-threads:
+   *
+   * The maximum amount of threads available.
+   * 
+   * Since: 0.7.0
+   */
+  param_spec = g_param_spec_uint("max-threads",
+				 "maximum threads to use",
+				 "The maximum of threads to be created.",
 				 1, 65535,
 				 1024,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -151,8 +165,16 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
   thread_pool->start = ags_thread_pool_real_start;
 
   /* signals */
+  /**
+   * AgsThreadPool::start:
+   * @thread_pool: the #AgsThreadPool
+   *
+   * The ::start() signal is invoked in order to started the pool.
+   * 
+   * Since: 0.7.0
+   */
   thread_pool_signals[START] =
-    g_signal_new("start\0",
+    g_signal_new("start",
 		 G_TYPE_FROM_CLASS (thread_pool),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsThreadPoolClass, start),
@@ -378,7 +400,7 @@ ags_thread_pool_creation_thread(void *ptr)
     param.sched_priority = AGS_THREAD_POOL_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread_pool->flags),
@@ -387,12 +409,12 @@ ags_thread_pool_creation_thread(void *ptr)
 
   
 #ifdef AGS_DEBUG
-  g_message("ags_thread_pool_creation_thread\0");
+  g_message("ags_thread_pool_creation_thread");
 #endif
   
   while((AGS_THREAD_POOL_RUNNING & (g_atomic_int_get(&(thread_pool->flags)))) != 0){
 #ifdef AGS_DEBUG
-    g_message("ags_thread_pool_creation_thread@loopStart\0");
+    g_message("ags_thread_pool_creation_thread@loopStart");
 #endif
     
     pthread_mutex_lock(thread_pool->idle_mutex);
@@ -488,7 +510,7 @@ ags_thread_pool_creation_thread(void *ptr)
    pthread_mutex_unlock(parent_mutex);
 
 #ifdef AGS_DEBUG
-    g_message("ags_thread_pool_creation_thread@loopEND\0");
+    g_message("ags_thread_pool_creation_thread@loopEND");
 #endif
   }
 }

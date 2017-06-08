@@ -78,7 +78,7 @@ ags_worker_thread_get_type()
     };
 
     ags_type_worker_thread = g_type_register_static(AGS_TYPE_THREAD,
-						    "AgsWorkerThread\0",
+						    "AgsWorkerThread",
 						    &ags_worker_thread_info,
 						    0);
     
@@ -124,7 +124,7 @@ ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread)
    * Since: 0.7.122.8
    */
   worker_thread_signals[DO_POLL] =
-    g_signal_new("do-poll\0",
+    g_signal_new("do-poll",
 		 G_TYPE_FROM_CLASS (thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsWorkerThreadClass, do_poll),

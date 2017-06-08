@@ -70,7 +70,7 @@ ags_connection_get_type (void)
     };
 
     ags_type_connection = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsConnection\0",
+						 "AgsConnection",
 						 &ags_connection_info,
 						 0);
   }
@@ -103,9 +103,9 @@ ags_connection_class_init(AgsConnectionClass *connection)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_object("data-object\0",
-				   "assigned data object\0",
-				   "The data object it is assigned with\0",
+  param_spec = g_param_spec_object("data-object",
+				   "assigned data object",
+				   "The data object it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

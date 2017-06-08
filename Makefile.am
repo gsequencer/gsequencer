@@ -3,14 +3,14 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 AUTOMAKE_OPTIONS = foreign
-# SUBDIRS = . docs/reference/ags
+SUBDIRS = po
 
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security
 
 # what flags you want to pass to the C compiler & linker
 CFLAGS = @CFLAGS@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LTLIBINTL)
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@
@@ -22,6 +22,9 @@ midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@
 # 
 # TARGETS = gsequencer
 
+localedir = $(datadir)/locale
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
+
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la
@@ -32,7 +35,7 @@ bin_PROGRAMS = gsequencer midi2xml
 libgsequencerdir = $(libdir)/gsequencer
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
-EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1 ags_functional_note_edit_test.xml
+EXTRA_DIST = config.rpath  COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1 ags_functional_note_edit_test.xml
 
 EXTRA_DIST += \
 	functional-system-tests.mk.am \
@@ -256,6 +259,9 @@ include $(top_srcdir)/unit-tests.mk
 include $(top_srcdir)/functional-tests.mk
 
 TESTS = $(check_PROGRAMS)
+
+# internationalization
+noinst_HEADERS = ags/i18n.h
 
 # libags all files
 deprecated_libags_h_sources =

@@ -82,7 +82,7 @@ ags_polling_thread_get_type()
     };
 
     ags_type_polling_thread = g_type_register_static(AGS_TYPE_THREAD,
-						     "AgsPollingThread\0",
+						     "AgsPollingThread",
 						     &ags_polling_thread_info,
 						     0);
     
@@ -212,7 +212,7 @@ ags_polling_thread_run(AgsThread *thread)
     param.sched_priority = AGS_POLLING_THREAD_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),

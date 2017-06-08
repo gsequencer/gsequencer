@@ -73,7 +73,7 @@ ags_poll_fd_get_type()
     };
 
     ags_type_poll_fd = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsPollFd\0",
+					      "AgsPollFd",
 					      &ags_poll_fd_info,
 					      0);
 
@@ -109,7 +109,7 @@ ags_poll_fd_class_init(AgsPollFdClass *poll_fd)
    * Since: 0.7.50
    */
   poll_fd_signals[DISPATCH] =
-    g_signal_new("dispatch\0",
+    g_signal_new("dispatch",
 		 G_TYPE_FROM_CLASS (poll_fd),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPollFdClass, dispatch),

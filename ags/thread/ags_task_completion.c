@@ -76,7 +76,7 @@ ags_task_completion_get_type()
     };
 
     ags_type_task_completion = g_type_register_static(G_TYPE_OBJECT,
-						      "AgsTaskCompletion\0",
+						      "AgsTaskCompletion",
 						      &ags_task_completion_info,
 						      0);
     
@@ -111,7 +111,7 @@ ags_task_completion_class_init(AgsTaskCompletionClass *task_completion)
    * The ::complete signal is emited as a task was finished
    */
   task_completion_signals[COMPLETE] =
-    g_signal_new("complete\0",
+    g_signal_new("complete",
 		 G_TYPE_FROM_CLASS(task_completion),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTaskCompletionClass, complete),
@@ -147,7 +147,7 @@ ags_task_completion_connect(AgsConnectable *connectable)
   g_atomic_int_or(&(task_completion->flags),
 		  AGS_TASK_COMPLETION_QUEUED);
 
-  g_signal_connect_after(task_completion->task, "launch\0",
+  g_signal_connect_after(task_completion->task, "launch",
 			 G_CALLBACK(ags_task_completion_launch_callback), task_completion);
 }
 

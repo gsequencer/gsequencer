@@ -60,7 +60,7 @@ ags_timestamp_thread_get_type()
     };
     
     ags_type_timestamp_thread = g_type_register_static(AGS_TYPE_THREAD,
-						       "AgsTimestampThread\0",
+						       "AgsTimestampThread",
 						       &ags_timestamp_thread_info,
 						       0);
     

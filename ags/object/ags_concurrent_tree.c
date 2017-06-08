@@ -47,7 +47,7 @@ ags_concurrent_tree_get_type()
     };
 
     ags_type_concurrent_tree = g_type_register_static(G_TYPE_INTERFACE,
-						      "AgsConcurrentTree\0", &ags_concurrent_tree_info,
+						      "AgsConcurrentTree", &ags_concurrent_tree_info,
 						      0);
   }
 
