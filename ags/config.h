@@ -1,8 +1,14 @@
-/* config.h.  Generated from config.h.in by configure.  */
-/* config.h.in.  Generated from configure.ac by autoheader.  */
+/* ags/config.h.  Generated from config.h.in by configure.  */
+/* ags/config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* ALSA enabled */
-/* #undef AGS_WITH_ALSA */
+#define AGS_WITH_ALSA 1
+
+/* Disable if you don't want libinstpatch */
+/* #undef AGS_WITH_LIBINSTPATCH */
+
+/* OSS enabled */
+#define AGS_WITH_OSS 1
 
 /* Disable if you don't want xmlrpc-c */
 /* #undef AGS_WITH_XMLRPC_C */
@@ -23,7 +29,7 @@
 #define HAVE_ALLOCA_H 1
 
 /* ALSA sequencer event available */
-#define HAVE_ALSA_SEQ_EVENT_H 1
+/* #undef HAVE_ALSA_SEQ_EVENT_H */
 
 /* Define to 1 if you have the <argz.h> header file. */
 #define HAVE_ARGZ_H 1
@@ -32,7 +38,7 @@
 #define HAVE_ATEXIT 1
 
 /* Atk 2.12 available */
-/* #undef HAVE_ATK_2_12 */
+#define HAVE_ATK_2_12 1
 
 /* Define to 1 if you have the `clock_gettime' function. */
 #define HAVE_CLOCK_GETTIME 1
@@ -64,14 +70,11 @@
 /* GLib 2.6 available */
 #define HAVE_GLIB_2_6 1
 
-/* Define to 1 if you have the <gmp.h> header file. */
-#define HAVE_GMP_H 1
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
 /* Jack port uuid available */
-#define HAVE_JACK_PORT_UUID 1
+/* #undef HAVE_JACK_PORT_UUID */
 
 /* Define to 1 if you have the <ladspa.h> header file. */
 #define HAVE_LADSPA_H 1
@@ -234,8 +237,7 @@
 /* Define to 1 if you have the `__argz_stringify' function. */
 #define HAVE___ARGZ_STRINGIFY 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Name of package */
@@ -248,7 +250,7 @@
 #define PACKAGE_NAME "gsequencer"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "gsequencer 0.7.63"
+#define PACKAGE_STRING "gsequencer 0.8.1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "gsequencer"
@@ -257,7 +259,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.7.63"
+#define PACKAGE_VERSION "0.8.1"
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -271,7 +273,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.7.63"
+#define VERSION "0.8.1"
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
