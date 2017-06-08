@@ -35,7 +35,7 @@ style "default_widget" = "default"
 	base[ACTIVE] = { 0.0, 0.0, 0.0 }
 
 	text[NORMAL] = { 0.87, 0.99, 1.0 }
-	text[ACTIVE] = { 0.13, 0.01, 0.0 }
+	text[NORMAL] = { 0.87, 0.99, 1.0 }
 }
 
 style "inverse_widget" = "default"
@@ -53,7 +53,7 @@ style "inverse_widget" = "default"
 	base[ACTIVE] = { 1.0, 1.0, 1.0 }
 
 	text[NORMAL] = { 0.13, 0.01, 0.0 }
-	text[ACTIVE] = { 0.87, 0.99, 1.0 }
+	text[NORMAL] = { 0.13, 0.01, 0.0 }
 }
 
 style "scale_widget" = "inverse_widget"
@@ -72,6 +72,8 @@ widget_class "AgsWindow*" style "main_window"
 widget_class "AgsAutomationWindow*" style "main_window"
 widget_class "GtkWindow*" style "main_window"
 widget_class "AgsPreferences*" style "main_window"
+widget_class "AgsMidiImportWizard*" style "main_window"
+widget_class "AgsMidiExportWizard*" style "main_window"
 widget_class "AgsExportWindow*" style "main_window"
 widget_class "AgsMachineEditor*" style "main_window"
 widget_class "AgsMidiDialog*" style "main_window"

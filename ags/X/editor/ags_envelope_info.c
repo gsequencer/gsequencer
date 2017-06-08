@@ -191,7 +191,7 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 					      -1,
 					      "plot",
 					      toggle_renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_X0,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_PLOT,
 					      NULL);
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
