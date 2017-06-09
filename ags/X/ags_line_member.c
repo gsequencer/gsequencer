@@ -43,6 +43,8 @@
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
 
+#include <ags/i18n.h>
+
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_member_init(AgsLineMember *line_member);
@@ -573,6 +575,10 @@ ags_line_member_set_property(GObject *gobject,
 	return;
       }
 
+      if(line_member->widget_label != NULL){
+	g_free(line_member->widget_label);
+      }
+      
       line_member->widget_label = g_strdup(label);
       ags_line_member_set_label(line_member, line_member->widget_label);
     }

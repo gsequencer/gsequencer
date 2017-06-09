@@ -35,6 +35,7 @@
 #include <ags/X/ags_soundcard_editor.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 int
 ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
@@ -48,7 +49,7 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  audio_preferences->connect_jack = (GtkButton *) gtk_button_new_with_label("connect jack");
+  audio_preferences->connect_jack = (GtkButton *) gtk_button_new_with_label(i18n("connect jack"));
   gtk_box_pack_end((GtkBox *) GTK_DIALOG(preferences)->action_area,
 		   (GtkWidget *) audio_preferences->connect_jack,
 		   TRUE, FALSE,

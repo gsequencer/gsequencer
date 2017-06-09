@@ -56,6 +56,8 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_plugin_interface_init(AgsPluginInterface *plugin);
@@ -1832,12 +1834,12 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
@@ -2103,25 +2105,25 @@ ags_machine_popup_new(AgsMachine *machine)
 
   popup = (GtkMenu *) gtk_menu_new();
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move up"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("move up"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move down"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("move down"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("hide"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("hide"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("show"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("show"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("destroy"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("destroy"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("rename"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("rename"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
   
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("properties"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("properties"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
   list_start = 
@@ -2175,7 +2177,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
   GtkMenu *edit;
   GtkMenuItem *item;
   
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("edit"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("edit"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
   gtk_widget_show((GtkWidget *) item);
 
@@ -2186,7 +2188,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
   gtk_widget_show((GtkWidget *) edit);
 
   if((AGS_MACHINE_POPUP_COPY_PATTERN & edit_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("copy pattern"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("copy pattern"));
     gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
     
     g_signal_connect((GObject*) item, "activate",
@@ -2196,7 +2198,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
   }
   
   if((AGS_MACHINE_POPUP_PASTE_PATTERN & edit_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("paste pattern"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("paste pattern"));
     gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
 
     g_signal_connect((GObject*) item, "activate",
@@ -2206,7 +2208,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
   }
 
   if((AGS_MACHINE_POPUP_ENVELOPE & edit_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("envelope"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("envelope"));
     gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
     
     g_signal_connect((GObject*) item, "activate",
@@ -2235,7 +2237,7 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
 
   gchar *str;
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("connection"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("connection"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
   gtk_widget_show((GtkWidget *) item);
 
@@ -2246,7 +2248,7 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
   gtk_widget_show((GtkWidget *) connection);
 
   if((AGS_MACHINE_POPUP_CONNECTION_EDITOR & connection_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("audio connection"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("audio connection"));
     gtk_menu_shell_append((GtkMenuShell *) connection, (GtkWidget*) item);
     
     g_signal_connect((GObject*) item, "activate",
@@ -2256,7 +2258,7 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
   }
 
   if((AGS_MACHINE_POPUP_MIDI_DIALOG & connection_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("MIDI dialog"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("MIDI dialog"));
     gtk_menu_shell_append((GtkMenuShell *) connection, (GtkWidget*) item);
     
     g_signal_connect((GObject*) item, "activate",

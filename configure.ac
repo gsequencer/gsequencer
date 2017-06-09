@@ -59,13 +59,13 @@ AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
-AC_CHECK_LIB([X11], [main], AC_MSG_ERROR("No X11 library present"))
+AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
 # FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main], AC_MSG_ERROR("No dl library present"))
+AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
 # FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main], AC_MSG_ERROR("No math library present"))
+AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
 # FIXME: Replace `main' with a function in `-lrt':
-AC_CHECK_LIB([rt], [main], AC_MSG_ERROR("No rt library present"))
+AC_CHECK_LIB([rt], [main], , AC_MSG_ERROR("No rt library present"))
 
 # Checks for header files.
 AC_PATH_X

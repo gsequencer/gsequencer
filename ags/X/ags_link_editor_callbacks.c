@@ -35,6 +35,8 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
+#include <ags/i18n.h>
+
 int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response, AgsLinkEditor *link_editor);
 int ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLinkEditor *link_editor);
 
@@ -165,7 +167,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
 				 FALSE);
 
-      link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("select audio file"),
+      link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("select audio file"),
 										       (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) link_editor),
 										       GTK_FILE_CHOOSER_ACTION_OPEN,
 										       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -180,7 +182,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gtk_file_chooser_set_extra_widget((GtkFileChooser *) link_editor->file_chooser,
 					(GtkWidget *) hbox);
 
-      label = (GtkLabel *) gtk_label_new(g_strdup("audio channel: "));
+      label = (GtkLabel *) gtk_label_new(i18n("audio channel: "));
       gtk_box_pack_start((GtkBox *) hbox,
 			 (GtkWidget *) label,
 			 FALSE, FALSE,

@@ -43,6 +43,8 @@
 
 #include <ladspa.h>
 
+#include <ags/i18n.h>
+
 void ags_ladspa_browser_class_init(AgsLadspaBrowserClass *ladspa_browser);
 void ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser);
 void ags_ladspa_browser_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -150,7 +152,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("filename: ");
+  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -179,7 +181,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
     free(filenames_start);
   }
     
-  label = (GtkLabel *) gtk_label_new("effect: ");
+  label = (GtkLabel *) gtk_label_new(i18n("effect: "));
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -201,7 +203,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Label: ",
+				    "label", i18n("Label: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(label),
@@ -210,7 +212,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Maker: ",
+				    "label", i18n("Maker: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(label),
@@ -219,7 +221,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Copyright: ",
+				    "label", i18n("Copyright: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(label),
@@ -228,7 +230,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Ports: ",
+				    "label", i18n("Ports: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(label),

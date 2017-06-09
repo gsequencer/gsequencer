@@ -38,6 +38,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_link_collection_editor_class_init(AgsLinkCollectionEditorClass *link_collection_editor);
 void ags_link_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_link_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -204,7 +206,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("link");
+  label = (GtkLabel *) gtk_label_new(i18n("link"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -251,7 +253,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first line");
+  label = (GtkLabel *) gtk_label_new(i18n("first line"));
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -278,7 +280,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first link line");
+  label = (GtkLabel *) gtk_label_new(i18n("first link line"));
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -304,7 +306,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("count");
+  label = (GtkLabel *) gtk_label_new(i18n("count"));
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,

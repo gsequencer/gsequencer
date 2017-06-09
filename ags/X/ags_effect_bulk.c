@@ -1127,6 +1127,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1164,20 +1167,26 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name", g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id),
+						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
+
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      g_free(plugin_name);
+      g_free(control_port);
+      
       /* ladspa conversion */
       ladspa_conversion = NULL;
 
@@ -1600,6 +1609,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1635,19 +1647,25 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("dssi-%u",
+				    dssi_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name", g_strdup_printf("dssi-%u", dssi_plugin->unique_id),
+						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
 						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* ladspa conversion */
       ladspa_conversion = NULL;
@@ -2083,6 +2101,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -2120,19 +2141,25 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("lv2-<%s>",
+				    lv2_plugin->uri);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name", g_strdup_printf("lv2-<%s>", lv2_plugin->uri),
+						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* lv2 conversion */
       lv2_conversion = NULL;

@@ -28,6 +28,8 @@
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
 
+#include <ags/i18n.h>
+
 void ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser);
 void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
 void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -151,7 +153,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("Plugin type:");
+  label = (GtkLabel *) gtk_label_new(i18n("Plugin type:"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,

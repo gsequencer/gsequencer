@@ -54,6 +54,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_collection_mapper);
 void ags_track_collection_mapper_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_track_collection_mapper_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -229,7 +231,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
   track_collection_mapper->notation = NULL;
 
   /* enabled */
-  track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled");
+  track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->enabled,
 		   0, 4,
@@ -248,7 +250,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 
   /* instrument */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "instrument: ",
+				    "label", i18n("instrument: "),
 				    "xalign", 0.0,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
@@ -258,7 +260,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 
   /* sequence */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "sequence: ",
+				    "label", i18n("sequence: "),
 				    "xalign", 0.0,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
@@ -325,6 +327,8 @@ ags_track_collection_mapper_set_property(GObject *gobject,
   case PROP_INSTRUMENT:
     {
       GList *list, *list_start;
+
+      gchar *str;
       gchar *instrument;
 
       instrument = g_value_get_string(value);
@@ -333,39 +337,56 @@ ags_track_collection_mapper_set_property(GObject *gobject,
 	return;
       }
 
+      if(track_collection_mapper->instrument != NULL){
+	g_free(track_collection_mapper->instrument);
+      }
+      
       track_collection_mapper->instrument = g_strdup(instrument);
 
       list_start =
 	list = gtk_container_get_children((GtkContainer *) track_collection_mapper->info);
+
+      str = g_strdup_printf("%s: %s",
+			    i18n("instrument"),
+			    instrument);
       gtk_label_set_text(list->data,
-			 g_strdup_printf("instrument: %s",
-					 instrument));
+			 str);
 
       g_list_free(list_start);
+      g_free(str);
     }
     break;
   case PROP_SEQUENCE:
     {
       GList *list, *list_start;
-      gchar *sequence;
 
+      gchar *str;
+      gchar *sequence;
+      
       sequence = g_value_get_string(value);
 
       if(sequence == track_collection_mapper->sequence){
 	return;
       }
 
+      if(track_collection_mapper->sequence != NULL){
+	g_free(track_collection_mapper->sequence);
+      }
+      
       track_collection_mapper->sequence = g_strdup(sequence);
 
       list_start =
 	list = gtk_container_get_children((GtkContainer *) track_collection_mapper->info);
       list = list->next;
+
+      str = g_strdup_printf("%s: %s",
+			    i18n("sequence"),
+			    sequence);
       gtk_label_set_text(list->data,
-			 g_strdup_printf("sequence: %s",
-					 sequence));
+			 str);
 
       g_list_free(list_start);
-
+      g_free(str);
     }
     break;
   default:

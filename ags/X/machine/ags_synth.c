@@ -74,6 +74,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_synth_class_init(AgsSynthClass *synth);
 void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_plugin_interface_init(AgsPluginInterface *plugin);
@@ -264,10 +266,10 @@ ags_synth_init(AgsSynth *synth)
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
 
-  synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("auto update"));
+  synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->auto_update, FALSE, FALSE, 0);
 
-  synth->update = (GtkButton *) gtk_button_new_with_label(g_strdup("update"));
+  synth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
 
@@ -276,7 +278,7 @@ ags_synth_init(AgsSynth *synth)
 
   
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "lower",
+				    "label", i18n("lower"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -296,7 +298,7 @@ ags_synth_init(AgsSynth *synth)
 
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "loop start",
+				    "label", i18n("loop start"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -316,7 +318,7 @@ ags_synth_init(AgsSynth *synth)
 
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "loop end",
+				    "label", i18n("loop end"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,

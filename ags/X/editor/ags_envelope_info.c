@@ -30,6 +30,8 @@
 
 #include <complex.h>
 
+#include <ags/i18n.h>
+
 void ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info);
 void ags_envelope_info_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_envelope_info_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -189,32 +191,33 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
 					      -1,
-					      "plot",
+					      i18n("plot"),
 					      toggle_renderer,
 					      "text", AGS_ENVELOPE_INFO_COLUMN_PLOT,
 					      NULL);
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
 					      -1,
-					      "Note:x0",
+					      i18n("Note:x0"),
 					      renderer,
 					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_X0,
 					      NULL);
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
 					      -1,
-					      "Note:x1",
+					      i18n("Note:x1"),
 					      renderer,
 					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_X1,
 					      NULL);
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
 					      -1,
-					      "Note:y",
+					      i18n("Note:y"),
 					      renderer,
 					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_Y,
 					      NULL);
 
+  //TODO:JK: remove below since we can plot
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
 					      -1,
 					      "attack [x]",

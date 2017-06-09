@@ -32,6 +32,8 @@
 
 #include <complex.h>
 
+#include <ags/i18n.h>
+
 void ags_envelope_editor_class_init(AgsEnvelopeEditorClass *envelope_editor);
 void ags_envelope_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_envelope_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -235,7 +237,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* attack */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "attack",
+				    "label", i18n("attack"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -276,7 +278,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* decay */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "decay",
+				    "label", i18n("decay"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -317,7 +319,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* sustain */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "sustain",
+				    "label", i18n("sustain"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -358,7 +360,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* release */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "release",
+				    "label", i18n("release"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -399,7 +401,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* ratio */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "ratio",
+				    "label", i18n("ratio"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,

@@ -63,6 +63,8 @@
 #include <ladspa.h>
 #include <dlfcn.h>
 
+#include <ags/i18n.h>
+
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_plugin_interface_init(AgsPluginInterface *plugin);
@@ -417,7 +419,7 @@ ags_line_init(AgsLine *line)
 		     FALSE, FALSE,
 		     0);
 
-  line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("group");
+  line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("group"));
   gtk_toggle_button_set_active(line->group, TRUE);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->group),
@@ -662,6 +664,8 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsMutexManager *mutex_manager;
 
+  gchar *str;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
   
@@ -707,14 +711,20 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 
     /* set label */
     pthread_mutex_lock(channel_mutex);
-  
-    gtk_label_set_label(line->label,
-			g_strdup_printf("channel %d", channel->audio_channel));
 
+    str = g_strdup_printf("%s %d", i18n("channel"), channel->audio_channel);
+    gtk_label_set_label(line->label,
+			str);
+
+    g_free(str);
+    
     pthread_mutex_unlock(channel_mutex);
   }else{
+    str = g_strdup_printf("%s (null)", i18n("channel"));
     gtk_label_set_label(line->label,
-			g_strdup_printf("channel (null)"));
+			str);
+
+    g_free(str);
   }
 }
 
@@ -777,6 +787,9 @@ ags_line_add_ladspa_effect(AgsLine *line,
   GList *port, *recall_port;
   GList *port_descriptor;
 
+  gchar *plugin_name;
+  gchar *control_port;
+  
   gdouble step;
   guint port_count;
 
@@ -868,19 +881,26 @@ ags_line_add_ladspa_effect(AgsLine *line,
       }
       
       /* add line member */
+      plugin_name = g_strdup_printf("ladspa-%u",
+				    ladspa_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name", g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id),
+						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
+      
       child_widget = ags_line_member_get_widget(line_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* ladspa conversion */
       ladspa_conversion = NULL;
@@ -1025,7 +1045,8 @@ ags_line_add_lv2_effect(AgsLine *line,
   GList *port_descriptor;
 
   gchar *port_type_0, *port_type_1;
-  gchar *str;
+  gchar *plugin_name;
+  gchar *control_port;
 
   gdouble step;
   guint port_count;
@@ -1122,19 +1143,25 @@ ags_line_add_lv2_effect(AgsLine *line,
       }
 
       /* add line member */
+      plugin_name = g_strdup_printf("lv2-<%s>",
+				    lv2_plugin->uri);
+      control_port = g_strdup_printf("%d/%d",
+				     k,
+				     port_count);
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name", g_strdup_printf("lv2-<%s>", lv2_plugin->uri),
+						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port", g_strdup_printf("%d/%d",
-										     k,
-										     port_count),
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* lv2 conversion */
       lv2_conversion = NULL;

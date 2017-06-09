@@ -42,6 +42,8 @@
 
 #include <lv2.h>
 
+#include <ags/i18n.h>
+
 void ags_lv2_browser_class_init(AgsLv2BrowserClass *lv2_browser);
 void ags_lv2_browser_init(AgsLv2Browser *lv2_browser);
 void ags_lv2_browser_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -140,6 +142,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   GtkLabel *label;
 
   GList *list;
+
+  gchar *str;
   gchar **filenames, **filenames_start;
   
   /* plugin */
@@ -149,7 +153,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("filename: ");
+  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -178,7 +182,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
     g_free(filenames_start);
   }
 
-  label = (GtkLabel *) gtk_label_new("effect: ");
+  label = (GtkLabel *) gtk_label_new(i18n("effect: "));
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -198,41 +202,57 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
 
+  str = g_strdup_printf("%s: ",
+			i18n("Name"));
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Name: ",
+				    "label", str,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
+  g_free(str);
+  
+  str = g_strdup_printf("%s: ",
+			i18n("Homepage"));
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Homepage: ",
+				    "label", str,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
+  g_free(str);
+
+  str = g_strdup_printf("%s: ",
+			i18n("M-Box"));
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "M-Box: ",
+				    "label", str,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
+  g_free(str);
+
+  str = g_strdup_printf("%s: ",
+			i18n("Ports"));
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Ports: ",
+				    "label", str,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
+
+  g_free(str);
   
   table = (GtkTable *) gtk_table_new(256, 2,
 				     FALSE);

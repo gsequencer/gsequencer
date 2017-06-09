@@ -73,6 +73,8 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <ags/i18n.h>
+
 void ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge);
 void ags_live_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_live_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -483,7 +485,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   gtk_menu_item_set_submenu((GtkMenuItem *) item,
 			    (GtkWidget *) live_lv2_bridge->lv2_menu);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("show GUI");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("show GUI"));
   gtk_menu_shell_append((GtkMenuShell *) live_lv2_bridge->lv2_menu,
 			(GtkWidget *) item);
 
@@ -1372,7 +1374,7 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
 			    GTK_WIDGET(hbox),
 			    0);
   
-      label = (GtkLabel *) gtk_label_new("program");
+      label = (GtkLabel *) gtk_label_new(i18n("program"));
       gtk_box_pack_start((GtkBox *) hbox,
 			 (GtkWidget *) label,
 			 FALSE, FALSE,
@@ -1433,7 +1435,7 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
   			GTK_WIDGET(hbox),
   			0);
   
-  label = (GtkLabel *) gtk_label_new("preset");
+  label = (GtkLabel *) gtk_label_new(i18n("preset"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -1615,6 +1617,9 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1650,20 +1655,26 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("lv2-<%s>",
+				    lv2_plugin->uri);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port->data)->port_name,
-						   "plugin-name", g_strdup_printf("lv2-<%s>", lv2_plugin->uri),
+						   "plugin-name", plugin_name,
 						   "filename", live_lv2_bridge->filename,
 						   "effect", live_lv2_bridge->effect,
-						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port->data)->port_name),
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "specifier", AGS_PORT_DESCRIPTOR(port->data)->port_name,
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      g_free(plugin_name);
+      g_free(control_port);
+      
       /* lv2 conversion */
       lv2_conversion = NULL;
 

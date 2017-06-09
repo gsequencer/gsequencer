@@ -42,6 +42,8 @@
 
 #include <dssi.h>
 
+#include <ags/i18n.h>
+
 void ags_dssi_browser_class_init(AgsDssiBrowserClass *dssi_browser);
 void ags_dssi_browser_init(AgsDssiBrowser *dssi_browser);
 void ags_dssi_browser_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -143,6 +145,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
   
   GList *list;
 
+  gchar *str;
   gchar **filenames, **filenames_start;
 
   dssi_manager = ags_dssi_manager_get_instance();
@@ -154,7 +157,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("filename: ");
+  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -182,7 +185,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   free(filenames_start);
 
-  label = (GtkLabel *) gtk_label_new("effect: ");
+  label = (GtkLabel *) gtk_label_new(i18n("effect: "));
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -203,7 +206,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Label: ",
+				    "label", i18n("Label: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
@@ -212,7 +215,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Maker: ",
+				    "label", i18n("Maker: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
@@ -221,7 +224,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Copyright: ",
+				    "label", i18n("Copyright: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
@@ -230,7 +233,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign", 0.0,
-				    "label", "Ports: ",
+				    "label", i18n("Ports: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),

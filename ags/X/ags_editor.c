@@ -42,6 +42,8 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#include <ags/i18n.h>
+
 void ags_editor_class_init(AgsEditorClass *editor);
 void ags_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_editor_init(AgsEditor *editor);
@@ -200,11 +202,13 @@ ags_editor_init(AgsEditor *editor)
 
   editor->soundcard = NULL;
 
+  /* toolbar */
   editor->toolbar = ags_toolbar_new();
   gtk_box_pack_start((GtkBox *) editor,
 		     (GtkWidget *) editor->toolbar,
 		     FALSE, FALSE, 0);
 
+  /* hpaned and scrolled window */
   editor->paned = 
     paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) editor,
@@ -215,6 +219,7 @@ ags_editor_init(AgsEditor *editor)
   gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
+  /* machine selector */
   editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 					  "homogeneous", FALSE,
 					  "spacing", 0,
@@ -223,7 +228,7 @@ ags_editor_init(AgsEditor *editor)
 				      AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO |
 				      AGS_MACHINE_SELECTOR_NOTATION);
   gtk_label_set_label(editor->machine_selector->label,
-		      "notation");
+		      i18n("notation"));
   
   editor->machine_selector->popup = ags_machine_selector_popup_new(editor->machine_selector);
   g_object_set(editor->machine_selector->menu_button,
@@ -234,6 +239,7 @@ ags_editor_init(AgsEditor *editor)
 
   editor->selected_machine = NULL;
 
+  /* edit widget */
   editor->editor_child = NULL;
   editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
@@ -433,7 +439,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 					      "homogeneous", FALSE,
 					      "spacing", 0,
 					      NULL);
-    editor_child->notebook->prefix = g_strdup("channel");
+    editor_child->notebook->prefix = g_strdup(i18n("channel"));
     g_object_ref(editor_child->notebook);
     gtk_table_attach(editor->table, (GtkWidget *) editor_child->notebook,
 		     0, 3, y, y + 1,

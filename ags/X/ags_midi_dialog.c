@@ -36,6 +36,8 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/i18n.h>
+
 void ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog);
 void ags_midi_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_midi_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -215,7 +217,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   		     FALSE, FALSE,
   		     0);
   
-  label = (GtkLabel *) gtk_label_new("midi channel");
+  label = (GtkLabel *) gtk_label_new(i18n("midi channel"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(label),
   		     FALSE, FALSE,
@@ -229,7 +231,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   
   /* playback */
   midi_dialog->playback = NULL;
-  //  midi_dialog->playback = (GtkCheckButton *) gtk_check_button_new_with_label("playback");
+  //  midi_dialog->playback = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("playback"));
   //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
   //		     GTK_WIDGET(midi_dialog->playback),
   //		     FALSE, FALSE,
@@ -237,7 +239,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* record */
   midi_dialog->record = NULL;
-  //  midi_dialog->record = (GtkCheckButton *) gtk_check_button_new_with_label("record");
+  //  midi_dialog->record = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("record"));
   //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
   //		     GTK_WIDGET(midi_dialog->record),
   //		     FALSE, FALSE,
@@ -258,7 +260,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     0);
   
   /* audio start */
-  label = (GtkLabel *) gtk_label_new("audio start mapping");
+  label = (GtkLabel *) gtk_label_new(i18n("audio start mapping"));
   g_object_set(label,
 	       "xalign", 0.0,
 	       NULL);
@@ -280,7 +282,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
 
   /* audio end */
-  label = (GtkLabel *) gtk_label_new("audio end mapping");
+  label = (GtkLabel *) gtk_label_new(i18n("audio end mapping"));
   g_object_set(label,
 	       "xalign", 0.0,
 	       NULL);
@@ -302,7 +304,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
 
   /* midi start */
-  label = (GtkLabel *) gtk_label_new("midi start mapping");
+  label = (GtkLabel *) gtk_label_new(i18n("midi start mapping"));
   g_object_set(label,
 	       "xalign", 0.0,
 	       NULL);
@@ -324,7 +326,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
 
   /* midi end */
-  label = (GtkLabel *) gtk_label_new("midi end mapping");
+  label = (GtkLabel *) gtk_label_new(i18n("midi end mapping"));
   g_object_set(label,
 	       "xalign", 0.0,
 	       NULL);
@@ -360,7 +362,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     0);
   
   /* midi device */
-  label = (GtkLabel *) gtk_label_new("midi device");
+  label = (GtkLabel *) gtk_label_new(i18n("midi device"));
   g_object_set(label,
 	       "xalign", 0.0,
 	       NULL);

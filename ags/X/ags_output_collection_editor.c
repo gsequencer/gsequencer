@@ -39,6 +39,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_output_collection_editor_class_init(AgsOutputCollectionEditorClass *output_collection_editor);
 void ags_output_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_output_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -197,7 +199,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first line");
+  label = (GtkLabel *) gtk_label_new(i18n("first line"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -221,7 +223,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("count");
+  label = (GtkLabel *) gtk_label_new(i18n("count"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -245,7 +247,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("soundcard");
+  label = (GtkLabel *) gtk_label_new(i18n("soundcard"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -267,7 +269,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("audio channel");
+  label = (GtkLabel *) gtk_label_new(i18n("audio channel"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -295,7 +297,9 @@ ags_output_collection_editor_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_CHANNEL_TYPE:
-    output_collection_editor->channel_type = g_value_get_gtype(value);
+    {
+      output_collection_editor->channel_type = g_value_get_gtype(value);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -315,7 +319,9 @@ ags_output_collection_editor_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_CHANNEL_TYPE:
-    g_value_set_gtype(value, output_collection_editor->channel_type);
+    {
+      g_value_set_gtype(value, output_collection_editor->channel_type);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

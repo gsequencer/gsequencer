@@ -30,6 +30,8 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/i18n.h>
+
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
 void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_oscillator_init(AgsOscillator *oscillator);
@@ -117,7 +119,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_container_add((GtkContainer *) oscillator, (GtkWidget *) table);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("wave"),
+			    (GtkWidget *) gtk_label_new(i18n("wave")),
 			    0, 1, 0, 1);
 
   /* wave */
@@ -149,17 +151,17 @@ ags_oscillator_init(AgsOscillator *oscillator)
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "sawtooth",
+		     0, i18n("sawtooth"),
 		     -1);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "square",
+		     0, i18n("square"),
 		     -1);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "triangle",
+		     0, i18n("triangle"),
 		     -1);
 
   gtk_combo_box_set_model(oscillator->wave, GTK_TREE_MODEL(model));
@@ -167,28 +169,28 @@ ags_oscillator_init(AgsOscillator *oscillator)
 
   /* other controls */
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("attack"),
+			    (GtkWidget *) gtk_label_new(i18n("attack")),
 			    2, 3, 0, 1);
   oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->attack->adjustment->value = 0.0;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->attack, 3, 4, 0, 1);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("length"),
+			    (GtkWidget *) gtk_label_new(i18n("length")),
 			    4, 5, 0, 1);
   oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / 27.5, 100000.0, 1.0);
   oscillator->frame_count->adjustment->value = 3200;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("phase"),
+			    (GtkWidget *) gtk_label_new(i18n("phase")),
 			    0, 1, 1, 2);
   oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->phase->adjustment->value = 0.0;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->phase, 1, 2, 1, 2);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("frequency"),
+			    (GtkWidget *) gtk_label_new(i18n("frequency")),
 			    2, 3, 1, 2);
   oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(8.0, 100000.0, 1.0);
   gtk_spin_button_set_digits(oscillator->frequency,
@@ -200,7 +202,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    1, 2);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("volume"),
+			    (GtkWidget *) gtk_label_new(i18n("volume")),
 			    4, 5, 1, 2);
   oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
   gtk_spin_button_set_digits(oscillator->volume,

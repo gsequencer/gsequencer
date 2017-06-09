@@ -38,6 +38,8 @@
 #include <ags/X/editor/ags_note_edit.h>
 #include <ags/X/editor/ags_pattern_edit.h>
 
+#include <ags/i18n.h>
+
 void ags_navigation_class_init(AgsNavigationClass *navigation);
 void ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_navigation_init(AgsNavigation *navigation);
@@ -208,7 +210,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_container_add((GtkContainer *) navigation->expander,
 		    (GtkWidget *) gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE));
 
-  label = (GtkLabel *) gtk_label_new("bpm");
+  label = (GtkLabel *) gtk_label_new(i18n("bpm"));
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
   navigation->bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 1000.0, 1.0);
@@ -248,13 +250,13 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->forward, FALSE, FALSE, 0);
 
 
-  navigation->loop = (GtkCheckButton *) gtk_check_button_new_with_label("loop");
+  navigation->loop = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("loop"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop, FALSE, FALSE, 2);
 
   label = (GtkLabel *) gtk_label_new("position");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->position_time = (GtkLabel *) gtk_label_new(g_strdup("00:00.000"));
+  navigation->position_time = (GtkLabel *) gtk_label_new("00:00.000");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_time, FALSE, FALSE, 2);
 
   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -281,13 +283,13 @@ ags_navigation_init(AgsNavigation *navigation)
   //  GTK_WIDGET_SET_FLAGS((GtkWidget *) hbox, GTK_NO_SHOW_ALL);
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);
 
-  label = (GtkLabel *) gtk_label_new("loop L");
+  label = (GtkLabel *) gtk_label_new(i18n("loop L"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
   navigation->loop_left_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_left_tact, FALSE, FALSE, 2);
 
-  label = (GtkLabel *) gtk_label_new("loop R");
+  label = (GtkLabel *) gtk_label_new(i18n("loop R"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
   navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
@@ -297,13 +299,13 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->scroll = NULL;
   /*
-  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll");
+  navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-scroll"));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
 			       FALSE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
   */
   
-  navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers");
+  navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->exclude_sequencer),
 			       TRUE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->exclude_sequencer, FALSE, FALSE, 2);

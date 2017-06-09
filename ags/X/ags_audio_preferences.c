@@ -41,6 +41,7 @@
 #include <ags/X/ags_soundcard_editor.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preferences);
 void ags_audio_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -196,7 +197,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
     audio_preferences->stop_jack = NULL;
   }else{
 
-    label = (GtkLabel *) gtk_label_new("JACK driver");
+    label = (GtkLabel *) gtk_label_new(i18n("JACK driver"));
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
@@ -212,7 +213,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
   
-    label = (GtkLabel *) gtk_label_new("JACK server");
+    label = (GtkLabel *) gtk_label_new(i18n("JACK server"));
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
@@ -228,13 +229,13 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
 
-    audio_preferences->start_jack = (GtkButton *) gtk_button_new_with_label("start");
+    audio_preferences->start_jack = (GtkButton *) gtk_button_new_with_label(i18n("start"));
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(audio_preferences->start_jack),
 		       FALSE, FALSE,
 		       0);
 
-    audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label("stop");
+    audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label(i18n("stop"));
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(audio_preferences->stop_jack),
 		       FALSE, FALSE,

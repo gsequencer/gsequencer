@@ -72,6 +72,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <ags/i18n.h>
+
 void ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge);
 void ags_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -348,7 +350,7 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("program");
+  label = (GtkLabel *) gtk_label_new(i18n("program"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -399,6 +401,7 @@ ags_dssi_bridge_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
+      gchar *str;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -418,9 +421,13 @@ ags_dssi_bridge_set_property(GObject *gobject,
 
 	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) dssi_bridge);
 
+	  str = g_strdup_printf("%s %s",
+				i18n("Plugin file not present"),
+				filename);
 	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s",
-						filename));
+				str);
+
+	  g_free(str);
 	}
       }
 

@@ -38,6 +38,7 @@
 #include <ags/X/ags_line_member.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_automation_toolbar_class_init(AgsAutomationToolbarClass *automation_toolbar);
 void ags_automation_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -187,7 +188,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   /*  */
   automation_toolbar->zoom_history = 4;
   
-  label = (GtkLabel *) gtk_label_new("zoom");
+  label = (GtkLabel *) gtk_label_new(i18n("zoom"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 
@@ -200,7 +201,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  label = (GtkLabel *) gtk_label_new("port");
+  label = (GtkLabel *) gtk_label_new(i18n("port"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 

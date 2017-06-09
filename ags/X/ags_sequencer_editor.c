@@ -42,6 +42,7 @@
 #include <ags/X/ags_midi_preferences.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_sequencer_editor_class_init(AgsSequencerEditorClass *sequencer_editor);
 void ags_sequencer_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -162,7 +163,7 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "backend",
+				    "label", i18n("backend"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -198,7 +199,7 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   
   /* sound card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "MIDI card",
+				    "label", i18n("MIDI card"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,

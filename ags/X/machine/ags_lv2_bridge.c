@@ -71,6 +71,8 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <ags/i18n.h>
+
 void ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge);
 void ags_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -460,7 +462,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   gtk_menu_item_set_submenu((GtkMenuItem *) item,
 			    (GtkWidget *) lv2_bridge->lv2_menu);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("show GUI");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("show GUI"));
   gtk_menu_shell_append((GtkMenuShell *) lv2_bridge->lv2_menu,
 			(GtkWidget *) item);
 
@@ -1561,7 +1563,7 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
 			    GTK_WIDGET(hbox),
 			    0);
   
-      label = (GtkLabel *) gtk_label_new("program");
+      label = (GtkLabel *) gtk_label_new(i18n("program"));
       gtk_box_pack_start((GtkBox *) hbox,
 			 (GtkWidget *) label,
 			 FALSE, FALSE,
@@ -1622,7 +1624,7 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   			GTK_WIDGET(hbox),
   			0);
   
-  label = (GtkLabel *) gtk_label_new("preset");
+  label = (GtkLabel *) gtk_label_new(i18n("preset"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,

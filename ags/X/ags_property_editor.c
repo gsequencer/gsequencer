@@ -22,6 +22,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_property_editor_class_init(AgsPropertyEditorClass *property_editor);
 void ags_property_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_property_editor_init(AgsPropertyEditor *property_editor);
@@ -95,7 +97,7 @@ ags_property_editor_init(AgsPropertyEditor *property_editor)
 {
   property_editor->flags = 0;
 
-  property_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled");
+  property_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_box_pack_start(GTK_BOX(property_editor),
 		     GTK_WIDGET(property_editor->enabled),
 		     FALSE, FALSE,

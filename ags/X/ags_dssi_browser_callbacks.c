@@ -32,6 +32,8 @@
 
 #include <dssi.h>
 
+#include <ags/i18n.h>
+
 void
 ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					  AgsDssiBrowser *dssi_browser)
@@ -63,8 +65,12 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   str = gtk_combo_box_text_get_active_text(filename);
   
   while((base_plugin = ags_base_plugin_find_filename(base_plugin, str)) != NULL){
+    str = g_strdup_printf("%s",
+			  AGS_BASE_PLUGIN(base_plugin->data)->effect);
     gtk_combo_box_text_append_text(effect,
-				   g_strdup_printf("%s", AGS_BASE_PLUGIN(base_plugin->data)->effect));
+				   str);
+
+    g_free(str);
     
     base_plugin = base_plugin->next;
   }
@@ -81,8 +87,11 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   GtkComboBoxText *filename, *effect;
   GtkLabel *label;
   AgsDssiPlugin *dssi_plugin;
+
   GList *list, *list_start, *child, *child_start;
+
   gchar *str, *tmp;
+
   guint port_count;
   guint y;
   unsigned long i;
@@ -127,33 +136,48 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
       /* update ui - reading plugin file */
       label = GTK_LABEL(list->data);
+      str = g_strconcat(i18n("Label"),
+			": ",
+			plugin_descriptor->LADSPA_Plugin->Label,
+			NULL);
       gtk_label_set_text(label,
-			 g_strconcat("Label: ",
-				     plugin_descriptor->LADSPA_Plugin->Label,
-				     NULL));
+			 str);
+
+      g_free(str);
 
       list = list->next;
       label = GTK_LABEL(list->data);
+      str = g_strconcat(i18n("Maker"),
+			": ",
+			plugin_descriptor->LADSPA_Plugin->Label,
+			NULL);
       gtk_label_set_text(label,
-			 g_strconcat("Maker: ",
-				     plugin_descriptor->LADSPA_Plugin->Maker,
-				     NULL));
+			 str);
+
+      g_free(str);
 
       list = list->next;
       label = GTK_LABEL(list->data);
+      str = g_strconcat(i18n("Copyright"),
+			": ",
+			plugin_descriptor->LADSPA_Plugin->Label,
+			NULL);
       gtk_label_set_text(label,
-			 g_strconcat("Copyright: ",
-				     plugin_descriptor->LADSPA_Plugin->Copyright,
-				     NULL));
+			 str);
+
+      g_free(str);
 
       port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
 
       list = list->next;
       label = GTK_LABEL(list->data);
 
-      str = g_strdup("Ports: ");
+      str = g_strdup_printf("%s: ",
+			    i18n("Ports"));
       gtk_label_set_text(label,
 			 str);
+
+      g_free(str);
 
       list = list->next;
       table = GTK_TABLE(list->data);
@@ -201,23 +225,39 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   }else{
     /* update ui - empty */
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Label"));
     gtk_label_set_text(label,
-		       "Label: ");
+		       str);
+
+    g_free(str);
+    
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Maker"));
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Copyright"));
     gtk_label_set_text(label,
-		       "Maker: ");
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Ports"));
     gtk_label_set_text(label,
-		       "Copyright: ");
+		       str);
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       "Ports: ");
+    g_free(str);
 
     list = list->next;
     table = GTK_TABLE(list->data);

@@ -29,6 +29,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/i18n.h>
+
 void ags_server_preferences_class_init(AgsServerPreferencesClass *server_preferences);
 void ags_server_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -147,7 +149,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		     FALSE, FALSE,
 		     2);
 
-  server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label("start server");
+  server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("start server"));
   gtk_table_attach(table,
 		   GTK_WIDGET(server_preferences->start),
 		   0, 2,
@@ -159,7 +161,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* address */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "address",
+				    "label", i18n("address"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -181,7 +183,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* port */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "port",
+				    "label", i18n("port"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -203,7 +205,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* username */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "username",
+				    "label", i18n("username"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -225,7 +227,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* password */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "password",
+				    "label", i18n("password"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,

@@ -31,6 +31,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_collection_entry_class_init(AgsMachineCollectionEntryClass *machine_collection_entry);
 void ags_machine_collection_entry_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_collection_entry_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -168,7 +170,7 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
   machine_collection_entry->machine = NULL;
 
   /* enabled */
-  machine_collection_entry->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled");
+  machine_collection_entry->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_table_attach((GtkTable *) machine_collection_entry,
 		   (GtkWidget *) machine_collection_entry->enabled,
 		   0, 4,
@@ -211,7 +213,7 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
   
   /* sequence */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "sequence: ",
+				    "label", i18n("sequence: "),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach((GtkTable *) machine_collection_entry,

@@ -40,6 +40,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bulk.h>
 
+#include <ags/i18n.h>
+
 void ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member);
 void ags_bulk_member_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_bulk_member_init(AgsBulkMember *bulk_member);
@@ -478,6 +480,10 @@ ags_bulk_member_set_property(GObject *gobject,
 	return;
       }
 
+      if(bulk_member->widget_label != NULL){
+	g_free(bulk_member->widget_label);
+      }
+      
       bulk_member->widget_label = g_strdup(label);
       ags_bulk_member_set_label(bulk_member, label);
     }
@@ -492,11 +498,16 @@ ags_bulk_member_set_property(GObject *gobject,
 	return;
       }
 
+      if(bulk_member->plugin_name != NULL){
+	g_free(bulk_member->plugin_name);
+      }
+      
       bulk_member->plugin_name = g_strdup(plugin_name);
     }
     break;
   case PROP_FILENAME:
     {
+      gchar *str;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -516,9 +527,13 @@ ags_bulk_member_set_property(GObject *gobject,
 
 	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) bulk_member);
 
+	  str = g_strdup_printf("%s %s",
+				i18n("Plugin file not present"),
+				filename);
 	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s",
-						filename));
+				str);
+
+	  g_free(str);
 	}
       }
 
@@ -535,6 +550,10 @@ ags_bulk_member_set_property(GObject *gobject,
 	return;
       }
 
+      if(bulk_member->effect != NULL){
+	g_free(bulk_member->effect);
+      }
+      
       bulk_member->effect = g_strdup(effect);
     }
     break;
@@ -565,6 +584,11 @@ ags_bulk_member_set_property(GObject *gobject,
 	return;
       }
 
+      if(bulk_member->control_port != NULL){
+	g_free(bulk_member->control_port);
+      }
+
+      
       bulk_member->control_port = g_strdup(control_port);
     }
     break;

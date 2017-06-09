@@ -32,6 +32,8 @@
 
 #include <lv2.h>
 
+#include <ags/i18n.h>
+
 void
 ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					 AgsLv2Browser *lv2_browser)
@@ -101,26 +103,40 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
     
     /* update ui - empty */
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: %s",
+			  i18n("Name"),
+			  lv2_plugin->foaf_name);
     gtk_label_set_text(label,
-		       g_strdup_printf("Name: %s",
-				       lv2_plugin->foaf_name));
+		       str);
+
+    g_free(str);
+    
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: %s",
+			  i18n("Homepage"),
+			  lv2_plugin->foaf_homepage);
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: %s",
+			  i18n("M-Box"),
+			  lv2_plugin->foaf_mbox);
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       g_strdup_printf("Homepage: %s",
-				       lv2_plugin->foaf_homepage));
+		       i18n("Ports: "));
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       g_strdup_printf("M-Box: %s",
-				       lv2_plugin->foaf_mbox));
-
-    list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       "Ports: ");
+    g_free(str);
 
     list = list->next;
     table = GTK_TABLE(list->data);
@@ -194,23 +210,39 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   }else{
     /* update ui - empty */
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Name"));
     gtk_label_set_text(label,
-		       "Name: ");
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Homepage"));
     gtk_label_set_text(label,
-		       "Homepage: ");
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("M-Box"));
     gtk_label_set_text(label,
-		       "M-Box: ");
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Ports"));
     gtk_label_set_text(label,
-		       "Ports: ");
+		       str);
+
+    g_free(str);
 
     list = list->next;
     table = GTK_TABLE(list->data);

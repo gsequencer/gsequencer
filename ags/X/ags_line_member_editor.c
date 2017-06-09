@@ -30,6 +30,8 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_line_member_editor_class_init(AgsLineMemberEditorClass *line_member_editor);
 void ags_line_member_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_member_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -236,6 +238,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
   GList *recall;
 
+  gchar *str;
   gchar *filename, *effect;
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
@@ -293,16 +296,19 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
     }else{
       g_critical("unsupported recall");
     }
-    
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s",
-						       filename,
-						       effect));
+
+    str = g_strdup_printf("%s - %s",
+			  filename,
+			  effect);
+    label = (GtkLabel *) gtk_label_new(str);
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(label),
 		       FALSE, FALSE,
 		       0);
     gtk_widget_show_all((GtkWidget *) hbox);
 
+    g_free(str);
+    
     recall = recall->next;
   }
 }

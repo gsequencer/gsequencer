@@ -29,6 +29,8 @@
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/ags_output_listing_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor);
 void ags_connection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_connection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -193,7 +195,8 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
-  gtk_window_set_title((GtkWindow *) connection_editor, g_strdup("connections"));
+  gtk_window_set_title((GtkWindow *) connection_editor,
+		       i18n("connections"));
 
   connection_editor->flags = 0;
 
@@ -211,14 +214,14 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("output")));
+			   (GtkWidget *) gtk_label_new(i18n("output")));
 
   /* audio connection editor */
   connection_editor->output_connection_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("connect output")));
+			   (GtkWidget *) gtk_label_new(i18n("connect output")));
 
   /* GtkButton's in GtkDialog->action_area  */
   connection_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);

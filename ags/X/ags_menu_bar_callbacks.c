@@ -100,18 +100,23 @@ ags_menu_bar_open_response_callback(GtkFileChooserDialog *file_chooser, gint res
   if(response == GTK_RESPONSE_ACCEPT){
     AgsFile *file;
     AgsSaveFile *save_file;
-    char *filename;
 
+    char *filename;
+    gchar *str;
+    
     GError *error;
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     error = NULL;
 
-    g_spawn_command_line_async(g_strdup_printf("gsequencer --filename %s",
-					       filename),
+    str = g_strdup_printf("gsequencer --filename %s",
+			  filename);
+    g_spawn_command_line_async(str,
 			       &error);
+
     g_free(filename);
+    g_free(str);
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);
@@ -190,6 +195,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     AgsApplicationContext *application_context;
 
     gchar *filename;
+    gchar *str;
     
     GError *error;
     
@@ -236,7 +242,11 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     }
     
     window->name = g_strdup(filename);
-    gtk_window_set_title((GtkWindow *) window, g_strconcat("GSequencer - ", window->name, NULL));
+
+    str = g_strconcat("GSequencer - ", window->name, NULL);
+    gtk_window_set_title((GtkWindow *) window, str);
+
+    g_free(str);
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);
@@ -1133,6 +1143,8 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   static gchar *license;
   static GdkPixbuf *logo;
 
+  gchar *str;
+  
   int n_read;
   
   GError *error;
@@ -1157,7 +1169,10 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
       error = NULL;
 
-      logo = gdk_pixbuf_new_from_file(g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png"), &error);
+      str = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png");
+      logo = gdk_pixbuf_new_from_file(str, &error);
+
+      g_free(str);
     }
   }
   
@@ -1166,7 +1181,7 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 			"authors", authors,
 			"license", license,
 			"version", AGS_VERSION,
-			"website", "http://gsequencer.org",
+			"website", "http://nongnu.org/gsequencer",
 			"title", "Advanced Gtk+ Sequencer",
 			"logo", logo,
 			NULL);

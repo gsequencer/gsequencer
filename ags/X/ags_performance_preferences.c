@@ -29,6 +29,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/i18n.h>
+
 void ags_performance_preferences_class_init(AgsPerformancePreferencesClass *performance_preferences);
 void ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -138,13 +140,13 @@ ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *ap
 void
 ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences)
 {
-  performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label("Auto-sense on stream");
+  performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Auto-sense on stream"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->stream_auto_sense),
 		     FALSE, FALSE,
 		     0);
   
-  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label("Super threaded");
+  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->super_threaded),
 		     FALSE, FALSE,

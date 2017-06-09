@@ -37,6 +37,7 @@
 #include <ags/X/ags_export_soundcard.h>
 
 #include <stdlib.h>
+#include <ags/i18n.h>
 
 void ags_export_window_class_init(AgsExportWindowClass *export_window);
 void ags_export_window_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -189,7 +190,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->flags = 0;
 
   g_object_set(export_window,
-	       "title", "export to audio data",
+	       "title", i18n("export to audio data"),
 	       NULL);
 
   export_window->application_context = NULL;
@@ -213,7 +214,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 			  13)){
     export_window->live_export = NULL;
   }else{
-    export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label("live export");
+    export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("live export"));
     gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
 				 TRUE);
     gtk_box_pack_start(GTK_BOX(vbox),
@@ -225,7 +226,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   g_free(str);
   
   /* exclude sequencer */
-  export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers");
+  export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
   gtk_toggle_button_set_active((GtkToggleButton *) export_window->exclude_sequencer,
 			       TRUE);
   gtk_box_pack_start(GTK_BOX(vbox),
@@ -241,7 +242,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     0);
 
   /* mode */
-  label = (GtkLabel *) gtk_label_new("mode");
+  label = (GtkLabel *) gtk_label_new(i18n("mode"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
@@ -268,7 +269,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   0, 0);
 
   /* tact */
-  label = (GtkLabel *) gtk_label_new("tact");
+  label = (GtkLabel *) gtk_label_new(i18n("tact"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
@@ -290,7 +291,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   0, 0);
 
   /* time */
-  label = (GtkLabel *) gtk_label_new("time");
+  label = (GtkLabel *) gtk_label_new(i18n("time"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
@@ -347,7 +348,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
-  export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label("export");
+  export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("export"));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->export),
 		     FALSE, FALSE,

@@ -39,6 +39,7 @@
 #include <math.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor);
 void ags_automation_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -217,7 +218,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 						     NULL);
   automation_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_AUTOMATION);
   gtk_label_set_label(automation_editor->machine_selector->label,
-		      "automation");
+		      i18n("automation"));
   
   automation_editor->machine_selector->popup = ags_machine_selector_popup_new(automation_editor->machine_selector);
   g_object_set(automation_editor->machine_selector->menu_button,
@@ -239,19 +240,19 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->audio_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_notebook_append_page(automation_editor->notebook,
 			   (GtkWidget *) automation_editor->audio_table,
-			   gtk_label_new("audio"));
+			   gtk_label_new(i18n("audio")));
   
   /* output */
   automation_editor->output_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_notebook_append_page(automation_editor->notebook,
 			   (GtkWidget *) automation_editor->output_table,
-			   gtk_label_new("output"));
+			   gtk_label_new(i18n("output")));
 
   /* input */
   automation_editor->input_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_notebook_append_page(automation_editor->notebook,
 			   (GtkWidget *) automation_editor->input_table,
-			   gtk_label_new("input"));
+			   gtk_label_new(i18n("input")));
 
   /* currenty selected widgets */
   automation_editor->current_audio_scale = NULL;
@@ -732,7 +733,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 								"homogeneous", FALSE,
 								"spacing", 0,
 								NULL);
-    automation_editor_child->output_notebook->prefix = g_strdup("line");
+    automation_editor_child->output_notebook->prefix = g_strdup(i18n("line"));
     g_object_ref(automation_editor_child->output_notebook);
     gtk_table_attach(automation_editor->output_table, (GtkWidget *) automation_editor_child->output_notebook,
 		     0, 3, y, y + 1,
@@ -776,7 +777,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 							       "homogeneous", FALSE,
 							       "spacing", 0,
 							       NULL);
-    automation_editor_child->input_notebook->prefix = g_strdup("line");
+    automation_editor_child->input_notebook->prefix = g_strdup(i18n("line"));
     g_object_ref(automation_editor_child->input_notebook);
     gtk_table_attach(automation_editor->input_table, (GtkWidget *) automation_editor_child->input_notebook,
 		     0, 3, y, y + 1,

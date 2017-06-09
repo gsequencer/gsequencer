@@ -27,6 +27,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/i18n.h>
+
 void ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_preferences);
 void ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -134,7 +136,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   GtkHBox *hbox;
   GtkLabel *label;
 
-  generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label("autosave thread");
+  generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("autosave thread"));
   gtk_box_pack_start(GTK_BOX(generic_preferences),
 		     GTK_WIDGET(generic_preferences->autosave_thread),
 		     FALSE, FALSE,
@@ -148,7 +150,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("segmentation");
+  label = (GtkLabel *) gtk_label_new(i18n("segmentation"));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -172,7 +174,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("engine mode");
+  label = (GtkLabel *) gtk_label_new(i18n("engine mode"));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,

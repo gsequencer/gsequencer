@@ -27,6 +27,8 @@
 
 #include <ags/X/ags_line_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_pad_editor_class_init(AgsPadEditorClass *pad_editor);
 void ags_pad_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pad_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -339,6 +341,8 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 
     AgsMutexManager *mutex_manager;
 
+    gchar *str;
+    
     guint pad;
     guint i;
 
@@ -365,9 +369,14 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
     pthread_mutex_unlock(channel_mutex);
 
     /* set label */
+    str = g_strdup_printf("%s: %u",
+			  i18n("pad"),
+			  pad + 1);
     gtk_expander_set_label(pad_editor->line_editor_expander,
-			   g_strdup_printf("pad: %u", pad));
+			   str);
 
+    g_free(str);
+    
     pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
 		      GTK_WIDGET(pad_editor->line_editor));

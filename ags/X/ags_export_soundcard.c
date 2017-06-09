@@ -32,6 +32,7 @@
 #include <ags/X/ags_export_window.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard);
 void ags_export_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -165,7 +166,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "backend",
+				    "label", i18n("backend"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -201,7 +202,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   
   /* sound card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "sound card",
+				    "label", i18n("soundcard"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -221,7 +222,7 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   
   /* filename */
-  label = (GtkLabel *) gtk_label_new("file");
+  label = (GtkLabel *) gtk_label_new(i18n("file"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);
@@ -249,14 +250,14 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		     TRUE, TRUE,
 		     0);
 
-  export_soundcard->file_chooser_button = (GtkButton *) gtk_button_new_with_label("open");
+  export_soundcard->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_soundcard->file_chooser_button),
 		     TRUE, TRUE,
 		     0);
 
   /* output format */
-  label = (GtkLabel *) gtk_label_new("output format");
+  label = (GtkLabel *) gtk_label_new(i18n("output format"));
   g_object_set(G_OBJECT(label),
 	       "xalign", 0.0,
 	       NULL);

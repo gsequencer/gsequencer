@@ -195,19 +195,25 @@ ags_window_init(AgsWindow *window)
   
   window->soundcard = NULL;
 
+  /* window name and title */
   window->name = g_strdup("unnamed");
 
   str = g_strconcat("GSequencer - ", window->name, NULL);
   gtk_window_set_title((GtkWindow *) window, str);
 
+  g_free(str);
+
+  /* vbox */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
 
+  /* menubar */
   window->menu_bar = ags_menu_bar_new();
   gtk_box_pack_start((GtkBox *) vbox,
   		     (GtkWidget *) window->menu_bar,
   		     FALSE, FALSE, 0);
 
+  /* vpaned and scrolled window */
   window->paned = (GtkVPaned *) gtk_vpaned_new();
   gtk_box_pack_start((GtkBox*) vbox, (GtkWidget*) window->paned, TRUE, TRUE, 0);
 
@@ -216,13 +222,15 @@ ags_window_init(AgsWindow *window)
 		  scrolled_window,
 		  TRUE, TRUE);
 
+  /* machines rack */
   window->machines = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *) scrolled_window,
 					(GtkWidget *) window->machines);
 
   window->machine_counter = ags_window_standard_machine_counter_alloc();
   window->selected = NULL;
-  
+
+  /* editor */
   window->editor = g_object_new(AGS_TYPE_EDITOR,
 				"homogeneous", FALSE,
 				"spacing", 0,
@@ -231,6 +239,7 @@ ags_window_init(AgsWindow *window)
 		  (GtkWidget *) window->editor,
 		  TRUE, TRUE);
 
+  /* navigation */
   window->navigation = g_object_new(AGS_TYPE_NAVIGATION,
 				    "homogeneous", FALSE,
 				    "spacing", 0,
@@ -239,6 +248,7 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
+  /* windows and dialogs */
   window->dialog = NULL;
 
   window->automation_window = ags_automation_window_new((GtkWidget *) window);

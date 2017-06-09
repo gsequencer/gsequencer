@@ -30,6 +30,8 @@
 
 #include <complex.h>
 
+#include <ags/i18n.h>
+
 void ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog);
 void ags_envelope_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_envelope_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -176,7 +178,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   GtkScrolledWindow *scrolled_window;
   
   gtk_window_set_title((GtkWindow *) envelope_dialog,
-		       g_strdup("Envelope"));
+		       i18n("Envelope"));
 
   envelope_dialog->flags = 0;
 
@@ -197,7 +199,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("editor")));
+			   (GtkWidget *) gtk_label_new(i18n("editor")));
 
   envelope_dialog->envelope_editor = ags_envelope_editor_new();
   gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_editor_scrolled_window,
@@ -208,7 +210,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("info")));
+			   (GtkWidget *) gtk_label_new(i18n("info")));
 
   envelope_dialog->envelope_info = ags_envelope_info_new();
   gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_info_scrolled_window,

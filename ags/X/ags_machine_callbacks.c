@@ -51,6 +51,8 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include <ags/i18n.h>
+
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
@@ -288,7 +290,7 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
   GtkEntry *entry;
 
   machine->rename =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("rename"),
+    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
 						       GTK_STOCK_OK,
@@ -319,6 +321,8 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     GtkMenuToolButton *menu_tool_button;
 
     GList *list, *list_start;
+
+    gchar *str;
     
     window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
     
@@ -333,14 +337,20 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
 				  NULL);
     gtk_widget_destroy(gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)));
 
+    str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
+		      ": ",
+		      text,
+		      NULL);
     menu_tool_button = 
       machine->menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-					       "label", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": ", text, NULL),
+					       "label", str,
 					       "menu", machine->popup,
 					       NULL);
     gtk_frame_set_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
 			       (GtkWidget *) menu_tool_button);
     gtk_widget_show_all((GtkWidget *) menu_tool_button);
+
+    g_free(str);
     
     /* update editor */
     list =
@@ -349,10 +359,16 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     while(list != NULL){
       if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
 	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+	str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
+			  ": ",
+			  text,
+			  NULL);
 	g_object_set(list->data,
-		     "label", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": ", text, NULL),
+		     "label", str,
 		     NULL);
 
+	g_free(str);
+	
 	break;
       }
 
@@ -369,9 +385,15 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     while(list != NULL){
       if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
 	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+	str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
+			  ": ",
+			  text,
+			  NULL);
 	g_object_set(list->data,
-		     "label", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": ", text, NULL),
+		     "label", str,
 		     NULL);
+
+	g_free(str);
 
 	break;
       }

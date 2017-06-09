@@ -15435,6 +15435,8 @@ _ACEOF
 
   LIBS="-lX11 $LIBS"
 
+else
+  as_fn_error $? "\"No X11 library present\"" "$LINENO" 5
 fi
 
 # FIXME: Replace `main' with a function in `-ldl':
@@ -15475,6 +15477,8 @@ _ACEOF
 
   LIBS="-ldl $LIBS"
 
+else
+  as_fn_error $? "\"No dl library present\"" "$LINENO" 5
 fi
 
 # FIXME: Replace `main' with a function in `-lm':
@@ -15515,6 +15519,8 @@ _ACEOF
 
   LIBS="-lm $LIBS"
 
+else
+  as_fn_error $? "\"No math library present\"" "$LINENO" 5
 fi
 
 # FIXME: Replace `main' with a function in `-lrt':
@@ -15555,6 +15561,8 @@ _ACEOF
 
   LIBS="-lrt $LIBS"
 
+else
+  as_fn_error $? "\"No rt library present\"" "$LINENO" 5
 fi
 
 
@@ -15958,6 +15966,8 @@ if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
 
+else
+  as_fn_error $? "\"missing headers\"" "$LINENO" 5
 fi
 
 done

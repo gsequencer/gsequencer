@@ -69,6 +69,8 @@
 
 #include <ladspa.h>
 
+#include <ags/i18n.h>
+
 void ags_effect_line_class_init(AgsEffectLineClass *effect_line);
 void ags_effect_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin);
@@ -744,6 +746,9 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -787,20 +792,26 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
       }
       
       /* add line member */
+      plugin_name = g_strdup_printf("ladspa-%u",
+				    ladspa_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name", g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id),
+						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
 
+      g_free(plugin_name);
+      g_free(control_port);
+      
       /* ladspa conversion */
       ladspa_conversion = NULL;
 
@@ -1091,6 +1102,9 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1134,19 +1148,25 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       }
 
       /* add line member */
+      plugin_name = g_strdup_printf("lv2-<%s>",
+				    lv2_plugin->uri);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name", g_strdup_printf("lv2-<%s>", lv2_plugin->uri),
+						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* lv2 conversion */
       lv2_conversion = NULL;

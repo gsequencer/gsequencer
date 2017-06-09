@@ -146,9 +146,6 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
   GtkHBox *hbox;
-  GtkLabel *label;
-
-  gchar *str;  
   
   g_signal_connect_after((GObject *) midi_preferences, "parent-set",
 			 G_CALLBACK(ags_midi_preferences_parent_set_callback), (gpointer) midi_preferences);
@@ -196,8 +193,6 @@ ags_midi_preferences_disconnect(AgsConnectable *connectable)
 {
   AgsMidiPreferences *midi_preferences;
 
-  gchar *str;
-  
   midi_preferences = AGS_MIDI_PREFERENCES(connectable);
 
   if((AGS_MIDI_PREFERENCES_CONNECTED & (midi_preferences->flags)) == 0){

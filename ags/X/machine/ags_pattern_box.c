@@ -45,6 +45,8 @@
 
 #include <atk/atk.h>
 
+#include <ags/i18n.h>
+
 static GType ags_accessible_pattern_box_get_type(void);
 void ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box);
 void ags_accessible_pattern_box_class_init(AtkObject *object);
@@ -215,6 +217,8 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   AgsLed *led;
   GtkToggleButton *toggle_button;
   GtkRadioButton *radio_button;
+
+  gchar *str;
   
   guint i;
 
@@ -293,18 +297,26 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   for(i = 0; i < pattern_box->n_indices; i++){
     if(radio_button == NULL){
-      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup_printf("%d-%d",
-											      i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls));
+      str = g_strdup_printf("%d-%d",
+			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
+      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL,
+									str);
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
 			 (GtkWidget *) radio_button,
 			 FALSE, FALSE,
 			 0);
+
+      g_free(str);
     }else{
+      str = g_strdup_printf("%d-%d",
+			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
-			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup_printf("%d-%d",
-													    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls)),
+			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group,
+								       str),
 			 FALSE, FALSE,
 			 0);
+
+      g_free(str);
     }
   }
 }

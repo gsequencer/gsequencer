@@ -76,6 +76,8 @@
 #include <ladspa.h>
 #include <dssi.h>
 
+#include <ags/i18n.h>
+
 void ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge);
 void ags_live_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_live_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -350,7 +352,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("program");
+  label = (GtkLabel *) gtk_label_new(i18n("program"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -401,6 +403,7 @@ ags_live_dssi_bridge_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
+      gchar *str;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -420,9 +423,13 @@ ags_live_dssi_bridge_set_property(GObject *gobject,
 
 	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) live_dssi_bridge);
 
+	  str = g_strdup_printf("%s %s",
+				i18n("Plugin file not present"),
+				filename);
 	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s",
-						filename));
+				str);
+
+	  g_free(str);
 	}
       }
 
@@ -1312,6 +1319,9 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1347,20 +1357,26 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("dssi-%u",
+				    dssi_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PORT_DESCRIPTOR(port->data)->port_name,
-						   "plugin-name", g_strdup_printf("dssi-%u", dssi_plugin->unique_id),
+						   "plugin-name", plugin_name,
 						   "filename", live_dssi_bridge->filename,
 						   "effect", live_dssi_bridge->effect,
 						   "specifier", AGS_PORT_DESCRIPTOR(port->data)->port_name,
-						   "control-port", g_strdup_printf("%u/%u",
-										     k,
-										     port_count),
+						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      g_free(plugin_name);
+      g_free(control_port);
+      
       /* ladspa conversion */
       ladspa_conversion = NULL;
 

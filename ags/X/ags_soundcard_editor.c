@@ -43,6 +43,7 @@
 #include <ags/X/ags_preferences.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_soundcard_editor_class_init(AgsSoundcardEditorClass *soundcard_editor);
 void ags_soundcard_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -164,7 +165,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "backend",
+				    "label", i18n("backend"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -200,7 +201,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   
   /* sound card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "sound card",
+				    "label", i18n("soundcard"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -246,7 +247,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   
   /* audio channels */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "audio channels",
+				    "label", i18n("audio channels"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -268,7 +269,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   /* samplerate */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "samplerate",
+				    "label", i18n("samplerate"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -289,7 +290,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   /* buffer size */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "buffer size",
+				    "label", i18n("buffer size"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
@@ -310,7 +311,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 
   /* format */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "format",
+				    "label", i18n("format"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,

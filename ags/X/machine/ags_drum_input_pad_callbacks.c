@@ -56,6 +56,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad *pad);
 void ags_drum_input_pad_open_play_done(AgsRecall *recall, AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *pad);
@@ -78,12 +80,12 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
     return;
 
   drum_input_pad->file_chooser =
-    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new (g_strdup("Open File"),
-									 (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum_input_pad),
-									 GTK_FILE_CHOOSER_ACTION_OPEN,
-									 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-									 GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-									 NULL);
+    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open File"),
+									(GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum_input_pad),
+									GTK_FILE_CHOOSER_ACTION_OPEN,
+									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+									GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+									NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
   g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);
@@ -93,7 +95,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   gtk_file_chooser_set_extra_widget((GtkFileChooser *) file_chooser,
 				    (GtkWidget *) hbox);
   
-  label = (GtkLabel *) gtk_label_new(g_strdup("channel: "));
+  label = (GtkLabel *) gtk_label_new(i18n("channel: "));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,

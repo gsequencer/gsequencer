@@ -26,15 +26,20 @@ ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
 {
   AgsFFPlayerInputLine *ffplayer_input_line;
 
+  gchar *str;
+  
   ffplayer_input_line = AGS_FFPLAYER_INPUT_LINE(gobject);
 
   if(AGS_EFFECT_LINE(ffplayer_input_line)->channel == NULL){
     return;
   }
-  
+
+  str = g_strdup_printf("in: %d, %d",
+			AGS_EFFECT_LINE(ffplayer_input_line)->channel->pad + 1,
+			AGS_EFFECT_LINE(ffplayer_input_line)->channel->audio_channel + 1);
   gtk_label_set_text(AGS_EFFECT_LINE(ffplayer_input_line)->label,
-		     g_strdup_printf("in:%d,%d",
-				     AGS_EFFECT_LINE(ffplayer_input_line)->channel->pad,
-				     AGS_EFFECT_LINE(ffplayer_input_line)->channel->audio_channel));
+		     str);
+
+  g_free(str);
 }
 

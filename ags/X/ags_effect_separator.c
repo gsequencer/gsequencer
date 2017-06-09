@@ -207,6 +207,10 @@ ags_effect_separator_set_property(GObject *gobject,
       
       filename = g_value_get_string(value);
 
+      if(effect_separator->filename != NULL){
+	g_free(effect_separator->filename);
+      }
+      
       effect_separator->filename = g_strdup(filename);
     }
     break;
@@ -216,6 +220,10 @@ ags_effect_separator_set_property(GObject *gobject,
       
       effect = g_value_get_string(value);
 
+      if(effect_separator->effect != NULL){
+	g_free(effect_separator->effect);
+      }
+      
       effect_separator->effect = g_strdup(effect);
     }
     break;

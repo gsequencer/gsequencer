@@ -67,6 +67,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
 void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_plugin_interface_init(AgsPluginInterface *plugin);
@@ -248,23 +250,29 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
 
+  /* context menu */
   ags_machine_popup_add_connection_options(ffplayer,
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
+  /* audio resize */
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels",
 			 G_CALLBACK(ags_ffplayer_set_audio_channels), ffplayer);
 
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads",
 			 G_CALLBACK(ags_ffplayer_set_pads), ffplayer);
 
+  /* flags */
   ffplayer->flags = 0;
-  
+
+  /* mapped IO */
   ffplayer->mapped_input_pad = 0;
   ffplayer->mapped_output_pad = 0;
 
+  /* context menu */
   ags_machine_popup_add_edit_options((AgsMachine *) ffplayer,
 				     (AGS_MACHINE_POPUP_ENVELOPE));
-				     
+
+  /* name and xml type */
   ffplayer->name = NULL;
   ffplayer->xml_type = "ags-ffplayer";
 
@@ -294,7 +302,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   0, 0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "preset",
+				    "label", i18n("preset"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
@@ -309,7 +317,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label", "instrument",
+				    "label", i18n("instrument"),
 				    "xalign", 0.0,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
