@@ -70,7 +70,7 @@ ags_simple_file_write_get_type()
     };
 
     ags_type_simple_file_write = g_type_register_static(AGS_TYPE_TASK,
-							"AgsSimpleFileWrite\0",
+							"AgsSimpleFileWrite",
 							&ags_simple_file_write_info,
 							0);
 

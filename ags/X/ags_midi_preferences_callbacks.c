@@ -109,7 +109,7 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
   
   ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
   ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
-  g_signal_connect(sequencer_editor->remove, "clicked\0",
+  g_signal_connect(sequencer_editor->remove, "clicked",
 		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
   gtk_widget_show_all((GtkWidget *) sequencer_editor);
 }

@@ -100,7 +100,7 @@ ags_machine_collection_get_type(void)
     };
 
     ags_type_machine_collection = g_type_register_static(GTK_TYPE_VBOX,
-							 "AgsMachineCollection\0", &ags_machine_collection_info,
+							 "AgsMachineCollection", &ags_machine_collection_info,
 							 0);
     
     g_type_add_interface_static(ags_type_machine_collection,
@@ -357,7 +357,7 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
 									 machine_collection->child_parameter_count,
 									 machine_collection->child_parameter);
   g_object_set(machine_collection_entry,
-	       "machine\0", machine,
+	       "machine", machine,
 	       NULL);
   gtk_box_pack_start(GTK_BOX(machine_collection->child),
 		     GTK_WIDGET(machine_collection_entry),

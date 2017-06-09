@@ -181,7 +181,7 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
 	  description_start = 
 	    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
 	}else{
-	  g_message("ags_effect_line_callbacks.c unsupported plugin browser\0");
+	  g_message("ags_effect_line_callbacks.c unsupported plugin browser");
 	}
 
 	/* get port description */
@@ -196,50 +196,50 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
 	      controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
 
 	      if(!g_ascii_strncasecmp(controls,
-				      "led\0",
+				      "led",
 				      4)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "AgsLed\0");
+						   "AgsLed");
 	      }else if(!g_ascii_strncasecmp(controls,
-				      "vertical indicator\0",
+				      "vertical indicator",
 				      19)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "AgsVIndicator\0");
+						   "AgsVIndicator");
 	      }else if(!g_ascii_strncasecmp(controls,
-				      "horizontal indicator\0",
+				      "horizontal indicator",
 				      19)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "AgsHIndicator\0");
+						   "AgsHIndicator");
 	      }else if(!g_ascii_strncasecmp(controls,
-				      "spin button\0",
+				      "spin button",
 				      12)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "GtkSpinButton\0");
+						   "GtkSpinButton");
 	      }else if(!g_ascii_strncasecmp(controls,
-					    "dial\0",
+					    "dial",
 					    5)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "AgsDial\0");
+						   "AgsDial");
 	      }else if(!g_ascii_strncasecmp(controls,
-					    "vertical scale\0",
+					    "vertical scale",
 					    15)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "GtkVScale\0");
+						   "GtkVScale");
 	      }else if(!g_ascii_strncasecmp(controls,
-					    "horizontal scale\0",
+					    "horizontal scale",
 					    17)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "GtkHScale\0");
+						   "GtkHScale");
 	      }else if(!g_ascii_strncasecmp(controls,
-					    "check-button\0",
+					    "check-button",
 					    13)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "GtkCheckButton\0");
+						   "GtkCheckButton");
 	      }else if(!g_ascii_strncasecmp(controls,
-					    "toggle button\0",
+					    "toggle button",
 					    14)){
 		control_type_name = g_list_prepend(control_type_name,
-						   "GtkToggleButton\0");
+						   "GtkToggleButton");
 	      }
 	      
 	      port_control = port_control->next;
@@ -462,7 +462,7 @@ ags_effect_line_output_port_run_post_callback(AgsRecall *recall,
 	}
       }else{
 	g_object_get(child,
-		     "adjustment\0", &adjustment,
+		     "adjustment", &adjustment,
 		     NULL);
 	
 	gtk_adjustment_set_value(adjustment,

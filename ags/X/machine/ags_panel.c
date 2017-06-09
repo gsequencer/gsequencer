@@ -122,7 +122,7 @@ ags_panel_get_type(void)
     };
     
     ags_type_panel = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsPanel\0", &ags_panel_info,
+					    "AgsPanel", &ags_panel_info,
 					    0);
     
     g_type_add_interface_static(ags_type_panel,
@@ -187,7 +187,7 @@ ags_panel_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_panel_init(AgsPanel *panel)
 {
-  g_signal_connect_after((GObject *) panel, "parent-set\0",
+  g_signal_connect_after((GObject *) panel, "parent-set",
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
   ags_machine_popup_add_connection_options((AgsMachine *) panel,
@@ -201,15 +201,15 @@ ags_panel_init(AgsPanel *panel)
   AGS_MACHINE(panel)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(panel)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-audio-channels\0",
+  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-audio-channels",
 		   G_CALLBACK(ags_panel_set_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-pads\0",
+  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-pads",
 		   G_CALLBACK(ags_panel_set_pads), NULL);
 
   /* */
   panel->name = NULL;
-  panel->xml_type = "ags-panel\0";
+  panel->xml_type = "ags-panel";
 
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) panel)), (GtkWidget *) panel->vbox);
@@ -229,10 +229,10 @@ ags_panel_finalize(GObject *gobject)
   panel = (AgsPanel *) gobject;
   
   g_object_disconnect(G_OBJECT(AGS_MACHINE(panel)->audio),
-		      "set-audio-channels\0",
+		      "set-audio-channels",
 		      G_CALLBACK(ags_panel_set_audio_channels),
 		      NULL,
-		      "set-pads\0",
+		      "set-pads",
 		      G_CALLBACK(ags_panel_set_pads),
 		      NULL,
 		      NULL);
@@ -315,11 +315,11 @@ ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   list = file->lookup;
@@ -335,7 +335,7 @@ ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			     NULL,
 			     ags_file_read_machine_resolve_audio,
 			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
 			     G_CALLBACK(ags_panel_read_resolve_audio), gobject);
       
       break;
@@ -354,10 +354,10 @@ ags_panel_read_resolve_audio(AgsFileLookup *file_lookup,
 
   panel = AGS_PANEL(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
 			 G_CALLBACK(ags_panel_set_audio_channels), panel);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
 			 G_CALLBACK(ags_panel_set_pads), panel);
 }
 
@@ -376,18 +376,18 @@ ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-panel\0");
+		    "ags-panel");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", panel,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", panel,
 				   NULL));
 
   xmlAddChild(parent,
@@ -424,7 +424,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 	    GObject *data_object;
 
 	    g_object_get(G_OBJECT(list->data),
-			 "data-object\0", &data_object,
+			 "data-object", &data_object,
 			 NULL);
 	    
 	    if(AGS_IS_SOUNDCARD(data_object)){
@@ -445,7 +445,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 
       for(j = audio_channels_old; j < audio_channels; j++){
 	audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
-					"data-object\0", audio->soundcard,
+					"data-object", audio->soundcard,
 					NULL);
 	audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
 				    AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
@@ -480,7 +480,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 	  audio_connection = (AgsAudioConnection *) list->data;
 	  
 	  g_object_get(audio_connection,
-		       "data-object\0", &data_object,
+		       "data-object", &data_object,
 		       NULL);
 	    
 	  if(AGS_IS_SOUNDCARD(data_object)){
@@ -518,7 +518,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
       for(i = pads_old; i < pads; i++){
 	for(j = 0; j < audio->audio_channels; j++){
 	  audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
-					  "data-object\0", audio->soundcard,
+					  "data-object", audio->soundcard,
 					  NULL);
 	  audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
 				      AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
@@ -553,7 +553,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 	    audio_connection = (AgsAudioConnection *) list->data;
 	    
 	    g_object_get(G_OBJECT(audio_connection),
-			 "data-object\0", &data_object,
+			 "data-object", &data_object,
 			 NULL);
 	    
 	    if(AGS_IS_SOUNDCARD(data_object)){
@@ -595,7 +595,7 @@ ags_panel_new(GObject *soundcard)
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, soundcard);
     g_object_set_property(G_OBJECT(AGS_MACHINE(panel)->audio),
-			  "soundcard\0", &value);
+			  "soundcard", &value);
     g_value_unset(&value);
   }
 

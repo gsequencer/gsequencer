@@ -83,7 +83,7 @@ ags_plugin_browser_get_type(void)
     };
 
     ags_type_plugin_browser = g_type_register_static(GTK_TYPE_DIALOG,
-						     "AgsPluginBrowser\0", &ags_plugin_browser_info,
+						     "AgsPluginBrowser", &ags_plugin_browser_info,
 						     0);
 
     g_type_add_interface_static(ags_type_plugin_browser,
@@ -151,7 +151,7 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("Plugin type:\0");
+  label = (GtkLabel *) gtk_label_new("Plugin type:");
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -164,9 +164,9 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     0);
   
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
-				 "Lv2\0");
+				 "Lv2");
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
-				 "LADSPA\0");
+				 "LADSPA");
 
   plugin_browser->active_browser = NULL;
   
@@ -224,17 +224,17 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 
   plugin_browser->flags |= AGS_PLUGIN_BROWSER_CONNECTED;
   
-  g_signal_connect(plugin_browser->plugin_type, "changed\0",
+  g_signal_connect(plugin_browser->plugin_type, "changed",
 		   G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback), plugin_browser);
   
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
 
   /* AgsPluginBrowser buttons */
-  g_signal_connect((GObject *) plugin_browser->ok, "clicked\0",
+  g_signal_connect((GObject *) plugin_browser->ok, "clicked",
 		   G_CALLBACK(ags_plugin_browser_ok_callback), (gpointer) plugin_browser);
 
-  g_signal_connect((GObject *) plugin_browser->cancel, "clicked\0",
+  g_signal_connect((GObject *) plugin_browser->cancel, "clicked",
 		   G_CALLBACK(ags_plugin_browser_cancel_callback), (gpointer) plugin_browser);
 }
 
@@ -252,7 +252,7 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
   plugin_browser->flags &= (~AGS_PLUGIN_BROWSER_CONNECTED);
   
   g_object_disconnect(plugin_browser->plugin_type,
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback),
 		      plugin_browser,
 		      NULL);
@@ -262,13 +262,13 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
 
   /* AgsPluginBrowser buttons */
   g_object_disconnect((GObject *) plugin_browser->ok,
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_plugin_browser_ok_callback),
 		      (gpointer) plugin_browser,
 		      NULL);
 
   g_object_disconnect((GObject *) plugin_browser->cancel,
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_plugin_browser_cancel_callback),
 		      (gpointer) plugin_browser,
 		      NULL);

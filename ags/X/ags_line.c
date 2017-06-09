@@ -166,7 +166,7 @@ ags_line_get_type(void)
     };
 
     ags_type_line = g_type_register_static(GTK_TYPE_VBOX,
-					   "AgsLine\0", &ags_line_info,
+					   "AgsLine", &ags_line_info,
 					   0);
 
     g_type_add_interface_static(ags_type_line,
@@ -205,9 +205,9 @@ ags_line_class_init(AgsLineClass *line)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("pad\0",
-				   "parent pad\0",
-				   "The pad which is its parent\0",
+  param_spec = g_param_spec_object("pad",
+				   "parent pad",
+				   "The pad which is its parent",
 				   AGS_TYPE_PAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -221,9 +221,9 @@ ags_line_class_init(AgsLineClass *line)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
+  param_spec = g_param_spec_object("channel",
+				   "assigned channel",
+				   "The channel it is assigned with",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -251,7 +251,7 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4.3
    */
   line_signals[SET_CHANNEL] =
-    g_signal_new("set-channel\0",
+    g_signal_new("set-channel",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, set_channel),
@@ -270,7 +270,7 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4.3
    */
   line_signals[GROUP_CHANGED] =
-    g_signal_new("group-changed\0",
+    g_signal_new("group-changed",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, group_changed),
@@ -292,7 +292,7 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4.3
    */
   line_signals[ADD_EFFECT] =
-    g_signal_new("add-effect\0",
+    g_signal_new("add-effect",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, add_effect),
@@ -313,7 +313,7 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4.3
    */
   line_signals[REMOVE_EFFECT] =
-    g_signal_new("remove-effect\0",
+    g_signal_new("remove-effect",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, remove_effect),
@@ -332,7 +332,7 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4.3
    */
   line_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+    g_signal_new("map-recall",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, map_recall),
@@ -352,7 +352,7 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4.3
    */
   line_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, find_port),
@@ -396,7 +396,7 @@ ags_line_init(AgsLine *line)
 						     NULL);
   }
   
-  g_signal_connect_after((GObject *) line, "parent_set\0",
+  g_signal_connect_after((GObject *) line, "parent_set",
 			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
 
   line->flags = 0;
@@ -417,7 +417,7 @@ ags_line_init(AgsLine *line)
 		     FALSE, FALSE,
 		     0);
 
-  line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("group\0");
+  line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("group");
   gtk_toggle_button_set_active(line->group, TRUE);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->group),
@@ -551,7 +551,7 @@ ags_line_connect(AgsConnectable *connectable)
   line->flags |= AGS_LINE_CONNECTED;
 
 #ifdef AGS_DEBUG
-  g_message("line connect\0");
+  g_message("line connect");
 #endif
   
   if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
@@ -564,7 +564,7 @@ ags_line_connect(AgsConnectable *connectable)
   }
 
   /* connect group button */
-  g_signal_connect_after((GObject *) line->group, "clicked\0",
+  g_signal_connect_after((GObject *) line->group, "clicked",
 			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
 
   /* connect line members */
@@ -600,14 +600,14 @@ ags_line_disconnect(AgsConnectable *connectable)
   line->flags &= (~AGS_LINE_CONNECTED);
 
 #ifdef AGS_DEBUG
-  g_message("line disconnect\0");
+  g_message("line disconnect");
 #endif
 
   /* disconnect group button */
   if(line->group != NULL &&
      GTK_IS_BUTTON(line->group)){
     g_object_disconnect(line->group,
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_line_group_clicked_callback),
 			(gpointer) line,
 			NULL);
@@ -684,9 +684,9 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   if(channel != NULL){
     g_object_ref(G_OBJECT(channel));
 
-    line->add_effect_handler = g_signal_connect_after(channel, "add-effect\0",
+    line->add_effect_handler = g_signal_connect_after(channel, "add-effect",
 						      G_CALLBACK(ags_line_add_effect_callback), line);
-    //    line->remove_effect_handler = g_signal_connect_after(channel, "remove-effect\0",
+    //    line->remove_effect_handler = g_signal_connect_after(channel, "remove-effect",
     //							 G_CALLBACK(ags_line_remove_effect_callback), line);
   }
 
@@ -709,12 +709,12 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
     pthread_mutex_lock(channel_mutex);
   
     gtk_label_set_label(line->label,
-			g_strdup_printf("channel %d\0", channel->audio_channel));
+			g_strdup_printf("channel %d", channel->audio_channel));
 
     pthread_mutex_unlock(channel_mutex);
   }else{
     gtk_label_set_label(line->label,
-			g_strdup_printf("channel (null)\0"));
+			g_strdup_printf("channel (null)"));
   }
 }
 
@@ -807,9 +807,9 @@ ags_line_add_ladspa_effect(AgsLine *line,
   /* add separator */
   separator = ags_effect_separator_new();
   g_object_set(separator,
-	       "text\0", effect,
-	       "filename\0", filename,
-	       "effect\0", effect,
+	       "text", effect,
+	       "filename", filename,
+	       "effect", effect,
 	       NULL);
   ags_expander_add(line->expander,
   		   (GtkWidget *) separator,
@@ -869,16 +869,16 @@ ags_line_add_ladspa_effect(AgsLine *line,
       
       /* add line member */
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%u/%u\0",
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name", g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id),
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "control-port", g_strdup_printf("%u/%u",
 										     k,
 										     port_count),
-						   "steps\0", step_count,
+						   "steps", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
 
@@ -977,7 +977,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
       }
       
 #ifdef AGS_DEBUG
-      g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("ladspa bounds: %f %f", lower_bound, upper_bound);
 #endif
 	  
       ags_expander_add(line->expander,
@@ -1060,9 +1060,9 @@ ags_line_add_lv2_effect(AgsLine *line,
   /* add separator */
   separator = ags_effect_separator_new();
   g_object_set(separator,
-	       "text\0", effect,
-	       "filename\0", filename,
-	       "effect\0", effect,
+	       "text", effect,
+	       "filename", filename,
+	       "effect", effect,
 	       NULL);
   ags_expander_add(line->expander,
   		   (GtkWidget *) separator,
@@ -1123,16 +1123,16 @@ ags_line_add_lv2_effect(AgsLine *line,
 
       /* add line member */
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%d/%d\0",
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name", g_strdup_printf("lv2-<%s>", lv2_plugin->uri),
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "control-port", g_strdup_printf("%d/%d",
 										     k,
 										     port_count),
-						   "steps\0", step_count,
+						   "steps", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
 
@@ -1205,7 +1205,7 @@ ags_line_add_lv2_effect(AgsLine *line,
       }
 
 #ifdef AGS_DEBUG
-      g_message("lv2 bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("lv2 bounds: %f %f", lower_bound, upper_bound);
 #endif
 
       ags_expander_add(line->expander,
@@ -1405,8 +1405,8 @@ ags_line_real_remove_effect(AgsLine *line,
     
     if(AGS_IS_EFFECT_SEPARATOR(control->data)){
       g_object_get(control->data,
-		   "filename\0", &separator_filename,
-		   "effect\0", &separator_effect,
+		   "filename", &separator_filename,
+		   "effect", &separator_effect,
 		   NULL);
       
       if(separator_filename != NULL &&
@@ -1780,7 +1780,7 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	  }
 	}else{
 	  g_object_get(child,
-		       "adjustment\0", &adjustment,
+		       "adjustment", &adjustment,
 		       NULL);
 	
 	  gtk_adjustment_set_value(adjustment,
@@ -1819,8 +1819,8 @@ ags_line_new(GtkWidget *pad, AgsChannel *channel)
   AgsLine *line;
 
   line = (AgsLine *) g_object_new(AGS_TYPE_LINE,
-				  "pad\0", pad,
-				  "channel\0", channel,
+				  "pad", pad,
+				  "channel", channel,
 				  NULL);
 
   return(line);

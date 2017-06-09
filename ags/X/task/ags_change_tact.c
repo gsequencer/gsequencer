@@ -61,7 +61,7 @@ ags_change_tact_get_type()
     };
 
     ags_type_change_tact = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsChangeTact\0",
+						  "AgsChangeTact",
 						  &ags_change_tact_info,
 						  0);
 

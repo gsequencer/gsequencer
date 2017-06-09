@@ -72,7 +72,7 @@ ags_midi_export_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
     }
     break;
   default:
-    g_warning("unknown response\0");
+    g_warning("unknown response");
   }
 }
 

@@ -144,7 +144,7 @@ ags_synth_get_type(void)
     };
     
     ags_type_synth = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsSynth\0", &ags_synth_info,
+					    "AgsSynth", &ags_synth_info,
 					    0);
     
     g_type_add_interface_static(ags_type_synth,
@@ -218,7 +218,7 @@ ags_synth_init(AgsSynth *synth)
   GtkLabel *label;
   GtkFrame *frame;
 
-  g_signal_connect_after((GObject *) synth, "parent_set\0",
+  g_signal_connect_after((GObject *) synth, "parent_set",
 			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
 
   audio = AGS_MACHINE(synth)->audio;
@@ -232,10 +232,10 @@ ags_synth_init(AgsSynth *synth)
   AGS_MACHINE(synth)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(synth)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_audio_channels",
 			 G_CALLBACK(ags_synth_set_audio_channels), synth);
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads",
 			 G_CALLBACK(ags_synth_set_pads), synth);
 
   //  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
@@ -245,7 +245,7 @@ ags_synth_init(AgsSynth *synth)
   synth->flags = 0;
  
   synth->name = NULL;
-  synth->xml_type = "ags-synth\0";
+  synth->xml_type = "ags-synth";
 
   synth->mapped_input_pad = 0;
   synth->mapped_output_pad = 0;
@@ -264,10 +264,10 @@ ags_synth_init(AgsSynth *synth)
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
 
-  synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("auto update\0"));
+  synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("auto update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->auto_update, FALSE, FALSE, 0);
 
-  synth->update = (GtkButton *) gtk_button_new_with_label(g_strdup("update\0"));
+  synth->update = (GtkButton *) gtk_button_new_with_label(g_strdup("update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
 
@@ -276,8 +276,8 @@ ags_synth_init(AgsSynth *synth)
 
   
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "lower\0",
-				    "xalign\0", 0.0,
+				    "label", "lower",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -296,8 +296,8 @@ ags_synth_init(AgsSynth *synth)
 
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "loop start\0",
-				    "xalign\0", 0.0,
+				    "label", "loop start",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -316,8 +316,8 @@ ags_synth_init(AgsSynth *synth)
 
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "loop end\0",
-				    "xalign\0", 0.0,
+				    "label", "loop end",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -355,13 +355,13 @@ ags_synth_connect(AgsConnectable *connectable)
   /* AgsSynth */
   synth = AGS_SYNTH(connectable);
 
-  g_signal_connect((GObject *) synth->lower, "value-changed\0",
+  g_signal_connect((GObject *) synth->lower, "value-changed",
 		   G_CALLBACK(ags_synth_lower_callback), synth);
 
-  g_signal_connect((GObject *) synth->auto_update, "toggled\0",
+  g_signal_connect((GObject *) synth->auto_update, "toggled",
 		   G_CALLBACK(ags_synth_auto_update_callback), synth);
 
-  g_signal_connect((GObject *) synth->update, "clicked\0",
+  g_signal_connect((GObject *) synth->update, "clicked",
 		   G_CALLBACK(ags_synth_update_callback), (gpointer) synth);
 }
 
@@ -380,19 +380,19 @@ ags_synth_disconnect(AgsConnectable *connectable)
   synth = AGS_SYNTH(connectable);
 
   g_object_disconnect((GObject *) synth->lower,
-		      "value-changed\0",
+		      "value-changed",
 		      G_CALLBACK(ags_synth_lower_callback),
 		      synth,
 		      NULL);
 
   g_object_disconnect((GObject *) synth->auto_update,
-		      "toggled\0",
+		      "toggled",
 		      G_CALLBACK(ags_synth_auto_update_callback),
 		      synth,
 		      NULL);
   
   g_object_disconnect((GObject *) synth->update,
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_synth_update_callback),
 		      (gpointer) synth,
 		      NULL);
@@ -448,11 +448,11 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   /* fix wrong flag */
@@ -471,7 +471,7 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			     NULL,
 			     ags_file_read_machine_resolve_audio,
 			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
 			     G_CALLBACK(ags_synth_read_resolve_audio), gobject);
       
       break;
@@ -483,17 +483,17 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   /*  */
   gtk_spin_button_set_value(gobject->lower,
 			    g_ascii_strtod(xmlGetProp(node,
-						      "lower\0"),
+						      "lower"),
 					   NULL));
 
   gtk_spin_button_set_value(gobject->loop_start,
 			    g_ascii_strtod(xmlGetProp(node,
-						      "loop-begin\0"),
+						      "loop-begin"),
 					   NULL));
 
   gtk_spin_button_set_value(gobject->loop_end,
 			    g_ascii_strtod(xmlGetProp(node,
-						      "loop-end\0"),
+						      "loop-end"),
 					   NULL));
 }
 
@@ -505,10 +505,10 @@ ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
 
   synth = AGS_SYNTH(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
 			 G_CALLBACK(ags_synth_set_audio_channels), synth);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
 			 G_CALLBACK(ags_synth_set_pads), synth);
 
   if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
@@ -532,31 +532,31 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-synth\0");
+		    "ags-synth");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", synth,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", synth,
 				   NULL));
 
   xmlNewProp(node,
-	     "lower\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->lower)));
+	     "lower",
+	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->lower)));
 
   xmlNewProp(node,
-	     "loop-begin\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->loop_start)));
+	     "loop-begin",
+	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->loop_start)));
 
   xmlNewProp(node,
-	     "loop-end\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->loop_end)));
+	     "loop-end",
+	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->loop_end)));
 
   xmlAddChild(parent,
 	      node);
@@ -802,7 +802,7 @@ ags_synth_new(GObject *soundcard)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
-	       "soundcard\0", soundcard,
+	       "soundcard", soundcard,
 	       NULL);
 
   return(synth);

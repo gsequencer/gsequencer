@@ -72,7 +72,7 @@ ags_meter_get_type(void)
     };
 
     ags_type_meter = g_type_register_static(GTK_TYPE_DRAWING_AREA,
-					    "AgsMeter\0", &ags_meter_info,
+					    "AgsMeter", &ags_meter_info,
 					    0);
     
     g_type_add_interface_static(ags_type_meter,
@@ -119,10 +119,10 @@ ags_meter_connect(AgsConnectable *connectable)
 
   meter = AGS_METER(connectable);
 
-  g_signal_connect((GObject *) meter, "expose_event\0",
+  g_signal_connect((GObject *) meter, "expose_event",
   		   G_CALLBACK(ags_meter_expose_event), (gpointer) meter);
 
-  g_signal_connect((GObject *) meter, "configure_event\0",
+  g_signal_connect((GObject *) meter, "configure_event",
   		   G_CALLBACK(ags_meter_configure_event), (gpointer) meter);
 }
 
@@ -181,51 +181,51 @@ ags_meter_paint(AgsMeter *meter)
   
   /* apply base note */
   if(!g_ascii_strncasecmp(base_note,
-		      "A\0",
+		      "A",
 		      2)){
     j = (11 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 11) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "A#\0",
+		      "A#",
 		      3)){
     j = (10 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 10) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "H\0",
+		      "H",
 		      2)){
     j = (9 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 9) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "C\0",
+		      "C",
 		      2)){
     j = (8 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 8) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "C#\0",
+		      "C#",
 		      3)){
     j = (7 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 7) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "D\0",
+		      "D",
 		      2)){
     j = (6 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 6) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "D#\0",
+		      "D#",
 		      3)){
     j = (5 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 5) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "E\0",
+		      "E",
 		      2)){
     j = (4 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 4) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "F\0",
+		      "F",
 		      2)){
     j = (3 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 3) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "F#\0",
+		      "F#",
 		      3)){
     j = (2 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads * 2) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "G\0",
+		      "G",
 		      2)){
     j = (1 + j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + (editor->selected_machine->audio->input_pads) + 4;
   }else if(!g_ascii_strncasecmp(base_note,
-		      "G#\0",
+		      "G#",
 		      3)){
     j = (j) + (editor->selected_machine->audio->input_pads % 12) * (j * editor->selected_machine->audio->input_pads) + 4;
   }

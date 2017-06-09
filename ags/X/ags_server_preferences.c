@@ -84,7 +84,7 @@ ags_server_preferences_get_type(void)
     };
 
     ags_type_server_preferences = g_type_register_static(GTK_TYPE_VBOX,
-							 "AgsServerPreferences\0", &ags_server_preferences_info,
+							 "AgsServerPreferences", &ags_server_preferences_info,
 							 0);
     
     g_type_add_interface_static(ags_type_server_preferences,
@@ -147,7 +147,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		     FALSE, FALSE,
 		     2);
 
-  server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label("start server\0");
+  server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label("start server");
   gtk_table_attach(table,
 		   GTK_WIDGET(server_preferences->start),
 		   0, 2,
@@ -159,8 +159,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* address */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "address\0",
-				    "xalign\0", 0.0,
+				    "label", "address",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -181,8 +181,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* port */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "port\0",
-				    "xalign\0", 0.0,
+				    "label", "port",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -203,8 +203,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* username */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "username\0",
-				    "xalign\0", 0.0,
+				    "label", "username",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -225,8 +225,8 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 
   /* password */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "password\0",
-				    "xalign\0", 0.0,
+				    "label", "password",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),

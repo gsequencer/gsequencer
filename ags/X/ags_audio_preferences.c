@@ -97,7 +97,7 @@ ags_audio_preferences_get_type(void)
     };
     
     ags_type_audio_preferences = g_type_register_static(GTK_TYPE_VBOX,
-							"AgsAudioPreferences\0", &ags_audio_preferences_info,
+							"AgsAudioPreferences", &ags_audio_preferences_info,
 							0);
     
     g_type_add_interface_static(ags_type_audio_preferences,
@@ -153,7 +153,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
   gchar *str;  
   
-  g_signal_connect_after((GObject *) audio_preferences, "parent-set\0",
+  g_signal_connect_after((GObject *) audio_preferences, "parent-set",
 			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
 
   audio_preferences->flags = 0;
@@ -184,19 +184,19 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   
   str = ags_config_get_value(ags_config_get_instance(),
 			     AGS_CONFIG_GENERIC,
-			     "disable-feature\0");
+			     "disable-feature");
   
   /* JACK */  
   if(str == NULL ||
      !g_ascii_strncasecmp(str,
-			  "experimental\0",
+			  "experimental",
 			  13)){
     audio_preferences->jack_driver = NULL;
     audio_preferences->start_jack = NULL;
     audio_preferences->stop_jack = NULL;
   }else{
 
-    label = (GtkLabel *) gtk_label_new("JACK driver\0");
+    label = (GtkLabel *) gtk_label_new("JACK driver");
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
@@ -212,7 +212,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
   
-    label = (GtkLabel *) gtk_label_new("JACK server\0");
+    label = (GtkLabel *) gtk_label_new("JACK server");
     gtk_table_attach(table,
 		     GTK_WIDGET(label),
 		     0, 1,
@@ -228,13 +228,13 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
 
-    audio_preferences->start_jack = (GtkButton *) gtk_button_new_with_label("start\0");
+    audio_preferences->start_jack = (GtkButton *) gtk_button_new_with_label("start");
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(audio_preferences->start_jack),
 		       FALSE, FALSE,
 		       0);
 
-    audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label("stop\0");
+    audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label("stop");
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(audio_preferences->stop_jack),
 		       FALSE, FALSE,
@@ -267,23 +267,23 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
   audio_preferences->flags |= AGS_AUDIO_PREFERENCES_CONNECTED;
   
   if(audio_preferences->add != NULL){
-    g_signal_connect(G_OBJECT(audio_preferences->add), "clicked\0",
+    g_signal_connect(G_OBJECT(audio_preferences->add), "clicked",
 		     G_CALLBACK(ags_audio_preferences_add_callback), audio_preferences);
   }
   
   if(audio_preferences->connect_jack != NULL){
-    g_signal_connect(G_OBJECT(audio_preferences->connect_jack), "clicked\0",
+    g_signal_connect(G_OBJECT(audio_preferences->connect_jack), "clicked",
 		     G_CALLBACK(ags_audio_preferences_connect_jack_callback), audio_preferences);    
   }
     
   /* experimental */
   if(audio_preferences->start_jack != NULL){
-    g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked\0",
+    g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked",
 		     G_CALLBACK(ags_audio_preferences_start_jack_callback), audio_preferences);
   }
 
   if(audio_preferences->stop_jack != NULL){
-    g_signal_connect(G_OBJECT(audio_preferences->stop_jack), "clicked\0",
+    g_signal_connect(G_OBJECT(audio_preferences->stop_jack), "clicked",
 		     G_CALLBACK(ags_audio_preferences_stop_jack_callback), audio_preferences);
   }
 }
@@ -305,7 +305,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
 
   if(audio_preferences->add != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->add),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_audio_preferences_add_callback),
 			audio_preferences,
 			NULL);
@@ -313,7 +313,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   
   if(audio_preferences->connect_jack != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->connect_jack),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_audio_preferences_connect_jack_callback),
 			audio_preferences,
 			NULL);
@@ -322,7 +322,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   /* experimental */
   if(audio_preferences->start_jack != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->start_jack),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_audio_preferences_start_jack_callback),
 			audio_preferences,
 			NULL);
@@ -330,7 +330,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   
   if(audio_preferences->stop_jack != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->stop_jack),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_audio_preferences_stop_jack_callback),
 			audio_preferences,
 			NULL);
@@ -423,7 +423,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
     
     ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
     ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
-    g_signal_connect(soundcard_editor->remove, "clicked\0",
+    g_signal_connect(soundcard_editor->remove, "clicked",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
     
     list = list->next;

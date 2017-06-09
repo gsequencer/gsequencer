@@ -54,7 +54,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename))) != NULL){
     gtk_combo_box_text_append_text(effect,
-				   g_strdup_printf("%s\0", AGS_BASE_PLUGIN(list->data)->effect));
+				   g_strdup_printf("%s", AGS_BASE_PLUGIN(list->data)->effect));
 
     list = list->next;
   }
@@ -109,7 +109,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
      plugin_index != -1 &&
      plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
+							   "ladspa_descriptor");
 
     if(dlerror() == NULL && ladspa_descriptor){
       plugin_descriptor = ladspa_descriptor(plugin_index);
@@ -119,21 +119,21 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
       /* update ui - reading plugin file */
       label = GTK_LABEL(list->data);
       gtk_label_set_text(label,
-			 g_strconcat("Label: \0",
+			 g_strconcat("Label: ",
 				     plugin_descriptor->Label,
 				     NULL));
 
       list = list->next;
       label = GTK_LABEL(list->data);
       gtk_label_set_text(label,
-			 g_strconcat("Maker: \0",
+			 g_strconcat("Maker: ",
 				     plugin_descriptor->Maker,
 				     NULL));
 
       list = list->next;
       label = GTK_LABEL(list->data);
       gtk_label_set_text(label,
-			 g_strconcat("Copyright: \0",
+			 g_strconcat("Copyright: ",
 				     plugin_descriptor->Copyright,
 				     NULL));
 
@@ -142,7 +142,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
       list = list->next;
       label = GTK_LABEL(list->data);
 
-      str = g_strdup("Ports: \0");
+      str = g_strdup("Ports: ");
       gtk_label_set_text(label,
 			 str);
 
@@ -171,8 +171,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	str = g_strdup(plugin_descriptor->PortNames[i]);
 
 	label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-					  "xalign\0", 0.0,
-					  "label\0", str,
+					  "xalign", 0.0,
+					  "label", str,
 					  NULL);
 	gtk_table_attach_defaults(table,
 				  GTK_WIDGET(label),
@@ -214,22 +214,22 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     /* update ui - empty */
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Label: \0");
+		       "Label: ");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Maker: \0");
+		       "Maker: ");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Copyright: \0");
+		       "Copyright: ");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Ports: \0");
+		       "Ports: ");
 
     list = list->next;
     table = GTK_TABLE(list->data);

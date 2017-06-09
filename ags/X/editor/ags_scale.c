@@ -72,7 +72,7 @@ ags_scale_get_type(void)
     };
 
     ags_type_scale = g_type_register_static(GTK_TYPE_DRAWING_AREA,
-					    "AgsScale\0", &ags_scale_info,
+					    "AgsScale", &ags_scale_info,
 					    0);
     
     g_type_add_interface_static(ags_type_scale,
@@ -124,10 +124,10 @@ ags_scale_connect(AgsConnectable *connectable)
 
   scale = AGS_SCALE(connectable);
 
-  g_signal_connect((GObject *) scale, "expose_event\0",
+  g_signal_connect((GObject *) scale, "expose_event",
   		   G_CALLBACK(ags_scale_expose_event), (gpointer) scale);
 
-  g_signal_connect((GObject *) scale, "configure_event\0",
+  g_signal_connect((GObject *) scale, "configure_event",
   		   G_CALLBACK(ags_scale_configure_event), (gpointer) scale);
 }
 

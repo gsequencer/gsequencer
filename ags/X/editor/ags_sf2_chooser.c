@@ -78,7 +78,7 @@ ags_sf2_chooser_get_type(void)
     };
 
     ags_type_sf2_chooser = g_type_register_static(GTK_TYPE_VBOX,
-						  "AgsSF2Chooser\0", &ags_sf2_chooser_info,
+						  "AgsSF2Chooser", &ags_sf2_chooser_info,
 						  0);
     
     g_type_add_interface_static(ags_type_sf2_chooser,
@@ -107,9 +107,9 @@ ags_sf2_chooser_class_init(AgsSF2ChooserClass *sf2_chooser)
   gobject->finalize = ags_sf2_chooser_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("ipatch\0",
-				   "current ipatch\0",
-				   "The current AgsIpatch\0",
+  param_spec = g_param_spec_object("ipatch",
+				   "current ipatch",
+				   "The current AgsIpatch",
 				   AGS_TYPE_IPATCH,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -144,8 +144,8 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 
   /* first row - preset */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "preset: \0",
-				    "xalign\0", 0.0,
+				    "label", "preset: ",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -164,8 +164,8 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 
   /* second row - instrument */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "instrument: \0",
-				    "xalign\0", 0.0,
+				    "label", "instrument: ",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -184,8 +184,8 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 
   /* third row - sample */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "sample: \0",
-				    "xalign\0", 0.0,
+				    "label", "sample: ",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -281,13 +281,13 @@ ags_sf2_chooser_connect(AgsConnectable *connectable)
   /* AgsSF2Chooser */
   sf2_chooser = AGS_SF2_CHOOSER(connectable);
 
-  g_signal_connect(G_OBJECT(sf2_chooser->preset), "changed\0",
+  g_signal_connect(G_OBJECT(sf2_chooser->preset), "changed",
 		   G_CALLBACK(ags_sf2_chooser_preset_changed), sf2_chooser);
 
-  g_signal_connect(G_OBJECT(sf2_chooser->instrument), "changed\0",
+  g_signal_connect(G_OBJECT(sf2_chooser->instrument), "changed",
 		   G_CALLBACK(ags_sf2_chooser_instrument_changed), sf2_chooser);
 
-  g_signal_connect(G_OBJECT(sf2_chooser->sample), "changed\0",
+  g_signal_connect(G_OBJECT(sf2_chooser->sample), "changed",
 		   G_CALLBACK(ags_sf2_chooser_sample_changed), sf2_chooser);
 }
 
@@ -327,8 +327,8 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 
   /* Ipatch related */
   ipatch = g_object_new(AGS_TYPE_IPATCH,
-			"mode\0", AGS_IPATCH_READ,
-			"filename\0", filename,
+			"mode", AGS_IPATCH_READ,
+			"filename", filename,
 			NULL);
   ags_playable_open(AGS_PLAYABLE(ipatch), filename);
 
@@ -337,7 +337,7 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   ipatch->reader = (GObject *) sf2_reader;
 
   g_object_set(G_OBJECT(sf2_chooser),
-	       "ipatch\0", ipatch,
+	       "ipatch", ipatch,
 	       NULL);
 
   /* fill sf2_chooser->preset */
@@ -351,7 +351,7 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 			    &error);
 
   if(error != NULL){
-    g_error("%s\0", error->message);
+    g_error("%s", error->message);
   }
 
   preset = ags_playable_sublevel_names(playable);

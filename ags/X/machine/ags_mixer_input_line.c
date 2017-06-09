@@ -89,7 +89,7 @@ ags_mixer_input_line_get_type()
     };
 
     ags_type_mixer_input_line = g_type_register_static(AGS_TYPE_LINE,
-						       "AgsMixerInputLine\0", &ags_mixer_input_line_info,
+						       "AgsMixerInputLine", &ags_mixer_input_line_info,
 						       0);
 
     g_type_add_interface_static(ags_type_mixer_input_line,
@@ -132,10 +132,10 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 
   /* volume indicator */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type\0", AGS_TYPE_VINDICATOR,
-					       "plugin-name\0", "ags-peak\0",
-					       "specifier\0", "./peak[0]\0",
-					       "control-port\0", "1/1\0",
+					       "widget-type", AGS_TYPE_VINDICATOR,
+					       "plugin-name", "ags-peak",
+					       "specifier", "./peak[0]",
+					       "control-port", "1/1",
 					       NULL);
   line_member->flags |= (AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE |
 			 AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE);
@@ -151,7 +151,7 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,
-	       "adjustment\0", adjustment,
+	       "adjustment", adjustment,
 	       NULL);
 
   gtk_widget_set_size_request(widget,
@@ -160,10 +160,10 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 
   /* volume */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type\0", GTK_TYPE_VSCALE,
-					       "plugin-name\0", "ags-volume\0",
-					       "specifier\0", "./volume[0]\0",
-					       "control-port\0", "1/1\0",
+					       "widget-type", GTK_TYPE_VSCALE,
+					       "plugin-name", "ags-volume",
+					       "specifier", "./volume[0]",
+					       "control-port", "1/1",
 					       NULL);
   ags_expander_add(AGS_LINE(mixer_input_line)->expander,
 		   GTK_WIDGET(line_member),
@@ -251,7 +251,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   /* ags-peak */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-peak\0",
+			    "ags-peak",
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -263,7 +263,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   /* ags-mute */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-mute\0",
+			    "ags-mute",
 			    source->audio_channel, source->audio_channel + 1,
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -275,7 +275,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   /* ags-volume */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-volume\0",
+			    "ags-volume",
 			    source->audio_channel, source->audio_channel + 1,
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -305,7 +305,7 @@ ags_mixer_input_line_new(AgsChannel *channel)
   AgsMixerInputLine *mixer_input_line;
 
   mixer_input_line = (AgsMixerInputLine *) g_object_new(AGS_TYPE_MIXER_INPUT_LINE,
-							"channel\0", channel,
+							"channel", channel,
 							NULL);
 
   return(mixer_input_line);

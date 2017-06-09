@@ -88,7 +88,7 @@ ags_listing_editor_get_type(void)
     };
 
     ags_type_listing_editor = g_type_register_static(AGS_TYPE_PROPERTY_LISTING_EDITOR,
-						     "AgsListingEditor\0",
+						     "AgsListingEditor",
 						     &ags_listing_editor_info,
 						     0);
     
@@ -131,7 +131,7 @@ ags_listing_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_listing_editor_init(AgsListingEditor *listing_editor)
 {
-  g_signal_connect_after(G_OBJECT(listing_editor), "parent_set\0",
+  g_signal_connect_after(G_OBJECT(listing_editor), "parent_set",
 			 G_CALLBACK(ags_listing_editor_parent_set_callback), listing_editor);
 
   listing_editor->channel_type = G_TYPE_NONE;
@@ -160,7 +160,7 @@ ags_listing_editor_connect(AgsConnectable *connectable)
     /* AgsAudio */
     audio = machine_editor->machine->audio;
 
-    listing_editor->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
+    listing_editor->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set_pads",
 							      G_CALLBACK(ags_listing_editor_set_pads_callback), listing_editor);
   }
 
@@ -381,7 +381,7 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
     pad_editor->editor_type[1] = AGS_TYPE_LINE_MEMBER_EDITOR;
 
     g_object_set(pad_editor,
-		 "channel\0", channel,
+		 "channel", channel,
 		 NULL);
     
     gtk_box_pack_start(GTK_BOX(listing_editor->child),

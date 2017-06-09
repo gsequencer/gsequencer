@@ -203,7 +203,7 @@ ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
 
   if(control_name != NULL &&
      g_ascii_strncasecmp(control_name,
-			 "\0",
+			 "",
 			 1)){
     ags_automation_toolbar_apply_port(automation_toolbar,
 				      control_name);

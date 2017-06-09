@@ -80,7 +80,7 @@ ags_add_sequencer_editor_jack_get_type()
     };
 
     ags_type_add_sequencer_editor_jack = g_type_register_static(AGS_TYPE_TASK,
-								"AgsAddSequencerEditorJack\0",
+								"AgsAddSequencerEditorJack",
 								&ags_add_sequencer_editor_jack_info,
 								0);
 

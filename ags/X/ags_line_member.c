@@ -125,7 +125,7 @@ ags_line_member_get_type(void)
     };
 
     ags_type_line_member = g_type_register_static(GTK_TYPE_FRAME,
-						  "AgsLineMember\0", &ags_line_member_info,
+						  "AgsLineMember", &ags_line_member_info,
 						  0);
 
     g_type_add_interface_static(ags_type_line_member,
@@ -160,9 +160,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_ulong("widget-type\0",
-				  "widget type of line member\0",
-				  "The widget type this line member packs\0",
+  param_spec = g_param_spec_ulong("widget-type",
+				  "widget type of line member",
+				  "The widget type this line member packs",
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -177,9 +177,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_string("widget-label\0",
-				   "label to display\0",
-				   "The label to display\0",
+  param_spec = g_param_spec_string("widget-label",
+				   "label to display",
+				   "The label to display",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -193,9 +193,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_string("plugin-name\0",
-				   "plugin name to control\0",
-				   "The plugin's name to control\0",
+  param_spec = g_param_spec_string("plugin-name",
+				   "plugin name to control",
+				   "The plugin's name to control",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -209,9 +209,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.7.10
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "the filename\0",
-				   "The filename of the plugin\0",
+  param_spec = g_param_spec_string("filename",
+				   "the filename",
+				   "The filename of the plugin",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -225,9 +225,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.7.10
    */
-  param_spec = g_param_spec_string("effect\0",
-				   "the effect\0",
-				   "The effect of the plugin\0",
+  param_spec = g_param_spec_string("effect",
+				   "the effect",
+				   "The effect of the plugin",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -241,9 +241,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_string("specifier\0",
-				   "port specifier\0",
-				   "The specifier of the port\0",
+  param_spec = g_param_spec_string("specifier",
+				   "port specifier",
+				   "The specifier of the port",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -257,9 +257,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_string("control-port\0",
-				   "control port index\0",
-				   "The index of the port to control\0",
+  param_spec = g_param_spec_string("control-port",
+				   "control port index",
+				   "The index of the port to control",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -273,9 +273,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.7.21
    */
-  param_spec = g_param_spec_uint("steps\0",
-				 "steps of line members port\0",
-				 "The steps this line members port has\0",
+  param_spec = g_param_spec_uint("steps",
+				 "steps of line members port",
+				 "The steps this line members port has",
 				 0,
 				 G_MAXUINT,
 				 AGS_DIAL_DEFAULT_PRECISION,
@@ -291,9 +291,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("port\0",
-				   "port to apply\0",
-				   "The port to apply\0",
+  param_spec = g_param_spec_object("port",
+				   "port to apply",
+				   "The port to apply",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -307,9 +307,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_pointer("port-data\0",
-				    "port data\0",
-				    "The port data\0",
+  param_spec = g_param_spec_pointer("port-data",
+				    "port data",
+				    "The port data",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_DATA,
@@ -322,9 +322,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recall-port\0",
-				   "recall port to apply\0",
-				   "The recall port to apply\0",
+  param_spec = g_param_spec_object("recall-port",
+				   "recall port to apply",
+				   "The recall port to apply",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -338,9 +338,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_pointer("recall-port-data\0",
-				    "recall port data\0",
-				    "The recall port data\0",
+  param_spec = g_param_spec_pointer("recall-port-data",
+				    "recall port data",
+				    "The recall port data",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_PORT_DATA,
@@ -353,9 +353,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * 
    * Since: 0.7.8
    */
-  param_spec = g_param_spec_ulong("task-type\0",
-				  "task type to apply\0",
-				  "The task type to apply the port\0",
+  param_spec = g_param_spec_ulong("task-type",
+				  "task type to apply",
+				  "The task type to apply the port",
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -376,7 +376,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * The ::change-port signal notifies modified port.
    */
   line_member_signals[CHANGE_PORT] =
-    g_signal_new("change-port\0",
+    g_signal_new("change-port",
 		 G_TYPE_FROM_CLASS(line_member),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineMemberClass, change_port),
@@ -393,7 +393,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * The ::find-port retrieves all associated ports
    */
   line_member_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(line_member),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineMemberClass, find_port),
@@ -414,7 +414,7 @@ ags_line_member_init(AgsLineMember *line_member)
 {
   AgsDial *dial;
   
-  g_signal_connect_after((GObject *) line_member, "parent_set\0",
+  g_signal_connect_after((GObject *) line_member, "parent_set",
 			 G_CALLBACK(ags_line_member_parent_set_callback), (gpointer) line_member);
 
   line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
@@ -423,7 +423,7 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->widget_type = AGS_TYPE_DIAL;
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
-				  "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
+				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
   
   gtk_container_add(GTK_CONTAINER(line_member),
@@ -554,7 +554,7 @@ ags_line_member_set_property(GObject *gobject,
       }else{
 	if(!(AGS_IS_INDICATOR(new_child) ||
 	     AGS_IS_LED(new_child))){
-	  g_warning("ags_line_member_set_property() - unknown child type %s\0", g_type_name(widget_type));
+	  g_warning("ags_line_member_set_property() - unknown child type %s", g_type_name(widget_type));
 	}
       }
 
@@ -612,7 +612,7 @@ ags_line_member_set_property(GObject *gobject,
 	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line_member);
 
 	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s\0",
+				g_strdup_printf("Plugin file not present %s",
 						filename));
 	}
       }
@@ -673,7 +673,7 @@ ags_line_member_set_property(GObject *gobject,
 
       if(AGS_IS_DIAL(child)){
 	g_object_set(child,
-		     "scale-precision\0", steps,
+		     "scale-precision", steps,
 		     NULL);
       }
     }
@@ -905,38 +905,38 @@ ags_line_member_connect(AgsConnectable *connectable)
   
   /* widget callback */
   if(line_member->widget_type == AGS_TYPE_DIAL){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_line_member_dial_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_VSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_line_member_vscale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_HSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_line_member_hscale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+    g_signal_connect(GTK_WIDGET(control), "clicked",
 		     G_CALLBACK(ags_line_member_check_button_clicked_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+    g_signal_connect(GTK_WIDGET(control), "clicked",
 		     G_CALLBACK(ags_line_member_toggle_button_clicked_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+    g_signal_connect(GTK_WIDGET(control), "clicked",
 		     G_CALLBACK(ags_line_member_button_clicked_callback), line_member);
   }
 
   /* port callback */
   if((AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE & (line_member->flags)) != 0 &&
      line_member->port != NULL){
-    g_signal_connect_after(line_member->port, "safe-write\0",
+    g_signal_connect_after(line_member->port, "safe-write",
 			   G_CALLBACK(ags_line_member_port_safe_write_callback), line_member);
   }
 
   if((AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE & (line_member->flags)) != 0 &&
      line_member->recall_port != NULL){
-    g_signal_connect_after(line_member->recall_port, "safe-write\0",
+    g_signal_connect_after(line_member->recall_port, "safe-write",
 			   G_CALLBACK(ags_line_member_port_safe_write_callback), line_member);
   }
 }
@@ -978,14 +978,14 @@ ags_line_member_set_label(AgsLineMember *line_member,
     child_widget = gtk_bin_get_child(GTK_BIN(line_member));
 
     g_object_set(G_OBJECT(child_widget),
-		 "label\0", label,
+		 "label", label,
 		 NULL);
   }else{
     gtk_frame_set_label_widget((GtkFrame *) line_member,
 			       g_object_new(GTK_TYPE_LABEL,
-					    "wrap\0", TRUE,
-					    "wrap-mode\0", PANGO_WRAP_CHAR,
-					    "use-markup\0", TRUE,
+					    "wrap", TRUE,
+					    "wrap-mode", PANGO_WRAP_CHAR,
+					    "use-markup", TRUE,
 					    "label", g_markup_printf_escaped("<small>%s</small>", label),
 					    NULL));
   }
@@ -1078,7 +1078,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
 	    success = TRUE;
 	  }else{
-	    g_warning("unsupported child type in conversion\0");
+	    g_warning("unsupported child type in conversion");
 	  }
 
 	  if(success){
@@ -1155,7 +1155,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
 	    success = TRUE;
 	  }else{
-	    g_warning("unsupported child type in conversion\0");
+	    g_warning("unsupported child type in conversion");
 	  }
 
 	  if(success){
@@ -1313,7 +1313,7 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     port = AGS_RECALL(recall->data)->port;
 
 #ifdef AGS_DEBUG
-      g_message("search port in %s\0", G_OBJECT_TYPE_NAME(recall->data));
+      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
 #endif
 
       while(port != NULL){
@@ -1407,19 +1407,19 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 
   if(channel_port != NULL || recall_channel_port != NULL){
     g_object_set(G_OBJECT(line_member),
-		 "port\0", channel_port,
+		 "port", channel_port,
 		 NULL);
 
     g_object_set(G_OBJECT(line_member),
-		 "recall-port\0", recall_channel_port,
+		 "recall-port", recall_channel_port,
 		 NULL);
   }else if(audio_port != NULL || recall_audio_port != NULL){
     g_object_set(G_OBJECT(line_member),
-		 "port\0", audio_port,
+		 "port", audio_port,
 		 NULL);
 
     g_object_set(G_OBJECT(line_member),
-		 "recall-port\0", recall_audio_port,
+		 "recall-port", recall_audio_port,
 		 NULL);
   }
 

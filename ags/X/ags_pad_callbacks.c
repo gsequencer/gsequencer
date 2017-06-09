@@ -304,8 +304,8 @@ ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
 							 GTK_DIALOG_DESTROY_WITH_PARENT,
 							 GTK_MESSAGE_ERROR,
 							 GTK_BUTTONS_CLOSE,
-							 "Error: %s\0", soundcard_thread->error->message);
-    g_signal_connect(dialog, "response\0",
+							 "Error: %s", soundcard_thread->error->message);
+    g_signal_connect(dialog, "response",
 		     G_CALLBACK(ags_pad_start_complete_response), pad);
     gtk_widget_show_all((GtkWidget *) dialog);
   }
@@ -385,7 +385,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   pthread_mutex_unlock(channel_mutex);
   
 #ifdef AGS_DEBUG
-  g_message("launch\0");
+  g_message("launch");
 #endif
   
   while(channel != next_pad){
@@ -415,7 +415,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
       AgsAudioSignal *audio_signal;
       AgsRecallID *current_recall_id;
       
-      g_signal_connect_after(channel, "done\0",
+      g_signal_connect_after(channel, "done",
 			     G_CALLBACK(ags_line_channel_done_callback), AGS_LINE(list->data));
       
       /* add audio signal */

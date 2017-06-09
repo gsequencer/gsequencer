@@ -51,7 +51,7 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
+#define AGS_RENAME_ENTRY "AgsRenameEntry"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
@@ -85,7 +85,7 @@ ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   gtk_container_child_get_property(GTK_CONTAINER(GTK_WIDGET(machine)->parent),
 				   GTK_WIDGET(machine),
-				   "position\0", &val);
+				   "position", &val);
 
   if(g_value_get_int (&val) > 0){
     gtk_box_reorder_child(GTK_BOX(GTK_WIDGET(machine)->parent),
@@ -107,7 +107,7 @@ ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *mac
 
   gtk_container_child_get_property(GTK_CONTAINER(GTK_WIDGET(machine)->parent),
 				   GTK_WIDGET(machine),
-				   "position\0", &val);
+				   "position", &val);
 
   if(g_value_get_int (&val) < g_list_length(gtk_container_get_children((GtkContainer *) GTK_WIDGET(machine)->parent)) - 1){
     gtk_box_reorder_child(GTK_BOX(GTK_WIDGET(machine)->parent),
@@ -275,7 +275,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   g_object_ref(machine->audio);
   remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
-  g_signal_connect(remove_audio, "launch\0",
+  g_signal_connect(remove_audio, "launch",
 		   G_CALLBACK(ags_machine_remove_audio_launch_callback), machine);
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(remove_audio));
@@ -288,7 +288,7 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
   GtkEntry *entry;
 
   machine->rename =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("rename\0"),
+    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("rename"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
 						       GTK_STOCK_OK,
@@ -303,7 +303,7 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
 
   gtk_widget_show_all((GtkWidget *) dialog);
 
-  g_signal_connect((GObject *) dialog, "response\0",
+  g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_machine_popup_rename_response_callback), (gpointer) machine);
 
   return(0);
@@ -335,8 +335,8 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
 
     menu_tool_button = 
       machine->menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-					       "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
-					       "menu\0", machine->popup,
+					       "label", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": ", text, NULL),
+					       "menu", machine->popup,
 					       NULL);
     gtk_frame_set_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
 			       (GtkWidget *) menu_tool_button);
@@ -350,7 +350,7 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
       if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
 	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
 	g_object_set(list->data,
-		     "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
+		     "label", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": ", text, NULL),
 		     NULL);
 
 	break;
@@ -370,7 +370,7 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
       if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
 	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
 	g_object_set(list->data,
-		     "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
+		     "label", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": ", text, NULL),
 		     NULL);
 
 	break;
@@ -392,7 +392,7 @@ int
 ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   machine->properties = (GtkDialog *) ags_machine_editor_new(machine);
-  g_signal_connect_after(machine->properties, "destroy\0",
+  g_signal_connect_after(machine->properties, "destroy",
 			 G_CALLBACK(ags_machine_popup_properties_destroy_callback), machine);
 
   gtk_window_set_default_size((GtkWindow *) machine->properties, -1, 400);
@@ -447,7 +447,7 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
     connection_editor = ags_connection_editor_new(machine);
     machine->connection_editor = (GtkDialog *) connection_editor;
     
-    g_signal_connect(connection_editor, "delete-event\0",
+    g_signal_connect(connection_editor, "delete-event",
 		     G_CALLBACK(ags_machine_connection_editor_delete_event_callback), machine);
 
     ags_connectable_connect(AGS_CONNECTABLE(connection_editor));
@@ -481,7 +481,7 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
 			   AGS_MIDI_DIALOG_MAPPING |
 			   AGS_MIDI_DIALOG_DEVICE);
     
-    g_signal_connect(midi_dialog, "delete-event\0",
+    g_signal_connect(midi_dialog, "delete-event",
 		     G_CALLBACK(ags_machine_midi_dialog_delete_event_callback), machine);
 
     ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
@@ -515,8 +515,8 @@ ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine 
 
   if(response == GTK_RESPONSE_ACCEPT){
     filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data(G_OBJECT(dialog), "overwrite\0");
-    create = g_object_get_data(G_OBJECT(dialog), "create\0");
+    overwrite = g_object_get_data(G_OBJECT(dialog), "overwrite");
+    create = g_object_get_data(G_OBJECT(dialog), "create");
 
     ags_machine_open_files(machine,
 			   filenames,
@@ -542,8 +542,8 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 
   if(response == GTK_RESPONSE_ACCEPT){
     filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data((GObject *) widget, "overwrite\0");
-    create = g_object_get_data((GObject *) widget, "create\0");
+    overwrite = g_object_get_data((GObject *) widget, "overwrite");
+    create = g_object_get_data((GObject *) widget, "create");
 
     current_folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(file_chooser));
     //TODO:JK: you need to check against recently used
@@ -572,7 +572,7 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 	
 	while(slist != NULL){
 	  if(g_str_has_suffix(slist->data,
-			      ".sf2\0")){
+			      ".sf2")){
 	    AgsFileSelectionEntry *entry;
 	    
 	    
@@ -638,8 +638,8 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 					 &error);
 	  
 	  while((current_filename = (gchar *) g_dir_read_name(current_directory)) != NULL){
-	    if(!g_strcmp0(".\0", current_filename) ||
-	       !g_strcmp0("..\0", current_filename))
+	    if(!g_strcmp0(".", current_filename) ||
+	       !g_strcmp0("..", current_filename))
 	      continue;
 
 	    if(!ags_file_selection_contains_file(file_selection,
@@ -678,7 +678,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
       return;
     }
 
-    g_message("machine: on\0");
+    g_message("machine: on");
 
     machine->flags |= AGS_MACHINE_BLOCK_PLAY;
 
@@ -693,7 +693,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
       return;
     }
 
-    g_message("machine: off\0");
+    g_message("machine: off");
 
     machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
@@ -894,8 +894,8 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
 							 GTK_DIALOG_DESTROY_WITH_PARENT,
 							 GTK_MESSAGE_ERROR,
 							 GTK_BUTTONS_CLOSE,
-							 "Error: %s\0", soundcard_thread->error->message);
-    g_signal_connect(dialog, "response\0",
+							 "Error: %s", soundcard_thread->error->message);
+    g_signal_connect(dialog, "response",
 		     G_CALLBACK(ags_machine_start_complete_response), machine);
     gtk_widget_show_all((GtkWidget *) dialog);
   }

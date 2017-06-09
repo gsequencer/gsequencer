@@ -31,7 +31,7 @@ ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
 
-  AGS_MACHINE(panel)->name = g_strdup_printf("Default %d\0",
+  AGS_MACHINE(panel)->name = g_strdup_printf("Default %d",
 					     ags_window_find_machine_counter(window, AGS_TYPE_PANEL)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_PANEL);

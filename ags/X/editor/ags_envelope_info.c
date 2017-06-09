@@ -89,7 +89,7 @@ ags_envelope_info_get_type(void)
     };
 
     ags_type_envelope_info = g_type_register_static(GTK_TYPE_VBOX,
-						    "AgsEnvelopeInfo\0", &ags_envelope_info_info,
+						    "AgsEnvelopeInfo", &ags_envelope_info_info,
 						    0);
 
     g_type_add_interface_static(ags_type_envelope_info,
@@ -362,7 +362,7 @@ ags_envelope_info_x_label_func(gdouble value,
   gchar *format;
   gchar *str;
   
-  format = g_strdup_printf("%%.%df\0",
+  format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->y_label_precision));
 
   str = g_strdup_printf(format,
@@ -379,7 +379,7 @@ ags_envelope_info_y_label_func(gdouble value,
   gchar *format;
   gchar *str;
   
-  format = g_strdup_printf("%%.%df\0",
+  format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->y_label_precision));
 
   str = g_strdup_printf(format,

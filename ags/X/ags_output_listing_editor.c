@@ -89,7 +89,7 @@ ags_output_listing_editor_get_type(void)
     };
 
     ags_type_output_listing_editor = g_type_register_static(AGS_TYPE_PROPERTY_LISTING_EDITOR,
-							    "AgsOutputListingEditor\0",
+							    "AgsOutputListingEditor",
 							    &ags_output_listing_editor_info,
 							    0);
     
@@ -132,7 +132,7 @@ ags_output_listing_editor_applicable_interface_init(AgsApplicableInterface *appl
 void
 ags_output_listing_editor_init(AgsOutputListingEditor *output_listing_editor)
 {
-  g_signal_connect_after(G_OBJECT(output_listing_editor), "parent_set\0",
+  g_signal_connect_after(G_OBJECT(output_listing_editor), "parent_set",
 			 G_CALLBACK(ags_output_listing_editor_parent_set_callback), output_listing_editor);
 
   output_listing_editor->channel_type = G_TYPE_NONE;
@@ -162,7 +162,7 @@ ags_output_listing_editor_connect(AgsConnectable *connectable)
     /* AgsAudio */
     audio = connection_editor->machine->audio;
 
-    output_listing_editor->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
+    output_listing_editor->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set_pads",
 								     G_CALLBACK(ags_output_listing_editor_set_pads_callback), output_listing_editor);
   }
 
@@ -381,7 +381,7 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
     pad_editor->editor_type[0] = AGS_TYPE_OUTPUT_EDITOR;
 
     g_object_set(pad_editor,
-		 "channel\0", channel,
+		 "channel", channel,
 		 NULL);
     
     gtk_box_pack_start(GTK_BOX(output_listing_editor->child),

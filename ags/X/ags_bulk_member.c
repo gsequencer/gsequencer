@@ -120,7 +120,7 @@ ags_bulk_member_get_type(void)
     };
 
     ags_type_bulk_member = g_type_register_static(GTK_TYPE_FRAME,
-						  "AgsBulkMember\0", &ags_bulk_member_info,
+						  "AgsBulkMember", &ags_bulk_member_info,
 						  0);
 
     g_type_add_interface_static(ags_type_bulk_member,
@@ -155,9 +155,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_ulong("widget-type\0",
-				  "widget type of bulk member\0",
-				  "The widget type this bulk member packs\0",
+  param_spec = g_param_spec_ulong("widget-type",
+				  "widget type of bulk member",
+				  "The widget type this bulk member packs",
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -172,9 +172,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_string("widget-label\0",
-				   "label to display\0",
-				   "The label to display\0",
+  param_spec = g_param_spec_string("widget-label",
+				   "label to display",
+				   "The label to display",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -188,9 +188,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_string("plugin-name\0",
-				   "plugin name to control\0",
-				   "The plugin's name to control\0",
+  param_spec = g_param_spec_string("plugin-name",
+				   "plugin name to control",
+				   "The plugin's name to control",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -204,9 +204,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_string("specifier\0",
-				   "port specifier\0",
-				   "The specifier of the port\0",
+  param_spec = g_param_spec_string("specifier",
+				   "port specifier",
+				   "The specifier of the port",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -220,9 +220,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "the filename\0",
-				   "The filename of the plugin\0",
+  param_spec = g_param_spec_string("filename",
+				   "the filename",
+				   "The filename of the plugin",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -236,9 +236,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_string("effect\0",
-				   "the effect\0",
-				   "The effect of the plugin\0",
+  param_spec = g_param_spec_string("effect",
+				   "the effect",
+				   "The effect of the plugin",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -252,9 +252,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_string("control-port\0",
-				   "control port index\0",
-				   "The index of the port to control\0",
+  param_spec = g_param_spec_string("control-port",
+				   "control port index",
+				   "The index of the port to control",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -268,9 +268,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.7.21
    */
-  param_spec = g_param_spec_uint("steps\0",
-				 "steps of bulk members port\0",
-				 "The steps this bulk members port has\0",
+  param_spec = g_param_spec_uint("steps",
+				 "steps of bulk members port",
+				 "The steps this bulk members port has",
 				 0,
 				 G_MAXUINT,
 				 AGS_DIAL_DEFAULT_PRECISION,
@@ -286,9 +286,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.7.8
    */
-  param_spec = g_param_spec_object("bulk-port\0",
-				   "a bulk port\0",
-				   "The bulk port to add\0",
+  param_spec = g_param_spec_object("bulk-port",
+				   "a bulk port",
+				   "The bulk port to add",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -302,9 +302,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.7.8
    */
-  param_spec = g_param_spec_object("recall-bulk-port\0",
-				   "a recall bulk port\0",
-				   "The bulk port to add\0",
+  param_spec = g_param_spec_object("recall-bulk-port",
+				   "a recall bulk port",
+				   "The bulk port to add",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -318,9 +318,9 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * 
    * Since: 0.7.8
    */
-  param_spec = g_param_spec_ulong("task-type\0",
-				  "task type to apply\0",
-				  "The task type to apply the ports\0",
+  param_spec = g_param_spec_ulong("task-type",
+				  "task type to apply",
+				  "The task type to apply the ports",
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -343,7 +343,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.7.2
    */
   bulk_member_signals[CHANGE_PORT] =
-    g_signal_new("change-port\0",
+    g_signal_new("change-port",
 		 G_TYPE_FROM_CLASS(bulk_member),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsBulkMemberClass, change_port),
@@ -363,7 +363,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.7.2
    */
   bulk_member_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(bulk_member),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsBulkMemberClass, find_port),
@@ -384,7 +384,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 {
   AgsDial *dial;
   
-  g_signal_connect_after((GObject *) bulk_member, "parent_set\0",
+  g_signal_connect_after((GObject *) bulk_member, "parent_set",
 			 G_CALLBACK(ags_bulk_member_parent_set_callback), (gpointer) bulk_member);
 
   bulk_member->flags = (AGS_BULK_MEMBER_RESET_BY_ATOMIC |
@@ -393,7 +393,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   
   bulk_member->widget_type = AGS_TYPE_DIAL;
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
-				  "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
+				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
   gtk_widget_set_size_request((GtkWidget *) dial,
 			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
@@ -517,7 +517,7 @@ ags_bulk_member_set_property(GObject *gobject,
 	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) bulk_member);
 
 	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s\0",
+				g_strdup_printf("Plugin file not present %s",
 						filename));
 	}
       }
@@ -581,7 +581,7 @@ ags_bulk_member_set_property(GObject *gobject,
 
       if(AGS_IS_DIAL(child)){
 	g_object_set(child,
-		     "scale-precision\0", steps,
+		     "scale-precision", steps,
 		     NULL);
       }
     }
@@ -769,25 +769,25 @@ ags_bulk_member_connect(AgsConnectable *connectable)
 
   /* widget callback */
   if(bulk_member->widget_type == AGS_TYPE_DIAL){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_bulk_member_dial_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_bulk_member_vscale_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_bulk_member_hscale_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+    g_signal_connect(GTK_WIDGET(control), "value-changed",
 		     G_CALLBACK(ags_bulk_member_spin_button_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+    g_signal_connect(GTK_WIDGET(control), "clicked",
 		     G_CALLBACK(ags_bulk_member_check_button_clicked_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+    g_signal_connect(GTK_WIDGET(control), "clicked",
 		     G_CALLBACK(ags_bulk_member_toggle_button_clicked_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+    g_signal_connect(GTK_WIDGET(control), "clicked",
 		     G_CALLBACK(ags_bulk_member_button_clicked_callback), bulk_member);
   }
 }
@@ -876,14 +876,14 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
     child_widget = gtk_bin_get_child(GTK_BIN(bulk_member));
 
     g_object_set(G_OBJECT(child_widget),
-		 "label\0", label,
+		 "label", label,
 		 NULL);
   }else{
     gtk_frame_set_label_widget((GtkFrame *) bulk_member,
 			       (GtkWidget *) g_object_new(GTK_TYPE_LABEL,
-							  "wrap\0", TRUE,
-							  "wrap-mode\0", PANGO_WRAP_CHAR,
-							  "use-markup\0", TRUE,
+							  "wrap", TRUE,
+							  "wrap-mode", PANGO_WRAP_CHAR,
+							  "use-markup", TRUE,
 							  "label", g_markup_printf_escaped("<small>%s</small>", label),
 							  NULL));
   }
@@ -964,7 +964,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	      success = TRUE;
 	    }else{
-	      g_warning("unsupported child type in conversion\0");
+	      g_warning("unsupported child type in conversion");
 	    }
 
 	    if(success){
@@ -1024,7 +1024,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 	      success = TRUE;
 	    }else{
-	      g_warning("unsupported child type in conversion\0");
+	      g_warning("unsupported child type in conversion");
 	    }
 
 	    if(success){
@@ -1079,7 +1079,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
       pthread_mutex_unlock(port->mutex);
       
-      //      g_message("change %f\0", g_value_get_float(&value));
+      //      g_message("change %f", g_value_get_float(&value));
       ags_port_safe_write(port,
 			  &value);
 
@@ -1171,7 +1171,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
       port = AGS_RECALL(recall->data)->port;
 
 #ifdef AGS_DEBUG
-      g_message("search port in %s\0", G_OBJECT_TYPE_NAME(recall->data));
+      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
 #endif
 
       while(port != NULL){

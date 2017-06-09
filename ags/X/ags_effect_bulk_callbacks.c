@@ -113,7 +113,7 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 		       0);
 
     //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
+    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s",
 						       filename,
 						       effect));
     gtk_box_pack_start(GTK_BOX(hbox),
@@ -310,7 +310,7 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	}
       }else{
 	g_object_get(child,
-		     "adjustment\0", &adjustment,
+		     "adjustment", &adjustment,
 		     NULL);
 	
 	gtk_adjustment_set_value(adjustment,

@@ -54,7 +54,7 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename))) != NULL){
     gtk_combo_box_text_append_text(effect,
-				   g_strdup_printf("%s\0", AGS_BASE_PLUGIN(list->data)->effect));
+				   g_strdup_printf("%s", AGS_BASE_PLUGIN(list->data)->effect));
 
     list = list->next;
   }
@@ -102,25 +102,25 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
     /* update ui - empty */
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       g_strdup_printf("Name: %s\0",
+		       g_strdup_printf("Name: %s",
 				       lv2_plugin->foaf_name));
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       g_strdup_printf("Homepage: %s\0",
+		       g_strdup_printf("Homepage: %s",
 				       lv2_plugin->foaf_homepage));
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       g_strdup_printf("M-Box: %s\0",
+		       g_strdup_printf("M-Box: %s",
 				       lv2_plugin->foaf_mbox));
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Ports: \0");
+		       "Ports: ");
 
     list = list->next;
     table = GTK_TABLE(list->data);
@@ -151,8 +151,8 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
       str = g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name);
 
       label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-					"xalign\0", 0.0,
-					"label\0", str,
+					"xalign", 0.0,
+					"label", str,
 					NULL);
       gtk_table_attach_defaults(table,
 				GTK_WIDGET(label),
@@ -195,22 +195,22 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
     /* update ui - empty */
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Name: \0");
+		       "Name: ");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Homepage: \0");
+		       "Homepage: ");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "M-Box: \0");
+		       "M-Box: ");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Ports: \0");
+		       "Ports: ");
 
     list = list->next;
     table = GTK_TABLE(list->data);

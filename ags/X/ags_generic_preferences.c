@@ -83,7 +83,7 @@ ags_generic_preferences_get_type(void)
     };
 
     ags_type_generic_preferences = g_type_register_static(GTK_TYPE_VBOX,
-							  "AgsGenericPreferences\0", &ags_generic_preferences_info,
+							  "AgsGenericPreferences", &ags_generic_preferences_info,
 							  0);
     
     g_type_add_interface_static(ags_type_generic_preferences,
@@ -134,7 +134,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
   GtkHBox *hbox;
   GtkLabel *label;
 
-  generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label("autosave thread\0");
+  generic_preferences->autosave_thread = (GtkCheckButton *) gtk_check_button_new_with_label("autosave thread");
   gtk_box_pack_start(GTK_BOX(generic_preferences),
 		     GTK_WIDGET(generic_preferences->autosave_thread),
 		     FALSE, FALSE,
@@ -148,7 +148,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("segmentation\0");
+  label = (GtkLabel *) gtk_label_new("segmentation");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -172,7 +172,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("engine mode\0");
+  label = (GtkLabel *) gtk_label_new("engine mode");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -180,9 +180,9 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 
   generic_preferences->engine_mode = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
-				 "deterministic\0");
+				 "deterministic");
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
-				 "performance\0");
+				 "performance");
   gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
 			   1);
   
@@ -222,29 +222,29 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
-		       "disable-feature\0",
-		       "experimental\0");
+		       "disable-feature",
+		       "experimental");
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
     ags_config_set_value(config,
 			 AGS_CONFIG_GENERIC,
-			 "autosave-thread\0",
-			 "true\0");
+			 "autosave-thread",
+			 "true");
   }else{
     ags_config_set_value(config,
 			 AGS_CONFIG_GENERIC,
-			 "autosave-thread\0",
-			 "false\0");
+			 "autosave-thread",
+			 "false");
   }
 
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
-		       "segmentation\0",
+		       "segmentation",
 		       gtk_combo_box_text_get_active_text(generic_preferences->segmentation));
 
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
-		       "engine-mode\0",
+		       "engine-mode",
 		       gtk_combo_box_text_get_active_text(generic_preferences->engine_mode));
 }
 
@@ -263,12 +263,12 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
-			     "autosave-thread\0");
+			     "autosave-thread");
 
   if(str != NULL){
     gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
 				 ((!g_ascii_strncasecmp(str,
-							"true\0",
+							"true",
 							5)) ? TRUE: FALSE));
   }else{
     gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
@@ -294,28 +294,28 @@ ags_generic_preferences_create_segmentation()
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "1/1\0",
+		     0, "1/1",
 		     1, 1,
 		     2, 1,
 		     -1);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "3/4\0",
+		     0, "3/4",
 		     1, 4,
 		     2, 4,
 		     -1);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "4/4\0",
+		     0, "4/4",
 		     1, 4,
 		     2, 4,
 		     -1);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "8/8\0",
+		     0, "8/8",
 		     1, 4,
 		     2, 4,
 		     -1);

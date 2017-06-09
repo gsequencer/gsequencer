@@ -92,7 +92,7 @@ ags_envelope_editor_get_type(void)
     };
 
     ags_type_envelope_editor = g_type_register_static(GTK_TYPE_VBOX,
-						      "AgsEnvelopeEditor\0", &ags_envelope_editor_info,
+						      "AgsEnvelopeEditor", &ags_envelope_editor_info,
 						      0);
 
     g_type_add_interface_static(ags_type_envelope_editor,
@@ -235,8 +235,8 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* attack */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "attack\0",
-				    "xalign\0", 0.0,
+				    "label", "attack",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -276,8 +276,8 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* decay */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "decay\0",
-				    "xalign\0", 0.0,
+				    "label", "decay",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -317,8 +317,8 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* sustain */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "sustain\0",
-				    "xalign\0", 0.0,
+				    "label", "sustain",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -358,8 +358,8 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* release */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "release\0",
-				    "xalign\0", 0.0,
+				    "label", "release",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -399,8 +399,8 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 
   /* ratio */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "ratio\0",
-				    "xalign\0", 0.0,
+				    "label", "ratio",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -435,27 +435,27 @@ ags_envelope_editor_connect(AgsConnectable *connectable)
 
   envelope_editor->flags |= AGS_ENVELOPE_EDITOR_CONNECTED;
 
-  g_signal_connect((GObject *) envelope_editor->attack_x, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->attack_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_attack_x_callback), (gpointer) envelope_editor);
-  g_signal_connect((GObject *) envelope_editor->attack_y, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->attack_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_attack_y_callback), (gpointer) envelope_editor);
 
-  g_signal_connect((GObject *) envelope_editor->decay_x, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->decay_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_decay_x_callback), (gpointer) envelope_editor);
-  g_signal_connect((GObject *) envelope_editor->decay_y, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->decay_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_decay_y_callback), (gpointer) envelope_editor);
 
-  g_signal_connect((GObject *) envelope_editor->sustain_x, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->sustain_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_sustain_x_callback), (gpointer) envelope_editor);
-  g_signal_connect((GObject *) envelope_editor->sustain_y, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->sustain_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_sustain_y_callback), (gpointer) envelope_editor);
 
-  g_signal_connect((GObject *) envelope_editor->release_x, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->release_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_release_x_callback), (gpointer) envelope_editor);
-  g_signal_connect((GObject *) envelope_editor->release_y, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->release_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_release_y_callback), (gpointer) envelope_editor);
 
-  g_signal_connect((GObject *) envelope_editor->ratio, "value-changed\0",
+  g_signal_connect((GObject *) envelope_editor->ratio, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_ratio_callback), (gpointer) envelope_editor);
 }
 
@@ -568,7 +568,7 @@ ags_envelope_editor_x_label_func(gdouble value,
   gchar *format;
   gchar *str;
   
-  format = g_strdup_printf("%%.%df\0",
+  format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->y_label_precision));
 
   str = g_strdup_printf(format,
@@ -585,7 +585,7 @@ ags_envelope_editor_y_label_func(gdouble value,
   gchar *format;
   gchar *str;
   
-  format = g_strdup_printf("%%.%df\0",
+  format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->y_label_precision));
 
   str = g_strdup_printf(format,

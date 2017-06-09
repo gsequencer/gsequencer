@@ -54,19 +54,19 @@ ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
-			    "jack\0",
+			    "jack",
 			    5)){
       ags_sequencer_editor_load_jack_card(sequencer_editor);
 
       gtk_widget_show_all((GtkWidget *) sequencer_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
-				  "alsa\0",
+				  "alsa",
 				  5)){
       ags_sequencer_editor_load_alsa_card(sequencer_editor);
 
       gtk_widget_hide((GtkWidget *) sequencer_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
-				  "oss\0",
+				  "oss",
 				  4)){
       ags_sequencer_editor_load_oss_card(sequencer_editor);
 
@@ -130,18 +130,18 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   str = NULL;
   
   if(AGS_IS_JACK_MIDIIN(sequencer)){
-    str = "jack\0";
+    str = "jack";
   }else if(AGS_IS_MIDIIN(sequencer)){
     if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      str = "alsa\0";
+      str = "alsa";
     }else if((AGS_MIDIIN_OSS & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      str = "oss\0";
+      str = "oss";
     }
   }
 
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
-			  "alsa\0",
+			  "alsa",
 			  5)){
     use_alsa = TRUE;
   }

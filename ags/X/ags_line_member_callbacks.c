@@ -33,7 +33,7 @@ ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_membe
   GtkAdjustment *adjustment;
 
   g_object_get(dial,
-	       "adjustment\0", &adjustment,
+	       "adjustment", &adjustment,
 	       NULL);
   ags_line_member_change_port(line_member,
 			      (gpointer) &(adjustment->value));

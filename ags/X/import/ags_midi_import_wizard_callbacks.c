@@ -70,14 +70,14 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 
 	/* parse */
 	file = fopen(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(midi_import_wizard->file_chooser)),
-		     "r\0");
+		     "r");
 	
 	midi_parser = ags_midi_parser_new(file);
 	midi_doc = ags_midi_parser_parse_full(midi_parser);
-	xmlSaveFormatFileEnc("-\0", midi_doc, "UTF-8\0", 1);
+	xmlSaveFormatFileEnc("-", midi_doc, "UTF-8", 1);
 	
 	g_object_set(midi_import_wizard->track_collection,
-		     "midi-document\0", midi_doc,
+		     "midi-document", midi_doc,
 		      NULL);
 	ags_track_collection_parse((AgsTrackCollection *) midi_import_wizard->track_collection);
       }
@@ -96,6 +96,6 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
     }
     break;
   default:
-    g_warning("unknown response\0");
+    g_warning("unknown response");
   }
 }

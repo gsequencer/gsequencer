@@ -106,7 +106,7 @@ ags_automation_editor_get_type(void)
     };
 
     ags_type_automation_editor = g_type_register_static(GTK_TYPE_VBOX,
-							"AgsAutomationEditor\0", &ags_automation_editor_info,
+							"AgsAutomationEditor", &ags_automation_editor_info,
 							0);
     
     g_type_add_interface_static(ags_type_automation_editor,
@@ -150,9 +150,9 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "assigned soundcard",
+				   "The soundcard it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -171,7 +171,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    * The ::machine-changed signal notifies about changed machine.
    */
   automation_editor_signals[MACHINE_CHANGED] =
-    g_signal_new("machine-changed\0",
+    g_signal_new("machine-changed",
                  G_TYPE_FROM_CLASS(automation_editor),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAutomationEditorClass, machine_changed),
@@ -187,7 +187,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
   
-  g_signal_connect_after((GObject *) automation_editor, "parent-set\0",
+  g_signal_connect_after((GObject *) automation_editor, "parent-set",
 			 G_CALLBACK(ags_automation_editor_parent_set_callback), automation_editor);
 
   automation_editor->flags = 0;
@@ -212,16 +212,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   automation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
-						     "homogeneous\0", FALSE,
-						     "spacing\0", 0,
+						     "homogeneous", FALSE,
+						     "spacing", 0,
 						     NULL);
   automation_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_AUTOMATION);
   gtk_label_set_label(automation_editor->machine_selector->label,
-		      "automation\0");
+		      "automation");
   
   automation_editor->machine_selector->popup = ags_machine_selector_popup_new(automation_editor->machine_selector);
   g_object_set(automation_editor->machine_selector->menu_button,
-	       "menu\0", automation_editor->machine_selector->popup,
+	       "menu", automation_editor->machine_selector->popup,
 	       NULL);
   
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) automation_editor->machine_selector);
@@ -239,19 +239,19 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->audio_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_notebook_append_page(automation_editor->notebook,
 			   (GtkWidget *) automation_editor->audio_table,
-			   gtk_label_new("audio\0"));
+			   gtk_label_new("audio"));
   
   /* output */
   automation_editor->output_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_notebook_append_page(automation_editor->notebook,
 			   (GtkWidget *) automation_editor->output_table,
-			   gtk_label_new("output\0"));
+			   gtk_label_new("output"));
 
   /* input */
   automation_editor->input_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_notebook_append_page(automation_editor->notebook,
 			   (GtkWidget *) automation_editor->input_table,
-			   gtk_label_new("input\0"));
+			   gtk_label_new("input"));
 
   /* currenty selected widgets */
   automation_editor->current_audio_scale = NULL;
@@ -298,7 +298,7 @@ ags_automation_editor_set_property(GObject *gobject,
       if(soundcard != NULL){
 	g_object_ref(soundcard);
 
-	g_signal_connect(soundcard, "tic\0",
+	g_signal_connect(soundcard, "tic",
 			 G_CALLBACK(ags_automation_editor_tic_callback), automation_editor);
       }
       
@@ -346,12 +346,12 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   
   /*  */
   if(automation_editor->soundcard != NULL){
-    g_signal_connect(automation_editor->soundcard, "tic\0",
+    g_signal_connect(automation_editor->soundcard, "tic",
 		     G_CALLBACK(ags_automation_editor_tic_callback), automation_editor);
   }
   
   
-  g_signal_connect((GObject *) automation_editor->machine_selector, "changed\0",
+  g_signal_connect((GObject *) automation_editor->machine_selector, "changed",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 
   /*  */
@@ -729,10 +729,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     /* output */
     automation_editor_child->output_notebook = 
       automation_editor->current_output_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
-								"homogeneous\0", FALSE,
-								"spacing\0", 0,
+								"homogeneous", FALSE,
+								"spacing", 0,
 								NULL);
-    automation_editor_child->output_notebook->prefix = g_strdup("line\0");
+    automation_editor_child->output_notebook->prefix = g_strdup("line");
     g_object_ref(automation_editor_child->output_notebook);
     gtk_table_attach(automation_editor->output_table, (GtkWidget *) automation_editor_child->output_notebook,
 		     0, 3, y, y + 1,
@@ -773,10 +773,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     /* input */
     automation_editor_child->input_notebook = 
       automation_editor->current_input_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
-							       "homogeneous\0", FALSE,
-							       "spacing\0", 0,
+							       "homogeneous", FALSE,
+							       "spacing", 0,
 							       NULL);
-    automation_editor_child->input_notebook->prefix = g_strdup("line\0");
+    automation_editor_child->input_notebook->prefix = g_strdup("line");
     g_object_ref(automation_editor_child->input_notebook);
     gtk_table_attach(automation_editor->input_table, (GtkWidget *) automation_editor_child->input_notebook,
 		     0, 3, y, y + 1,
@@ -1031,7 +1031,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     guint line;
     
     xpathCtxt = xmlXPathNewContext(clipboard);
-    xpathObj = xmlXPathEvalExpression("/audio/automation\0", xpathCtxt);
+    xpathObj = xmlXPathEvalExpression("/audio/automation", xpathCtxt);
 
     first_x = -1;
     
@@ -1070,12 +1070,12 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	    while(child != NULL){
 	      if(child->type == XML_ELEMENT_NODE){
 		if(!xmlStrncmp(child->name,
-			       "acceleration\0",
+			       "acceleration",
 			       5)){
 		  guint tmp;
 
 		  tmp = g_ascii_strtoull(xmlGetProp(child,
-						    "x\0"),
+						    "x"),
 					 NULL,
 					 10);
 
@@ -1089,7 +1089,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	    }
 
 	    x_boundary = g_ascii_strtoull(xmlGetProp(nodeset->nodeTab[i],
-						     "x-boundary\0"),
+						     "x-boundary"),
 					  NULL,
 					  10);
 
@@ -1121,12 +1121,12 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	    while(child != NULL){
 	      if(child->type == XML_ELEMENT_NODE){
 		if(!xmlStrncmp(child->name,
-			       "acceleration\0",
+			       "acceleration",
 			       5)){
 		  guint tmp;
 
 		  tmp = g_ascii_strtoull(xmlGetProp(child,
-						    "x\0"),
+						    "x"),
 					 NULL,
 					 10);
 
@@ -1191,12 +1191,12 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	      while(child != NULL){
 		if(child->type == XML_ELEMENT_NODE){
 		  if(!xmlStrncmp(child->name,
-				 "acceleration\0",
+				 "acceleration",
 				 5)){
 		    guint tmp;
 
 		    tmp = g_ascii_strtoull(xmlGetProp(child,
-						      "x\0"),
+						      "x"),
 					   NULL,
 					   10);
 
@@ -1210,7 +1210,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	      }
 
 	      x_boundary = g_ascii_strtoull(xmlGetProp(nodeset->nodeTab[i],
-						       "x-boundary\0"),
+						       "x-boundary"),
 					    NULL,
 					    10);
 
@@ -1242,12 +1242,12 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	      while(child != NULL){
 		if(child->type == XML_ELEMENT_NODE){
 		  if(!xmlStrncmp(child->name,
-				 "acceleration\0",
+				 "acceleration",
 				 5)){
 		    guint tmp;
 
 		    tmp = g_ascii_strtoull(xmlGetProp(child,
-						      "x\0"),
+						      "x"),
 					   NULL,
 					   10);
 
@@ -1346,7 +1346,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     
     /* get xml tree */
     clipboard = xmlReadMemory(buffer, strlen(buffer),
-			      NULL, "UTF-8\0",
+			      NULL, "UTF-8",
 			      0);
     audio_node = xmlDocGetRootElement(clipboard);
 
@@ -1360,7 +1360,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     pthread_mutex_lock(audio_mutex);
     
     while(audio_node != NULL){
-      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
+      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio", audio_node->name, 6)){
 
 	automation_node = audio_node->children;
 	
@@ -1463,7 +1463,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
     /* create root node */
-    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio");
     xmlDocSetRootElement(clipboard, audio_node);
 
     /* get mutex manager and application mutex */
@@ -1534,7 +1534,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
     g_list_free(list_start);
     
     /* write to clipboard */
-    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -1612,7 +1612,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
     /* create root node */
-    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio");
     xmlDocSetRootElement(clipboard, audio_node);
 
     /* get mutex manager and application mutex */
@@ -1683,7 +1683,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
     g_list_free(list_start);
 
     /* write to clipboard */
-    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -1698,7 +1698,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 void
 ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
 {
-  g_message("ags_automation_editor_invert() - not implemented\0");
+  g_message("ags_automation_editor_invert() - not implemented");
 }
 
 /**

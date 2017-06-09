@@ -114,7 +114,7 @@ ags_gui_thread_get_type()
     };
 
     ags_type_gui_thread = g_type_register_static(AGS_TYPE_THREAD,
-						    "AgsGuiThread\0",
+						    "AgsGuiThread",
 						    &ags_gui_thread_info,
 						    0);
     
@@ -397,7 +397,7 @@ ags_gui_thread_run(AgsThread *thread)
     param.sched_priority = AGS_GUI_THREAD_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -427,7 +427,7 @@ ags_gui_thread_run(AgsThread *thread)
     
     g_main_context_push_thread_default(main_context);
 
-    g_signal_connect(polling_thread, "run\0",
+    g_signal_connect(polling_thread, "run",
 		     G_CALLBACK(ags_gui_thread_polling_thread_run_callback), gui_thread);
 
 
@@ -621,7 +621,7 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 
       poll_fd->delay = 5.0;
       
-      //      g_signal_connect(poll_fd, "dispatch\0",
+      //      g_signal_connect(poll_fd, "dispatch",
       //	       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
       
       ags_polling_thread_add_poll_fd(polling_thread,

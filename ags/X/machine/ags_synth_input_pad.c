@@ -98,7 +98,7 @@ ags_synth_input_pad_get_type()
     };
 
     ags_type_synth_input_pad = g_type_register_static(AGS_TYPE_PAD,
-						      "AgsSynthInputPad\0", &ags_synth_input_pad_info,
+						      "AgsSynthInputPad", &ags_synth_input_pad_info,
 						      0);
 
     g_type_add_interface_static(ags_type_synth_input_pad,
@@ -150,7 +150,7 @@ void
 ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad)
 {
   synth_input_pad->name = NULL;
-  synth_input_pad->xml_type = "ags-synth-input-pad\0";
+  synth_input_pad->xml_type = "ags-synth-input-pad";
 }
 
 void
@@ -216,11 +216,11 @@ ags_synth_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 }
 
@@ -237,18 +237,18 @@ ags_synth_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-synth-input-pad\0");
+		    "ags-synth-input-pad");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", synth_input_pad,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", synth_input_pad,
 				   NULL));
 
   xmlAddChild(parent,
@@ -291,7 +291,7 @@ ags_synth_input_pad_new(AgsChannel *channel)
   AgsSynthInputPad *synth_input_pad;
 
   synth_input_pad = (AgsSynthInputPad *) g_object_new(AGS_TYPE_SYNTH_INPUT_PAD,
-						      "channel\0", channel,
+						      "channel", channel,
 						      NULL);
   
   return(synth_input_pad);

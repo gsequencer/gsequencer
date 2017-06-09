@@ -89,7 +89,7 @@ ags_automation_window_get_type()
     };
 
     ags_type_automation_window = g_type_register_static(GTK_TYPE_WINDOW,
-							"AgsAutomationWindow\0", &ags_automation_window_info,
+							"AgsAutomationWindow", &ags_automation_window_info,
 							0);
     
     g_type_add_interface_static(ags_type_automation_window,
@@ -124,9 +124,9 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "assigned soundcard",
+				   "The soundcard it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,7 +152,7 @@ void
 ags_automation_window_init(AgsAutomationWindow *automation_window)
 {
   g_object_set(G_OBJECT(automation_window),
-	       "title\0", "edit automation\0",
+	       "title", "edit automation",
 	       NULL);
 
   automation_window->flags = 0;
@@ -196,7 +196,7 @@ ags_automation_window_set_property(GObject *gobject,
       automation_window->soundcard = soundcard;
 
       g_object_set(G_OBJECT(automation_window->automation_editor),
-		   "soundcard\0", soundcard,
+		   "soundcard", soundcard,
 		   NULL);
     }
     break;

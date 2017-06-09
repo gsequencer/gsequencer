@@ -77,7 +77,7 @@ ags_effect_separator_get_type(void)
     };
 
     ags_type_effect_separator = g_type_register_static(GTK_TYPE_HBOX,
-						       "AgsEffectSeparator\0", &ags_effect_separator_info,
+						       "AgsEffectSeparator", &ags_effect_separator_info,
 						       0);
 
     g_type_add_interface_static(ags_type_effect_separator,
@@ -110,9 +110,9 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * 
    * Since: 0.7.122.19
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "filename\0",
-				   "The filename\0",
+  param_spec = g_param_spec_string("filename",
+				   "filename",
+				   "The filename",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -126,9 +126,9 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * 
    * Since: 0.7.122.19
    */
-  param_spec = g_param_spec_string("effect\0",
-				   "effect\0",
-				   "The effect\0",
+  param_spec = g_param_spec_string("effect",
+				   "effect",
+				   "The effect",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -142,9 +142,9 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * 
    * Since: 0.7.122.19
    */
-  param_spec = g_param_spec_string("text\0",
-				   "text\0",
-				   "The text\0",
+  param_spec = g_param_spec_string("text",
+				   "text",
+				   "The text",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

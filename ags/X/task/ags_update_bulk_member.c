@@ -81,7 +81,7 @@ ags_update_bulk_member_get_type()
     };
 
     ags_type_update_bulk_member = g_type_register_static(AGS_TYPE_TASK,
-							 "AgsUpdateBulkMember\0",
+							 "AgsUpdateBulkMember",
 							 &ags_update_bulk_member_info,
 							 0);
 
@@ -204,7 +204,7 @@ ags_update_bulk_member_launch(AgsTask *task)
   }
 
   if(update_bulk_member->new_size > update_bulk_member->old_size){
-    //    g_message("%s %s\0", update_bulk_member->bulk_member->filename, update_bulk_member->bulk_member->effect);
+    //    g_message("%s %s", update_bulk_member->bulk_member->filename, update_bulk_member->bulk_member->effect);
 	      
     /* grow bulk port */
     if(update_bulk_member->pads){

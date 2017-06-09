@@ -81,7 +81,7 @@ ags_matrix_bridge_get_type(void)
     };
 
     ags_type_matrix_bridge = g_type_register_static(AGS_TYPE_EFFECT_BRIDGE,
-						    "AgsMatrixBridge\0", &ags_matrix_bridge_info,
+						    "AgsMatrixBridge", &ags_matrix_bridge_info,
 						    0);
 
     g_type_add_interface_static(ags_type_matrix_bridge,
@@ -138,13 +138,13 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
   GtkExpander *expander;
   GtkTable *table;
 
-  frame = (GtkFrame *) gtk_frame_new("input bridge\0");
+  frame = (GtkFrame *) gtk_frame_new("input bridge");
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(matrix_bridge),
 		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
-  expander = (GtkExpander *) gtk_expander_new("show/hide\0");
+  expander = (GtkExpander *) gtk_expander_new("show/hide");
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) expander);
 
@@ -209,7 +209,7 @@ ags_matrix_bridge_new(AgsAudio *audio)
   AgsMatrixBridge *matrix_bridge;
 
   matrix_bridge = (AgsMatrixBridge *) g_object_new(AGS_TYPE_MATRIX_BRIDGE,
-						   "audio\0", audio,
+						   "audio", audio,
 						   NULL);
 
   return(matrix_bridge);

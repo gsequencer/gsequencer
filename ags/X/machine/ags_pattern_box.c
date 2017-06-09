@@ -113,7 +113,7 @@ ags_pattern_box_get_type(void)
     };
     
     ags_type_pattern_box = g_type_register_static(GTK_TYPE_TABLE,
-						  "AgsPatternBox\0", &ags_pattern_box_info,
+						  "AgsPatternBox", &ags_pattern_box_info,
 						  0);
     
     g_type_add_interface_static(ags_type_pattern_box,
@@ -149,7 +149,7 @@ ags_accessible_pattern_box_get_type(void)
     };
     
     ags_type_accessible_pattern_box = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-							     "AgsAccessiblePatternBox\0", &ags_accesssible_pattern_box_info,
+							     "AgsAccessiblePatternBox", &ags_accesssible_pattern_box_info,
 							     0);
 
     g_type_add_interface_static(ags_type_accessible_pattern_box,
@@ -168,7 +168,7 @@ ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
 
   ags_pattern_box_parent_class = g_type_class_peek_parent(pattern_box);
 
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 
   /* GObjectClass */
   gobject = (GObjectClass *) pattern_box;
@@ -219,10 +219,10 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   guint i;
 
   g_object_set(pattern_box,
-	       "can-focus\0", TRUE,
-	       "n-columns\0", 2,
+	       "can-focus", TRUE,
+	       "n-columns", 2,
 	       "n-rows", 2,
-	       "homogeneous\0", FALSE,
+	       "homogeneous", FALSE,
 	       NULL);
   gtk_widget_set_events((GtkWidget *) pattern_box,
 			GDK_CONTROL_MASK
@@ -240,9 +240,9 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   pattern_box->active_led = 0;
   pattern_box->hled_array = (GtkHBox *) ags_hled_array_new();
   g_object_set(pattern_box->hled_array,
-	       "led-width\0", AGS_PATTERN_BOX_LED_DEFAULT_WIDTH,
-	       "led-height\0", AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT,
-	       "led-count\0", pattern_box->n_controls,
+	       "led-width", AGS_PATTERN_BOX_LED_DEFAULT_WIDTH,
+	       "led-height", AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT,
+	       "led-count", pattern_box->n_controls,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,
 			      pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, 10);
@@ -293,7 +293,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   for(i = 0; i < pattern_box->n_indices; i++){
     if(radio_button == NULL){
-      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup_printf("%d-%d\0",
+      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup_printf("%d-%d",
 											      i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls));
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
 			 (GtkWidget *) radio_button,
@@ -301,7 +301,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 			 0);
     }else{
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
-			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup_printf("%d-%d\0",
+			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup_printf("%d-%d",
 													    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls)),
 			 FALSE, FALSE,
 			 0);
@@ -334,16 +334,16 @@ ags_pattern_box_connect(AgsConnectable *connectable)
 
   pattern_box->flags |= AGS_PATTERN_BOX_CONNECTED;
 
-  g_signal_connect_after(G_OBJECT(pattern_box), "focus_in_event\0",
+  g_signal_connect_after(G_OBJECT(pattern_box), "focus_in_event",
 			 G_CALLBACK(ags_pattern_box_focus_in_callback), (gpointer) pattern_box);
 
-  g_signal_connect_after(G_OBJECT(pattern_box), "focus_out_event\0",
+  g_signal_connect_after(G_OBJECT(pattern_box), "focus_out_event",
 			 G_CALLBACK(ags_pattern_box_focus_out_callback), (gpointer) pattern_box);
   
-  g_signal_connect(G_OBJECT(pattern_box), "key_press_event\0",
+  g_signal_connect(G_OBJECT(pattern_box), "key_press_event",
 		   G_CALLBACK(ags_pattern_box_key_press_event), (gpointer) pattern_box);
 
-  g_signal_connect(G_OBJECT(pattern_box), "key_release_event\0",
+  g_signal_connect(G_OBJECT(pattern_box), "key_release_event",
 		   G_CALLBACK(ags_pattern_box_key_release_event), (gpointer) pattern_box);
 
   /* connect pattern */
@@ -351,7 +351,7 @@ ags_pattern_box_connect(AgsConnectable *connectable)
     list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked\0",
+    g_signal_connect(G_OBJECT(list->data), "clicked",
 		     G_CALLBACK(ags_pattern_box_pad_callback), (gpointer) pattern_box);
 
     list = list->next;
@@ -364,7 +364,7 @@ ags_pattern_box_connect(AgsConnectable *connectable)
     list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
   while(list != NULL){
-    g_signal_connect_after(G_OBJECT(list->data), "clicked\0",
+    g_signal_connect_after(G_OBJECT(list->data), "clicked",
 			   G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 		   
     list = list->next;
@@ -390,16 +390,16 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
   pattern_box->flags &= (~AGS_PATTERN_BOX_CONNECTED);
 
   g_object_disconnect(G_OBJECT(pattern_box),
-		      "focus_in_event\0",
+		      "focus_in_event",
 		      G_CALLBACK(ags_pattern_box_focus_in_callback),
 		      (gpointer) pattern_box,
-		      "focus_out_event\0",
+		      "focus_out_event",
 		      G_CALLBACK(ags_pattern_box_focus_out_callback),
 		      (gpointer) pattern_box,
-		      "key_press_event\0",
+		      "key_press_event",
 		      G_CALLBACK(ags_pattern_box_key_press_event),
 		      (gpointer) pattern_box,
-		      "key_release_event\0",
+		      "key_release_event",
 		      G_CALLBACK(ags_pattern_box_key_release_event),
 		      (gpointer) pattern_box,
 		      NULL);
@@ -410,7 +410,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_pattern_box_pad_callback),
 			(gpointer) pattern_box,
 			NULL);
@@ -426,7 +426,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_pattern_box_offset_callback),
 			(gpointer) pattern_box,
 			NULL);
@@ -593,12 +593,12 @@ ags_accessible_pattern_box_get_description(AtkAction *action,
 					   gint i)
 {
   static const gchar **actions = {
-    "move cursor left\0",
-    "move cursor right\0",
-    "decrement pattern index\0",
-    "increment pattern index\0",
-    "toggle audio pattern\0"
-    "copy pattern to clipboard\0",
+    "move cursor left",
+    "move cursor right",
+    "decrement pattern index",
+    "increment pattern index",
+    "toggle audio pattern"
+    "copy pattern to clipboard",
   };
 
   if(i >= 0 && i < 6){
@@ -613,12 +613,12 @@ ags_accessible_pattern_box_get_name(AtkAction *action,
 				    gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
-    "toggle\0",
-    "copy\0",
+    "left",
+    "right",
+    "up",
+    "down",
+    "toggle",
+    "copy",
   };
   
   if(i >= 0 && i < 6){
@@ -633,10 +633,10 @@ ags_accessible_pattern_box_get_keybinding(AtkAction *action,
 					  gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
+    "left",
+    "right",
+    "up",
+    "down",
     "space",
     "Ctrl+c",
   };
@@ -835,7 +835,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     }
 
     g_object_get(audio,
-		 "play\0", &list_start,
+		 "play", &list_start,
 		 NULL);
 
     play_count_beats_audio = NULL;

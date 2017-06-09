@@ -95,7 +95,7 @@ ags_machine_collection_entry_get_type(void)
     };
 
     ags_type_machine_collection_entry = g_type_register_static(GTK_TYPE_TABLE,
-							       "AgsMachineCollectionEntry\0", &ags_machine_collection_entry_info,
+							       "AgsMachineCollectionEntry", &ags_machine_collection_entry_info,
 							       0);
 
     g_type_add_interface_static(ags_type_machine_collection_entry,
@@ -130,9 +130,9 @@ ags_machine_collection_entry_class_init(AgsMachineCollectionEntryClass *machine_
    * 
    * Since: 0.8.0
    */
-  param_spec = g_param_spec_object("machine\0",
-				   "assigned machine\0",
-				   "The machine which this machine entry is assigned with\0",
+  param_spec = g_param_spec_object("machine",
+				   "assigned machine",
+				   "The machine which this machine entry is assigned with",
 				   AGS_TYPE_MACHINE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -168,7 +168,7 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
   machine_collection_entry->machine = NULL;
 
   /* enabled */
-  machine_collection_entry->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled\0");
+  machine_collection_entry->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled");
   gtk_table_attach((GtkTable *) machine_collection_entry,
 		   (GtkWidget *) machine_collection_entry->enabled,
 		   0, 4,
@@ -178,7 +178,7 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 
   /* machine label */
   machine_collection_entry->label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-							      "xalign\0", 0.0,
+							      "xalign", 0.0,
 							      NULL);
   gtk_table_attach((GtkTable *) machine_collection_entry,
 		   (GtkWidget *) machine_collection_entry->label,
@@ -189,8 +189,8 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 
   /* instrument * /
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "instrument: \0",
-				    "xalign\0", 0.0,
+				    "label", "instrument: ",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach((GtkTable *) machine_collection_entry,
 		   (GtkWidget *) label,
@@ -211,8 +211,8 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
   
   /* sequence */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "sequence: \0",
-				    "xalign\0", 0.0,
+				    "label", "sequence: ",
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach((GtkTable *) machine_collection_entry,
 		   (GtkWidget *) label,
@@ -260,7 +260,7 @@ ags_machine_collection_entry_set_property(GObject *gobject,
 
 	/* fill in some fields */
 	gtk_label_set_text(machine_collection_entry->label,
-			   g_strdup_printf("%s: %s\0",
+			   g_strdup_printf("%s: %s",
 					   G_OBJECT_TYPE_NAME(machine),
 					   AGS_MACHINE(machine)->name));
 	

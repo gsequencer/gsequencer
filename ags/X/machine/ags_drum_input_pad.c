@@ -101,7 +101,7 @@ ags_drum_input_pad_get_type()
     };
 
     ags_type_drum_input_pad = g_type_register_static(AGS_TYPE_PAD,
-						     "AgsDrumInputPad\0", &ags_drum_input_pad_info,
+						     "AgsDrumInputPad", &ags_drum_input_pad_info,
 						     0);
 
     g_type_add_interface_static(ags_type_drum_input_pad,
@@ -165,7 +165,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   drum_input_pad->flags = 0;
 
   drum_input_pad->name = NULL;
-  drum_input_pad->xml_type = "ags-drum-input-pad\0";
+  drum_input_pad->xml_type = "ags-drum-input-pad";
 
   pad = (AgsPad *) drum_input_pad;
 
@@ -182,7 +182,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   gtk_container_add((GtkContainer *) drum_input_pad->play, (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_PLAY, GTK_ICON_SIZE_BUTTON));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum_input_pad->play, TRUE, TRUE, 0);
 
-  drum_input_pad->edit = (GtkToggleButton *) gtk_toggle_button_new_with_label("edit\0");
+  drum_input_pad->edit = (GtkToggleButton *) gtk_toggle_button_new_with_label("edit");
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) drum_input_pad->edit, FALSE, FALSE, 0);
 
   drum_input_pad->pad_open_play_ref = 0;
@@ -223,13 +223,13 @@ ags_drum_input_pad_connect(AgsConnectable *connectable)
   ags_drum_input_pad_parent_connectable_interface->connect(connectable);
 
   /* AgsDrumInputPad */
-  g_signal_connect(G_OBJECT(drum_input_pad->open), "clicked\0",
+  g_signal_connect(G_OBJECT(drum_input_pad->open), "clicked",
 		   G_CALLBACK(ags_drum_input_pad_open_callback), (gpointer) drum_input_pad);
 
-  g_signal_connect_after(G_OBJECT(drum_input_pad->play), "toggled\0",
+  g_signal_connect_after(G_OBJECT(drum_input_pad->play), "toggled",
 			 G_CALLBACK(ags_drum_input_pad_play_callback), (gpointer) drum_input_pad);
 
-  g_signal_connect(G_OBJECT(drum_input_pad->edit), "clicked\0",
+  g_signal_connect(G_OBJECT(drum_input_pad->edit), "clicked",
 		   G_CALLBACK(ags_drum_input_pad_edit_callback), (gpointer) drum_input_pad);
 }
 
@@ -293,19 +293,19 @@ ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
   
   /*  */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node\0", node,
-					       "file\0", file,
+					       "node", node,
+					       "file", file,
 					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start\0",
+  g_signal_connect(G_OBJECT(file_launch), "start",
 		   G_CALLBACK(ags_drum_input_pad_launch_task), gobject);
   ags_file_add_launch(file,
 		      (GObject *) file_launch);
@@ -319,7 +319,7 @@ ags_drum_input_pad_launch_task(AgsFileLaunch *file_launch, AgsDrumInputPad *drum
   node = file_launch->node;
 
   if(!xmlStrncmp(xmlGetProp(node,
-			    "edit\0"),
+			    "edit"),
 		 AGS_FILE_TRUE,
 		 5)){
     gtk_button_clicked((GtkButton *) drum_input_pad->edit);
@@ -340,23 +340,23 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
     id = ags_id_generator_create_uuid();
   
     node = xmlNewNode(NULL,
-		      "ags-drum-input-pad\0");
+		      "ags-drum-input-pad");
     xmlNewProp(node,
 	       AGS_FILE_ID_PROP,
 	       id);
 
     ags_file_add_id_ref(file,
 			g_object_new(AGS_TYPE_FILE_ID_REF,
-				     "application-context\0", file->application_context,
-				     "file\0", file,
-				     "node\0", node,
-				     "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				     "reference\0", drum_input_pad,
+				     "application-context", file->application_context,
+				     "file", file,
+				     "node", node,
+				     "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				     "reference", drum_input_pad,
 				     NULL));
 
     xmlNewProp(node,
-	       "edit\0",
-	       g_strdup_printf("%s\0", AGS_FILE_TRUE));
+	       "edit",
+	       g_strdup_printf("%s", AGS_FILE_TRUE));
 
     xmlAddChild(parent,
 		node);  
@@ -381,7 +381,7 @@ ags_drum_input_pad_new(AgsChannel *channel)
   AgsDrumInputPad *drum_input_pad;
 
   drum_input_pad = (AgsDrumInputPad *) g_object_new(AGS_TYPE_DRUM_INPUT_PAD,
-						    "channel\0", channel,
+						    "channel", channel,
 						    NULL);
 
   return(drum_input_pad);

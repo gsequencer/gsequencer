@@ -100,7 +100,7 @@ ags_note_edit_get_type(void)
     };
 
     ags_type_note_edit = g_type_register_static(GTK_TYPE_TABLE,
-						"AgsNoteEdit\0", &ags_note_edit_info,
+						"AgsNoteEdit", &ags_note_edit_info,
 						0);
     
     g_type_add_interface_static(ags_type_note_edit,
@@ -136,7 +136,7 @@ ags_accessible_note_edit_get_type(void)
     };
     
     ags_type_accessible_note_edit = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-							   "AgsAccessibleNoteEdit\0", &ags_accesssible_note_edit_info,
+							   "AgsAccessibleNoteEdit", &ags_accesssible_note_edit_info,
 							   0);
 
     g_type_add_interface_static(ags_type_accessible_note_edit,
@@ -159,7 +159,7 @@ ags_note_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_note_edit_class_init(AgsNoteEditClass *note_edit)
 {
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 }
 
 void
@@ -294,37 +294,37 @@ ags_note_edit_connect(AgsConnectable *connectable)
 						 AGS_TYPE_EDITOR);
 
   if(editor != NULL && editor->selected_machine != NULL){
-    g_signal_connect_after(editor->selected_machine->audio, "set-audio-channels\0",
+    g_signal_connect_after(editor->selected_machine->audio, "set-audio-channels",
 			   G_CALLBACK(ags_note_edit_set_audio_channels_callback), note_edit);
-    g_signal_connect_after(editor->selected_machine->audio, "set-pads\0",
+    g_signal_connect_after(editor->selected_machine->audio, "set-pads",
 			   G_CALLBACK(ags_note_edit_set_pads_callback), note_edit);
   }
   
-  g_signal_connect_after((GObject *) note_edit->drawing_area, "expose_event\0",
+  g_signal_connect_after((GObject *) note_edit->drawing_area, "expose_event",
 			 G_CALLBACK(ags_note_edit_drawing_area_expose_event), (gpointer) note_edit);
 
-  g_signal_connect_after((GObject *) note_edit->drawing_area, "configure_event\0",
+  g_signal_connect_after((GObject *) note_edit->drawing_area, "configure_event",
 			 G_CALLBACK(ags_note_edit_drawing_area_configure_event), (gpointer) note_edit);
 
-  g_signal_connect((GObject *) note_edit->drawing_area, "button_press_event\0",
+  g_signal_connect((GObject *) note_edit->drawing_area, "button_press_event",
 		   G_CALLBACK(ags_note_edit_drawing_area_button_press_event), (gpointer) note_edit);
 
-  g_signal_connect((GObject *) note_edit->drawing_area, "button_release_event\0",
+  g_signal_connect((GObject *) note_edit->drawing_area, "button_release_event",
 		   G_CALLBACK(ags_note_edit_drawing_area_button_release_event), (gpointer) note_edit);
 
-  g_signal_connect((GObject *) note_edit->drawing_area, "motion_notify_event\0",
+  g_signal_connect((GObject *) note_edit->drawing_area, "motion_notify_event",
 		   G_CALLBACK(ags_note_edit_drawing_area_motion_notify_event), (gpointer) note_edit);
 			
-  g_signal_connect((GObject *) note_edit->drawing_area, "key_press_event\0",
+  g_signal_connect((GObject *) note_edit->drawing_area, "key_press_event",
 		   G_CALLBACK(ags_note_edit_drawing_area_key_press_event), (gpointer) note_edit);
 
-  g_signal_connect((GObject *) note_edit->drawing_area, "key_release_event\0",
+  g_signal_connect((GObject *) note_edit->drawing_area, "key_release_event",
 		   G_CALLBACK(ags_note_edit_drawing_area_key_release_event), (gpointer) note_edit);
 
-  g_signal_connect_after((GObject *) note_edit->vscrollbar, "value-changed\0",
+  g_signal_connect_after((GObject *) note_edit->vscrollbar, "value-changed",
 			 G_CALLBACK(ags_note_edit_vscrollbar_value_changed), (gpointer) note_edit);
 
-  g_signal_connect_after((GObject *) note_edit->hscrollbar, "value-changed\0",
+  g_signal_connect_after((GObject *) note_edit->hscrollbar, "value-changed",
 			 G_CALLBACK(ags_note_edit_hscrollbar_value_changed), (gpointer) note_edit);
 }
 
@@ -598,19 +598,19 @@ ags_accessible_note_edit_get_description(AtkAction *action,
 					 gint i)
 {
   static const gchar **actions = {
-    "move cursor left\0",
-    "move cursor right\0",
-    "move cursor up\0",
-    "move cursor down\0",
-    "add audio note\0",
-    "shrink audio note\0",
-    "grow audio note\0",
-    "remove audio note\0",
-    "copy note to clipboard\0",
-    "cut note to clipbaord\0",
-    "paste note from clipboard\0",
-    "select all note\0",
-    "invert note\0",
+    "move cursor left",
+    "move cursor right",
+    "move cursor up",
+    "move cursor down",
+    "add audio note",
+    "shrink audio note",
+    "grow audio note",
+    "remove audio note",
+    "copy note to clipboard",
+    "cut note to clipbaord",
+    "paste note from clipboard",
+    "select all note",
+    "invert note",
   };
 
   if(i >= 0 && i < 13){
@@ -625,19 +625,19 @@ ags_accessible_note_edit_get_name(AtkAction *action,
 				  gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
-    "add\0",
-    "shrink\0",
-    "grow\0",
-    "remove\0",
-    "copy\0",
-    "cut\0",
-    "paste\0",
-    "select-all\0",
-    "invert\0",
+    "left",
+    "right",
+    "up",
+    "down",
+    "add",
+    "shrink",
+    "grow",
+    "remove",
+    "copy",
+    "cut",
+    "paste",
+    "select-all",
+    "invert",
   };
   
   if(i >= 0 && i < 13){
@@ -652,14 +652,14 @@ ags_accessible_note_edit_get_keybinding(AtkAction *action,
 					gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
+    "left",
+    "right",
+    "up",
+    "down",
     "space",
-    "Shft+Left\0",
-    "Shft+Right\0",
-    "Del\0"
+    "Shft+Left",
+    "Shft+Right",
+    "Del"
     "Ctrl+c"
     "Ctrl+x",
     "Ctrl+v",

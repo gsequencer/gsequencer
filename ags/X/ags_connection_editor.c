@@ -104,7 +104,7 @@ ags_connection_editor_get_type(void)
     };
 
     ags_type_connection_editor = g_type_register_static(GTK_TYPE_DIALOG,
-							"AgsConnectionEditor\0", &ags_connection_editor_info,
+							"AgsConnectionEditor", &ags_connection_editor_info,
 							0);
 
     g_type_add_interface_static(ags_type_connection_editor,
@@ -139,9 +139,9 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_object("machine\0",
-				   "assigned machine\0",
-				   "The machine which this machine editor is assigned with\0",
+  param_spec = g_param_spec_object("machine",
+				   "assigned machine",
+				   "The machine which this machine editor is assigned with",
 				   AGS_TYPE_MACHINE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -160,7 +160,7 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    * The ::set-machine notify about modified machine.
    */
   connection_editor_signals[SET_MACHINE] =
-    g_signal_new("set-machine\0",
+    g_signal_new("set-machine",
 		 G_TYPE_FROM_CLASS (connection_editor),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConnectionEditorClass, set_machine),
@@ -193,7 +193,7 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
-  gtk_window_set_title((GtkWindow *) connection_editor, g_strdup("connections\0"));
+  gtk_window_set_title((GtkWindow *) connection_editor, g_strdup("connections"));
 
   connection_editor->flags = 0;
 
@@ -211,14 +211,14 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("output\0")));
+			   (GtkWidget *) gtk_label_new(g_strdup("output")));
 
   /* audio connection editor */
   connection_editor->output_connection_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("connect output\0")));
+			   (GtkWidget *) gtk_label_new(g_strdup("connect output")));
 
   /* GtkButton's in GtkDialog->action_area  */
   connection_editor->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
@@ -285,7 +285,7 @@ ags_connection_editor_connect(AgsConnectable *connectable)
   connection_editor = AGS_CONNECTION_EDITOR(connectable);
 
   /* GtkNotebook */
-  g_signal_connect((GtkNotebook *) connection_editor->notebook, "switch-page\0",
+  g_signal_connect((GtkNotebook *) connection_editor->notebook, "switch-page",
 		   G_CALLBACK(ags_connection_editor_switch_page_callback), (gpointer) connection_editor);
 
   /* AgsConnectionEditor tabs */
@@ -293,13 +293,13 @@ ags_connection_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(connection_editor->output_connection_editor));
 
   /* AgsConnectionEditor buttons */
-  g_signal_connect((GObject *) connection_editor->apply, "clicked\0",
+  g_signal_connect((GObject *) connection_editor->apply, "clicked",
 		   G_CALLBACK(ags_connection_editor_apply_callback), (gpointer) connection_editor);
 
-  g_signal_connect((GObject *) connection_editor->ok, "clicked\0",
+  g_signal_connect((GObject *) connection_editor->ok, "clicked",
 		   G_CALLBACK(ags_connection_editor_ok_callback), (gpointer) connection_editor);
 
-  g_signal_connect((GObject *) connection_editor->cancel, "clicked\0",
+  g_signal_connect((GObject *) connection_editor->cancel, "clicked",
 		   G_CALLBACK(ags_connection_editor_cancel_callback), (gpointer) connection_editor);
 }
 
@@ -434,7 +434,7 @@ ags_connection_editor_new(AgsMachine *machine)
   AgsConnectionEditor *connection_editor;
 
   connection_editor = (AgsConnectionEditor *) g_object_new(AGS_TYPE_CONNECTION_EDITOR,
-							   "machine\0", machine,
+							   "machine", machine,
 							   NULL);
 
   return(connection_editor);

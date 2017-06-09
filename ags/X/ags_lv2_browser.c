@@ -94,7 +94,7 @@ ags_lv2_browser_get_type(void)
     };
 
     ags_type_lv2_browser = g_type_register_static(GTK_TYPE_VBOX,
-						  "AgsLv2Browser\0", &ags_lv2_browser_info,
+						  "AgsLv2Browser", &ags_lv2_browser_info,
 						  0);
 
     g_type_add_interface_static(ags_type_lv2_browser,
@@ -149,7 +149,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("filename: \0");
+  label = (GtkLabel *) gtk_label_new("filename: ");
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -178,7 +178,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
     g_free(filenames_start);
   }
 
-  label = (GtkLabel *) gtk_label_new("effect: \0");
+  label = (GtkLabel *) gtk_label_new("effect: ");
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -199,8 +199,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "Name: \0",
+				    "xalign", 0.0,
+				    "label", "Name: ",
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
@@ -208,8 +208,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "Homepage: \0",
+				    "xalign", 0.0,
+				    "label", "Homepage: ",
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
@@ -217,8 +217,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "M-Box: \0",
+				    "xalign", 0.0,
+				    "label", "M-Box: ",
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
@@ -226,8 +226,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "Ports: \0",
+				    "xalign", 0.0,
+				    "label", "Ports: ",
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
@@ -254,11 +254,11 @@ ags_lv2_browser_connect(AgsConnectable *connectable)
     list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
   list = list->next;
 
-  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+  g_signal_connect_after(G_OBJECT(list->data), "changed",
 			 G_CALLBACK(ags_lv2_browser_plugin_filename_callback), lv2_browser);
 
   list = list->next->next;
-  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+  g_signal_connect_after(G_OBJECT(list->data), "changed",
 			 G_CALLBACK(ags_lv2_browser_plugin_uri_callback), lv2_browser);
 
   g_list_free(list_start);
@@ -373,7 +373,7 @@ ags_lv2_browser_combo_box_output_boolean_controls_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
-				 "led\0");
+				 "led");
 
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
@@ -398,9 +398,9 @@ ags_lv2_browser_combo_box_output_controls_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
-				 "vertical indicator\0");
+				 "vertical indicator");
   gtk_combo_box_text_append_text(combo_box,
-				 "horizontal indicator\0");
+				 "horizontal indicator");
 
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
@@ -425,9 +425,9 @@ ags_lv2_browser_combo_box_boolean_controls_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
-				 "check-button\0");
+				 "check-button");
   gtk_combo_box_text_append_text(combo_box,
-				 "toggle button\0");
+				 "toggle button");
 
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
@@ -452,13 +452,13 @@ ags_lv2_browser_combo_box_controls_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
-				 "spin button\0");
+				 "spin button");
   gtk_combo_box_text_append_text(combo_box,
-				 "dial\0");
+				 "dial");
   gtk_combo_box_text_append_text(combo_box,
-				 "vertical scale\0");
+				 "vertical scale");
   gtk_combo_box_text_append_text(combo_box,
-				 "horizontal scale\0");
+				 "horizontal scale");
 
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
@@ -493,8 +493,8 @@ ags_lv2_browser_new()
   AgsLv2Browser *lv2_browser;
 
   lv2_browser = (AgsLv2Browser *) g_object_new(AGS_TYPE_LV2_BROWSER,
-					       "homogeneous\0", FALSE,
-					       "spacing\0", 0,
+					       "homogeneous", FALSE,
+					       "spacing", 0,
 					       NULL);
 
   return(lv2_browser);

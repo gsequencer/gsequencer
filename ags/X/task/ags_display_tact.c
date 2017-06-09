@@ -72,7 +72,7 @@ ags_display_tact_get_type()
     };
     
     ags_type_display_tact = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsDisplayTact\0",
+						   "AgsDisplayTact",
 						   &ags_display_tact_info,
 						   0);
     

@@ -108,7 +108,7 @@ ags_editor_get_type(void)
     };
 
     ags_type_editor = g_type_register_static(GTK_TYPE_VBOX,
-					     "AgsEditor\0", &ags_editor_info,
+					     "AgsEditor", &ags_editor_info,
 					     0);
     
     g_type_add_interface_static(ags_type_editor,
@@ -144,9 +144,9 @@ ags_editor_class_init(AgsEditorClass *editor)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "assigned soundcard",
+				   "The soundcard it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -165,7 +165,7 @@ ags_editor_class_init(AgsEditorClass *editor)
    * The ::machine-changed signal notifies about changed machine.
    */
   editor_signals[MACHINE_CHANGED] =
-    g_signal_new("machine-changed\0",
+    g_signal_new("machine-changed",
                  G_TYPE_FROM_CLASS (editor),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsEditorClass, machine_changed),
@@ -190,7 +190,7 @@ ags_editor_init(AgsEditor *editor)
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
 
-  g_signal_connect_after((GObject *) editor, "parent-set\0",
+  g_signal_connect_after((GObject *) editor, "parent-set",
 			 G_CALLBACK(ags_editor_parent_set_callback), editor);
 
   editor->flags = 0;
@@ -216,18 +216,18 @@ ags_editor_init(AgsEditor *editor)
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
-					  "homogeneous\0", FALSE,
-					  "spacing\0", 0,
+					  "homogeneous", FALSE,
+					  "spacing", 0,
 					  NULL);
   editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
 				      AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO |
 				      AGS_MACHINE_SELECTOR_NOTATION);
   gtk_label_set_label(editor->machine_selector->label,
-		      "notation\0");
+		      "notation");
   
   editor->machine_selector->popup = ags_machine_selector_popup_new(editor->machine_selector);
   g_object_set(editor->machine_selector->menu_button,
-	       "menu\0", editor->machine_selector->popup,
+	       "menu", editor->machine_selector->popup,
 	       NULL);
   
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->machine_selector);
@@ -274,7 +274,7 @@ ags_editor_set_property(GObject *gobject,
       }
       
       if(soundcard != NULL){
-	g_signal_connect(soundcard, "tic\0",
+	g_signal_connect(soundcard, "tic",
 			 G_CALLBACK(ags_editor_tic_callback), editor);
 	g_object_ref(soundcard);
       }
@@ -329,11 +329,11 @@ ags_editor_connect(AgsConnectable *connectable)
 
   /*  */
   if(editor->soundcard != NULL){
-    g_signal_connect(editor->soundcard, "tic\0",
+    g_signal_connect(editor->soundcard, "tic",
 		     G_CALLBACK(ags_editor_tic_callback), editor);
   }
   
-  g_signal_connect((GObject *) editor->machine_selector, "changed\0",
+  g_signal_connect((GObject *) editor->machine_selector, "changed",
 		   G_CALLBACK(ags_editor_machine_changed_callback), (gpointer) editor);
 
   /*  */
@@ -430,10 +430,10 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     
     editor_child->notebook = 
       editor->current_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
-					      "homogeneous\0", FALSE,
-					      "spacing\0", 0,
+					      "homogeneous", FALSE,
+					      "spacing", 0,
 					      NULL);
-    editor_child->notebook->prefix = g_strdup("channel\0");
+    editor_child->notebook->prefix = g_strdup("channel");
     g_object_ref(editor_child->notebook);
     gtk_table_attach(editor->table, (GtkWidget *) editor_child->notebook,
 		     0, 3, y, y + 1,
@@ -648,7 +648,7 @@ ags_editor_paste(AgsEditor *editor)
     guint first_x;
     
     xpathCtxt = xmlXPathNewContext(clipboard);
-    xpathObj = xmlXPathEvalExpression("/audio/notation\0", xpathCtxt);
+    xpathObj = xmlXPathEvalExpression("/audio/notation", xpathCtxt);
 
     first_x = -1;
     
@@ -671,7 +671,7 @@ ags_editor_paste(AgsEditor *editor)
 	}
 	
 	//	audio_channel = (guint) g_ascii_strtoull(xmlGetProp(nodes->nodeTab[i],
-	//						    "audio-channel\0"),
+	//						    "audio-channel"),
 	//					 NULL,
 	//					 10);
 	notation_list = g_list_nth(machine->audio->notation,
@@ -699,12 +699,12 @@ ags_editor_paste(AgsEditor *editor)
 	  while(child != NULL){
 	    if(child->type == XML_ELEMENT_NODE){
 	      if(!xmlStrncmp(child->name,
-			     "note\0",
+			     "note",
 			     5)){
 		guint tmp;
 
 		tmp = g_ascii_strtoull(xmlGetProp(child,
-						  "x1\0"),
+						  "x1"),
 				       NULL,
 				       10);
 
@@ -718,7 +718,7 @@ ags_editor_paste(AgsEditor *editor)
 	  }
 
 	  x_boundary = g_ascii_strtoull(xmlGetProp(nodes->nodeTab[i],
-						   "x_boundary\0"),
+						   "x_boundary"),
 					NULL,
 					10);
 
@@ -751,12 +751,12 @@ ags_editor_paste(AgsEditor *editor)
 	  while(child != NULL){
 	    if(child->type == XML_ELEMENT_NODE){
 	      if(!xmlStrncmp(child->name,
-			     "note\0",
+			     "note",
 			     5)){
 		guint tmp;
 
 		tmp = g_ascii_strtoull(xmlGetProp(child,
-						  "x1\0"),
+						  "x1"),
 				       NULL,
 				       10);
 
@@ -822,7 +822,7 @@ ags_editor_paste(AgsEditor *editor)
       }
       
 #ifdef DEBUG
-      printf("pasting at position: [%u,%u]\n\0", position_x, position_y);
+      printf("pasting at position: [%u,%u]\n", position_x, position_y);
 #endif
     }else{
       paste_from_position = FALSE;
@@ -830,7 +830,7 @@ ags_editor_paste(AgsEditor *editor)
 
     /* get xml tree */
     clipboard = xmlReadMemory(buffer, strlen(buffer),
-			      NULL, "UTF-8\0",
+			      NULL, "UTF-8",
 			      0);
     audio_node = xmlDocGetRootElement(clipboard);
 
@@ -838,7 +838,7 @@ ags_editor_paste(AgsEditor *editor)
     
     /* iterate xml tree */
     while(audio_node != NULL){
-      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
+      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio", audio_node->name, 6)){
 
 	notation_node = audio_node->children;
 	
@@ -963,7 +963,7 @@ ags_editor_copy(AgsEditor *editor)
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
     /* create root node */
-    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio");
     xmlDocSetRootElement(clipboard, audio_node);
 
     /* create notation nodes */
@@ -987,7 +987,7 @@ ags_editor_copy(AgsEditor *editor)
     }
     
     /* write to clipboard */
-    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -1043,7 +1043,7 @@ ags_editor_cut(AgsEditor *editor)
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
     /* create root node */
-    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio");
     xmlDocSetRootElement(clipboard, audio_node);
 
     /* create notation nodes */
@@ -1092,7 +1092,7 @@ ags_editor_cut(AgsEditor *editor)
     cairo_paint(cr);
     
     /* write to clipboard */
-    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));

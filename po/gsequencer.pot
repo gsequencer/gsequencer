@@ -1,0 +1,36 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Joël Krähemann
+# This file is distributed under the same license as the gsequencer package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gsequencer 0.8.1\n"
+"Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
+"POT-Creation-Date: 2017-06-09 15:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ags/X/ags_xorg_application_context.c:459
+#, c-format
+msgid "unknown soundcard backend - %s"
+msgstr ""
+
+#: ags/X/ags_xorg_application_context.c:469
+msgid "unknown soundcard backend - NULL"
+msgstr ""
+
+#: ags/X/ags_xorg_application_context.c:612
+#, c-format
+msgid "unknown sequencer backend - %s"
+msgstr ""
+
+#: ags/X/ags_xorg_application_context.c:622
+msgid "unknown sequencer backend - NULL"
+msgstr ""

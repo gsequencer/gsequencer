@@ -67,8 +67,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
-#define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
+#define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout"
+#define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall"
 
 void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
 
@@ -82,7 +82,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
-  AGS_MACHINE(drum)->name = g_strdup_printf("Default %d\0",
+  AGS_MACHINE(drum)->name = g_strdup_printf("Default %d",
 					    ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_DRUM);
@@ -120,7 +120,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
     return;
   }
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
@@ -129,21 +129,21 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   drum->open_dialog = (GtkWidget *) file_chooser;
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data(G_OBJECT(file_chooser), "create\0", (gpointer) check_button);
+  g_object_set_data(G_OBJECT(file_chooser), "create", (gpointer) check_button);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data(G_OBJECT(file_chooser), "overwrite\0", (gpointer) check_button);
+  g_object_set_data(G_OBJECT(file_chooser), "overwrite", (gpointer) check_button);
 
   gtk_widget_show_all(GTK_WIDGET(file_chooser));
 
-  g_signal_connect(G_OBJECT(file_chooser), "response\0",
+  g_signal_connect(G_OBJECT(file_chooser), "response",
 		   G_CALLBACK(ags_drum_open_response_callback), drum);
-  g_signal_connect(G_OBJECT(file_chooser), "response\0",
+  g_signal_connect(G_OBJECT(file_chooser), "response",
 		   G_CALLBACK(ags_machine_open_response_callback), drum);
 }
 

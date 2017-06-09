@@ -30,7 +30,7 @@ ags_panel_input_line_notify_data_object_callback(GObject *audio_connection,
 {
   gchar *str;
   
-  str = g_strdup_printf("%s:%s[%d]\0",
+  str = g_strdup_printf("%s:%s[%d]",
 			G_OBJECT_TYPE_NAME(AGS_CONNECTION(audio_connection)->data_object),
 			ags_soundcard_get_device(AGS_SOUNDCARD(AGS_CONNECTION(audio_connection)->data_object)),
 			AGS_AUDIO_CONNECTION(audio_connection)->mapped_line);
@@ -45,7 +45,7 @@ ags_panel_input_line_notify_mapped_line_callback(GObject *audio_connection,
 {
   gchar *str;
   
-  str = g_strdup_printf("%s:%s[%d]\0",
+  str = g_strdup_printf("%s:%s[%d]",
 			G_OBJECT_TYPE_NAME(AGS_CONNECTION(audio_connection)->data_object),
 			ags_soundcard_get_device(AGS_SOUNDCARD(AGS_CONNECTION(audio_connection)->data_object)),
 			AGS_AUDIO_CONNECTION(audio_connection)->mapped_line);

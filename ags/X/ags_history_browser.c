@@ -84,7 +84,7 @@ ags_history_browser_get_type()
     };
 
     ags_type_history_browser = g_type_register_static(GTK_TYPE_WINDOW,
-						      "AgsHistoryBrowser\0", &ags_history_browser_info,
+						      "AgsHistoryBrowser", &ags_history_browser_info,
 						      0);
     
     g_type_add_interface_static(ags_type_history_browser,
@@ -120,9 +120,9 @@ ags_history_browser_class_init(AgsHistoryBrowserClass *history_browser)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "assigned application context\0",
-				   "The AgsApplicationContext it is assigned with\0",
+  param_spec = g_param_spec_object("application-context",
+				   "assigned application context",
+				   "The AgsApplicationContext it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -89,7 +89,7 @@ ags_menu_bar_get_type(void)
     };
 
     ags_type_menu_bar = g_type_register_static(GTK_TYPE_MENU_BAR,
-					       "AgsMenuBar\0", &ags_menu_bar_info,
+					       "AgsMenuBar", &ags_menu_bar_info,
 					       0);
     
     g_type_add_interface_static(ags_type_menu_bar,
@@ -125,7 +125,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   menu_bar->flags = 0;
   
   /* File */
-  item = (GtkImageMenuItem *) gtk_menu_item_new_with_mnemonic("_File\0");
+  item = (GtkImageMenuItem *) gtk_menu_item_new_with_mnemonic("_File");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   menu_bar->file = (GtkMenu *) gtk_menu_new();
@@ -143,7 +143,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("export\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("export"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
@@ -171,56 +171,56 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   menu_bar->add = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->add);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Panel\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Panel"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Mixer\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Mixer"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Drum\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Drum"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Matrix\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Matrix"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Synth\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Synth"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
 #ifdef AGS_WITH_LIBINSTPATCH
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 #endif
   
   /* bridge */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("LADSPA\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("LADSPA"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Lv2\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Lv2"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
   /* live */
   menu_bar->live = (GtkMenu *) gtk_menu_new();
   
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!");
   gtk_menu_item_set_submenu((GtkMenuItem*) item, menu_bar->live);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Lv2\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Lv2"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
 
   /* automation */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation\0"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation"));
   //  gtk_widget_set_sensitive(item,
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
@@ -233,22 +233,22 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
   
   /* MIDI */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("MIDI\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("MIDI");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   menu_bar->midi = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->midi);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("import\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("import");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("export track\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("export track");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
 
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("playback\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("playback");
   gtk_widget_set_sensitive(item,
 			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
@@ -285,23 +285,23 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1_start = 
     list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_open_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_save_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_save_as_callback), menu_bar);
   list1 = list1->next->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_export_callback), menu_bar);
   list1 = list1->next->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_quit_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
@@ -311,7 +311,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1_start = 
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_add_callback), (gpointer) menu_bar);
 
   list2_start = 
@@ -319,28 +319,28 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1 = list1->next;
 
   /* machines */
-  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+  g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_bar_add_panel_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+  g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_bar_add_mixer_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+  g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_bar_add_drum_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+  g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_bar_add_matrix_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+  g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_bar_add_synth_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
 #ifdef AGS_WITH_LIBINSTPATCH
-  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+  g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
   list2 = list2->next;
 #endif
@@ -351,7 +351,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list2 = list2->next;
 
   while(list3 != NULL){
-    g_signal_connect(G_OBJECT(list3->data), "activate\0",
+    g_signal_connect(G_OBJECT(list3->data), "activate",
 		     G_CALLBACK(ags_menu_bar_add_ladspa_bridge_callback), (gpointer) menu_bar);
     
     list3 = list3->next;
@@ -365,7 +365,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list2 = list2->next;
 
   while(list3 != NULL){
-    g_signal_connect(G_OBJECT(list3->data), "activate\0",
+    g_signal_connect(G_OBJECT(list3->data), "activate",
 		     G_CALLBACK(ags_menu_bar_add_dssi_bridge_callback), (gpointer) menu_bar);
 
     list3 = list3->next;
@@ -379,7 +379,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list2 = list2->next;
   
   while(list3 != NULL){
-    g_signal_connect(G_OBJECT(list3->data), "activate\0",
+    g_signal_connect(G_OBJECT(list3->data), "activate",
 		     G_CALLBACK(ags_menu_bar_add_lv2_bridge_callback), (gpointer) menu_bar);
     
     list3 = list3->next;
@@ -397,7 +397,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list3 = list3->next;
 
   while(list4 != NULL){
-    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+    g_signal_connect(G_OBJECT(list4->data), "activate",
 		     G_CALLBACK(ags_menu_bar_add_live_dssi_bridge_callback), (gpointer) menu_bar);
 
     list4 = list4->next;
@@ -411,7 +411,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   //  list3 = list3->next;
   
   while(list4 != NULL){
-    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+    g_signal_connect(G_OBJECT(list4->data), "activate",
 		     G_CALLBACK(ags_menu_bar_add_live_lv2_bridge_callback), (gpointer) menu_bar);
     
     list4 = list4->next;
@@ -422,12 +422,12 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_list_free(list2_start);
 
   /* automation and preferences */
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_automation_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_preferences_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
@@ -437,16 +437,16 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1_start = 
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
+  g_signal_connect(G_OBJECT(list1->data), "activate",
 		   G_CALLBACK(ags_menu_bar_midi_import_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
+  g_signal_connect(G_OBJECT(list1->data), "activate",
 		   G_CALLBACK(ags_menu_bar_midi_export_track_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
+  g_signal_connect(G_OBJECT(list1->data), "activate",
 		   G_CALLBACK(ags_menu_bar_midi_playback_callback), (gpointer) menu_bar);
   
   g_list_free(list1_start);
@@ -456,7 +456,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1_start = 
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+  g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_bar_about_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
@@ -488,48 +488,48 @@ ags_zoom_menu_new()
   menu = (GtkMenu *) gtk_menu_new();
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("16:1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("16:1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("8:1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("8:1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("4:1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("4:1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("2:1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("2:1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:2\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:2"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:4\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:4"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:8\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:8"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:16\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:16"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
@@ -548,49 +548,49 @@ ags_tact_menu_new()
   //TODO:JK: uncomment me if tact implemented
   /*
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("16/1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("16/1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("8/1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("8/1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("4/1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("4/1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("2/1\0"));
-  gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
-  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
-
-
-  item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:1\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("2/1"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/2\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:1"));
+  gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
+  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+
+
+  item = (GtkMenuItem *) gtk_menu_item_new();
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/2"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/4\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/4"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/8\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/8"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/16\0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/16"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
   */
@@ -615,23 +615,23 @@ ags_zoom_combo_box_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   //  gtk_combo_box_text_append_text(combo_box,
-  //				 "16:1\0");
+  //				 "16:1");
   //  gtk_combo_box_text_append_text(combo_box,
-  //				 "8:1\0");
+  //				 "8:1");
   gtk_combo_box_text_append_text(combo_box,
-				 "4:1\0");
+				 "4:1");
   gtk_combo_box_text_append_text(combo_box,
-				 "2:1\0");
+				 "2:1");
   gtk_combo_box_text_append_text(combo_box,
-				 "1:1\0");
+				 "1:1");
   gtk_combo_box_text_append_text(combo_box,
-				 "1:2\0");
+				 "1:2");
   gtk_combo_box_text_append_text(combo_box,
-				 "1:4\0");
+				 "1:4");
   gtk_combo_box_text_append_text(combo_box,
-				 "1:8\0");
+				 "1:8");
   gtk_combo_box_text_append_text(combo_box,
-				 "1:16\0");
+				 "1:16");
 
   return((GtkComboBox *) combo_box);
 }
@@ -653,23 +653,23 @@ ags_tact_combo_box_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
-				 "16/1\0");
+				 "16/1");
   gtk_combo_box_text_append_text(combo_box,
-				 "8/1\0");
+				 "8/1");
   gtk_combo_box_text_append_text(combo_box,
-				 "4/1\0");
+				 "4/1");
   gtk_combo_box_text_append_text(combo_box,
-				 "2/1\0");
+				 "2/1");
   gtk_combo_box_text_append_text(combo_box,
-				 "1/1\0");
+				 "1/1");
   gtk_combo_box_text_append_text(combo_box,
-				 "1/2\0");
+				 "1/2");
   gtk_combo_box_text_append_text(combo_box,
-				 "1/4\0");
+				 "1/4");
   gtk_combo_box_text_append_text(combo_box,
-				 "1/8\0");
+				 "1/8");
   gtk_combo_box_text_append_text(combo_box,
-				 "1/16\0");
+				 "1/16");
 
   return((GtkComboBox *) combo_box);
 }
@@ -835,7 +835,7 @@ ags_live_lv2_bridge_menu_new()
 			AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
       g_object_set_data((GObject *) item,
 			AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
-      g_message("%s %s\0", AGS_BASE_PLUGIN(list->data)->filename, AGS_BASE_PLUGIN(list->data)->effect);
+      g_message("%s %s", AGS_BASE_PLUGIN(list->data)->filename, AGS_BASE_PLUGIN(list->data)->effect);
     
       gtk_menu_shell_append((GtkMenuShell *) menu,
 			    (GtkWidget *) item);

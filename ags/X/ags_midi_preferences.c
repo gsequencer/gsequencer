@@ -94,7 +94,7 @@ ags_midi_preferences_get_type(void)
     };
     
     ags_type_midi_preferences = g_type_register_static(GTK_TYPE_VBOX,
-						       "AgsMidiPreferences\0", &ags_midi_preferences_info,
+						       "AgsMidiPreferences", &ags_midi_preferences_info,
 						       0);
     
     g_type_add_interface_static(ags_type_midi_preferences,
@@ -150,7 +150,7 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 
   gchar *str;  
   
-  g_signal_connect_after((GObject *) midi_preferences, "parent-set\0",
+  g_signal_connect_after((GObject *) midi_preferences, "parent-set",
 			 G_CALLBACK(ags_midi_preferences_parent_set_callback), (gpointer) midi_preferences);
 
   midi_preferences->flags = 0;
@@ -186,7 +186,7 @@ ags_midi_preferences_connect(AgsConnectable *connectable)
   midi_preferences->flags |= AGS_MIDI_PREFERENCES_CONNECTED;
   
   if(midi_preferences->add != NULL){
-    g_signal_connect(G_OBJECT(midi_preferences->add), "clicked\0",
+    g_signal_connect(G_OBJECT(midi_preferences->add), "clicked",
 		     G_CALLBACK(ags_midi_preferences_add_callback), midi_preferences);
   }
 }
@@ -208,7 +208,7 @@ ags_midi_preferences_disconnect(AgsConnectable *connectable)
 
   if(midi_preferences->add != NULL){
     g_object_disconnect(G_OBJECT(midi_preferences->add),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_midi_preferences_add_callback),
 			midi_preferences,
 			NULL);
@@ -301,7 +301,7 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
     
     ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
     ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
-    g_signal_connect(sequencer_editor->remove, "clicked\0",
+    g_signal_connect(sequencer_editor->remove, "clicked",
 		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
     
     list = list->next;

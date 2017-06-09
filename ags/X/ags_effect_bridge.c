@@ -121,7 +121,7 @@ ags_effect_bridge_get_type(void)
     };
 
     ags_type_effect_bridge = g_type_register_static(GTK_TYPE_VBOX,
-						    "AgsEffectBridge\0", &ags_effect_bridge_info,
+						    "AgsEffectBridge", &ags_effect_bridge_info,
 						    0);
 
     g_type_add_interface_static(ags_type_effect_bridge,
@@ -158,9 +158,9 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "assigned audio\0",
-				   "The audio it is assigned with\0",
+  param_spec = g_param_spec_object("audio",
+				   "assigned audio",
+				   "The audio it is assigned with",
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -185,7 +185,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * audio.
    */
   effect_bridge_signals[RESIZE_AUDIO_CHANNELS] =
-    g_signal_new("resize-audio-channels\0",
+    g_signal_new("resize-audio-channels",
 		 G_TYPE_FROM_CLASS(effect_bridge),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_audio_channels),
@@ -207,7 +207,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * audio.
    */
   effect_bridge_signals[RESIZE_PADS] =
-    g_signal_new("resize-pads\0",
+    g_signal_new("resize-pads",
 		 G_TYPE_FROM_CLASS(effect_bridge),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBridgeClass, resize_pads),
@@ -225,7 +225,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * The ::map-recall should be used to add the effect_bridge's default recall.
    */
   effect_bridge_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+    g_signal_new("map-recall",
                  G_TYPE_FROM_CLASS (effect_bridge),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsEffectBridgeClass, map_recall),
@@ -241,7 +241,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * The ::find-port as recall should be mapped
    */
   effect_bridge_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(effect_bridge),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBridgeClass, find_port),
@@ -379,10 +379,10 @@ ags_effect_bridge_set_property(GObject *gobject,
 	
 	g_object_ref(audio);
 
-	g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
+	g_signal_connect_after(G_OBJECT(audio), "set-audio-channels",
 			       G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
 	  
-	g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
+	g_signal_connect_after(G_OBJECT(audio), "set-pads",
 			       G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
 
 	/* set channel and resize for AgsOutput */
@@ -399,7 +399,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->output_line_type,
 					audio->audio_channels, g_list_length(effect_line));
 	    g_object_set(G_OBJECT(effect_pad->data),
-			 "channel\0", output,
+			 "channel", output,
 			 NULL);
 
 	    output = output->next_pad;
@@ -413,7 +413,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    /* add effect pad */
 	    for(; i < audio->output_pads; i++){
 	      effect_pad = g_object_new(effect_bridge->output_pad_type,
-					"channel\0", output,
+					"channel", output,
 					NULL);
 	      gtk_container_add((GtkContainer *) effect_bridge->output,
 				GTK_WIDGET(effect_pad));
@@ -449,7 +449,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->input_line_type,
 					audio->audio_channels, g_list_length(effect_line));
 	    g_object_set(G_OBJECT(effect_pad->data),
-			 "channel\0", input,
+			 "channel", input,
 			 NULL);
 
 	    input = input->next_pad;
@@ -463,7 +463,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    /* add effect pad */
 	    for(; i < audio->input_pads; i++){
 	      effect_pad = g_object_new(effect_bridge->input_pad_type,
-					"channel\0", input,
+					"channel", input,
 					NULL);
 	      gtk_container_add((GtkContainer *) effect_bridge->input,
 				GTK_WIDGET(effect_pad));
@@ -491,13 +491,13 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->bulk_output != NULL){
 	g_object_set(effect_bridge->bulk_output,
-		     "audio\0", audio,
+		     "audio", audio,
 		     NULL);
       }
 
       if(effect_bridge->bulk_input != NULL){
 	g_object_set(effect_bridge->bulk_input,
-		     "audio\0", audio,
+		     "audio", audio,
 		     NULL);
       }
     }
@@ -784,7 +784,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
       if(channel_type == AGS_TYPE_OUTPUT){
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
 	  effect_pad = g_object_new(effect_bridge->output_pad_type,
-				    "channel\0", current,
+				    "channel", current,
 				    NULL);
 	  ags_effect_pad_resize_lines(effect_pad, effect_bridge->output_line_type,
 				      audio->audio_channels, 0);
@@ -794,7 +794,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
       }else{
 	if(effect_bridge->input_pad_type != G_TYPE_NONE){
 	  effect_pad = g_object_new(effect_bridge->input_pad_type,
-				    "channel\0", current,
+				    "channel", current,
 				    NULL);
 	  ags_effect_pad_resize_lines(effect_pad, effect_bridge->input_line_type,
 				      audio->audio_channels, 0);
@@ -1029,7 +1029,7 @@ ags_effect_bridge_new(AgsAudio *audio)
   AgsEffectBridge *effect_bridge;
 
   effect_bridge = (AgsEffectBridge *) g_object_new(AGS_TYPE_EFFECT_BRIDGE,
-						   "audio\0", audio,
+						   "audio", audio,
 						   NULL);
 
   return(effect_bridge);

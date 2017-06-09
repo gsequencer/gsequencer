@@ -98,7 +98,7 @@ ags_midi_export_wizard_get_type(void)
     };
 
     ags_type_midi_export_wizard = g_type_register_static(GTK_TYPE_DIALOG,
-							 "AgsMidiExportWizard\0", &ags_midi_export_wizard_info,
+							 "AgsMidiExportWizard", &ags_midi_export_wizard_info,
 							 0);
 
     g_type_add_interface_static(ags_type_midi_export_wizard,
@@ -139,9 +139,9 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
    * 
    * Since: 0.8.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "assigned application context\0",
-				   "The AgsApplicationContext it is assigned with\0",
+  param_spec = g_param_spec_object("application-context",
+				   "assigned application context",
+				   "The AgsApplicationContext it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,9 +155,9 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
    * 
    * Since: 0.8.0
    */
-  param_spec = g_param_spec_object("main-window\0",
-				   "assigned main window\0",
-				   "The assigned main window\0",
+  param_spec = g_param_spec_object("main-window",
+				   "assigned main window",
+				   "The assigned main window",
 				   AGS_TYPE_WINDOW,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -339,7 +339,7 @@ ags_midi_export_wizard_connect(AgsConnectable *connectable)
 
   midi_export_wizard->flags |= AGS_MIDI_EXPORT_WIZARD_CONNECTED;
   
-  g_signal_connect(midi_export_wizard, "response\0",
+  g_signal_connect(midi_export_wizard, "response",
 		   G_CALLBACK(ags_midi_export_wizard_response_callback), NULL);
 
   ags_connectable_connect(AGS_CONNECTABLE(midi_export_wizard->machine_collection));
@@ -426,9 +426,9 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   /* open file */
   filename = gtk_file_chooser_get_filename(midi_export_wizard->file_chooser);
   
-  file = fopen(filename, "w\0");
+  file = fopen(filename, "w");
   g_object_set(midi_export_wizard->midi_builder,
-	       "file\0", file,
+	       "file", file,
 	       NULL);
 
   /* add header */

@@ -88,7 +88,7 @@ ags_line_editor_get_type(void)
     };
 
     ags_type_line_editor = g_type_register_static(GTK_TYPE_VBOX,
-						  "AgsLineEditor\0", &ags_line_editor_info,
+						  "AgsLineEditor", &ags_line_editor_info,
 						  0);
 
     g_type_add_interface_static(ags_type_line_editor,
@@ -121,9 +121,9 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
    * 
    * Since: 0.3
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel which this line editor is assigned with\0",
+  param_spec = g_param_spec_object("channel",
+				   "assigned channel",
+				   "The channel which this line editor is assigned with",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -219,7 +219,7 @@ ags_line_editor_connect(AgsConnectable *connectable)
 
   line_editor->flags |= AGS_LINE_EDITOR_CONNECTED;
   
-  g_signal_connect(G_OBJECT(line_editor), "show\0",
+  g_signal_connect(G_OBJECT(line_editor), "show",
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
   
   if(line_editor->link_editor != NULL){
@@ -249,7 +249,7 @@ ags_line_editor_disconnect(AgsConnectable *connectable)
   line_editor->flags &= (~AGS_LINE_EDITOR_CONNECTED);
 
   g_object_disconnect(G_OBJECT(line_editor),
-		      "show\0",
+		      "show",
 		      G_CALLBACK(ags_line_editor_show_callback),
 		      (gpointer) line_editor,
 		      NULL);
@@ -387,7 +387,7 @@ ags_line_editor_new(AgsChannel *channel)
   AgsLineEditor *line_editor;
 
   line_editor = (AgsLineEditor *) g_object_new(AGS_TYPE_LINE_EDITOR,
-					       "channel\0", channel,
+					       "channel", channel,
 					       NULL);
 
   return(line_editor);

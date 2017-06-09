@@ -112,7 +112,7 @@ ags_drum_output_line_get_type()
     };
 
     ags_type_drum_output_line = g_type_register_static(AGS_TYPE_LINE,
-						       "AgsDrumOutputLine\0", &ags_drum_output_line_info,
+						       "AgsDrumOutputLine", &ags_drum_output_line_info,
 						       0);
 
     g_type_add_interface_static(ags_type_drum_output_line,
@@ -164,10 +164,10 @@ ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line)
 {
-  g_signal_connect_after((GObject *) drum_output_line, "parent_set\0",
+  g_signal_connect_after((GObject *) drum_output_line, "parent_set",
 			 G_CALLBACK(ags_drum_output_line_parent_set_callback), NULL);
 
-  drum_output_line->xml_type = "ags-drum-output-line\0";
+  drum_output_line->xml_type = "ags-drum-output-line";
 }
 
 void
@@ -188,7 +188,7 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
   
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
 
-  g_signal_connect_after((GObject *) AGS_LINE(drum_output_line)->channel->audio, "set-pads\0",
+  g_signal_connect_after((GObject *) AGS_LINE(drum_output_line)->channel->audio, "set-pads",
 			 G_CALLBACK(ags_drum_output_line_set_pads_callback), drum_output_line);
 
   /* empty */
@@ -327,12 +327,12 @@ ags_drum_output_line_map_recall(AgsLine *line,
   /* remap for input */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
-			     "engine-mode\0");
+			     "engine-mode");
   performance_mode = FALSE;
   
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
-			  "performance\0",
+			  "performance",
 			  12)){    
     input = audio->input;
 
@@ -340,7 +340,7 @@ ags_drum_output_line_map_recall(AgsLine *line,
       /* ags-copy */
       ags_recall_factory_create(audio,
 				NULL, NULL,
-				"ags-copy\0",
+				"ags-copy",
 				0, audio->audio_channels, 
 				input->pad, input->pad + 1,
 				(AGS_RECALL_FACTORY_INPUT |
@@ -360,7 +360,7 @@ ags_drum_output_line_map_recall(AgsLine *line,
     while(input != NULL){
       ags_recall_factory_create(audio,
 				NULL, NULL,
-				"ags-buffer\0",
+				"ags-buffer",
 				0, audio->audio_channels, 
 				input->pad, input->pad + 1,
 				(AGS_RECALL_FACTORY_INPUT |
@@ -376,7 +376,7 @@ ags_drum_output_line_map_recall(AgsLine *line,
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
-			      "ags-stream\0",
+			      "ags-stream",
 			      output->audio_channel, output->audio_channel + 1,
 			      output->pad, output->pad + 1,
 			      (AGS_RECALL_FACTORY_OUTPUT |
@@ -399,11 +399,11 @@ ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 }
 
@@ -419,18 +419,18 @@ ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-drum-output-line\0");
+		    "ags-drum-output-line");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", drum_output_line,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", drum_output_line,
 				   NULL));
 
   return(node);
@@ -452,7 +452,7 @@ ags_drum_output_line_new(AgsChannel *channel)
   AgsDrumOutputLine *drum_output_line;
 
   drum_output_line = (AgsDrumOutputLine *) g_object_new(AGS_TYPE_DRUM_OUTPUT_LINE,
-							"channel\0", channel,
+							"channel", channel,
 							NULL);
 
   return(drum_output_line);
