@@ -59,18 +59,18 @@ AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
-AC_CHECK_LIB([X11], [main])
+AC_CHECK_LIB([X11], [main], AC_MSG_ERROR("No X11 library present"))
 # FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main])
+AC_CHECK_LIB([dl], [main], AC_MSG_ERROR("No dl library present"))
 # FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
+AC_CHECK_LIB([m], [main], AC_MSG_ERROR("No math library present"))
 # FIXME: Replace `main' with a function in `-lrt':
-AC_CHECK_LIB([rt], [main])
+AC_CHECK_LIB([rt], [main], AC_MSG_ERROR("No rt library present"))
 
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h])
+AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
