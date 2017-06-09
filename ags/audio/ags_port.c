@@ -23,6 +23,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <ags/i18n.h>
+
 void ags_port_class_init(AgsPortClass *port_class);
 void ags_port_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_port_init(AgsPort *port);
@@ -139,8 +141,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("plugin-name",
-				   "plugin-name of port",
-				   "The plugin-name this port belongs to",
+				   i18n_pspec("plugin-name of port"),
+				   i18n_pspec("The plugin-name this port belongs to"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,8 +157,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("specifier",
-				   "specifier of port",
-				   "The specifier this port is identified by",
+				   i18n_pspec("specifier of port"),
+				   i18n_pspec("The specifier this port is identified by"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -171,8 +173,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("control-port",
-				   "control-port of port",
-				   "The control-port this port is numbered",
+				   i18n_pspec("control-port of port"),
+				   i18n_pspec("The control-port this port is numbered"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,8 +189,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_boolean("port-value-is-pointer",
-				    "port-value-is-pointer indicates if value is a pointer",
-				    "The port-value-is-pointer indicates if value is a pointer",
+				    i18n_pspec("port-value-is-pointer indicates if value is a pointer"),
+				    i18n_pspec("The port-value-is-pointer indicates if value is a pointer"),
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -203,8 +205,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_gtype("port-value-type",
-				  "port-value-type tells you the type of the values",
-				  "The port-value-type tells you the type of the values",
+				  i18n_pspec("port-value-type tells you the type of the values"),
+				  i18n_pspec("The port-value-type tells you the type of the values"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -219,8 +221,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("port-value-size",
-				 "port-value-size is the size of a single entry",
-				 "The port-value-size is the size of a single entry",
+				 i18n_pspec("port-value-size is the size of a single entry"),
+				 i18n_pspec("The port-value-size is the size of a single entry"),
 				 1, 8,
 				 sizeof(gdouble),
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -236,8 +238,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("port-value-length",
-				 "port-value-length is the array size",
-				 "The port-value-length is the array size",
+				 i18n_pspec("port-value-length is the array size"),
+				 i18n_pspec("The port-value-length is the array size"),
 				 0, 65535,
 				 1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -253,8 +255,8 @@ ags_port_class_init(AgsPortClass *port)
    * Since: 0.7.9
    */
   param_spec = g_param_spec_object("conversion",
-				   "conversion converts values",
-				   "The conversion is able to translate values",
+				   i18n_pspec("conversion converts values"),
+				   i18n_pspec("The conversion is able to translate values"),
 				   AGS_TYPE_CONVERSION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

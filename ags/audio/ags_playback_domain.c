@@ -28,15 +28,7 @@
 
 #include <ags/audio/thread/ags_audio_thread.h>
 
-/**
- * SECTION:ags_playback_domain
- * @short_description: Outputting to soundcard domain
- * @title: AgsPlaybackDomain
- * @section_id:
- * @include: ags/audio/ags_playback_domain.h
- *
- * #AgsPlaybackDomain represents a domain to output.
- */
+#include <ags/i18n.h>
 
 void ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain);
 void ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -53,6 +45,16 @@ void ags_playback_domain_disconnect(AgsConnectable *connectable);
 void ags_playback_domain_connect(AgsConnectable *connectable);
 void ags_playback_domain_dispose(GObject *gobject);
 void ags_playback_domain_finalize(GObject *gobject);
+
+/**
+ * SECTION:ags_playback_domain
+ * @short_description: Outputting to soundcard domain
+ * @title: AgsPlaybackDomain
+ * @section_id:
+ * @include: ags/audio/ags_playback_domain.h
+ *
+ * #AgsPlaybackDomain represents a domain to output.
+ */
 
 static gpointer ags_playback_domain_parent_class = NULL;
 
@@ -125,8 +127,8 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("domain",
-				   "assigned domain",
-				   "The domain it is assigned with",
+				   i18n_pspec("assigned domain"),
+				   i18n_pspec("The domain it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -141,8 +143,8 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("playback",
-				   "assigned playback",
-				   "The playback it is assigned with",
+				   i18n_pspec("assigned playback"),
+				   i18n_pspec("The playback it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

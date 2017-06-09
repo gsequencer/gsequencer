@@ -69,6 +69,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_packable_interface_init(AgsPackableInterface *packable);
@@ -270,8 +272,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of recall",
-				   "The soundcard which this recall is packed into",
+				   i18n_pspec("soundcard of recall"),
+				   i18n_pspec("The soundcard which this recall is packed into"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -286,8 +288,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("recall-container",
-				   "container of recall",
-				   "The container which this recall is packed into",
+				   i18n_pspec("container of recall"),
+				   i18n_pspec("The container which this recall is packed into"),
 				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -302,8 +304,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("dependency",
-				   "dependency of recall",
-				   "The dependency that can be added",
+				   i18n_pspec("dependency of recall"),
+				   i18n_pspec("The dependency that can be added"),
 				   AGS_TYPE_RECALL_DEPENDENCY,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -318,8 +320,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("recall-id",
-				   "run id of recall",
-				   "The recall id of the recall",
+				   i18n_pspec("run id of recall"),
+				   i18n_pspec("The recall id of the recall"),
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -334,8 +336,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("parent",
-				   "parent recall of this recall",
-				   "The recall should be the parent instance of this recall",
+				   i18n_pspec("parent recall of this recall"),
+				   i18n_pspec("The recall should be the parent instance of this recall"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -350,8 +352,8 @@ ags_recall_class_init(AgsRecallClass *recall)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("child",
-				   "child of recall",
-				   "The child that can be added",
+				   i18n_pspec("child of recall"),
+				   i18n_pspec("The child that can be added"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -363,11 +365,11 @@ ags_recall_class_init(AgsRecallClass *recall)
    *
    * The assigned #AgsPort
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("port",
-				   "port of recall",
-				   "The port of recall",
+				   i18n_pspec("port of recall"),
+				   i18n_pspec("The port of recall"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -2539,7 +2541,7 @@ ags_recall_get_children(AgsRecall *recall)
  *
  * Returns: a GList, or %NULL if not found
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
@@ -2589,7 +2591,7 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
  *
  * Returns: a GList, or %NULL if not found
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect)
@@ -2736,7 +2738,7 @@ ags_recall_template_find_type(GList *recall_i, GType type)
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_recall_template_find_all_type(GList *recall_i, ...)

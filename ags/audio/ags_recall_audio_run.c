@@ -32,6 +32,8 @@
 
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_run_packable_interface_init(AgsPackableInterface *packable);
@@ -166,8 +168,8 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio object it is assigned to",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio object it is assigned to"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -182,8 +184,8 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-audio",
-				   "AgsRecallAudio of this recall",
-				   "The AgsRecallAudio which this recall needs",
+				   i18n_pspec("AgsRecallAudio of this recall"),
+				   i18n_pspec("The AgsRecallAudio which this recall needs"),
 				   AGS_TYPE_RECALL_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -82,6 +82,8 @@
 #include <dssi.h>
 #include <lv2.h>
 
+#include <ags/i18n.h>
+
 /**
  * SECTION:ags_channel
  * @short_description: Acts as entry point to the audio tree.
@@ -227,8 +229,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio it is assigned with",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -243,8 +245,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("soundcard",
-				   "assigned soundcard",
-				   "The soundcard it is assigned with",
+				   i18n_pspec("assigned soundcard"),
+				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -259,8 +261,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.45
    */
   param_spec =  g_param_spec_uint("samplerate",
-				  "samplerate",
-				  "The samplerate",
+				  i18n_pspec("samplerate"),
+				  i18n_pspec("The samplerate"),
 				  0,
 				  G_MAXUINT32,
 				  0,
@@ -277,8 +279,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.45
    */
   param_spec =  g_param_spec_uint("buffer-size",
-				  "buffer size",
-				  "The buffer size",
+				  i18n_pspec("buffer size"),
+				  i18n_pspec("The buffer size"),
 				  0,
 				  G_MAXUINT32,
 				  0,
@@ -295,8 +297,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.45
    */
   param_spec =  g_param_spec_uint("format",
-				  "format",
-				  "The format",
+				  i18n_pspec("format"),
+				  i18n_pspec("The format"),
 				  0,
 				  G_MAXUINT32,
 				  0,
@@ -313,8 +315,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("audio-channel",
-				  "nth audio channel",
-				  "The nth audio channel",
+				  i18n_pspec("nth audio channel"),
+				  i18n_pspec("The nth audio channel"),
 				  0,
 				  65535,
 				  0,
@@ -331,8 +333,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("pad",
-				  "nth pad",
-				  "The nth pad",
+				  i18n_pspec("nth pad"),
+				  i18n_pspec("The nth pad"),
 				  0,
 				  65535,
 				  0,
@@ -349,8 +351,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("line",
-				  "nth line",
-				  "The nth line",
+				  i18n_pspec("nth line"),
+				  i18n_pspec("The nth line"),
 				  0,
 				  65535,
 				  0,
@@ -367,8 +369,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_string("note",
-				   "assigned note",
-				   "The note it is assigned with",
+				   i18n_pspec("assigned note"),
+				   i18n_pspec("The note it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -383,8 +385,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_object("playback",
-				   "assigned playback",
-				   "The playback it is assigned with",
+				   i18n_pspec("assigned playback"),
+				   i18n_pspec("The playback it is assigned with"),
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -399,8 +401,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("recall-id",
-				    "assigned recall id",
-				    "The recall id it is assigned with",
+				    i18n_pspec("assigned recall id"),
+				    i18n_pspec("The recall id it is assigned with"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_ID,
@@ -414,8 +416,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("recall-container",
-				    "containing recall-container",
-				    "The recall container it contains",
+				    i18n_pspec("containing recall-container"),
+				    i18n_pspec("The recall container it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CONTAINER,
@@ -429,8 +431,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("recall",
-				    "containing recall",
-				    "The recall it contains",
+				    i18n_pspec("containing recall"),
+				    i18n_pspec("The recall it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL,
@@ -444,8 +446,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("play",
-				    "containing play",
-				    "The play it contains",
+				    i18n_pspec("containing play"),
+				    i18n_pspec("The play it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAY,
@@ -459,8 +461,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_object("link",
-				   "assigned link",
-				   "The link it is assigned with",
+				   i18n_pspec("assigned link"),
+				   i18n_pspec("The link it is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -475,8 +477,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_object("first-recycling",
-				   "containing first recycling",
-				   "The first recycling it contains",
+				   i18n_pspec("containing first recycling"),
+				   i18n_pspec("The first recycling it contains"),
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -491,8 +493,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_object("last-recycling",
-				   "containing last recycling",
-				   "The last recycling it contains",
+				   i18n_pspec("containing last recycling"),
+				   i18n_pspec("The last recycling it contains"),
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -507,8 +509,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("pattern",
-				    "containing pattern",
-				    "The pattern it contains",
+				    i18n_pspec("containing pattern"),
+				    i18n_pspec("The pattern it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PATTERN,

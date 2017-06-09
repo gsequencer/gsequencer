@@ -33,6 +33,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel);
 void ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_channel_packable_interface_init(AgsPackableInterface *packable);
@@ -154,14 +156,14 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("destination",
-				   "assigned destination channel",
-				   "The destination channel object it is assigned to",
-				    AGS_TYPE_CHANNEL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-   g_object_class_install_property(gobject,
-				   PROP_DESTINATION,
-				   param_spec);
-
+				   i18n_pspec("assigned destination channel"),
+				   i18n_pspec("The destination channel object it is assigned to"),
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DESTINATION,
+				  param_spec);
+  
   /**
    * AgsRecallChannel:source:
    *
@@ -170,8 +172,8 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
    * Since: 0.4.0
    */
    param_spec = g_param_spec_object("source",
-				    "assigned source channel",
-				    "The source channel object it is assigned to",
+				    i18n_pspec("assigned source channel"),
+				    i18n_pspec("The source channel object it is assigned to"),
 				    AGS_TYPE_CHANNEL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
    g_object_class_install_property(gobject,

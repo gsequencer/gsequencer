@@ -34,6 +34,8 @@
 #include <unistd.h>
 #include <math.h>
 
+#include <ags/i18n.h>
+
 #include <errno.h>
 
 void ags_thread_class_init(AgsThreadClass *thread);
@@ -168,8 +170,8 @@ ags_thread_class_init(AgsThreadClass *thread)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_double("frequency",
-				   "JIFFIE",
-				   "JIFFIE",
+				   i18n_pspec("JIFFIE"),
+				   i18n_pspec("JIFFIE"),
 				   0.01,
 				   1000.0,
 				   1000.0,

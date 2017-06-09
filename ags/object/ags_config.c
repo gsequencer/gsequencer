@@ -35,6 +35,7 @@
 #include <pwd.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_config_class_init(AgsConfigClass *config_class);
 void ags_config_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -154,8 +155,8 @@ ags_config_class_init(AgsConfigClass *config)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("application-context",
-				   "application context of config",
-				   "The application context which this config is packed into",
+				   i18n_pspec("application context of config"),
+				   i18n_pspec("The application context which this config is packed into"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

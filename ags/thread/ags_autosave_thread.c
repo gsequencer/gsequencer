@@ -27,6 +27,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+#include <ags/i18n.h>
+
 void ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread);
 void ags_autosave_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_autosave_thread_main_loop_interface_init(AgsMainLoopInterface *main_loop);
@@ -134,8 +136,8 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
 
   /* properties */
   param_spec = g_param_spec_object("application-context",
-				   "application context to check against",
-				   "The application context to check against serialization.",
+				   i18n_pspec("application context to check against"),
+				   i18n_pspec("The application context to check against serialization"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -57,6 +57,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 /**
  * SECTION:ags_audio
  * @short_description: A container of channels organizing them as input or output
@@ -211,8 +213,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("soundcard",
-				   "assigned soundcard",
-				   "The soundcard it is assigned with",
+				   i18n_pspec("assigned soundcard"),
+				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -227,8 +229,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("sequencer",
-				   "assigned sequencer",
-				   "The sequencer it is assigned with",
+				   i18n_pspec("assigned sequencer"),
+				   i18n_pspec("The sequencer it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -243,8 +245,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("midi-file",
-				   "assigned midi_file",
-				   "The midi file it is assigned with",
+				   i18n_pspec("assigned midi_file"),
+				   i18n_pspec("The midi file it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -259,8 +261,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("samplerate",
-				 "samplerate",
-				 "The samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -277,8 +279,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("buffer-size",
-				 "buffer size",
-				 "The buffer size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -295,8 +297,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_uint("format",
-				 "format",
-				 "The format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -313,8 +315,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("sequence-length",
-				 "sequence-length",
-				 "The sequence length",
+				 i18n_pspec("sequence-length"),
+				 i18n_pspec("The sequence length"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -331,8 +333,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("audio-channels",
-				 "audio channels count",
-				 "The count of audio channels of audio",
+				 i18n_pspec("audio channels count"),
+				 i18n_pspec("The count of audio channels of audio"),
 				 0,
 				 65535,
 				 0,
@@ -350,8 +352,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("input-pads",
-				 "input pads count",
-				 "The count of input pads of audio",
+				 i18n_pspec("input pads count"),
+				 i18n_pspec("The count of input pads of audio"),
 				 0,
 				 65535,
 				 0,
@@ -368,8 +370,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("input-lines",
-				 "input lines count",
-				 "The count of input lines of audio",
+				 i18n_pspec("input lines count"),
+				 i18n_pspec("The count of input lines of audio"),
 				 0,
 				 65535,
 				 0,
@@ -386,8 +388,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("output-pads",
-				 "output pads count",
-				 "The count of output pads of audio",
+				 i18n_pspec("output pads count"),
+				 i18n_pspec("The count of output pads of audio"),
 				 0,
 				 65535,
 				 0,
@@ -404,8 +406,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("output-lines",
-				 "output lines count",
-				 "The count of output lines of audio",
+				 i18n_pspec("output lines count"),
+				 i18n_pspec("The count of output lines of audio"),
 				 0,
 				 65535,
 				 0,
@@ -422,8 +424,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.3
    */
   param_spec = g_param_spec_uint("audio-start-mapping",
-				 "audio start mapping",
-				 "The audio start mapping",
+				 i18n_pspec("audio start mapping"),
+				 i18n_pspec("The audio start mapping"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -440,8 +442,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.3
    */
   param_spec = g_param_spec_uint("audio-end-mapping",
-				 "audio end mapping",
-				 "The audio end mapping",
+				 i18n_pspec("audio end mapping"),
+				 i18n_pspec("The audio end mapping"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -458,8 +460,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.3
    */
   param_spec =  g_param_spec_uint("midi-start-mapping",
-				  "midi start mapping range",
-				  "The midi mapping range's start",
+				  i18n_pspec("midi start mapping range"),
+				  i18n_pspec("The midi mapping range's start"),
 				  0,
 				  G_MAXUINT32,
 				  0,
@@ -476,8 +478,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.3
    */
   param_spec = g_param_spec_uint("midi-end-mapping",
-				 "midi end mapping range",
-				 "The midi mapping range's start",
+				 i18n_pspec("midi end mapping range"),
+				 i18n_pspec("The midi mapping range's start"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -494,8 +496,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("midi-channel",
-				 "midi channel",
-				 "The midi channel",
+				 i18n_pspec("midi channel"),
+				 i18n_pspec("The midi channel"),
 				 0,
 				 16,
 				 0,
@@ -512,8 +514,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_object("audio-connection",
-				   "audio connection",
-				   "The audio connection information",
+				   i18n_pspec("audio connection"),
+				   i18n_pspec("The audio connection information"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -528,8 +530,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_object("output",
-				   "containing output",
-				   "The output it contains",
+				   i18n_pspec("containing output"),
+				   i18n_pspec("The output it contains"),
 				   AGS_TYPE_OUTPUT,
 				   G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -544,8 +546,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_object("input",
-				   "containing input",
-				   "The input it contains",
+				   i18n_pspec("containing input"),
+				   i18n_pspec("The input it contains"),
 				   AGS_TYPE_INPUT,
 				   G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -560,8 +562,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_object("playback-domain",
-				   "assigned playback domain",
-				   "The assigned playback domain",
+				   i18n_pspec("assigned playback domain"),
+				   i18n_pspec("The assigned playback domain"),
 				   AGS_TYPE_PLAYBACK_DOMAIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -576,8 +578,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("notation",
-				    "containing notation",
-				    "The notation it contains",
+				    i18n_pspec("containing notation"),
+				    i18n_pspec("The notation it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTATION,
@@ -591,8 +593,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("automation",
-				    "containing automation",
-				    "The automation it contains",
+				    i18n_pspec("containing automation"),
+				    i18n_pspec("The automation it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUTOMATION,
@@ -606,8 +608,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("recall-id",
-				    "assigned recall id",
-				    "The assigned recall id",
+				    i18n_pspec("assigned recall id"),
+				    i18n_pspec("The assigned recall id"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT,
@@ -621,8 +623,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("recycling-context",
-				    "assigned recycling context",
-				    "The assigned recall id",
+				    i18n_pspec("assigned recycling context"),
+				    i18n_pspec("The assigned recall id"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT,
@@ -636,8 +638,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("recall-container",
-				    "containing recall container",
-				    "The recall container it contains",
+				    i18n_pspec("containing recall container"),
+				    i18n_pspec("The recall container it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CONTAINER,
@@ -651,8 +653,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("play",
-				    "containing play",
-				    "The play it contains",
+				    i18n_pspec("containing play"),
+				    i18n_pspec("The play it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAY,
@@ -666,8 +668,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("recall",
-				    "containing recall",
-				    "The recall it contains",
+				    i18n_pspec("containing recall"),
+				    i18n_pspec("The recall it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL,

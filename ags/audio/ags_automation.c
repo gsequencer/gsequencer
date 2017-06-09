@@ -42,6 +42,8 @@
 #include <math.h>
 #include <errno.h>
 
+#include <ags/i18n.h>
+
 void ags_automation_class_init(AgsAutomationClass *automation);
 void ags_automation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_portlet_interface_init(AgsPortletInterface *portlet);
@@ -167,11 +169,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of automation",
-				   "The audio of automation",
+				   i18n_pspec("audio of automation"),
+				   i18n_pspec("The audio of automation"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -184,11 +186,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's line.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_uint("line",
-				  "line of effect",
-				  "The numerical line of effect",
+				  i18n_pspec("line of effect"),
+				  i18n_pspec("The numerical line of effect"),
 				  0,
 				  65535,
 				  0,
@@ -202,11 +204,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's assigned channel type.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_gtype("channel-type",
-				   "channel type to apply",
-				   "The channel type to apply",
+				   i18n_pspec("channel type to apply"),
+				   i18n_pspec("The channel type to apply"),
 				   G_TYPE_NONE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -219,11 +221,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's assigned control name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("control-name",
-				    "control name",
-				    "The control name",
+				    i18n_pspec("control name"),
+				    i18n_pspec("The control name"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -238,8 +240,8 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_object("port",
-				   "port of automation",
-				   "The port of automation",
+				   i18n_pspec("port of automation"),
+				   i18n_pspec("The port of automation"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -251,11 +253,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's steps.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_uint("steps",
-				  "steps of effect",
-				  "The steps of effect",
+				  i18n_pspec("steps of effect"),
+				  i18n_pspec("The steps of effect"),
 				  0,
 				  65535,
 				  0,
@@ -269,11 +271,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's upper.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_double("upper",
-				    "upper of effect",
-				    "The upper of effect",
+				    i18n_pspec("upper of effect"),
+				    i18n_pspec("The upper of effect"),
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -287,11 +289,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's lower.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_double("lower",
-				    "lower of effect",
-				    "The lower of effect",
+				    i18n_pspec("lower of effect"),
+				    i18n_pspec("The lower of effect"),
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -306,11 +308,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's default-value.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_double("default-value",
-				    "default value of effect",
-				    "The default value of effect",
+				    i18n_pspec("default value of effect"),
+				    i18n_pspec("The default value of effect"),
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -328,8 +330,8 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * Since: 0.7.122.8
    */
   param_spec = g_param_spec_pointer("acceleration",
-				    "acceleration",
-				    "The acceleration",
+				    i18n_pspec("acceleration"),
+				    i18n_pspec("The acceleration"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ACCELERATION,
@@ -343,8 +345,8 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_pointer("current-accelerations",
-				    "current accelerations for offset",
-				    "The current accelerations for offset",
+				    i18n_pspec("current accelerations for offset"),
+				    i18n_pspec("The current accelerations for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CURRENT_ACCELERATIONS,
@@ -358,8 +360,8 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_pointer("next-accelerations",
-				    "next accelerations for offset",
-				    "The next accelerations for offset",
+				    i18n_pspec("next accelerations for offset"),
+				    i18n_pspec("The next accelerations for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NEXT_ACCELERATIONS,
@@ -373,8 +375,8 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * Since: 0.7.56
    */
   param_spec = g_param_spec_object("timestamp",
-				   "timestamp of automation",
-				   "The timestamp of automation",
+				   i18n_pspec("timestamp of automation"),
+				   i18n_pspec("The timestamp of automation"),
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -971,7 +973,7 @@ ags_automation_find_port(GList *automation,
  *
  * Returns: Next match.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
@@ -1016,7 +1018,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
  *
  * Adds a acceleration to automation.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_automation_add_acceleration(AgsAutomation *automation,
@@ -1066,7 +1068,7 @@ ags_automation_add_acceleration(AgsAutomation *automation,
  *
  * Returns: %TRUE if successfully removed acceleration.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
@@ -1108,7 +1110,7 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
  *
  * Returns: the selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_get_selection(AgsAutomation *automation)
@@ -1125,7 +1127,7 @@ ags_automation_get_selection(AgsAutomation *automation)
  *
  * Returns: %TRUE if selected
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 gboolean
 ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration)
@@ -1156,7 +1158,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
  *
  * Returns: the matching acceleration.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 AgsAcceleration*
 ags_automation_find_point(AgsAutomation *automation,
@@ -1199,7 +1201,7 @@ ags_automation_find_point(AgsAutomation *automation,
  *
  * Returns: the matching acceleration as #GList.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_find_region(AgsAutomation *automation,
@@ -1252,7 +1254,7 @@ ags_automation_find_region(AgsAutomation *automation,
  *
  * Clear selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_automation_free_selection(AgsAutomation *automation)
@@ -1284,7 +1286,7 @@ ags_automation_free_selection(AgsAutomation *automation)
  *
  * Select acceleration at position.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 void
 ags_automation_add_point_to_selection(AgsAutomation *automation,
@@ -1331,7 +1333,7 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
  *
  * Remove acceleration at position of selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
@@ -1409,7 +1411,7 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
  *
  * Remove acceleration within region of selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 void
 ags_automation_remove_region_from_selection(AgsAutomation *automation,
@@ -1465,7 +1467,7 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
  *
  * Returns: the selection as XML.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 xmlNode*
 ags_automation_copy_selection(AgsAutomation *automation)
@@ -1526,7 +1528,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
  *
  * Returns: the selection as XML.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 xmlNode*
 ags_automation_cut_selection(AgsAutomation *automation)
@@ -1892,7 +1894,7 @@ ags_automation_get_current(AgsAutomation *automation)
  *
  * Returns: a %NULL terminated string array
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 gchar**
 ags_automation_get_specifier_unique(GList *automation)
@@ -1941,7 +1943,7 @@ ags_automation_get_specifier_unique(GList *automation)
  *
  * Returns: Next matching #GList
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_find_specifier(GList *automation,

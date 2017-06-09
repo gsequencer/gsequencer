@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_audio_connection.h>
 
+#include <ags/i18n.h>
+
 void ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection);
 void ags_audio_connection_init (AgsAudioConnection *audio_connection);
 void ags_audio_connection_set_property(GObject *gobject,
@@ -104,8 +106,8 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_object("audio",
-				   "audio",
-				   "The audio belonging to",
+				   i18n_pspec("audio"),
+				   i18n_pspec("The audio belonging to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -120,8 +122,8 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_ulong("channel-type",
-				  "channel type",
-				  "The channel type belonging to",
+				  i18n_pspec("channel type"),
+				  i18n_pspec("The channel type belonging to"),
 				  0, G_MAXULONG,
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -137,8 +139,8 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_uint("pad",
-				 "pad",
-				 "The pad assigned with",
+				 i18n_pspec("pad"),
+				 i18n_pspec("The pad assigned with"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -155,8 +157,8 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_uint("audio-channel",
-				 "audio-channel",
-				 "The audio_channel assigned with",
+				 i18n_pspec("audio-channel"),
+				 i18n_pspec("The audio_channel assigned with"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -173,8 +175,8 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_uint("line",
-				 "line",
-				 "The line assigned with",
+				 i18n_pspec("line"),
+				 i18n_pspec("The line assigned with"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -191,8 +193,8 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_uint("mapped-line",
-				 "mapped line",
-				 "The mapped line of data object",
+				 i18n_pspec("mapped line"),
+				 i18n_pspec("The mapped line of data object"),
 				 0,
 				 G_MAXUINT32,
 				 0,

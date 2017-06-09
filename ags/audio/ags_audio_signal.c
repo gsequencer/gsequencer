@@ -35,16 +35,8 @@
 #include <math.h>
 #include <string.h>
 
-/**
- * SECTION:ags_audio_signal
- * @short_description: Contains the audio data and its alignment
- * @title: AgsAudioSignal
- * @section_id:
- * @include: ags/audio/ags_audio_signal.h
- *
- * #AgsAudioSignal organizes audio data within a #GList whereby data
- * pointing to the buffer.
- */
+#include <ags/i18n.h>
+
 
 void ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal_class);
 void ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -63,6 +55,17 @@ void ags_audio_signal_dispose(GObject *gobject);
 void ags_audio_signal_finalize(GObject *gobject);
 
 void ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
+
+/**
+ * SECTION:ags_audio_signal
+ * @short_description: Contains the audio data and its alignment
+ * @title: AgsAudioSignal
+ * @section_id:
+ * @include: ags/audio/ags_audio_signal.h
+ *
+ * #AgsAudioSignal organizes audio data within a #GList whereby data
+ * pointing to the buffer.
+ */
 
 enum{
   PROP_0,
@@ -158,8 +161,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("soundcard",
-				   "assigned soundcard",
-				   "The soundcard it is assigned with",
+				   i18n_pspec("assigned soundcard"),
+				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,8 +177,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recycling",
-				   "assigned recycling",
-				   "The recycling it is assigned with",
+				   i18n_pspec("assigned recycling"),
+				   i18n_pspec("The recycling it is assigned with"),
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -190,8 +193,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall_id",
-				   "assigned recall id",
-				   "The recall id it is assigned with",
+				   i18n_pspec("assigned recall id"),
+				   i18n_pspec("The recall id it is assigned with"),
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -206,8 +209,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("samplerate",
-				 "using samplerate",
-				 "The samplerate to be used",
+				 i18n_pspec("using samplerate"),
+				 i18n_pspec("The samplerate to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -224,8 +227,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("buffer-size",
-				 "using buffer size",
-				 "The buffer size to be used",
+				 i18n_pspec("using buffer size"),
+				 i18n_pspec("The buffer size to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -242,8 +245,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("format",
-				 "using format",
-				 "The format to be used",
+				 i18n_pspec("using format"),
+				 i18n_pspec("The format to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -260,8 +263,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("word-size",
-				 "frame word size",
-				 "The word size of a frame",
+				 i18n_pspec("frame word size"),
+				 i18n_pspec("The word size of a frame"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -278,8 +281,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("length",
-				 "stream length",
-				 "The length of the stream",
+				 i18n_pspec("stream length"),
+				 i18n_pspec("The length of the stream"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -296,8 +299,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("first-frame",
-				 "stream's first frame",
-				 "The first frame of the stream",
+				 i18n_pspec("stream's first frame"),
+				 i18n_pspec("The first frame of the stream"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -314,8 +317,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("last-frame",
-				 "stream's last frame",
-				 "The last frame of the stream",
+				 i18n_pspec("stream's last frame"),
+				 i18n_pspec("The last frame of the stream"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -332,8 +335,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("frame-count",
-				 "frame count of audio data",
-				 "The initial frame count of audio data",
+				 i18n_pspec("frame count of audio data"),
+				 i18n_pspec("The initial frame count of audio data"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -350,8 +353,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("loop-start",
-				 "stream's loop start",
-				 "The loop start of the stream",
+				 i18n_pspec("stream's loop start"),
+				 i18n_pspec("The loop start of the stream"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -368,8 +371,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("loop-end",
-				 "stream's loop end",
-				 "The loop end of the stream",
+				 i18n_pspec("stream's loop end"),
+				 i18n_pspec("The loop end of the stream"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -386,8 +389,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_double("delay",
-				   "using delay",
-				   "The delay to be used",
+				   i18n_pspec("using delay"),
+				   i18n_pspec("The delay to be used"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -404,8 +407,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("attack",
-				 "using attack",
-				 "The attack to be used",
+				 i18n_pspec("using attack"),
+				 i18n_pspec("The attack to be used"),
 				 0,
 				 65535,
 				 0,
@@ -423,8 +426,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("stream",
-				    "containing stream",
-				    "The stream it contains",
+				    i18n_pspec("containing stream"),
+				    i18n_pspec("The stream it contains"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM,
@@ -438,8 +441,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("stream-end",
-				    "end of stream",
-				    "The stream's end",
+				    i18n_pspec("end of stream"),
+				    i18n_pspec("The stream's end"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_END,
@@ -453,8 +456,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("stream-current",
-				    "current stream",
-				    "The current stream",
+				    i18n_pspec("current stream"),
+				    i18n_pspec("The current stream"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_CURRENT,
@@ -468,8 +471,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("note",
-				   "assigned note",
-				   "The note it is assigned with",
+				   i18n_pspec("assigned note"),
+				   i18n_pspec("The note it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

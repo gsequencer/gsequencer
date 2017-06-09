@@ -35,6 +35,8 @@
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
 
+#include <ags/i18n.h>
+
 /**
  * SECTION:ags_turtle
  * @short_description: Terse RDF Triple Language
@@ -115,11 +117,11 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
    *
    * The assigned filename.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_string("filename",
-				   "filename of turtle",
-				   "The filename this turtle is assigned to",
+				   i18n_pspec("filename of turtle"),
+				   i18n_pspec("The filename this turtle is assigned to"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -134,8 +136,8 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
    * Since: 0.7.3
    */
   param_spec = g_param_spec_pointer("xml-doc",
-				    "xml document of turtle",
-				    "The xml document turtle was converted to",
+				    i18n_pspec("xml document of turtle"),
+				    i18n_pspec("The xml document turtle was converted to"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_XML_DOC,
@@ -1600,7 +1602,7 @@ ags_turtle_read_pn_local_esc(gchar *offset,
  *
  * Returns: a #GList-struct containing xmlNode
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_turtle_find_xpath(AgsTurtle *turtle,
@@ -1645,7 +1647,7 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
  *
  * Returns: a #GList-struct containing xmlNode
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
@@ -1704,7 +1706,7 @@ ags_turtle_string_convert(AgsTurtle *turtle, gchar *str)
  *
  * Returns: a #xmlDoc pointer
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 xmlDoc*
 ags_turtle_load(AgsTurtle *turtle,
@@ -3129,7 +3131,7 @@ ags_turtle_load(AgsTurtle *turtle,
  *
  * Returns: the new instance
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsTurtle*
 ags_turtle_new(gchar *filename)

@@ -44,6 +44,8 @@
 
 #include <ags/audio/task/ags_cancel_recall.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
 void ags_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -177,8 +179,8 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("audio-channel",
-				 "assigned audio channel",
-				 "The audio channel this recall does output to",
+				 i18n_pspec("assigned audio channel"),
+				 i18n_pspec("The audio channel this recall does output to"),
 				 0,
 				 65536,
 				 0,
@@ -195,8 +197,8 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("destination",
-				   "AgsRecycling destination of this recall",
-				   "The AgsRecycling destination of this recall",
+				   i18n_pspec("AgsRecycling destination of this recall"),
+				   i18n_pspec("The AgsRecycling destination of this recall"),
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -211,8 +213,8 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("source",
-				   "AgsRecycling source of this recall",
-				   "The AgsRecycling source of this recall",
+				   i18n_pspec("AgsRecycling source of this recall"),
+				   i18n_pspec("The AgsRecycling source of this recall"),
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -227,8 +229,8 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("child-destination",
-				   "AgsAudioSignal of this recall",
-				   "The destination AgsAudioSignal child recall needs",
+				   i18n_pspec("AgsAudioSignal of this recall"),
+				   i18n_pspec("The destination AgsAudioSignal child recall needs"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -243,8 +245,8 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("child-source",
-				   "AgsAudioSignal of this recall",
-				   "The source AgsAudioSignal child recall needs",
+				   i18n_pspec("AgsAudioSignal of this recall"),
+				   i18n_pspec("The source AgsAudioSignal child recall needs"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

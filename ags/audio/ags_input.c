@@ -35,6 +35,8 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch.h>
 
+#include <ags/i18n.h>
+
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_input_set_property(GObject *gobject,
@@ -132,8 +134,8 @@ ags_input_class_init(AgsInputClass *input)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("file-link",
-				   "file link assigned to",
-				   "The file link to read from",
+				   i18n_pspec("file link assigned to"),
+				   i18n_pspec("The file link to read from"),
 				   AGS_TYPE_FILE_LINK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -148,8 +150,8 @@ ags_input_class_init(AgsInputClass *input)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("synth-generator",
-				   "the synth generator",
-				   "The synth generator to be used",
+				   i18n_pspec("the synth generator"),
+				   i18n_pspec("The synth generator to be used"),
 				   AGS_TYPE_SYNTH_GENERATOR,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

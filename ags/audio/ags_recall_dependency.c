@@ -29,6 +29,8 @@
 
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency);
 void ags_recall_dependency_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_dependency_init(AgsRecallDependency *recall_dependency);
@@ -125,8 +127,8 @@ ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("dependency",
-				   "dependency of recall",
-				   "A dependency of the recall",
+				   i18n_pspec("dependency of recall"),
+				   i18n_pspec("A dependency of the recall"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -19,6 +19,8 @@
 
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/i18n.h>
+
 void ags_file_launch_class_init(AgsFileLaunchClass *file_launch);
 void ags_file_launch_init (AgsFileLaunch *file_launch);
 void ags_file_launch_set_property(GObject *gobject,
@@ -76,7 +78,7 @@ ags_file_launch_get_type (void)
     };
 
     ags_type_file_launch = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsFileLaunch\0",
+						  "AgsFileLaunch",
 						  &ags_file_launch_info,
 						  0);
   }
@@ -108,9 +110,9 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("node\0",
-				    "the node\0",
-				    "The node to find the element\0",
+  param_spec = g_param_spec_pointer("node",
+				    i18n_pspec("the node"),
+				    i18n_pspec("The node to find the element"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NODE,
@@ -123,9 +125,9 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("reference\0",
-				    "the reference\0",
-				    "The reference to find the element\0",
+  param_spec = g_param_spec_pointer("reference",
+				    i18n_pspec("the reference"),
+				    i18n_pspec("The reference to find the element"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_REFERENCE,
@@ -138,9 +140,9 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("file\0",
-				   "file assigned to\0",
-				   "The entire file assigned to\0",
+  param_spec = g_param_spec_object("file",
+				   i18n_pspec("file assigned to"),
+				   i18n_pspec("The entire file assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -154,9 +156,9 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context access\0",
-				   "The application context to access the tree\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("application context access"),
+				   i18n_pspec("The application context to access the tree"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -175,7 +177,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    * Since: 0.7.0
    */
   file_launch_signals[START] =
-    g_signal_new("start\0",
+    g_signal_new("start",
 		 G_TYPE_FROM_CLASS(file_launch),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileLaunchClass, start),

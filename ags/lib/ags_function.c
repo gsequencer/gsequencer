@@ -23,16 +23,7 @@
 
 #include <regex.h>
 
-/**
- * SECTION:ags_function
- * @short_description: Function to translate values
- * @title: AgsFunction
- * @section_id:
- * @include: ags/lib/ags_function.h
- *
- * The #AgsFunction translates values from linear math to a given
- * function.
- */
+#include <ags/i18n.h>
 
 void ags_function_class_init(AgsFunctionClass *function);
 void ags_function_init (AgsFunction *function);
@@ -45,6 +36,17 @@ void ags_function_get_property(GObject *gobject,
 			       GValue *value,
 			       GParamSpec *param_spec);
 void ags_function_finalize(GObject *gobject);
+
+/**
+ * SECTION:ags_function
+ * @short_description: Function to translate values
+ * @title: AgsFunction
+ * @section_id:
+ * @include: ags/lib/ags_function.h
+ *
+ * The #AgsFunction translates values from linear math to a given
+ * function.
+ */
 
 #define ags_function_print_sin(str, term) (sprintf(str, "1 / 2 * %s * exp(- %s * (%s) * log(%s)) - 1 / 2 * %s * exp(%s * (%s) * log(%s))", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
@@ -145,8 +147,8 @@ ags_function_class_init(AgsFunctionClass *function)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_string("source-function",
-				   "function as string",
-				   "The function to use to translate values",
+				   i18n_pspec("function as string"),
+				   i18n_pspec("The function to use to translate values"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -161,8 +163,8 @@ ags_function_class_init(AgsFunctionClass *function)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_string("normalized-function",
-				   "normalized form of function as string",
-				   "The normalized form of function to use to translate values",
+				   i18n_pspec("normalized form of function as string"),
+				   i18n_pspec("The normalized form of function to use to translate values"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,8 +179,8 @@ ags_function_class_init(AgsFunctionClass *function)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("pivot-table",
-				    "pivot table representation",
-				    "The original pivot table representation",
+				    i18n_pspec("pivot table representation"),
+				    i18n_pspec("The original pivot table representation"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PIVOT_TABLE,

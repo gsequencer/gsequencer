@@ -21,15 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-/**
- * SECTION:ags_conversion
- * @short_description: Conversion of values
- * @title: AgsConversion
- * @section_id:
- * @include: ags/lib/ags_conversion.h
- *
- * The #AgsConversion converts values.
- */
+#include <ags/i18n.h>
 
 void ags_conversion_class_init(AgsConversionClass *conversion);
 void ags_conversion_init (AgsConversion *conversion);
@@ -124,8 +116,8 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    * Since: 0.7.8
    */
   param_spec = g_param_spec_string("name",
-				   "name of conversion",
-				   "The name of the conversion",
+				   i18n_pspec("name of conversion"),
+				   i18n_pspec("The name of the conversion"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -140,8 +132,8 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    * Since: 0.7.8
    */
   param_spec = g_param_spec_string("description",
-				   "description of conversion",
-				   "The description of the conversion",
+				   i18n_pspec("description of conversion"),
+				   i18n_pspec("The description of the conversion"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

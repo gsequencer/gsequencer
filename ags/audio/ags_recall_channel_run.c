@@ -44,6 +44,8 @@
 
 #include <ags/audio/task/ags_cancel_recall.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
 void ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_channel_run_packable_interface_init(AgsPackableInterface *packable);
@@ -211,8 +213,8 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("audio-channel",
-				 "assigned audio channel",
-				 "The audio channel this recall is assigned to",
+				 i18n_pspec("assigned audio channel"),
+				 i18n_pspec("The audio channel this recall is assigned to"),
 				 0, 65535,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -229,8 +231,8 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-audio-run",
-				   "AgsRecallAudioRun of this recall",
-				   "The AgsRecallAudioRun which this recall needs",
+				   i18n_pspec("AgsRecallAudioRun of this recall"),
+				   i18n_pspec("The AgsRecallAudioRun which this recall needs"),
 				   AGS_TYPE_RECALL_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -245,8 +247,8 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-channel",
-				   "AsgRecallChannel of this recall",
-				   "The AgsRecallChannel which this recall needs",
+				   i18n_pspec("AsgRecallChannel of this recall"),
+				   i18n_pspec("The AgsRecallChannel which this recall needs"),
 				   AGS_TYPE_RECALL_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -261,8 +263,8 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("destination",
-				   "destination of output",
-				   "The destination AgsChannel where it will output to",
+				   i18n_pspec("destination of output"),
+				   i18n_pspec("The destination AgsChannel where it will output to"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -277,8 +279,8 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("source",
-				   "source of input",
-				   "The source AgsChannel where it will take the input from",
+				   i18n_pspec("source of input"),
+				   i18n_pspec("The source AgsChannel where it will take the input from"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

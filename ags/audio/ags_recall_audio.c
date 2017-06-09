@@ -28,6 +28,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio);
 void ags_recall_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_packable_interface_init(AgsPackableInterface *packable);
@@ -148,8 +150,8 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio object it is assigned to",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio object it is assigned to"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

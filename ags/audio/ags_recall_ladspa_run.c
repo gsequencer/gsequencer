@@ -35,6 +35,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_ladspa_run_class_init(AgsRecallLadspaRunClass *recall_ladspa_run_class);
 void ags_recall_ladspa_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_ladspa_run_plugin_interface_init(AgsPluginInterface *plugin);

@@ -46,6 +46,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);
 void ags_lv2_plugin_init (AgsLv2Plugin *lv2_plugin);
 void ags_lv2_plugin_set_property(GObject *gobject,
@@ -162,8 +164,8 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    * Since: 0.122.8
    */
   param_spec = g_param_spec_string("pname",
-				   "pname of the plugin",
-				   "The pname this plugin is associated with",
+				   i18n_pspec("pname of the plugin"),
+				   i18n_pspec("The pname this plugin is associated with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,8 +180,8 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_string("uri",
-				   "uri of the plugin",
-				   "The uri this plugin is located in",
+				   i18n_pspec("uri of the plugin"),
+				   i18n_pspec("The uri this plugin is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -194,8 +196,8 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    * Since: 0.7.127
    */
   param_spec = g_param_spec_string("ui-uri",
-				   "ui-uri of the plugin",
-				   "The ui-uri this plugin has",
+				   i18n_pspec("ui-uri of the plugin"),
+				   i18n_pspec("The ui-uri this plugin has"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -210,8 +212,8 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    * Since: 0.7.127
    */
   param_spec = g_param_spec_object("manifest",
-				   "manifest of the plugin",
-				   "The manifest this plugin is located in",
+				   i18n_pspec("manifest of the plugin"),
+				   i18n_pspec("The manifest this plugin is located in"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -226,8 +228,8 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_object("turtle",
-				   "turtle of the plugin",
-				   "The turtle this plugin is located in",
+				   i18n_pspec("turtle of the plugin"),
+				   i18n_pspec("The turtle this plugin is located in"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

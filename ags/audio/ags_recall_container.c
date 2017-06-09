@@ -28,6 +28,8 @@
 
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
 void ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_container_init(AgsRecallContainer *recall);
@@ -129,10 +131,10 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_gtype("recall-audio-type",
-				  "audio level recall type",
-				  "The recall type which this recall container has on audio level",
-				   G_TYPE_NONE,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				  i18n_pspec("audio level recall type"),
+				  i18n_pspec("The recall type which this recall container has on audio level"),
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_AUDIO_TYPE,
 				  param_spec);
@@ -145,8 +147,8 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-audio",
-				   "audio level recall",
-				   "The recall which this recall container has on audio level",
+				   i18n_pspec("audio level recall"),
+				   i18n_pspec("The recall which this recall container has on audio level"),
 				   AGS_TYPE_RECALL_AUDIO,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -161,8 +163,8 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_gtype("recall-audio-run-type",
-				  "audio runlevel recall type",
-				  "The recall type which this recall container has on audio level during a run",
+				  i18n_pspec("audio runlevel recall type"),
+				  i18n_pspec("The recall type which this recall container has on audio level during a run"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,8 +179,8 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-audio-run",
-				   "audio runlevel recall",
-				   "The recall which this recall container has on audio level during a run",
+				   i18n_pspec("audio runlevel recall"),
+				   i18n_pspec("The recall which this recall container has on audio level during a run"),
 				   AGS_TYPE_RECALL_AUDIO_RUN,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -193,8 +195,8 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_gtype("recall-channel-type",
-				  "channel level recall type",
-				  "The recall type which this recall container has on channel level",
+				  i18n_pspec("channel level recall type"),
+				  i18n_pspec("The recall type which this recall container has on channel level"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -209,10 +211,10 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
  param_spec = g_param_spec_object("recall-channel",
-				   "channel level recall",
-				   "The recall which this recall container has on channel level",
-				   AGS_TYPE_RECALL_CHANNEL,
-				   G_PARAM_WRITABLE);
+				  i18n_pspec("channel level recall"),
+				  i18n_pspec("The recall which this recall container has on channel level"),
+				  AGS_TYPE_RECALL_CHANNEL,
+				  G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CHANNEL,
 				  param_spec);
@@ -225,8 +227,8 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_gtype("recall_channel_run_type",
-				  "channel runlevel recall type",
-				  "The recall type which this recall container has on audio level during a run",
+				  i18n_pspec("channel runlevel recall type"),
+				  i18n_pspec("The recall type which this recall container has on audio level during a run"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -241,8 +243,8 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall_channel_run",
-				   "channel runlevel recall",
-				   "The recall which this recall container has on audio level during a run",
+				   i18n_pspec("channel runlevel recall"),
+				   i18n_pspec("The recall which this recall container has on audio level during a run"),
 				   AGS_TYPE_RECALL_CHANNEL_RUN,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -45,6 +45,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa_class);
 void ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin);
@@ -158,8 +160,8 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
    * Since: 0.4.2
    */
   param_spec =  g_param_spec_string("filename",
-				    "the object file",
-				    "The filename as string of object file",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,8 +176,8 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
    * Since: 0.4.2
    */
   param_spec =  g_param_spec_string("effect",
-				    "the effect",
-				    "The effect's string representation",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -190,8 +192,8 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
    * Since: 0.4.2
    */
   param_spec =  g_param_spec_ulong("index",
-				   "index of effect",
-				   "The numerical index of effect",
+				   i18n_pspec("index of effect"),
+				   i18n_pspec("The numerical index of effect"),
 				   0,
 				   65535,
 				   0,

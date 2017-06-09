@@ -57,16 +57,7 @@
 #include <unistd.h>
 
 #include <ags/config.h>
-
-/**
- * SECTION:ags_devout
- * @short_description: Output to soundcard
- * @title: AgsDevout
- * @section_id:
- * @include: ags/audio/ags_devout.h
- *
- * #AgsDevout represents a soundcard and supports output.
- */
+#include <ags/i18n.h>
 
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -188,6 +179,16 @@ void ags_devout_set_audio(AgsSoundcard *soundcard,
 			  GList *audio);
 GList* ags_devout_get_audio(AgsSoundcard *soundcard);
 
+/**
+ * SECTION:ags_devout
+ * @short_description: Output to soundcard
+ * @title: AgsDevout
+ * @section_id:
+ * @include: ags/audio/ags_devout.h
+ *
+ * #AgsDevout represents a soundcard and supports output.
+ */
+
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
@@ -297,8 +298,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("application-context",
-				   "the application context object",
-				   "The application context object",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -313,8 +314,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
-				    "the application mutex object",
-				    "The application mutex object",
+				    i18n_pspec("the application mutex object"),
+				    i18n_pspec("The application mutex object"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_APPLICATION_MUTEX,
@@ -328,8 +329,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("device",
-				   "the device identifier",
-				   "The device to perform output to",
+				   i18n_pspec("the device identifier"),
+				   i18n_pspec("The device to perform output to"),
 				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -344,8 +345,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
-				 "count of DSP channels",
-				 "The count of DSP channels to use",
+				 i18n_pspec("count of DSP channels"),
+				 i18n_pspec("The count of DSP channels to use"),
 				 1,
 				 64,
 				 2,
@@ -362,8 +363,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
-				 "count of PCM channels",
-				 "The count of PCM channels to use",
+				 i18n_pspec("count of PCM channels"),
+				 i18n_pspec("The count of PCM channels to use"),
 				 1,
 				 64,
 				 2,
@@ -383,8 +384,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("format",
-				 "precision of buffer",
-				 "The precision to use for a frame",
+				 i18n_pspec("precision of buffer"),
+				 i18n_pspec("The precision to use for a frame"),
 				 1,
 				 64,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
@@ -401,8 +402,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("buffer-size",
-				 "frame count of a buffer",
-				 "The count of frames a buffer contains",
+				 i18n_pspec("frame count of a buffer"),
+				 i18n_pspec("The count of frames a buffer contains"),
 				 1,
 				 44100,
 				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
@@ -419,8 +420,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("samplerate",
-				 "frames per second",
-				 "The frames count played during a second",
+				 i18n_pspec("frames per second"),
+				 i18n_pspec("The frames count played during a second"),
 				 8000,
 				 96000,
 				 44100,
@@ -437,8 +438,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("buffer",
-				    "the buffer",
-				    "The buffer to play",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to play"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -452,8 +453,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_double("bpm",
-				   "beats per minute",
-				   "Beats per minute to use",
+				   i18n_pspec("beats per minute"),
+				   i18n_pspec("Beats per minute to use"),
 				   1.0,
 				   240.0,
 				   120.0,
@@ -470,8 +471,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_double("delay-factor",
-				   "delay factor",
-				   "The delay factor",
+				   i18n_pspec("delay factor"),
+				   i18n_pspec("The delay factor"),
 				   0.0,
 				   16.0,
 				   1.0,
@@ -488,8 +489,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("attack",
-				    "attack of buffer",
-				    "The attack to use for the buffer",
+				    i18n_pspec("attack of buffer"),
+				    i18n_pspec("The attack to use for the buffer"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,

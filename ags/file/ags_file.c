@@ -46,6 +46,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#include <ags/i18n.h>
+
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init(AgsFile *file);
 void ags_file_set_property(GObject *gobject,
@@ -164,8 +166,8 @@ ags_file_class_init(AgsFileClass *file)
    * Since: 0.5.0
    */
   param_spec = g_param_spec_string("filename",
-				   "filename to read or write",
-				   "The filename to read or write to.",
+				   i18n_pspec("filename to read or write"),
+				   i18n_pspec("The filename to read or write to"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -180,8 +182,8 @@ ags_file_class_init(AgsFileClass *file)
    * Since: 0.5.0
    */
   param_spec = g_param_spec_string("encoding",
-				   "encoding to use",
-				   "The encoding of the XML document.",
+				   i18n_pspec("encoding to use"),
+				   i18n_pspec("The encoding of the XML document"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -196,8 +198,8 @@ ags_file_class_init(AgsFileClass *file)
    * Since: 0.5.0
    */
   param_spec = g_param_spec_string("audio-format",
-				   "audio format to use",
-				   "The audio format used to embedded audio.",
+				   i18n_pspec("audio format to use"),
+				   i18n_pspec("The audio format used by embedded audio"),
 				   AGS_FILE_DEFAULT_AUDIO_FORMAT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -212,8 +214,8 @@ ags_file_class_init(AgsFileClass *file)
    * Since: 0.5.0
    */
   param_spec = g_param_spec_string("audio-encoding",
-				   "audio encoding to use",
-				   "The audio encoding used to embedded audio.",
+				   i18n_pspec("audio encoding to use"),
+				   i18n_pspec("The audio encoding used by embedded audio"),
 				   AGS_FILE_DEFAULT_AUDIO_ENCODING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -228,8 +230,8 @@ ags_file_class_init(AgsFileClass *file)
    * Since: 0.7.3
    */
   param_spec = g_param_spec_pointer("xml-doc",
-				    "xml document of file",
-				    "The xml document assigned with file",
+				    i18n_pspec("xml document of file"),
+				    i18n_pspec("The xml document assigned with file"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_XML_DOC,
@@ -243,8 +245,8 @@ ags_file_class_init(AgsFileClass *file)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_object("application-context",
-				   "application context of file",
-				   "The application context to write to file.",
+				   i18n_pspec("application context of file"),
+				   i18n_pspec("The application context to write to file"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

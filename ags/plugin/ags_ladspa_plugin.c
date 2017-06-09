@@ -34,6 +34,8 @@
 
 #include <ladspa.h>
 
+#include <ags/i18n.h>
+
 void ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin);
 void ags_ladspa_plugin_init (AgsLadspaPlugin *ladspa_plugin);
 void ags_ladspa_plugin_set_property(GObject *gobject,
@@ -133,8 +135,8 @@ ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_uint("unique-id",
-				 "unique-id of the plugin",
-				 "The unique-id this plugin is assigned with",
+				 i18n_pspec("unique-id of the plugin"),
+				 i18n_pspec("The unique-id this plugin is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,

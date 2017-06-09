@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ags/i18n.h>
+
 void ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context_class);
 void ags_recycling_context_init(AgsRecyclingContext *recycling_context);
 void ags_recycling_context_set_property(GObject *gobject,
@@ -109,8 +111,8 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("parent",
-				   "parent context",
-				   "The context this one is packed into",
+				   i18n_pspec("parent context"),
+				   i18n_pspec("The context this one is packed into"),
 				   AGS_TYPE_RECYCLING_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -125,8 +127,8 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint64("length",
-				   "length of the array of assigned recycling",
-				   "The recycling array length",
+				   i18n_pspec("length of the array of assigned recycling"),
+				   i18n_pspec("The recycling array length"),
 				   0, G_MAXUINT64,
 				   0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -142,8 +144,8 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-id",
-				   "the default recall id",
-				   "The recall id located in audio object as destiny",
+				   i18n_pspec("the default recall id"),
+				   i18n_pspec("The recall id located in audio object as destiny"),
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

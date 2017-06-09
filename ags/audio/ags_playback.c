@@ -28,15 +28,7 @@
 #include <ags/audio/thread/ags_iterator_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
 
-/**
- * SECTION:ags_playback
- * @short_description: Outputting to soundcard context
- * @title: AgsPlayback
- * @section_id:
- * @include: ags/audio/ags_playback.h
- *
- * #AgsPlayback represents a context to output.
- */
+#include <ags/i18n.h>
 
 void ags_playback_class_init(AgsPlaybackClass *playback);
 void ags_playback_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -53,6 +45,16 @@ void ags_playback_disconnect(AgsConnectable *connectable);
 void ags_playback_connect(AgsConnectable *connectable);
 void ags_playback_dispose(GObject *gobject);
 void ags_playback_finalize(GObject *gobject);
+
+/**
+ * SECTION:ags_playback
+ * @short_description: Outputting to soundcard context
+ * @title: AgsPlayback
+ * @section_id:
+ * @include: ags/audio/ags_playback.h
+ *
+ * #AgsPlayback represents a context to output.
+ */
 
 static gpointer ags_playback_parent_class = NULL;
 
@@ -126,8 +128,8 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("playback-domain",
-				   "parent playback domain",
-				   "The playback domain it is child of",
+				   i18n_pspec("parent playback domain"),
+				   i18n_pspec("The playback domain it is child of"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -142,8 +144,8 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("source",
-				   "assigned source",
-				   "The source it is assigned with",
+				   i18n_pspec("assigned source"),
+				   i18n_pspec("The source it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -158,8 +160,8 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_uint("audio-channel",
-				 "assigned audio channel",
-				 "The audio channel it is assigned with",
+				 i18n_pspec("assigned audio channel"),
+				 i18n_pspec("The audio channel it is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,

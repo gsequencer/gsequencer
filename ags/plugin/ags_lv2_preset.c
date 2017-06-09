@@ -25,6 +25,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset);
 void ags_lv2_preset_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_preset_init(AgsLv2Preset *lv2_preset);
@@ -124,8 +126,8 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * Since: 0.7.122.8
    */
   param_spec = g_param_spec_object("lv2-plugin",
-				   "lv2 plugin of the preset",
-				   "The lv2 plugin this preset is located in",
+				   i18n_pspec("lv2 plugin of the preset"),
+				   i18n_pspec("The lv2 plugin this preset is located in"),
 				   AGS_TYPE_LV2_PLUGIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -140,8 +142,8 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * Since: 0.7.122.8
    */
   param_spec = g_param_spec_string("uri",
-				   "uri of the preset",
-				   "The uri this preset is located in",
+				   i18n_pspec("uri of the preset"),
+				   i18n_pspec("The uri this preset is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -156,8 +158,8 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * Since: 0.7.122.8
    */
   param_spec = g_param_spec_string("bank",
-				   "bank of the preset",
-				   "The bank this preset is assigned with",
+				   i18n_pspec("bank of the preset"),
+				   i18n_pspec("The bank this preset is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -172,8 +174,8 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * Since: 0.7.122.8
    */
   param_spec = g_param_spec_string("preset-label",
-				   "preset label",
-				   "The preset label",
+				   i18n_pspec("preset label"),
+				   i18n_pspec("The preset label"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -188,8 +190,8 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * Since: 0.7.122.8
    */
   param_spec = g_param_spec_object("turtle",
-				   "turtle of the preset",
-				   "The turtle this preset is located in",
+				   i18n_pspec("turtle of the preset"),
+				   i18n_pspec("The turtle this preset is located in"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

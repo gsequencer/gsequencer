@@ -45,6 +45,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2_class);
 void ags_recall_lv2_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_lv2_plugin_interface_init(AgsPluginInterface *plugin);
@@ -162,8 +164,8 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_object("turtle",
-				   "turtle of recall lv2",
-				   "The turtle which this recall lv2 is described by",
+				   i18n_pspec("turtle of recall lv2"),
+				   i18n_pspec("The turtle which this recall lv2 is described by"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,8 +180,8 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("filename",
-				    "the object file",
-				    "The filename as string of object file",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -194,8 +196,8 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("effect",
-				    "the effect",
-				    "The effect's string representation",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -210,8 +212,8 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("uri",
-				    "the uri",
-				    "The uri's string representation",
+				    i18n_pspec("the uri"),
+				    i18n_pspec("The uri's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -226,8 +228,8 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * Since: 0.7.0
    */
   param_spec =  g_param_spec_ulong("index",
-				   "index of uri",
-				   "The numerical index of uri",
+				   i18n_pspec("index of uri"),
+				   i18n_pspec("The numerical index of uri"),
 				   0,
 				   65535,
 				   0,

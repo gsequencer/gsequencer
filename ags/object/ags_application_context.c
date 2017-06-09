@@ -30,6 +30,8 @@
 #include <string.h>
 #include <pwd.h>
 
+#include <ags/i18n.h>
+
 void ags_application_context_class_init(AgsApplicationContextClass *application_context);
 void ags_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_application_context_init(AgsApplicationContext *application_context);
@@ -146,8 +148,8 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * Since: 0.5.0
    */
   param_spec = g_param_spec_object("main-loop",
-				   "main-loop of application context",
-				   "The main-loop what application context is running in",
+				   i18n_pspec("main-loop of application context"),
+				   i18n_pspec("The main-loop what application context is running in"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,8 +164,8 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * Since: 0.5.0
    */
   param_spec = g_param_spec_object("config",
-				   "config of application context",
-				   "The config what application context is running in",
+				   i18n_pspec("config of application context"),
+				   i18n_pspec("The config what application context is running in"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,8 +180,8 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * Since: 0.5.0
    */
   param_spec = g_param_spec_object("file",
-				   "file of application context",
-				   "The file what application context does persist",
+				   i18n_pspec("file of application context"),
+				   i18n_pspec("The file what application context does persist"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

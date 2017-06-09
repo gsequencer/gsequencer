@@ -40,6 +40,8 @@
 
 #include <ags/thread/file/ags_thread_file_xml.h>
 
+#include <ags/i18n.h>
+
 void ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thread_application_context);
 void ags_thread_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
@@ -157,11 +159,11 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 0.4
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("autosave-thread",
-				   "thread pool of thread application context",
-				   "The thread pool which this thread application context assigned to",
+				   i18n_pspec("thread pool of thread application context"),
+				   i18n_pspec("The thread pool which this thread application context assigned to"),
 				   AGS_TYPE_AUTOSAVE_THREAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,11 +176,11 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 0.4
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("thread-pool",
-				   "thread pool of thread application context",
-				   "The thread pool which this thread application context assigned to",
+				   i18n_pspec("thread pool of thread application context"),
+				   i18n_pspec("The thread pool which this thread application context assigned to"),
 				   AGS_TYPE_THREAD_POOL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

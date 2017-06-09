@@ -26,6 +26,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool);
 void ags_thread_pool_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_pool_init(AgsThreadPool *thread_pool);
@@ -135,8 +137,8 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_uint("max-unused-threads",
-				 "maximum unused threads",
-				 "The maximum of unused threads.",
+				 i18n_pspec("maximum unused threads"),
+				 i18n_pspec("The maximum of unused threads"),
 				 1, 65535,
 				 24,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -152,8 +154,8 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_uint("max-threads",
-				 "maximum threads to use",
-				 "The maximum of threads to be created.",
+				 i18n_pspec("maximum threads to use"),
+				 i18n_pspec("The maximum of threads to be created"),
 				 1, 65535,
 				 1024,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);

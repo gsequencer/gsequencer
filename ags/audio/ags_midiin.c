@@ -47,6 +47,7 @@
 #include <time.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 /**
  * SECTION:ags_midiin
@@ -227,8 +228,8 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_object("application-context",
-				   "the application context object",
-				   "The application context object",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -243,8 +244,8 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
-				    "the application mutex object",
-				    "The application mutex object",
+				    i18n_pspec("the application mutex object"),
+				    i18n_pspec("The application mutex object"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_APPLICATION_MUTEX,
@@ -258,8 +259,8 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_string("device",
-				   "the device identifier",
-				   "The device to perform output to",
+				   i18n_pspec("the device identifier"),
+				   i18n_pspec("The device to perform output to"),
 				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -274,8 +275,8 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("buffer",
-				    "the buffer",
-				    "The buffer to record",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to record"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -289,8 +290,8 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_double("bpm",
-				   "beats per minute",
-				   "Beats per minute to use",
+				   i18n_pspec("beats per minute"),
+				   i18n_pspec("Beats per minute to use"),
 				   1.0,
 				   240.0,
 				   120.0,
@@ -307,8 +308,8 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_double("delay-factor",
-				   "delay factor",
-				   "The delay factor",
+				   i18n_pspec("delay factor"),
+				   i18n_pspec("The delay factor"),
 				   0.0,
 				   16.0,
 				   1.0,
@@ -325,8 +326,8 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("attack",
-				    "attack of buffer",
-				    "The attack to use for the buffer",
+				    i18n_pspec("attack of buffer"),
+				    i18n_pspec("The attack to use for the buffer"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,

@@ -23,6 +23,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_base_plugin_class_init(AgsBasePluginClass *base_plugin);
 void ags_base_plugin_init (AgsBasePlugin *base_plugin);
 void ags_base_plugin_set_property(GObject *gobject,
@@ -123,8 +125,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_string("filename",
-				   "filename of the plugin",
-				   "The filename this plugin is located in",
+				   i18n_pspec("filename of the plugin"),
+				   i18n_pspec("The filename this plugin is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -139,8 +141,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_string("effect",
-				   "effect of the plugin",
-				   "The effect this plugin is assigned with",
+				   i18n_pspec("effect of the plugin"),
+				   i18n_pspec("The effect this plugin is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,8 +157,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_uint("effect-index",
-				 "effect-index of the plugin",
-				 "The effect-index this plugin is assigned with",
+				 i18n_pspec("effect-index of the plugin"),
+				 i18n_pspec("The effect-index this plugin is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -173,8 +175,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.127
    */
   param_spec = g_param_spec_string("ui-filename",
-				   "UI filename of the plugin",
-				   "The UI filename this plugin is located in",
+				   i18n_pspec("UI filename of the plugin"),
+				   i18n_pspec("The UI filename this plugin is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,8 +191,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.127
    */
   param_spec = g_param_spec_string("ui-effect",
-				   "UI effect of the plugin",
-				   "The UI effect this plugin is assigned with",
+				   i18n_pspec("UI effect of the plugin"),
+				   i18n_pspec("The UI effect this plugin is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -205,8 +207,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.127
    */
   param_spec = g_param_spec_uint("ui-effect-index",
-				 "UI effect-index of the plugin",
-				 "The UI effect-index this plugin is assigned with",
+				 i18n_pspec("UI effect-index of the plugin"),
+				 i18n_pspec("The UI effect-index this plugin is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -223,8 +225,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_object("ui-plugin",
-				   "ui-plugin of the plugin",
-				   "The ui-plugin this plugin is assigned with",
+				   i18n_pspec("ui-plugin of the plugin"),
+				   i18n_pspec("The ui-plugin this plugin is assigned with"),
 				   AGS_TYPE_BASE_PLUGIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

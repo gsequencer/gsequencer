@@ -25,6 +25,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_note_class_init(AgsNoteClass *note);
 void ags_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_note_init(AgsNote *note);
@@ -118,6 +120,7 @@ ags_note_class_init(AgsNoteClass *note)
 
   gobject->finalize = ags_note_finalize;
 
+  /* properties */
   /**
    * AgsNote:x0:
    *
@@ -126,8 +129,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("x0",
-				 "offset x0",
-				 "The first x offset",
+				 i18n_pspec("offset x0"),
+				 i18n_pspec("The first x offset"),
 				 0,
 				 65535,
 				 0,
@@ -144,8 +147,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("x1",
-				 "offset x1",
-				 "The last x offset",
+				 i18n_pspec("offset x1"),
+				 i18n_pspec("The last x offset"),
 				 0,
 				 65535,
 				 0,
@@ -162,8 +165,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("y",
-				 "offset y",
-				 "The y offset",
+				 i18n_pspec("offset y"),
+				 i18n_pspec("The y offset"),
 				 0,
 				 65535,
 				 0,
@@ -180,8 +183,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_double("stream-delay",
-				   "delay of stream",
-				   "The delay of the stream",
+				   i18n_pspec("delay of stream"),
+				   i18n_pspec("The delay of the stream"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -198,8 +201,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("stream-attack",
-				 "offset stream-attack",
-				 "The first x offset",
+				 i18n_pspec("offset stream-attack"),
+				 i18n_pspec("The first x offset"),
 				 0,
 				 65535,
 				 0,
@@ -216,8 +219,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_boxed("attack",
-				  "envelope's attack",
-				  "The envelope's attack",
+				  i18n_pspec("envelope's attack"),
+				  i18n_pspec("The envelope's attack"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -232,8 +235,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_boxed("decay",
-				  "envelope's decay",
-				  "The envelope's decay",
+				  i18n_pspec("envelope's decay"),
+				  i18n_pspec("The envelope's decay"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -248,8 +251,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_boxed("sustain",
-				  "envelope's sustain",
-				  "The envelope's sustain",
+				  i18n_pspec("envelope's sustain"),
+				  i18n_pspec("The envelope's sustain"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -264,8 +267,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.2
    */
   param_spec = g_param_spec_boxed("release",
-				  "envelope's release",
-				  "The envelope's release",
+				  i18n_pspec("envelope's release"),
+				  i18n_pspec("The envelope's release"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -280,8 +283,8 @@ ags_note_class_init(AgsNoteClass *note)
    * Since: 0.7.42
    */
   param_spec = g_param_spec_boxed("ratio",
-				  "envelope's ratio",
-				  "The envelope's ratio",
+				  i18n_pspec("envelope's ratio"),
+				  i18n_pspec("The envelope's ratio"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

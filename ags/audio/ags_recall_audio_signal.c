@@ -33,6 +33,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signal);
 void ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -174,8 +176,8 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("audio-channel",
-				 "output to audio channel",
-				 "The audio channel to which it should write",
+				 i18n_pspec("output to audio channel"),
+				 i18n_pspec("The audio channel to which it should write"),
 				 0,
 				 65536,
 				 0,
@@ -192,8 +194,8 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("destination",
-				   "destination of output",
-				   "The destination where this recall will write the audio signal to",
+				   i18n_pspec("destination of output"),
+				   i18n_pspec("The destination where this recall will write the audio signal to"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -208,8 +210,8 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("source",
-				   "source of input",
-				   "The source where this recall will take the audio signal from",
+				   i18n_pspec("source of input"),
+				   i18n_pspec("The source where this recall will take the audio signal from"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

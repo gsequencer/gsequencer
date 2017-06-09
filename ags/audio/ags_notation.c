@@ -31,6 +31,9 @@
 #include <pthread.h>
 
 #include <stdlib.h>
+
+#include <ags/i18n.h>
+
 #include <errno.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
@@ -171,8 +174,8 @@ ags_notation_class_init(AgsNotationClass *notation)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of notation",
-				   "The audio of notation",
+				   i18n_pspec("audio of notation"),
+				   i18n_pspec("The audio of notation"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -188,8 +191,8 @@ ags_notation_class_init(AgsNotationClass *notation)
    * Since: 0.4.3
    */
   param_spec =  g_param_spec_uint("audio-channel",
-				  "audio-channel of effect",
-				  "The numerical audio-channel of effect",
+				  i18n_pspec("audio-channel of effect"),
+				  i18n_pspec("The numerical audio-channel of effect"),
 				  0,
 				  65535,
 				  0,
@@ -206,8 +209,8 @@ ags_notation_class_init(AgsNotationClass *notation)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_object("port",
-				   "port of notation",
-				   "The port of notation",
+				   i18n_pspec("port of notation"),
+				   i18n_pspec("The port of notation"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -222,8 +225,8 @@ ags_notation_class_init(AgsNotationClass *notation)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_object("note",
-				   "note of notation",
-				   "The note of notation",
+				   i18n_pspec("note of notation"),
+				   i18n_pspec("The note of notation"),
 				   AGS_TYPE_NOTE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -238,8 +241,8 @@ ags_notation_class_init(AgsNotationClass *notation)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("current-notes",
-				    "current notes for offset",
-				    "The current notes for offset",
+				    i18n_pspec("current notes for offset"),
+				    i18n_pspec("The current notes for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CURRENT_NOTES,
@@ -253,8 +256,8 @@ ags_notation_class_init(AgsNotationClass *notation)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("next-notes",
-				    "next notes for offset",
-				    "The next notes for offset",
+				    i18n_pspec("next notes for offset"),
+				    i18n_pspec("The next notes for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NEXT_NOTES,
@@ -268,8 +271,8 @@ ags_notation_class_init(AgsNotationClass *notation)
    * Since: 0.7.12
    */
   param_spec = g_param_spec_object("timestamp",
-				   "timestamp of pattern",
-				   "The timestamp of pattern",
+				   i18n_pspec("timestamp of pattern"),
+				   i18n_pspec("The timestamp of pattern"),
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -30,6 +30,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <ags/i18n.h>
+
 void ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin);
 void ags_dssi_plugin_init (AgsDssiPlugin *dssi_plugin);
 void ags_dssi_plugin_set_property(GObject *gobject,
@@ -141,8 +143,8 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_uint("unique-id",
-				 "unique-id of the plugin",
-				 "The unique-id this plugin is assigned with",
+				 i18n_pspec("unique-id of the plugin"),
+				 i18n_pspec("The unique-id this plugin is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -159,8 +161,8 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    * Since: 0.7.6
    */
   param_spec = g_param_spec_string("program",
-				   "program of the plugin",
-				   "The program this plugin is located in",
+				   i18n_pspec("program of the plugin"),
+				   i18n_pspec("The program this plugin is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

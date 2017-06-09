@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
 void ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_id_init(AgsRecallID *recall_id);
@@ -121,8 +123,8 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recycling",
-				   "assigned recycling",
-				   "The recycling it is assigned with",
+				   i18n_pspec("assigned recycling"),
+				   i18n_pspec("The recycling it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -137,8 +139,8 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_object("recycling-context",
-				   "assigned recycling context",
-				   "The recycling context it is assigned with",
+				   i18n_pspec("assigned recycling context"),
+				   i18n_pspec("The recycling context it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

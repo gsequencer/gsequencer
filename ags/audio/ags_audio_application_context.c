@@ -103,6 +103,8 @@
 #include <jack/control.h>
 #include <stdbool.h>
 
+#include <ags/i18n.h>
+
 void ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_application_context);
 void ags_audio_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
@@ -246,8 +248,8 @@ ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_
    * Since: 0.4
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of audio application context",
-				   "The soundcard which this audio application context assigned to",
+				   i18n_pspec("soundcard of audio application context"),
+				   i18n_pspec("The soundcard which this audio application context assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
