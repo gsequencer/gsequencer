@@ -89,7 +89,7 @@ ags_envelope_recycling_get_type()
     };
 
     ags_type_envelope_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-							 "AgsEnvelopeRecycling\0",
+							 "AgsEnvelopeRecycling",
 							 &ags_envelope_recycling_info,
 							 0);
 
@@ -149,10 +149,10 @@ ags_envelope_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableI
 void
 ags_envelope_recycling_init(AgsEnvelopeRecycling *envelope_recycling)
 {
-  AGS_RECALL(envelope_recycling)->name = "ags-envelope\0";
+  AGS_RECALL(envelope_recycling)->name = "ags-envelope";
   AGS_RECALL(envelope_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(envelope_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(envelope_recycling)->xml_type = "ags-envelope-recycling\0";
+  AGS_RECALL(envelope_recycling)->xml_type = "ags-envelope-recycling";
   AGS_RECALL(envelope_recycling)->port = NULL;
 
   AGS_RECALL(envelope_recycling)->child_type = AGS_TYPE_ENVELOPE_AUDIO_SIGNAL;
@@ -261,7 +261,7 @@ ags_envelope_recycling_new(AgsRecycling *source)
   AgsEnvelopeRecycling *envelope_recycling;
 
   envelope_recycling = (AgsEnvelopeRecycling *) g_object_new(AGS_TYPE_ENVELOPE_RECYCLING,
-							     "source\0", source,
+							     "source", source,
 							     NULL);
 
   return(envelope_recycling);

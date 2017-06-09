@@ -114,7 +114,7 @@ ags_ipatch_get_type()
     };
 
     ags_type_ipatch = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsIpatch\0",
+					     "AgsIpatch",
 					     &ags_ipatch_info,
 					     0);
 
@@ -154,9 +154,9 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of ipatch\0",
-				   "The soundcard what ipatch has it's presets\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "soundcard of ipatch",
+				   "The soundcard what ipatch has it's presets",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -170,9 +170,9 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("filename\0",
-				    "the filename\0",
-				    "The filename to open\0",
+  param_spec = g_param_spec_pointer("filename",
+				    "the filename",
+				    "The filename to open",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
@@ -185,9 +185,9 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("mode\0",
-				    "the mode\0",
-				    "The mode to open the file\0",
+  param_spec = g_param_spec_pointer("mode",
+				    "the mode",
+				    "The mode to open the file",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MODE,
@@ -313,7 +313,7 @@ ags_ipatch_set_property(GObject *gobject,
 					&error);
 
 	if(error != NULL){
-	  g_warning("%s\0", error->message);
+	  g_warning("%s", error->message);
 	}
       }
 #endif
@@ -376,9 +376,9 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
 gboolean
 ags_ipatch_check_suffix(gchar *filename)
 {
-  if(g_str_has_suffix(filename, ".sf2\0") ||
-     g_str_has_suffix(filename, ".dls\0") ||
-     g_str_has_suffix(filename, ".gig\0")){
+  if(g_str_has_suffix(filename, ".sf2") ||
+     g_str_has_suffix(filename, ".dls") ||
+     g_str_has_suffix(filename, ".gig")){
     return(TRUE);
   }
 
@@ -395,7 +395,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
   GError *error;
   
 #ifdef AGS_DEBUG
-  g_message("open %s with libinstpatch.\0", filename);
+  g_message("open %s with libinstpatch.", filename);
 #endif
 
   ipatch = AGS_IPATCH(playable);
@@ -408,7 +408,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 					     &error);
 
   if(error != NULL){
-    g_warning("%s\0", error->message);
+    g_warning("%s", error->message);
   }
 
   if(ipatch->handle == NULL){
@@ -419,7 +419,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     ipatch->flags |= AGS_IPATCH_DLS2;
 
     //TODO:JK: implement me
-  }else if(g_str_has_suffix(filename, ".sf2\0")){
+  }else if(g_str_has_suffix(filename, ".sf2")){
     /*  */
     ipatch->flags |= AGS_IPATCH_SF2;
 
@@ -439,7 +439,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 											     &error);
 
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
     }
 
     /* load samples */
@@ -690,7 +690,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	    //				      &(ipatch_sf2_reader->bank),
 	    //				      &(ipatch_sf2_reader->program));
 
-	    //	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+	    //	    g_message("bank %d program %d\n", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
 
 	    this_error = NULL;
 	    ipatch_sf2_reader->preset = (IpatchContainer *) IPATCH_SF2_PRESET(list->data);
@@ -776,7 +776,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	  g_set_error(error,
 		      AGS_PLAYABLE_ERROR,
 		      AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
-		      "no level called %s in soundfont2 file: %s\0",
+		      "no level called %s in soundfont2 file: %s",
 		      sublevel_name, ipatch_sf2_reader->ipatch->filename);
 	}
       }
@@ -802,7 +802,7 @@ ags_ipatch_level_up(AgsPlayable *playable, guint levels, GError **error)
     g_set_error(error,
 		AGS_PLAYABLE_ERROR,
 		AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
-		"Not able to go %u steps higher in soundfont2 file: %s\0",
+		"Not able to go %u steps higher in soundfont2 file: %s",
 		levels, ipatch->filename);
   }
 }
@@ -876,7 +876,7 @@ ags_ipatch_info(AgsPlayable *playable,
       g_set_error(error,
 		  AGS_PLAYABLE_ERROR,
 		  AGS_PLAYABLE_ERROR_NO_SAMPLE,
-		  "no sample selected for file: %s\0",
+		  "no sample selected for file: %s",
 		  ipatch->filename);
     }
 
@@ -886,9 +886,9 @@ ags_ipatch_info(AgsPlayable *playable,
 #ifdef AGS_WITH_LIBINSTPATCH
   sample = IPATCH_SAMPLE(ipatch->iter->data);
   g_object_get(G_OBJECT(sample),
-	       "sample-size\0", frames,
-	       "loop-start\0", loop_start,
-	       "loop-end\0", loop_end,
+	       "sample-size", frames,
+	       "loop-start", loop_start,
+	       "loop-end", loop_end,
 	       NULL);
 #endif
   
@@ -938,7 +938,7 @@ ags_ipatch_get_samplerate(AgsPlayable *playable)
   }
 
   g_object_get(sample,
-	       "sample-rate\0", &samplerate,
+	       "sample-rate", &samplerate,
 	       NULL);
 #endif
   
@@ -984,7 +984,7 @@ ags_ipatch_get_format(AgsPlayable *playable)
   
   if(sample != NULL){
     g_object_get(sample,
-		 "sample-format\0", &format,
+		 "sample-format", &format,
 		 NULL);
   }
 
@@ -1036,7 +1036,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 		    &this_error);
 
   if(this_error != NULL){
-    g_warning("%s\0", this_error->message);
+    g_warning("%s", this_error->message);
   }
 
   if(channels == 0 ||
@@ -1086,7 +1086,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 			       &this_error);
       
   if(this_error != NULL){
-    g_warning("%s\0", this_error->message);
+    g_warning("%s", this_error->message);
   }
 #endif
   

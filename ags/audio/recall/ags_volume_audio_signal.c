@@ -87,7 +87,7 @@ ags_volume_audio_signal_get_type()
     };
 
     ags_type_volume_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							  "AgsVolumeAudioSignal\0",
+							  "AgsVolumeAudioSignal",
 							  &ags_volume_audio_signal_info,
 							  0);
 
@@ -144,10 +144,10 @@ ags_volume_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectable
 void
 ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal)
 {
-  AGS_RECALL(volume_audio_signal)->name = "ags-volume\0";
+  AGS_RECALL(volume_audio_signal)->name = "ags-volume";
   AGS_RECALL(volume_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(volume_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(volume_audio_signal)->xml_type = "ags-volume-audio-signal\0";
+  AGS_RECALL(volume_audio_signal)->xml_type = "ags-volume-audio-signal";
   AGS_RECALL(volume_audio_signal)->port = NULL;
 }
 

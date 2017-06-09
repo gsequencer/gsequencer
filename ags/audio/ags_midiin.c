@@ -185,7 +185,7 @@ ags_midiin_get_type (void)
     };
 
     ags_type_midiin = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsMidiin\0",
+					     "AgsMidiin",
 					     &ags_midiin_info,
 					     0);
 
@@ -226,9 +226,9 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
+  param_spec = g_param_spec_object("application-context",
+				   "the application context object",
+				   "The application context object",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -242,9 +242,9 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("application-mutex\0",
-				    "the application mutex object\0",
-				    "The application mutex object\0",
+  param_spec = g_param_spec_pointer("application-mutex",
+				    "the application mutex object",
+				    "The application mutex object",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_APPLICATION_MUTEX,
@@ -257,10 +257,10 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_string("device\0",
-				   "the device identifier\0",
-				   "The device to perform output to\0",
-				   "hw:0\0",
+  param_spec = g_param_spec_string("device",
+				   "the device identifier",
+				   "The device to perform output to",
+				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -273,9 +273,9 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("buffer\0",
-				    "the buffer\0",
-				    "The buffer to record\0",
+  param_spec = g_param_spec_pointer("buffer",
+				    "the buffer",
+				    "The buffer to record",
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -288,9 +288,9 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_double("bpm\0",
-				   "beats per minute\0",
-				   "Beats per minute to use\0",
+  param_spec = g_param_spec_double("bpm",
+				   "beats per minute",
+				   "Beats per minute to use",
 				   1.0,
 				   240.0,
 				   120.0,
@@ -306,9 +306,9 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_double("delay-factor\0",
-				   "delay factor\0",
-				   "The delay factor\0",
+  param_spec = g_param_spec_double("delay-factor",
+				   "delay factor",
+				   "The delay factor",
 				   0.0,
 				   16.0,
 				   1.0,
@@ -324,9 +324,9 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("attack\0",
-				    "attack of buffer\0",
-				    "The attack to use for the buffer\0",
+  param_spec = g_param_spec_pointer("attack",
+				    "attack of buffer",
+				    "The attack to use for the buffer",
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
@@ -339,7 +339,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
 GQuark
 ags_midiin_error_quark()
 {
-  return(g_quark_from_static_string("ags-midiin-error-quark\0"));
+  return(g_quark_from_static_string("ags-midiin-error-quark"));
 }
 
 void
@@ -454,17 +454,17 @@ ags_midiin_init(AgsMidiin *midiin)
 
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SEQUENCER,
-			     "backend\0");
+			     "backend");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SEQUENCER_0,
-			       "backend\0");
+			       "backend");
   }
   
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
-			  "oss\0",
+			  "oss",
 			  4)){
     use_alsa = FALSE;
   }
@@ -713,7 +713,7 @@ ags_midiin_dispose(GObject *gobject)
 
     while(list != NULL){
       g_object_set(list->data,
-		   "sequencer\0", NULL,
+		   "sequencer", NULL,
 		   NULL);
 
       list = list->next;
@@ -776,7 +776,7 @@ ags_midiin_finalize(GObject *gobject)
 
     while(list != NULL){
       g_object_set(list->data,
-		   "sequencer\0", NULL,
+		   "sequencer", NULL,
 		   NULL);
 
       list = list->next;
@@ -975,7 +975,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
 	continue;
       }
 
-      str = g_strdup_printf("hw:%i\0", card_num);
+      str = g_strdup_printf("hw:%i", card_num);
       error = snd_ctl_open(&card_handle, str, 0);
 
       if(error < 0){
@@ -1021,8 +1021,8 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     int next, n;
     int i;
 
-    if((mixer_device = getenv("OSS_MIXERDEV\0")) == NULL){
-      mixer_device = "/dev/mixer\0";
+    if((mixer_device = getenv("OSS_MIXERDEV")) == NULL){
+      mixer_device = "/dev/mixer";
     }
 
     if((mixerfd = open(mixer_device, O_RDONLY, 0)) == -1){
@@ -1032,27 +1032,27 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
       case ENXIO:
       case ENODEV:
 	{
-	  g_warning("Open Sound System is not running in your system.\0");
+	  g_warning("Open Sound System is not running in your system.");
 	}
 	break;
       case ENOENT:
 	{
-	  g_warning("No %s device available in your system.\nPerhaps Open Sound System is not installed or running.\0", mixer_device);
+	  g_warning("No %s device available in your system.\nPerhaps Open Sound System is not installed or running.", mixer_device);
 	}
 	break;  
       default:
-	g_warning("%s\0", strerror(e));
+	g_warning("%s", strerror(e));
       }
     }
       
     if(ioctl(mixerfd, SNDCTL_SYSINFO, &sysinfo) == -1){
       if(errno == ENXIO){
-	g_warning("OSS has not detected any supported sound hardware in your system.\0");
+	g_warning("OSS has not detected any supported sound hardware in your system.");
       }else{
-	g_warning("SNDCTL_SYSINFO\0");
+	g_warning("SNDCTL_SYSINFO");
 
 	if(errno == EINVAL){
-	  g_warning("Error: OSS version 4.0 or later is required\0");
+	  g_warning("Error: OSS version 4.0 or later is required");
 	}
       }
 
@@ -1070,7 +1070,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
       if(ioctl(mixerfd, SNDCTL_ENGINEINFO, &mi) == -1){
 	int e = errno;
 	
-	g_warning("Can't get device info for /dev/midi%2d (SNDCTL_AUDIOINFO)\nerrno = %d: %s\0", i, e, strerror(e));
+	g_warning("Can't get device info for /dev/midi%2d (SNDCTL_AUDIOINFO)\nerrno = %d: %s", i, e, strerror(e));
 	
 	continue;
       }
@@ -1078,7 +1078,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
       if((MIDI_CAP_INPUT & (mi.caps)) != 0){
 	if(card_id != NULL){
 	  *card_id = g_list_prepend(*card_id,
-				    g_strdup_printf("/dev/midi2%i\0", i));
+				    g_strdup_printf("/dev/midi2%i", i));
 	}
 	
 	if(card_name != NULL){
@@ -1218,13 +1218,13 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
   if(midiin->in.oss.device_fd == -1){
     pthread_mutex_unlock(mutex);
 
-    g_warning("couldn't open device %s\0", midiin->in.oss.device);
+    g_warning("couldn't open device %s", midiin->in.oss.device);
 
     if(error != NULL){
       g_set_error(error,
 		  AGS_MIDIIN_ERROR,
 		  AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
-		  "unable to open MIDI device: %s\n\0",
+		  "unable to open MIDI device: %s\n",
 		  str);
     }
 
@@ -1328,7 +1328,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
     num_read = read(device_fd, buf, sizeof(buf));
     
     if((num_read < 0)){
-      g_warning("Problem reading MIDI input\0");
+      g_warning("Problem reading MIDI input");
     }
 
     if(num_read > 0){
@@ -1532,7 +1532,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
     g_set_error(error,
 		AGS_MIDIIN_ERROR,
 		AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
-		"unable to open midi device: %s\n\0",
+		"unable to open midi device: %s\n",
 		snd_strerror(err));
 
     pthread_mutex_unlock(mutex);
@@ -1638,7 +1638,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
     status = snd_rawmidi_read(device_handle, &c, 1);
 
     if((status < 0) && (status != -EBUSY) && (status != -EAGAIN)){
-      g_warning("Problem reading MIDI input: %s\0", snd_strerror(status));
+      g_warning("Problem reading MIDI input: %s", snd_strerror(status));
     }
 
     if(status >= 0){
@@ -2021,7 +2021,7 @@ ags_midiin_new(GObject *application_context)
   AgsMidiin *midiin;
 
   midiin = (AgsMidiin *) g_object_new(AGS_TYPE_MIDIIN,
-				      "application-context\0", application_context,
+				      "application-context", application_context,
 				      NULL);
   
   return(midiin);

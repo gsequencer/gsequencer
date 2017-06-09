@@ -88,7 +88,7 @@ ags_change_soundcard_get_type()
     };
 
     ags_type_change_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsChangeSoundcard\0",
+						       "AgsChangeSoundcard",
 						       &ags_change_soundcard_info,
 						       0);
 
@@ -125,9 +125,9 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of change soundcard\0",
-				   "The application context of change soundcard task\0",
+  param_spec = g_param_spec_object("application-context",
+				   "application context of change soundcard",
+				   "The application context of change soundcard task",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -141,9 +141,9 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("new-soundcard\0",
-				   "new soundcard of change soundcard\0",
-				   "The new soundcard of change soundcard task\0",
+  param_spec = g_param_spec_object("new-soundcard",
+				   "new soundcard of change soundcard",
+				   "The new soundcard of change soundcard task",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -157,9 +157,9 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("old-soundcard\0",
-				   "old soundcard of change soundcard\0",
-				   "The old soundcard of change soundcard task\0",
+  param_spec = g_param_spec_object("old-soundcard",
+				   "old soundcard of change soundcard",
+				   "The old soundcard of change soundcard task",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -374,7 +374,7 @@ ags_change_soundcard_launch(AgsTask *task)
   parameter = (GParameter *) g_new0(GParameter,
 				    1);
 
-  parameter[0].name = "soundcard\0";
+  parameter[0].name = "soundcard";
   
   g_value_init(&(parameter[0].value),
 	       G_TYPE_OBJECT);
@@ -397,12 +397,12 @@ ags_change_soundcard_launch(AgsTask *task)
     audio_connection = AGS_AUDIO_CONNECTION(list->data);
     
     g_object_get(G_OBJECT(list->data),
-		 "data-object\0", &data_object,
+		 "data-object", &data_object,
 		 NULL);
 	    
     if(AGS_IS_SOUNDCARD(data_object)){
       g_object_set(audio_connection,
-		   "data-object\0", new_soundcard,
+		   "data-object", new_soundcard,
 		   NULL);
     }
 

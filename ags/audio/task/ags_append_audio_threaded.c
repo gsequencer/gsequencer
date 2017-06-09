@@ -90,7 +90,7 @@ ags_append_audio_threaded_get_type()
     };
 
     ags_type_append_audio_threaded = g_type_register_static(AGS_TYPE_TASK,
-							    "AgsAppendAudioThreaded\0",
+							    "AgsAppendAudioThreaded",
 							    &ags_append_audio_threaded_info,
 							    0);
     
@@ -127,9 +127,9 @@ ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_t
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio-loop\0",
-				   "audio loop of append audio\0",
-				   "The audio loop of append audio threaded task\0",
+  param_spec = g_param_spec_object("audio-loop",
+				   "audio loop of append audio",
+				   "The audio loop of append audio threaded task",
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -143,9 +143,9 @@ ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_t
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("playback\0",
-				   "playback of append recall\0",
-				   "The playback of append audio threaded task\0",
+  param_spec = g_param_spec_object("playback",
+				   "playback of append recall",
+				   "The playback of append audio threaded task",
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

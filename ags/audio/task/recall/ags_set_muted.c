@@ -94,7 +94,7 @@ ags_set_muted_get_type()
     };
 
     ags_type_set_muted = g_type_register_static(AGS_TYPE_TASK,
-						"AgsSetMuted\0",
+						"AgsSetMuted",
 						&ags_set_muted_info,
 						0);
     
@@ -131,9 +131,9 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of set buffer size\0",
-				   "The scope of set buffer size\0",
+  param_spec = g_param_spec_object("scope",
+				   "scope of set buffer size",
+				   "The scope of set buffer size",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,9 +147,9 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_boolean("muted\0",
-				    "muted\0",
-				    "The muted to set\0",
+  param_spec = g_param_spec_boolean("muted",
+				    "muted",
+				    "The muted to set",
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -298,7 +298,7 @@ ags_set_muted_launch(AgsTask *task)
 
     ags_set_muted_recall(set_muted, recall);
   }else{
-    g_warning("AgsSetMuted: Not supported scope\0");
+    g_warning("AgsSetMuted: Not supported scope");
   }
 }
 

@@ -89,7 +89,7 @@ ags_recall_recycling_dummy_get_type()
     };
 
     ags_type_recall_recycling_dummy = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-							     "AgsRecallRecyclingDummy\0",
+							     "AgsRecallRecyclingDummy",
 							     &ags_recall_recycling_dummy_info,
 							     0);
 
@@ -146,10 +146,10 @@ ags_recall_recycling_dummy_dynamic_connectable_interface_init(AgsDynamicConnecta
 void
 ags_recall_recycling_dummy_init(AgsRecallRecyclingDummy *recall_recycling_dummy)
 {
-  AGS_RECALL(recall_recycling_dummy)->name = "ags-recall\0";
+  AGS_RECALL(recall_recycling_dummy)->name = "ags-recall";
   AGS_RECALL(recall_recycling_dummy)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(recall_recycling_dummy)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(recall_recycling_dummy)->xml_type = "ags-recall-recycling-dummy\0";
+  AGS_RECALL(recall_recycling_dummy)->xml_type = "ags-recall-recycling-dummy";
   AGS_RECALL(recall_recycling_dummy)->port = NULL;
 
   AGS_RECALL(recall_recycling_dummy)->flags |= AGS_RECALL_PERSISTENT;
@@ -227,7 +227,7 @@ ags_recall_recycling_dummy_new(AgsRecycling *recycling, GType child_type)
   AgsRecallRecyclingDummy *recall_recycling_dummy;
 
   recall_recycling_dummy = (AgsRecallRecyclingDummy *) g_object_new(AGS_TYPE_RECALL_RECYCLING_DUMMY,
-								    "source\0", recycling,
+								    "source", recycling,
 								    NULL);
   AGS_RECALL(recall_recycling_dummy)->child_type = child_type;
 

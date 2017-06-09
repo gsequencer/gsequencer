@@ -91,7 +91,7 @@ ags_toggle_pattern_bit_get_type()
     };
 
     ags_type_toggle_pattern_bit = g_type_register_static(AGS_TYPE_TASK,
-							 "AgsTogglePatternBit\0",
+							 "AgsTogglePatternBit",
 							 &ags_toggle_pattern_bit_info,
 							 0);
 
@@ -128,9 +128,9 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("pattern\0",
-				   "pattern of toggle pattern bit\0",
-				   "The pattern of toggle pattern bit task\0",
+  param_spec = g_param_spec_object("pattern",
+				   "pattern of toggle pattern bit",
+				   "The pattern of toggle pattern bit task",
 				   AGS_TYPE_PATTERN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -144,9 +144,9 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("line\0",
-				 "line\0",
-				 "The line\0",
+  param_spec = g_param_spec_uint("line",
+				 "line",
+				 "The line",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -162,9 +162,9 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("index-i\0",
-				 "index-i\0",
-				 "The index-i\0",
+  param_spec = g_param_spec_uint("index-i",
+				 "index-i",
+				 "The index-i",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -180,9 +180,9 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("index-j\0",
-				 "index-j\0",
-				 "The index-j\0",
+  param_spec = g_param_spec_uint("index-j",
+				 "index-j",
+				 "The index-j",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -198,9 +198,9 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("bit\0",
-				 "bit\0",
-				 "The bit\0",
+  param_spec = g_param_spec_uint("bit",
+				 "bit",
+				 "The bit",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -211,7 +211,7 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
 
   /* signals */
   toggle_pattern_bit_signals[REFRESH_GUI] =
-    g_signal_new("refresh-gui\0",
+    g_signal_new("refresh-gui",
 		 G_TYPE_FROM_CLASS (toggle_pattern_bit),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsTogglePatternBitClass, refresh_gui),
@@ -380,7 +380,7 @@ ags_toggle_pattern_bit_launch(AgsTask *task)
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(task);
 
 #ifdef AGS_DEBUG
-  g_message("toggle pattern\0");
+  g_message("toggle pattern");
 #endif
   
   ags_pattern_toggle_bit((AgsPattern *) toggle_pattern_bit->pattern,

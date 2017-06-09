@@ -87,7 +87,7 @@ ags_playback_domain_get_type (void)
     };
 
     ags_type_playback_domain = g_type_register_static(G_TYPE_OBJECT,
-						      "AgsPlaybackDomain\0",
+						      "AgsPlaybackDomain",
 						      &ags_playback_domain_info,
 						      0);
 
@@ -124,9 +124,9 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("domain\0",
-				   "assigned domain\0",
-				   "The domain it is assigned with\0",
+  param_spec = g_param_spec_object("domain",
+				   "assigned domain",
+				   "The domain it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -140,9 +140,9 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("playback\0",
-				   "assigned playback\0",
-				   "The playback it is assigned with\0",
+  param_spec = g_param_spec_object("playback",
+				   "assigned playback",
+				   "The playback it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,23 +174,23 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   /* thread model */
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "model\0");
+			      "model");
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope\0");
+			      "super-threaded-scope");
 
   if(str0 != NULL && str1 != NULL){
     if(!g_ascii_strncasecmp(str0,
-			    "super-threaded\0",
+			    "super-threaded",
 			    15)){
       if(!g_ascii_strncasecmp(str1,
-			      "audio\0",
+			      "audio",
 			      6) ||
 	 !g_ascii_strncasecmp(str1,
-			      "channel\0",
+			      "channel",
 			      8) ||
 	 !g_ascii_strncasecmp(str1,
-			      "recycling\0",
+			      "recycling",
 			      10)){
 	super_threaded_audio = TRUE;
       }
@@ -234,12 +234,12 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
     /* samplerate */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD,
-			       "samplerate\0");
+			       "samplerate");
 
     if(str == NULL){
       str = ags_config_get_value(config,
 				 AGS_CONFIG_SOUNDCARD_0,
-				 "samplerate\0");
+				 "samplerate");
     }
   
     if(str != NULL){
@@ -253,12 +253,12 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
     /* buffer size */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD,
-			       "buffer-size\0");
+			       "buffer-size");
 
     if(str == NULL){
       str = ags_config_get_value(config,
 				 AGS_CONFIG_SOUNDCARD_0,
-				 "buffer-size\0");
+				 "buffer-size");
     }
   
     if(str != NULL){
@@ -331,18 +331,18 @@ ags_playback_domain_set_property(GObject *gobject,
 	  freq = ceil((gdouble) AGS_AUDIO(domain)->samplerate / (gdouble) AGS_AUDIO(domain)->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
 	  g_object_set(playback_domain->audio_thread[0],
-		       "frequency\0", freq,
-		       "audio\0", domain,
+		       "frequency", freq,
+		       "audio", domain,
 		       NULL);
 
 	  g_object_set(playback_domain->audio_thread[1],
-		       "frequency\0", freq,
-		       "audio\0", domain,
+		       "frequency", freq,
+		       "audio", domain,
 		       NULL);
 
 	  g_object_set(playback_domain->audio_thread[2],
-		       "frequency\0", freq,
-		       "audio\0", domain,
+		       "frequency", freq,
+		       "audio", domain,
 		       NULL);
 	}
       }

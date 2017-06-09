@@ -92,7 +92,7 @@ ags_open_single_file_get_type()
     };
 
     ags_type_open_single_file = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsOpenSingleFile\0",
+						       "AgsOpenSingleFile",
 						       &ags_open_single_file_info,
 						       0);
 
@@ -129,9 +129,9 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel of open file\0",
-				   "The channel of open file task\0",
+  param_spec = g_param_spec_object("channel",
+				   "channel of open file",
+				   "The channel of open file task",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -145,9 +145,9 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of open file\0",
-				   "The soundcard of open file task\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "soundcard of open file",
+				   "The soundcard of open file task",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -161,9 +161,9 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "the filename\0",
-				   "The filename containing the output\0",
+  param_spec = g_param_spec_string("filename",
+				   "the filename",
+				   "The filename containing the output",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,9 +177,9 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("start-channel\0",
-				 "start channel\0",
-				 "The start channel\0",
+  param_spec = g_param_spec_uint("start-channel",
+				 "start channel",
+				 "The start channel",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -195,9 +195,9 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("audio-channels\0",
-				 "audio channels\0",
-				 "The audio channels to read\0",
+  param_spec = g_param_spec_uint("audio-channels",
+				 "audio channels",
+				 "The audio channels to read",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -421,16 +421,16 @@ ags_open_single_file_launch(AgsTask *task)
 			   &error);
 
       if(error != NULL){
-	g_warning("%s\0", error->message);
+	g_warning("%s", error->message);
       }
     }
 
     file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
-			     "filename\0", open_single_file->filename,
-			     "audio-channel\0", i,
+			     "filename", open_single_file->filename,
+			     "audio-channel", i,
 			     NULL);
     g_object_set(channel,
-		 "file-link\0", file_link,
+		 "file-link", file_link,
 		 NULL);
     
     /* mark as template */

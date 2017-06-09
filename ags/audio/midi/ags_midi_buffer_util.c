@@ -2353,7 +2353,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
       default:
 	{
 #ifdef AGS_DEBUG
-	  g_message("repeat status=0x%x\0", prev_status);
+	  g_message("repeat status=0x%x", prev_status);
 #endif
 	  status = prev_status;
 	  
@@ -2434,7 +2434,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
       case 0xf5:
 	{
 #ifdef AGS_DEBUG
-	  g_message("undefined\0");
+	  g_message("undefined");
 #endif
 	  
 	  offset += delta_time_size;
@@ -2453,7 +2453,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 	{
 	  /* sysex continuation or arbitrary stuff */
 #ifdef AGS_DEBUG
-	  g_message("sysex end\0");
+	  g_message("sysex end");
 #endif
 	}
 	break;
@@ -2596,7 +2596,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 	}    
 	break;
       default:
-	g_warning("bad byte\0");
+	g_warning("bad byte");
       }
     }
   }
@@ -2666,7 +2666,7 @@ ags_midi_buffer_util_decode(unsigned char *buffer,
     }
     break;
   default:
-    g_warning("ags_midi_buffer_util_decode() - unsupported MIDI event\0");
+    g_warning("ags_midi_buffer_util_decode() - unsupported MIDI event");
     break;
   }
   

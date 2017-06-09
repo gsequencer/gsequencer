@@ -64,12 +64,12 @@ static AgsConnectableInterface *ags_copy_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_copy_channel_parent_mutable_interface;
 static AgsPluginInterface *ags_copy_channel_parent_plugin_interface;
 
-static const gchar *ags_copy_channel_plugin_name = "ags-copy\0";
+static const gchar *ags_copy_channel_plugin_name = "ags-copy";
 static const gchar *ags_copy_channel_plugin_specifier[] = {
-  "./muted[0]\0",
+  "./muted[0]",
 };
 static const gchar *ags_copy_channel_plugin_control_port[] = {
-  "1/1\0",
+  "1/1",
 };
 
 GType
@@ -109,7 +109,7 @@ ags_copy_channel_get_type()
     };
     
     ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsCopyChannel\0",
+						   "AgsCopyChannel",
 						   &ags_copy_channel_info,
 						   0);
 
@@ -179,9 +179,9 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("muted\0",
-				   "mute channel\0",
-				   "Mute the channel\0",
+  param_spec = g_param_spec_object("muted",
+				   "mute channel",
+				   "Mute the channel",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -194,21 +194,21 @@ ags_copy_channel_init(AgsCopyChannel *copy_channel)
 {
   GList *port;
 
-  AGS_RECALL(copy_channel)->name = "ags-copy\0";
+  AGS_RECALL(copy_channel)->name = "ags-copy";
   AGS_RECALL(copy_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(copy_channel)->xml_type = "ags-copy-channel\0";
+  AGS_RECALL(copy_channel)->xml_type = "ags-copy-channel";
 
   port = NULL;
 
   copy_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", ags_copy_channel_plugin_name,
-				     "specifier\0", ags_copy_channel_plugin_specifier[0],
-				     "control-port\0", ags_copy_channel_plugin_control_port[0],
-				     "port-value-is-pointer\0", FALSE,
-				     "port-value-type\0", G_TYPE_BOOLEAN,
-				     "port-value-size\0", sizeof(gboolean),
-				     "port-value-length\0", 1,
+				     "plugin-name", ags_copy_channel_plugin_name,
+				     "specifier", ags_copy_channel_plugin_specifier[0],
+				     "control-port", ags_copy_channel_plugin_control_port[0],
+				     "port-value-is-pointer", FALSE,
+				     "port-value-type", G_TYPE_BOOLEAN,
+				     "port-value-size", sizeof(gboolean),
+				     "port-value-length", 1,
 				     NULL);
   g_object_ref(copy_channel->muted);
   copy_channel->muted->port_value.ags_port_boolean = FALSE;
@@ -334,10 +334,10 @@ ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./muted[0]\0",
+		"./muted[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "muted\0", AGS_PORT(port->data),
+		   "muted", AGS_PORT(port->data),
 		   NULL);
     }
 
@@ -374,8 +374,8 @@ ags_copy_channel_new(AgsChannel *destination,
   AgsCopyChannel *copy_channel;
 
   copy_channel = (AgsCopyChannel *) g_object_new(AGS_TYPE_COPY_CHANNEL,
-						 "destination\0", destination,
-						 "channel\0", source,
+						 "destination", destination,
+						 "channel", source,
 						 NULL);
 
   return(copy_channel);

@@ -93,7 +93,7 @@ ags_init_audio_get_type()
     };
 
     ags_type_init_audio = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsInitAudio\0",
+						 "AgsInitAudio",
 						 &ags_init_audio_info,
 						 0);
 
@@ -130,9 +130,9 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of init audio\0",
-				   "The audio of init audio task\0",
+  param_spec = g_param_spec_object("audio",
+				   "audio of init audio",
+				   "The audio of init audio task",
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,9 +146,9 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-playback\0",
-				     "do playback\0",
-				     "Do playback of audio\0",
+  param_spec =  g_param_spec_boolean("do-playback",
+				     "do playback",
+				     "Do playback of audio",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,9 +162,9 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-sequencer\0",
-				     "do sequencer\0",
-				     "Do sequencer of audio\0",
+  param_spec =  g_param_spec_boolean("do-sequencer",
+				     "do sequencer",
+				     "Do sequencer of audio",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,9 +178,9 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-notation\0",
-				     "do notation\0",
-				     "Do notation of audio\0",
+  param_spec =  g_param_spec_boolean("do-notation",
+				     "do notation",
+				     "Do notation of audio",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

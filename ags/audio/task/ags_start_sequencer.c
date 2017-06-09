@@ -84,7 +84,7 @@ ags_start_sequencer_get_type()
     };
 
     ags_type_start_sequencer = g_type_register_static(AGS_TYPE_TASK,
-						      "AgsStartSequencer\0",
+						      "AgsStartSequencer",
 						      &ags_start_sequencer_info,
 						      0);
 
@@ -121,9 +121,9 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of start sequencer\0",
-				   "The application context of start sequencer task\0",
+  param_spec = g_param_spec_object("application-context",
+				   "application context of start sequencer",
+				   "The application context of start sequencer task",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -286,7 +286,7 @@ ags_start_sequencer_launch(AgsTask *task)
     /* append to AgsSequencer */
     AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
 
-    g_message("start sequencer\0");
+    g_message("start sequencer");
 
     start_queue = NULL;    
     start_queue = g_list_prepend(start_queue,

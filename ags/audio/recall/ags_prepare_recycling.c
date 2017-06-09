@@ -83,7 +83,7 @@ ags_prepare_recycling_get_type()
     };
 
     ags_type_prepare_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-							"AgsPrepareRecycling\0",
+							"AgsPrepareRecycling",
 							&ags_prepare_recycling_info,
 							0);
 
@@ -140,10 +140,10 @@ ags_prepare_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableIn
 void
 ags_prepare_recycling_init(AgsPrepareRecycling *prepare_recycling)
 {
-  AGS_RECALL(prepare_recycling)->name = "ags-prepare\0";
+  AGS_RECALL(prepare_recycling)->name = "ags-prepare";
   AGS_RECALL(prepare_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(prepare_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(prepare_recycling)->xml_type = "ags-prepare-recycling\0";
+  AGS_RECALL(prepare_recycling)->xml_type = "ags-prepare-recycling";
   AGS_RECALL(prepare_recycling)->port = NULL;
 
   AGS_RECALL(prepare_recycling)->child_type = AGS_TYPE_PREPARE_AUDIO_SIGNAL;
@@ -227,7 +227,7 @@ ags_prepare_recycling_new(AgsRecycling *recycling)
   AgsPrepareRecycling *prepare_recycling;
 
   prepare_recycling = (AgsPrepareRecycling *) g_object_new(AGS_TYPE_PREPARE_RECYCLING,
-							   "source\0", recycling,
+							   "source", recycling,
 							   NULL);
 
   return(prepare_recycling);

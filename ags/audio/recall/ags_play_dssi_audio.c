@@ -86,7 +86,7 @@ static gpointer ags_play_dssi_audio_parent_class = NULL;
 static AgsConnectableInterface* ags_play_dssi_audio_parent_connectable_interface;
 static AgsPluginInterface *ags_play_dssi_parent_plugin_interface;
 
-static const gchar *ags_play_dssi_audio_plugin_name = "ags-play-dssi\0";
+static const gchar *ags_play_dssi_audio_plugin_name = "ags-play-dssi";
 static const gchar *ags_play_dssi_audio_specifier[] = {
 };
 static const gchar *ags_play_dssi_audio_control_port[] = {
@@ -123,7 +123,7 @@ ags_play_dssi_audio_get_type()
     };    
 
     ags_type_play_dssi_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-						      "AgsPlayDssiAudio\0",
+						      "AgsPlayDssiAudio",
 						      &ags_play_dssi_audio_info,
 						      0);
 
@@ -163,9 +163,9 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_string("filename\0",
-				    "the object file\0",
-				    "The filename as string of object file\0",
+  param_spec =  g_param_spec_string("filename",
+				    "the object file",
+				    "The filename as string of object file",
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -179,9 +179,9 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_string("effect\0",
-				    "the effect\0",
-				    "The effect's string representation\0",
+  param_spec =  g_param_spec_string("effect",
+				    "the effect",
+				    "The effect's string representation",
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -195,9 +195,9 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_ulong("index\0",
-				   "index of effect\0",
-				   "The numerical index of effect\0",
+  param_spec =  g_param_spec_ulong("index",
+				   "index of effect",
+				   "The numerical index of effect",
 				   0,
 				   65535,
 				   0,
@@ -229,10 +229,10 @@ ags_play_dssi_audio_init(AgsPlayDssiAudio *play_dssi_audio)
 {
   GList *port;
 
-  AGS_RECALL(play_dssi_audio)->name = "ags-play-dssi\0";
+  AGS_RECALL(play_dssi_audio)->name = "ags-play-dssi";
   AGS_RECALL(play_dssi_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_dssi_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_dssi_audio)->xml_type = "ags-play-dssi-audio\0";
+  AGS_RECALL(play_dssi_audio)->xml_type = "ags-play-dssi-audio";
 
   play_dssi_audio->filename = NULL;
   play_dssi_audio->effect = NULL;
@@ -393,26 +393,26 @@ ags_play_dssi_audio_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   filename = xmlGetProp(node,
-			"filename\0");
+			"filename");
   effect = xmlGetProp(node,
-		      "effect\0");
+		      "effect");
   index = g_ascii_strtoull(xmlGetProp(node,
-				      "index\0"),
+				      "index"),
 			   NULL,
 			   10);
 
   g_object_set(gobject,
-	       "filename\0", filename,
-	       "effect\0", effect,
-	       "index\0", index,
+	       "filename", filename,
+	       "effect", effect,
+	       "index", index,
 	       NULL);
 
   ags_play_dssi_audio_load(gobject);
@@ -430,31 +430,31 @@ ags_play_dssi_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-recall-dssi\0");
+		    "ags-recall-dssi");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", play_dssi_audio,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", play_dssi_audio,
 				   NULL));
 
   xmlNewProp(node,
-	     "filename\0",
+	     "filename",
 	     g_strdup(play_dssi_audio->filename));
 
   xmlNewProp(node,
-	     "effect\0",
+	     "effect",
 	     g_strdup(play_dssi_audio->effect));
 
   xmlNewProp(node,
-	     "index\0",
-	     g_strdup_printf("%lu\0", play_dssi_audio->index));
+	     "index",
+	     g_strdup_printf("%lu", play_dssi_audio->index));
 
   xmlAddChild(parent,
 	      node);
@@ -487,7 +487,7 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
 
   if(plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor\0");
+						       "dssi_descriptor");
 
     if(dlerror() == NULL && dssi_descriptor){
       play_dssi_audio->plugin_descriptor = 
@@ -532,17 +532,17 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	gchar *plugin_name;
 	gchar *specifier;
 	
-	plugin_name = g_strdup_printf("dssi-%lu\0", dssi_plugin->unique_id);
+	plugin_name = g_strdup_printf("dssi-%lu", dssi_plugin->unique_id);
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 
 	current = g_object_new(AGS_TYPE_PORT,
-			       "plugin-name\0", plugin_name,
-			       "specifier\0", specifier,
-			       "control-port\0", g_strdup_printf("%lu/%lu\0",
+			       "plugin-name", plugin_name,
+			       "specifier", specifier,
+			       "control-port", g_strdup_printf("%lu/%lu",
 								 i,
 								 port_count),
-			       "port-value-is-pointer\0", FALSE,
-			       "port-value-type\0", G_TYPE_FLOAT,
+			       "port-value-is-pointer", FALSE,
+			       "port-value-type", G_TYPE_FLOAT,
 			       NULL);
 	g_object_ref(current);
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
@@ -564,7 +564,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 					    port_descriptor->data);
 	
 	current->port_value.ags_port_ladspa = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-	//	g_message("connecting port: %d/%d %f\0", i, port_count, current->port_value.ags_port_float);
+	//	g_message("connecting port: %d/%d %f", i, port_count, current->port_value.ags_port_float);
 
 	port = g_list_prepend(port,
 			      current);
@@ -600,7 +600,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
     AGS_RECALL(play_dssi_audio)->port = g_list_reverse(port);
   }
 
-  g_message("output lines: %d\0", play_dssi_audio->output_lines);
+  g_message("output lines: %d", play_dssi_audio->output_lines);
 
   return(g_list_copy(AGS_RECALL(play_dssi_audio)->port));
 }
@@ -668,7 +668,7 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
 
   if(ladspa_conversion != NULL){
     g_object_set(port,
-		 "conversion\0", ladspa_conversion,
+		 "conversion", ladspa_conversion,
 		 NULL);
   }
 }

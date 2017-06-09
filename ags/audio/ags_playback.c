@@ -88,7 +88,7 @@ ags_playback_get_type (void)
     };
 
     ags_type_playback = g_type_register_static(G_TYPE_OBJECT,
-					       "AgsPlayback\0",
+					       "AgsPlayback",
 					       &ags_playback_info,
 					       0);
 
@@ -125,9 +125,9 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("playback-domain\0",
-				   "parent playback domain\0",
-				   "The playback domain it is child of\0",
+  param_spec = g_param_spec_object("playback-domain",
+				   "parent playback domain",
+				   "The playback domain it is child of",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -141,9 +141,9 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("source\0",
-				   "assigned source\0",
-				   "The source it is assigned with\0",
+  param_spec = g_param_spec_object("source",
+				   "assigned source",
+				   "The source it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -157,9 +157,9 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_uint("audio-channel\0",
-				 "assigned audio channel\0",
-				 "The audio channel it is assigned with\0",
+  param_spec = g_param_spec_uint("audio-channel",
+				 "assigned audio channel",
+				 "The audio channel it is assigned with",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -198,21 +198,21 @@ ags_playback_init(AgsPlayback *playback)
   
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "model\0");
+			      "model");
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope\0");
+			      "super-threaded-scope");
 
   if(str0 != NULL && str1 != NULL){
     if(!g_ascii_strncasecmp(str0,
-			    "super-threaded\0",
+			    "super-threaded",
 			    15)){
       if(!g_ascii_strncasecmp(str1,
-			      "channel\0",
+			      "channel",
 			      8)){
 	super_threaded_channel = TRUE;
       }else if(!g_ascii_strncasecmp(str1,
-				    "recycling\0",
+				    "recycling",
 				    10)){
 	super_threaded_recycling = TRUE;
       }
@@ -253,12 +253,12 @@ ags_playback_init(AgsPlayback *playback)
   /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
+			     "samplerate");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
+			       "samplerate");
   }
   
   if(str != NULL){
@@ -272,12 +272,12 @@ ags_playback_init(AgsPlayback *playback)
   /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
+			     "buffer-size");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
+			       "buffer-size");
   }
   
   if(str != NULL){
@@ -422,45 +422,45 @@ ags_playback_set_property(GObject *gobject,
 
 	  /* channel thread */
 	  g_object_set(playback->channel_thread[0],
-		       "frequency\0", freq,
-		       "channel\0", source,
+		       "frequency", freq,
+		       "channel", source,
 		       NULL);
 
 	  g_object_set(playback->channel_thread[1],
-		       "frequency\0", freq,
-		       "channel\0", source,
+		       "frequency", freq,
+		       "channel", source,
 		       NULL);
 
 	  g_object_set(playback->channel_thread[2],
-		       "frequency\0", freq,
-		       "channel\0", source,
+		       "frequency", freq,
+		       "channel", source,
 		       NULL);
 
 	  if((AGS_PLAYBACK_SUPER_THREADED_RECYCLING & (g_atomic_int_get(&(playback->flags)))) != 0){
 	    /* recycling thread */
 	    g_object_set(playback->recycling_thread[0],
-			 "frequency\0", freq,
+			 "frequency", freq,
 			 NULL);
 
 	    g_object_set(playback->recycling_thread[1],
-			 "frequency\0", freq,
+			 "frequency", freq,
 			 NULL);
 
 	    g_object_set(playback->recycling_thread[2],
-			 "frequency\0", freq,
+			 "frequency", freq,
 			 NULL);
 
 	    /* iterator thread */
 	    g_object_set(playback->iterator_thread[0],
-			 "frequency\0", freq,
+			 "frequency", freq,
 			 NULL);
 
 	    g_object_set(playback->iterator_thread[1],
-			 "frequency\0", freq,
+			 "frequency", freq,
 			 NULL);
 
 	    g_object_set(playback->iterator_thread[2],
-			 "frequency\0", freq,
+			 "frequency", freq,
 			 NULL);
 	  }
 	}

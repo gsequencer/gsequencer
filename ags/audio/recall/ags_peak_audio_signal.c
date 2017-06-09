@@ -100,7 +100,7 @@ ags_peak_audio_signal_get_type()
     };
 
     ags_type_peak_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsPeakAudioSignal\0",
+							"AgsPeakAudioSignal",
 							&ags_peak_audio_signal_info,
 							0);
 

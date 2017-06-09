@@ -91,7 +91,7 @@ ags_peak_channel_run_get_type()
     };
     
     ags_type_peak_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-						       "AgsPeakChannelRun\0",
+						       "AgsPeakChannelRun",
 						       &ags_peak_channel_run_info,
 						       0);
     
@@ -147,10 +147,10 @@ ags_peak_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run)
 {
-  AGS_RECALL(peak_channel_run)->name = "ags-peak\0";
+  AGS_RECALL(peak_channel_run)->name = "ags-peak";
   AGS_RECALL(peak_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(peak_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(peak_channel_run)->xml_type = "ags-peak-channel-run\0";
+  AGS_RECALL(peak_channel_run)->xml_type = "ags-peak-channel-run";
   AGS_RECALL(peak_channel_run)->port = NULL;
 
   AGS_RECALL(peak_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
@@ -222,7 +222,7 @@ ags_peak_channel_run_new(AgsChannel *channel)
   AgsPeakChannelRun *peak_channel_run;
 
   peak_channel_run = (AgsPeakChannelRun *) g_object_new(AGS_TYPE_PEAK_CHANNEL_RUN,
-							    "source\0", channel,
+							    "source", channel,
 							    NULL);
 
   return(peak_channel_run);

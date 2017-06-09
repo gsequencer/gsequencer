@@ -82,7 +82,7 @@ ags_cancel_recall_get_type()
     };
 
     ags_type_cancel_recall = g_type_register_static(AGS_TYPE_TASK,
-						    "AgsCancelRecall\0",
+						    "AgsCancelRecall",
 						    &ags_cancel_recall_info,
 						    0);
     
@@ -119,9 +119,9 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("recall\0",
-				   "recall of cancel recall\0",
-				   "The recall of cancel recall task\0",
+  param_spec = g_param_spec_object("recall",
+				   "recall of cancel recall",
+				   "The recall of cancel recall task",
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -135,9 +135,9 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("playback\0",
-				   "playback of cancel recall\0",
-				   "The playback of cancel recall task\0",
+  param_spec = g_param_spec_object("playback",
+				   "playback of cancel recall",
+				   "The playback of cancel recall task",
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

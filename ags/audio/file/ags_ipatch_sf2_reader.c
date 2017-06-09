@@ -82,7 +82,7 @@ ags_ipatch_sf2_reader_get_type()
     };
 
     ags_type_ipatch_sf2_reader = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsIpatchSF2Reader\0",
+					     "AgsIpatchSF2Reader",
 					     &ags_ipatch_sf2_reader_info,
 					     0);
 

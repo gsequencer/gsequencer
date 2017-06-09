@@ -129,7 +129,7 @@ ags_jack_server_get_type()
     };
 
     ags_type_jack_server = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsJackServer\0",
+						  "AgsJackServer",
 						  &ags_jack_server_info,
 						  0);
 
@@ -170,9 +170,9 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * 
    * Since: 0.7.1
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
+  param_spec = g_param_spec_object("application-context",
+				   "the application context object",
+				   "The application context object",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -186,9 +186,9 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * 
    * Since: 0.7.1
    */
-  param_spec = g_param_spec_string("url\0",
-				   "the URL\0",
-				   "The URL\0",
+  param_spec = g_param_spec_string("url",
+				   "the URL",
+				   "The URL",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -202,9 +202,9 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("default-soundcard\0",
-				   "default soundcard\0",
-				   "The default soundcard\0",
+  param_spec = g_param_spec_object("default-soundcard",
+				   "default soundcard",
+				   "The default soundcard",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -218,9 +218,9 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("default-jack-client\0",
-				   "default jack client\0",
-				   "The default jack client\0",
+  param_spec = g_param_spec_object("default-jack-client",
+				   "default jack client",
+				   "The default jack client",
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -234,9 +234,9 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("jack-client\0",
-				   "jack client list\0",
-				   "The jack client list\0",
+  param_spec = g_param_spec_object("jack-client",
+				   "jack client list",
+				   "The jack client list",
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -753,13 +753,13 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   /* the default client */
   if(jack_server->default_client == NULL){
     g_object_set(jack_server,
-		 "default-jack-client\0", ags_jack_client_new((GObject *) jack_server),
+		 "default-jack-client", ags_jack_client_new((GObject *) jack_server),
 		 NULL);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
     
     ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
+			 "ags-default-client");
     initial_set = TRUE;
     
     if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
@@ -772,15 +772,15 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   /* the soundcard */
   if(is_output){
     jack_devout = ags_jack_devout_new(jack_server->application_context);
-    str = g_strdup_printf("ags-jack-devout-%d\0",
+    str = g_strdup_printf("ags-jack-devout-%d",
 			  jack_server->n_soundcards);
     g_object_set(AGS_JACK_DEVOUT(jack_devout),
-		 "jack-client\0", default_client,
-		 "device\0", str,
+		 "jack-client", default_client,
+		 "device", str,
 		 NULL);
     g_free(str);
     g_object_set(default_client,
-		 "device\0", jack_devout,
+		 "device", jack_devout,
 		 NULL);
     
     if(initial_set &&
@@ -789,18 +789,18 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 				jack_devout->buffer_size);
 
       if(rc != 0){
-	g_message("%s\0", strerror(rc));
+	g_message("%s", strerror(rc));
       }
     }
     
     /* register ports */
     for(i = 0; i < jack_devout->pcm_channels; i++){
-      str = g_strdup_printf("ags-soundcard%d-%04d\0",
+      str = g_strdup_printf("ags-soundcard%d-%04d",
 			    jack_server->n_soundcards,
 			    i);
       
 #ifdef AGS_DEBUG
-      g_message("%s\0", str);
+      g_message("%s", str);
 #endif
       
       jack_port = ags_jack_port_new((GObject *) default_client);
@@ -808,7 +808,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 			       (GObject *) jack_port);
 
       g_object_set(jack_devout,
-		   "jack-port\0", jack_port,
+		   "jack-port", jack_port,
 		   NULL);
       
       if(jack_devout->port_name == NULL){
@@ -852,7 +852,7 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
   default_client = (AgsJackClient *) jack_server->default_client;
 
   if(default_client == NULL){
-    g_warning("GSequencer - no jack client\0");
+    g_warning("GSequencer - no jack client");
     
     return;
   }
@@ -886,7 +886,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   gchar *str;
   
   if(is_output){
-    g_warning("GSequencer - MIDI output not implemented\0");
+    g_warning("GSequencer - MIDI output not implemented");
     return(NULL);
   }
   
@@ -895,13 +895,13 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   /* the default client */
   if(jack_server->default_client == NULL){
     g_object_set(jack_server,
-		 "default-jack-client\0", (GObject *) ags_jack_client_new((GObject *) jack_server),
+		 "default-jack-client", (GObject *) ags_jack_client_new((GObject *) jack_server),
 		 NULL);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
     
     ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
+			 "ags-default-client");
 
     if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
       g_warning("ags_jack_server.c - can't open JACK client");
@@ -910,23 +910,23 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 
   default_client = (AgsJackClient *) jack_server->default_client;
 
-  str = g_strdup_printf("ags-jack-midiin-%d\0",
+  str = g_strdup_printf("ags-jack-midiin-%d",
 			jack_server->n_sequencers);
   jack_midiin = ags_jack_midiin_new(jack_server->application_context);
   g_object_set(AGS_JACK_MIDIIN(jack_midiin),
-	       "jack-client\0", default_client,
-	       "device\0", str,
+	       "jack-client", default_client,
+	       "device", str,
 	       NULL);
   g_object_set(default_client,
-	       "device\0", jack_midiin,
+	       "device", jack_midiin,
 	       NULL);
 
   /* register sequencer */
-  str = g_strdup_printf("ags-sequencer%d\0",
+  str = g_strdup_printf("ags-sequencer%d",
 			jack_server->n_sequencers);
 
 #ifdef AGS_DEBUG
-  g_message("%s\0", str);
+  g_message("%s", str);
 #endif
   
   jack_port = ags_jack_port_new((GObject *) default_client);
@@ -934,7 +934,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 			   (GObject *) jack_port);
 
   g_object_set(jack_midiin,
-	       "jack-port\0", jack_port,
+	       "jack-port", jack_port,
 	       NULL);
   
   ags_jack_port_register(jack_port,
@@ -962,7 +962,7 @@ ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
   default_client = (AgsJackClient *) jack_server->default_client;
 
   if(default_client == NULL){
-    g_warning("GSequencer - no jack client\0");
+    g_warning("GSequencer - no jack client");
     
     return;
   }
@@ -1001,13 +1001,13 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   /* the default client */
   if(jack_server->default_client == NULL){
     g_object_set(jack_server,
-		 "default-jack-client\0", (GObject *) ags_jack_client_new((GObject *) jack_server),
+		 "default-jack-client", (GObject *) ags_jack_client_new((GObject *) jack_server),
 		 NULL);
     ags_jack_server_add_client(jack_server,
 			       jack_server->default_client);
     
     ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client\0");
+			 "ags-default-client");
 
     if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
       g_warning("ags_jack_server.c - can't open JACK client");
@@ -1021,11 +1021,11 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   /* the soundcard */
   jack_devout = ags_jack_devout_new(jack_server->application_context);
   g_object_set(AGS_JACK_DEVOUT(jack_devout),
-	       "jack-client\0", default_client,
-	       "device\0", "ags-default-devout\0",
+	       "jack-client", default_client,
+	       "device", "ags-default-devout",
 	       NULL);
   g_object_set(default_client,
-	       "device\0", jack_devout,
+	       "device", jack_devout,
 	       NULL);
 
   if(default_client->client != NULL){
@@ -1033,17 +1033,17 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 			      jack_devout->buffer_size);
     
     if(rc != 0){
-      g_message("%s\0", strerror(rc));
+      g_message("%s", strerror(rc));
     }
   }
   
   /* register ports */
   for(i = 0; i < jack_devout->pcm_channels; i++){
-    str = g_strdup_printf("ags-default-soundcard-%04d\0",
+    str = g_strdup_printf("ags-default-soundcard-%04d",
 			  i);
 
 #ifdef AGS_DEBUG
-    g_message("%s\0", str);
+    g_message("%s", str);
 #endif
     
     jack_port = ags_jack_port_new((GObject *) default_client);
@@ -1051,7 +1051,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 			     (GObject *) jack_port);
 
     g_object_set(jack_devout,
-		 "jack-port\0", jack_port,
+		 "jack-port", jack_port,
 		 NULL);
 
     if(jack_devout->port_name == NULL){
@@ -1259,8 +1259,8 @@ ags_jack_server_new(GObject *application_context,
   AgsJackServer *jack_server;
 
   jack_server = (AgsJackServer *) g_object_new(AGS_TYPE_JACK_SERVER,
-					       "application-context\0", application_context,
-					       "url\0", url,
+					       "application-context", application_context,
+					       "url", url,
 					       NULL);
 
   return(jack_server);

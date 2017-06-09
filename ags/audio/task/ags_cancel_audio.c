@@ -92,7 +92,7 @@ ags_cancel_audio_get_type()
     };
 
     ags_type_cancel_audio = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsCancelAudio\0",
+						   "AgsCancelAudio",
 						   &ags_cancel_audio_info,
 						   0);
     
@@ -129,9 +129,9 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of cancel audio\0",
-				   "The audio of cancel audio task\0",
+  param_spec = g_param_spec_object("audio",
+				   "audio of cancel audio",
+				   "The audio of cancel audio task",
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -145,9 +145,9 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-playback\0",
-				     "do playback\0",
-				     "Do playback of audio\0",
+  param_spec =  g_param_spec_boolean("do-playback",
+				     "do playback",
+				     "Do playback of audio",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -161,9 +161,9 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-sequencer\0",
-				     "do sequencer\0",
-				     "Do sequencer of audio\0",
+  param_spec =  g_param_spec_boolean("do-sequencer",
+				     "do sequencer",
+				     "Do sequencer of audio",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,9 +177,9 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-notation\0",
-				     "do notation\0",
-				     "Do notation of audio\0",
+  param_spec =  g_param_spec_boolean("do-notation",
+				     "do notation",
+				     "Do notation of audio",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

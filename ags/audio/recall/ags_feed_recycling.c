@@ -88,7 +88,7 @@ ags_feed_recycling_get_type()
     };
 
     ags_type_feed_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						     "AgsFeedRecycling\0",
+						     "AgsFeedRecycling",
 						     &ags_feed_recycling_info,
 						     0);
 
@@ -145,10 +145,10 @@ ags_feed_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInter
 void
 ags_feed_recycling_init(AgsFeedRecycling *feed_recycling)
 {
-  AGS_RECALL(feed_recycling)->name = "ags-feed\0";
+  AGS_RECALL(feed_recycling)->name = "ags-feed";
   AGS_RECALL(feed_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(feed_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(feed_recycling)->xml_type = "ags-feed-recycling\0";
+  AGS_RECALL(feed_recycling)->xml_type = "ags-feed-recycling";
   AGS_RECALL(feed_recycling)->port = NULL;
 
   AGS_RECALL(feed_recycling)->child_type = AGS_TYPE_FEED_AUDIO_SIGNAL;
@@ -231,7 +231,7 @@ ags_feed_recycling_new(AgsRecycling *recycling)
   AgsFeedRecycling *feed_recycling;
 
   feed_recycling = (AgsFeedRecycling *) g_object_new(AGS_TYPE_FEED_RECYCLING,
-						     "source\0", recycling,
+						     "source", recycling,
 						     NULL);
 
   return(feed_recycling);

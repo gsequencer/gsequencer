@@ -87,7 +87,7 @@ ags_seek_soundcard_get_type()
     };
 
     ags_type_seek_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsSeekSoundcard\0",
+						     "AgsSeekSoundcard",
 						     &ags_seek_soundcard_info,
 						     0);
 
@@ -124,9 +124,9 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of seek soundcard\0",
-				   "The soundcard of seek soundcard\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "soundcard of seek soundcard",
+				   "The soundcard of seek soundcard",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -140,9 +140,9 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("steps\0",
-				 "steps\0",
-				 "The amount of steps\0",
+  param_spec = g_param_spec_uint("steps",
+				 "steps",
+				 "The amount of steps",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -158,9 +158,9 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_boolean("move-forward\0",
-				    "move forward\0",
-				    "Do moving forward\0",
+  param_spec = g_param_spec_boolean("move-forward",
+				    "move forward",
+				    "Do moving forward",
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

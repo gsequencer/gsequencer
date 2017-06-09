@@ -104,7 +104,7 @@ ags_soundcard_thread_get_type()
     };
 
     ags_type_soundcard_thread = g_type_register_static(AGS_TYPE_THREAD,
-						       "AgsSoundcardThread\0",
+						       "AgsSoundcardThread",
 						       &ags_soundcard_thread_info,
 						       0);
     
@@ -141,9 +141,9 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
    * 
    * Since: 0.7.121
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard assigned to\0",
-				   "The AgsSoundcard it is assigned to.\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "soundcard assigned to",
+				   "The AgsSoundcard it is assigned to.",
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,22 +189,22 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
 
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate\0");
+			      "samplerate");
 
   if(str0 == NULL){
     str0 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate\0");
+				"samplerate");
   }
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size\0");
+			      "buffer-size");
 
   if(str1 == NULL){
     str1 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size\0");
+				"buffer-size");
   }
 
   if(str0 == NULL || str1 == NULL){
@@ -270,7 +270,7 @@ ags_soundcard_thread_set_property(GObject *gobject,
 				  NULL);
 	
 	g_object_set(soundcard_thread,
-		     "frequency\0", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		     "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		     NULL);
 
 	if(AGS_IS_DEVOUT(soundcard)){
@@ -327,7 +327,7 @@ ags_soundcard_thread_connect(AgsConnectable *connectable)
   ags_soundcard_thread_parent_connectable_interface->connect(connectable);
 
   audio_loop = ags_thread_get_toplevel(soundcard_thread);
-  g_signal_connect((GObject *) audio_loop, "stopped-all\0",
+  g_signal_connect((GObject *) audio_loop, "stopped-all",
 		   G_CALLBACK(ags_soundcard_thread_stopped_all_callback), soundcard_thread);    
 }
 
@@ -405,7 +405,7 @@ ags_soundcard_thread_start(AgsThread *thread)
 			    &(soundcard_thread->error));
 
 #ifdef AGS_DEBUG
-    g_message("ags_devout_alsa_play\0");
+    g_message("ags_devout_alsa_play");
 #endif
   }
 
@@ -422,7 +422,7 @@ ags_soundcard_thread_start(AgsThread *thread)
       
       ags_polling_thread_add_poll_fd(polling_thread,
 				     poll_fd->data);
-      g_signal_connect(G_OBJECT(poll_fd->data), "dispatch\0",
+      g_signal_connect(G_OBJECT(poll_fd->data), "dispatch",
 		       G_CALLBACK(ags_soundcard_thread_dispatch_callback), soundcard_thread);
 
       position = ags_polling_thread_fd_position(polling_thread,
@@ -481,7 +481,7 @@ ags_soundcard_thread_run(AgsThread *thread)
     param.sched_priority = AGS_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -503,7 +503,7 @@ ags_soundcard_thread_run(AgsThread *thread)
     if(error != NULL){
       //TODO:JK: implement me
 
-      g_warning("%s\0",
+      g_warning("%s",
 		error->message);
     }
   }
@@ -639,7 +639,7 @@ ags_soundcard_thread_new(GObject *soundcard)
   AgsSoundcardThread *soundcard_thread;
 
   soundcard_thread = (AgsSoundcardThread *) g_object_new(AGS_TYPE_SOUNDCARD_THREAD,
-							 "soundcard\0", soundcard,
+							 "soundcard", soundcard,
 							 NULL);
 
 

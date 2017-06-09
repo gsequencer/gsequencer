@@ -70,7 +70,7 @@ ags_lv2_worker_manager_get_type()
     };
 
     ags_type_lv2_worker_manager = g_type_register_static(G_TYPE_OBJECT,
-						      "AgsLv2WorkerManager\0",
+						      "AgsLv2WorkerManager",
 						      &ags_lv2_worker_manager_info,
 						      0);
 
@@ -153,7 +153,7 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
   
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread),
 					 ags_lv2_worker_safe_run);
-  g_signal_connect(thread, "interrupted\0",
+  g_signal_connect(thread, "interrupted",
 		   G_CALLBACK(ags_lv2_worker_interrupted_callback), lv2_worker);
   
   g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),

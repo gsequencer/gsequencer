@@ -70,7 +70,7 @@ ags_lv2_uri_map_manager_get_type()
     };
 
     ags_type_lv2_uri_map_manager = g_type_register_static(G_TYPE_OBJECT,
-							  "AgsLv2UriMapManager\0",
+							  "AgsLv2UriMapManager",
 							  &ags_lv2_uri_map_manager_info,
 							  0);
 
@@ -221,7 +221,7 @@ ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
 					 uri);
 
   if(value == NULL){
-    g_message("new uri %s\0", uri);
+    g_message("new uri %s", uri);
     
     value = g_new0(GValue,
 		   1);
@@ -278,7 +278,7 @@ ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_data,
   uint32_t id;
 
   if(map != NULL){
-    uri = g_strdup_printf("%s<%s>\0",
+    uri = g_strdup_printf("%s<%s>",
 			  map,
 			  uri);
   }

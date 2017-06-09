@@ -98,7 +98,7 @@ ags_ladspa_plugin_get_type (void)
     };
 
     ags_type_ladspa_plugin = g_type_register_static(AGS_TYPE_BASE_PLUGIN,
-						    "AgsLadspaPlugin\0",
+						    "AgsLadspaPlugin",
 						    &ags_ladspa_plugin_info,
 						    0);
   }
@@ -132,9 +132,9 @@ ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_uint("unique-id\0",
-				 "unique-id of the plugin\0",
-				 "The unique-id this plugin is assigned with\0",
+  param_spec = g_param_spec_uint("unique-id",
+				 "unique-id of the plugin",
+				 "The unique-id this plugin is assigned with",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -282,7 +282,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 				  RTLD_NOW);
   
   if(base_plugin->plugin_so == NULL){
-    g_warning("ags_ladspa_plugin.c - failed to load static object file\0");
+    g_warning("ags_ladspa_plugin.c - failed to load static object file");
     
     dlerror();
 
@@ -290,7 +290,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   }
 
   ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym((void *) base_plugin->plugin_so,
-							 "ladspa_descriptor\0");
+							 "ladspa_descriptor");
   
   if(dlerror() == NULL && ladspa_descriptor){
     effect_index = base_plugin->effect_index;
@@ -298,7 +298,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     if(base_plugin->plugin_descriptor != NULL){
       g_object_set(base_plugin,
-		   "unique-id\0", AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->UniqueID,
+		   "unique-id", AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->UniqueID,
 		   NULL);
       
       port_count = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortCount;
@@ -458,9 +458,9 @@ ags_ladspa_plugin_new(gchar *filename, gchar *effect, guint effect_index)
   AgsLadspaPlugin *ladspa_plugin;
 
   ladspa_plugin = (AgsLadspaPlugin *) g_object_new(AGS_TYPE_LADSPA_PLUGIN,
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "effect-index\0", effect_index,
+						   "filename", filename,
+						   "effect", effect,
+						   "effect-index", effect_index,
 						   NULL);
 
   return(ladspa_plugin);

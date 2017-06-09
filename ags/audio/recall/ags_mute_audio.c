@@ -104,7 +104,7 @@ ags_mute_audio_get_type()
     };
     
     ags_type_mute_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-						 "AgsMuteAudio\0",
+						 "AgsMuteAudio",
 						 &ags_mute_audio_info,
 						 0);
 
@@ -149,9 +149,9 @@ ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("muted\0",
-				   "mute audio\0",
-				   "Mute the audio\0",
+  param_spec = g_param_spec_object("muted",
+				   "mute audio",
+				   "Mute the audio",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,22 +187,22 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
 {
   GList *port;
 
-  AGS_RECALL(mute_audio)->name = "ags-mute\0";
+  AGS_RECALL(mute_audio)->name = "ags-mute";
   AGS_RECALL(mute_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(mute_audio)->xml_type = "ags-mute-audio\0";
+  AGS_RECALL(mute_audio)->xml_type = "ags-mute-audio";
 
   port = NULL;
 
   /* muted */
   mute_audio->muted = g_object_new(AGS_TYPE_PORT,
-				   "plugin-name\0", "ags-mute\0",
-				   "specifier\0", "./muted[0]\0",
-				   "control-port\0", "1/1\0",
-				   "port-value-is-pointer\0", FALSE,
-				   "port-value-type\0", G_TYPE_FLOAT,
-				   "port-value-size\0", sizeof(gfloat),
-				   "port-value-length\0", 1,
+				   "plugin-name", "ags-mute",
+				   "specifier", "./muted[0]",
+				   "control-port", "1/1",
+				   "port-value-is-pointer", FALSE,
+				   "port-value-type", G_TYPE_FLOAT,
+				   "port-value-size", sizeof(gfloat),
+				   "port-value-length", 1,
 				   NULL);
   g_object_ref(mute_audio->muted);
 
@@ -312,10 +312,10 @@ ags_mute_audio_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"muted[0]\0",
+		"muted[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "muted\0", AGS_PORT(port->data),
+		   "muted", AGS_PORT(port->data),
 		   NULL);
     }
 

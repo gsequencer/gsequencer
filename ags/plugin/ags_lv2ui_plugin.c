@@ -101,7 +101,7 @@ ags_lv2ui_plugin_get_type (void)
     };
 
     ags_type_lv2ui_plugin = g_type_register_static(AGS_TYPE_BASE_PLUGIN,
-						   "AgsLv2uiPlugin\0",
+						   "AgsLv2uiPlugin",
 						   &ags_lv2ui_plugin_info,
 						   0);
   }
@@ -136,9 +136,9 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * 
    * Since: 0.7.127
    */
-  param_spec = g_param_spec_string("gui-uri\0",
-				   "GUI URI of the plugin\0",
-				   "The GUI URI this plugin is located in\0",
+  param_spec = g_param_spec_string("gui-uri",
+				   "GUI URI of the plugin",
+				   "The GUI URI this plugin is located in",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,9 +152,9 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_object("manifest\0",
-				   "manifest of the plugin\0",
-				   "The manifest this plugin is located in\0",
+  param_spec = g_param_spec_object("manifest",
+				   "manifest of the plugin",
+				   "The manifest this plugin is located in",
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -168,9 +168,9 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * 
    * Since: 0.7.127
    */
-  param_spec = g_param_spec_object("gui-turtle\0",
-				   "GUI turtle of the plugin\0",
-				   "The GUI turtle this plugin is located in\0",
+  param_spec = g_param_spec_object("gui-turtle",
+				   "GUI turtle of the plugin",
+				   "The GUI turtle this plugin is located in",
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -184,9 +184,9 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * 
    * Since: 0.7.127
    */
-  param_spec = g_param_spec_object("lv2-plugin\0",
-				   "LV2 plugin of the plugin\0",
-				   "The LV2 plugin this plugin is located in\0",
+  param_spec = g_param_spec_object("lv2-plugin",
+				   "LV2 plugin of the plugin",
+				   "The LV2 plugin this plugin is located in",
 				   AGS_TYPE_LV2_PLUGIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -458,11 +458,11 @@ ags_lv2ui_plugin_new(AgsTurtle *gui_turtle, gchar *filename, gchar *effect, gcha
   AgsLv2uiPlugin *lv2ui_plugin;
 
   lv2ui_plugin = (AgsLv2uiPlugin *) g_object_new(AGS_TYPE_LV2UI_PLUGIN,
-						 "gui-turtle\0", gui_turtle,
-						 "filename\0", filename,
-						 "effect\0", effect,
-						 "gui-uri\0", gui_uri,
-						 "effect-index\0", effect_index,
+						 "gui-turtle", gui_turtle,
+						 "filename", filename,
+						 "effect", effect,
+						 "gui-uri", gui_uri,
+						 "effect-index", effect_index,
 						 NULL);
 
   return(lv2ui_plugin);

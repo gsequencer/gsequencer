@@ -92,7 +92,7 @@ ags_volume_channel_run_get_type()
     };
 
     ags_type_volume_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							 "AgsVolumeChannelRun\0",
+							 "AgsVolumeChannelRun",
 							 &ags_volume_channel_run_info,
 							 0);
 
@@ -148,10 +148,10 @@ ags_volume_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableI
 void
 ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run)
 {
-  AGS_RECALL(volume_channel_run)->name = "ags-volume\0";
+  AGS_RECALL(volume_channel_run)->name = "ags-volume";
   AGS_RECALL(volume_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(volume_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(volume_channel_run)->xml_type = "ags-volume-channel-run\0";
+  AGS_RECALL(volume_channel_run)->xml_type = "ags-volume-channel-run";
   AGS_RECALL(volume_channel_run)->port = NULL;
 
   AGS_RECALL(volume_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
@@ -249,7 +249,7 @@ ags_volume_channel_run_new(AgsChannel *channel)
   AgsVolumeChannelRun *volume_channel_run;
 
   volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
-							    "source\0", channel,
+							    "source", channel,
 							    NULL);
 
   return(volume_channel_run);

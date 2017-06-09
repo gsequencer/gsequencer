@@ -87,7 +87,7 @@ ags_lv2_preset_get_type()
     };
     
     ags_type_lv2_preset = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsLv2Preset\0",
+						 "AgsLv2Preset",
 						 &ags_lv2_preset_info,
 						 0);
     
@@ -123,9 +123,9 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * 
    * Since: 0.7.122.8
    */
-  param_spec = g_param_spec_object("lv2-plugin\0",
-				   "lv2 plugin of the preset\0",
-				   "The lv2 plugin this preset is located in\0",
+  param_spec = g_param_spec_object("lv2-plugin",
+				   "lv2 plugin of the preset",
+				   "The lv2 plugin this preset is located in",
 				   AGS_TYPE_LV2_PLUGIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -139,9 +139,9 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * 
    * Since: 0.7.122.8
    */
-  param_spec = g_param_spec_string("uri\0",
-				   "uri of the preset\0",
-				   "The uri this preset is located in\0",
+  param_spec = g_param_spec_string("uri",
+				   "uri of the preset",
+				   "The uri this preset is located in",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,9 +155,9 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * 
    * Since: 0.7.122.8
    */
-  param_spec = g_param_spec_string("bank\0",
-				   "bank of the preset\0",
-				   "The bank this preset is assigned with\0",
+  param_spec = g_param_spec_string("bank",
+				   "bank of the preset",
+				   "The bank this preset is assigned with",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -171,9 +171,9 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * 
    * Since: 0.7.122.8
    */
-  param_spec = g_param_spec_string("preset-label\0",
-				   "preset label\0",
-				   "The preset label\0",
+  param_spec = g_param_spec_string("preset-label",
+				   "preset label",
+				   "The preset label",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,9 +187,9 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    * 
    * Since: 0.7.122.8
    */
-  param_spec = g_param_spec_object("turtle\0",
-				   "turtle of the preset\0",
-				   "The turtle this preset is located in\0",
+  param_spec = g_param_spec_object("turtle",
+				   "turtle of the preset",
+				   "The turtle this preset is located in",
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -487,7 +487,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
   }
 
   /* retrieve triple by uri */
-  xpath = g_strdup_printf("(//rdf-triple/rdf-subject/rdf-iri/rdf-iriref[text() = '%s'])/ancestor::*[self::rdf-triple][1]\0",
+  xpath = g_strdup_printf("(//rdf-triple/rdf-subject/rdf-iri/rdf-iriref[text() = '%s'])/ancestor::*[self::rdf-triple][1]",
 			  lv2_preset->uri);
     
   list = ags_turtle_find_xpath(lv2_preset->turtle,
@@ -500,7 +500,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
     g_list_free(list);
   }else{
-    xpath = g_strdup_printf("//rdf-triple//rdf-iriref[text() = '<%s>']/ancestor::*[self::rdf-triple][1]\0",
+    xpath = g_strdup_printf("//rdf-triple//rdf-iriref[text() = '<%s>']/ancestor::*[self::rdf-triple][1]",
 			    lv2_preset->uri);
     
     list = ags_turtle_find_xpath(lv2_preset->turtle,
@@ -513,14 +513,14 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
       g_list_free(list);
     }else{
-      g_warning("rdf-triple not found\0");
+      g_warning("rdf-triple not found");
       
       return;
     }
   }
 
   /* preset label */
-  xpath = ".//rdf-pname-ln[text()='rdfs:label']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0";
+  xpath = ".//rdf-pname-ln[text()='rdfs:label']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string";
   label_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
 						       xpath,
 						       triple_node);
@@ -532,7 +532,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
   }
 
   /* bank */
-  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':bank') + 1) = ':bank']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref\0";
+  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':bank') + 1) = ':bank']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
   bank_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
 						      xpath,
 						      triple_node);
@@ -547,7 +547,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
   }
 
   /* load ports */
-  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object\0";
+  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object";
   port_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
 						      xpath,
 						      triple_node);
@@ -560,7 +560,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
     port_node = port_list->data;
     
     /* load symbol */
-    xpath = g_ascii_strdown(".//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':symbol') + 1) = ':symbol']]\0",
+    xpath = g_ascii_strdown(".//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':symbol') + 1) = ':symbol']]",
 			    -1);
     list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
 						   xpath,
@@ -581,7 +581,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
     }
 
     /* port value */
-    xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':value') + 1) = ':value']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0",
+    xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':value') + 1) = ':value']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
 			    -1);
     list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
 						   xpath,
@@ -659,9 +659,9 @@ ags_lv2_preset_new(GObject *lv2_plugin,
   AgsLv2Preset *lv2_preset;
 
   lv2_preset = (AgsLv2Preset *) g_object_new(AGS_TYPE_LV2_PRESET,
-					     "lv2-plugin\0", lv2_plugin,
-					     "turtle\0", turtle,
-					     "uri\0", uri,
+					     "lv2-plugin", lv2_plugin,
+					     "turtle", turtle,
+					     "uri", uri,
 					     NULL);
 
   return(lv2_preset);

@@ -91,7 +91,7 @@ ags_note_get_type()
     };
 
     ags_type_note = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsNote\0",
+					   "AgsNote",
 					   &ags_note_info,
 					   0);
     
@@ -125,9 +125,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("x0\0",
-				 "offset x0\0",
-				 "The first x offset\0",
+  param_spec = g_param_spec_uint("x0",
+				 "offset x0",
+				 "The first x offset",
 				 0,
 				 65535,
 				 0,
@@ -143,9 +143,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("x1\0",
-				 "offset x1\0",
-				 "The last x offset\0",
+  param_spec = g_param_spec_uint("x1",
+				 "offset x1",
+				 "The last x offset",
 				 0,
 				 65535,
 				 0,
@@ -161,9 +161,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("y\0",
-				 "offset y\0",
-				 "The y offset\0",
+  param_spec = g_param_spec_uint("y",
+				 "offset y",
+				 "The y offset",
 				 0,
 				 65535,
 				 0,
@@ -179,9 +179,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_double("stream-delay\0",
-				   "delay of stream\0",
-				   "The delay of the stream\0",
+  param_spec = g_param_spec_double("stream-delay",
+				   "delay of stream",
+				   "The delay of the stream",
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -197,9 +197,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("stream-attack\0",
-				 "offset stream-attack\0",
-				 "The first x offset\0",
+  param_spec = g_param_spec_uint("stream-attack",
+				 "offset stream-attack",
+				 "The first x offset",
 				 0,
 				 65535,
 				 0,
@@ -215,9 +215,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("attack\0",
-				  "envelope's attack\0",
-				  "The envelope's attack\0",
+  param_spec = g_param_spec_boxed("attack",
+				  "envelope's attack",
+				  "The envelope's attack",
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -231,9 +231,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("decay\0",
-				  "envelope's decay\0",
-				  "The envelope's decay\0",
+  param_spec = g_param_spec_boxed("decay",
+				  "envelope's decay",
+				  "The envelope's decay",
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -247,9 +247,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("sustain\0",
-				  "envelope's sustain\0",
-				  "The envelope's sustain\0",
+  param_spec = g_param_spec_boxed("sustain",
+				  "envelope's sustain",
+				  "The envelope's sustain",
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -263,9 +263,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("release\0",
-				  "envelope's release\0",
-				  "The envelope's release\0",
+  param_spec = g_param_spec_boxed("release",
+				  "envelope's release",
+				  "The envelope's release",
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -279,9 +279,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.42
    */
-  param_spec = g_param_spec_boxed("ratio\0",
-				  "envelope's ratio\0",
-				  "The envelope's ratio\0",
+  param_spec = g_param_spec_boxed("ratio",
+				  "envelope's ratio",
+				  "The envelope's ratio",
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -920,11 +920,11 @@ ags_note_new_with_offset(guint x0, guint x1,
   AgsNote *note;
 
   note = (AgsNote *) g_object_new(AGS_TYPE_NOTE,
-				  "x0\0", x0,
-				  "x1\0", x1,
-				  "y\0", y,
-				  "stream-delay\0", stream_delay,
-				  "stream-attack\0", stream_attack,
+				  "x0", x0,
+				  "x1", x1,
+				  "y", y,
+				  "stream-delay", stream_delay,
+				  "stream-attack", stream_attack,
 				  NULL);
 
   return(note);

@@ -97,7 +97,7 @@ ags_set_samplerate_get_type()
     };
 
     ags_type_set_samplerate = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsSetSamplerate\0",
+						     "AgsSetSamplerate",
 						     &ags_set_samplerate_info,
 						     0);
     
@@ -134,9 +134,9 @@ ags_set_samplerate_class_init(AgsSetSamplerateClass *set_samplerate)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of set samplerate\0",
-				   "The scope of set samplerate\0",
+  param_spec = g_param_spec_object("scope",
+				   "scope of set samplerate",
+				   "The scope of set samplerate",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -150,9 +150,9 @@ ags_set_samplerate_class_init(AgsSetSamplerateClass *set_samplerate)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("samplerate\0",
-				 "samplerate\0",
-				 "The samplerate to apply\0",
+  param_spec = g_param_spec_uint("samplerate",
+				 "samplerate",
+				 "The samplerate to apply",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -336,8 +336,8 @@ ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel
 			    NULL);
   
   g_object_set(channel,
-	       "samplerate\0", samplerate,
-	       "buffer-size\0", buffer_size,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
 	       NULL);
 }
 

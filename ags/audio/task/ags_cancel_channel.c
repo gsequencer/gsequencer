@@ -86,7 +86,7 @@ ags_cancel_channel_get_type()
     };
 
     ags_type_cancel_channel = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsCancelChannel\0",
+						     "AgsCancelChannel",
 						     &ags_cancel_channel_info,
 						     0);
     
@@ -123,9 +123,9 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel of cancel channel\0",
-				   "The channel of cancel channel task\0",
+  param_spec = g_param_spec_object("channel",
+				   "channel of cancel channel",
+				   "The channel of cancel channel task",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -139,9 +139,9 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("recall-id\0",
-				   "recall id of cancel channel\0",
-				   "The recall id of cancel channel task\0",
+  param_spec = g_param_spec_object("recall-id",
+				   "recall id of cancel channel",
+				   "The recall id of cancel channel task",
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,9 +155,9 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("playback\0",
-				   "playback of cancel channel\0",
-				   "The playback of cancel channel task\0",
+  param_spec = g_param_spec_object("playback",
+				   "playback of cancel channel",
+				   "The playback of cancel channel task",
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

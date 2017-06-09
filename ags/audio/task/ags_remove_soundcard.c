@@ -85,7 +85,7 @@ ags_remove_soundcard_get_type()
     };
 
     ags_type_remove_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsRemoveSoundcard\0",
+						       "AgsRemoveSoundcard",
 						       &ags_remove_soundcard_info,
 						       0);
 
@@ -122,9 +122,9 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of remove soundcard\0",
-				   "The application context of remove soundcard task\0",
+  param_spec = g_param_spec_object("application-context",
+				   "application context of remove soundcard",
+				   "The application context of remove soundcard task",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -138,9 +138,9 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of remove soundcard\0",
-				   "The soundcard of remove soundcard task\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "soundcard of remove soundcard",
+				   "The soundcard of remove soundcard task",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

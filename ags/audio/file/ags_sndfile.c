@@ -110,7 +110,7 @@ ags_sndfile_get_type()
     };
 
     ags_type_sndfile = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsSndfile\0",
+					      "AgsSndfile",
 					      &ags_sndfile_info,
 					      0);
 
@@ -240,7 +240,7 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
   }
 
 #ifdef AGS_DEBUG
-  g_message("ags_sndfile_open(): channels %d frames %d\0", sndfile->info->channels, sndfile->info->frames);
+  g_message("ags_sndfile_open(): channels %d frames %d", sndfile->info->channels, sndfile->info->frames);
 #endif
   
   if(sndfile->file == NULL){
@@ -271,7 +271,7 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
   sndfile->info->seekable = 0;
   sndfile->info->sections = 0;
 
-  g_message("export to: %s\n  samplerate: %d\n  channels: %d\n  format: %x\0",
+  g_message("export to: %s\n  samplerate: %d\n  channels: %d\n  format: %x",
 	    name,
 	    samplerate,
 	    channels,
@@ -421,7 +421,7 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
     num_read = sf_read_double(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
 
     if(num_read != sndfile->info->frames * sndfile->info->channels){
-      g_warning("ags_sndfile_read(): read to many items\0");
+      g_warning("ags_sndfile_read(): read to many items");
     }
   }else{
     source = sndfile->buffer;

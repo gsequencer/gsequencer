@@ -226,7 +226,7 @@ ags_fifoout_get_type (void)
     };
 
     ags_type_fifoout = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsFifoout\0",
+					      "AgsFifoout",
 					      &ags_fifoout_info,
 					      0);
 
@@ -270,9 +270,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
+  param_spec = g_param_spec_object("application-context",
+				   "the application context object",
+				   "The application context object",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -286,9 +286,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_pointer("application-mutex\0",
-				    "the application mutex object\0",
-				    "The application mutex object\0",
+  param_spec = g_param_spec_pointer("application-mutex",
+				    "the application mutex object",
+				    "The application mutex object",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_APPLICATION_MUTEX,
@@ -301,10 +301,10 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_string("device\0",
-				   "the device identifier\0",
-				   "The device to perform output to\0",
-				   "hw:0\0",
+  param_spec = g_param_spec_string("device",
+				   "the device identifier",
+				   "The device to perform output to",
+				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -317,9 +317,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_uint("dsp-channels\0",
-				 "count of DSP channels\0",
-				 "The count of DSP channels to use\0",
+  param_spec = g_param_spec_uint("dsp-channels",
+				 "count of DSP channels",
+				 "The count of DSP channels to use",
 				 1,
 				 64,
 				 2,
@@ -335,9 +335,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_uint("pcm-channels\0",
-				 "count of PCM channels\0",
-				 "The count of PCM channels to use\0",
+  param_spec = g_param_spec_uint("pcm-channels",
+				 "count of PCM channels",
+				 "The count of PCM channels to use",
 				 1,
 				 64,
 				 2,
@@ -356,9 +356,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_uint("format\0",
-				 "precision of buffer\0",
-				 "The precision to use for a frame\0",
+  param_spec = g_param_spec_uint("format",
+				 "precision of buffer",
+				 "The precision to use for a frame",
 				 1,
 				 64,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
@@ -374,9 +374,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_uint("buffer-size\0",
-				 "frame count of a buffer\0",
-				 "The count of frames a buffer contains\0",
+  param_spec = g_param_spec_uint("buffer-size",
+				 "frame count of a buffer",
+				 "The count of frames a buffer contains",
 				 1,
 				 44100,
 				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
@@ -392,9 +392,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_uint("samplerate\0",
-				 "frames per second\0",
-				 "The frames count played during a second\0",
+  param_spec = g_param_spec_uint("samplerate",
+				 "frames per second",
+				 "The frames count played during a second",
 				 8000,
 				 96000,
 				 44100,
@@ -410,9 +410,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_pointer("buffer\0",
-				    "the buffer\0",
-				    "The buffer to play\0",
+  param_spec = g_param_spec_pointer("buffer",
+				    "the buffer",
+				    "The buffer to play",
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -425,9 +425,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_double("bpm\0",
-				   "beats per minute\0",
-				   "Beats per minute to use\0",
+  param_spec = g_param_spec_double("bpm",
+				   "beats per minute",
+				   "Beats per minute to use",
 				   1.0,
 				   240.0,
 				   120.0,
@@ -443,9 +443,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_double("delay-factor\0",
-				   "delay factor\0",
-				   "The delay factor\0",
+  param_spec = g_param_spec_double("delay-factor",
+				   "delay factor",
+				   "The delay factor",
 				   0.0,
 				   16.0,
 				   1.0,
@@ -461,9 +461,9 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_pointer("attack\0",
-				    "attack of buffer\0",
-				    "The attack to use for the buffer\0",
+  param_spec = g_param_spec_pointer("attack",
+				    "attack of buffer",
+				    "The attack to use for the buffer",
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
@@ -476,7 +476,7 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
 GQuark
 ags_fifoout_error_quark()
 {
-  return(g_quark_from_static_string("ags-fifoout-error-quark\0"));
+  return(g_quark_from_static_string("ags-fifoout-error-quark"));
 }
 
 void
@@ -613,12 +613,12 @@ ags_fifoout_init(AgsFifoout *fifoout)
   /* dsp channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "dsp-channels\0");
+			     "dsp-channels");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "dsp-channels\0");
+			       "dsp-channels");
   }
   
   if(str != NULL){
@@ -632,12 +632,12 @@ ags_fifoout_init(AgsFifoout *fifoout)
   /* pcm channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "pcm-channels\0");
+			     "pcm-channels");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "pcm-channels\0");
+			       "pcm-channels");
   }
   
   if(str != NULL){
@@ -651,12 +651,12 @@ ags_fifoout_init(AgsFifoout *fifoout)
   /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
+			     "samplerate");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
+			       "samplerate");
   }
   
   if(str != NULL){
@@ -669,12 +669,12 @@ ags_fifoout_init(AgsFifoout *fifoout)
   /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
+			     "buffer-size");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
+			       "buffer-size");
   }
   
   if(str != NULL){
@@ -687,12 +687,12 @@ ags_fifoout_init(AgsFifoout *fifoout)
   /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "format\0");
+			     "format");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "format\0");
+			       "format");
   }
   
   if(str != NULL){
@@ -798,10 +798,10 @@ ags_fifoout_set_property(GObject *gobject,
 	/* segmentation */
 	segmentation = ags_config_get_value(config,
 					    AGS_CONFIG_GENERIC,
-					    "segmentation\0");
+					    "segmentation");
 
 	if(segmentation != NULL){
-	  sscanf(segmentation, "%d/%d\0",
+	  sscanf(segmentation, "%d/%d",
 		 &discriminante,
 		 &nominante);
     
@@ -1172,7 +1172,7 @@ ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
   
   pthread_mutex_unlock(application_context->mutex);
 
-  //  g_message("switch - 0x%0x\0", ((AGS_FIFOOUT_BUFFER0 |
+  //  g_message("switch - 0x%0x", ((AGS_FIFOOUT_BUFFER0 |
   //				  AGS_FIFOOUT_BUFFER1 |
   //				  AGS_FIFOOUT_BUFFER2 |
   //				  AGS_FIFOOUT_BUFFER3) & (fifoout->flags)));
@@ -1268,10 +1268,10 @@ ags_fifoout_set_presets(AgsSoundcard *soundcard,
 
   fifoout = AGS_FIFOOUT(soundcard);
   g_object_set(fifoout,
-	       "pcm-channels\0", channels,
-	       "samplerate\0", rate,
-	       "buffer-size\0", buffer_size,
-	       "format\0", format,
+	       "pcm-channels", channels,
+	       "samplerate", rate,
+	       "buffer-size", buffer_size,
+	       "format", format,
 	       NULL);
 }
 
@@ -1603,7 +1603,7 @@ ags_fifoout_get_next_buffer(AgsSoundcard *soundcard)
   
   fifoout = AGS_FIFOOUT(soundcard);
 
-  //  g_message("next - 0x%0x\0", ((AGS_FIFOOUT_BUFFER0 |
+  //  g_message("next - 0x%0x", ((AGS_FIFOOUT_BUFFER0 |
   //				AGS_FIFOOUT_BUFFER1 |
   //				AGS_FIFOOUT_BUFFER2 |
   //				AGS_FIFOOUT_BUFFER3) & (fifoout->flags)));
@@ -1723,7 +1723,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
   delay = (60.0 * (((gdouble) fifoout->samplerate / (gdouble) fifoout->buffer_size) / (gdouble) fifoout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) fifoout->delay_factor)));
 
 #ifdef AGS_DEBUG
-  g_message("delay : %f\0", delay);
+  g_message("delay : %f", delay);
 #endif
   
   default_tact_frames = (guint) (delay * fifoout->buffer_size);
@@ -1736,7 +1736,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
     fifoout->attack[i] = (guint) ((i * default_tact_frames + fifoout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (fifoout->buffer_size);
     
 #ifdef AGS_DEBUG
-    g_message("%d\0", fifoout->attack[i]);
+    g_message("%d", fifoout->attack[i]);
 #endif
   }
   
@@ -1744,7 +1744,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
     fifoout->delay[i] = ((gdouble) (default_tact_frames + fifoout->attack[i])) / (gdouble) fifoout->buffer_size;
     
 #ifdef AGS_DEBUG
-    g_message("%f\0", fifoout->delay[i]);
+    g_message("%f", fifoout->delay[i]);
 #endif
   }
 }
@@ -1793,7 +1793,7 @@ ags_fifoout_realloc_buffer(AgsFifoout *fifoout)
     }
     break;
   default:
-    g_warning("ags_fifoout_realloc_buffer(): unsupported word size\0");
+    g_warning("ags_fifoout_realloc_buffer(): unsupported word size");
     return;
   }
   
@@ -1842,7 +1842,7 @@ ags_fifoout_new(GObject *application_context)
   AgsFifoout *fifoout;
 
   fifoout = (AgsFifoout *) g_object_new(AGS_TYPE_FIFOOUT,
-					"application-context\0", application_context,
+					"application-context", application_context,
 					NULL);
   
   return(fifoout);

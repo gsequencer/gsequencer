@@ -82,7 +82,7 @@ ags_set_audio_channels_get_type()
     };
 
     ags_type_set_audio_channels = g_type_register_static(AGS_TYPE_TASK,
-							 "AgsSetAudioChannels\0",
+							 "AgsSetAudioChannels",
 							 &ags_set_audio_channels_info,
 							 0);
     
@@ -119,9 +119,9 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of set audio channels\0",
-				   "The soundcard of set audio channels\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "soundcard of set audio channels",
+				   "The soundcard of set audio channels",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -135,9 +135,9 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("audio-channels\0",
-				 "audio channels\0",
-				 "The count of audio channels\0",
+  param_spec = g_param_spec_uint("audio-channels",
+				 "audio channels",
+				 "The count of audio channels",
 				 0,
 				 G_MAXUINT,
 				 0,

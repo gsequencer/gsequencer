@@ -50,7 +50,7 @@ ags_remote_output_get_type (void)
     };
 
     ags_type_remote_output = g_type_register_static(AGS_TYPE_REMOTE_CHANNEL,
-						    "AgsRemoteOutput\0",
+						    "AgsRemoteOutput",
 						    &ags_remote_output_info, 0);
 
     g_type_add_interface_static(ags_type_remote_output,

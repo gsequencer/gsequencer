@@ -81,7 +81,7 @@ ags_save_file_get_type()
     };
 
     ags_type_save_file = g_type_register_static(AGS_TYPE_TASK,
-						"AgsSaveFile\0",
+						"AgsSaveFile",
 						&ags_save_file_info,
 						0);
 
@@ -118,9 +118,9 @@ ags_save_file_class_init(AgsSaveFileClass *save_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("file\0",
-				   "file of save file\0",
-				   "The file of save file task\0",
+  param_spec = g_param_spec_object("file",
+				   "file of save file",
+				   "The file of save file task",
 				   AGS_TYPE_FILE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -240,7 +240,7 @@ ags_save_file_launch(AgsTask *task)
 
   save_file = AGS_SAVE_FILE(task);
 
-  g_message("Saving to: %s\0", save_file->file->filename);
+  g_message("Saving to: %s", save_file->file->filename);
   error = NULL;
   ags_file_rw_open(save_file->file,
 		   TRUE,

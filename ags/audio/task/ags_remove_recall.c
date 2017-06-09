@@ -92,7 +92,7 @@ ags_remove_recall_get_type()
     };
 
     ags_type_remove_recall = g_type_register_static(AGS_TYPE_TASK,
-						    "AgsRemoveRecall\0",
+						    "AgsRemoveRecall",
 						    &ags_remove_recall_info,
 						    0);
 
@@ -128,9 +128,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("context\0",
-				   "context of remove recall\0",
-				   "The context of remove recall task\0",
+  param_spec = g_param_spec_object("context",
+				   "context of remove recall",
+				   "The context of remove recall task",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -144,9 +144,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("recall\0",
-				   "recall of remove recall\0",
-				   "The recall of remove recall task\0",
+  param_spec = g_param_spec_object("recall",
+				   "recall of remove recall",
+				   "The recall of remove recall task",
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -160,9 +160,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("is-play\0",
-				     "is play context\0",
-				     "Remove recall to play context\0",
+  param_spec =  g_param_spec_boolean("is-play",
+				     "is play context",
+				     "Remove recall to play context",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -176,9 +176,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("remove-all\0",
-				     "remove all\0",
-				     "Remove all related recall\0",
+  param_spec =  g_param_spec_boolean("remove-all",
+				     "remove all",
+				     "Remove all related recall",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

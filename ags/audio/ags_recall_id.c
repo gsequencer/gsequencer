@@ -83,7 +83,7 @@ ags_recall_id_get_type(void)
     };
 
     ags_type_recall_id = g_type_register_static(G_TYPE_OBJECT,
-						"AgsRecallID\0",
+						"AgsRecallID",
 						&ags_recall_id_info,
 						0);
 
@@ -120,9 +120,9 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recycling\0",
-				   "assigned recycling\0",
-				   "The recycling it is assigned with\0",
+  param_spec = g_param_spec_object("recycling",
+				   "assigned recycling",
+				   "The recycling it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,9 +136,9 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("recycling-context\0",
-				   "assigned recycling context\0",
-				   "The recycling context it is assigned with\0",
+  param_spec = g_param_spec_object("recycling-context",
+				   "assigned recycling context",
+				   "The recycling context it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

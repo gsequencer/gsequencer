@@ -139,7 +139,7 @@ ags_play_channel_run_master_get_type()
     };    
 
     ags_type_play_channel_run_master = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							      "AgsPlayChannelRunMaster\0",
+							      "AgsPlayChannelRunMaster",
 							      &ags_play_channel_run_master_info,
 							      0);
     
@@ -185,9 +185,9 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("stream-channel-run\0",
-				   "assigned AgsStreamChannelRun\0",
-				   "an assigned AgsStreamChannelRun\0",
+  param_spec = g_param_spec_object("stream-channel-run",
+				   "assigned AgsStreamChannelRun",
+				   "an assigned AgsStreamChannelRun",
 				   AGS_TYPE_STREAM_CHANNEL_RUN,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -231,10 +231,10 @@ ags_play_channel_run_master_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_master)
 {
-  AGS_RECALL(play_channel_run_master)->name = "ags-play\0";
+  AGS_RECALL(play_channel_run_master)->name = "ags-play";
   AGS_RECALL(play_channel_run_master)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_channel_run_master)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_channel_run_master)->xml_type = "ags-play-channel-run-master\0";
+  AGS_RECALL(play_channel_run_master)->xml_type = "ags-play-channel-run-master";
   AGS_RECALL(play_channel_run_master)->port = NULL;
 
   AGS_RECALL(play_channel_run_master)->flags |= (AGS_RECALL_INPUT_ORIENTATED |
@@ -291,7 +291,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run_master)->flags)) != 0){
 	    streamer->done_handler =
-	      g_signal_connect(G_OBJECT(stream_channel_run), "done\0",
+	      g_signal_connect(G_OBJECT(stream_channel_run), "done",
 			       G_CALLBACK(ags_play_channel_run_master_stream_channel_done_callback), play_channel_run_master);
 	  }
 	}
@@ -392,7 +392,7 @@ ags_play_channel_run_master_connect(AgsConnectable *connectable)
   gobject = G_OBJECT(AGS_RECALL_CHANNEL(play_channel)->source);
 
   play_channel_run_master->source_recycling_changed_handler =
-    g_signal_connect(gobject, "recycling_changed\0",
+    g_signal_connect(gobject, "recycling_changed",
 		     G_CALLBACK(ags_play_channel_run_master_source_recycling_changed_callback), play_channel_run_master);
 }
 
@@ -447,7 +447,7 @@ ags_play_channel_run_master_connect_dynamic(AgsDynamicConnectable *dynamic_conne
     gobject = G_OBJECT(streamer->stream_channel_run);
 
     streamer->done_handler =
-      g_signal_connect(gobject, "done\0",
+      g_signal_connect(gobject, "done",
 		       G_CALLBACK(ags_play_channel_run_master_stream_channel_done_callback), streamer);
 
     list = list->next;
@@ -545,7 +545,7 @@ ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
       stream_channel_run = (AgsStreamChannelRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
 
       g_object_set(G_OBJECT(recall),
-		   "stream-channel-run\0", stream_channel_run,
+		   "stream-channel-run", stream_channel_run,
 		   NULL);
 
       i++;
@@ -632,7 +632,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 
 	if(list != NULL){
 	  g_object_set(G_OBJECT(play_channel_run_master),
-		       "stream-channel-run\0", AGS_STREAM_CHANNEL_RUN(list->data),
+		       "stream-channel-run", AGS_STREAM_CHANNEL_RUN(list->data),
 		       NULL);
 
 	  container = AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run_master)->container);
@@ -644,7 +644,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 
 	    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(current_master)->flags)) == 0){
 	      g_object_set(G_OBJECT(current_master),
-			   "stream-channel-run\0", AGS_STREAM_CHANNEL_RUN(list->data),
+			   "stream-channel-run", AGS_STREAM_CHANNEL_RUN(list->data),
 			   NULL);
 	    }
 	    

@@ -91,7 +91,7 @@ ags_open_file_get_type()
     };
 
     ags_type_open_file = g_type_register_static(AGS_TYPE_TASK,
-						"AgsOpenFile\0",
+						"AgsOpenFile",
 						&ags_open_file_info,
 						0);
 
@@ -128,9 +128,9 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of open file\0",
-				   "The audio of open file task\0",
+  param_spec = g_param_spec_object("audio",
+				   "audio of open file",
+				   "The audio of open file task",
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -144,9 +144,9 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_pointer("filenames\0",
-				    "filenames of open file\0",
-				    "The filenames of open file task\0",
+  param_spec = g_param_spec_pointer("filenames",
+				    "filenames of open file",
+				    "The filenames of open file task",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAMES,
@@ -159,9 +159,9 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("overwrite-channels\0",
-				     "open file overwriting channels\0",
-				     "Do overwrite channels as open files\0",
+  param_spec =  g_param_spec_boolean("overwrite-channels",
+				     "open file overwriting channels",
+				     "Do overwrite channels as open files",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -175,9 +175,9 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("create-channels\0",
-				     "open file creating channels\0",
-				     "Do create channels as open files\0",
+  param_spec =  g_param_spec_boolean("create-channels",
+				     "open file creating channels",
+				     "Do create channels as open files",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -400,8 +400,8 @@ ags_open_file_launch(AgsTask *task)
     
     while(iter != channel->next_pad && audio_signal != NULL){
       file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
-			       "filename\0", current_filename,
-			       "audio-channel\0", j,
+			       "filename", current_filename,
+			       "audio-channel", j,
 			       NULL);
       g_object_set(G_OBJECT(iter),
 		   "file-link", file_link,
@@ -416,7 +416,7 @@ ags_open_file_launch(AgsTask *task)
 			     &error);
 
 	if(error != NULL){
-	  g_warning("%s\0", error->message);
+	  g_warning("%s", error->message);
 	}
       }
 

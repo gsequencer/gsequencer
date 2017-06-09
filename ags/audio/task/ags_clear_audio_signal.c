@@ -83,7 +83,7 @@ ags_clear_audio_signal_get_type()
     };
 
     ags_type_clear_audio_signal = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsClearAudioSignal\0",
+						  "AgsClearAudioSignal",
 						  &ags_clear_audio_signal_info,
 						  0);
 
@@ -120,9 +120,9 @@ ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal)
    * 
    * Since: 0.7.122.17
    */
-  param_spec = g_param_spec_object("audio-signal\0",
-				   "audio signal of clear audio signal\0",
-				   "The audio signal of clear audio signal task\0",
+  param_spec = g_param_spec_object("audio-signal",
+				   "audio signal of clear audio signal",
+				   "The audio signal of clear audio signal task",
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -71,7 +71,7 @@ ags_tic_device_get_type()
     };
 
     ags_type_tic_device = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsTicDevice\0",
+						 "AgsTicDevice",
 						 &ags_tic_device_info,
 						 0);
 

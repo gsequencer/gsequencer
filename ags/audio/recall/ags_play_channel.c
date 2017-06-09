@@ -71,14 +71,14 @@ static AgsConnectableInterface *ags_play_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_play_channel_parent_mutable_interface;
 static AgsPluginInterface *ags_play_channel_parent_plugin_interface;
 
-static const gchar *ags_play_channel_plugin_name = "ags-play\0";
+static const gchar *ags_play_channel_plugin_name = "ags-play";
 static const gchar *ags_play_channel_specifier[] = {
-  "./audio-channel[0]\0",
-  "./muted[0]\0",
+  "./audio-channel[0]",
+  "./muted[0]",
 };
 static const gchar *ags_play_channel_control_port[] = {
-  "1/2\0",
-  "2/2\0",
+  "1/2",
+  "2/2",
 };
 
 GType
@@ -118,7 +118,7 @@ ags_play_channel_get_type()
     };    
 
     ags_type_play_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsPlayChannel\0",
+						   "AgsPlayChannel",
 						   &ags_play_channel_info,
 						   0);
 
@@ -164,9 +164,9 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("audio-channel\0",
-				   "assigned audio channel\0",
-				   "The audio channel this recall does output to\0",
+  param_spec = g_param_spec_object("audio-channel",
+				   "assigned audio channel",
+				   "The audio channel this recall does output to",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -180,9 +180,9 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("muted\0",
-				   "mute channel\0",
-				   "Mute the channel\0",
+  param_spec = g_param_spec_object("muted",
+				   "mute channel",
+				   "Mute the channel",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -220,22 +220,22 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 {
   GList *port;
 
-  AGS_RECALL(play_channel)->name = "ags-play\0";
+  AGS_RECALL(play_channel)->name = "ags-play";
   AGS_RECALL(play_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_channel)->xml_type = "ags-play-channel\0";
+  AGS_RECALL(play_channel)->xml_type = "ags-play-channel";
 
   port = NULL;
 
   /* audio channel */
   play_channel->audio_channel = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name\0", ags_play_channel_plugin_name,
-					     "specifier\0", ags_play_channel_specifier[0],
-					     "control-port\0", ags_play_channel_control_port[0],
-					     "port-value-is-pointer\0", FALSE,
-					     "port-value-type\0", G_TYPE_UINT64,
-					     "port-value-size\0", sizeof(guint64),
-					     "port-value-length\0", 1,
+					     "plugin-name", ags_play_channel_plugin_name,
+					     "specifier", ags_play_channel_specifier[0],
+					     "control-port", ags_play_channel_control_port[0],
+					     "port-value-is-pointer", FALSE,
+					     "port-value-type", G_TYPE_UINT64,
+					     "port-value-size", sizeof(guint64),
+					     "port-value-length", 1,
 					     NULL);
   g_object_ref(play_channel->audio_channel);
 
@@ -247,13 +247,13 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 
   /* muted */
   play_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", ags_play_channel_plugin_name,
-				     "specifier\0", ags_play_channel_specifier[1],
-				     "control-port\0", ags_play_channel_control_port[1],
-				     "port-value-is-pointer\0", FALSE,
-				     "port-value-type\0", G_TYPE_BOOLEAN,
-				     "port-value-size\0", sizeof(gboolean),
-				     "port-value-length\0", 1,
+				     "plugin-name", ags_play_channel_plugin_name,
+				     "specifier", ags_play_channel_specifier[1],
+				     "control-port", ags_play_channel_control_port[1],
+				     "port-value-is-pointer", FALSE,
+				     "port-value-type", G_TYPE_BOOLEAN,
+				     "port-value-size", sizeof(gboolean),
+				     "port-value-length", 1,
 				     NULL);
   g_object_ref(play_channel->muted);
 
@@ -422,16 +422,16 @@ ags_play_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./audio-channel[0]\0",
+		"./audio-channel[0]",
 		17)){
       g_object_set(G_OBJECT(plugin),
-		   "audio-channel\0", AGS_PORT(port->data),
+		   "audio-channel", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./muted[0]\0",
+		"./muted[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "muted\0", AGS_PORT(port->data),
+		   "muted", AGS_PORT(port->data),
 		   NULL);
     }
 
@@ -468,7 +468,7 @@ ags_play_channel_new(GObject *soundcard,
   AgsPlayChannel *play_channel;
 
   play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						 "soundcard\0", soundcard,
+						 "soundcard", soundcard,
 						 NULL);
   
   play_channel->audio_channel->port_value.ags_port_uint = audio_channel;

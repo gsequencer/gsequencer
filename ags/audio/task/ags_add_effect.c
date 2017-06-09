@@ -83,7 +83,7 @@ ags_add_effect_get_type()
     };
 
     ags_type_add_effect = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsAddEffect\0",
+						 "AgsAddEffect",
 						 &ags_add_effect_info,
 						 0);
 
@@ -120,9 +120,9 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel of add effect\0",
-				   "The channel of add effect task\0",
+  param_spec = g_param_spec_object("channel",
+				   "channel of add effect",
+				   "The channel of add effect task",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,9 +136,9 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "the filename\0",
-				   "The filename containing the effect\0",
+  param_spec = g_param_spec_string("filename",
+				   "the filename",
+				   "The filename containing the effect",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,9 +152,9 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_string("effect\0",
-				   "the effect\0",
-				   "The effect\0",
+  param_spec = g_param_spec_string("effect",
+				   "the effect",
+				   "The effect",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -85,7 +85,7 @@ ags_start_soundcard_get_type()
     };
 
     ags_type_start_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						      "AgsStartSoundcard\0",
+						      "AgsStartSoundcard",
 						      &ags_start_soundcard_info,
 						      0);
 
@@ -122,9 +122,9 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of start soundcard\0",
-				   "The application context of start soundcard task\0",
+  param_spec = g_param_spec_object("application-context",
+				   "application context of start soundcard",
+				   "The application context of start soundcard task",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -287,7 +287,7 @@ ags_start_soundcard_launch(AgsTask *task)
     /* append to AgsSoundcard */
     AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
 
-    g_message("start soundcard\0");
+    g_message("start soundcard");
 
     start_queue = NULL;    
     start_queue = g_list_prepend(start_queue,

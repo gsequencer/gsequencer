@@ -93,7 +93,7 @@ ags_envelope_channel_get_type()
     };
 
     ags_type_envelope_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						       "AgsEnvelopeChannel\0",
+						       "AgsEnvelopeChannel",
 						       &ags_envelope_channel_info,
 						       0);
 
@@ -149,9 +149,9 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("attack\0",
-				   "attack channel\0",
-				   "Attack of the channel\0",
+  param_spec = g_param_spec_object("attack",
+				   "attack channel",
+				   "Attack of the channel",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -165,9 +165,9 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("decay\0",
-				   "decay channel\0",
-				   "Decay of the channel\0",
+  param_spec = g_param_spec_object("decay",
+				   "decay channel",
+				   "Decay of the channel",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -181,9 +181,9 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("sustain\0",
-				   "sustain channel\0",
-				   "Sustain of the channel\0",
+  param_spec = g_param_spec_object("sustain",
+				   "sustain channel",
+				   "Sustain of the channel",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -197,9 +197,9 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("release\0",
-				   "release channel\0",
-				   "Release of the channel\0",
+  param_spec = g_param_spec_object("release",
+				   "release channel",
+				   "Release of the channel",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -213,9 +213,9 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("ratio\0",
-				   "envelope ratio\0",
-				   "The ratio of the envelope\0",
+  param_spec = g_param_spec_object("ratio",
+				   "envelope ratio",
+				   "The ratio of the envelope",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -228,23 +228,23 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 {
   GList *port;
 
-  AGS_RECALL(envelope_channel)->name = "ags-envelope\0";
+  AGS_RECALL(envelope_channel)->name = "ags-envelope";
   AGS_RECALL(envelope_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(envelope_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(envelope_channel)->xml_type = "ags-envelope-channel\0";
+  AGS_RECALL(envelope_channel)->xml_type = "ags-envelope-channel";
 
   /* ports */
   port = NULL;
 
   /* attack */
   envelope_channel->attack = g_object_new(AGS_TYPE_PORT,
-					  "plugin-name\0", g_strdup("ags-envelope\0"),
-					  "specifier\0", "./attack[0]\0",
-					  "control-port\0", "1/5\0",
-					  "port-value-is-pointer\0", FALSE,
-					  "port-value-type\0", G_TYPE_DOUBLE,
-					  "port-value-size\0", sizeof(gdouble),
-					  "port-value-length\0", 1,
+					  "plugin-name", g_strdup("ags-envelope"),
+					  "specifier", "./attack[0]",
+					  "control-port", "1/5",
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_DOUBLE,
+					  "port-value-size", sizeof(gdouble),
+					  "port-value-length", 1,
 					  NULL);
   g_object_ref(envelope_channel->attack);
   
@@ -256,13 +256,13 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* decay */
   envelope_channel->decay = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name\0", g_strdup("ags-envelope\0"),
-					 "specifier\0", "./decay[0]\0",
-					 "control-port\0", "2/5\0",
-					 "port-value-is-pointer\0", FALSE,
-					 "port-value-type\0", G_TYPE_DOUBLE,
-					 "port-value-size\0", sizeof(gdouble),
-					 "port-value-length\0", 1,
+					 "plugin-name", g_strdup("ags-envelope"),
+					 "specifier", "./decay[0]",
+					 "control-port", "2/5",
+					 "port-value-is-pointer", FALSE,
+					 "port-value-type", G_TYPE_DOUBLE,
+					 "port-value-size", sizeof(gdouble),
+					 "port-value-length", 1,
 					 NULL);
   g_object_ref(envelope_channel->decay);
 
@@ -274,13 +274,13 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* sustain */
   envelope_channel->sustain = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name\0", g_strdup("ags-envelope\0"),
-					   "specifier\0", "./sustain[0]\0",
-					   "control-port\0", "3/5\0",
-					   "port-value-is-pointer\0", FALSE,
-					   "port-value-type\0", G_TYPE_DOUBLE,
-					   "port-value-size\0", sizeof(gdouble),
-					   "port-value-length\0", 1,
+					   "plugin-name", g_strdup("ags-envelope"),
+					   "specifier", "./sustain[0]",
+					   "control-port", "3/5",
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_DOUBLE,
+					   "port-value-size", sizeof(gdouble),
+					   "port-value-length", 1,
 					   NULL);
   g_object_ref(envelope_channel->sustain);
 
@@ -292,13 +292,13 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* release */
   envelope_channel->release = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name\0", g_strdup("ags-envelope\0"),
-					   "specifier\0", "./release[0]\0",
-					   "control-port\0", "4/5\0",
-					   "port-value-is-pointer\0", FALSE,
-					   "port-value-type\0", G_TYPE_DOUBLE,
-					   "port-value-size\0", sizeof(gdouble),
-					   "port-value-length\0", 1,
+					   "plugin-name", g_strdup("ags-envelope"),
+					   "specifier", "./release[0]",
+					   "control-port", "4/5",
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_DOUBLE,
+					   "port-value-size", sizeof(gdouble),
+					   "port-value-length", 1,
 					   NULL);
   g_object_ref(envelope_channel->release);
   
@@ -310,13 +310,13 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* ratio */  
   envelope_channel->ratio = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name\0", g_strdup("ags-envelope\0"),
-					 "specifier\0", "./ratio[0]\0",
-					 "control-port\0", "5/5\0",
-					 "port-value-is-pointer\0", FALSE,
-					 "port-value-type\0", G_TYPE_DOUBLE,
-					 "port-value-size\0", sizeof(gdouble),
-					 "port-value-length\0", 1,
+					 "plugin-name", g_strdup("ags-envelope"),
+					 "specifier", "./ratio[0]",
+					 "control-port", "5/5",
+					 "port-value-is-pointer", FALSE,
+					 "port-value-type", G_TYPE_DOUBLE,
+					 "port-value-size", sizeof(gdouble),
+					 "port-value-length", 1,
 					 NULL);
   g_object_ref(envelope_channel->ratio);
   
@@ -515,34 +515,34 @@ ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"attack[0]\0",
+		"attack[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "attack\0", AGS_PORT(port->data),
+		   "attack", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"decay[0]\0",
+		"decay[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "decay\0", AGS_PORT(port->data),
+		   "decay", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"sustain[0]\0",
+		"sustain[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "sustain\0", AGS_PORT(port->data),
+		   "sustain", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"release[0]\0",
+		"release[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "release\0", AGS_PORT(port->data),
+		   "release", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"ratio[0]\0",
+		"ratio[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "ratio\0", AGS_PORT(port->data),
+		   "ratio", AGS_PORT(port->data),
 		   NULL);
     }
 

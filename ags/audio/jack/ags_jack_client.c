@@ -110,7 +110,7 @@ ags_jack_client_get_type()
     };
     
     ags_type_jack_client = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsJackClient\0",
+						  "AgsJackClient",
 						  &ags_jack_client_info,
 						  0);
 
@@ -147,9 +147,9 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    * 
    * Since: 0.7.1
    */
-  param_spec = g_param_spec_object("jack-server\0",
-				   "assigned JACK server\0",
-				   "The assigned JACK server.\0",
+  param_spec = g_param_spec_object("jack-server",
+				   "assigned JACK server",
+				   "The assigned JACK server.",
 				   AGS_TYPE_JACK_SERVER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -163,9 +163,9 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("device\0",
-				   "assigned device\0",
-				   "The assigned device.\0",
+  param_spec = g_param_spec_object("device",
+				   "assigned device",
+				   "The assigned device.",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -179,9 +179,9 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("port\0",
-				   "assigned port\0",
-				   "The assigned port.\0",
+  param_spec = g_param_spec_object("port",
+				   "assigned port",
+				   "The assigned port.",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -428,7 +428,7 @@ ags_jack_client_dispose(GObject *gobject)
 
     while(list != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "jack-client\0", NULL,
+		   "jack-client", NULL,
 		   NULL);
 
       list = list->next;
@@ -560,12 +560,12 @@ ags_jack_client_open(AgsJackClient *jack_client,
   }
 
   if(jack_client->client != NULL){
-    g_message("Advanced Gtk+ Sequencer JACK client already open\0");
+    g_message("Advanced Gtk+ Sequencer JACK client already open");
     
     return;
   } 
   
-  g_message("Advanced Gtk+ Sequencer open JACK client\0");
+  g_message("Advanced Gtk+ Sequencer open JACK client");
   
   jack_client->name = g_strdup(client_name);
   jack_client->client = jack_client_open(jack_client->name,
@@ -878,7 +878,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   pthread_mutex_unlock(mutex);
 
   if(g_atomic_int_get(&(jack_client->queued)) > 0){
-    g_warning("drop JACK callback\0");
+    g_warning("drop JACK callback");
     
     return(0);
   }else{
@@ -1267,7 +1267,7 @@ ags_jack_client_new(GObject *jack_server)
   AgsJackClient *jack_client;
 
   jack_client = (AgsJackClient *) g_object_new(AGS_TYPE_JACK_CLIENT,
-					       "jack-server\0", jack_server,
+					       "jack-server", jack_server,
 					       NULL);
 
   return(jack_client);

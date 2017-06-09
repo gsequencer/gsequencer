@@ -82,7 +82,7 @@ ags_ipatch_dls2_reader_get_type()
     };
 
     ags_type_ipatch_dls2_reader = g_type_register_static(G_TYPE_OBJECT,
-							 "AgsIpatchDLS2Reader\0",
+							 "AgsIpatchDLS2Reader",
 							 &ags_ipatch_dls2_reader_info,
 							 0);
 

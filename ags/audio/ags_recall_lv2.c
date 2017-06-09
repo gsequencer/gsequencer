@@ -120,7 +120,7 @@ ags_recall_lv2_get_type (void)
     };
 
     ags_type_recall_lv2 = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						 "AgsRecallLv2\0",
+						 "AgsRecallLv2",
 						 &ags_recall_lv2_info,
 						 0);
 
@@ -161,9 +161,9 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("turtle\0",
-				   "turtle of recall lv2\0",
-				   "The turtle which this recall lv2 is described by\0",
+  param_spec = g_param_spec_object("turtle",
+				   "turtle of recall lv2",
+				   "The turtle which this recall lv2 is described by",
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,9 +177,9 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * 
    * Since: 0.7.0
    */
-  param_spec =  g_param_spec_string("filename\0",
-				    "the object file\0",
-				    "The filename as string of object file\0",
+  param_spec =  g_param_spec_string("filename",
+				    "the object file",
+				    "The filename as string of object file",
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -193,9 +193,9 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * 
    * Since: 0.7.0
    */
-  param_spec =  g_param_spec_string("effect\0",
-				    "the effect\0",
-				    "The effect's string representation\0",
+  param_spec =  g_param_spec_string("effect",
+				    "the effect",
+				    "The effect's string representation",
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -209,9 +209,9 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * 
    * Since: 0.7.0
    */
-  param_spec =  g_param_spec_string("uri\0",
-				    "the uri\0",
-				    "The uri's string representation\0",
+  param_spec =  g_param_spec_string("uri",
+				    "the uri",
+				    "The uri's string representation",
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -225,9 +225,9 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    * 
    * Since: 0.7.0
    */
-  param_spec =  g_param_spec_ulong("index\0",
-				   "index of uri\0",
-				   "The numerical index of uri\0",
+  param_spec =  g_param_spec_ulong("index",
+				   "index of uri",
+				   "The numerical index of uri",
 				   0,
 				   65535,
 				   0,
@@ -259,10 +259,10 @@ ags_recall_lv2_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_lv2_init(AgsRecallLv2 *recall_lv2)
 {
-  AGS_RECALL(recall_lv2)->name = "ags-lv2\0";
+  AGS_RECALL(recall_lv2)->name = "ags-lv2";
   AGS_RECALL(recall_lv2)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(recall_lv2)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(recall_lv2)->xml_type = "ags-recall-lv2\0";
+  AGS_RECALL(recall_lv2)->xml_type = "ags-recall-lv2";
   AGS_RECALL(recall_lv2)->port = NULL;
 
   recall_lv2->flags = 0;
@@ -558,7 +558,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 									      FALSE);
 	
 #ifdef AGS_DEBUG
-	  g_message("connecting port: %d/%d\0", i, port_count);      
+	  g_message("connecting port: %d/%d", i, port_count);      
 #endif
 	}
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -606,29 +606,29 @@ ags_recall_lv2_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   filename = xmlGetProp(node,
-			"filename\0");
+			"filename");
   effect = xmlGetProp(node,
-		      "effect\0");
+		      "effect");
   uri = xmlGetProp(node,
-		   "uri\0");
+		   "uri");
   index = g_ascii_strtoull(xmlGetProp(node,
-				      "index\0"),
+				      "index"),
 			   NULL,
 			   10);
 
   g_object_set(gobject,
-	       "filename\0", filename,
-	       "effect\0", effect,
-	       "uri\0", uri,
-	       "index\0", index,
+	       "filename", filename,
+	       "effect", effect,
+	       "uri", uri,
+	       "index", index,
 	       NULL);
 
   ags_recall_lv2_load(gobject);
@@ -647,35 +647,35 @@ ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-recall-lv2\0");
+		    "ags-recall-lv2");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", recall_lv2,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", recall_lv2,
 				   NULL));
 
   xmlNewProp(node,
-	     "filename\0",
+	     "filename",
 	     g_strdup(recall_lv2->filename));
   
   xmlNewProp(node,
-	     "effect\0",
+	     "effect",
 	     g_strdup(recall_lv2->effect));
 
   xmlNewProp(node,
-	     "uri\0",
+	     "uri",
 	     g_strdup(recall_lv2->uri));
 
   xmlNewProp(node,
-	     "index\0",
-	     g_strdup_printf("%d\0", recall_lv2->index));
+	     "index",
+	     g_strdup_printf("%d", recall_lv2->index));
 
   xmlAddChild(parent,
 	      node);
@@ -713,7 +713,7 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						     "lv2_descriptor\0");
+						     "lv2_descriptor");
 
     if(dlerror() == NULL && lv2_descriptor){
       recall_lv2->plugin_descriptor = 
@@ -752,7 +752,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       recall_lv2->filename, recall_lv2->effect);
 #ifdef AGS_DEBUG
-  g_message("ports from ttl: %s\0", lv2_plugin->turtle->filename);
+  g_message("ports from ttl: %s", lv2_plugin->turtle->filename);
 #endif
   
   port = NULL;
@@ -763,7 +763,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     
     for(i = 0; i < port_count; i++){
 #ifdef AGS_DEBUG
-      g_message("Lv2 plugin port-index: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+      g_message("Lv2 plugin port-index: %d", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
 #endif
       
       if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -792,16 +792,16 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	  continue;
 	}
 	
-	plugin_name = g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri);
+	plugin_name = g_strdup_printf("lv2-<%s>", lv2_plugin->uri);
 
 	current = g_object_new(AGS_TYPE_PORT,
-			       "plugin-name\0", plugin_name,
-			       "specifier\0", specifier,
-			       "control-port\0", g_strdup_printf("%u/%u\0",
+			       "plugin-name", plugin_name,
+			       "specifier", specifier,
+			       "control-port", g_strdup_printf("%u/%u",
 								 i,
 								 port_count),
-			       "port-value-is-pointer\0", FALSE,
-			       "port-value-type\0", G_TYPE_FLOAT,
+			       "port-value-is-pointer", FALSE,
+			       "port-value-type", G_TYPE_FLOAT,
 			       NULL);
 	g_object_ref(current);
 	
@@ -827,7 +827,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 									    FALSE);
 
 #ifdef AGS_DEBUG
-	g_message("connecting port: %s %d/%d\0", specifier, i, port_count);
+	g_message("connecting port: %s %d/%d", specifier, i, port_count);
 #endif
 	
 	port = g_list_prepend(port,
@@ -895,7 +895,7 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
   if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
     lv2_conversion = ags_lv2_conversion_new();
     g_object_set(port,
-		 "conversion\0", lv2_conversion,
+		 "conversion", lv2_conversion,
 		 NULL);
     
     lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
@@ -967,13 +967,13 @@ ags_recall_lv2_new(AgsChannel *source,
   }
 
   recall_lv2 = (AgsRecallLv2 *) g_object_new(AGS_TYPE_RECALL_LV2,
-					     "soundcard\0", soundcard,
-					     "turtle\0", turtle,
-					     "source\0", source,
-					     "filename\0", filename,
-					     "effect\0", effect,
-					     "uri\0", uri,
-					     "index\0", index,
+					     "soundcard", soundcard,
+					     "turtle", turtle,
+					     "source", source,
+					     "filename", filename,
+					     "effect", effect,
+					     "uri", uri,
+					     "index", index,
 					     NULL);
 
   return(recall_lv2);

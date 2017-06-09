@@ -472,7 +472,7 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
       
       midi_iter += (3 + midi_iter[2]);
     }else{
-      g_warning("ags_midi_util.c - unexpected byte %x\0", midi_iter[0]);
+      g_warning("ags_midi_util.c - unexpected byte %x", midi_iter[0]);
 	  
       midi_iter++;
     }

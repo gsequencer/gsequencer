@@ -101,7 +101,7 @@ ags_recall_adaptor_run_get_type()
     };
 
     ags_type_recall_adaptor_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-							 "AgsRecallAdaptorRun\0",
+							 "AgsRecallAdaptorRun",
 							 &ags_recall_adaptor_run_info,
 							 0);
 

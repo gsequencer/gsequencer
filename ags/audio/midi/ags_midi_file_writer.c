@@ -67,7 +67,7 @@ ags_midi_file_writer_get_type(void)
     };
 
     ags_type_midi_file_writer = g_type_register_static(G_TYPE_OBJECT,
-						       "AgsMidiFileWriter\0", &ags_midi_file_writer_info,
+						       "AgsMidiFileWriter", &ags_midi_file_writer_info,
 						       0);
   }
 
@@ -98,9 +98,9 @@ ags_midi_file_writer_class_init(AgsMidiFileWriterClass *midi_file_writer)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_object("midi-file\0",
-				   "assigned midi file\0",
-				   "The midi file to read\0",
+  param_spec = g_param_spec_object("midi-file",
+				   "assigned midi file",
+				   "The midi file to read",
 				   AGS_TYPE_MIDI_FILE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -261,8 +261,8 @@ ags_midi_file_writer_new(gchar *filename)
   AgsMidiFileWriter *midi_file_writer;
 
   midi_file_writer = (AgsMidiFileWriter *) g_object_new(AGS_TYPE_MIDI_FILE_WRITER,
-							"midi-file\0", g_object_new(AGS_TYPE_MIDI_FILE,
-										    "filename\0", filename,
+							"midi-file", g_object_new(AGS_TYPE_MIDI_FILE,
+										    "filename", filename,
 										    NULL),
 							NULL);
   

@@ -75,7 +75,7 @@ ags_record_thread_get_type()
     };
 
     ags_type_record_thread = g_type_register_static(AGS_TYPE_THREAD,
-						    "AgsRecordThread\0",
+						    "AgsRecordThread",
 						    &ags_record_thread_info,
 						    0);
     
@@ -105,9 +105,9 @@ ags_record_thread_class_init(AgsRecordThreadClass *record_thread)
   gobject->finalize = ags_record_thread_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("registry\0",
-				   "registry to check against\0",
-				   "The registry to check against serialization.\0",
+  param_spec = g_param_spec_object("registry",
+				   "registry to check against",
+				   "The registry to check against serialization.",
 				   AGS_TYPE_REGISTRY,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -282,8 +282,8 @@ ags_record_thread_new(GObject *devout, AgsRegistry *registry)
   AgsRecordThread *record_thread;
 
   record_thread = (AgsRecordThread *) g_object_new(AGS_TYPE_RECORD_THREAD,
-						   "devout\0", devout,
-						   "registry\0", registry,
+						   "devout", devout,
+						   "registry", registry,
 						   NULL);
   
   return(record_thread);

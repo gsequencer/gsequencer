@@ -85,7 +85,7 @@ ags_remove_region_from_selection_get_type()
     };
 
     ags_type_remove_region_from_selection = g_type_register_static(AGS_TYPE_TASK,
-								   "AgsRemoveRegionFromSelection\0",
+								   "AgsRemoveRegionFromSelection",
 								   &ags_remove_region_from_selection_info,
 								   0);
 
@@ -122,9 +122,9 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("notation\0",
-				   "notation of remove note\0",
-				   "The notation of remove note task\0",
+  param_spec = g_param_spec_object("notation",
+				   "notation of remove note",
+				   "The notation of remove note task",
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -138,9 +138,9 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("x0\0",
-				 "offset x0\0",
-				 "The x0 offset\0",
+  param_spec = g_param_spec_uint("x0",
+				 "offset x0",
+				 "The x0 offset",
 				 0,
 				 65535,
 				 0,
@@ -155,9 +155,9 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("x1\0",
-				 "offset x1\0",
-				 "The x1 offset\0",
+  param_spec = g_param_spec_uint("x1",
+				 "offset x1",
+				 "The x1 offset",
 				 0,
 				 65535,
 				 0,
@@ -173,9 +173,9 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("y0\0",
-				 "offset y0\0",
-				 "The y0 offset\0",
+  param_spec = g_param_spec_uint("y0",
+				 "offset y0",
+				 "The y0 offset",
 				 0,
 				 65535,
 				 0,
@@ -191,9 +191,9 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("y1\0",
-				 "offset y1\0",
-				 "The y1 offset\0",
+  param_spec = g_param_spec_uint("y1",
+				 "offset y1",
+				 "The y1 offset",
 				 0,
 				 65535,
 				 0,

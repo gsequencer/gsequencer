@@ -120,7 +120,7 @@ ags_audio_signal_get_type(void)
     };
 
     ags_type_audio_signal = g_type_register_static(G_TYPE_OBJECT,
-						   "AgsAudioSignal\0",
+						   "AgsAudioSignal",
 						   &ags_audio_signal_info,
 						   0);
 
@@ -157,9 +157,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard",
+				   "assigned soundcard",
+				   "The soundcard it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -173,9 +173,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recycling\0",
-				   "assigned recycling\0",
-				   "The recycling it is assigned with\0",
+  param_spec = g_param_spec_object("recycling",
+				   "assigned recycling",
+				   "The recycling it is assigned with",
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,9 +189,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recall_id\0",
-				   "assigned recall id\0",
-				   "The recall id it is assigned with\0",
+  param_spec = g_param_spec_object("recall_id",
+				   "assigned recall id",
+				   "The recall id it is assigned with",
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -205,9 +205,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("samplerate\0",
-				 "using samplerate\0",
-				 "The samplerate to be used\0",
+  param_spec = g_param_spec_uint("samplerate",
+				 "using samplerate",
+				 "The samplerate to be used",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -223,9 +223,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("buffer-size\0",
-				 "using buffer size\0",
-				 "The buffer size to be used\0",
+  param_spec = g_param_spec_uint("buffer-size",
+				 "using buffer size",
+				 "The buffer size to be used",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -241,9 +241,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("format\0",
-				 "using format\0",
-				 "The format to be used\0",
+  param_spec = g_param_spec_uint("format",
+				 "using format",
+				 "The format to be used",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -259,9 +259,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("word-size\0",
-				 "frame word size\0",
-				 "The word size of a frame\0",
+  param_spec = g_param_spec_uint("word-size",
+				 "frame word size",
+				 "The word size of a frame",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -277,9 +277,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("length\0",
-				 "stream length\0",
-				 "The length of the stream\0",
+  param_spec = g_param_spec_uint("length",
+				 "stream length",
+				 "The length of the stream",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -295,9 +295,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("first-frame\0",
-				 "stream's first frame\0",
-				 "The first frame of the stream\0",
+  param_spec = g_param_spec_uint("first-frame",
+				 "stream's first frame",
+				 "The first frame of the stream",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -313,9 +313,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("last-frame\0",
-				 "stream's last frame\0",
-				 "The last frame of the stream\0",
+  param_spec = g_param_spec_uint("last-frame",
+				 "stream's last frame",
+				 "The last frame of the stream",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -331,9 +331,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_uint("frame-count\0",
-				 "frame count of audio data\0",
-				 "The initial frame count of audio data\0",
+  param_spec = g_param_spec_uint("frame-count",
+				 "frame count of audio data",
+				 "The initial frame count of audio data",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -349,9 +349,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("loop-start\0",
-				 "stream's loop start\0",
-				 "The loop start of the stream\0",
+  param_spec = g_param_spec_uint("loop-start",
+				 "stream's loop start",
+				 "The loop start of the stream",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -367,9 +367,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("loop-end\0",
-				 "stream's loop end\0",
-				 "The loop end of the stream\0",
+  param_spec = g_param_spec_uint("loop-end",
+				 "stream's loop end",
+				 "The loop end of the stream",
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -385,9 +385,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_double("delay\0",
-				   "using delay\0",
-				   "The delay to be used\0",
+  param_spec = g_param_spec_double("delay",
+				   "using delay",
+				   "The delay to be used",
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -403,9 +403,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("attack\0",
-				 "using attack\0",
-				 "The attack to be used\0",
+  param_spec = g_param_spec_uint("attack",
+				 "using attack",
+				 "The attack to be used",
 				 0,
 				 65535,
 				 0,
@@ -422,9 +422,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_pointer("stream\0",
-				    "containing stream\0",
-				    "The stream it contains\0",
+  param_spec = g_param_spec_pointer("stream",
+				    "containing stream",
+				    "The stream it contains",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM,
@@ -437,9 +437,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_pointer("stream-end\0",
-				    "end of stream\0",
-				    "The stream's end\0",
+  param_spec = g_param_spec_pointer("stream-end",
+				    "end of stream",
+				    "The stream's end",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_END,
@@ -452,9 +452,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_pointer("stream-current\0",
-				    "current stream\0",
-				    "The current stream\0",
+  param_spec = g_param_spec_pointer("stream-current",
+				    "current stream",
+				    "The current stream",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_CURRENT,
@@ -467,9 +467,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("note\0",
-				   "assigned note\0",
-				   "The note it is assigned with\0",
+  param_spec = g_param_spec_object("note",
+				   "assigned note",
+				   "The note it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -488,7 +488,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * The ::reallloc-buffer-size signal is invoked to notify modified buffer size.
    */
   audio_signal_signals[REALLOC_BUFFER_SIZE] =
-    g_signal_new("realloc-buffer-size\0",
+    g_signal_new("realloc-buffer-size",
 		 G_TYPE_FROM_CLASS (audio_signal),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsAudioSignalClass, realloc_buffer_size),
@@ -526,12 +526,12 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
+			     "samplerate");
   
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
+			       "samplerate");
   }  
 
   if(str != NULL){
@@ -546,12 +546,12 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   /* buffer-size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
+			     "buffer-size");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
+			       "buffer-size");
   }
   
   if(str != NULL){
@@ -566,12 +566,12 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "format\0");
+			     "format");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "format\0");
+			       "format");
   }
   
   if(str != NULL){
@@ -643,9 +643,9 @@ ags_audio_signal_set_property(GObject *gobject,
 				  &format);
 
 	g_object_set(audio_signal,
-		     "samplerate\0", samplerate,
-		     "buffer-size\0", buffer_size,
-		     "format\0", format,
+		     "samplerate", samplerate,
+		     "buffer-size", buffer_size,
+		     "format", format,
 		     NULL);
       }
     }
@@ -1022,11 +1022,11 @@ ags_audio_signal_finalize(GObject *gobject)
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
 #ifdef AGS_DEBUG
-  g_message("finalize AgsAudioSignal\0");
+  g_message("finalize AgsAudioSignal");
 #endif
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
-    g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
+    g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n");
   }
 
   /* disconnect */
@@ -1125,7 +1125,7 @@ ags_stream_alloc(guint buffer_size,
     }
     break;
   default:
-    g_warning("ags_stream_alloc(): unsupported word size\0");
+    g_warning("ags_stream_alloc(): unsupported word size");
     return(NULL);
   }
 
@@ -1204,7 +1204,7 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
       }
       break;
     default:
-      g_warning("ags_audio_signal_set_buffer_size() - unsupported format\0");
+      g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
     }
     
     stream = stream->next;
@@ -1262,7 +1262,7 @@ ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
       }
       break;
     default:
-      g_warning("ags_audio_signal_set_format() - unsupported format\0");
+      g_warning("ags_audio_signal_set_format() - unsupported format");
     }
     
     stream = stream->next;
@@ -1612,7 +1612,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
       }
       break;
     default:
-      g_warning("ags_audio_signal_duplicate(): unsupported word size\0");
+      g_warning("ags_audio_signal_duplicate(): unsupported word size");
       return;
     }
     
@@ -2777,9 +2777,9 @@ ags_audio_signal_new(GObject *soundcard,
   AgsAudioSignal *audio_signal;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "soundcard\0", soundcard,
-						 "recycling\0", recycling,
-						 "recall-id\0", recall_id,
+						 "soundcard", soundcard,
+						 "recycling", recycling,
+						 "recall-id", recall_id,
 						 NULL);
 
   return(audio_signal);
@@ -2809,9 +2809,9 @@ ags_audio_signal_new_with_length(GObject *soundcard,
   AgsAudioSignal *audio_signal, *template;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "soundcard\0", soundcard,
-						 "recycling\0", recycling,
-						 "recall-id\0", recall_id,
+						 "soundcard", soundcard,
+						 "recycling", recycling,
+						 "recall-id", recall_id,
 						 NULL);
 
   template = ags_audio_signal_get_template(AGS_RECYCLING(recycling)->audio_signal);

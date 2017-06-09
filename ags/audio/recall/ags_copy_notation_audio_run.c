@@ -105,7 +105,7 @@ ags_copy_notation_audio_run_get_type()
     };
 
     ags_type_copy_notation_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-							      "AgsCopyNotationAudioRun\0",
+							      "AgsCopyNotationAudioRun",
 							      &ags_copy_notation_audio_run_info,
 							      0);
     
@@ -140,9 +140,9 @@ ags_copy_notation_audio_run_class_init(AgsCopyNotationAudioRunClass *copy_notati
   gobject->finalize = ags_copy_notation_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("count_beats_audio_run\0",
-				   "assigned AgsCountBeatsAudioRun\0",
-				   "The AgsCountBeatsAudioRun which emits beat signal\0",
+  param_spec = g_param_spec_object("count_beats_audio_run",
+				   "assigned AgsCountBeatsAudioRun",
+				   "The AgsCountBeatsAudioRun which emits beat signal",
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -324,7 +324,7 @@ ags_copy_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
 
   g_object_ref(G_OBJECT(delay_audio_run));
   copy_notation_audio_run->tic_alloc_input_handler =
-    g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input\0",
+    g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input",
 		     G_CALLBACK(ags_copy_notation_audio_run_tic_alloc_input_callback), copy_notation_audio_run);
 }
 
@@ -381,7 +381,7 @@ ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "count_beats_audio_run\0", count_beats_audio_run,
+	       "count_beats_audio_run", count_beats_audio_run,
 	       NULL);
 }
 
@@ -498,7 +498,7 @@ ags_copy_notation_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
   AgsCopyNotationAudioRun *copy_notation_audio_run;
 
   copy_notation_audio_run = (AgsCopyNotationAudioRun *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO_RUN,
-								     "count_beats_audio_run\0", count_beats_audio_run,
+								     "count_beats_audio_run", count_beats_audio_run,
 								     NULL);
 
   return(copy_notation_audio_run);

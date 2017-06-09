@@ -84,7 +84,7 @@ ags_remove_audio_signal_get_type()
     };
 
     ags_type_remove_audio_signal = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsRemoveAudioSignal\0",
+						  "AgsRemoveAudioSignal",
 						  &ags_remove_audio_signal_info,
 						  0);
 
@@ -121,9 +121,9 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("recycling\0",
-				   "recycling of remove audio signal\0",
-				   "The recycling of remove audio signal task\0",
+  param_spec = g_param_spec_object("recycling",
+				   "recycling of remove audio signal",
+				   "The recycling of remove audio signal task",
 		 		   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -137,9 +137,9 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio-signal\0",
-				   "audio signal of remove audio signal\0",
-				   "The audio signal of remove audio signal task\0",
+  param_spec = g_param_spec_object("audio-signal",
+				   "audio signal of remove audio signal",
+				   "The audio signal of remove audio signal task",
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

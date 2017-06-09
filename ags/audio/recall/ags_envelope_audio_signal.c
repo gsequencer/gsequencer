@@ -98,7 +98,7 @@ ags_envelope_audio_signal_get_type()
     };
 
     ags_type_envelope_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							    "AgsEnvelopeAudioSignal\0",
+							    "AgsEnvelopeAudioSignal",
 							    &ags_envelope_audio_signal_info,
 							    0);
 
@@ -155,10 +155,10 @@ ags_envelope_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectab
 void
 ags_envelope_audio_signal_init(AgsEnvelopeAudioSignal *envelope_audio_signal)
 {
-  AGS_RECALL(envelope_audio_signal)->name = "ags-envelope\0";
+  AGS_RECALL(envelope_audio_signal)->name = "ags-envelope";
   AGS_RECALL(envelope_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(envelope_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(envelope_audio_signal)->xml_type = "ags-envelope-audio-signal\0";
+  AGS_RECALL(envelope_audio_signal)->xml_type = "ags-envelope-audio-signal";
   AGS_RECALL(envelope_audio_signal)->port = NULL;
 
   AGS_RECALL(envelope_audio_signal)->child_type = G_TYPE_NONE;
@@ -478,7 +478,7 @@ ags_envelope_audio_signal_new(AgsAudioSignal *source)
   AgsEnvelopeAudioSignal *envelope_audio_signal;
 
   envelope_audio_signal = (AgsEnvelopeAudioSignal *) g_object_new(AGS_TYPE_ENVELOPE_AUDIO_SIGNAL,
-								  "source\0", source,
+								  "source", source,
 								  NULL);
 
   return(envelope_audio_signal);

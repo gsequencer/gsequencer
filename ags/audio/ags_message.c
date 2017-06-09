@@ -30,7 +30,7 @@ ags_message_get_type()
 
   if(!ags_type_message){
     ags_type_message = g_type_register_static_simple(G_TYPE_INTERFACE,
-						     "AgsMessage\0",
+						     "AgsMessage",
 						     sizeof(AgsMessageInterface),
 						     (GClassInitFunc) ags_message_class_init,
 						     0, NULL, 0);
@@ -51,7 +51,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    *
    * The ::key-on signal
    */
-  g_signal_new("key-on\0",
+  g_signal_new("key-on",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, key_on),
@@ -71,7 +71,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    *
    * The ::key-off signal
    */
-  g_signal_new("key-off\0",
+  g_signal_new("key-off",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, key_off),
@@ -91,7 +91,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    *
    * The ::key-pressure signal
    */
-  g_signal_new("key-pressure\0",
+  g_signal_new("key-pressure",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, key_pressure),
@@ -112,7 +112,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    *
    * The ::change-parameter signal
    */
-  g_signal_new("change-parameter\0",
+  g_signal_new("change-parameter",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, change_parameter),
@@ -133,7 +133,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    *
    * The ::change-mode signal
    */
-  g_signal_new("change-mode\0",
+  g_signal_new("change-mode",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, change_mode),
@@ -151,7 +151,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    *
    * The ::pitch-bend signal
    */
-  g_signal_new("pitch-bend\0",
+  g_signal_new("pitch-bend",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, pitch_bend),
@@ -167,7 +167,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    * 
    * The ::set-bpm signal
    */
-  g_signal_new("set-bpm\0",
+  g_signal_new("set-bpm",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, set_bpm),
@@ -183,7 +183,7 @@ ags_message_class_init(AgsMessageInterface *interface)
    *
    * The ::set-delay-factor signal
    */
-  g_signal_new("set-delay-factor\0",
+  g_signal_new("set-delay-factor",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, set_delay_factor),

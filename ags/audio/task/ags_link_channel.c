@@ -83,7 +83,7 @@ ags_link_channel_get_type()
     };
 
     ags_type_link_channel = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsLinkChannel\0",
+						   "AgsLinkChannel",
 						   &ags_link_channel_info,
 						   0);
 
@@ -120,9 +120,9 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel of link channel\0",
-				   "The channel of link channel task\0",
+  param_spec = g_param_spec_object("channel",
+				   "channel of link channel",
+				   "The channel of link channel task",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,9 +136,9 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("link\0",
-				   "link of link channel\0",
-				   "The link of link channel task\0",
+  param_spec = g_param_spec_object("link",
+				   "link of link channel",
+				   "The link of link channel task",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,9 +152,9 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_pointer("error\0",
-				    "error of link channel\0",
-				    "The error of link channel task\0",
+  param_spec = g_param_spec_pointer("error",
+				    "error of link channel",
+				    "The error of link channel task",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ERROR,
@@ -323,7 +323,7 @@ ags_link_channel_launch(AgsTask *task)
   		       &(link_channel->error));
 
   if(link_channel->error != NULL){
-    g_message("%s\0", link_channel->error->message);
+    g_message("%s", link_channel->error->message);
   }
 }
 

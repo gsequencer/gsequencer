@@ -91,7 +91,7 @@ ags_recall_ladspa_run_get_type (void)
     };
 
     ags_type_recall_ladspa_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsRecallLadspaRun\0",
+							"AgsRecallLadspaRun",
 							&ags_recall_ladspa_run_info,
 							0);
 
@@ -231,7 +231,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 													  samplerate);
 
 #ifdef AGS_DEBUG
-      g_message("instantiate LADSPA handle\0");
+      g_message("instantiate LADSPA handle");
 #endif
 
   }
@@ -258,7 +258,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
     }
     
 #ifdef AGS_DEBUG
-      g_message("instantiate LADSPA handle\0");
+      g_message("instantiate LADSPA handle");
 #endif
 
   }
@@ -414,12 +414,12 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 							   port_data);
 	  
 #ifdef AGS_DEBUG
-	    g_message("connecting port[%lu]: %lu/%lu\0", j, i, port_count);
+	    g_message("connecting port[%lu]: %lu/%lu", j, i, port_count);
 #endif	  
 	  }
 	}
       }else{
-	g_critical("LADSPA port not found\0");
+	g_critical("LADSPA port not found");
       }
     }
   }
@@ -441,7 +441,7 @@ ags_recall_ladspa_run_new(AgsAudioSignal *audio_signal)
   AgsRecallLadspaRun *recall_ladspa_run;
 
   recall_ladspa_run = (AgsRecallLadspaRun *) g_object_new(AGS_TYPE_RECALL_LADSPA_RUN,
-							  "source\0", audio_signal,
+							  "source", audio_signal,
 							  NULL);
 
   return(recall_ladspa_run);

@@ -970,7 +970,7 @@ ags_synth_util_sin(void *buffer,
     break;
   default:
     {
-      g_warning("ags_synth_util_sin() - unsupported format\0");
+      g_warning("ags_synth_util_sin() - unsupported format");
     }
   }
 }
@@ -1055,7 +1055,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   default:
     {
-      g_warning("ags_synth_util_sawtooth() - unsupported format\0");
+      g_warning("ags_synth_util_sawtooth() - unsupported format");
     }
   }
 }
@@ -1140,7 +1140,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   default:
     {
-      g_warning("ags_synth_util_triangle() - unsupported format\0");
+      g_warning("ags_synth_util_triangle() - unsupported format");
     }
   }
 }
@@ -1225,7 +1225,7 @@ ags_synth_util_square(void *buffer,
     break;
   default:
     {
-      g_warning("ags_synth_util_square() - unsupported format\0");
+      g_warning("ags_synth_util_square() - unsupported format");
     }
   }
 }

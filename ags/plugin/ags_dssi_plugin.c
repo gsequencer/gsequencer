@@ -106,7 +106,7 @@ ags_dssi_plugin_get_type (void)
     };
 
     ags_type_dssi_plugin = g_type_register_static(AGS_TYPE_BASE_PLUGIN,
-						  "AgsDssiPlugin\0",
+						  "AgsDssiPlugin",
 						  &ags_dssi_plugin_info,
 						  0);
   }
@@ -140,9 +140,9 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_uint("unique-id\0",
-				 "unique-id of the plugin\0",
-				 "The unique-id this plugin is assigned with\0",
+  param_spec = g_param_spec_uint("unique-id",
+				 "unique-id of the plugin",
+				 "The unique-id this plugin is assigned with",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -158,9 +158,9 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_string("program\0",
-				   "program of the plugin\0",
-				   "The program this plugin is located in\0",
+  param_spec = g_param_spec_string("program",
+				   "program of the plugin",
+				   "The program this plugin is located in",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -196,7 +196,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    * Since: 0.7.122
    */
   dssi_plugin_signals[CHANGE_PROGRAM] =
-    g_signal_new("change-program\0",
+    g_signal_new("change-program",
 		 G_TYPE_FROM_CLASS (dssi_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsDssiPluginClass, change_program),
@@ -366,7 +366,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 				  RTLD_NOW);
   
   if(base_plugin->plugin_so == NULL){
-    g_warning("ags_dssi_plugin.c - failed to load static object file\0");
+    g_warning("ags_dssi_plugin.c - failed to load static object file");
     
     dlerror();
 
@@ -374,7 +374,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   }
 
   dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
-						     "dssi_descriptor\0");
+						     "dssi_descriptor");
   
   if(dlerror() == NULL && dssi_descriptor){
     effect_index = base_plugin->effect_index;
@@ -382,7 +382,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     if(base_plugin->plugin_descriptor != NULL){
       g_object_set(base_plugin,
-		   "unique-id\0", AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->UniqueID,
+		   "unique-id", AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->UniqueID,
 		   NULL);
       
       port_count = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortCount;
@@ -577,9 +577,9 @@ ags_dssi_plugin_new(gchar *filename, gchar *effect, guint effect_index)
   AgsDssiPlugin *dssi_plugin;
 
   dssi_plugin = (AgsDssiPlugin *) g_object_new(AGS_TYPE_DSSI_PLUGIN,
-					       "filename\0", filename,
-					       "effect\0", effect,
-					       "effect-index\0", effect_index,
+					       "filename", filename,
+					       "effect", effect,
+					       "effect-index", effect_index,
 					       NULL);
 
   return(dssi_plugin);

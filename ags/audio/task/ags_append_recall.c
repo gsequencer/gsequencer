@@ -87,7 +87,7 @@ ags_append_recall_get_type()
     };
 
     ags_type_append_recall = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsAppendRecall\0",
+						  "AgsAppendRecall",
 						  &ags_append_recall_info,
 						  0);
 
@@ -124,9 +124,9 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio-loop\0",
-				   "audio loop of append recall\0",
-				   "The audio loop of append recall task\0",
+  param_spec = g_param_spec_object("audio-loop",
+				   "audio loop of append recall",
+				   "The audio loop of append recall task",
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -140,9 +140,9 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("playback\0",
-				   "playback of append recall\0",
-				   "The playback of append recall task\0",
+  param_spec = g_param_spec_object("playback",
+				   "playback of append recall",
+				   "The playback of append recall task",
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

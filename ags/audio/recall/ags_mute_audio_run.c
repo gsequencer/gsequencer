@@ -89,7 +89,7 @@ ags_mute_audio_run_get_type()
     };    
 
     ags_type_mute_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-						     "AgsMuteAudioRun\0",
+						     "AgsMuteAudioRun",
 						     &ags_mute_audio_run_info,
 						     0);
     
@@ -149,10 +149,10 @@ ags_mute_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_mute_audio_run_init(AgsMuteAudioRun *mute_audio_run)
 {
-  AGS_RECALL(mute_audio_run)->name = "ags-mute\0";
+  AGS_RECALL(mute_audio_run)->name = "ags-mute";
   AGS_RECALL(mute_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(mute_audio_run)->xml_type = "ags-mute-audio-run\0";
+  AGS_RECALL(mute_audio_run)->xml_type = "ags-mute-audio-run";
   AGS_RECALL(mute_audio_run)->port = NULL;
 }
 

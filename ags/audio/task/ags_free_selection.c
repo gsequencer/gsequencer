@@ -81,7 +81,7 @@ ags_free_selection_get_type()
     };
 
     ags_type_free_selection = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsFreeSelection\0",
+						     "AgsFreeSelection",
 						     &ags_free_selection_info,
 						     0);
 
@@ -118,9 +118,9 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("notation\0",
-				   "notation of free selection\0",
-				   "The notation of free selection task\0",
+  param_spec = g_param_spec_object("notation",
+				   "notation of free selection",
+				   "The notation of free selection task",
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

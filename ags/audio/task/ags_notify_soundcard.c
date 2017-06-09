@@ -87,7 +87,7 @@ ags_notify_soundcard_get_type()
     };
 
     ags_type_notify_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsNotifySoundcard\0",
+						       "AgsNotifySoundcard",
 						       &ags_notify_soundcard_info,
 						       0);
 
@@ -124,9 +124,9 @@ ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard-thread\0",
-				   "soundcard thread of notify soundcard\0",
-				   "The soundcard thread of notify soundcard task\0",
+  param_spec = g_param_spec_object("soundcard-thread",
+				   "soundcard thread of notify soundcard",
+				   "The soundcard thread of notify soundcard task",
 				   AGS_TYPE_SOUNDCARD_THREAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

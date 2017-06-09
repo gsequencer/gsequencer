@@ -83,7 +83,7 @@ ags_remove_point_from_selection_get_type()
     };
 
     ags_type_remove_point_from_selection = g_type_register_static(AGS_TYPE_TASK,
-								  "AgsRemovePointFromSelection\0",
+								  "AgsRemovePointFromSelection",
 								  &ags_remove_point_from_selection_info,
 								  0);
     
@@ -120,9 +120,9 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("notation\0",
-				   "notation of remove point from selection\0",
-				   "The notation of remove point from selection task\0",
+  param_spec = g_param_spec_object("notation",
+				   "notation of remove point from selection",
+				   "The notation of remove point from selection task",
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,9 +136,9 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("x\0",
-				 "offset x\0",
-				 "The x offset\0",
+  param_spec = g_param_spec_uint("x",
+				 "offset x",
+				 "The x offset",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -154,9 +154,9 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("y\0",
-				 "offset y\0",
-				 "The y offset\0",
+  param_spec = g_param_spec_uint("y",
+				 "offset y",
+				 "The y offset",
 				 0,
 				 G_MAXUINT,
 				 0,

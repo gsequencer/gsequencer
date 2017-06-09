@@ -66,7 +66,7 @@ ags_lv2_worker_get_type()
     };
     
     ags_type_lv2_worker = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsLv2Worker\0",
+						 "AgsLv2Worker",
 						 &ags_lv2_worker_info,
 						 0);
     

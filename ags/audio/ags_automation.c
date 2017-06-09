@@ -75,9 +75,9 @@ void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name,
  * #AgsAutomation acts as a container of #AgsAcceleration.
  */
 
-#define AGS_AUTOMATION_CLIPBOARD_VERSION "0.4.3\0"
-#define AGS_AUTOMATION_CLIPBOARD_TYPE "AgsAutomationClipboardXml\0"
-#define AGS_AUTOMATION_CLIPBOARD_FORMAT "AgsAutomationNativePiano\0"
+#define AGS_AUTOMATION_CLIPBOARD_VERSION "0.4.3"
+#define AGS_AUTOMATION_CLIPBOARD_TYPE "AgsAutomationClipboardXml"
+#define AGS_AUTOMATION_CLIPBOARD_FORMAT "AgsAutomationNativePiano"
 
 enum{
   PROP_0,
@@ -129,7 +129,7 @@ ags_automation_get_type()
     };
 
     ags_type_automation = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsAutomation\0",
+						 "AgsAutomation",
 						 &ags_automation_info,
 						 0);
 
@@ -169,9 +169,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of automation\0",
-				   "The audio of automation\0",
+  param_spec = g_param_spec_object("audio",
+				   "audio of automation",
+				   "The audio of automation",
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -186,9 +186,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_uint("line\0",
-				  "line of effect\0",
-				  "The numerical line of effect\0",
+  param_spec =  g_param_spec_uint("line",
+				  "line of effect",
+				  "The numerical line of effect",
 				  0,
 				  65535,
 				  0,
@@ -204,9 +204,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_gtype("channel-type\0",
-				   "channel type to apply\0",
-				   "The channel type to apply\0",
+  param_spec =  g_param_spec_gtype("channel-type",
+				   "channel type to apply",
+				   "The channel type to apply",
 				   G_TYPE_NONE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -221,9 +221,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_string("control-name\0",
-				    "control name\0",
-				    "The control name\0",
+  param_spec =  g_param_spec_string("control-name",
+				    "control name",
+				    "The control name",
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -237,9 +237,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("port\0",
-				   "port of automation\0",
-				   "The port of automation\0",
+  param_spec = g_param_spec_object("port",
+				   "port of automation",
+				   "The port of automation",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -253,9 +253,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_uint("steps\0",
-				  "steps of effect\0",
-				  "The steps of effect\0",
+  param_spec =  g_param_spec_uint("steps",
+				  "steps of effect",
+				  "The steps of effect",
 				  0,
 				  65535,
 				  0,
@@ -271,9 +271,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_double("upper\0",
-				    "upper of effect\0",
-				    "The upper of effect\0",
+  param_spec =  g_param_spec_double("upper",
+				    "upper of effect",
+				    "The upper of effect",
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -289,9 +289,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_double("lower\0",
-				    "lower of effect\0",
-				    "The lower of effect\0",
+  param_spec =  g_param_spec_double("lower",
+				    "lower of effect",
+				    "The lower of effect",
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -308,9 +308,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_double("default-value\0",
-				    "default value of effect\0",
-				    "The default value of effect\0",
+  param_spec =  g_param_spec_double("default-value",
+				    "default value of effect",
+				    "The default value of effect",
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -327,9 +327,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.7.122.8
    */
-  param_spec = g_param_spec_pointer("acceleration\0",
-				    "acceleration\0",
-				    "The acceleration\0",
+  param_spec = g_param_spec_pointer("acceleration",
+				    "acceleration",
+				    "The acceleration",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ACCELERATION,
@@ -342,9 +342,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("current-accelerations\0",
-				    "current accelerations for offset\0",
-				    "The current accelerations for offset\0",
+  param_spec = g_param_spec_pointer("current-accelerations",
+				    "current accelerations for offset",
+				    "The current accelerations for offset",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CURRENT_ACCELERATIONS,
@@ -357,9 +357,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("next-accelerations\0",
-				    "next accelerations for offset\0",
-				    "The next accelerations for offset\0",
+  param_spec = g_param_spec_pointer("next-accelerations",
+				    "next accelerations for offset",
+				    "The next accelerations for offset",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NEXT_ACCELERATIONS,
@@ -372,9 +372,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.7.56
    */
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp of automation\0",
-				   "The timestamp of automation\0",
+  param_spec = g_param_spec_object("timestamp",
+				   "timestamp of automation",
+				   "The timestamp of automation",
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -888,7 +888,7 @@ void
 ags_automation_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
-	       "port\0", port,
+	       "port", port,
 	       NULL);
 }
 
@@ -898,7 +898,7 @@ ags_automation_get_port(AgsPortlet *portlet)
   GObject *port;
 
   g_object_get(G_OBJECT(portlet),
-	       "port\0", &port,
+	       "port", &port,
 	       NULL);
 
   return(port);
@@ -914,8 +914,8 @@ ags_automation_list_safe_properties(AgsPortlet *portlet)
   pthread_mutex_lock(&mutex);
 
   if(list == NULL){
-    list = g_list_prepend(list, "current-accelerations\0");
-    list = g_list_prepend(list, "next-accelerations\0");
+    list = g_list_prepend(list, "current-accelerations");
+    list = g_list_prepend(list, "next-accelerations");
   }
 
   pthread_mutex_unlock(&mutex);
@@ -1479,14 +1479,14 @@ ags_automation_copy_selection(AgsAutomation *automation)
   selection = automation->selection;
 
   /* create root node */
-  automation_node = xmlNewNode(NULL, BAD_CAST "automation\0");
+  automation_node = xmlNewNode(NULL, BAD_CAST "automation");
 
-  xmlNewProp(automation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
-  xmlNewProp(automation_node, BAD_CAST "type\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_TYPE);
-  xmlNewProp(automation_node, BAD_CAST "version\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_VERSION);
-  xmlNewProp(automation_node, BAD_CAST "format\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_FORMAT);
-  xmlNewProp(automation_node, "control-name\0", automation->control_name);
-  xmlNewProp(automation_node, "line\0", g_strdup_printf("%u\0", automation->line));
+  xmlNewProp(automation_node, BAD_CAST "program", BAD_CAST "ags");
+  xmlNewProp(automation_node, BAD_CAST "type", BAD_CAST AGS_AUTOMATION_CLIPBOARD_TYPE);
+  xmlNewProp(automation_node, BAD_CAST "version", BAD_CAST AGS_AUTOMATION_CLIPBOARD_VERSION);
+  xmlNewProp(automation_node, BAD_CAST "format", BAD_CAST AGS_AUTOMATION_CLIPBOARD_FORMAT);
+  xmlNewProp(automation_node, "control-name", automation->control_name);
+  xmlNewProp(automation_node, "line", g_strdup_printf("%u", automation->line));
 
   selection = automation->selection;
 
@@ -1500,10 +1500,10 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
   while(selection != NULL){
     acceleration = AGS_ACCELERATION(selection->data);
-    current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration\0", NULL);
+    current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration", NULL);
 
-    xmlNewProp(current_acceleration, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", acceleration->x));
-    xmlNewProp(current_acceleration, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%f\0", acceleration->y));
+    xmlNewProp(current_acceleration, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", acceleration->x));
+    xmlNewProp(current_acceleration, BAD_CAST "y", BAD_CAST g_strdup_printf("%f", acceleration->y));
 
     if(y_boundary > acceleration->y){
       y_boundary = acceleration->y;
@@ -1512,8 +1512,8 @@ ags_automation_copy_selection(AgsAutomation *automation)
     selection = selection->next;
   }
 
-  xmlNewProp(automation_node, BAD_CAST "x-boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
-  xmlNewProp(automation_node, BAD_CAST "y-boundary\0", BAD_CAST g_strdup_printf("%f\0", y_boundary));
+  xmlNewProp(automation_node, BAD_CAST "x-boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
+  xmlNewProp(automation_node, BAD_CAST "y-boundary", BAD_CAST g_strdup_printf("%f", y_boundary));
   
   return(automation_node);
 }
@@ -1592,13 +1592,13 @@ ags_automation_merge_clipboard(xmlNode *audio_node,
     while(child != NULL){
       if(child->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp(child->name,
-		       "acceleration\0",
+		       "acceleration",
 		       13)){
 	  if(!xmlStrcmp(xmlGetProp(child,
-				   "x\0"),
+				   "x"),
 			x) &&
 	     !xmlStrcmp(xmlGetProp(child,
-				   "y\0"),
+				   "y"),
 			y)){
 	    return(TRUE);
 	  }
@@ -1621,14 +1621,14 @@ ags_automation_merge_clipboard(xmlNode *audio_node,
   while(find_automation != NULL){
     if(find_automation->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(find_automation->name,
-		     "automation\0",
+		     "automation",
 		     11)){
 	if(!xmlStrcmp(xmlGetProp(find_automation,
-				 "line\0"),
+				 "line"),
 		      xmlGetProp(automation_node,
 				 "line")) &&
 	   !xmlStrcmp(xmlGetProp(find_automation,
-				 "control-name\0"),
+				 "control-name"),
 		      xmlGetProp(automation_node,
 				 "control-name"))){
 	  break;
@@ -1652,13 +1652,13 @@ ags_automation_merge_clipboard(xmlNode *audio_node,
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "acceleration\0",
+		     "acceleration",
 		     13)){
 	if(!ags_automation_merge_clipboard_find_acceleration(find_automation,
 							     xmlGetProp(child,
-									"x\0"),
+									"x"),
 							     xmlGetProp(child,
-									"y\0"))){
+									"y"))){
 	  xmlAddChild(find_automation,
 		      xmlCopyNode(child,
 				  1));
@@ -1758,9 +1758,9 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
     }
     
     for(; node != NULL; node = node->next){
-      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration\0", node->name, 5)){
+      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 5)){
 	/* retrieve x0 offset */
-	x = xmlGetProp(node, "x\0");
+	x = xmlGetProp(node, "x");
 
 	if(x == NULL)
 	  continue;
@@ -1777,7 +1777,7 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 	}
 	
 	/* retrieve y offset */
-	y = xmlGetProp(node, "y\0");
+	y = xmlGetProp(node, "y");
 
 	if(y == NULL)
 	  continue;
@@ -1831,7 +1831,7 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 	acceleration->y = y_val;
 
 #ifdef AGS_DEBUG
-	g_message("adding acceleration at: [%u|%f]\n\0", x_val, y_val);
+	g_message("adding acceleration at: [%u|%f]\n", x_val, y_val);
 #endif
 	
 	ags_automation_add_acceleration(automation,
@@ -1844,27 +1844,27 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
   }
   
   while(automation_node != NULL){
-    if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation\0", automation_node->name, 9))
+    if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation", automation_node->name, 9))
       break;
 
     automation_node = automation_node->next;
   }
 
   if(automation_node != NULL){
-    program = xmlGetProp(automation_node, "program\0");
+    program = xmlGetProp(automation_node, "program");
 
-    if(!xmlStrncmp("ags\0", program, 4)){
-      version = xmlGetProp(automation_node, "version\0");
-      type = xmlGetProp(automation_node, "type\0");
-      format = xmlGetProp(automation_node, "format\0");
+    if(!xmlStrncmp("ags", program, 4)){
+      version = xmlGetProp(automation_node, "version");
+      type = xmlGetProp(automation_node, "type");
+      format = xmlGetProp(automation_node, "format");
 
-      if(!xmlStrncmp("AgsAutomationNativePiano\0", format, 22)){
+      if(!xmlStrncmp("AgsAutomationNativePiano", format, 22)){
 	AgsAcceleration *acceleration;
 	
-	base_frequency = xmlGetProp(automation_node, "base-frequency\0");
+	base_frequency = xmlGetProp(automation_node, "base-frequency");
 
-	x_boundary = xmlGetProp(automation_node, "x-boundary\0");
-	y_boundary = xmlGetProp(automation_node, "y-boundary\0");
+	x_boundary = xmlGetProp(automation_node, "x-boundary");
+	y_boundary = xmlGetProp(automation_node, "y-boundary");
 
 	ags_automation_insert_from_clipboard_version_0_4_3(automation,
 							   automation_node, version,
@@ -2107,14 +2107,14 @@ ags_automation_get_value(AgsAutomation *automation,
       g_value_set_double(value,
 			 current);
     }else if(port->port_value_type == G_TYPE_POINTER){
-      g_warning("ags_automation.c - unsupported value type pointer\0");
+      g_warning("ags_automation.c - unsupported value type pointer");
     }else if(port->port_value_type == G_TYPE_OBJECT){
-      g_warning("ags_automation.c - unsupported value type object\0");
+      g_warning("ags_automation.c - unsupported value type object");
     }else{
-      g_warning("ags_automation.c - unknown type\0");
+      g_warning("ags_automation.c - unknown type");
     }
   }else{
-    g_warning("ags_automation.c - unsupported value type pointer\0");
+    g_warning("ags_automation.c - unsupported value type pointer");
   }
 
   return(ret_x);
@@ -2142,10 +2142,10 @@ ags_automation_new(GObject *audio,
   AgsAutomation *automation;
 
   automation = (AgsAutomation *) g_object_new(AGS_TYPE_AUTOMATION,
-					      "audio\0", audio,
-					      "line\0", line,
-					      "channel-type\0", channel_type,
-					      "control-name\0", control_name,
+					      "audio", audio,
+					      "line", line,
+					      "channel-type", channel_type,
+					      "control-name", control_name,
 					      NULL);
 
   return(automation);

@@ -62,12 +62,12 @@ enum{
 static gpointer ags_volume_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_channel_parent_connectable_interface;
 
-static const gchar *ags_volume_channel_plugin_name = "ags-volume\0";
+static const gchar *ags_volume_channel_plugin_name = "ags-volume";
 static const gchar *ags_volume_channel_specifier[] = {
-  "./volume[0]\0"
+  "./volume[0]"
 };
 static const gchar *ags_volume_channel_control_port[] = {
-  "1/1\0"
+  "1/1"
 };
 
 GType
@@ -101,7 +101,7 @@ ags_volume_channel_get_type()
     };
 
     ags_type_volume_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						     "AgsVolumeChannel\0",
+						     "AgsVolumeChannel",
 						     &ags_volume_channel_info,
 						     0);
     
@@ -158,9 +158,9 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
    * 
    * Since: 0.7.122.7 
    */
-  param_spec = g_param_spec_object("volume\0",
-				   "volume to apply\0",
-				   "The volume to apply on the channel\0",
+  param_spec = g_param_spec_object("volume",
+				   "volume to apply",
+				   "The volume to apply on the channel",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -173,22 +173,22 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 {
   GList *port;
 
-  AGS_RECALL(volume_channel)->name = "ags-volume\0";
+  AGS_RECALL(volume_channel)->name = "ags-volume";
   AGS_RECALL(volume_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(volume_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(volume_channel)->xml_type = "ags-volume-channel\0";
+  AGS_RECALL(volume_channel)->xml_type = "ags-volume-channel";
 
   /* initialize the port */
   port = NULL;
 
   /* volume */
   volume_channel->volume = g_object_new(AGS_TYPE_PORT,
-					"plugin-name\0", "ags-volume\0",
-					"specifier\0", "./volume[0]\0",
-					"control-port\0", "1/1\0",
-					"port-value-is-pointer\0", FALSE,
-					"port-value-type\0", G_TYPE_FLOAT,
-					"port-value-size\0", sizeof(gfloat),
+					"plugin-name", "ags-volume",
+					"specifier", "./volume[0]",
+					"control-port", "1/1",
+					"port-value-is-pointer", FALSE,
+					"port-value-type", G_TYPE_FLOAT,
+					"port-value-size", sizeof(gfloat),
 					"port-value-length", 1,
 					NULL);
   g_object_ref(volume_channel->volume);
@@ -298,10 +298,10 @@ ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./volume[0]\0",
+		"./volume[0]",
 		12)){
       g_object_set(G_OBJECT(plugin),
-		   "volume\0", AGS_PORT(port->data),
+		   "volume", AGS_PORT(port->data),
 		   NULL);
     }
 

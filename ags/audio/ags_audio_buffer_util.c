@@ -53,7 +53,7 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
     return(AGS_AUDIO_BUFFER_UTIL_S64);
   default:
     {
-      g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format\0");
+      g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format");
       
       return(0);
     }
@@ -96,7 +96,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -122,7 +122,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -149,7 +149,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -175,7 +175,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -201,7 +201,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -227,7 +227,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -253,7 +253,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -261,7 +261,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
     }
   default:
     {
-      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format\0");
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format");
       
       return(0);
     }
@@ -397,7 +397,7 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
       memset((signed long long *) buffer, 0, channels * count * sizeof(signed long long));
     }
   default:
-    g_critical("unsupported audio buffer format\0");
+    g_critical("unsupported audio buffer format");
   }
 }
 
@@ -889,7 +889,7 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
     }
     break;
   default:
-    g_warning("ags_audio_buffer_util_envelope() - unknown format\0");
+    g_warning("ags_audio_buffer_util_envelope() - unknown format");
   }
 
   return(retval);
@@ -1286,7 +1286,7 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
     }
     break;
   default:
-    g_warning("ags_audio_buffer_util_volume() - unknown format\0");
+    g_warning("ags_audio_buffer_util_volume() - unknown format");
   }
 }
 
@@ -1696,7 +1696,7 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
     }
     break;
   default:
-    g_warning("ags_audio_buffer_util_resample() - unknown format\0");
+    g_warning("ags_audio_buffer_util_resample() - unknown format");
   }
 
   return(retval);
@@ -4549,7 +4549,7 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     break;
   default:
     {
-      g_warning("ags_audio_buffer_util.c - unknown copy mode\0");
+      g_warning("ags_audio_buffer_util.c - unknown copy mode");
     }
   }
 }

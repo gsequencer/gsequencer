@@ -73,7 +73,7 @@ ags_midi_file_get_type(void)
     };
 
     ags_type_midi_file = g_type_register_static(G_TYPE_OBJECT,
-						"AgsMidiFile\0", &ags_midi_file_info,
+						"AgsMidiFile", &ags_midi_file_info,
 						0);
   }
 
@@ -104,9 +104,9 @@ ags_midi_file_class_init(AgsMidiFileClass *midi_file)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "assigned filename\0",
-				   "The filename to read or write\0",
+  param_spec = g_param_spec_string("filename",
+				   "assigned filename",
+				   "The filename to read or write",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -226,7 +226,7 @@ ags_midi_file_open(AgsMidiFile *midi_file)
   }
 
   midi_file->file = fopen(midi_file->filename,
-			  "r\0");
+			  "r");
 
   return(TRUE);
 }
@@ -276,7 +276,7 @@ ags_midi_file_rw_open(AgsMidiFile *midi_file)
   }
   
   midi_file->file = fopen(midi_file->filename,
-			  "r+\0");
+			  "r+");
 
   return(TRUE);
 }
@@ -333,7 +333,7 @@ ags_midi_file_read(AgsMidiFile *midi_file)
   n_read = fread(midi_file->buffer, sizeof(unsigned char), sb.st_size, midi_file->file);
 
   if(n_read != sb.st_size){
-    g_critical("fread() number of bytes read doesn't match buffer size\0");
+    g_critical("fread() number of bytes read doesn't match buffer size");
   }
   
   midi_file->iter = midi_file->buffer;
@@ -982,7 +982,7 @@ ags_midi_file_read_track_data(AgsMidiFile *midi_file,
 	{
 	  /* sysex continuation or arbitrary stuff */
 #ifdef AGS_DEBUG
-	  g_message("sysex end\0");
+	  g_message("sysex end");
 #endif
 	}
 	break;
@@ -1112,7 +1112,7 @@ ags_midi_file_read_track_data(AgsMidiFile *midi_file,
 	}
 	break;
       default:
-	g_warning("bad byte\0");
+	g_warning("bad byte");
 	break;
       }
     }
@@ -1164,7 +1164,7 @@ ags_midi_file_new(gchar *filename)
   AgsMidiFile *midi_file;
 
   midi_file = (AgsMidiFile *) g_object_new(AGS_TYPE_MIDI_FILE,
-					   "filename\0", filename,
+					   "filename", filename,
 					   NULL);
 
   return(midi_file);

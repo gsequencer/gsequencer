@@ -77,7 +77,7 @@ ags_play_audio_file_get_type()
     };
 
     ags_type_play_audio_file = g_type_register_static(AGS_TYPE_RECALL,
-						      "AgsPlayAudioFile\0",
+						      "AgsPlayAudioFile",
 						      &ags_play_audio_file_info,
 						      0);
 
@@ -107,27 +107,27 @@ ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file)
   gobject->finalize = ags_play_audio_file_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("soundcard\0",
-				  "assigned soundcard\0",
-				  "The soundcard this recall is assigned to\0",
+  param_spec = g_param_spec_gtype("soundcard",
+				  "assigned soundcard",
+				  "The soundcard this recall is assigned to",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("audio_file\0",
-				  "assigned audio file\0",
-				  "The audio file this recall is assigned to\0",
+  param_spec = g_param_spec_gtype("audio_file",
+				  "assigned audio file",
+				  "The audio file this recall is assigned to",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_FILE,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("current\0",
-				  "current frame\0",
-				  "The current frame this recall is playing\0",
+  param_spec = g_param_spec_gtype("current",
+				  "current frame",
+				  "The current frame this recall is playing",
 				   G_TYPE_UINT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -348,8 +348,8 @@ ags_play_audio_file_new(AgsAudioFile *audio_file,
   AgsPlayAudioFile *play_audio_file;
 
   play_audio_file = (AgsPlayAudioFile *) g_object_new(AGS_TYPE_PLAY_AUDIO_FILE,
-						      "audio_file\0", audio_file,
-						      "soundcard\0", soundcard,
+						      "audio_file", audio_file,
+						      "soundcard", soundcard,
 						      NULL);
 
   return(play_audio_file);
