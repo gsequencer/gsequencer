@@ -137,7 +137,7 @@ ags_signal_handler(int signr)
     exit(-1);
   }else{
     sigemptyset(&(ags_sigact.sa_mask));
-
+    
     //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
     // pthread_yield();
     //    }
@@ -1251,6 +1251,10 @@ main(int argc, char **argv)
 #ifdef AGS_USE_TIMER
   timer_t *timer_id
 #endif
+
+  setlocale(LC_ALL, "");
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
   
   putenv("LC_CTYPE=C");
 
