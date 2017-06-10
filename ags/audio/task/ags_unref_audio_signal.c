@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_unref_audio_signal_class_init(AgsUnrefAudioSignalClass *unref_audio_signal);
 void ags_unref_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_unref_audio_signal_init(AgsUnrefAudioSignal *unref_audio_signal);
@@ -119,8 +121,8 @@ ags_unref_audio_signal_class_init(AgsUnrefAudioSignalClass *unref_audio_signal)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-signal",
-				   "audio signal of unref audio signal",
-				   "The audio signal of unref audio signal task",
+				   i18n_pspec("audio signal of unref audio signal"),
+				   i18n_pspec("The audio signal of unref audio signal task"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

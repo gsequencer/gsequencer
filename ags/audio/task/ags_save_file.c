@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_save_file_class_init(AgsSaveFileClass *save_file);
 void ags_save_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_save_file_init(AgsSaveFile *save_file);
@@ -119,8 +121,8 @@ ags_save_file_class_init(AgsSaveFileClass *save_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("file",
-				   "file of save file",
-				   "The file of save file task",
+				   i18n_pspec("file of save file"),
+				   i18n_pspec("The file of save file task"),
 				   AGS_TYPE_FILE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

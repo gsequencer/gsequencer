@@ -26,6 +26,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_container);
 void ags_add_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_recall_container_init(AgsAddRecallContainer *add_recall_container);
@@ -125,8 +127,8 @@ ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_conta
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of add recall container",
-				   "The audio of add recall container task",
+				   i18n_pspec("audio of add recall container"),
+				   i18n_pspec("The audio of add recall container task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -141,8 +143,8 @@ ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_conta
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recall-container",
-				   "recall container of add recall container",
-				   "The recall container of add recall container task",
+				   i18n_pspec("recall container of add recall container"),
+				   i18n_pspec("The recall container of add recall container task"),
 				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

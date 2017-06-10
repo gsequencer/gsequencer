@@ -28,6 +28,8 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/i18n.h>
+
 void ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_connection);
 void ags_reset_audio_connection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_reset_audio_connection_init(AgsResetAudioConnection *reset_audio_connection);
@@ -131,8 +133,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of reset audio connection",
-				   "The soundcard of reset audio connection task",
+				   i18n_pspec("soundcard of reset audio connection"),
+				   i18n_pspec("The soundcard of reset audio connection task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,8 +149,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of reset audio connection",
-				   "The audio of reset audio connection task",
+				   i18n_pspec("audio of reset audio connection"),
+				   i18n_pspec("The audio of reset audio connection task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -163,8 +165,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_gtype("channel-type",
-				  "channel type",
-				  "The channel type of connection",
+				  i18n_pspec("channel type"),
+				  i18n_pspec("The channel type of connection"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -180,8 +182,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("pad",
-				 "nth pad",
-				 "The nth pad of audio",
+				 i18n_pspec("nth pad"),
+				 i18n_pspec("The nth pad of audio"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -199,8 +201,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("audio-channel",
-				 "nth audio channel",
-				 "The nth audio channel of audio",
+				 i18n_pspec("nth audio channel"),
+				 i18n_pspec("The nth audio channel of audio"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -217,8 +219,8 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("mapped-line",
-				 "nth mapped line",
-				 "The nth mapped line of connection",
+				 i18n_pspec("nth mapped line"),
+				 i18n_pspec("The nth mapped line of connection"),
 				 0,
 				 G_MAXUINT,
 				 0,

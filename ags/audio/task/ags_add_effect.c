@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_add_effect_class_init(AgsAddEffectClass *add_effect);
 void ags_add_effect_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_effect_init(AgsAddEffect *add_effect);
@@ -121,8 +123,8 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel",
-				   "channel of add effect",
-				   "The channel of add effect task",
+				   i18n_pspec("channel of add effect"),
+				   i18n_pspec("The channel of add effect task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -137,8 +139,8 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("filename",
-				   "the filename",
-				   "The filename containing the effect",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename containing the effect"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -153,8 +155,8 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("effect",
-				   "the effect",
-				   "The effect",
+				   i18n_pspec("the effect"),
+				   i18n_pspec("The effect"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

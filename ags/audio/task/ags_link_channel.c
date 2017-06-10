@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_link_channel_class_init(AgsLinkChannelClass *link_channel);
 void ags_link_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_link_channel_init(AgsLinkChannel *link_channel);
@@ -121,8 +123,8 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel",
-				   "channel of link channel",
-				   "The channel of link channel task",
+				   i18n_pspec("channel of link channel"),
+				   i18n_pspec("The channel of link channel task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -137,8 +139,8 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("link",
-				   "link of link channel",
-				   "The link of link channel task",
+				   i18n_pspec("link of link channel"),
+				   i18n_pspec("The link of link channel task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -153,8 +155,8 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_pointer("error",
-				    "error of link channel",
-				    "The error of link channel task",
+				    i18n_pspec("error of link channel"),
+				    i18n_pspec("The error of link channel task"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ERROR,

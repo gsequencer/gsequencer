@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels);
 void ags_set_audio_channels_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels);
@@ -120,8 +122,8 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of set audio channels",
-				   "The soundcard of set audio channels",
+				   i18n_pspec("soundcard of set audio channels"),
+				   i18n_pspec("The soundcard of set audio channels"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,8 +138,8 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("audio-channels",
-				 "audio channels",
-				 "The count of audio channels",
+				 i18n_pspec("audio channels"),
+				 i18n_pspec("The count of audio channels"),
 				 0,
 				 G_MAXUINT,
 				 0,

@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_remove_note_class_init(AgsRemoveNoteClass *remove_note);
 void ags_remove_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_note_init(AgsRemoveNote *remove_note);
@@ -121,8 +123,8 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("notation",
-				   "notation of add note",
-				   "The notation of add note task",
+				   i18n_pspec("notation of add note"),
+				   i18n_pspec("The notation of add note task"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -137,8 +139,8 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("x",
-				 "offset x",
-				 "The x offset",
+				 i18n_pspec("offset x"),
+				 i18n_pspec("The x offset"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -155,8 +157,8 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("y",
-				 "offset y",
-				 "The y offset",
+				 i18n_pspec("offset y"),
+				 i18n_pspec("The y offset"),
 				 0,
 				 G_MAXUINT,
 				 0,

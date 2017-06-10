@@ -38,6 +38,8 @@
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_channel_init(AgsAppendChannel *append_channel);
@@ -137,8 +139,8 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-loop",
-				   "audio loop of append channel",
-				   "The audio loop of append channel task",
+				   i18n_pspec("audio loop of append channel"),
+				   i18n_pspec("The audio loop of append channel task"),
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -153,8 +155,8 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel",
-				   "channel of append channel",
-				   "The channel of append channel task",
+				   i18n_pspec("channel of append channel"),
+				   i18n_pspec("The channel of append channel task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

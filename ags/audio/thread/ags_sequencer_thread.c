@@ -34,6 +34,8 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/i18n.h>
+
 void ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread);
 void ags_sequencer_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread);
@@ -145,8 +147,8 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
    * Since: 0.7.121
    */
   param_spec = g_param_spec_object("sequencer",
-				   "sequencer assigned to",
-				   "The AgsSequencer it is assigned to.",
+				   i18n_pspec("sequencer assigned to"),
+				   i18n_pspec("The AgsSequencer it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

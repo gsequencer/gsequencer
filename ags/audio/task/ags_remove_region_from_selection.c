@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *remove_region_from_selection);
 void ags_remove_region_from_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_region_from_selection_init(AgsRemoveRegionFromSelection *remove_region_from_selection);
@@ -123,8 +125,8 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("notation",
-				   "notation of remove note",
-				   "The notation of remove note task",
+				   i18n_pspec("notation of remove note"),
+				   i18n_pspec("The notation of remove note task"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -139,8 +141,8 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("x0",
-				 "offset x0",
-				 "The x0 offset",
+				 i18n_pspec("offset x0"),
+				 i18n_pspec("The x0 offset"),
 				 0,
 				 65535,
 				 0,
@@ -148,6 +150,7 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
   g_object_class_install_property(gobject,
 				  PROP_X0,
 				  param_spec);
+
   /**
    * AgsRemoveRegionFromSelection:x1:
    *
@@ -156,8 +159,8 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("x1",
-				 "offset x1",
-				 "The x1 offset",
+				 i18n_pspec("offset x1"),
+				 i18n_pspec("The x1 offset"),
 				 0,
 				 65535,
 				 0,
@@ -174,8 +177,8 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("y0",
-				 "offset y0",
-				 "The y0 offset",
+				 i18n_pspec("offset y0"),
+				 i18n_pspec("The y0 offset"),
 				 0,
 				 65535,
 				 0,
@@ -192,8 +195,8 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("y1",
-				 "offset y1",
-				 "The y1 offset",
+				 i18n_pspec("offset y1"),
+				 i18n_pspec("The y1 offset"),
 				 0,
 				 65535,
 				 0,

@@ -24,6 +24,8 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer);
 void ags_start_sequencer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_start_sequencer_init(AgsStartSequencer *start_sequencer);
@@ -122,8 +124,8 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("application-context",
-				   "application context of start sequencer",
-				   "The application context of start sequencer task",
+				   i18n_pspec("application context of start sequencer"),
+				   i18n_pspec("The application context of start sequencer task"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

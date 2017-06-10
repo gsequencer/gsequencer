@@ -26,6 +26,8 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/i18n.h>
+
 void ags_append_recall_class_init(AgsAppendRecallClass *append_recall);
 void ags_append_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_recall_init(AgsAppendRecall *append_recall);
@@ -125,8 +127,8 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-loop",
-				   "audio loop of append recall",
-				   "The audio loop of append recall task",
+				   i18n_pspec("audio loop of append recall"),
+				   i18n_pspec("The audio loop of append recall task"),
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -141,8 +143,8 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("playback",
-				   "playback of append recall",
-				   "The playback of append recall task",
+				   i18n_pspec("playback of append recall"),
+				   i18n_pspec("The playback of append recall task"),
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

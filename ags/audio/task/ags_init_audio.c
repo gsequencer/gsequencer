@@ -30,6 +30,8 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/i18n.h>
+
 void ags_init_audio_class_init(AgsInitAudioClass *init_audio);
 void ags_init_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_init_audio_init(AgsInitAudio *init_audio);
@@ -131,8 +133,8 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of init audio",
-				   "The audio of init audio task",
+				   i18n_pspec("audio of init audio"),
+				   i18n_pspec("The audio of init audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,8 +149,8 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-playback",
-				     "do playback",
-				     "Do playback of audio",
+				     i18n_pspec("do playback"),
+				     i18n_pspec("Do playback of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -163,8 +165,8 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-sequencer",
-				     "do sequencer",
-				     "Do sequencer of audio",
+				     i18n_pspec("do sequencer"),
+				     i18n_pspec("Do sequencer of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -179,8 +181,8 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-notation",
-				     "do notation",
-				     "Do notation of audio",
+				     i18n_pspec("do notation"),
+				     i18n_pspec("Do notation of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

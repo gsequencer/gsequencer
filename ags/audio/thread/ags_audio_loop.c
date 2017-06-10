@@ -45,7 +45,7 @@
 #include <ags/audio/thread/ags_recycling_thread.h>
 #include <ags/audio/thread/ags_iterator_thread.h>
 
-#include <fontconfig/fontconfig.h>
+#include <ags/i18n.h>
 
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
 void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -192,8 +192,8 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("application-context",
-				   "the application context object",
-				   "The application context object",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -208,8 +208,8 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard assigned to",
-				   "The AgsSoundcard it is assigned to.",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -224,8 +224,8 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-recall",
-				   "recall to run",
-				   "A recall to run",
+				   i18n_pspec("recall to run"),
+				   i18n_pspec("A recall to run"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -240,8 +240,8 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-channel",
-				   "channel to run",
-				   "A channel to run",
+				   i18n_pspec("channel to run"),
+				   i18n_pspec("A channel to run"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -256,8 +256,8 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-audio",
-				   "audio to run",
-				   "A audio to run",
+				   i18n_pspec("audio to run"),
+				   i18n_pspec("A audio to run"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

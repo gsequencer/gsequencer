@@ -29,6 +29,8 @@
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/i18n.h>
+
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
 void ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_file_init(AgsOpenFile *open_file);
@@ -129,8 +131,8 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of open file",
-				   "The audio of open file task",
+				   i18n_pspec("audio of open file"),
+				   i18n_pspec("The audio of open file task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -145,8 +147,8 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_pointer("filenames",
-				    "filenames of open file",
-				    "The filenames of open file task",
+				    i18n_pspec("filenames of open file"),
+				    i18n_pspec("The filenames of open file task"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAMES,
@@ -160,8 +162,8 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("overwrite-channels",
-				     "open file overwriting channels",
-				     "Do overwrite channels as open files",
+				     i18n_pspec("open file overwriting channels"),
+				     i18n_pspec("Do overwrite channels as open files"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -176,8 +178,8 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("create-channels",
-				     "open file creating channels",
-				     "Do create channels as open files",
+				     i18n_pspec("open file creating channels"),
+				     i18n_pspec("Do create channels as open files"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

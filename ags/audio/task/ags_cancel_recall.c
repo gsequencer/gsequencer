@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall);
 void ags_cancel_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_recall_init(AgsCancelRecall *cancel_recall);
@@ -120,8 +122,8 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recall",
-				   "recall of cancel recall",
-				   "The recall of cancel recall task",
+				   i18n_pspec("recall of cancel recall"),
+				   i18n_pspec("The recall of cancel recall task"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,8 +138,8 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("playback",
-				   "playback of cancel recall",
-				   "The playback of cancel recall task",
+				   i18n_pspec("playback of cancel recall"),
+				   i18n_pspec("The playback of cancel recall task"),
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

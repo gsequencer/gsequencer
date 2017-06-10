@@ -23,6 +23,8 @@
 
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/i18n.h>
+
 void ags_record_thread_class_init(AgsRecordThreadClass *record_thread);
 void ags_record_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_record_thread_init(AgsRecordThread *record_thread);
@@ -106,8 +108,8 @@ ags_record_thread_class_init(AgsRecordThreadClass *record_thread)
 
   /* properties */
   param_spec = g_param_spec_object("registry",
-				   "registry to check against",
-				   "The registry to check against serialization.",
+				   i18n_pspec("registry to check against"),
+				   i18n_pspec("The registry to check against serialization"),
 				   AGS_TYPE_REGISTRY,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

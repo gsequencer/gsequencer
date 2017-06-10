@@ -27,6 +27,8 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <ags/i18n.h>
+
 void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
 void ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag);
@@ -125,8 +127,8 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
    * Since: 0.7.111
    */
   param_spec = g_param_spec_object("device",
-				   "device of change device",
-				   "The device of change device task",
+				   i18n_pspec("device of change device"),
+				   i18n_pspec("The device of change device task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

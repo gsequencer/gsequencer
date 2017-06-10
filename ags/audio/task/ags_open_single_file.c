@@ -29,6 +29,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/i18n.h>
+
 void ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file);
 void ags_open_single_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_single_file_init(AgsOpenSingleFile *open_single_file);
@@ -130,8 +132,8 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel",
-				   "channel of open file",
-				   "The channel of open file task",
+				   i18n_pspec("channel of open file"),
+				   i18n_pspec("The channel of open file task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,8 +148,8 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of open file",
-				   "The soundcard of open file task",
+				   i18n_pspec("soundcard of open file"),
+				   i18n_pspec("The soundcard of open file task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,8 +164,8 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("filename",
-				   "the filename",
-				   "The filename containing the output",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename containing the output"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,8 +180,8 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("start-channel",
-				 "start channel",
-				 "The start channel",
+				 i18n_pspec("start channel"),
+				 i18n_pspec("The start channel"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -196,8 +198,8 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("audio-channels",
-				 "audio channels",
-				 "The audio channels to read",
+				 i18n_pspec("audio channels"),
+				 i18n_pspec("The audio channels to read"),
 				 0,
 				 G_MAXUINT,
 				 0,

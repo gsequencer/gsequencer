@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit);
 void ags_toggle_pattern_bit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_toggle_pattern_bit_init(AgsTogglePatternBit *toggle_pattern_bit);
@@ -129,8 +131,8 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("pattern",
-				   "pattern of toggle pattern bit",
-				   "The pattern of toggle pattern bit task",
+				   i18n_pspec("pattern of toggle pattern bit"),
+				   i18n_pspec("The pattern of toggle pattern bit task"),
 				   AGS_TYPE_PATTERN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -145,8 +147,8 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("line",
-				 "line",
-				 "The line",
+				 i18n_pspec("line"),
+				 i18n_pspec("The line"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -163,8 +165,8 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("index-i",
-				 "index-i",
-				 "The index-i",
+				 i18n_pspec("index-i"),
+				 i18n_pspec("The index-i"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -181,8 +183,8 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("index-j",
-				 "index-j",
-				 "The index-j",
+				 i18n_pspec("index-j"),
+				 i18n_pspec("The index-j"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -199,8 +201,8 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("bit",
-				 "bit",
-				 "The bit",
+				 i18n_pspec("bit"),
+				 i18n_pspec("The bit"),
 				 0,
 				 G_MAXUINT,
 				 0,

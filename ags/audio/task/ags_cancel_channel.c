@@ -24,6 +24,8 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/i18n.h>
+
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
 void ags_cancel_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_channel_init(AgsCancelChannel *cancel_channel);
@@ -124,8 +126,8 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel",
-				   "channel of cancel channel",
-				   "The channel of cancel channel task",
+				   i18n_pspec("channel of cancel channel"),
+				   i18n_pspec("The channel of cancel channel task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -140,8 +142,8 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recall-id",
-				   "recall id of cancel channel",
-				   "The recall id of cancel channel task",
+				   i18n_pspec("recall id of cancel channel"),
+				   i18n_pspec("The recall id of cancel channel task"),
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -156,8 +158,8 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("playback",
-				   "playback of cancel channel",
-				   "The playback of cancel channel task",
+				   i18n_pspec("playback of cancel channel"),
+				   i18n_pspec("The playback of cancel channel task"),
 				   AGS_TYPE_PLAYBACK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

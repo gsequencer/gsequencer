@@ -23,6 +23,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal);
 void ags_clear_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_clear_audio_signal_init(AgsClearAudioSignal *clear_audio_signal);
@@ -121,8 +123,8 @@ ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal)
    * Since: 0.7.122.17
    */
   param_spec = g_param_spec_object("audio-signal",
-				   "audio signal of clear audio signal",
-				   "The audio signal of clear audio signal task",
+				   i18n_pspec("audio signal of clear audio signal"),
+				   i18n_pspec("The audio signal of clear audio signal task"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

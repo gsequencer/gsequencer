@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequencer_length);
 void ags_apply_sequencer_length_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_sequencer_length_init(AgsApplySequencerLength *apply_sequencer_length);
@@ -132,8 +134,8 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope",
-				   "scope of set buffer size",
-				   "The scope of set buffer size",
+				   i18n_pspec("scope of set buffer size"),
+				   i18n_pspec("The scope of set buffer size"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -148,8 +150,8 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    * Since: 0.7.117
    */
   param_spec = g_param_spec_double("sequencer-length",
-				   "sequencer length",
-				   "The sequence length to apply",
+				   i18n_pspec("sequencer length"),
+				   i18n_pspec("The sequence length to apply"),
 				   0,
 				   G_MAXDOUBLE,
 				   0,

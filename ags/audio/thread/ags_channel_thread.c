@@ -30,6 +30,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread);
 void ags_channel_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_channel_thread_init(AgsChannelThread *channel_thread);
@@ -133,8 +135,8 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard assigned to",
-				   "The AgsSoundcard it is assigned to.",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to."),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -149,8 +151,8 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_object("channel",
-				   "channel assigned to",
-				   "The AgsChannel it is assigned to.",
+				   i18n_pspec("channel assigned to"),
+				   i18n_pspec("The AgsChannel it is assigned to."),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

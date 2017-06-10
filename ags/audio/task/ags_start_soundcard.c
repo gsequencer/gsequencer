@@ -25,6 +25,8 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard);
 void ags_start_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_start_soundcard_init(AgsStartSoundcard *start_soundcard);
@@ -123,8 +125,8 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("application-context",
-				   "application context of start soundcard",
-				   "The application context of start soundcard task",
+				   i18n_pspec("application context of start soundcard"),
+				   i18n_pspec("The application context of start soundcard task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

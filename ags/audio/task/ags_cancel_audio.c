@@ -29,6 +29,8 @@
 
 #include <ags/audio/thread/ags_audio_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
 void ags_cancel_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_audio_init(AgsCancelAudio *cancel_audio);
@@ -130,8 +132,8 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of cancel audio",
-				   "The audio of cancel audio task",
+				   i18n_pspec("audio of cancel audio"),
+				   i18n_pspec("The audio of cancel audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,8 +148,8 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-playback",
-				     "do playback",
-				     "Do playback of audio",
+				     i18n_pspec("do playback"),
+				     i18n_pspec("Do playback of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,8 +164,8 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-sequencer",
-				     "do sequencer",
-				     "Do sequencer of audio",
+				     i18n_pspec("do sequencer"),
+				     i18n_pspec("Do sequencer of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,8 +180,8 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-notation",
-				     "do notation",
-				     "Do notation of audio",
+				     i18n_pspec("do notation"),
+				     i18n_pspec("Do notation of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -36,6 +36,8 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/i18n.h>
+
 void ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread);
 void ags_soundcard_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread);
@@ -142,8 +144,8 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
    * Since: 0.7.121
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard assigned to",
-				   "The AgsSoundcard it is assigned to.",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -30,6 +30,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/i18n.h>
+
 void ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size);
 void ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size);
@@ -135,8 +137,8 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope",
-				   "scope of set buffer size",
-				   "The scope of set buffer size",
+				   i18n_pspec("scope of set buffer size"),
+				   i18n_pspec("The scope of set buffer size"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -151,8 +153,8 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("buffer-size",
-				 "buffer size",
-				 "The buffer size to apply",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,

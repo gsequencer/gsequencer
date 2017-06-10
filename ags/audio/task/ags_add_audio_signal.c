@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal);
 void ags_add_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal);
@@ -123,8 +125,8 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recycling",
-				   "recycling of add audio signal",
-				   "The recycling of add audio signal task",
+				   i18n_pspec("recycling of add audio signal"),
+				   i18n_pspec("The recycling of add audio signal task"),
 		 		   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -139,8 +141,8 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-signal",
-				   "audio signal of add audio signal",
-				   "The audio signal of add audio signal task",
+				   i18n_pspec("audio signal of add audio signal"),
+				   i18n_pspec("The audio signal of add audio signal task"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,8 +157,8 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of add audio signal",
-				   "The soundcard of add audio signal task",
+				   i18n_pspec("soundcard of add audio signal"),
+				   i18n_pspec("The soundcard of add audio signal task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -171,8 +173,8 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("recall-id",
-				   "audio signal of add audio signal",
-				   "The audio signal of add audio signal task",
+				   i18n_pspec("audio signal of add audio signal"),
+				   i18n_pspec("The audio signal of add audio signal task"),
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,8 +189,8 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_uint("audio-signal-flags",
-				  "audio signal flags of effect",
-				  "The audio signal's flags to apply",
+				  i18n_pspec("audio signal flags of effect"),
+				  i18n_pspec("The audio signal's flags to apply"),
 				  0,
 				  G_MAXUINT,
 				  0,

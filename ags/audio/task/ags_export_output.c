@@ -27,6 +27,8 @@
 
 #include <sndfile.h>
 
+#include <ags/i18n.h>
+
 void ags_export_output_class_init(AgsExportOutputClass *export_output);
 void ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_output_init(AgsExportOutput *export_output);
@@ -130,8 +132,8 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("export-thread",
-				   "export thread of export output",
-				   "The export thread of export output task",
+				   i18n_pspec("export thread of export output"),
+				   i18n_pspec("The export thread of export output task"),
 				   AGS_TYPE_EXPORT_THREAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,8 +148,8 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of export output",
-				   "The soundcard of export output task",
+				   i18n_pspec("soundcard of export output"),
+				   i18n_pspec("The soundcard of export output task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,8 +164,8 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("filename",
-				   "the filename",
-				   "The filename containing the output",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename containing the output"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,8 +180,8 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    * Since: 0.7.119
    */
   param_spec = g_param_spec_uint("format",
-				 "audio format",
-				 "The audio format to use",
+				 i18n_pspec("audio format"),
+				 i18n_pspec("The audio format to use"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -196,8 +198,8 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("tic",
-				 "tic offset",
-				 "The tic offset",
+				 i18n_pspec("tic offset"),
+				 i18n_pspec("The tic offset"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -214,8 +216,8 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("live-performance",
-				     "export output live",
-				     "Do export output live",
+				     i18n_pspec("export output live"),
+				     i18n_pspec("Do export output live"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -442,7 +444,10 @@ ags_export_output_launch(AgsTask *task)
   audio_file = ags_audio_file_new(filename,
 				  soundcard,
 				  0, pcm_channels);
+
+#ifdef AGS_DEBUG
   g_message("pcm - %d", pcm_channels);
+#endif
   
   audio_file->samplerate = (int) samplerate;
   audio_file->channels = pcm_channels;

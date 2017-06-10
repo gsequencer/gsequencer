@@ -41,6 +41,8 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch.h>
 
+#include <ags/i18n.h>
+
 void ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets);
 void ags_apply_presets_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_presets_init(AgsApplyPresets *apply_presets);
@@ -150,8 +152,8 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope",
-				   "scope of apply presets",
-				   "The scope of apply presets task",
+				   i18n_pspec("scope of apply presets"),
+				   i18n_pspec("The scope of apply presets task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -166,8 +168,8 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("samplerate",
-				 "samplerate",
-				 "The samplerate to apply",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -185,8 +187,8 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("buffer-size",
-				 "buffer size",
-				 "The buffer size to apply",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size to apply"),
 				 0,
 				 65535,
 				 0,
@@ -203,8 +205,8 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("format",
-				 "format",
-				 "The format to apply",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,

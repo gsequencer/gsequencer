@@ -27,6 +27,8 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard);
 void ags_notify_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notify_soundcard_init(AgsNotifySoundcard *notify_soundcard);
@@ -125,8 +127,8 @@ ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard-thread",
-				   "soundcard thread of notify soundcard",
-				   "The soundcard thread of notify soundcard task",
+				   i18n_pspec("soundcard thread of notify soundcard"),
+				   i18n_pspec("The soundcard thread of notify soundcard task"),
 				   AGS_TYPE_SOUNDCARD_THREAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

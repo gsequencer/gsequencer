@@ -27,6 +27,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/i18n.h>
+
 void ags_set_format_class_init(AgsSetFormatClass *set_format);
 void ags_set_format_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_format_init(AgsSetFormat *set_format);
@@ -132,8 +134,8 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope",
-				   "scope of set format",
-				   "The scope of set format",
+				   i18n_pspec("scope of set format"),
+				   i18n_pspec("The scope of set format"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -148,8 +150,8 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("format",
-				 "format",
-				 "The format to apply",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,

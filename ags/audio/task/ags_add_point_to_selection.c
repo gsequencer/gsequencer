@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_selection);
 void ags_add_point_to_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_point_to_selection_init(AgsAddPointToSelection *add_point_to_selection);
@@ -122,8 +124,8 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("notation",
-				   "notation of add point to selection",
-				   "The notation of add point to selection task",
+				   i18n_pspec("notation of add point to selection"),
+				   i18n_pspec("The notation of add point to selection task"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -138,8 +140,8 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("x",
-				 "offset x",
-				 "The x offset",
+				 i18n_pspec("offset x"),
+				 i18n_pspec("The x offset"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -156,8 +158,8 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    * Since: 0.7.117
    */
   param_spec = g_param_spec_uint("y",
-				 "offset y",
-				 "The y offset",
+				 i18n_pspec("offset y"),
+				 i18n_pspec("The y offset"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -174,8 +176,8 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("replace-current-selection",
-				     "replace current selection",
-				     "Replace current selection of notation",
+				     i18n_pspec("replace current selection"),
+				     i18n_pspec("Replace current selection of notation"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

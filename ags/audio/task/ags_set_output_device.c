@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/i18n.h>
+
 void ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device);
 void ags_set_output_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_output_device_init(AgsSetOutputDevice *set_output_device);
@@ -123,8 +125,8 @@ ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of set audio channels",
-				   "The soundcard of set audio channels",
+				   i18n_pspec("soundcard of set audio channels"),
+				   i18n_pspec("The soundcard of set audio channels"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -139,8 +141,8 @@ ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("device",
-				   "device identifier",
-				   "The device identifier to set",
+				   i18n_pspec("device identifier"),
+				   i18n_pspec("The device identifier to set"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

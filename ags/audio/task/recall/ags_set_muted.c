@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_set_muted_class_init(AgsSetMutedClass *set_muted);
 void ags_set_muted_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_muted_init(AgsSetMuted *set_muted);
@@ -132,8 +134,8 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("scope",
-				   "scope of set buffer size",
-				   "The scope of set buffer size",
+				   i18n_pspec("scope of set buffer size"),
+				   i18n_pspec("The scope of set buffer size"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -148,8 +150,8 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_boolean("muted",
-				    "muted",
-				    "The muted to set",
+				    i18n_pspec("muted"),
+				    i18n_pspec("The muted to set"),
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

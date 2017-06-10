@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_free_selection_class_init(AgsFreeSelectionClass *free_selection);
 void ags_free_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_free_selection_init(AgsFreeSelection *free_selection);
@@ -119,8 +121,8 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("notation",
-				   "notation of free selection",
-				   "The notation of free selection task",
+				   i18n_pspec("notation of free selection"),
+				   i18n_pspec("The notation of free selection task"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

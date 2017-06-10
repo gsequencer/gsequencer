@@ -36,6 +36,8 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
+#include <ags/i18n.h>
+
 void ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample);
 void ags_open_sf2_sample_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample);
@@ -137,8 +139,8 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("channel",
-				   "channel of open sf2 sample",
-				   "The channel of open sf2 sample task",
+				   i18n_pspec("channel of open sf2 sample"),
+				   i18n_pspec("The channel of open sf2 sample task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -153,8 +155,8 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("filename",
-				   "the filename",
-				   "The filename containing the sf2 sample",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename containing the sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -169,8 +171,8 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("preset",
-				   "the preset",
-				   "The preset containing the sf2 sample",
+				   i18n_pspec("the preset"),
+				   i18n_pspec("The preset containing the sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -185,8 +187,8 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("instrument",
-				   "the instrument",
-				   "The instrument containing the sf2 sample",
+				   i18n_pspec("the instrument"),
+				   i18n_pspec("The instrument containing the sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -201,8 +203,8 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_string("sample",
-				   "the sample",
-				   "The sf2 sample",
+				   i18n_pspec("the sample"),
+				   i18n_pspec("The sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

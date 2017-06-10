@@ -39,6 +39,8 @@
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_audio_init(AgsAppendAudio *append_audio);
@@ -141,8 +143,8 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio-loop",
-				   "audio loop of append audio",
-				   "The audio loop of append audio task",
+				   i18n_pspec("audio loop of append audio"),
+				   i18n_pspec("The audio loop of append audio task"),
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -157,8 +159,8 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * Since: 0.7.117
    */
   param_spec = g_param_spec_object("audio",
-				   "audio of append audio",
-				   "The audio of append audio task",
+				   i18n_pspec("audio of append audio"),
+				   i18n_pspec("The audio of append audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -173,8 +175,8 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-playback",
-				     "do playback",
-				     "Do playback of audio",
+				     i18n_pspec("do playback"),
+				     i18n_pspec("Do playback of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,8 +191,8 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-sequencer",
-				     "do sequencer",
-				     "Do sequencer of audio",
+				     i18n_pspec("do sequencer"),
+				     i18n_pspec("Do sequencer of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -205,8 +207,8 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * Since: 0.7.117
    */
   param_spec =  g_param_spec_boolean("do-notation",
-				     "do notation",
-				     "Do notation of audio",
+				     i18n_pspec("do notation"),
+				     i18n_pspec("Do notation of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
