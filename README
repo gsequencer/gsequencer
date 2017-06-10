@@ -8,7 +8,7 @@ without any warranty.
 
 jkraehemann@gmail.com
 
-You need a realtime kernel in conjunction with ags in order to do more computing expensive synthesis.
+It is recommended to have a realtime kernel in conjunction with ags in order to do more computing expensive synthesis.
 
 Please visit http://rt.wiki.kernel.org for more information.
 
@@ -25,6 +25,27 @@ $ systemd-run -p CPUAccounting=false -p MemoryAccounting=false -p TasksAccountin
 If you have pulseaudio running you might run `gsequencer` with pasuspender like:
 
 $ pasuspender -- gsequencer
+
+Purpose
+====
+
+The Advanced Gtk+ Sequencer framework is related to audio computation by representing it within a tree structure. It does various
+abstraction and the base library can serve as fundament of any application.
+
+libags provides an application context and a threaded tree. Which is synchronized by hard-realtime fashion. In terms of deterministic
+dead-line. Each tic of the used threads has to fulfill its work in order to proceed. The file object might be used for light-weight
+composition or persistency.
+
+libags-audio is built upon libags and provides a tree of audio signals. They can be computed in parallel. One key feature is the
+nested recycling tree. It allows to share audio data across channels. Further it avoids to wedge the parallel tree. There is support
+for free plugin standards like LADPSA, DSSI and Lv2. So it does give support to read or write MIDI data.
+
+libags-gui is a standalone library providing additional Gtk+-2.0 widgets.
+
+GSequencer is the main application providing a Gtk+-2.0 GUI. Allowing you to edit or record notation. It is designed to be accessible
+you should be able to control the entire application by keyboard. Likewise it implements various Atk interfaces. The frontend to AGS
+requires to add machines by menubar and link them appropriately with properties dialog. It is available of the context menu. Note you can't
+create any loops within the tree.
 
 General Notes on Licensing
 ====
