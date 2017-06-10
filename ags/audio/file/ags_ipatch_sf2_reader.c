@@ -100,7 +100,8 @@ void
 ags_ipatch_sf2_reader_class_init(AgsIpatchSF2ReaderClass *ipatch_sf2_reader)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_ipatch_sf2_reader_parent_class = g_type_class_peek_parent(ipatch_sf2_reader);
 
   gobject = (GObjectClass *) ipatch_sf2_reader;

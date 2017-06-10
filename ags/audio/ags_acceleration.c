@@ -99,7 +99,8 @@ void
 ags_acceleration_class_init(AgsAccelerationClass *acceleration)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_acceleration_parent_class = g_type_class_peek_parent(acceleration);
 
   gobject = (GObjectClass *) acceleration;

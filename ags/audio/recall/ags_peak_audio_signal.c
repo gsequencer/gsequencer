@@ -130,14 +130,14 @@ ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal)
   /* GObjectClass */
   gobject = (GObjectClass *) peak_audio_signal;
 
-  gobject->set_property = ags_peak_channel_set_property;
-  gobject->get_property = ags_peak_channel_get_property;
+  gobject->set_property = ags_peak_audio_signal_set_property;
+  gobject->get_property = ags_peak_audio_signal_get_property;
 
   gobject->finalize = ags_peak_audio_signal_finalize;
 
   /* properties */
   /**
-   * AgsPeakChannel:peak:
+   * AgsPeakAudioSignal:peak:
    * 
    * The peak.
    * 

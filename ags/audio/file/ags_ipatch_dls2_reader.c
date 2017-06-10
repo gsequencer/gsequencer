@@ -100,7 +100,8 @@ void
 ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_ipatch_dls2_reader_parent_class = g_type_class_peek_parent(ipatch_dls2_reader);
 
   gobject = (GObjectClass *) ipatch_dls2_reader;
