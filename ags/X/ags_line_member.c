@@ -163,8 +163,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_ulong("widget-type",
-				  "widget type of line member",
-				  "The widget type this line member packs",
+				  i18n_pspec("widget type of line member"),
+				  i18n_pspec("The widget type this line member packs"),
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -180,8 +180,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("widget-label",
-				   "label to display",
-				   "The label to display",
+				   i18n_pspec("label to display"),
+				   i18n_pspec("The label to display"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -196,8 +196,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("plugin-name",
-				   "plugin name to control",
-				   "The plugin's name to control",
+				   i18n_pspec("plugin name to control"),
+				   i18n_pspec("The plugin's name to control"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -212,8 +212,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.7.10
    */
   param_spec = g_param_spec_string("filename",
-				   "the filename",
-				   "The filename of the plugin",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename of the plugin"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -228,8 +228,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.7.10
    */
   param_spec = g_param_spec_string("effect",
-				   "the effect",
-				   "The effect of the plugin",
+				   i18n_pspec("the effect"),
+				   i18n_pspec("The effect of the plugin"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -244,8 +244,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("specifier",
-				   "port specifier",
-				   "The specifier of the port",
+				   i18n_pspec("port specifier"),
+				   i18n_pspec("The specifier of the port"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -260,8 +260,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_string("control-port",
-				   "control port index",
-				   "The index of the port to control",
+				   i18n_pspec("control port index"),
+				   i18n_pspec("The index of the port to control"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -276,8 +276,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.7.21
    */
   param_spec = g_param_spec_uint("steps",
-				 "steps of line members port",
-				 "The steps this line members port has",
+				 i18n_pspec("steps of line members port"),
+				 i18n_pspec("The steps this line members port has"),
 				 0,
 				 G_MAXUINT,
 				 AGS_DIAL_DEFAULT_PRECISION,
@@ -294,8 +294,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("port",
-				   "port to apply",
-				   "The port to apply",
+				   i18n_pspec("port to apply"),
+				   i18n_pspec("The port to apply"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -310,8 +310,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("port-data",
-				    "port data",
-				    "The port data",
+				    i18n_pspec("port data"),
+				    i18n_pspec("The port data"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_DATA,
@@ -325,8 +325,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-port",
-				   "recall port to apply",
-				   "The recall port to apply",
+				   i18n_pspec("recall port to apply"),
+				   i18n_pspec("The recall port to apply"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -341,8 +341,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("recall-port-data",
-				    "recall port data",
-				    "The recall port data",
+				    i18n_pspec("recall port data"),
+				    i18n_pspec("The recall port data"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_PORT_DATA,
@@ -356,8 +356,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * Since: 0.7.8
    */
   param_spec = g_param_spec_ulong("task-type",
-				  "task type to apply",
-				  "The task type to apply the port",
+				  i18n_pspec("task type to apply"),
+				  i18n_pspec("The task type to apply the port"),
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);

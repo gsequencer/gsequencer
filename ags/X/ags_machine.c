@@ -189,8 +189,8 @@ ags_machine_class_init(AgsMachineClass *machine)
    * Since: 0.3
    */
   param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio it is assigned to",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned to"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

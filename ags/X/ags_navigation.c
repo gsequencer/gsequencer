@@ -144,8 +144,8 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("soundcard",
-				   "assigned soundcard",
-				   "The soundcard it is assigned with",
+				   i18n_pspec("assigned soundcard"),
+				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -31,6 +31,8 @@
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
 
+#include <ags/i18n.h>
+
 void ags_track_collection_class_init(AgsTrackCollectionClass *track_collection);
 void ags_track_collection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_track_collection_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -136,8 +138,8 @@ ags_track_collection_class_init(AgsTrackCollectionClass *track_collection)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("midi-document",
-				    "midi document of track collection",
-				    "The midi document this track collection is assigned to",
+				    i18n_pspec("midi document of track collection"),
+				    i18n_pspec("The midi document this track collection is assigned to"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MIDI_DOCUMENT,

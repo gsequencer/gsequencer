@@ -208,8 +208,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.4.3
    */
   param_spec =  g_param_spec_string("filename",
-				    "the object file",
-				    "The filename as string of object file",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -224,8 +224,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.4.3
    */
   param_spec =  g_param_spec_string("effect",
-				    "the effect",
-				    "The effect's string representation",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -240,8 +240,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.4.3
    */
   param_spec =  g_param_spec_string("uri",
-				    "the uri",
-				    "The uri's string representation",
+				    i18n_pspec("the uri"),
+				    i18n_pspec("The uri's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -256,8 +256,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.4.3
    */
   param_spec =  g_param_spec_ulong("index",
-				   "index of uri",
-				   "The numerical index of uri",
+				   i18n_pspec("index of uri"),
+				   i18n_pspec("The numerical index of uri"),
 				   0,
 				   65535,
 				   0,
@@ -275,8 +275,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.7.6
    */
   param_spec =  g_param_spec_boolean("has-midi",
-				     "has-midi",
-				     "If effect has-midi",
+				     i18n_pspec("has-midi"),
+				     i18n_pspec("If effect has-midi"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -292,8 +292,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.7.6
    */
   param_spec =  g_param_spec_boolean("has-gui",
-				     "has-gui",
-				     "If effect has-gui",
+				     i18n_pspec("has-gui"),
+				     i18n_pspec("If effect has-gui"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -308,8 +308,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.7.6
    */
   param_spec =  g_param_spec_string("gui-filename",
-				    "the GUI object file",
-				    "The filename as string of GUI object file",
+				    i18n_pspec("the GUI object file"),
+				    i18n_pspec("The filename as string of GUI object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -324,8 +324,8 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * Since: 0.4.3
    */
   param_spec =  g_param_spec_string("gui-uri",
-				    "the gui-uri",
-				    "The gui-uri's string representation",
+				    i18n_pspec("the gui-uri"),
+				    i18n_pspec("The gui-uri's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

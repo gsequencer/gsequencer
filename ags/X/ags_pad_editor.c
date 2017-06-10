@@ -121,8 +121,8 @@ ags_pad_editor_class_init(AgsPadEditorClass *pad_editor)
   gobject->get_property = ags_pad_editor_get_property;
 
   param_spec = g_param_spec_object("channel",
-				   "assigned channel",
-				   "The channel which this pad editor is assigned with",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel which this pad editor is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

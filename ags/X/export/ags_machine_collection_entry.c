@@ -133,8 +133,8 @@ ags_machine_collection_entry_class_init(AgsMachineCollectionEntryClass *machine_
    * Since: 0.8.0
    */
   param_spec = g_param_spec_object("machine",
-				   "assigned machine",
-				   "The machine which this machine entry is assigned with",
+				   i18n_pspec("assigned machine"),
+				   i18n_pspec("The machine which this machine entry is assigned with"),
 				   AGS_TYPE_MACHINE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

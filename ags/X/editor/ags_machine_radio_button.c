@@ -23,6 +23,8 @@
 
 #include <ags/X/editor/ags_machine_selector.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_button);
 void ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button);
@@ -122,11 +124,11 @@ ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_bu
    *
    * The assigned #AgsMachine
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("machine",
-				   "assigned machine",
-				   "The machine it is assigned to",
+				   i18n_pspec("assigned machine"),
+				   i18n_pspec("The machine it is assigned to"),
 				   AGS_TYPE_MACHINE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

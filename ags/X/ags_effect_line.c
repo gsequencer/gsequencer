@@ -211,8 +211,8 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("channel",
-				   "assigned channel",
-				   "The channel it is assigned with",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel it is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

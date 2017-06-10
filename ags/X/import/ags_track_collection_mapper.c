@@ -158,8 +158,8 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("track",
-				    "assigned track",
-				    "The track which this track mapper is assigned with",
+				    i18n_pspec("assigned track"),
+				    i18n_pspec("The track which this track mapper is assigned with"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TRACK,
@@ -173,8 +173,8 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    * Since: 0.7.0
    */
   param_spec = g_param_spec_string("instrument",
-				   "assigned instrument",
-				   "The instrument which this track mapper is assigned with",
+				   i18n_pspec("assigned instrument"),
+				   i18n_pspec("The instrument which this track mapper is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,8 +189,8 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    * Since: 0.7.0
    */
   param_spec = g_param_spec_string("sequence",
-				   "assigned sequence",
-				   "The sequence which this track mapper is assigned with",
+				   i18n_pspec("assigned sequence"),
+				   i18n_pspec("The sequence which this track mapper is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

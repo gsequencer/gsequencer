@@ -30,6 +30,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_automation_window_class_init(AgsAutomationWindowClass *automation_window);
 void ags_automation_window_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_window_init(AgsAutomationWindow *automation_window);
@@ -125,8 +127,8 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_object("soundcard",
-				   "assigned soundcard",
-				   "The soundcard it is assigned with",
+				   i18n_pspec("assigned soundcard"),
+				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -301,8 +301,8 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
    * Since: 0.7.0
    */
   param_spec = g_param_spec_object("window",
-				   "window of xorg application context",
-				   "The window which this xorg application context assigned to",
+				   i18n_pspec("window of xorg application context"),
+				   i18n_pspec("The window which this xorg application context assigned to"),
 				   AGS_TYPE_WINDOW,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

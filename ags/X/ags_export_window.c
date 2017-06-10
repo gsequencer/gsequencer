@@ -136,8 +136,8 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("application-context",
-				   "assigned application context",
-				   "The AgsApplicationContext it is assigned with",
+				   i18n_pspec("assigned application context"),
+				   i18n_pspec("The AgsApplicationContext it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,8 +152,8 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    * Since: 0.7.119
    */
   param_spec = g_param_spec_object("main-window",
-				   "assigned main window",
-				   "The assigned main window",
+				   i18n_pspec("assigned main window"),
+				   i18n_pspec("The assigned main window"),
 				   AGS_TYPE_WINDOW,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -147,8 +147,8 @@ ags_output_collection_editor_class_init(AgsOutputCollectionEditorClass *output_c
    * Since: 0.7.65
    */
   param_spec = g_param_spec_gtype("channel-type",
-				  "assigned channel type",
-				  "The channel type which this channel output collection editor is assigned with",
+				  i18n_pspec("assigned channel type"),
+				  i18n_pspec("The channel type which this channel output collection editor is assigned with"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

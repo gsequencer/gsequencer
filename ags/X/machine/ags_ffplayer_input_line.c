@@ -31,14 +31,6 @@ void ags_ffplayer_input_line_class_init(AgsFFPlayerInputLineClass *ffplayer_inpu
 void ags_ffplayer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_input_line_init(AgsFFPlayerInputLine *ffplayer_input_line);
-void ags_ffplayer_input_line_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_ffplayer_input_line_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
 void ags_ffplayer_input_line_connect(AgsConnectable *connectable);
 void ags_ffplayer_input_line_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_input_line_finalize(GObject *gobject);

@@ -55,6 +55,8 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pad_plugin_interface_init(AgsPluginInterface *plugin);
@@ -178,8 +180,8 @@ ags_pad_class_init(AgsPadClass *pad)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("channel",
-				   "assigned channel",
-				   "The channel it is assigned with",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel it is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

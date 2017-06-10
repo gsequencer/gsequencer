@@ -87,6 +87,8 @@
 #include <dssi.h>
 #include <lv2.h>
 
+#include <ags/i18n.h>
+
 void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
 void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_bulk_plugin_interface_init(AgsPluginInterface *plugin);
@@ -239,11 +241,11 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The #AgsAudio to visualize.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio it is assigned with",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned with"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -255,11 +257,11 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The target channel.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_gtype("channel-type",
-				  "assigned channel type",
-				  "The channel type it is assigned with",
+				  i18n_pspec("assigned channel type"),
+				  i18n_pspec("The channel type it is assigned with"),
 				  AGS_TYPE_CHANNEL,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

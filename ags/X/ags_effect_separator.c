@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator);
 void ags_effect_separator_init(AgsEffectSeparator *effect_separator);
 void ags_effect_separator_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -111,8 +113,8 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * Since: 0.7.122.19
    */
   param_spec = g_param_spec_string("filename",
-				   "filename",
-				   "The filename",
+				   i18n_pspec("filename"),
+				   i18n_pspec("The filename"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -127,8 +129,8 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * Since: 0.7.122.19
    */
   param_spec = g_param_spec_string("effect",
-				   "effect",
-				   "The effect",
+				   i18n_pspec("effect"),
+				   i18n_pspec("The effect"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -143,8 +145,8 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * Since: 0.7.122.19
    */
   param_spec = g_param_spec_string("text",
-				   "text",
-				   "The text",
+				   i18n_pspec("text"),
+				   i18n_pspec("The text"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

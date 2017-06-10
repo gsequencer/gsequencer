@@ -158,8 +158,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_ulong("widget-type",
-				  "widget type of bulk member",
-				  "The widget type this bulk member packs",
+				  i18n_pspec("widget type of bulk member"),
+				  i18n_pspec("The widget type this bulk member packs"),
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -175,8 +175,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("widget-label",
-				   "label to display",
-				   "The label to display",
+				   i18n_pspec("label to display"),
+				   i18n_pspec("The label to display"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -191,8 +191,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("plugin-name",
-				   "plugin name to control",
-				   "The plugin's name to control",
+				   i18n_pspec("plugin name to control"),
+				   i18n_pspec("The plugin's name to control"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -207,8 +207,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("specifier",
-				   "port specifier",
-				   "The specifier of the port",
+				   i18n_pspec("port specifier"),
+				   i18n_pspec("The specifier of the port"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -223,8 +223,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("filename",
-				   "the filename",
-				   "The filename of the plugin",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename of the plugin"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -239,8 +239,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("effect",
-				   "the effect",
-				   "The effect of the plugin",
+				   i18n_pspec("the effect"),
+				   i18n_pspec("The effect of the plugin"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -255,8 +255,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("control-port",
-				   "control port index",
-				   "The index of the port to control",
+				   i18n_pspec("control port index"),
+				   i18n_pspec("The index of the port to control"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -271,8 +271,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.7.21
    */
   param_spec = g_param_spec_uint("steps",
-				 "steps of bulk members port",
-				 "The steps this bulk members port has",
+				 i18n_pspec("steps of bulk members port"),
+				 i18n_pspec("The steps this bulk members port has"),
 				 0,
 				 G_MAXUINT,
 				 AGS_DIAL_DEFAULT_PRECISION,
@@ -289,8 +289,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.7.8
    */
   param_spec = g_param_spec_object("bulk-port",
-				   "a bulk port",
-				   "The bulk port to add",
+				   i18n_pspec("a bulk port"),
+				   i18n_pspec("The bulk port to add"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -305,8 +305,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.7.8
    */
   param_spec = g_param_spec_object("recall-bulk-port",
-				   "a recall bulk port",
-				   "The bulk port to add",
+				   i18n_pspec("a recall bulk port"),
+				   i18n_pspec("The bulk port to add"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -321,8 +321,8 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    * Since: 0.7.8
    */
   param_spec = g_param_spec_ulong("task-type",
-				  "task type to apply",
-				  "The task type to apply the ports",
+				  i18n_pspec("task type to apply"),
+				  i18n_pspec("The task type to apply the ports"),
 				  0, G_MAXULONG, 
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);

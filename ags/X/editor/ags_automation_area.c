@@ -34,6 +34,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_automation_area_class_init(AgsAutomationAreaClass *automation_area);
 void ags_automation_area_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_area_init(AgsAutomationArea *automation_area);
@@ -140,8 +142,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec =  g_param_spec_uint("y",
-				  "y offset",
-				  "The y offset",
+				  i18n_pspec("y offset"),
+				  i18n_pspec("The y offset"),
 				  0,
 				  65535,
 				  0,
@@ -158,8 +160,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec =  g_param_spec_uint("height",
-				  "height of the area",
-				  "The height of the area",
+				  i18n_pspec("height of the area"),
+				  i18n_pspec("The height of the area"),
 				  0,
 				  65535,
 				  0,
@@ -176,8 +178,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_object("drawing-area",
-				   "assigned drawing area",
-				   "The drawing area it is assigned with",
+				   i18n_pspec("assigned drawing area"),
+				   i18n_pspec("The drawing area it is assigned with"),
 				   GTK_TYPE_DRAWING_AREA,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -192,8 +194,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio it is assigned with",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned with"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -208,8 +210,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_gtype("channel-type",
-				  "assigned channel type",
-				  "The channel type it is assigned with",
+				  i18n_pspec("assigned channel type"),
+				  i18n_pspec("The channel type it is assigned with"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -224,8 +226,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_string("filename",
-				   "filename assigned with",
-				   "The filename it is assigned with",
+				   i18n_pspec("filename assigned with"),
+				   i18n_pspec("The filename it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -240,8 +242,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_string("effect",
-				   "effect assigned with",
-				   "The effect name it is assigned with",
+				   i18n_pspec("effect assigned with"),
+				   i18n_pspec("The effect name it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -256,8 +258,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_string("control-specifier",
-				   "assigned control specifier",
-				   "The control specifier it is assigned with",
+				   i18n_pspec("assigned control specifier"),
+				   i18n_pspec("The control specifier it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -272,8 +274,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_string("control-name",
-				   "displayed control name",
-				   "The control name to display",
+				   i18n_pspec("displayed control name"),
+				   i18n_pspec("The control name to display"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

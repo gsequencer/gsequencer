@@ -34,6 +34,8 @@
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_bulk.h>
 
+#include <ags/i18n.h>
+
 void ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge);
 void ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -156,11 +158,11 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The start of a bunch of #AgsAudio to visualize.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio it is assigned with",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned with"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -735,7 +737,7 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
  *
  * Resize audio channel allocation.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
@@ -859,7 +861,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
  *
  * Resize pad allocation.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
@@ -1021,7 +1023,7 @@ ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
  *
  * Returns: a new #AgsEffectBridge
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsEffectBridge*
 ags_effect_bridge_new(AgsAudio *audio)

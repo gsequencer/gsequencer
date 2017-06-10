@@ -23,6 +23,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/i18n.h>
+
 void ags_line_editor_class_init(AgsLineEditorClass *line_editor);
 void ags_line_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -122,8 +124,8 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
    * Since: 0.3
    */
   param_spec = g_param_spec_object("channel",
-				   "assigned channel",
-				   "The channel which this line editor is assigned with",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel which this line editor is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -27,6 +27,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window);
 void ags_playback_window_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_playback_window_init(AgsPlaybackWindow *playback_window);
@@ -124,8 +126,8 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
    * Since: 0.8.0
    */
   param_spec = g_param_spec_object("application-context",
-				   "assigned application context",
-				   "The AgsApplicationContext it is assigned with",
+				   i18n_pspec("assigned application context"),
+				   i18n_pspec("The AgsApplicationContext it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -140,8 +142,8 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
    * Since: 0.8.0
    */
   param_spec = g_param_spec_object("main-window",
-				   "assigned main window",
-				   "The assigned main window",
+				   i18n_pspec("assigned main window"),
+				   i18n_pspec("The assigned main window"),
 				   AGS_TYPE_WINDOW,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

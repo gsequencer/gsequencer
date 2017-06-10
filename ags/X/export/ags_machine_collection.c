@@ -34,6 +34,8 @@
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_collection_class_init(AgsMachineCollectionClass *machine_collection);
 void ags_machine_collection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_collection_applicable_interface_init(AgsApplicableInterface *applicable);

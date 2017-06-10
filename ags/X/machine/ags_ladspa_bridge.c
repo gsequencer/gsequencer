@@ -42,6 +42,8 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <ags/i18n.h>
+
 void ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge);
 void ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ladspa_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -157,11 +159,11 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("filename",
-				    "the object file",
-				    "The filename as string of object file",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -173,11 +175,11 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_string("effect",
-				    "the effect",
-				    "The effect's string representation",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,11 +191,11 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's index.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
   param_spec =  g_param_spec_ulong("index",
-				   "index of effect",
-				   "The numerical index of effect",
+				   i18n_pspec("index of effect"),
+				   i18n_pspec("The numerical index of effect"),
 				   0,
 				   65535,
 				   0,
@@ -640,7 +642,7 @@ ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
  *
  * Returns: a new #AgsLadspaBridge
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsLadspaBridge*
 ags_ladspa_bridge_new(GObject *soundcard,

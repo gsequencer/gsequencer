@@ -208,8 +208,8 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("pad",
-				   "parent pad",
-				   "The pad which is its parent",
+				   i18n_pspec("parent pad"),
+				   i18n_pspec("The pad which is its parent"),
 				   AGS_TYPE_PAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -224,8 +224,8 @@ ags_line_class_init(AgsLineClass *line)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("channel",
-				   "assigned channel",
-				   "The channel it is assigned with",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel it is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
