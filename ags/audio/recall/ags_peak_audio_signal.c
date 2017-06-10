@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/i18n.h>
+
 void ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal);
 void ags_peak_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_peak_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -128,7 +130,29 @@ ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal)
   /* GObjectClass */
   gobject = (GObjectClass *) peak_audio_signal;
 
+  gobject->set_property = ags_peak_channel_set_property;
+  gobject->get_property = ags_peak_channel_get_property;
+
   gobject->finalize = ags_peak_audio_signal_finalize;
+
+  /* properties */
+  /**
+   * AgsPeakChannel:peak:
+   * 
+   * The peak.
+   * 
+   * Since: 0.8.2
+   */
+  param_spec = g_param_spec_double("peak",
+				   i18n_pspec("resulting peak"),
+				   i18n_pspec("The peak resulted"),
+				   0.0,
+				   1.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PEAK,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) peak_audio_signal;
@@ -158,6 +182,8 @@ void
 ags_peak_audio_signal_init(AgsPeakAudioSignal *peak_audio_signal)
 {
   AGS_RECALL(peak_audio_signal)->child_type = G_TYPE_NONE;
+
+  peak_audio_signal->peak = 0.0;
 }
 
 void
@@ -167,6 +193,54 @@ ags_peak_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_peak_audio_signal_parent_class)->finalize(gobject);
 
   /* empty */
+}
+
+void
+ags_peak_audio_signal_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsPeakAudioSignal *peak_audio_signal;
+
+  peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_PEAK:
+    {
+      gdouble peak;
+
+      peak = g_value_get_double(value);
+
+      peak_audio_signal->peak = peak;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_peak_audio_signal_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsPeakAudioSignal *peak_audio_signal;
+
+  peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_PEAK:
+    {
+      g_value_set_double(value, peak_audio_signal->peak);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

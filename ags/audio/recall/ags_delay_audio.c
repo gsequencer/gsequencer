@@ -27,6 +27,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_delay_audio_plugin_interface_init(AgsPluginInterface *plugin);
@@ -189,8 +191,8 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("bpm",
-				   "bpm of recall",
-				   "The recall's bpm",
+				   i18n_pspec("bpm of recall"),
+				   i18n_pspec("The recall's bpm"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -205,8 +207,8 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("tact",
-				   "tact of recall",
-				   "The recall's tact",
+				   i18n_pspec("tact of recall"),
+				   i18n_pspec("The recall's tact"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -221,8 +223,8 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("sequencer-delay",
-				   "sequencer-delay of recall",
-				   "The delay of the sequencer",
+				   i18n_pspec("sequencer-delay of recall"),
+				   i18n_pspec("The delay of the sequencer"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -237,8 +239,8 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("notation-delay",
-				   "notation-delay of recall",
-				   "The delay of the notation",
+				   i18n_pspec("notation-delay of recall"),
+				   i18n_pspec("The delay of the notation"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -253,8 +255,8 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("sequencer-duration",
-				   "sequencer-duration of recall",
-				   "The duration of the sequencer",
+				   i18n_pspec("sequencer-duration of recall"),
+				   i18n_pspec("The duration of the sequencer"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -269,8 +271,8 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("notation-duration",
-				   "notation-duration of recall",
-				   "The duration of the notation",
+				   i18n_pspec("notation-duration of recall"),
+				   i18n_pspec("The duration of the notation"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

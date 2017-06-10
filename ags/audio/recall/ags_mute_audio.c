@@ -25,6 +25,8 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio);
 void ags_mute_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mute_audio_mutable_interface_init(AgsMutableInterface *mutable);
@@ -150,8 +152,8 @@ ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("muted",
-				   "mute audio",
-				   "Mute the audio",
+				   i18n_pspec("mute audio"),
+				   i18n_pspec("Mute the audio"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

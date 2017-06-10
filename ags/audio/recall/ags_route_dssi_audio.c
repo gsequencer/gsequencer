@@ -22,6 +22,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_route_dssi_audio_class_init(AgsRouteDssiAudioClass *route_dssi_audio);
 void ags_route_dssi_audio_init(AgsRouteDssiAudio *route_dssi_audio);
 void ags_route_dssi_audio_plugin_interface_init(AgsPluginInterface *plugin);
@@ -133,8 +135,8 @@ ags_route_dssi_audio_class_init(AgsRouteDssiAudioClass *route_dssi_audio)
    * Since: 0.7.1
    */
   param_spec = g_param_spec_object("notation-input",
-				   "route notation input",
-				   "Route notation as input to the DSSI recall.",
+				   i18n_pspec("route notation input"),
+				   i18n_pspec("Route notation as input to the DSSI recall."),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -149,8 +151,8 @@ ags_route_dssi_audio_class_init(AgsRouteDssiAudioClass *route_dssi_audio)
    * Since: 0.7.1
    */
   param_spec = g_param_spec_object("sequencer-input",
-				   "route sequencer input",
-				   "Route sequencer as input to the DSSI recall.",
+				   i18n_pspec("route sequencer input"),
+				   i18n_pspec("Route sequencer as input to the DSSI recall."),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -28,6 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ags/i18n.h>
+
 void ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder);
 void ags_midi_builder_init(AgsMidiBuilder *midi_builder);
 void ags_midi_builder_set_property(GObject *gobject,
@@ -226,8 +228,8 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    * Since: 0.7.0
    */
   param_spec = g_param_spec_pointer("file",
-				    "the file stream",
-				    "The file stream to parse",
+				    i18n_pspec("the file stream"),
+				    i18n_pspec("The file stream to parse"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILE,

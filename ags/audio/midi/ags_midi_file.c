@@ -25,6 +25,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <ags/i18n.h>
+
 void ags_midi_file_class_init(AgsMidiFileClass *midi_file);
 void ags_midi_file_init(AgsMidiFile *midi_file);
 void ags_midi_file_set_property(GObject *gobject,
@@ -105,8 +107,8 @@ ags_midi_file_class_init(AgsMidiFileClass *midi_file)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_string("filename",
-				   "assigned filename",
-				   "The filename to read or write",
+				   i18n_pspec("assigned filename"),
+				   i18n_pspec("The filename to read or write"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

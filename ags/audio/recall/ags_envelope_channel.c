@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel);
 void ags_envelope_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_envelope_channel_plugin_interface_init(AgsPluginInterface *plugin);
@@ -150,8 +152,8 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("attack",
-				   "attack channel",
-				   "Attack of the channel",
+				   i18n_pspec("attack channel"),
+				   i18n_pspec("Attack of the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -166,8 +168,8 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("decay",
-				   "decay channel",
-				   "Decay of the channel",
+				   i18n_pspec("decay channel"),
+				   i18n_pspec("Decay of the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -182,8 +184,8 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("sustain",
-				   "sustain channel",
-				   "Sustain of the channel",
+				   i18n_pspec("sustain channel"),
+				   i18n_pspec("Sustain of the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -198,8 +200,8 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("release",
-				   "release channel",
-				   "Release of the channel",
+				   i18n_pspec("release channel"),
+				   i18n_pspec("Release of the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -214,8 +216,8 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("ratio",
-				   "envelope ratio",
-				   "The ratio of the envelope",
+				   i18n_pspec("envelope ratio"),
+				   i18n_pspec("The ratio of the envelope"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -238,7 +240,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* attack */
   envelope_channel->attack = g_object_new(AGS_TYPE_PORT,
-					  "plugin-name", g_strdup("ags-envelope"),
+					  "plugin-name", "ags-envelope",
 					  "specifier", "./attack[0]",
 					  "control-port", "1/5",
 					  "port-value-is-pointer", FALSE,
@@ -256,7 +258,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* decay */
   envelope_channel->decay = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", g_strdup("ags-envelope"),
+					 "plugin-name", "ags-envelope",
 					 "specifier", "./decay[0]",
 					 "control-port", "2/5",
 					 "port-value-is-pointer", FALSE,
@@ -274,7 +276,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* sustain */
   envelope_channel->sustain = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name", g_strdup("ags-envelope"),
+					   "plugin-name", "ags-envelope",
 					   "specifier", "./sustain[0]",
 					   "control-port", "3/5",
 					   "port-value-is-pointer", FALSE,
@@ -292,7 +294,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* release */
   envelope_channel->release = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name", g_strdup("ags-envelope"),
+					   "plugin-name", "ags-envelope",
 					   "specifier", "./release[0]",
 					   "control-port", "4/5",
 					   "port-value-is-pointer", FALSE,
@@ -310,7 +312,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* ratio */  
   envelope_channel->ratio = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", g_strdup("ags-envelope"),
+					 "plugin-name", "ags-envelope",
 					 "specifier", "./ratio[0]",
 					 "control-port", "5/5",
 					 "port-value-is-pointer", FALSE,

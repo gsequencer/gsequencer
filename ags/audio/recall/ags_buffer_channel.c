@@ -25,6 +25,8 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel);
 void ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable);
@@ -185,8 +187,8 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("muted",
-				   "mute channel",
-				   "Mute the channel",
+				   i18n_pspec("mute channel"),
+				   i18n_pspec("Mute the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -207,14 +209,14 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
   port = NULL;
 
   buffer_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name", ags_buffer_channel_plugin_name,
-				     "specifier", ags_buffer_channel_plugin_specifier[0],
-				     "control-port", ags_buffer_channel_plugin_control_port[0],
-				     "port-value-is-pointer", FALSE,
-				     "port-value-type", G_TYPE_FLOAT,
-				     "port-value-size", sizeof(gfloat),
-				     "port-value-length", 1,
-				     NULL);
+				       "plugin-name", ags_buffer_channel_plugin_name,
+				       "specifier", ags_buffer_channel_plugin_specifier[0],
+				       "control-port", ags_buffer_channel_plugin_control_port[0],
+				       "port-value-is-pointer", FALSE,
+				       "port-value-type", G_TYPE_FLOAT,
+				       "port-value-size", sizeof(gfloat),
+				       "port-value-length", 1,
+				       NULL);
   g_object_ref(buffer_channel->muted);
   buffer_channel->muted->port_value.ags_port_float = (float) FALSE;
 
@@ -233,9 +235,9 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
 
 void
 ags_buffer_channel_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
 {
   AgsBufferChannel *buffer_channel;
 
@@ -271,9 +273,9 @@ ags_buffer_channel_set_property(GObject *gobject,
 
 void
 ags_buffer_channel_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
 {
   AgsBufferChannel *buffer_channel;
 

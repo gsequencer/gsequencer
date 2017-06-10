@@ -23,6 +23,8 @@
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_channel_mutable_interface_init(AgsMutableInterface *mutable);
@@ -180,8 +182,8 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("muted",
-				   "mute channel",
-				   "Mute the channel",
+				   i18n_pspec("mute channel"),
+				   i18n_pspec("Mute the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

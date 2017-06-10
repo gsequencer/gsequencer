@@ -32,6 +32,8 @@
 
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
 void ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -170,8 +172,8 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("delay-audio-run",
-				   "assigned AgsDelayAudioRun",
-				   "the AgsDelayAudioRun which emits alloc signal",
+				   i18n_pspec("assigned AgsDelayAudioRun"),
+				   i18n_pspec("the AgsDelayAudioRun which emits alloc signal"),
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -186,8 +188,8 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
-				   "assigned AgsCountBeatsAudioRun",
-				   "the AgsCountBeatsAudioRun which emits beat signal",
+				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
+				   i18n_pspec("the AgsCountBeatsAudioRun which emits beat signal"),
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

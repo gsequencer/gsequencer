@@ -19,6 +19,8 @@
 
 #include <ags/audio/recall/ags_copy_notation_audio.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audio);
 void ags_copy_notation_audio_init(AgsCopyNotationAudio *copy_notation_audio);
 void ags_copy_notation_audio_set_property(GObject *gobject,
@@ -102,8 +104,8 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("notation",
-				   "the assigned notation",
-				   "The AgsNotation it is assigned to",
+				   i18n_pspec("the assigned notation"),
+				   i18n_pspec("The AgsNotation it is assigned to"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -118,8 +120,8 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_uint("audio_channel",
-				 "the audio channel to play",
-				 "The audio channel to play of audio object",
+				 i18n_pspec("the audio channel to play"),
+				 i18n_pspec("The audio channel to play of audio object"),
 				 0,
 				 65535,
 				 0,

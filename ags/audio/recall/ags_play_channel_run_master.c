@@ -37,6 +37,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channel_run_master);
 void ags_play_channel_run_master_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_run_master_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -186,8 +188,8 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("stream-channel-run",
-				   "assigned AgsStreamChannelRun",
-				   "an assigned AgsStreamChannelRun",
+				   i18n_pspec("assigned AgsStreamChannelRun"),
+				   i18n_pspec("an assigned AgsStreamChannelRun"),
 				   AGS_TYPE_STREAM_CHANNEL_RUN,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

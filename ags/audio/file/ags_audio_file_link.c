@@ -43,6 +43,8 @@
 #include <libxml/xpath.h>
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link);
 void ags_audio_file_link_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audio_file_link_init(AgsAudioFileLink *audio_file_link);
@@ -152,8 +154,8 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_string("preset",
-				   "the preset",
-				   "The preset to locate the file",
+				   i18n_pspec("the preset"),
+				   i18n_pspec("The preset to locate the file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -168,8 +170,8 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_string("instrument",
-				   "the instrument",
-				   "The instrument to locate the file",
+				   i18n_pspec("the instrument"),
+				   i18n_pspec("The instrument to locate the file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -184,8 +186,8 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_string("sample",
-				   "the sample",
-				   "The sample to locate the file",
+				   i18n_pspec("the sample"),
+				   i18n_pspec("The sample to locate the file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -200,8 +202,8 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_uint("audio-channel",
-				 "audio channel to read",
-				 "The selected audio channel to read",
+				 i18n_pspec("audio channel to read"),
+				 i18n_pspec("The selected audio channel to read"),
 				 0, 256,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -217,8 +219,8 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_object("timestamp",
-				   "timestamp",
-				   "The timestamp",
+				   i18n_pspec("timestamp"),
+				   i18n_pspec("The timestamp"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

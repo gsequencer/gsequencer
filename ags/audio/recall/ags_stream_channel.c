@@ -23,6 +23,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin);
@@ -142,8 +144,8 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("auto-sense",
-				   "mute channel",
-				   "Mute the channel",
+				   i18n_pspec("mute channel"),
+				   i18n_pspec("Mute the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

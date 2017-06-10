@@ -24,6 +24,8 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel);
 void ags_volume_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_volume_channel_plugin_interface_init(AgsPluginInterface *plugin);
@@ -159,8 +161,8 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
    * Since: 0.7.122.7 
    */
   param_spec = g_param_spec_object("volume",
-				   "volume to apply",
-				   "The volume to apply on the channel",
+				   i18n_pspec("volume to apply"),
+				   i18n_pspec("The volume to apply on the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

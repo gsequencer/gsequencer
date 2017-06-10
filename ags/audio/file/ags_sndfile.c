@@ -27,6 +27,8 @@
 
 #include <string.h>
 
+#include <ags/i18n.h>
+
 void ags_sndfile_class_init(AgsSndfileClass *sndfile);
 void ags_sndfile_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_sndfile_playable_interface_init(AgsPlayableInterface *playable);

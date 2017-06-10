@@ -45,6 +45,8 @@
 #include <jack/weakmacros.h>
 #include <jack/types.h>
 
+#include <ags/i18n.h>
+
 void ags_jack_client_class_init(AgsJackClientClass *jack_client);
 void ags_jack_client_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_jack_client_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
@@ -148,8 +150,8 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    * Since: 0.7.1
    */
   param_spec = g_param_spec_object("jack-server",
-				   "assigned JACK server",
-				   "The assigned JACK server.",
+				   i18n_pspec("assigned JACK server"),
+				   i18n_pspec("The assigned JACK server"),
 				   AGS_TYPE_JACK_SERVER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -164,8 +166,8 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("device",
-				   "assigned device",
-				   "The assigned device.",
+				   i18n_pspec("assigned device"),
+				   i18n_pspec("The assigned device"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -180,8 +182,8 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("port",
-				   "assigned port",
-				   "The assigned port.",
+				   i18n_pspec("assigned port"),
+				   i18n_pspec("The assigned port"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

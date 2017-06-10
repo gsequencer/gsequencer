@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
 void ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_mutable_interface_init(AgsMutableInterface *mutable);
@@ -165,8 +167,8 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("audio-channel",
-				   "assigned audio channel",
-				   "The audio channel this recall does output to",
+				   i18n_pspec("assigned audio channel"),
+				   i18n_pspec("The audio channel this recall does output to"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -181,8 +183,8 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("muted",
-				   "mute channel",
-				   "Mute the channel",
+				   i18n_pspec("mute channel"),
+				   i18n_pspec("Mute the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -26,6 +26,8 @@
 
 #include <ags/audio/recall/ags_copy_notation_audio.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_notation_audio_run_class_init(AgsCopyNotationAudioRunClass *copy_notation_audio_run);
 void ags_copy_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_notation_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -141,8 +143,8 @@ ags_copy_notation_audio_run_class_init(AgsCopyNotationAudioRunClass *copy_notati
 
   /* properties */
   param_spec = g_param_spec_object("count_beats_audio_run",
-				   "assigned AgsCountBeatsAudioRun",
-				   "The AgsCountBeatsAudioRun which emits beat signal",
+				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
+				   i18n_pspec("The AgsCountBeatsAudioRun which emits beat signal"),
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

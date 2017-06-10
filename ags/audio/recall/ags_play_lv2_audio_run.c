@@ -63,6 +63,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <ags/i18n.h>
+
 void ags_play_lv2_audio_run_class_init(AgsPlayLv2AudioRunClass *play_lv2_audio_run);
 void ags_play_lv2_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_lv2_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -209,8 +211,8 @@ ags_play_lv2_audio_run_class_init(AgsPlayLv2AudioRunClass *play_lv2_audio_run)
    * Since: 0.7.134
    */
   param_spec = g_param_spec_object("delay-audio-run",
-				   "assigned AgsDelayAudioRun",
-				   "the AgsDelayAudioRun which emits lv2_alloc_input signal",
+				   i18n_pspec("assigned AgsDelayAudioRun"),
+				   i18n_pspec("the AgsDelayAudioRun which emits lv2_alloc_input signal"),
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -225,8 +227,8 @@ ags_play_lv2_audio_run_class_init(AgsPlayLv2AudioRunClass *play_lv2_audio_run)
    * Since: 0.7.134
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
-				   "assigned AgsCountBeatsAudioRun",
-				   "the AgsCountBeatsAudioRun which just counts",
+				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
+				   i18n_pspec("the AgsCountBeatsAudioRun which just counts"),
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -241,8 +243,8 @@ ags_play_lv2_audio_run_class_init(AgsPlayLv2AudioRunClass *play_lv2_audio_run)
    * Since: 0.7.134
    */
   param_spec = g_param_spec_object("notation",
-				   "assigned AgsNotation",
-				   "The AgsNotation containing notes",
+				   i18n_pspec("assigned AgsNotation"),
+				   i18n_pspec("The AgsNotation containing notes"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

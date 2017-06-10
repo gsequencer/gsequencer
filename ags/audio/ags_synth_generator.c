@@ -38,6 +38,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator);
 void ags_synth_generator_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_generator_init(AgsSynthGenerator *synth_generator);
@@ -147,8 +149,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_uint("samplerate",
-				 "using samplerate",
-				 "The samplerate to be used",
+				 i18n_pspec("using samplerate"),
+				 i18n_pspec("The samplerate to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -165,8 +167,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_uint("buffer-size",
-				 "using buffer size",
-				 "The buffer size to be used",
+				 i18n_pspec("using buffer size"),
+				 i18n_pspec("The buffer size to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -183,8 +185,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_uint("format",
-				 "using format",
-				 "The format to be used",
+				 i18n_pspec("using format"),
+				 i18n_pspec("The format to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -201,8 +203,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_uint("n-frames",
-				 "apply n-frames",
-				 "To apply n-frames",
+				 i18n_pspec("apply n-frames"),
+				 i18n_pspec("To apply n-frames"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -219,8 +221,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_uint("oscillator",
-				 "using oscillator",
-				 "The oscillator to be used",
+				 i18n_pspec("using oscillator"),
+				 i18n_pspec("The oscillator to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -237,8 +239,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_double("frequency",
-				   "using frequency",
-				   "The frequency to be used",
+				   i18n_pspec("using frequency"),
+				   i18n_pspec("The frequency to be used"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -255,8 +257,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_double("phase",
-				   "using phase",
-				   "The phase to be used",
+				   i18n_pspec("using phase"),
+				   i18n_pspec("The phase to be used"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -273,8 +275,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_double("volume",
-				   "using volume",
-				   "The volume to be used",
+				   i18n_pspec("using volume"),
+				   i18n_pspec("The volume to be used"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -291,8 +293,8 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_object("timestamp",
-				   "timestamp",
-				   "The timestamp",
+				   i18n_pspec("timestamp"),
+				   i18n_pspec("The timestamp"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

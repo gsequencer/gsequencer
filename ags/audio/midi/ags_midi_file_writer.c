@@ -19,6 +19,8 @@
 
 #include <ags/audio/midi/ags_midi_file_writer.h>
 
+#include <ags/i18n.h>
+
 void ags_midi_file_writer_class_init(AgsMidiFileWriterClass *midi_file_writer);
 void ags_midi_file_writer_init(AgsMidiFileWriter *midi_file_writer);
 void ags_midi_file_writer_set_property(GObject *gobject,
@@ -99,8 +101,8 @@ ags_midi_file_writer_class_init(AgsMidiFileWriterClass *midi_file_writer)
    * Since: 0.7.74
    */
   param_spec = g_param_spec_object("midi-file",
-				   "assigned midi file",
-				   "The midi file to read",
+				   i18n_pspec("assigned midi file"),
+				   i18n_pspec("The midi file to read"),
 				   AGS_TYPE_MIDI_FILE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

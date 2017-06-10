@@ -35,6 +35,8 @@
 #include <sndfile.h>
 #include <string.h>
 
+#include <ags/i18n.h>
+
 void ags_audio_file_class_init(AgsAudioFileClass *audio_file);
 void ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_file_init(AgsAudioFile *audio_file);
@@ -142,8 +144,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of audio file",
-				   "The soundcard what audio file has it's presets",
+				   i18n_pspec("soundcard of audio file"),
+				   i18n_pspec("The soundcard what audio file has it's presets"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -158,8 +160,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("filename",
-				   "filename of lv2 manager",
-				   "The filename this lv2 manager is assigned to",
+				   i18n_pspec("filename of lv2 manager"),
+				   i18n_pspec("The filename this lv2 manager is assigned to"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,8 +176,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_uint("start-channel",
-				 "start-channel is the start offset",
-				 "The start-channel indicates what audio channel should be read",
+				 i18n_pspec("start-channel is the start offset"),
+				 i18n_pspec("The start-channel indicates what audio channel should be read"),
 				 0, G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -192,8 +194,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_uint("audio-channels",
-				 "read audio-channels of channels",
-				 "The audio-channels indicates how many channels should be read",
+				 i18n_pspec("read audio-channels of channels"),
+				 i18n_pspec("The audio-channels indicates how many channels should be read"),
 				 0, G_MAXUINT,
 				 1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -209,8 +211,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_uint("samplerate",
-				 "using samplerate",
-				 "The samplerate to be used",
+				 i18n_pspec("using samplerate"),
+				 i18n_pspec("The samplerate to be used"),
 				 0,
 				 65535,
 				 0,
@@ -227,8 +229,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_uint("buffer-size",
-				 "using buffer size",
-				 "The buffer size to be used",
+				 i18n_pspec("using buffer size"),
+				 i18n_pspec("The buffer size to be used"),
 				 0,
 				 65535,
 				 0,
@@ -245,8 +247,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_object("playable",
-				   "containing playable",
-				   "The playable it contains",
+				   i18n_pspec("containing playable"),
+				   i18n_pspec("The playable it contains"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -261,8 +263,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 0.4.3
    */
   param_spec = g_param_spec_object("audio-signal",
-				   "containing audio signal",
-				   "The audio signal it contains",
+				   i18n_pspec("containing audio signal"),
+				   i18n_pspec("The audio signal it contains"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

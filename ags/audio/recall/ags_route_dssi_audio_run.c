@@ -50,6 +50,8 @@
 
 #include <alsa/seq_midi_event.h>
 
+#include <ags/i18n.h>
+
 void ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_run);
 void ags_route_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_route_dssi_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -224,8 +226,8 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("delay-audio-run",
-				   "assigned AgsDelayAudioRun",
-				   "the AgsDelayAudioRun which emits notation_alloc_input signal",
+				   i18n_pspec("assigned AgsDelayAudioRun"),
+				   i18n_pspec("the AgsDelayAudioRun which emits notation_alloc_input signal"),
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -240,8 +242,8 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
-				   "assigned AgsCountBeatsAudioRun",
-				   "the AgsCountBeatsAudioRun which just counts",
+				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
+				   i18n_pspec("the AgsCountBeatsAudioRun which just counts"),
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -34,6 +34,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
 void ags_peak_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_peak_channel_plugin_interface_init(AgsPluginInterface *plugin);
@@ -171,8 +173,8 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("peak",
-				   "peak of channel",
-				   "The peak of channel",
+				   i18n_pspec("peak of channel"),
+				   i18n_pspec("The peak of channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

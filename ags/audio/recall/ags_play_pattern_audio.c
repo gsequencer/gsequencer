@@ -22,6 +22,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_play_pattern_audio_class_init(AgsPlayPatternAudioClass *play_pattern_audio);
 void ags_play_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_pattern_audio_init(AgsPlayPatternAudio *play_pattern_audio);
@@ -134,8 +136,8 @@ ags_play_pattern_audio_class_init(AgsPlayPatternAudioClass *play_pattern_audio)
    * Since: 0.7.122.9
    */
   param_spec = g_param_spec_object("bank-index-0",
-				   "current bank index 0",
-				   "The current bank index 0 of the AgsPattern",
+				   i18n_pspec("current bank index 0"),
+				   i18n_pspec("The current bank index 0 of the AgsPattern"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -150,8 +152,8 @@ ags_play_pattern_audio_class_init(AgsPlayPatternAudioClass *play_pattern_audio)
    * Since: 0.7.122.9
    */
   param_spec = g_param_spec_object("bank-index-1",
-				   "current bank index 1",
-				   "The current bank index 1 of the AgsPattern",
+				   i18n_pspec("current bank index 1"),
+				   i18n_pspec("The current bank index 1 of the AgsPattern"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

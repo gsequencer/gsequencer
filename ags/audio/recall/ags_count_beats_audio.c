@@ -25,6 +25,8 @@
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio);
 void ags_count_beats_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable);
@@ -197,8 +199,8 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("notation-loop",
-				   "notation-loop playing",
-				   "Play in a endless notation_loop",
+				   i18n_pspec("notation-loop playing"),
+				   i18n_pspec("Play in a endless notation_loop"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -213,8 +215,8 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("notation-loop-start",
-				   "start beat of notation loop",
-				   "The start beat of the notation loop",
+				   i18n_pspec("start beat of notation loop"),
+				   i18n_pspec("The start beat of the notation loop"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -229,8 +231,8 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("notation-loop-end",
-				   "end beat of notation loop",
-				   "The end beat of the notation loop",
+				   i18n_pspec("end beat of notation loop"),
+				   i18n_pspec("The end beat of the notation loop"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -245,8 +247,8 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("sequencer-loop",
-				   "sequencer loop playing",
-				   "Play sequencer in a endless loop",
+				   i18n_pspec("sequencer loop playing"),
+				   i18n_pspec("Play sequencer in a endless loop"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -261,8 +263,8 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("sequencer_loop_start",
-				   "start beat of loop",
-				   "The start beat of the sequencer loop",
+				   i18n_pspec("start beat of loop"),
+				   i18n_pspec("The start beat of the sequencer loop"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -277,8 +279,8 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("sequencer-loop-end",
-				   "end beat of sequencer loop",
-				   "The end beat of the sequencer loop",
+				   i18n_pspec("end beat of sequencer loop"),
+				   i18n_pspec("The end beat of the sequencer loop"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

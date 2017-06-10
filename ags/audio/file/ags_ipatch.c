@@ -26,6 +26,8 @@
 
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
+#include <ags/i18n.h>
+
 void ags_ipatch_class_init(AgsIpatchClass *ipatch);
 void ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ipatch_playable_interface_init(AgsPlayableInterface *playable);
@@ -155,8 +157,8 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    * Since: 0.7.45
    */
   param_spec = g_param_spec_object("soundcard",
-				   "soundcard of ipatch",
-				   "The soundcard what ipatch has it's presets",
+				   i18n_pspec("soundcard of ipatch"),
+				   i18n_pspec("The soundcard what ipatch has it's presets"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -171,8 +173,8 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_pointer("filename",
-				    "the filename",
-				    "The filename to open",
+				    i18n_pspec("the filename"),
+				    i18n_pspec("The filename to open"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
@@ -186,8 +188,8 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    * Since: 0.4.2
    */
   param_spec = g_param_spec_pointer("mode",
-				    "the mode",
-				    "The mode to open the file",
+				    i18n_pspec("the mode"),
+				    i18n_pspec("The mode to open the file"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MODE,

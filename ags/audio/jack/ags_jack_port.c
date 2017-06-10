@@ -34,6 +34,7 @@
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_jack_port_class_init(AgsJackPortClass *jack_port);
 void ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -134,8 +135,8 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    * Since: 0.7.1
    */
   param_spec = g_param_spec_object("jack-client",
-				   "assigned JACK client",
-				   "The assigned JACK client.",
+				   i18n_pspec("assigned JACK client"),
+				   i18n_pspec("The assigned JACK client"),
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -150,8 +151,8 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    * Since: 0.7.65
    */
   param_spec = g_param_spec_string("port-name",
-				   "port name",
-				   "The port name",
+				   i18n_pspec("port name"),
+				   i18n_pspec("The port name"),
 				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

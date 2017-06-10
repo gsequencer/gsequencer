@@ -32,7 +32,10 @@
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <string.h>
+
 #include <errno.h>
+
+#include <ags/i18n.h>
 
 void ags_jack_server_class_init(AgsJackServerClass *jack_server);
 void ags_jack_server_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -171,8 +174,8 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * Since: 0.7.1
    */
   param_spec = g_param_spec_object("application-context",
-				   "the application context object",
-				   "The application context object",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,8 +190,8 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * Since: 0.7.1
    */
   param_spec = g_param_spec_string("url",
-				   "the URL",
-				   "The URL",
+				   i18n_pspec("the URL"),
+				   i18n_pspec("The URL"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -203,8 +206,8 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("default-soundcard",
-				   "default soundcard",
-				   "The default soundcard",
+				   i18n_pspec("default soundcard"),
+				   i18n_pspec("The default soundcard"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -219,8 +222,8 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("default-jack-client",
-				   "default jack client",
-				   "The default jack client",
+				   i18n_pspec("default jack client"),
+				   i18n_pspec("The default jack client"),
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -235,8 +238,8 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("jack-client",
-				   "jack client list",
-				   "The jack client list",
+				   i18n_pspec("jack client list"),
+				   i18n_pspec("The jack client list"),
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

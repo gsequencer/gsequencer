@@ -48,6 +48,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio);
 void ags_play_dssi_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_dssi_audio_plugin_interface_init(AgsPluginInterface *plugin);
@@ -164,8 +166,8 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    * Since: 0.7.134
    */
   param_spec =  g_param_spec_string("filename",
-				    "the object file",
-				    "The filename as string of object file",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -180,8 +182,8 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    * Since: 0.7.134
    */
   param_spec =  g_param_spec_string("effect",
-				    "the effect",
-				    "The effect's string representation",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -196,8 +198,8 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    * Since: 0.7.134
    */
   param_spec =  g_param_spec_ulong("index",
-				   "index of effect",
-				   "The numerical index of effect",
+				   i18n_pspec("index of effect"),
+				   i18n_pspec("The numerical index of effect"),
 				   0,
 				   65535,
 				   0,

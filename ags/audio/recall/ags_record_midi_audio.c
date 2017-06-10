@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio);
 void ags_record_midi_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio);
@@ -140,8 +142,8 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("playback",
-				   "if do playback",
-				   "If playback should be performed",
+				   i18n_pspec("if do playback"),
+				   i18n_pspec("If playback should be performed"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -156,8 +158,8 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("record",
-				   "if do record",
-				   "If record data for later use should be done",
+				   i18n_pspec("if do record"),
+				   i18n_pspec("If record data for later use should be done"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -172,8 +174,8 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("filename",
-				   "filename of record",
-				   "The filename of record",
+				   i18n_pspec("filename of record"),
+				   i18n_pspec("The filename of record"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -188,8 +190,8 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("division",
-				   "division of record",
-				   "The division of record",
+				   i18n_pspec("division of record"),
+				   i18n_pspec("The division of record"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -204,8 +206,8 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("tempo",
-				   "tempo of record",
-				   "The tempo of record",
+				   i18n_pspec("tempo of record"),
+				   i18n_pspec("The tempo of record"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -220,8 +222,8 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("bpm",
-				   "bpm of record",
-				   "The bpm of record",
+				   i18n_pspec("bpm of record"),
+				   i18n_pspec("The bpm of record"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

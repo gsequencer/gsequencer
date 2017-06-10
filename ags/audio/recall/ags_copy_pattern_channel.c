@@ -24,6 +24,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_channel);
 void ags_copy_pattern_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel);
@@ -133,8 +135,8 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
    * Since: 0.7.122.7
    */
   param_spec = g_param_spec_object("pattern",
-				   "pattern to play",
-				   "The pattern which has to be played",
+				   i18n_pspec("pattern to play"),
+				   i18n_pspec("The pattern which has to be played"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

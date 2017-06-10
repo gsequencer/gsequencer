@@ -49,6 +49,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_audio_run);
 void ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -324,8 +326,8 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
-				   "assigned AgsDelayAudioRun",
-				   "The AgsDelayAudioRun which emits sequencer_alloc_output sequencer_count signal",
+				   i18n_pspec("assigned AgsDelayAudioRun"),
+				   i18n_pspec("The AgsDelayAudioRun which emits sequencer_alloc_output sequencer_count signal"),
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -340,8 +342,8 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("notation-counter",
-				 "notation counter indicates offset",
-				 "The notation counter indicates the offset in the notation",
+				 i18n_pspec("notation counter indicates offset"),
+				 i18n_pspec("The notation counter indicates the offset in the notation"),
 				 0,
 				 65535, //FIXME:JK: figure out how many beats this can really have
 				 0,
@@ -358,8 +360,8 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    * Since: 0.4.0
    */
   param_spec = g_param_spec_uint("sequencer-counter",
-				 "sequencer counter indicates offset",
-				 "The sequenecer counter indicates the offset in the sequencer",
+				 i18n_pspec("sequencer counter indicates offset"),
+				 i18n_pspec("The sequenecer counter indicates the offset in the sequencer"),
 				 0,
 				 65535, //FIXME:JK: figure out how many beats this can really have
 				 0,
