@@ -134,8 +134,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/ags/config.h
-CONFIG_CLEAN_FILES = functional-system-tests.mk libags.pc \
-	libags_audio.pc libags_gui.pc libgsequencer.pc
+CONFIG_CLEAN_FILES = libags.pc libags_audio.pc libags_gui.pc \
+	libgsequencer.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -1444,8 +1444,7 @@ TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in \
-	$(srcdir)/functional-system-tests.mk.in $(srcdir)/libags.pc.in \
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(srcdir)/libags_audio.pc.in $(srcdir)/libags_gui.pc.in \
 	$(srcdir)/libgsequencer.pc.in $(top_srcdir)/ags/config.h.in \
 	$(top_srcdir)/functional-tests.mk $(top_srcdir)/unit-tests.mk \
@@ -1718,10 +1717,10 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 # pkgconfig_DATA += libgsequencer.pc
 
 # extra
-EXTRA_DIST = config.rpath COPYING.docs config.h config.h.in \
-	gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 \
-	gsequencer.1 README ags_example.xml gsequencer-documentation \
-	midi2xml.1 ags_functional_note_edit_test.xml mkinstalldirs \
+EXTRA_DIST = config.rpath COPYING.docs ags/config.h.in gtk-doc.make \
+	gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README \
+	ags_example.xml gsequencer-documentation midi2xml.1 \
+	ags_functional_note_edit_test.xml mkinstalldirs m4/Makefile.am \
 	m4/Makefile.in ags/i18n.h ags/gettext.h \
 	functional-system-tests.mk.am functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
@@ -3521,8 +3520,6 @@ $(top_srcdir)/ags/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f ags/config.h ags/stamp-h1
-functional-system-tests.mk: $(top_builddir)/config.status $(srcdir)/functional-system-tests.mk.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 libags.pc: $(top_builddir)/config.status $(srcdir)/libags.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 libags_audio.pc: $(top_builddir)/config.status $(srcdir)/libags_audio.pc.in

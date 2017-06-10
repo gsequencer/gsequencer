@@ -37,8 +37,7 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 
 EXTRA_DIST = config.rpath \
 	COPYING.docs \
-	config.h \
-	config.h.in \
+	ags/config.h.in \
 	gtk-doc.make \
 	gsequencer.share \
 	acsite.m4 \
@@ -50,6 +49,7 @@ EXTRA_DIST = config.rpath \
 	midi2xml.1 \
 	ags_functional_note_edit_test.xml \
 	mkinstalldirs \
+	m4/Makefile.am \
 	m4/Makefile.in \
 	ags/i18n.h \
 	ags/gettext.h

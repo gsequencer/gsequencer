@@ -269,9 +269,11 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->mapped_output_pad = 0;
 
   /* context menu */
+#if 0
   ags_machine_popup_add_edit_options((AgsMachine *) ffplayer,
 				     (AGS_MACHINE_POPUP_ENVELOPE));
-
+#endif
+  
   /* name and xml type */
   ffplayer->name = NULL;
   ffplayer->xml_type = "ags-ffplayer";

@@ -1,41 +1,10 @@
-2017-06-08  gettextize  <bug-gnu-gettext@gnu.org>
-
-	* Makefile.am (SUBDIRS): Add intl.
-	* configure.ac (AC_CONFIG_FILES): Add intl/Makefile.
-
-2017-06-08  gettextize  <bug-gnu-gettext@gnu.org>
-
-	* m4/gettext.m4: New file, from gettext-0.19.8.1.
-	* m4/iconv.m4: New file, from gettext-0.19.8.1.
-	* m4/lib-ld.m4: New file, from gettext-0.19.8.1.
-	* m4/lib-link.m4: New file, from gettext-0.19.8.1.
-	* m4/lib-prefix.m4: New file, from gettext-0.19.8.1.
-	* m4/nls.m4: New file, from gettext-0.19.8.1.
-	* m4/po.m4: New file, from gettext-0.19.8.1.
-	* m4/progtest.m4: New file, from gettext-0.19.8.1.
-	* Makefile.am (SUBDIRS): Add po.
-	(EXTRA_DIST): Add config.rpath.
-	* configure.ac (AC_CONFIG_FILES): Add po/Makefile.in.
-
-2017-06-06  gettextize  <bug-gnu-gettext@gnu.org>
-
-	* m4/gettext.m4: New file, from gettext-0.19.8.1.
-	* m4/iconv.m4: New file, from gettext-0.19.8.1.
-	* m4/lib-ld.m4: New file, from gettext-0.19.8.1.
-	* m4/lib-link.m4: New file, from gettext-0.19.8.1.
-	* m4/lib-prefix.m4: New file, from gettext-0.19.8.1.
-	* m4/nls.m4: New file, from gettext-0.19.8.1.
-	* m4/po.m4: New file, from gettext-0.19.8.1.
-	* m4/progtest.m4: New file, from gettext-0.19.8.1.
-	* Makefile.am (SUBDIRS): New variable.
-	* configure.ac (AC_CONFIG_FILES): Add po/Makefile.in.
-
 ags (0.8.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved ags.rc to support AgsMidiExportWizard and AgsMidiImportWizard
 	* improved ags.rc to provide better color of active text
 	* improved Makefile.am
+	* added gettext support
 
 ags (0.8.1)
 
