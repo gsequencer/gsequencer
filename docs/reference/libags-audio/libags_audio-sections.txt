@@ -4122,20 +4122,6 @@ ags_start_soundcard_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_stream</FILE>
-<TITLE>AgsStream</TITLE>
-ags_stream
-ags_stream_new
-<SUBSECTION Public>
-AGS_STREAM
-AGS_STREAM_CLASS
-AGS_TYPE_STREAM
-AgsStream
-AgsStreamClass
-ags_stream_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_stream_audio_signal</FILE>
 <TITLE>AgsStreamAudioSignal</TITLE>
 ags_stream_audio_signal_new
