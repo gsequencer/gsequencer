@@ -1706,18 +1706,14 @@ install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	ln -s ../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	ln -s ../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	ln -s ../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	ln -s ../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
