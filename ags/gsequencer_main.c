@@ -1256,7 +1256,7 @@ main(int argc, char **argv)
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
   
-  putenv("LC_CTYPE=C");
+  putenv("LC_ALL=C");
 
   single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
