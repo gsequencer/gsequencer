@@ -188,7 +188,6 @@
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_stream.h>
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_volume_audio_signal.h>
 #include <ags/audio/recall/ags_volume_channel.h>
