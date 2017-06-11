@@ -439,7 +439,6 @@ am__objects_13 = $(am__objects_1) \
 	ags/audio/recall/libags_audio_la-ags_route_lv2_audio.lo \
 	ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo \
-	ags/audio/recall/libags_audio_la-ags_stream.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_channel.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_channel_run.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_recycling.lo \
@@ -1773,7 +1772,7 @@ EXTRA_DIST = config.rpath COPYING.docs ags/config.h.in gtk-doc.make \
 man1_MANS = gsequencer.1 midi2xml.1
 
 # clean
-CLEANFILES = functional-system-tests.mk $(appdata_DATA) \
+CLEANFILES = functional-system-tests.mk m4/Makefile $(appdata_DATA) \
 	$(pkgconfig_DATA)
 
 # pkg-config
@@ -2688,7 +2687,6 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_stream_audio_signal.h \
 	ags/audio/recall/ags_stream_channel.h \
 	ags/audio/recall/ags_stream_channel_run.h \
-	ags/audio/recall/ags_stream.h \
 	ags/audio/recall/ags_stream_recycling.h \
 	ags/audio/recall/ags_volume_audio_signal.h \
 	ags/audio/recall/ags_volume_channel.h \
@@ -2761,7 +2759,6 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_route_lv2_audio.c \
 	ags/audio/recall/ags_route_lv2_audio_run.c \
 	ags/audio/recall/ags_stream_audio_signal.c \
-	ags/audio/recall/ags_stream.c \
 	ags/audio/recall/ags_stream_channel.c \
 	ags/audio/recall/ags_stream_channel_run.c \
 	ags/audio/recall/ags_stream_recycling.c \
@@ -4328,9 +4325,6 @@ ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo:  \
-	ags/audio/recall/$(am__dirstamp) \
-	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
-ags/audio/recall/libags_audio_la-ags_stream.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/recall/libags_audio_la-ags_stream_channel.lo:  \
@@ -5918,7 +5912,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_dssi_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_lv2_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_lv2_audio_run.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel_run.Plo@am__quote@
@@ -7841,13 +7834,6 @@ ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo: ags/audio/recall/ag
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_stream_audio_signal.c' object='ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo `test -f 'ags/audio/recall/ags_stream_audio_signal.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream_audio_signal.c
-
-ags/audio/recall/libags_audio_la-ags_stream.lo: ags/audio/recall/ags_stream.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_stream.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Tpo -c -o ags/audio/recall/libags_audio_la-ags_stream.lo `test -f 'ags/audio/recall/ags_stream.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_stream.c' object='ags/audio/recall/libags_audio_la-ags_stream.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_stream.lo `test -f 'ags/audio/recall/ags_stream.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream.c
 
 ags/audio/recall/libags_audio_la-ags_stream_channel.lo: ags/audio/recall/ags_stream_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_stream_channel.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel.Tpo -c -o ags/audio/recall/libags_audio_la-ags_stream_channel.lo `test -f 'ags/audio/recall/ags_stream_channel.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream_channel.c
@@ -11502,7 +11488,7 @@ check-gettext:
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
 
 update-po: check-gettext
-	@find $(srcdir)/ags/ -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
+	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
 	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
 		rm -f $(srcdir)/po/POTFILES.in.2 ; \
 	else \

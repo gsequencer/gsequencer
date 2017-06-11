@@ -200,14 +200,14 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
-po/Makefile.in
-m4/Makefile
 Makefile
 functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile
 docs/reference/libgsequencer/Makefile
+m4/Makefile
+po/Makefile.in
 libags.pc
 libags_audio.pc
 libags_gui.pc

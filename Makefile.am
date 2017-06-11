@@ -71,7 +71,9 @@ EXTRA_DIST += \
 
 man1_MANS = gsequencer.1 midi2xml.1
 
-CLEANFILES = functional-system-tests.mk
+CLEANFILES = \
+	functional-system-tests.mk \
+	m4/Makefile
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -853,7 +855,6 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_stream_audio_signal.h \
 	ags/audio/recall/ags_stream_channel.h \
 	ags/audio/recall/ags_stream_channel_run.h \
-	ags/audio/recall/ags_stream.h \
 	ags/audio/recall/ags_stream_recycling.h \
 	ags/audio/recall/ags_volume_audio_signal.h \
 	ags/audio/recall/ags_volume_channel.h \
@@ -927,7 +928,6 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_route_lv2_audio.c \
 	ags/audio/recall/ags_route_lv2_audio_run.c \
 	ags/audio/recall/ags_stream_audio_signal.c \
-	ags/audio/recall/ags_stream.c \
 	ags/audio/recall/ags_stream_channel.c \
 	ags/audio/recall/ags_stream_channel_run.c \
 	ags/audio/recall/ags_stream_recycling.c \
@@ -1800,7 +1800,7 @@ check-gettext:
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
 
 update-po: check-gettext
-	@find $(srcdir)/ags/ -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
+	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
 	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
 		rm -f $(srcdir)/po/POTFILES.in.2 ; \
 	else \

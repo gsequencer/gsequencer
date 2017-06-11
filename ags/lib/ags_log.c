@@ -126,7 +126,7 @@ ags_log_finalize(GObject *gobject)
 AgsLog*
 ags_log_get_instance()
 {
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   pthread_mutex_lock(&mutex);
   

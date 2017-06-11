@@ -18934,7 +18934,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files po/Makefile.in m4/Makefile Makefile functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
+ac_config_files="$ac_config_files Makefile functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
 
 
 cat >confcache <<\_ACEOF
@@ -19984,14 +19984,14 @@ do
     "po-directories") CONFIG_COMMANDS="$CONFIG_COMMANDS po-directories" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
-    "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
-    "m4/Makefile") CONFIG_FILES="$CONFIG_FILES m4/Makefile" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "functional-system-tests.mk") CONFIG_FILES="$CONFIG_FILES functional-system-tests.mk" ;;
     "docs/reference/libags/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags/Makefile" ;;
     "docs/reference/libags-audio/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-audio/Makefile" ;;
     "docs/reference/libags-gui/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-gui/Makefile" ;;
     "docs/reference/libgsequencer/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libgsequencer/Makefile" ;;
+    "m4/Makefile") CONFIG_FILES="$CONFIG_FILES m4/Makefile" ;;
+    "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
     "libags.pc") CONFIG_FILES="$CONFIG_FILES libags.pc" ;;
     "libags_audio.pc") CONFIG_FILES="$CONFIG_FILES libags_audio.pc" ;;
     "libags_gui.pc") CONFIG_FILES="$CONFIG_FILES libags_gui.pc" ;;
