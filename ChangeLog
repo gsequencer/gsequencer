@@ -1,3 +1,10 @@
+ags (0.8.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiParser to don't skip length of status messages
+	* fixed libags-audio.h to not include removed header
+	* fixed Makefile.am to use correct symlink of gtk-doc
+
 ags (0.8.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

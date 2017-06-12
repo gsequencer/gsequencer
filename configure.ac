@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.8.2],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.8.3],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -27,9 +27,9 @@ AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
 	      [enable_oss=yes])
 
 AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
-			    		      [enable libinstpatch (default is no)])],
+					    [enable libinstpatch (default is yes)])],
 	      [],
-	      [enable_libinstpatch=no])
+	      [enable_libinstpatch=yes])
 
 AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],
