@@ -103,23 +103,24 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
 
   if(audio_channels_old < audio_channels){
     notation = g_list_nth(audio->notation,
-			  audio_channels_old - 1);
+			  audio_channels_old);
 
     for(i = audio_channels_old; i < audio_channels; i++){
       ags_notebook_insert_tab(editor_child->notebook,
 			      i);
       tabs = editor_child->notebook->tabs;
-      notation = notation->next;
       AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tabs->data)->toggle,
 				   TRUE);
+
+      notation = notation->next;
     }
 
     gtk_widget_show_all((GtkWidget *) editor_child->notebook);
   }else{
     for(i = audio_channels; i < audio_channels_old; i++){
       ags_notebook_remove_tab(editor_child->notebook,
-			      i);
+			      audio_channels);
     }
   }
 

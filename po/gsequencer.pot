@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.8.3\n"
+"Project-Id-Version: gsequencer 0.8.4\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-06-12 21:35+0200\n"
+"POT-Creation-Date: 2017-06-13 12:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -242,67 +242,67 @@ msgstr ""
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_machine.c:1837
+#: ags/X/ags_machine.c:1845
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:1842
+#: ags/X/ags_machine.c:1850
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:2108
+#: ags/X/ags_machine.c:2116
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:2111
+#: ags/X/ags_machine.c:2119
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:2114
+#: ags/X/ags_machine.c:2122
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:2117
+#: ags/X/ags_machine.c:2125
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:2120
+#: ags/X/ags_machine.c:2128
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:2123 ags/X/ags_machine_callbacks.c:293
+#: ags/X/ags_machine.c:2131 ags/X/ags_machine_callbacks.c:293
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:2126 ags/X/ags_machine_editor.c:198
+#: ags/X/ags_machine.c:2134 ags/X/ags_machine_editor.c:198
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:2180 ags/X/machine/ags_drum_input_pad.c:195
+#: ags/X/ags_machine.c:2188 ags/X/machine/ags_drum_input_pad.c:195
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:2191
+#: ags/X/ags_machine.c:2199
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2201
+#: ags/X/ags_machine.c:2209
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2211
+#: ags/X/ags_machine.c:2219
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:2240
+#: ags/X/ags_machine.c:2248
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2251
+#: ags/X/ags_machine.c:2259
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2261
+#: ags/X/ags_machine.c:2269
 msgid "MIDI dialog"
 msgstr ""
 

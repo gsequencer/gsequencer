@@ -175,8 +175,12 @@ ags_meter_paint(AgsMeter *meter)
     return;
   }
 
-  base_note = AGS_NOTATION(editor->selected_machine->audio->notation->data)->base_note;
-
+  if(editor->selected_machine->audio->notation != NULL){
+    base_note = AGS_NOTATION(editor->selected_machine->audio->notation->data)->base_note;
+  }else{
+    base_note = "A";
+  }
+  
   j = j % 12;
   
   /* apply base note */

@@ -2,6 +2,10 @@ ags (0.8.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsAddSoundcardEditor and AgsAddSequencerEditor dereference to wrong type
+	* fixed not showing AgsPad as resize from 0
+	* fixed crash in AgsMeter as resize to 0
+	* fixed resize of AgsNotebook in AgsPatternEdit and AgsNoteEdit related resize to/from 0
+	* fixed shrink of AgsNotebook in AgsAutomationEdit
 
 ags (0.8.3)
 

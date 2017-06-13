@@ -1025,6 +1025,14 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     }
 
     /* show all */
+    if(audio_channels_old == 0){
+      list_input_pad_start = 
+	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
+      
+      list_output_pad_start = 
+	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
+    }
+    
     if(gtk_widget_get_visible((GtkWidget *) machine)){
       if(audio_channels_old == 0){
 	/* AgsInput */

@@ -119,7 +119,7 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
     for(j = 0; j < pads; j++){
       for(i = audio_channels; i < audio_channels_old; i++){
 	ags_notebook_remove_tab(notebook,
-				j * audio_channels + i);
+				pads * audio_channels);
       }
     }
   }
