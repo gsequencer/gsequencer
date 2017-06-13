@@ -1,3 +1,8 @@
+ags (0.8.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsAddSoundcardEditor and AgsAddSequencerEditor dereference to wrong type
+
 ags (0.8.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

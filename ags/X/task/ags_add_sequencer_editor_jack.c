@@ -28,8 +28,7 @@
 #include <ags/audio/ags_channel.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_effect_bridge.h>
-#include <ags/X/ags_effect_bulk.h>
+#include <ags/X/ags_preferences.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
@@ -153,6 +152,7 @@ ags_add_sequencer_editor_jack_finalize(GObject *gobject)
 void
 ags_add_sequencer_editor_jack_launch(AgsTask *task)
 {
+  AgsPreferences *preferences;
   AgsWindow *window;
 
   AgsGuiThread *gui_thread;
@@ -167,8 +167,9 @@ ags_add_sequencer_editor_jack_launch(AgsTask *task)
   /* lock gdk threads */
   gdk_threads_enter();
 
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SEQUENCER_EDITOR_JACK(task)->sequencer_editor);
-
+  preferences = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SEQUENCER_EDITOR_JACK(task)->sequencer_editor);
+  window = preferences->window;
+  
   application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();
