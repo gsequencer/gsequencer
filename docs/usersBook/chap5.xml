@@ -22,7 +22,9 @@
   <para>
     The automation window is accessed by edit menu item automation. There are basic edit tools
     available to do your automation. You can use keyboard bindings to do your tasks are select
-    appropriate edit tool of toolbar.
+    appropriate edit tool of toolbar. As the appropriate port is checked it enables the automation
+    of it. Else it is by-passed and won't see any automation data. By enabling a port it gets visible
+    within the editor.
   </para>
 
   <itemizedlist mark="bullet">

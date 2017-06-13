@@ -2,3 +2,14 @@ Overview of Changes in AGS 0.8.2
 ================================
 
 * Added gettext support
+
+Overview of Changes in AGS 0.8.0
+================================
+
+* Added MIDI import wizard
+* Added MIDI export wizard
+
+Overview of Changes in AGS 0.7.0
+================================
+
+* provide GSequencer functionality as libraries
