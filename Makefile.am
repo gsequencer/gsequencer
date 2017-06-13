@@ -194,6 +194,14 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_navigation.png \
 	$(top_srcdir)/docs/images/ags_synth.png \
 	$(top_srcdir)/docs/images/ags_audio_preferences.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_bulk.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_line.png \
+	$(top_srcdir)/docs/images/ags_midi_dialog.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_preferences.png \
 	$(top_srcdir)/docs/images/ags_ffplayer.png \
 	$(top_srcdir)/docs/images/ags_ladspa_browser.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-link_input.png \
