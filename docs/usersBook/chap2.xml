@@ -222,11 +222,11 @@
     <title>MIDI dialog</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_audio_connection_bulk_output.png" />
+	  <imagedata fileref="../images/ags_midi_dialog.png" />
 	</imageobject>
 	<caption>
 	  <para>
-	    The audio connection screenshot
+	    The MIDI dialog screenshot
 	  </para>
 	</caption>
       </mediaobject>
