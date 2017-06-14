@@ -373,7 +373,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("x-start\0",
 				   "x start\0",
 				   "The x start\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_START,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -391,7 +391,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("x-end\0",
 				   "x end\0",
 				   "The x end\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_END,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -409,7 +409,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("y-start\0",
 				   "y start\0",
 				   "The y start\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_START,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -427,7 +427,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("y-end\0",
 				   "y end\0",
 				   "The y end\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_END,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);

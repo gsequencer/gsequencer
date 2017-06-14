@@ -106,10 +106,13 @@
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_xml.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_record_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
+
+#include <ags/widget/ags_led.h>
 
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>

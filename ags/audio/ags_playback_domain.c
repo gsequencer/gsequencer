@@ -28,6 +28,8 @@
 
 #include <ags/audio/thread/ags_audio_thread.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 void ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain);

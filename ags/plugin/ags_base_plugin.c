@@ -22,6 +22,7 @@
 #include <ags/object/ags_marshal.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 #include <ags/i18n.h>
 

@@ -64,8 +64,8 @@ ags_complex_alloc()
 
   ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
   
-  *ptr[0] = 0;
-  *ptr[1] = 0;
+  ptr[0][0] = 0.0;
+  ptr[0][1] = 0.0;
 
   return(ptr);
 }
@@ -87,8 +87,8 @@ ags_complex_copy(AgsComplex *ptr)
   
   new_ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
   
-  *new_ptr[0] = *ptr[0];
-  *new_ptr[1] = *ptr[1];
+  new_ptr[0][0] = ptr[0][0];
+  new_ptr[0][1] = ptr[0][1];
 
   return(new_ptr);
 }
@@ -122,7 +122,7 @@ ags_complex_get(AgsComplex *ptr)
 {
   complex z;
 
-  z = *ptr[0] + I * *ptr[1];
+  z = ptr[0][0] + ptr[0][1] * I;
 
   return(z);
 }
@@ -139,7 +139,7 @@ ags_complex_get(AgsComplex *ptr)
 void
 ags_complex_set(AgsComplex *ptr, complex z)
 {
-  *ptr[0] = creal(z);
-  *ptr[1] = cimag(z);
+  ptr[0][0] = creal(z);
+  ptr[0][1] = cimag(z);
 }
 

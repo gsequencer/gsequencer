@@ -61,6 +61,8 @@ struct _AgsEnvelopeInfo
 
   gchar *version;
   gchar *build_id;
+
+  GList *selection;
   
   AgsCartesian *cartesian;
   GtkTreeView *tree_view;

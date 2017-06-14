@@ -28,6 +28,8 @@
 #include <ags/audio/thread/ags_iterator_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 void ags_playback_class_init(AgsPlaybackClass *playback);

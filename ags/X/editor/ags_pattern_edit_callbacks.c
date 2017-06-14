@@ -437,7 +437,7 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     i = 0;
 
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+					    i)) != -1){
       /* retrieve notation */
       pthread_mutex_lock(audio_mutex);
 

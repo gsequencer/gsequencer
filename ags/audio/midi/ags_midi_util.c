@@ -21,6 +21,8 @@
 
 #include <ags/lib/ags_time.h>
 
+#include <string.h>
+
 /**
  * SECTION:ags_midi_util
  * @short_description: MIDI util

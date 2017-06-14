@@ -20,17 +20,26 @@
 #include <ags/X/editor/ags_envelope_info.h>
 #include <ags/X/editor/ags_envelope_info_callbacks.h>
 
+#include <ags/util/ags_list_util.h>
+
+#include <ags/lib/ags_complex.h>
+
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/ags_note.h>
+
+#include <ags/widget/ags_cartesian.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
 #include <complex.h>
+#include <math.h>
 
 #include <ags/i18n.h>
 
@@ -40,6 +49,7 @@ void ags_envelope_info_applicable_interface_init(AgsApplicableInterface *applica
 void ags_envelope_info_init(AgsEnvelopeInfo *envelope_info);
 void ags_envelope_info_connect(AgsConnectable *connectable);
 void ags_envelope_info_disconnect(AgsConnectable *connectable);
+void ags_envelope_info_finalize(GObject *gobject);
 void ags_envelope_info_set_update(AgsApplicable *applicable, gboolean update);
 void ags_envelope_info_apply(AgsApplicable *applicable);
 void ags_envelope_info_reset(AgsApplicable *applicable);
@@ -120,6 +130,8 @@ ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info)
   /* GObjectClass */
   gobject = (GObjectClass *) envelope_info;
 
+  gobject->finalize = ags_envelope_info_finalize;
+  
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) envelope_info;
 }
@@ -159,6 +171,8 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   envelope_info->version = AGS_ENVELOPE_INFO_DEFAULT_VERSION;
   envelope_info->build_id = AGS_ENVELOPE_INFO_DEFAULT_BUILD_ID;
 
+  envelope_info->selection = NULL;
+  
   /* cartesian */
   cartesian = 
     envelope_info->cartesian = ags_cartesian_new();
@@ -190,6 +204,7 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 
   model = gtk_list_store_new(AGS_ENVELOPE_INFO_COLUMN_LAST,
 			     G_TYPE_BOOLEAN,
+			     G_TYPE_UINT,
 			     G_TYPE_UINT,
 			     G_TYPE_UINT,
 			     G_TYPE_UINT);
@@ -272,6 +287,22 @@ ags_envelope_info_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_envelope_info_finalize(GObject *gobject)
+{
+  AgsEnvelopeInfo *envelope_info;
+
+  envelope_info = AGS_ENVELOPE_INFO(gobject);
+  
+  if(envelope_info->selection != NULL){
+    g_list_free_full(envelope_info->selection,
+		     g_object_unref);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_envelope_info_parent_class)->finalize(gobject);
+}
+
+void
 ags_envelope_info_set_update(AgsApplicable *applicable, gboolean update)
 {
   /* empty */
@@ -315,6 +346,13 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   while(notation != NULL){
     selection = AGS_NOTATION(notation->data)->selection;
 
+    if(envelope_info->selection == NULL){
+      envelope_info->selection = ags_list_util_copy_and_ref(selection);
+    }else{
+      envelope_info->selection = g_list_concat(envelope_info->selection,
+					       ags_list_util_copy_and_ref(selection));
+    }
+    
     while(selection != NULL){
       gtk_list_store_append(model,
 			    &iter);
@@ -369,7 +407,115 @@ ags_envelope_info_y_label_func(gdouble value,
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 {
-  //TODO:JK: implement me
+  AgsCartesian *cartesian;
+  AgsPlot *plot;
+
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  AgsNote *note;
+  
+  GList *selection;
+
+  complex z;
+  gdouble default_width, default_height;
+  gdouble offset;
+  gboolean do_plot;
+
+  if(!AGS_IS_ENVELOPE_INFO(envelope_info)){
+    return;
+  }
+
+  cartesian = envelope_info->cartesian;
+
+  default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
+  default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
+  
+  model = GTK_TREE_MODEL(gtk_tree_view_get_model(envelope_info->tree_view));
+
+  /* clear old plot */
+  if(cartesian->plot != NULL){
+    g_list_free_full(cartesian->plot,
+		     ags_plot_free);
+    
+    cartesian->plot = NULL;
+  }
+  
+  /* plot */
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    selection = envelope_info->selection;
+
+    while(selection != NULL){
+      gtk_tree_model_get(model,
+			 &iter,
+			 AGS_ENVELOPE_INFO_COLUMN_PLOT, &do_plot,
+			 -1);
+
+      if(do_plot){
+	note = AGS_NOTE(selection->data);
+
+	/* AgsPlot struct */
+	plot = ags_plot_alloc(5, 0, 0);
+	plot->join_points = TRUE;
+
+	plot->point_color[0][0] = 1.0;
+	plot->point_color[1][0] = 1.0;
+	plot->point_color[2][0] = 1.0;
+	plot->point_color[3][0] = 1.0;
+	plot->point_color[4][0] = 1.0;
+
+	/* set plot points */
+	z = ags_complex_get(&(note->ratio));
+	
+	plot->point[0][0] = 0.0;
+	plot->point[0][1] = default_height * cimag(z);
+
+	z = ags_complex_get(&(note->attack));
+
+	g_message("+ %f %f", creal(z), cimag(z));
+	
+	plot->point[1][0] = default_width * creal(z);
+	plot->point[1][1] = default_height * cimag(z);
+
+	offset = default_width * creal(z);
+	
+	z = ags_complex_get(&(note->decay));
+
+	plot->point[2][0] = offset + default_width * creal(z);
+	plot->point[2][1] = default_height * cimag(z);
+
+	offset += default_width * creal(z);
+
+	z = ags_complex_get(&(note->sustain));
+
+	plot->point[3][0] = offset + default_width * creal(z);
+	plot->point[3][1] = default_height * cimag(z);
+
+	offset += default_width * creal(z);
+
+	z = ags_complex_get(&(note->release));
+
+	plot->point[4][0] = offset + default_width * creal(z);
+	plot->point[4][1] = default_height * cimag(z);
+
+	/* add plot */
+	ags_cartesian_add_plot(cartesian,
+			       plot);
+      }
+      
+      /* iterate */
+      selection = selection->next;
+
+      if(!gtk_tree_model_iter_next(model,
+				   &iter)){
+	break;
+      }
+    }
+  }
+
+  /* queue draw */
+  gtk_widget_queue_draw(cartesian);
 }
 
 /**

@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>

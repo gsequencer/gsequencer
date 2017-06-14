@@ -26,6 +26,8 @@
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signal);
 void ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);

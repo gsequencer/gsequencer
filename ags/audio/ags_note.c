@@ -302,6 +302,8 @@ ags_note_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_note_init(AgsNote *note)
 {
+  complex z;
+  
   note->flags = 0;
 
   note->x[0] = 0;
@@ -310,18 +312,28 @@ ags_note_init(AgsNote *note)
 
   note->stream_delay = 0.0;
   note->stream_attack = 0;
-  
-  ags_complex_set(&(note->attack),
-		  1.0);
-  ags_complex_set(&(note->decay),
-		  1.0);
-  ags_complex_set(&(note->sustain),
-		  1.0);  
-  ags_complex_set(&(note->release),
-		  1.0);
 
+  z = 0.25 + 1.0 * I;
+  ags_complex_set(&(note->attack),
+		  z);
+
+  g_message("- %f %f", creal(z), cimag(z));
+  
+  z = 0.25 + 1.0 * I;
+  ags_complex_set(&(note->decay),
+		  z);
+
+  z = 0.25 + 1.0 * I;
+  ags_complex_set(&(note->sustain),
+		  z);
+
+  z = 0.25 + 1.0 * I;
+  ags_complex_set(&(note->release),
+		  z);
+
+  z = 1.0 * I;
   ags_complex_set(&(note->ratio),
-		  1.0);
+		  z);
   
   note->name = NULL;
   note->frequency = 440.0;

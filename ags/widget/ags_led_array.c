@@ -19,6 +19,8 @@
 
 #include "ags_led_array.h"
 
+#include <stdlib.h>
+
 void ags_led_array_class_init(AgsLedArrayClass *led_array);
 void ags_led_array_init(AgsLedArray *led_array);
 void ags_led_array_set_property(GObject *gobject,

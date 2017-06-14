@@ -86,6 +86,8 @@ struct _AgsPlayDssiAudioRunClass
 
 GType ags_play_dssi_audio_run_get_type();
 
+void ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run);
+
 AgsPlayDssiAudioRun* ags_play_dssi_audio_run_new();
 
 #endif /*__AGS_PLAY_DSSI_AUDIO_RUN_H__*/
