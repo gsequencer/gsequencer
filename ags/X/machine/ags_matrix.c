@@ -272,12 +272,8 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->mapped_output_pad = 0;
 
   ags_machine_popup_add_edit_options((AgsMachine *) matrix,
-				     (AGS_MACHINE_POPUP_COPY_PATTERN
-#if 0
-				      |
-				      AGS_MACHINE_POPUP_ENVELOPE
-#endif
-				      ));
+				     (AGS_MACHINE_POPUP_COPY_PATTERN |
+				      AGS_MACHINE_POPUP_ENVELOPE));
   
   /* create widgets */
   frame = (GtkFrame *) (gtk_bin_get_child((GtkBin *) matrix));

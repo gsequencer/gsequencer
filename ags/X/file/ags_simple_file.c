@@ -1813,10 +1813,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       ags_machine_popup_add_connection_options((AgsMachine *) gobject,
 					       (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
-#if 0
       ags_machine_popup_add_edit_options((AgsMachine *) gobject,
 					 (AGS_MACHINE_POPUP_ENVELOPE));
-#endif
     }
 
     g_object_set(gobject,

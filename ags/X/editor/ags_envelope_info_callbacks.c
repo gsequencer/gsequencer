@@ -21,3 +21,38 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
+
+void
+ags_envelope_info_plot_callback(GtkCellRendererToggle *cell_renderer,
+				gchar *path_str,
+				AgsEnvelopeInfo *envelope_info)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+  
+  gboolean fixed;
+
+  model = gtk_tree_view_get_model(envelope_info->tree_view);
+  path = gtk_tree_path_new_from_string(path_str);
+  
+  /* get toggled iter */
+  gtk_tree_model_get_iter(model, &iter, path);
+  gtk_tree_model_get(model, &iter,
+		     AGS_ENVELOPE_INFO_COLUMN_PLOT, &fixed,
+		     -1);
+
+  /* do something with the value */
+  fixed ^= 1;
+
+  /* set new value */
+  gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		     AGS_ENVELOPE_INFO_COLUMN_PLOT, fixed,
+		     -1);
+
+  /* clean up */
+  gtk_tree_path_free (path);
+
+  /* plot */
+  ags_envelope_info_plot(envelope_info);
+}

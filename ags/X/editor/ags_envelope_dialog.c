@@ -378,7 +378,11 @@ ags_envelope_dialog_apply(AgsApplicable *applicable)
 void
 ags_envelope_dialog_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+
+  envelope_dialog = AGS_ENVELOPE_DIALOG(applicable);
+
+  ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->envelope_info));
 }
 
 gboolean

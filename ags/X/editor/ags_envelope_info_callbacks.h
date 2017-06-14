@@ -27,4 +27,8 @@
 
 #include <ags/X/editor/ags_envelope_info.h>
 
+void ags_envelope_info_plot_callback(GtkCellRendererToggle *cell_renderer,
+				     gchar *path_str,
+				     AgsEnvelopeInfo *envelope_info);
+
 #endif /*__AGS_ENVELOPE_INFO_CALLBACKS_H__*/

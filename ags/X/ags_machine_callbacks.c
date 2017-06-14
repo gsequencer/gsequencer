@@ -453,10 +453,16 @@ ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine)
 void
 ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
 {
+  AgsEnvelopeDialog *envelope_dialog;
+  
   if(machine->envelope_dialog == NULL){
-    machine->envelope_dialog = ags_envelope_dialog_new(machine);
-    ags_connectable_connect(AGS_CONNECTABLE(machine->envelope_dialog));
-    gtk_widget_show_all(machine->envelope_dialog);
+    envelope_dialog = ags_envelope_dialog_new(machine);
+    machine->envelope_dialog = envelope_dialog;
+    
+    ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog));
+    ags_applicable_reset(AGS_APPLICABLE(envelope_dialog));
+
+    gtk_widget_show_all(envelope_dialog);
   }
 }
 

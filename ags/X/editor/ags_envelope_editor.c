@@ -529,7 +529,7 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
 
   /* set attack, decay, sustain and release */
   while(notation != NULL){
-    selection = AGS_NOTATION(notation->data);
+    selection = AGS_NOTATION(notation->data)->selection;
 
     while(selection != NULL){
       z = attack_x + I * attack_y;
@@ -551,6 +551,8 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
       z = I * ratio;
       ags_complex_set(&(AGS_NOTE(selection->data)->ratio),
 		      z);
+
+      selection = selection->next;
     }
     
     notation = notation->next;

@@ -28,6 +28,8 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/editor/ags_envelope_dialog.h>
+
 #include <complex.h>
 
 #include <ags/i18n.h>
@@ -186,14 +188,29 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   /* tree view */
   envelope_info->tree_view = (GtkTreeView *) gtk_tree_view_new();
 
+  model = gtk_list_store_new(AGS_ENVELOPE_INFO_COLUMN_LAST,
+			     G_TYPE_BOOLEAN,
+			     G_TYPE_UINT,
+			     G_TYPE_UINT,
+			     G_TYPE_UINT);
+  gtk_tree_view_set_model(envelope_info->tree_view,
+			  model);
+
   renderer = gtk_cell_renderer_text_new();
   toggle_renderer = gtk_cell_renderer_toggle_new();
-
+  
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
 					      -1,
 					      i18n("plot"),
 					      toggle_renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_PLOT,
+					      "active", AGS_ENVELOPE_INFO_COLUMN_PLOT,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
+					      -1,
+					      i18n("audio channel"),
+					      renderer,
+					      "text", AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL,
 					      NULL);
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
@@ -216,100 +233,14 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 					      renderer,
 					      "text", AGS_ENVELOPE_INFO_COLUMN_NOTE_Y,
 					      NULL);
-
-  //TODO:JK: remove below since we can plot
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "attack [x]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_ATTACK_X,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "attack [y]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_ATTACK_Y,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "decay [x]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_DECAY_X,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "decay [y]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_DECAY_Y,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "sustain [x]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_SUSTAIN_X,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "sustain [y]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_SUSTAIN_Y,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "release [x]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_RELEASE_X,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "release [y]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_RELEASE_Y,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "ratio [x]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_RATIO_X,
-					      NULL);
-
-  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
-					      -1,
-					      "ratio [y]",
-					      renderer,
-					      "text", AGS_ENVELOPE_INFO_COLUMN_RATIO_Y,
-					      NULL);
-  
-  model = gtk_list_store_new(AGS_ENVELOPE_INFO_COLUMN_LAST,
-			     G_TYPE_BOOLEAN,
-			     G_TYPE_UINT,
-			     G_TYPE_UINT,
-			     G_TYPE_UINT,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE,
-			     G_TYPE_DOUBLE);
-  gtk_tree_view_set_model(envelope_info->tree_view,
-			  model);
   
   gtk_box_pack_start((GtkBox *) envelope_info,
 		     (GtkWidget *) envelope_info->tree_view,
 		     FALSE, FALSE,
 		     0);
+  
+  g_signal_connect(G_OBJECT(toggle_renderer), "toggled\0",
+		   G_CALLBACK(ags_envelope_info_plot_callback), envelope_info);
 }
 
 void
@@ -355,7 +286,50 @@ ags_envelope_info_apply(AgsApplicable *applicable)
 void
 ags_envelope_info_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsEnvelopeInfo *envelope_info;
+
+  AgsMachine *machine;
+
+  GtkListStore *model;
+  GtkTreeIter iter;
+  
+  AgsAudio *audio;
+
+  GList *notation;
+  GList *selection;
+
+  envelope_info = AGS_ENVELOPE_INFO(applicable);
+  envelope_dialog = gtk_widget_get_ancestor(envelope_info,
+					    AGS_TYPE_ENVELOPE_DIALOG);
+  
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+
+  model = GTK_LIST_STORE(gtk_tree_view_get_model(envelope_info->tree_view));
+
+  /* fill tree view */
+  notation = audio->notation;
+
+  while(notation != NULL){
+    selection = AGS_NOTATION(notation->data)->selection;
+
+    while(selection != NULL){
+      gtk_list_store_append(model,
+			    &iter);
+      gtk_list_store_set(model, &iter,
+			 AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL, AGS_NOTATION(notation->data)->audio_channel,
+			 AGS_ENVELOPE_INFO_COLUMN_NOTE_X0, AGS_NOTE(selection->data)->x[0],
+			 AGS_ENVELOPE_INFO_COLUMN_NOTE_X1, AGS_NOTE(selection->data)->x[1],
+			 AGS_ENVELOPE_INFO_COLUMN_NOTE_Y, AGS_NOTE(selection->data)->y,
+			 -1);
+      
+      selection = selection->next;
+    }
+
+    notation = notation->next;
+  }
 }
 
 gchar*
@@ -390,6 +364,12 @@ ags_envelope_info_y_label_func(gdouble value,
   g_free(format);
 
   return(str);
+}
+
+void
+ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
+{
+  //TODO:JK: implement me
 }
 
 /**

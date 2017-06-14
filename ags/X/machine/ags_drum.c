@@ -267,12 +267,8 @@ ags_drum_init(AgsDrum *drum)
 
   /* context menu */
   ags_machine_popup_add_edit_options((AgsMachine *) drum,
-				     (AGS_MACHINE_POPUP_COPY_PATTERN
-#if 0
-				      |
-				      AGS_MACHINE_POPUP_ENVELOPE
-#endif
-				      ));
+				     (AGS_MACHINE_POPUP_COPY_PATTERN |
+				      AGS_MACHINE_POPUP_ENVELOPE));
   
   ags_machine_popup_add_connection_options(drum,
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
