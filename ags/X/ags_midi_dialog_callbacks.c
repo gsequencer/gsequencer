@@ -66,3 +66,13 @@ ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 
   return(0);
 }
+
+
+gboolean
+ags_midi_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
+			     AgsMidiDialog *midi_dialog)
+{
+  midi_dialog->machine->midi_dialog = NULL;
+
+  return(TRUE);
+}

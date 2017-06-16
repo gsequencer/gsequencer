@@ -30,4 +30,7 @@ int ags_envelope_dialog_apply_callback(GtkWidget *widget, AgsEnvelopeDialog *env
 int ags_envelope_dialog_ok_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
 int ags_envelope_dialog_cancel_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
 
+gboolean ags_envelope_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
+					  AgsEnvelopeDialog *envelope_dialog);
+
 #endif /*__AGS_ENVELOPE_DIALOG_CALLBACKS_H__*/

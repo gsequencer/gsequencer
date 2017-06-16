@@ -244,6 +244,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   AgsComplex *decay;
   AgsComplex *sustain;
   AgsComplex *release;  
+  AgsComplex *ratio;  
 
   GList *stream_source;
 
@@ -297,6 +298,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     sustain = &(note->sustain);
     release = &(note->release);
 
+    ratio = &(note->ratio);
+
     /* get offsets */
     current_position = g_list_position(source->stream_beginning,
 				       source->stream_current);
@@ -313,10 +316,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
     /* attack */
     x0 = 0.0;
-    y0 = 0.0;
+    y0 = ratio[0][0];
 
-    x1 = *attack[0];
-    y1 = *attack[1];
+    x1 = attack[0][0];
+    y1 = attack[0][1];
 
     offset = (x1 - x0) * source->frame_count;
     

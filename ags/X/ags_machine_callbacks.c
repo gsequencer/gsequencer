@@ -57,8 +57,6 @@
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_connection_editor_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine);
-void ags_machine_midi_dialog_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine);
 void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
 void ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine);
 
@@ -475,9 +473,6 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
     connection_editor = ags_connection_editor_new(machine);
     machine->connection_editor = (GtkDialog *) connection_editor;
     
-    g_signal_connect(connection_editor, "delete-event",
-		     G_CALLBACK(ags_machine_connection_editor_delete_event_callback), machine);
-
     ags_connectable_connect(AGS_CONNECTABLE(connection_editor));
     ags_applicable_reset(AGS_APPLICABLE(connection_editor));
 
@@ -491,12 +486,6 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
   return(0);
 }
 
-void
-ags_machine_connection_editor_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine)
-{
-  machine->connection_editor = NULL;
-}
-
 int
 ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
 {
@@ -508,9 +497,6 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
     midi_dialog->flags |= (AGS_MIDI_DIALOG_IO_OPTIONS |
 			   AGS_MIDI_DIALOG_MAPPING |
 			   AGS_MIDI_DIALOG_DEVICE);
-    
-    g_signal_connect(midi_dialog, "delete-event",
-		     G_CALLBACK(ags_machine_midi_dialog_delete_event_callback), machine);
 
     ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
     ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
@@ -523,12 +509,6 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
   gtk_widget_show_all((GtkWidget *) midi_dialog);
   
   return(0);
-}
-
-void
-ags_machine_midi_dialog_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine)
-{
-  machine->midi_dialog = NULL;
 }
 
 void

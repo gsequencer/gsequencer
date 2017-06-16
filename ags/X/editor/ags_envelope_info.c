@@ -472,8 +472,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	plot->point[0][1] = default_height * cimag(z);
 
 	z = ags_complex_get(&(note->attack));
-
-	g_message("+ %f %f", creal(z), cimag(z));
 	
 	plot->point[1][0] = default_width * creal(z);
 	plot->point[1][1] = default_height * cimag(z);

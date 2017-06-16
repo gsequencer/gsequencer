@@ -317,8 +317,6 @@ ags_note_init(AgsNote *note)
   ags_complex_set(&(note->attack),
 		  z);
 
-  g_message("- %f %f", creal(z), cimag(z));
-  
   z = 0.25 + 1.0 * I;
   ags_complex_set(&(note->decay),
 		  z);

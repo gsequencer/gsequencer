@@ -287,6 +287,9 @@ ags_connection_editor_connect(AgsConnectable *connectable)
 
   connection_editor = AGS_CONNECTION_EDITOR(connectable);
 
+  g_signal_connect(connection_editor, "delete-event",
+		   G_CALLBACK(ags_connection_editor_delete_event), connection_editor);
+  
   /* GtkNotebook */
   g_signal_connect((GtkNotebook *) connection_editor->notebook, "switch-page",
 		   G_CALLBACK(ags_connection_editor_switch_page_callback), (gpointer) connection_editor);

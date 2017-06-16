@@ -32,4 +32,7 @@ int ags_connection_editor_apply_callback(GtkWidget *widget, AgsConnectionEditor 
 int ags_connection_editor_ok_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
 int ags_connection_editor_cancel_callback(GtkWidget *widget, AgsConnectionEditor *connection_editor);
 
+gboolean ags_connection_editor_delete_event(GtkWidget *dialog, gint response,
+					    AgsConnectionEditor *connection_editor);
+
 #endif /*__AGS_CONNECTION_EDITOR_CALLBACKS_H__*/

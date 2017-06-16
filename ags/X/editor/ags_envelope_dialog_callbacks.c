@@ -54,3 +54,12 @@ ags_envelope_dialog_cancel_callback(GtkWidget *widget, AgsEnvelopeDialog *envelo
 
   return(0);
 }
+
+gboolean
+ags_envelope_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
+				 AgsEnvelopeDialog *envelope_dialog)
+{
+  envelope_dialog->machine->envelope_dialog = NULL;
+  
+  return(FALSE);
+}

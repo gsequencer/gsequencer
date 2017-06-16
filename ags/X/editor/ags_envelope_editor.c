@@ -194,25 +194,25 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
 
   plot->point[0][0] = 0.0;
-  plot->point[0][1] = default_height * 0.25;
+  plot->point[0][1] = default_height * 1.0;
 
   plot->point[1][0] = default_width * 0.25;
-  plot->point[1][1] = default_height * 0.5;
+  plot->point[1][1] = default_height * 1.0;
 
   offset = default_width * 0.25;
   
   plot->point[2][0] = offset + default_width * 0.25;
-  plot->point[2][1] = default_height * 0.5;
+  plot->point[2][1] = default_height * 1.0;
 
   offset += default_width * 0.25;
 
   plot->point[3][0] = offset + default_width * 0.25;
-  plot->point[3][1] = default_height * 0.5;
+  plot->point[3][1] = default_height * 1.0;
 
   offset += default_width * 0.25;
 
   plot->point[4][0] = offset + default_width * 0.25;
-  plot->point[4][1] = default_height * 0.5;
+  plot->point[4][1] = default_height * 1.0;
 
   ags_cartesian_add_plot(cartesian,
 			 plot);
@@ -270,7 +270,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
-		      0.25);
+		      1.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->attack_y,
 		     FALSE, FALSE,
@@ -311,7 +311,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
-		      0.25);
+		      1.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->decay_y,
 		     FALSE, FALSE,
@@ -352,7 +352,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
-		      0.25);
+		      1.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->sustain_y,
 		     FALSE, FALSE,
@@ -393,7 +393,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_y,
-		      0.25);
+		      1.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->release_y,
 		     FALSE, FALSE,
@@ -415,7 +415,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,
-		      0.25);
+		      1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(envelope_editor->ratio),
 		   1, 2,

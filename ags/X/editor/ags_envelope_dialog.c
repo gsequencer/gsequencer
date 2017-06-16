@@ -49,7 +49,6 @@ void ags_envelope_dialog_disconnect(AgsConnectable *connectable);
 void ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_envelope_dialog_apply(AgsApplicable *applicable);
 void ags_envelope_dialog_reset(AgsApplicable *applicable);
-gboolean ags_envelope_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_envelope_dialog
@@ -151,7 +150,7 @@ ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) envelope_dialog;
 
-  widget->delete_event = ags_envelope_dialog_delete_event;
+  //  widget->delete_event = ags_envelope_dialog_delete_event;
 }
 
 void
@@ -321,6 +320,9 @@ ags_envelope_dialog_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) envelope_dialog->cancel, "clicked",
 		   G_CALLBACK(ags_envelope_dialog_cancel_callback), (gpointer) envelope_dialog);
+
+  g_signal_connect((GObject *) envelope_dialog, "delete-event",
+		   G_CALLBACK(ags_envelope_dialog_delete_event), (gpointer) envelope_dialog);
 }
 
 void
@@ -383,16 +385,6 @@ ags_envelope_dialog_reset(AgsApplicable *applicable)
   envelope_dialog = AGS_ENVELOPE_DIALOG(applicable);
 
   ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->envelope_info));
-}
-
-gboolean
-ags_envelope_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
-{
-  AGS_ENVELOPE_DIALOG(widget)->machine->envelope_dialog = NULL;
-  
-  GTK_WIDGET_CLASS(ags_envelope_dialog_parent_class)->delete_event(widget, event);
-
-  return(TRUE);
 }
 
 /**
