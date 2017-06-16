@@ -28,6 +28,7 @@
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_envelope_editor.h>
+#include <ags/X/editor/ags_envelope_pattern.h>
 #include <ags/X/editor/ags_envelope_info.h>
 
 #define AGS_TYPE_ENVELOPE_DIALOG                (ags_envelope_dialog_get_type())
@@ -63,9 +64,13 @@ struct _AgsEnvelopeDialog
   GtkScrolledWindow *envelope_editor_scrolled_window;
   AgsEnvelopeEditor *envelope_editor;
 
+  GtkScrolledWindow *envelope_pattern_scrolled_window;
+  AgsEnvelopePattern *envelope_pattern;
+
   GtkScrolledWindow *envelope_info_scrolled_window;
   AgsEnvelopeInfo *envelope_info;
-  
+
+  GtkButton *add_preset;
   GtkButton *apply;
   GtkButton *ok;
   GtkButton *cancel;
