@@ -145,7 +145,8 @@ ags_envelope_editor_applicable_interface_init(AgsApplicableInterface *applicable
 void
 ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 {
-  GtkVBox *vbox;
+  GtkFrame *frame;
+  GtkHBox *hbox;
   GtkVBox *control;
   GtkTable *table;
   GtkLabel *label;
@@ -162,9 +163,43 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->version = AGS_ENVELOPE_EDITOR_DEFAULT_VERSION;
   envelope_editor->build_id = AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID;
 
-  /* vbox */
-  vbox = (GtkVBox *) envelope_editor;
+  /* enabled */
+  pattern_envelope->enabled = gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_pack_start((GtkBox *) pattern_envelope,
+		     (GtkWidget *) pattern_envelope->enabled,
+		     FALSE, FALSE,
+		     0);
+
+  /* frame - preset */
+  frame = (GtkFrame *) gtk_frame_new(i18n("preset"));
+  gtk_box_pack_start((GtkBox *) pattern_envelope,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) hbox);
   
+  pattern_envelope->preset = gtk_combo_box_text_new();
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) pattern_envelope->preset,
+		     FALSE, FALSE,
+		     0);
+
+  pattern_envelope->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) pattern_envelope->add,
+		     FALSE, FALSE,
+		     0);
+
+  pattern_envelope->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) pattern_envelope->remove,
+		     FALSE, FALSE,
+		     0);
+
   /* cartesian */
   cartesian = 
     envelope_editor->cartesian = ags_cartesian_new();
@@ -220,7 +255,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   /* cartesian - size, pack and redraw */
   gtk_widget_set_size_request(cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start((GtkBox *) envelope_editor,
 		     GTK_WIDGET(cartesian),
 		     FALSE, FALSE,
 		     0);
@@ -230,7 +265,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   /* table */
   table = (GtkTable *) gtk_table_new(5, 2,
 				     FALSE);
-  gtk_box_pack_start((GtkBox *) vbox,
+  gtk_box_pack_start((GtkBox *) envelope_editor,
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
 		     0);
@@ -239,6 +274,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("attack"),
 				    "xalign", 0.0,
+				    "yalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -280,6 +316,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("decay"),
 				    "xalign", 0.0,
+				    "yalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -321,6 +358,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("sustain"),
 				    "xalign", 0.0,
+				    "yalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -362,6 +400,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("release"),
 				    "xalign", 0.0,
+				    "yalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -403,6 +442,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("ratio"),
 				    "xalign", 0.0,
+				    "yalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),

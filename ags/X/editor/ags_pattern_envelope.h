@@ -45,8 +45,10 @@ typedef enum{
 }AgsPatternEnvelopeFlags;
 
 typedef enum{
+  AGS_ENVELOPE_INFO_COLUMN_EDIT,
   AGS_ENVELOPE_INFO_COLUMN_PLOT,
-  AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL,
+  AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL_START,
+  AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL_END,
   AGS_ENVELOPE_INFO_COLUMN_PATTERN_X_START,
   AGS_ENVELOPE_INFO_COLUMN_PATTERN_X_END,
   AGS_ENVELOPE_INFO_COLUMN_PATTERN_Y_START,
@@ -69,7 +71,8 @@ struct _AgsPatternEnvelope
 
   GtkTreeView *tree_view;
 
-  GtkSpinButton *audio_channel;
+  GtkSpinButton *audio_channel_start;
+  GtkSpinButton *audio_channel_end;
   
   GtkSpinButton *x_start;
   GtkSpinButton *x_end;
@@ -77,6 +80,8 @@ struct _AgsPatternEnvelope
   GtkSpinButton *y_start;
   GtkSpinButton *y_end;
 
+  GtkButton *move_up;
+  GtkButton *move_down;
   GtkButton *add;
   GtkButton *remove;
 };

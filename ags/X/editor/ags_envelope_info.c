@@ -158,8 +158,8 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 {
   AgsCartesian *cartesian;
 
-  GtkCellRenderer *renderer;
   GtkCellRenderer *toggle_renderer;
+  GtkCellRenderer *renderer;
   
   GtkListStore  *model;
   GtkTreeIter iter;
@@ -211,8 +211,8 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   gtk_tree_view_set_model(envelope_info->tree_view,
 			  model);
 
-  renderer = gtk_cell_renderer_text_new();
   toggle_renderer = gtk_cell_renderer_toggle_new();
+  renderer = gtk_cell_renderer_text_new();
   
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(envelope_info->tree_view),
 					      -1,
