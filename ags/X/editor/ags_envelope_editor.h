@@ -54,7 +54,10 @@ struct _AgsEnvelopeEditor
   gchar *build_id;
 
   GtkCheckButton *enabled;
-  GtkComboBox *preset;
+
+  GtkComboBoxText *preset;
+  GtkButton *add;
+  GtkButton *remove;
   
   AgsCartesian *cartesian;
   

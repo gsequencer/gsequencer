@@ -65,6 +65,7 @@ struct _AgsEnvelopeInfo
   GList *selection;
   
   AgsCartesian *cartesian;
+
   GtkTreeView *tree_view;
 };
 

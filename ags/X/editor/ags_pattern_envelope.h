@@ -44,6 +44,16 @@ typedef enum{
   AGS_PATTERN_ENVELOPE_CONNECTED      = 1,
 }AgsPatternEnvelopeFlags;
 
+typedef enum{
+  AGS_ENVELOPE_INFO_COLUMN_PLOT,
+  AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL,
+  AGS_ENVELOPE_INFO_COLUMN_PATTERN_X_START,
+  AGS_ENVELOPE_INFO_COLUMN_PATTERN_X_END,
+  AGS_ENVELOPE_INFO_COLUMN_PATTERN_Y_START,
+  AGS_ENVELOPE_INFO_COLUMN_PATTERN_Y_END,
+  AGS_ENVELOPE_INFO_COLUMN_LAST,
+}AgsEnvelopeInfoColumn;
+
 struct _AgsPatternEnvelope
 {
   GtkVBox vbox;
@@ -56,8 +66,19 @@ struct _AgsPatternEnvelope
   GtkCheckButton *enabled;
   
   AgsCartesian *cartesian;
-  GtkSpinButton *preset_count;
+
   GtkTreeView *tree_view;
+
+  GtkSpinButton *audio_channel;
+  
+  GtkSpinButton *x_start;
+  GtkSpinButton *x_end;
+  
+  GtkSpinButton *y_start;
+  GtkSpinButton *y_end;
+
+  GtkButton *add;
+  GtkButton *remove;
 };
 
 struct _AgsPatternEnvelopeClass
