@@ -30,7 +30,6 @@
 #include <ags/X/editor/ags_envelope_editor.h>
 #include <ags/X/editor/ags_pattern_envelope.h>
 #include <ags/X/editor/ags_envelope_info.h>
-#include <ags/X/editor/ags_envelope_preset.h>
 
 #define AGS_TYPE_ENVELOPE_DIALOG                (ags_envelope_dialog_get_type())
 #define AGS_ENVELOPE_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ENVELOPE_DIALOG, AgsEnvelopeDialog))

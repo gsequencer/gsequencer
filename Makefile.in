@@ -776,6 +776,8 @@ am__objects_28 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_note_edit_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_pattern_edit.lo \
 	ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo \
 	ags/X/editor/libgsequencer_la-ags_scale_area.lo \
 	ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_scale.lo \
@@ -1862,6 +1864,14 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_navigation.png \
 	$(top_srcdir)/docs/images/ags_synth.png \
 	$(top_srcdir)/docs/images/ags_audio_preferences.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_bulk.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_line.png \
+	$(top_srcdir)/docs/images/ags_midi_dialog.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_preferences.png \
 	$(top_srcdir)/docs/images/ags_ffplayer.png \
 	$(top_srcdir)/docs/images/ags_ladspa_browser.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-link_input.png \
@@ -3404,6 +3414,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_note_edit.h \
 	ags/X/editor/ags_pattern_edit_callbacks.h \
 	ags/X/editor/ags_pattern_edit.h \
+	ags/X/editor/ags_pattern_envelope_callbacks.h \
+	ags/X/editor/ags_pattern_envelope.h \
 	ags/X/editor/ags_scale_area_callbacks.h \
 	ags/X/editor/ags_scale_area.h \
 	ags/X/editor/ags_scale_callbacks.h \
@@ -3445,6 +3457,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_note_edit_callbacks.c \
 	ags/X/editor/ags_pattern_edit.c \
 	ags/X/editor/ags_pattern_edit_callbacks.c \
+	ags/X/editor/ags_pattern_envelope_callbacks.c \
+	ags/X/editor/ags_pattern_envelope.c \
 	ags/X/editor/ags_scale_area.c \
 	ags/X/editor/ags_scale_area_callbacks.c \
 	ags/X/editor/ags_scale.c \
@@ -5150,6 +5164,12 @@ ags/X/editor/libgsequencer_la-ags_pattern_edit.lo:  \
 ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_scale_area.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
@@ -5687,6 +5707,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_notebook_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_edit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_edit_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area_callbacks.Plo@am__quote@
@@ -9801,6 +9823,20 @@ ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo: ags/X/editor/ags_pa
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_pattern_edit_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo `test -f 'ags/X/editor/ags_pattern_edit_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_edit_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo: ags/X/editor/ags_pattern_envelope_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo `test -f 'ags/X/editor/ags_pattern_envelope_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_pattern_envelope_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo `test -f 'ags/X/editor/ags_pattern_envelope_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo: ags/X/editor/ags_pattern_envelope.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Tpo -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo `test -f 'ags/X/editor/ags_pattern_envelope.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_pattern_envelope.c' object='ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo `test -f 'ags/X/editor/ags_pattern_envelope.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope.c
 
 ags/X/editor/libgsequencer_la-ags_scale_area.lo: ags/X/editor/ags_scale_area.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_scale_area.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Tpo -c -o ags/X/editor/libgsequencer_la-ags_scale_area.lo `test -f 'ags/X/editor/ags_scale_area.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_area.c

@@ -20,13 +20,8 @@
 #include <ags/X/editor/ags_envelope_editor.h>
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/X/ags_window.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
@@ -164,15 +159,15 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->build_id = AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID;
 
   /* enabled */
-  pattern_envelope->enabled = gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     (GtkWidget *) pattern_envelope->enabled,
+  envelope_editor->enabled = gtk_check_button_new_with_label(i18n("enabled"));
+  gtk_box_pack_start((GtkBox *) envelope_editor,
+		     (GtkWidget *) envelope_editor->enabled,
 		     FALSE, FALSE,
 		     0);
 
   /* frame - preset */
   frame = (GtkFrame *) gtk_frame_new(i18n("preset"));
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
+  gtk_box_pack_start((GtkBox *) envelope_editor,
 		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
@@ -182,21 +177,21 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) hbox);
   
-  pattern_envelope->preset = gtk_combo_box_text_new();
+  envelope_editor->preset = gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) pattern_envelope->preset,
+		     (GtkWidget *) envelope_editor->preset,
 		     FALSE, FALSE,
 		     0);
 
-  pattern_envelope->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  envelope_editor->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) pattern_envelope->add,
+		     (GtkWidget *) envelope_editor->add,
 		     FALSE, FALSE,
 		     0);
 
-  pattern_envelope->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  envelope_editor->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,
-		     (GtkWidget *) pattern_envelope->remove,
+		     (GtkWidget *) envelope_editor->remove,
 		     FALSE, FALSE,
 		     0);
 

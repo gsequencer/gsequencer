@@ -204,6 +204,17 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_editor_scrolled_window,
 					(GtkWidget *) envelope_dialog->envelope_editor);
 
+  /* pattern envelope */
+  envelope_dialog->pattern_envelope_scrolled_window =
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_notebook_append_page(notebook,
+			   (GtkWidget *) scrolled_window,
+			   (GtkWidget *) gtk_label_new(i18n("pattern envelope")));
+
+  envelope_dialog->pattern_envelope = ags_pattern_envelope_new();
+  gtk_scrolled_window_add_with_viewport(envelope_dialog->pattern_envelope_scrolled_window,
+					(GtkWidget *) envelope_dialog->pattern_envelope);
+
   /* envelope info */
   envelope_dialog->envelope_info_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
@@ -309,6 +320,7 @@ ags_envelope_dialog_connect(AgsConnectable *connectable)
   envelope_dialog->flags |= AGS_ENVELOPE_DIALOG_CONNECTED;
 
   ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->envelope_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
   ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->envelope_info));
   
   /* applicable */
@@ -339,6 +351,7 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
   envelope_dialog->flags &= (~AGS_ENVELOPE_DIALOG_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->envelope_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
   ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->envelope_info));
   
   /* Applicable */
@@ -375,6 +388,8 @@ ags_envelope_dialog_apply(AgsApplicable *applicable)
   envelope_dialog = AGS_ENVELOPE_DIALOG(applicable);
 
   ags_applicable_apply(AGS_APPLICABLE(envelope_dialog->envelope_editor));
+  ags_applicable_apply(AGS_APPLICABLE(envelope_dialog->pattern_envelope));
+  ags_applicable_apply(AGS_APPLICABLE(envelope_dialog->envelope_info));
 }
 
 void
@@ -384,6 +399,8 @@ ags_envelope_dialog_reset(AgsApplicable *applicable)
 
   envelope_dialog = AGS_ENVELOPE_DIALOG(applicable);
 
+  ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->envelope_editor));
+  ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->pattern_envelope));
   ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->envelope_info));
 }
 

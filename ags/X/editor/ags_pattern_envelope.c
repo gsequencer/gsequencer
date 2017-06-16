@@ -20,12 +20,17 @@
 #include <ags/X/editor/ags_pattern_envelope.h>
 #include <ags/X/editor/ags_pattern_envelope_callbacks.h>
 
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
+
+#include <ags/X/editor/ags_envelope_dialog.h>
+
 #include <ags/i18n.h>
 
-void ags_pattern_envelope_class_init(AgsEnvelopePatternClass *pattern_envelope);
+void ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope);
 void ags_pattern_envelope_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_envelope_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_pattern_envelope_init(AgsEnvelopePattern *pattern_envelope);
+void ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope);
 void ags_pattern_envelope_connect(AgsConnectable *connectable);
 void ags_pattern_envelope_disconnect(AgsConnectable *connectable);
 void ags_pattern_envelope_finalize(GObject *gobject);
@@ -41,11 +46,11 @@ gchar* ags_pattern_envelope_y_label_func(gdouble value,
 /**
  * SECTION:ags_pattern_envelope
  * @short_description: pack pad editors.
- * @title: AgsEnvelopePattern
+ * @title: AgsPatternEnvelope
  * @section_id:
  * @include: ags/X/ags_pattern_envelope.h
  *
- * #AgsEnvelopePattern is a composite widget to show envelope controls
+ * #AgsPatternEnvelope is a composite widget to show envelope controls
  * of selected AgsNote.
  */
 
@@ -58,13 +63,13 @@ ags_pattern_envelope_get_type(void)
 
   if(!ags_type_pattern_envelope){
     static const GTypeInfo ags_pattern_envelope_info = {
-      sizeof (AgsEnvelopePatternClass),
+      sizeof (AgsPatternEnvelopeClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_pattern_envelope_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsEnvelopePattern),
+      sizeof (AgsPatternEnvelope),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_pattern_envelope_init,
     };
@@ -82,7 +87,7 @@ ags_pattern_envelope_get_type(void)
     };
 
     ags_type_pattern_envelope = g_type_register_static(GTK_TYPE_VBOX,
-						       "AgsEnvelopePattern", &ags_pattern_envelope_info,
+						       "AgsPatternEnvelope", &ags_pattern_envelope_info,
 						       0);
 
     g_type_add_interface_static(ags_type_pattern_envelope,
@@ -98,7 +103,7 @@ ags_pattern_envelope_get_type(void)
 }
 
 void
-ags_pattern_envelope_class_init(AgsEnvelopePatternClass *pattern_envelope)
+ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
@@ -133,7 +138,7 @@ ags_pattern_envelope_applicable_interface_init(AgsApplicableInterface *applicabl
 }
 
 void
-ags_pattern_envelope_init(AgsEnvelopePattern *pattern_envelope)
+ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 {
   GtkTable *table;
   GtkHBox *hbox;
@@ -143,12 +148,14 @@ ags_pattern_envelope_init(AgsEnvelopePattern *pattern_envelope)
   GtkCellRenderer *toggle_renderer;
   GtkCellRenderer *renderer;
 
+  GtkListStore  *model;
+
   gdouble width, height;
 
-  envelope_editor->flags = 0;
+  pattern_envelope->flags = 0;
 
-  envelope_editor->version = AGS_PATTERN_ENVELOPE_DEFAULT_VERSION;
-  envelope_editor->build_id = AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID;
+  pattern_envelope->version = AGS_PATTERN_ENVELOPE_DEFAULT_VERSION;
+  pattern_envelope->build_id = AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID;
 
   /* enabled */
   pattern_envelope->enabled = gtk_check_button_new_with_label(i18n("enabled"));
@@ -387,7 +394,7 @@ ags_pattern_envelope_init(AgsEnvelopePattern *pattern_envelope)
 void
 ags_pattern_envelope_connect(AgsConnectable *connectable)
 {
-  AgsEnvelopePattern *pattern_envelope;
+  AgsPatternEnvelope *pattern_envelope;
 
   pattern_envelope = AGS_PATTERN_ENVELOPE(connectable);
 
@@ -401,7 +408,7 @@ ags_pattern_envelope_connect(AgsConnectable *connectable)
 void
 ags_pattern_envelope_disconnect(AgsConnectable *connectable)
 {
-  AgsEnvelopePattern *pattern_envelope;
+  AgsPatternEnvelope *pattern_envelope;
 
   pattern_envelope = AGS_PATTERN_ENVELOPE(connectable);
 
@@ -471,25 +478,25 @@ ags_pattern_envelope_y_label_func(gdouble value,
 }
 
 void
-ags_pattern_envelope_plot(AgsEnvelopePattern *pattern_envelope)
+ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 {
 }
 
 /**
  * ags_pattern_envelope_new:
  *
- * Creates an #AgsEnvelopePattern
+ * Creates an #AgsPatternEnvelope
  *
- * Returns: a new #AgsEnvelopePattern
+ * Returns: a new #AgsPatternEnvelope
  *
  * Since: 0.8.5
  */
-AgsEnvelopePattern*
+AgsPatternEnvelope*
 ags_pattern_envelope_new()
 {
-  AgsEnvelopePattern *pattern_envelope;
+  AgsPatternEnvelope *pattern_envelope;
 
-  pattern_envelope = (AgsEnvelopePattern *) g_object_new(AGS_TYPE_PATTERN_ENVELOPE,
+  pattern_envelope = (AgsPatternEnvelope *) g_object_new(AGS_TYPE_PATTERN_ENVELOPE,
 							 NULL);
 
   return(pattern_envelope);
