@@ -269,7 +269,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("attack"),
 				    "xalign", 0.0,
-				    "yalign", 0.0,
+				    "yalign", 1.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -311,7 +311,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("decay"),
 				    "xalign", 0.0,
-				    "yalign", 0.0,
+				    "yalign", 1.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -353,7 +353,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("sustain"),
 				    "xalign", 0.0,
-				    "yalign", 0.0,
+				    "yalign", 1.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -395,7 +395,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("release"),
 				    "xalign", 0.0,
-				    "yalign", 0.0,
+				    "yalign", 1.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -437,7 +437,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("ratio"),
 				    "xalign", 0.0,
-				    "yalign", 0.0,
+				    "yalign", 1.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),

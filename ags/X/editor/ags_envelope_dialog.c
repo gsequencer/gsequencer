@@ -209,7 +209,7 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(i18n("pattern envelope")));
+			   (GtkWidget *) gtk_label_new(i18n("pattern")));
 
   envelope_dialog->pattern_envelope = ags_pattern_envelope_new();
   gtk_scrolled_window_add_with_viewport(envelope_dialog->pattern_envelope_scrolled_window,

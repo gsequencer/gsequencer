@@ -49,10 +49,10 @@ typedef enum{
   AGS_PATTERN_ENVELOPE_COLUMN_PLOT,
   AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_START,
   AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_END,
-  AGS_PATTERN_ENVELOPE_COLUMN_PATTERN_X_START,
-  AGS_PATTERN_ENVELOPE_COLUMN_PATTERN_X_END,
-  AGS_PATTERN_ENVELOPE_COLUMN_PATTERN_Y_START,
-  AGS_PATTERN_ENVELOPE_COLUMN_PATTERN_Y_END,
+  AGS_PATTERN_ENVELOPE_COLUMN_X_START,
+  AGS_PATTERN_ENVELOPE_COLUMN_X_END,
+  AGS_PATTERN_ENVELOPE_COLUMN_Y_START,
+  AGS_PATTERN_ENVELOPE_COLUMN_Y_END,
   AGS_PATTERN_ENVELOPE_COLUMN_LAST,
 }AgsPatternEnvelopeColumn;
 
@@ -80,6 +80,20 @@ struct _AgsPatternEnvelope
   GtkSpinButton *y_start;
   GtkSpinButton *y_end;
 
+  GtkHScale *attack_x;
+  GtkHScale *attack_y;
+  
+  GtkHScale *decay_x;
+  GtkHScale *decay_y;
+
+  GtkHScale *sustain_x;
+  GtkHScale *sustain_y;
+
+  GtkHScale *release_x;
+  GtkHScale *release_y;
+
+  GtkHScale *ratio;
+  
   GtkButton *move_up;
   GtkButton *move_down;
   GtkButton *add;

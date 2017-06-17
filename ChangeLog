@@ -1,3 +1,8 @@
+ags (0.8.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented to persist AgsLiveDssiBridge and AgsLiveLv2Bridge
+
 ags (0.8.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
