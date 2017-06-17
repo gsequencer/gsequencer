@@ -94,6 +94,8 @@
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
+#include <ags/X/machine/ags_live_dssi_bridge.h>
+#include <ags/X/machine/ags_live_lv2_bridge.h>
 
 #include <ags/config.h>
 
@@ -1784,7 +1786,57 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		 "filename", filename,
 		 "effect", effect,
 		 NULL);
+  }else if(AGS_IS_LIVE_DSSI_BRIDGE(gobject)){
+    xmlChar *filename, *effect;
+
+    filename = xmlGetProp(node,
+			  "plugin-file");
+
+    effect = xmlGetProp(node,
+			"effect");
+
+    g_object_set(gobject,
+		 "filename", filename,
+		 "effect", effect,
+		 NULL);
   }else if(AGS_IS_LV2_BRIDGE(gobject)){
+    AgsLv2Plugin *lv2_plugin;
+
+    xmlChar *filename, *effect;
+
+    filename = xmlGetProp(node,
+			  "plugin-file");
+
+    effect = xmlGetProp(node,
+			"effect");
+    
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+						 filename, effect);
+  
+    if(lv2_plugin != NULL &&
+       (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
+      
+      gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+				AGS_AUDIO_INPUT_HAS_RECYCLING |
+				AGS_AUDIO_SYNC |
+				AGS_AUDIO_ASYNC |
+				AGS_AUDIO_HAS_NOTATION | 
+				AGS_AUDIO_NOTATION_DEFAULT);
+      gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+			 AGS_MACHINE_REVERSE_NOTATION);
+
+      ags_machine_popup_add_connection_options((AgsMachine *) gobject,
+					       (AGS_MACHINE_POPUP_MIDI_DIALOG));
+
+      ags_machine_popup_add_edit_options((AgsMachine *) gobject,
+					 (AGS_MACHINE_POPUP_ENVELOPE));
+    }
+
+    g_object_set(gobject,
+		 "filename", filename,
+		 "effect", effect,
+		 NULL);
+  }else if(AGS_IS_LIVE_LV2_BRIDGE(gobject)){
     AgsLv2Plugin *lv2_plugin;
 
     xmlChar *filename, *effect;
@@ -1910,7 +1962,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
 	if(AGS_IS_LADSPA_BRIDGE(gobject) ||
 	   AGS_IS_DSSI_BRIDGE(gobject) ||
-	   AGS_IS_LV2_BRIDGE(gobject)){
+	   AGS_IS_LIVE_DSSI_BRIDGE(gobject) ||
+	   AGS_IS_LV2_BRIDGE(gobject) ||
+	   AGS_IS_LIVE_LV2_BRIDGE(gobject)){
 	  child = child->next;
 	  
 	  continue;
@@ -2054,8 +2108,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     ags_ladspa_bridge_load((AgsLadspaBridge *) gobject);
   }else if(AGS_IS_DSSI_BRIDGE(gobject)){
     ags_dssi_bridge_load((AgsDssiBridge *) gobject);
+  }else if(AGS_IS_LIVE_DSSI_BRIDGE(gobject)){
+    ags_live_dssi_bridge_load((AgsLiveDssiBridge *) gobject);
   }else if(AGS_IS_LV2_BRIDGE(gobject)){
     ags_lv2_bridge_load((AgsLv2Bridge *) gobject);
+  }else if(AGS_IS_LIVE_LV2_BRIDGE(gobject)){
+    ags_live_lv2_bridge_load((AgsLiveLv2Bridge *) gobject);
   }
 
   /* retrieve midi mapping */
@@ -2161,7 +2219,9 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   auto void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
   auto void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
   auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
+  auto void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
   auto void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
+  auto void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
 
   auto void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
   auto void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
@@ -2385,6 +2445,40 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     }
   }
 
+  void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge){
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    xmlChar *str;
+    gchar *value;
+
+    /* program */
+    //NOTE:JK: work-around
+    gtk_combo_box_set_active((GtkComboBox *) live_dssi_bridge->program,
+			     0);
+
+    model = gtk_combo_box_get_model((GtkComboBox *) live_dssi_bridge->program);
+
+    str = xmlGetProp(node,
+		     "program");
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) live_dssi_bridge->program,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+  }
+
   void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge){
     GtkTreeModel *model;
     GtkTreeIter iter;
@@ -2415,6 +2509,44 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	if(!g_strcmp0(str,
 		      value)){
 	  gtk_combo_box_set_active_iter((GtkComboBox *) lv2_bridge->preset,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+  }
+
+  void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge){
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    xmlChar *str;
+    gchar *value;
+
+    if(live_lv2_bridge->preset == NULL){
+      return;
+    }
+    
+    /* program */
+    //NOTE:JK: work-around
+    gtk_combo_box_set_active((GtkComboBox *) live_lv2_bridge->preset,
+			     0);
+
+    model = gtk_combo_box_get_model((GtkComboBox *) live_lv2_bridge->preset);
+
+    str = xmlGetProp(node,
+		     "preset");
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) live_lv2_bridge->preset,
 					&iter);
 	  break;
 	}
@@ -2577,8 +2709,12 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_ffplayer_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFFPlayer *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
     ags_simple_file_read_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
+  }else if(AGS_IS_DSSI_BRIDGE(machine)){
+    ags_simple_file_read_live_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
   }else if(AGS_IS_LV2_BRIDGE(machine)){
     ags_simple_file_read_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
+  }else if(AGS_IS_LV2_BRIDGE(machine)){
+    ags_simple_file_read_live_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
   }
   
   /* children */
@@ -5266,6 +5402,22 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "program",
 	       gtk_combo_box_text_get_active_text(dssi_bridge->program));
+  }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
+    AgsLiveDssiBridge *live_dssi_bridge;
+
+    live_dssi_bridge = (AgsLiveDssiBridge *) machine;
+
+    xmlNewProp(node,
+	       "plugin-file",
+	       live_dssi_bridge->filename);
+
+    xmlNewProp(node,
+	       "effect",
+	       live_dssi_bridge->effect);
+
+    xmlNewProp(node,
+	       "program",
+	       gtk_combo_box_text_get_active_text(live_dssi_bridge->program));
   }else if(AGS_IS_LV2_BRIDGE(machine)){
     AgsLv2Bridge *lv2_bridge;
 
@@ -5283,6 +5435,24 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
       xmlNewProp(node,
 		 "preset",
 		 gtk_combo_box_text_get_active_text(lv2_bridge->preset));
+    }
+  }else if(AGS_IS_LIVE_LV2_BRIDGE(machine)){
+    AgsLiveLv2Bridge *live_lv2_bridge;
+
+    live_lv2_bridge = (AgsLiveLv2Bridge *) machine;
+
+    xmlNewProp(node,
+	       "plugin-file",
+	       live_lv2_bridge->filename);
+
+    xmlNewProp(node,
+	       "effect",
+	       live_lv2_bridge->effect);
+
+    if(live_lv2_bridge->preset != NULL){
+      xmlNewProp(node,
+		 "preset",
+		 gtk_combo_box_text_get_active_text(live_lv2_bridge->preset));
     }
   }
   
