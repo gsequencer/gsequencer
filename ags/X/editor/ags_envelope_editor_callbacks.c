@@ -36,7 +36,7 @@ ags_envelope_editor_preset_add_callback(GtkButton *button,
   }
   
   envelope_editor->rename =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename"),
+    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("preset name"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(envelope_editor)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
 						       GTK_STOCK_OK,

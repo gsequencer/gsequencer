@@ -133,7 +133,7 @@ ags_pattern_envelope_preset_add_callback(GtkWidget *button,
   }
   
   pattern_envelope->rename =
-    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename"),
+    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("preset name"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(pattern_envelope)),
 						       GTK_DIALOG_DESTROY_WITH_PARENT,
 						       GTK_STOCK_OK,
