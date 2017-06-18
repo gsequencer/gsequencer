@@ -98,6 +98,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
 
   gobject->finalize = ags_audio_connection_finalize;
 
+  /* properties */
   /**
    * AgsAudioConnection:audio:
    *
@@ -152,13 +153,13 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
   /**
    * AgsAudioConnection:audio-channel:
    *
-   * The nth audio_channel assigned with.
+   * The nth audio channel assigned with.
    * 
    * Since: 0.7.65
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio-channel"),
-				 i18n_pspec("The audio_channel assigned with"),
+				 i18n_pspec("The audio channel assigned with"),
 				 0,
 				 G_MAXUINT32,
 				 0,

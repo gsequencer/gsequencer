@@ -37,6 +37,12 @@ typedef enum{
   AGS_PRESET_CONNECTED      = 1,
 }AgsPresetFlags;
 
+#define AGS_PRESET_ERROR (ags_preset_error_quark())
+
+typedef enum{
+  AGS_PRESET_ERROR_NO_SUCH_PARAMETER,
+};
+
 struct _AgsPreset
 {
   GObject gobject;
@@ -62,6 +68,22 @@ struct _AgsPresetClass
 {
   GObject gobject;
 };
+
+GType ags_preset_get_type();
+
+GQuark ags_preset_error_quark();
+
+GList* ags_preset_find_name(GList *preset,
+			    gchar *preset_name);
+
+gboolean ags_preset_add_parameter(AgsPreset *preset,
+				  gchar *param_name, GValue *value);
+void ags_preset_remove_parameter(AgsPreset *preset,
+				 guint nth);
+
+void ags_preset_get_parameter(AgsPreset *preset,
+			      gchar *param_name, GValue *value,
+			      GError *error);
 
 AgsPreset* ags_preset_new();
 
