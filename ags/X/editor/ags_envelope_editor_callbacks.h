@@ -26,6 +26,14 @@
 
 #include <ags/X/editor/ags_envelope_editor.h>
 
+void ags_envelope_editor_preset_add_callback(GtkButton *button,
+					     AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_preset_remove_callback(GtkButton *button,
+						AgsEnvelopeEditor *envelope_editor);
+
+void ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint response,
+							 AgsEnvelopeEditor *envelope_editor);
+
 void ags_envelope_editor_attack_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
 void ags_envelope_editor_attack_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
 

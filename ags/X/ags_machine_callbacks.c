@@ -287,6 +287,10 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
   GtkDialog *dialog;
   GtkEntry *entry;
 
+  if(machine->rename != NULL){
+    return(0);
+  }
+  
   machine->rename =
     dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename"),
 						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
@@ -299,7 +303,10 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
 
   entry = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(entry, machine->name);
-  gtk_box_pack_start((GtkBox *) dialog->vbox, (GtkWidget *) entry, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) dialog->vbox,
+		     (GtkWidget *) entry,
+		     FALSE, FALSE,
+		     0);
 
   gtk_widget_show_all((GtkWidget *) dialog);
 
@@ -328,7 +335,8 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
       g_free(machine->name);
     }
 
-    text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data), 0, -1);
+    text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
+				  0, -1);
     machine->name = g_strdup(text);
 
     gtk_menu_tool_button_set_menu((GtkMenuToolButton *) gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)),

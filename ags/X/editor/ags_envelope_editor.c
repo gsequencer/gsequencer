@@ -165,6 +165,9 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     FALSE, FALSE,
 		     0);
 
+  /* rename dialog */
+  envelope_editor->rename = NULL;
+
   /* frame - preset */
   frame = (GtkFrame *) gtk_frame_new(i18n("preset"));
   gtk_box_pack_start((GtkBox *) envelope_editor,
@@ -632,6 +635,26 @@ ags_envelope_editor_y_label_func(gdouble value,
   g_free(format);
 
   return(str);
+}
+
+void
+ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
+			       gchar *preset_name)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
+				  guint nth)
+{
+  //TODO:JK: implement me
 }
 
 void

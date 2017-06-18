@@ -49,10 +49,10 @@ typedef enum{
   AGS_PATTERN_ENVELOPE_COLUMN_PLOT,
   AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_START,
   AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_END,
+  AGS_PATTERN_ENVELOPE_COLUMN_PAD_START,
+  AGS_PATTERN_ENVELOPE_COLUMN_PAD_END,
   AGS_PATTERN_ENVELOPE_COLUMN_X_START,
   AGS_PATTERN_ENVELOPE_COLUMN_X_END,
-  AGS_PATTERN_ENVELOPE_COLUMN_Y_START,
-  AGS_PATTERN_ENVELOPE_COLUMN_Y_END,
   AGS_PATTERN_ENVELOPE_COLUMN_LAST,
 }AgsPatternEnvelopeColumn;
 
@@ -74,12 +74,12 @@ struct _AgsPatternEnvelope
   GtkSpinButton *audio_channel_start;
   GtkSpinButton *audio_channel_end;
   
+  GtkSpinButton *pad_start;
+  GtkSpinButton *pad_end;
+
   GtkSpinButton *x_start;
   GtkSpinButton *x_end;
   
-  GtkSpinButton *y_start;
-  GtkSpinButton *y_end;
-
   GtkHScale *attack_x;
   GtkHScale *attack_y;
   
@@ -93,6 +93,8 @@ struct _AgsPatternEnvelope
   GtkHScale *release_y;
 
   GtkHScale *ratio;
+
+  GtkDialog *rename;
   
   GtkButton *move_up;
   GtkButton *move_down;
@@ -106,6 +108,12 @@ struct _AgsPatternEnvelopeClass
 };
 
 GType ags_pattern_envelope_get_type(void);
+
+void ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
+				     gchar *preset_name);
+void ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
+					guint nth);
 
 void ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope);
 

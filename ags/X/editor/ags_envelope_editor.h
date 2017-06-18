@@ -55,6 +55,8 @@ struct _AgsEnvelopeEditor
 
   GtkCheckButton *enabled;
 
+  GtkDialog *rename;
+
   GtkComboBoxText *preset;
   GtkButton *add;
   GtkButton *remove;
@@ -82,6 +84,12 @@ struct _AgsEnvelopeEditorClass
 };
 
 GType ags_envelope_editor_get_type(void);
+
+void ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
+				    gchar *preset_name);
+void ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
+				       guint nth);
 
 void ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor);
 

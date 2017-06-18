@@ -27,4 +27,23 @@
 
 #include <ags/X/editor/ags_pattern_envelope.h>
 
+void ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
+					gchar *path_str,
+					AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_plot_callback(GtkCellRendererToggle *cell_renderer,
+					gchar *path_str,
+					AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
+						  AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
+						    AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_preset_add_callback(GtkWidget *button,
+					      AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_preset_remove_callback(GtkWidget *button,
+						 AgsPatternEnvelope *pattern_envelope);
+
+int ags_pattern_envelope_preset_rename_response_callback(GtkWidget *widget, gint response,
+							 AgsPatternEnvelope *pattern_envelope);
+
 #endif /*__AGS_PATTERN_ENVELOPE_CALLBACKS_H__*/
