@@ -76,6 +76,7 @@ ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
     }while(gtk_tree_model_iter_next(model, &iter));
   }
 
+  /* reset control */
   ags_pattern_envelope_reset_control(pattern_envelope);
 }
 
@@ -122,10 +123,10 @@ ags_pattern_envelope_audio_channel_start_callback(GtkWidget *spin_button,
   
   guint audio_channel_start;
 
-  GValue value = {0,};
-
-  GError *error;
-
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -133,30 +134,11 @@ ags_pattern_envelope_audio_channel_start_callback(GtkWidget *spin_button,
     return;
   }
 
-  /* get value */
+  /* set property */
   audio_channel_start = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
-
-  g_value_init(&value,
-	       G_TYPE_UINT);
-
-  error = NULL;
-  ags_preset_get_parameter(preset,
-			   "audio-channel-start", &value,
-			   &error);
-
-  if(error != NULL){
-    g_message("%s", error->message);
-
-    return;
-  }
-
-  /* add parameter */
-  g_value_reset(&value);
-  g_value_set_uint(&value,
-		   audio_channel_start);
-
-  ags_preset_add_parameter(preset,
-			   "audio-channel-start", &value);
+  g_object_set(preset,
+	       "audio-channel-start", audio_channel_start,
+	       NULL);
 
   /* reset */
   ags_pattern_envelope_reset_tree_view(pattern_envelope);
@@ -174,6 +156,10 @@ ags_pattern_envelope_audio_channel_end_callback(GtkWidget *spin_button,
 
   GError *error;
 
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -181,30 +167,11 @@ ags_pattern_envelope_audio_channel_end_callback(GtkWidget *spin_button,
     return;
   }
 
-  /* get value */
+  /* set property */
   audio_channel_end = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
-
-  g_value_init(&value,
-	       G_TYPE_UINT);
-
-  error = NULL;
-  ags_preset_get_parameter(preset,
-			   "audio-channel-end", &value,
-			   &error);
-
-  if(error != NULL){
-    g_message("%s", error->message);
-
-    return;
-  }
-
-  /* add parameter */
-  g_value_reset(&value);
-  g_value_set_uint(&value,
-		   audio_channel_end);
-
-  ags_preset_add_parameter(preset,
-			   "audio-channel-end", &value);
+  g_object_set(preset,
+	       "audio-channel-end", audio_channel_end,
+	       NULL);
 
   /* reset */
   ags_pattern_envelope_reset_tree_view(pattern_envelope);
@@ -222,6 +189,10 @@ ags_pattern_envelope_pad_start_callback(GtkWidget *spin_button,
 
   GError *error;
 
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -229,30 +200,11 @@ ags_pattern_envelope_pad_start_callback(GtkWidget *spin_button,
     return;
   }
 
-  /* get value */
+  /* set property */
   pad_start = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
-
-  g_value_init(&value,
-	       G_TYPE_UINT);
-
-  error = NULL;
-  ags_preset_get_parameter(preset,
-			   "pad-start", &value,
-			   &error);
-
-  if(error != NULL){
-    g_message("%s", error->message);
-
-    return;
-  }
-
-  /* add parameter */
-  g_value_reset(&value);
-  g_value_set_uint(&value,
-		   pad_start);
-
-  ags_preset_add_parameter(preset,
-			   "pad-start", &value);
+  g_object_set(preset,
+	       "pad-start", pad_start,
+	       NULL);
 
   /* reset */
   ags_pattern_envelope_reset_tree_view(pattern_envelope);
@@ -270,6 +222,10 @@ ags_pattern_envelope_pad_end_callback(GtkWidget *spin_button,
 
   GError *error;
 
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -277,30 +233,11 @@ ags_pattern_envelope_pad_end_callback(GtkWidget *spin_button,
     return;
   }
 
-  /* get value */
+  /* set property */
   pad_end = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
-
-  g_value_init(&value,
-	       G_TYPE_UINT);
-
-  error = NULL;
-  ags_preset_get_parameter(preset,
-			   "pad-end", &value,
-			   &error);
-
-  if(error != NULL){
-    g_message("%s", error->message);
-
-    return;
-  }
-
-  /* add parameter */
-  g_value_reset(&value);
-  g_value_set_uint(&value,
-		   pad_end);
-
-  ags_preset_add_parameter(preset,
-			   "pad-end", &value);
+  g_object_set(preset,
+	       "pad-end", pad_end,
+	       NULL);
 
   /* reset */
   ags_pattern_envelope_reset_tree_view(pattern_envelope);
@@ -318,6 +255,10 @@ ags_pattern_envelope_x_start_callback(GtkWidget *spin_button,
 
   GError *error;
 
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -325,30 +266,11 @@ ags_pattern_envelope_x_start_callback(GtkWidget *spin_button,
     return;
   }
 
-  /* get value */
+  /* set property */
   x_start = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
-
-  g_value_init(&value,
-	       G_TYPE_UINT);
-
-  error = NULL;
-  ags_preset_get_parameter(preset,
-			   "x-start", &value,
-			   &error);
-
-  if(error != NULL){
-    g_message("%s", error->message);
-
-    return;
-  }
-
-  /* add parameter */
-  g_value_reset(&value);
-  g_value_set_uint(&value,
-		   x_start);
-
-  ags_preset_add_parameter(preset,
-			   "x-start", &value);
+  g_object_set(preset,
+	       "x-start", x_start,
+	       NULL);
 
   /* reset */
   ags_pattern_envelope_reset_tree_view(pattern_envelope);
@@ -366,6 +288,10 @@ ags_pattern_envelope_x_end_callback(GtkWidget *spin_button,
 
   GError *error;
 
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -373,30 +299,11 @@ ags_pattern_envelope_x_end_callback(GtkWidget *spin_button,
     return;
   }
 
-  /* get value */
+  /* set property */
   x_end = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
-
-  g_value_init(&value,
-	       G_TYPE_UINT);
-
-  error = NULL;
-  ags_preset_get_parameter(preset,
-			   "x-end", &value,
-			   &error);
-
-  if(error != NULL){
-    g_message("%s", error->message);
-
-    return;
-  }
-
-  /* add parameter */
-  g_value_reset(&value);
-  g_value_set_uint(&value,
-		   x_end);
-
-  ags_preset_add_parameter(preset,
-			   "x-end", &value);
+  g_object_set(preset,
+	       "x-end", x_end,
+	       NULL);
 
   /* reset */
   ags_pattern_envelope_reset_tree_view(pattern_envelope);
@@ -417,6 +324,10 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
+
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
   
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
@@ -476,6 +387,10 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
 
   GError *error;
   
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -533,6 +448,10 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
+  
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
   
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
@@ -592,6 +511,10 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
 
   GError *error;
   
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -649,6 +572,10 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
+  
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
   
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
@@ -708,6 +635,10 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
 
   GError *error;
   
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -765,6 +696,10 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
+  
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
   
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
@@ -824,6 +759,10 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
 
   GError *error;
   
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
+  
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -881,6 +820,10 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
+  
+  if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
+    return;
+  }
   
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);

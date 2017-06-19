@@ -1239,7 +1239,166 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 void
 ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+
+  AgsComplex *val;
+  
+  complex z;
+  guint audio_channel_start, audio_channel_end;
+  guint pad_start, pad_end;
+  guint x_start, x_end;
+  
+  GValue value = {0,};
+
+  GError *error;
+  
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
+    return;
+  }
+
+  pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_NO_UPDATE;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  g_object_get(preset,
+	       "audio-channel-start", &audio_channel_start,
+	       "audio-channel-end", &audio_channel_end,
+	       "pad-start", &pad_start,
+	       "pad-end", &pad_end,
+	       "x-start", &x_start,
+	       "x-end", &x_end,
+	       NULL);
+  
+  gtk_spin_button_set_value(pattern_envelope->audio_channel_start,
+			    audio_channel_start);
+  gtk_spin_button_set_value(pattern_envelope->audio_channel_end,
+			    audio_channel_end);
+
+  gtk_spin_button_set_value(pattern_envelope->pad_start,
+			    pad_start);
+  gtk_spin_button_set_value(pattern_envelope->pad_end,
+			    pad_end);
+
+  gtk_spin_button_set_value(pattern_envelope->x_start,
+			    x_start);
+  gtk_spin_button_set_value(pattern_envelope->x_end,
+			    x_end);
+
+  /* attack */
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  ags_preset_get_parameter(preset,
+			   "attack", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  val = (AgsComplex *) g_value_get_boxed(&value);  
+  z = ags_complex_get(val);
+  
+  gtk_range_set_value(pattern_envelope->attack_x,
+		      creal(z));
+  gtk_range_set_value(pattern_envelope->attack_y,
+		      cimag(z));
+
+  /* decay */
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  ags_preset_get_parameter(preset,
+			   "decay", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  val = (AgsComplex *) g_value_get_boxed(&value);  
+  z = ags_complex_get(val);
+  
+  gtk_range_set_value(pattern_envelope->decay_x,
+		      creal(z));
+  gtk_range_set_value(pattern_envelope->decay_y,
+		      cimag(z));
+
+  /* sustain */
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  ags_preset_get_parameter(preset,
+			   "sustain", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  val = (AgsComplex *) g_value_get_boxed(&value);  
+  z = ags_complex_get(val);
+  
+  gtk_range_set_value(pattern_envelope->sustain_x,
+		      creal(z));
+  gtk_range_set_value(pattern_envelope->sustain_y,
+		      cimag(z));
+
+  /* release */
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  ags_preset_get_parameter(preset,
+			   "release", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  val = (AgsComplex *) g_value_get_boxed(&value);  
+  z = ags_complex_get(val);
+  
+  gtk_range_set_value(pattern_envelope->release_x,
+		      creal(z));
+  gtk_range_set_value(pattern_envelope->release_y,
+		      cimag(z));
+
+  /* ratio */
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  ags_preset_get_parameter(preset,
+			   "ratio", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  val = (AgsComplex *) g_value_get_boxed(&value);  
+  z = ags_complex_get(val);
+  
+  gtk_range_set_value(pattern_envelope->ratio,
+		      cimag(z));
+
+  /* unset no update */
+  pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 }
 
 /**
@@ -1253,7 +1412,70 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 void
 ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  AgsPreset *preset;
+
+  gboolean do_edit;
+
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
+    return;
+  }
+
+  pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_NO_UPDATE;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  /* get model */
+  model = gtk_tree_view_get_model(pattern_envelope->tree_view);
+
+  do_edit = FALSE;
+  
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(GTK_TREE_MODEL(model), &iter,
+			 AGS_PATTERN_ENVELOPE_COLUMN_EDIT, &do_edit,
+			 -1);
+
+      if(do_edit){
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model, &iter));
+  }
+
+  /* update row */
+  if(do_edit){
+    guint audio_channel_start, audio_channel_end;
+    guint pad_start, pad_end;
+    guint x_start, x_end;
+    
+    g_object_get(preset,
+		 "audio-channel-start", &audio_channel_start,
+		 "audio-channel-end", &audio_channel_end,
+		 "pad-start", &pad_start,
+		 "pad-end", &pad_end,
+		 "x-start", &x_start,
+		 "x-end", &x_end,
+		 NULL);
+    
+    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
+		       AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_START, audio_channel_start,
+		       AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_END, audio_channel_end,
+		       AGS_PATTERN_ENVELOPE_COLUMN_PAD_START, pad_start,
+		       AGS_PATTERN_ENVELOPE_COLUMN_PAD_END, pad_end,
+		       AGS_PATTERN_ENVELOPE_COLUMN_X_START, x_start,
+		       AGS_PATTERN_ENVELOPE_COLUMN_X_END, x_end,
+		       -1);
+  }
+  
+  /* unset no update */
+  pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 }
 
 /**

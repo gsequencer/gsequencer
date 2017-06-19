@@ -44,6 +44,7 @@ typedef struct _AgsPatternEnvelopeClass AgsPatternEnvelopeClass;
 
 typedef enum{
   AGS_PATTERN_ENVELOPE_CONNECTED      = 1,
+  AGS_PATTERN_ENVELOPE_NO_UPDATE      = 1 <<  1,
 }AgsPatternEnvelopeFlags;
 
 typedef enum{

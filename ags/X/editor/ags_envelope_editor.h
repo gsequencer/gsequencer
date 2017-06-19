@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_preset.h>
+
 #include <ags/widget/ags_cartesian.h>
 
 #define AGS_TYPE_ENVELOPE_EDITOR                (ags_envelope_editor_get_type())
@@ -42,6 +44,7 @@ typedef struct _AgsEnvelopeEditorClass AgsEnvelopeEditorClass;
 
 typedef enum{
   AGS_ENVELOPE_EDITOR_CONNECTED      = 1,
+  AGS_ENVELOPE_EDITOR_NO_UPDATE      = 1 <<  1,
 }AgsEnvelopeEditorFlags;
 
 struct _AgsEnvelopeEditor
@@ -84,6 +87,8 @@ struct _AgsEnvelopeEditorClass
 };
 
 GType ags_envelope_editor_get_type(void);
+
+AgsPreset* ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor);
 
 void ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor);
 void ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,

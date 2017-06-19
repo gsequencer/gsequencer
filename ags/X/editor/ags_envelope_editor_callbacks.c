@@ -19,8 +19,10 @@
 
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_preset.h>
+
+#include <ags/X/editor/ags_envelope_dialog.h>
 
 #include <ags/i18n.h>
 
@@ -101,53 +103,548 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 void
 ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble attack_x;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  attack_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "attack", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  attack_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "attack", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble attack_y;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  attack_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "attack", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + attack_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "attack", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble decay_x;
+
+  GValue value = {0,};
+
+  GError *error;  
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  decay_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "decay", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  decay_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "decay", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble decay_y;
+
+  GValue value = {0,};
+
+  GError *error;  
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  decay_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "decay", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + decay_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "decay", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble sustain_x;
+
+  GValue value = {0,};
+
+  GError *error;  
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  sustain_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "sustain", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  sustain_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "sustain", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble sustain_y;
+
+  GValue value = {0,};
+
+  GError *error;  
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  sustain_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "sustain", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + sustain_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "sustain", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble release_x;
+
+  GValue value = {0,};
+
+  GError *error;  
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  release_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "release", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  release_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "release", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble release_y;
+
+  GValue value = {0,};
+
+  GError *error;  
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  release_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "release", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + release_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "release", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
 
 void
 ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor)
 {
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble ratio;
+
+  GValue value = {0,};
+
+  GError *error;  
+
+  if((AGS_ENVELOPE_EDITOR_NO_UPDATE & (envelope_editor->flags)) != 0){
+    return;
+  }
+  
+  /* get preset */
+  preset = ags_envelope_editor_get_active_preset(envelope_editor);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  ratio = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "ratio", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  ratio * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "ratio", &value);
+
+  /* plot */
   ags_envelope_editor_plot(envelope_editor);
 }
