@@ -420,8 +420,11 @@ ags_window_finalize(GObject *gobject)
   g_object_unref(G_OBJECT(window->soundcard));
   g_object_unref(G_OBJECT(window->export_window));
 
-  free(window->name);
+  if(window->name != NULL){
+    free(window->name);
+  }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_window_parent_class)->finalize(gobject);
 }
 

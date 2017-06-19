@@ -1776,7 +1776,7 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
        !g_ascii_strncasecmp(card_id,
 			    "/dev/dsp",
 			    8)){
-      if(strlen(card_id) >  8){
+      if(strlen(card_id) > 8){
 	sscanf(card_id,
 	       "/dev/dsp%d",
 	       &(ainfo.dev));

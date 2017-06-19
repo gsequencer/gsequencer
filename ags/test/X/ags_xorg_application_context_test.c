@@ -81,13 +81,6 @@ gboolean xorg_application_context_test_finalized;
 int
 ags_xorg_application_context_test_init_suite()
 {
-  AgsConfig *config;
-
-  config = ags_config_get_instance();
-  ags_config_load_from_data(config,
-			    AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG,
-			    strlen(AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG));
-    
   return(0);
 }
 
@@ -107,8 +100,16 @@ ags_xorg_application_context_test_dispose()
 {
   AgsXorgApplicationContext *xorg_application_context;
 
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG,
+			    strlen(AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG));
+    
+
   xorg_application_context = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
-					   NULL);
+					  NULL);
 
   /* run dispose */
   g_object_run_dispose(xorg_application_context);
@@ -131,6 +132,13 @@ ags_xorg_application_context_test_finalize()
 {
   AgsXorgApplicationContext *xorg_application_context;
 
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG,
+			    strlen(AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG));
+  
   xorg_application_context = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
 					   NULL);
 

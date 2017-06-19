@@ -78,14 +78,7 @@ gboolean audio_application_context_test_finalized;
  */
 int
 ags_audio_application_context_test_init_suite()
-{
-  AgsConfig *config;
-
-  config = ags_config_get_instance();
-  ags_config_load_from_data(config,
-			    AGS_AUDIO_APPLICATION_CONTEXT_TEST_CONFIG,
-			    strlen(AGS_AUDIO_APPLICATION_CONTEXT_TEST_CONFIG));
-    
+{    
   return(0);
 }
 
@@ -104,6 +97,13 @@ void
 ags_audio_application_context_test_dispose()
 {
   AgsAudioApplicationContext *audio_application_context;
+
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_AUDIO_APPLICATION_CONTEXT_TEST_CONFIG,
+			    strlen(AGS_AUDIO_APPLICATION_CONTEXT_TEST_CONFIG));
 
   audio_application_context = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
 					   NULL);
@@ -126,6 +126,13 @@ void
 ags_audio_application_context_test_finalize()
 {
   AgsAudioApplicationContext *audio_application_context;
+
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_AUDIO_APPLICATION_CONTEXT_TEST_CONFIG,
+			    strlen(AGS_AUDIO_APPLICATION_CONTEXT_TEST_CONFIG));
 
   audio_application_context = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
 					   NULL);
