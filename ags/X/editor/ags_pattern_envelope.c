@@ -23,6 +23,9 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_preset.h>
+
 #include <ags/X/editor/ags_envelope_dialog.h>
 
 #include <math.h>
@@ -199,6 +202,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   model = gtk_list_store_new(AGS_PATTERN_ENVELOPE_COLUMN_LAST,
 			     G_TYPE_BOOLEAN,
 			     G_TYPE_BOOLEAN,
+			     G_TYPE_STRING,
 			     G_TYPE_UINT,
 			     G_TYPE_UINT,
 			     G_TYPE_UINT,
@@ -223,6 +227,13 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 					      i18n("plot"),
 					      toggle_renderer,
 					      "active", AGS_PATTERN_ENVELOPE_COLUMN_PLOT,
+					      NULL);
+
+  gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(pattern_envelope->tree_view),
+					      -1,
+					      i18n("preset"),
+					      renderer,
+					      "text", AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME,
 					      NULL);
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(pattern_envelope->tree_view),
@@ -709,6 +720,7 @@ ags_pattern_envelope_apply(AgsApplicable *applicable)
 void
 ags_pattern_envelope_reset(AgsApplicable *applicable)
 {
+  //TODO:JK: implement me
 }
 
 gchar*
@@ -748,21 +760,106 @@ ags_pattern_envelope_y_label_func(gdouble value,
 void
 ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  GtkListStore *model;
+  GtkTreeIter iter;
+
+  AgsAudio *audio;
+  
+  GList *preset;
+  
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
+    return;
+  }
+
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+  
+  /* get model */
+  model = GTK_LIST_STORE(gtk_combo_box_get_model(pattern_envelope->tree_view));
+
+  /* clear old */
+  gtk_list_store_clear(model);
+
+  /* create new */
+  preset = audio->preset;
+
+  while(preset != NULL){
+    gtk_list_store_append(model,
+			  &iter);
+    gtk_list_store_set(model, &iter,
+		       AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, AGS_PRESET(preset->data)->preset_name,
+		       AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_START, AGS_PRESET(preset->data)->audio_channel_start,
+		       AGS_PATTERN_ENVELOPE_COLUMN_AUDIO_CHANNEL_END, AGS_PRESET(preset->data)->audio_channel_end,
+		       AGS_PATTERN_ENVELOPE_COLUMN_PAD_START, AGS_PRESET(preset->data)->pad_start,
+		       AGS_PATTERN_ENVELOPE_COLUMN_PAD_END, AGS_PRESET(preset->data)->pad_end,
+		       AGS_PATTERN_ENVELOPE_COLUMN_X_START, AGS_PRESET(preset->data)->x_start,
+		       AGS_PATTERN_ENVELOPE_COLUMN_X_END, AGS_PRESET(preset->data)->x_end,
+		       -1);
+
+    preset = preset->next;
+  }
 }
 
 void
 ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 				gchar *preset_name)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsPreset *preset;
+  
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope) ||
+     preset_name == NULL){
+    return;
+  }
+  
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* create preset */
+  preset = g_object_new(AGS_TYPE_PRESET,
+			"preset-name", preset_name,
+			NULL);
+  ags_audio_add_preset(audio,
+		       preset);
 }
 
 void
 ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 				   guint nth)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsPreset *preset;
+  
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
+    return;
+  }
+  
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* create preset */
+  preset = g_list_nth_data(audio->preset,
+			   nth);
+  ags_audio_remove_preset(audio,
+			  preset);
 }
 
 void
