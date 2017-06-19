@@ -26,26 +26,29 @@
 
 #include <ags/X/editor/ags_envelope_editor.h>
 
-void ags_envelope_editor_preset_add_callback(GtkButton *button,
+void ags_envelope_editor_preset_callback(GtkWidget *combo_box,
+					 AgsEnvelopeEditor *envelope_editor);
+
+void ags_envelope_editor_preset_add_callback(GtkWidget *button,
 					     AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_preset_remove_callback(GtkButton *button,
+void ags_envelope_editor_preset_remove_callback(GtkWidget *button,
 						AgsEnvelopeEditor *envelope_editor);
 
 void ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint response,
 							 AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_attack_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_attack_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_decay_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_decay_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_sustain_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_sustain_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_release_x_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
-void ags_envelope_editor_release_y_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
 
-void ags_envelope_editor_ratio_callback(GtkButton *button, AgsEnvelopeEditor *envelope_editor);
+void ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope_editor);
 
 #endif /*__AGS_ENVELOPE_EDITOR_CALLBACKS_H__*/

@@ -404,6 +404,14 @@ ags_envelope_info_y_label_func(gdouble value,
   return(str);
 }
 
+/**
+ * ags_envelope_info_plot:
+ * @envelope_info: the #AgsEnvelopeInfo
+ * 
+ * Plot envelope.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 {

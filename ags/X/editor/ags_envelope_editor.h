@@ -91,6 +91,8 @@ void ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 void ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
 				       guint nth);
 
+void ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor);
+
 void ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor);
 
 AgsEnvelopeEditor* ags_envelope_editor_new();

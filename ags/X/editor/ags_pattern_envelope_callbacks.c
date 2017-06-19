@@ -381,7 +381,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   current = next->data;
   
   audio->preset = g_list_delete_link(audio->preset,
-				     preset);
+				     next);
 
   audio->preset = g_list_insert_before(audio->preset,
 				       preset,

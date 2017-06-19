@@ -478,26 +478,45 @@ ags_envelope_editor_connect(AgsConnectable *connectable)
 
   envelope_editor->flags |= AGS_ENVELOPE_EDITOR_CONNECTED;
 
+  /* preset */
+  g_signal_connect((GObject *) envelope_editor->preset, "changed",
+		   G_CALLBACK(ags_envelope_editor_preset_callback), (gpointer) envelope_editor);
+
+  g_signal_connect((GObject *) envelope_editor->add, "clicked",
+		   G_CALLBACK(ags_envelope_editor_preset_add_callback), (gpointer) envelope_editor);
+
+  g_signal_connect((GObject *) envelope_editor->remove, "clicked",
+		   G_CALLBACK(ags_envelope_editor_preset_remove_callback), (gpointer) envelope_editor);
+
+  /* attack x,y */
   g_signal_connect((GObject *) envelope_editor->attack_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_attack_x_callback), (gpointer) envelope_editor);
+
   g_signal_connect((GObject *) envelope_editor->attack_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_attack_y_callback), (gpointer) envelope_editor);
 
+  /* decay x,y */
   g_signal_connect((GObject *) envelope_editor->decay_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_decay_x_callback), (gpointer) envelope_editor);
+
   g_signal_connect((GObject *) envelope_editor->decay_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_decay_y_callback), (gpointer) envelope_editor);
 
+  /* sustain x,y */
   g_signal_connect((GObject *) envelope_editor->sustain_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_sustain_x_callback), (gpointer) envelope_editor);
+
   g_signal_connect((GObject *) envelope_editor->sustain_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_sustain_y_callback), (gpointer) envelope_editor);
 
+  /* release x,y */
   g_signal_connect((GObject *) envelope_editor->release_x, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_release_x_callback), (gpointer) envelope_editor);
+
   g_signal_connect((GObject *) envelope_editor->release_y, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_release_y_callback), (gpointer) envelope_editor);
 
+  /* ratio */
   g_signal_connect((GObject *) envelope_editor->ratio, "value-changed",
 		   G_CALLBACK(ags_envelope_editor_ratio_callback), (gpointer) envelope_editor);
 }
@@ -514,6 +533,84 @@ ags_envelope_editor_disconnect(AgsConnectable *connectable)
   }
 
   envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_CONNECTED);
+
+  /* preset */
+  g_object_disconnect((GObject *) envelope_editor->preset,
+		      "changed",
+		      G_CALLBACK(ags_envelope_editor_preset_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  g_object_disconnect((GObject *) envelope_editor->add,
+		      "clicked",
+		      G_CALLBACK(ags_envelope_editor_preset_add_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  g_object_disconnect((GObject *) envelope_editor->remove,
+		      "clicked",
+		      G_CALLBACK(ags_envelope_editor_preset_remove_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  /* attack x,y */
+  g_object_disconnect((GObject *) envelope_editor->attack_x,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_attack_x_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  g_object_disconnect((GObject *) envelope_editor->attack_y,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_attack_y_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  /* decay x,y */
+  g_object_disconnect((GObject *) envelope_editor->decay_x,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_decay_x_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  g_object_disconnect((GObject *) envelope_editor->decay_y,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_decay_y_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  /* sustain x,y */
+  g_object_disconnect((GObject *) envelope_editor->sustain_x,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_sustain_x_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  g_object_disconnect((GObject *) envelope_editor->sustain_y,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_sustain_y_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  /* release x,y */
+  g_object_disconnect((GObject *) envelope_editor->release_x,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_release_x_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  g_object_disconnect((GObject *) envelope_editor->release_y,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_release_y_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
+
+  /* ratio */
+  g_object_disconnect((GObject *) envelope_editor->ratio,
+		      "value-changed",
+		      G_CALLBACK(ags_envelope_editor_ratio_callback),
+		      (gpointer) envelope_editor,
+		      NULL);
 }
 
 void
@@ -817,6 +914,28 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
 			  preset);
 }
 
+/**
+ * ags_envelope_editor_reset_control:
+ * @envelope_editor: the #AgsEnvelopeEditor
+ * 
+ * Reset controls.
+ * 
+ * Since: 0.8.5
+ */
+void
+ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_envelope_editor_plot:
+ * @envelope_editor: the #AgsEnvelopeEditor
+ * 
+ * Plot envelope.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
 {

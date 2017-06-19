@@ -774,91 +774,98 @@ ags_pattern_envelope_disconnect(AgsConnectable *connectable)
 
   /* audio channel start/end */
   g_object_disconnect((GObject *) pattern_envelope->audio_channel_start,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_audio_channel_start_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
+
   g_object_disconnect((GObject *) pattern_envelope->audio_channel_end,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_audio_channel_end_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* pad start/end */
   g_object_disconnect((GObject *) pattern_envelope->pad_start,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_pad_start_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
+
   g_object_disconnect((GObject *) pattern_envelope->pad_end,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_pad_end_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* x start/end */
   g_object_disconnect((GObject *) pattern_envelope->x_start,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_x_start_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
+
   g_object_disconnect((GObject *) pattern_envelope->x_end,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_x_end_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* attack x,y */
   g_object_disconnect((GObject *) pattern_envelope->attack_x,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_attack_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
+
   g_object_disconnect((GObject *) pattern_envelope->attack_y,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_attack_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* decay x,y */
   g_object_disconnect((GObject *) pattern_envelope->decay_x,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_decay_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
+
   g_object_disconnect((GObject *) pattern_envelope->decay_y,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_decay_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* sustain x,y */
   g_object_disconnect((GObject *) pattern_envelope->sustain_x,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_sustain_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
+
   g_object_disconnect((GObject *) pattern_envelope->sustain_y,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_sustain_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* release x,y */
   g_object_disconnect((GObject *) pattern_envelope->release_x,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_release_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
+
   g_object_disconnect((GObject *) pattern_envelope->release_y,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_release_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* ratio */
   g_object_disconnect((GObject *) pattern_envelope->ratio,
-		      "clicked",
+		      "value-changed",
 		      G_CALLBACK(ags_pattern_envelope_ratio_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
@@ -1151,6 +1158,42 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 			  preset);
 }
 
+/**
+ * ags_pattern_envelope_reset_control:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ * 
+ * Reset controls.
+ * 
+ * Since: 0.8.5
+ */
+void
+ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_pattern_envelope_reset_tree_view:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ * 
+ * Reset tree view.
+ * 
+ * Since: 0.8.5
+ */
+void
+ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_pattern_envelope_plot:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ * 
+ * Plot envelope.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 {
