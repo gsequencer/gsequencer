@@ -249,6 +249,9 @@ ags_preset_init(AgsPreset *preset)
   
   preset->x_start = 0;
   preset->x_end = 0;
+
+  preset->parameter = NULL;
+  preset->n_params = 0;
 }
 
 void
@@ -368,35 +371,186 @@ ags_preset_get_property(GObject *gobject,
   }
 }
 
+/**
+ * ags_preset_find_name:
+ * @preset: the #GList-struct containing #AgsPreset
+ * @preset_name: the preset's name
+ * 
+ * Find preset name in @preset.
+ * 
+ * Returns: the next matching #AgsPreset
+ * 
+ * Since: 0.8.5
+ */
 GList*
 ags_preset_find_name(GList *preset,
 		     gchar *preset_name)
 {
-  //TODO:JK: implement me
+  while(preset != NULL){
+    if(!g_strcmp0(AGS_PRESET(preset->data)->preset_name,
+		  preset_name)){
+      return(preset);
+    }
+
+    preset = preset->next;
+  }
   
   return(NULL);
 }
 
+/**
+ * ags_preset_add_parameter:
+ * @preset: the #AgsPreset
+ * @param_name: the parameter name
+ * @value: the value to add
+ *
+ * Add parameter to @preset.
+ *
+ * Since: 0.8.5
+ */
 void
 ags_preset_add_parameter(AgsPreset *preset,
 			 gchar *param_name, GValue *value)
 {
-  //TODO:JK: implement me
+  guint nth;
+  guint i;
+  gboolean found;
+  
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  /* match or allocate */
+  found = FALSE;
+
+  if(preset->parameter == NULL){
+    preset->parameter = (GParameter *) malloc(sizeof(GParameter));
+
+    nth = 0;
+  }else{
+    for(i = 0; i < preset->n_params; i++){
+      if(!g_strcmp0(preset->parameter[0].name,
+		    param_name)){
+	nth = i;
+	found = TRUE;
+
+	break;
+      }
+    }
+
+    if(!found){
+      preset->parameter = (GParameter *) realloc(preset->parameter,
+						 (preset->n_params + 1) * sizeof(GParameter));
+
+      preset->n_params += 1;
+      nth = i;
+    }
+  }
+
+  /* set value */
+  preset->parameter[0].name = g_strdup(param_name);
+  g_value_copy(value,
+	       preset->parameter[0].value);
 }
 
+/**
+ * ags_preset_remove_parameter:
+ * @preset: the #AgsPreset
+ * @nth: the nth parameter to remove
+ * 
+ * Remove parameter of @preset.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_preset_remove_parameter(AgsPreset *preset,
 			    guint nth)
 {
-  //TODO:JK: implement me
+  GParameter *parameter;
+  
+  if(!AGS_IS_PRESET(preset) ||
+     preset->n_params == 0 ||
+     nth >= preset->n_params){
+    return;
+  }
+
+  parameter = preset->parameter;
+
+  if(preset->n_params == 1){
+    preset->parameter = NULL;
+
+    preset->n_params = 0;
+  }else{
+    preset->parameter = (GParameter *) malloc((preset->n_params - 1) * sizeof(GParameter));
+
+    if(nth > 0){
+      memcpy(preset->parameter,
+	     parameter,
+	     nth * sizeof(GParameter));
+    }
+
+    if(nth + 1 < preset->n_params){
+      memcpy(&(preset->parameter[nth]),
+	     &(parameter[nth + 1]),
+	     (preset->n_params - (nth + 1)) * sizeof(GParameter));    
+    }
+
+    preset->n_params -= 1;
+  }
+    
+  free(parameter);
 }
 
+/**
+ * ags_preset_get_parameter:
+ * @preset: the #AgsPreset
+ * @param_name: the parameter name
+ * @value: the return location of value
+ * @error: the #GError-struct
+ * 
+ * Get parameter specified by @param_name. If parameter not available
+ * the @error is set to indicate the failure.
+ *
+ * Since: 0.8.5
+ */
 void
 ags_preset_get_parameter(AgsPreset *preset,
 			 gchar *param_name, GValue *value,
 			 GError *error)
 {
-  //TODO:JK: implement me
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  if(preset->parameter == NULL){
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_PRESET_ERROR,
+		  AGS_PRESET_ERROR_NO_SUCH_PARAMETER,
+		  "unable to find parameter: %s",
+		  param_name);
+    }
+
+    return;
+  }
+  
+  for(i = 0; i < preset->n_params; i++){
+    if(!g_strcmp0(preset->parameter[0].name,
+		  param_name)){
+      g_value_copy(preset->parameter[0].value,
+		   value);
+      
+      return;
+    }
+  }
+  
+  if(error != NULL){
+    g_set_error(error,
+		AGS_PRESET_ERROR,
+		AGS_PRESET_ERROR_NO_SUCH_PARAMETER,
+		"unable to find parameter: %s",
+		param_name);
+  }
 }
 
 /**
