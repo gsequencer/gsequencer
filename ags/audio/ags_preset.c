@@ -35,18 +35,19 @@ void ags_preset_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_preset
- * @short_description: audio connections
+ * @short_description: presets
  * @title: AgsPreset
  * @section_id:
  * @include: ags/audio/ags_preset.h
  *
- * The #AgsPreset specifies your audio connections.
+ * The #AgsPreset stores presets.
  */
 
 static gpointer ags_preset_parent_class = NULL;
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_PRESET_NAME,
   PROP_AUDIO_CHANNEL_START,
   PROP_AUDIO_CHANNEL_END,
@@ -74,7 +75,7 @@ ags_preset_get_type (void)
       (GInstanceInitFunc) ags_preset_init,
     };
 
-    ags_type_preset = g_type_register_static(AGS_TYPE_CONNECTION,
+    ags_type_preset = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsPreset",
 					     &ags_preset_info,
 					     0);
@@ -100,6 +101,22 @@ ags_preset_class_init(AgsPresetClass *preset)
   gobject->finalize = ags_preset_finalize;
 
   /* properties */
+  /**
+   * AgsPreset:audio:
+   *
+   * The #AgsAudio belonging to.
+   * 
+   * Since: 0.8.5
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio"),
+				   i18n_pspec("The audio belonging to"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsPreset:preset-name:
    *
@@ -236,6 +253,8 @@ ags_preset_init(AgsPreset *preset)
 {
   preset->flags = 0;
 
+  preset->audio = NULL;
+  
   preset->preset_name = NULL;
 
   preset->audio_channel_start = 0;
@@ -265,6 +284,27 @@ ags_preset_set_property(GObject *gobject,
   preset = AGS_PRESET(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      GObject *audio;
+
+      audio = (GObject *) g_value_get_object(value);
+
+      if(preset->audio == audio){
+	return;
+      }
+
+      if(preset->audio != NULL){
+	g_object_unref(preset->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      preset->audio = audio;
+    }
+    break;
   case PROP_PRESET_NAME:
     {
       gchar *preset_name;
@@ -324,6 +364,11 @@ ags_preset_get_property(GObject *gobject,
   preset = AGS_PRESET(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, preset->audio);
+    }
+    break;
   case PROP_PRESET_NAME:
     {
       g_value_set_string(value,
@@ -351,7 +396,7 @@ ags_preset_get_property(GObject *gobject,
   case PROP_PAD_END:
     {
       g_value_set_uint(value,
-		       preset->end);
+		       preset->pad_end);
     }
     break;
   case PROP_X_START:
@@ -368,6 +413,18 @@ ags_preset_get_property(GObject *gobject,
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+  }
+}
+
+void
+ags_preset_finalize(GObject *gobject)
+{
+  AgsPreset *preset;
+
+  preset = AGS_PRESET(gobject);
+
+  if(preset->audio != NULL){
+    g_object_unref(preset->audio);
   }
 }
 
@@ -408,7 +465,7 @@ ags_preset_find_name(GList *preset,
  *
  * Since: 0.8.5
  */
-void
+gboolean
 ags_preset_add_parameter(AgsPreset *preset,
 			 gchar *param_name, GValue *value)
 {
@@ -417,7 +474,7 @@ ags_preset_add_parameter(AgsPreset *preset,
   gboolean found;
   
   if(!AGS_IS_PRESET(preset)){
-    return;
+    return(FALSE);
   }
 
   /* match or allocate */
@@ -450,7 +507,9 @@ ags_preset_add_parameter(AgsPreset *preset,
   /* set value */
   preset->parameter[0].name = g_strdup(param_name);
   g_value_copy(value,
-	       preset->parameter[0].value);
+	       &(preset->parameter[0].value));
+
+  return(!found);
 }
 
 /**
@@ -467,7 +526,7 @@ ags_preset_remove_parameter(AgsPreset *preset,
 			    guint nth)
 {
   GParameter *parameter;
-  
+
   if(!AGS_IS_PRESET(preset) ||
      preset->n_params == 0 ||
      nth >= preset->n_params){
@@ -518,6 +577,8 @@ ags_preset_get_parameter(AgsPreset *preset,
 			 gchar *param_name, GValue *value,
 			 GError *error)
 {
+  guint i;
+
   if(!AGS_IS_PRESET(preset)){
     return;
   }
@@ -537,7 +598,7 @@ ags_preset_get_parameter(AgsPreset *preset,
   for(i = 0; i < preset->n_params; i++){
     if(!g_strcmp0(preset->parameter[0].name,
 		  param_name)){
-      g_value_copy(preset->parameter[0].value,
+      g_value_copy(&(preset->parameter[0].value),
 		   value);
       
       return;

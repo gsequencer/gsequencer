@@ -544,6 +544,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
+	ags/audio/ags_preset.h \
 	ags/audio/ags_recall_audio.h \
 	ags/audio/ags_recall_audio_run.h \
 	ags/audio/ags_recall_audio_signal.h \
@@ -596,6 +597,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
+	ags/audio/ags_preset.c \
 	ags/audio/ags_recall_audio.c \
 	ags/audio/ags_recall_audio_run.c \
 	ags/audio/ags_recall_audio_signal.c \

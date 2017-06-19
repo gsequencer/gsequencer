@@ -93,6 +93,8 @@ struct _AgsAudio
   guint midi_channel;
   
   GList *audio_connection;
+
+  GList *preset;
   
   AgsChannel *output;
   AgsChannel *input;
@@ -156,6 +158,11 @@ void ags_audio_add_audio_connection(AgsAudio *audio,
 				    GObject *audio_connection);
 void ags_audio_remove_audio_connection(AgsAudio *audio,
 				       GObject *audio_connection);
+
+void ags_audio_add_preset(AgsAudio *audio,
+			  GObject *preset);
+void ags_audio_remove_preset(AgsAudio *audio,
+			     GObject *preset);
 
 void ags_audio_add_notation(AgsAudio *audio,
 			      GObject *notation);

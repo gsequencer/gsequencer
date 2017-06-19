@@ -34,6 +34,7 @@
 #include <ags/server/ags_registry.h>
 
 #include <ags/audio/ags_audio_connection.h>
+#include <ags/audio/ags_preset.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_output.h>
@@ -136,6 +137,7 @@ enum{
   PROP_MIDI_END_MAPPING,
   PROP_MIDI_CHANNEL,
   PROP_AUDIO_CONNECTION,
+  PROP_PRESET,
   PROP_OUTPUT,
   PROP_INPUT,
   PROP_PLAYBACK_DOMAIN,
@@ -521,7 +523,23 @@ ags_audio_class_init(AgsAudioClass *audio)
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CONNECTION,
 				  param_spec);
-  
+
+  /**
+   * AgsAudio:preset:
+   *
+   * The assigned #GList-struct containing #AgsPreset information.
+   * 
+   * Since: 0.8.5
+   */
+  param_spec = g_param_spec_object("preset",
+				   i18n_pspec("preset"),
+				   i18n_pspec("The preset"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESET,
+				  param_spec);
+    
   /**
    * AgsAudio:output:
    *
@@ -947,6 +965,9 @@ ags_audio_init(AgsAudio *audio)
   /* mapping */
   audio->audio_connection = NULL;
   
+  /* preset */
+  audio->preset = NULL;
+
   /* channels */
   audio->output = NULL;
   audio->input = NULL;
@@ -1187,6 +1208,21 @@ ags_audio_set_property(GObject *gobject,
 
       ags_audio_add_audio_connection(audio,
 				     (GObject *) audio_connection);
+    }
+    break;
+  case PROP_PRESET:
+    {
+      AgsPreset *preset;
+
+      preset = (AgsPreset *) g_value_get_object(value);
+
+      if(preset == NULL ||
+	 g_list_find(audio->preset, preset) != NULL){
+	return;
+      }
+
+      ags_audio_add_preset(audio,
+			   (GObject *) preset);
     }
     break;
   case PROP_PLAYBACK_DOMAIN:
@@ -1544,7 +1580,25 @@ ags_audio_dispose(GObject *gobject)
 
     audio->audio_connection = NULL;
   }
+
+  /* preset */
+  if(audio->preset != NULL){
+    list = audio->preset;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
   
+    g_list_free_full(audio->preset,
+		     g_object_unref);
+
+    audio->preset = NULL;
+  }
+
   /* notation */
   if(audio->notation != NULL){
     list = audio->notation;
@@ -1765,6 +1819,22 @@ ags_audio_finalize(GObject *gobject)
     }
 
     g_list_free_full(audio->audio_connection,
+		     g_object_unref);
+  }
+
+  /* audio connection */
+  if(audio->preset != NULL){
+    list = audio->preset;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "audio", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio->preset,
 		     g_object_unref);
   }
   
@@ -3786,7 +3856,7 @@ ags_audio_add_audio_connection(AgsAudio *audio,
   
   pthread_mutex_unlock(application_mutex);
 
-  /* add recall id */
+  /* add audio connection */
   pthread_mutex_lock(mutex);
 
   g_object_ref(audio_connection);
@@ -3824,11 +3894,87 @@ ags_audio_remove_audio_connection(AgsAudio *audio,
   
   pthread_mutex_unlock(application_mutex);
 
-  /* remove recall id */
+  /* remove audio connection */
   pthread_mutex_lock(mutex);
 
   audio->audio_connection = g_list_remove(audio->audio_connection, audio_connection);
   g_object_unref(audio_connection);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_add_preset:
+ * @audio: the #AgsAudio
+ * @preset: an #AgsPreset
+ *
+ * Adds an preset.
+ *
+ * Since: 0.8.5
+ */
+void
+ags_audio_add_preset(AgsAudio *audio,
+		     GObject *preset)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* add preset */
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(preset);
+  audio->preset = g_list_prepend(audio->preset, preset);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_remove_preset:
+ * @audio: the #AgsAudio
+ * @preset: an #AgsPreset
+ *
+ * Removes an preset.
+ *
+ * Since: 0.8.5
+ */
+void
+ags_audio_remove_preset(AgsAudio *audio,
+			GObject *preset)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove preset */
+  pthread_mutex_lock(mutex);
+
+  audio->preset = g_list_remove(audio->preset, preset);
+  g_object_unref(preset);
   
   pthread_mutex_unlock(mutex);
 }

@@ -49,6 +49,8 @@ struct _AgsPreset
 
   guint flags;
 
+  GObject *audio;
+  
   gchar *preset_name;
 
   guint audio_channel_start;
