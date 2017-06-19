@@ -24,7 +24,6 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_preset.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
@@ -956,6 +955,77 @@ ags_pattern_envelope_y_label_func(gdouble value,
   g_free(format);
 
   return(str);
+}
+
+/**
+ * ags_pattern_envelope_get_active_preset:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ * 
+ * Get active preset.
+ * 
+ * Returns: the matching #AgsPreset, if none selected %NULL
+ * 
+ * Since: 0.8.5
+ */
+AgsPreset*
+ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
+{
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  AgsAudio *audio;
+
+  GList *preset;
+
+  gchar *preset_name;
+  
+  gboolean do_edit;
+  
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* get model */
+  model = gtk_tree_view_get_model(pattern_envelope->tree_view);
+
+  /* get active */
+  do_edit = FALSE;
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_edit,
+			 -1);
+      
+      if(do_edit){
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model, &iter));
+  }
+
+  if(!do_edit){
+    return(NULL);
+  }
+  
+  /* preset name */
+  gtk_tree_model_get(model, &iter,
+		     AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, &preset_name,
+		     -1);
+
+  /* find preset */
+  preset = ags_preset_find_name(audio->preset,
+				preset_name);
+
+  if(preset != NULL){
+    return(preset->data);
+  }
+
+  return(NULL);
 }
 
 /**

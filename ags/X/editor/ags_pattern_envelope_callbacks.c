@@ -75,6 +75,8 @@ ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
       g_free(str);
     }while(gtk_tree_model_iter_next(model, &iter));
   }
+
+  ags_pattern_envelope_reset_control(pattern_envelope);
 }
 
 void
@@ -116,105 +118,810 @@ void
 ags_pattern_envelope_audio_channel_start_callback(GtkWidget *spin_button,
 						  AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  guint audio_channel_start;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  /* get value */
+  audio_channel_start = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "audio-channel-start", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  /* add parameter */
+  g_value_reset(&value);
+  g_value_set_uint(&value,
+		   audio_channel_start);
+
+  ags_preset_add_parameter(preset,
+			   "audio-channel-start", &value);
+
+  /* reset */
+  ags_pattern_envelope_reset_tree_view(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_audio_channel_end_callback(GtkWidget *spin_button,
 						AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  guint audio_channel_end;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  /* get value */
+  audio_channel_end = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "audio-channel-end", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  /* add parameter */
+  g_value_reset(&value);
+  g_value_set_uint(&value,
+		   audio_channel_end);
+
+  ags_preset_add_parameter(preset,
+			   "audio-channel-end", &value);
+
+  /* reset */
+  ags_pattern_envelope_reset_tree_view(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_pad_start_callback(GtkWidget *spin_button,
 					AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  guint pad_start;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  /* get value */
+  pad_start = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "pad-start", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  /* add parameter */
+  g_value_reset(&value);
+  g_value_set_uint(&value,
+		   pad_start);
+
+  ags_preset_add_parameter(preset,
+			   "pad-start", &value);
+
+  /* reset */
+  ags_pattern_envelope_reset_tree_view(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_pad_end_callback(GtkWidget *spin_button,
 				      AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  guint pad_end;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  /* get value */
+  pad_end = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "pad-end", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  /* add parameter */
+  g_value_reset(&value);
+  g_value_set_uint(&value,
+		   pad_end);
+
+  ags_preset_add_parameter(preset,
+			   "pad-end", &value);
+
+  /* reset */
+  ags_pattern_envelope_reset_tree_view(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_x_start_callback(GtkWidget *spin_button,
 				      AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  guint x_start;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  /* get value */
+  x_start = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "x-start", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  /* add parameter */
+  g_value_reset(&value);
+  g_value_set_uint(&value,
+		   x_start);
+
+  ags_preset_add_parameter(preset,
+			   "x-start", &value);
+
+  /* reset */
+  ags_pattern_envelope_reset_tree_view(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_x_end_callback(GtkWidget *spin_button,
 				    AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  guint x_end;
+
+  GValue value = {0,};
+
+  GError *error;
+
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+
+  /* get value */
+  x_end = gtk_spin_button_get_value_as_int((GtkSpinButton *) spin_button);
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "x-end", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+
+  /* add parameter */
+  g_value_reset(&value);
+  g_value_set_uint(&value,
+		   x_end);
+
+  ags_preset_add_parameter(preset,
+			   "x-end", &value);
+
+  /* reset */
+  ags_pattern_envelope_reset_tree_view(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_attack_x_callback(GtkWidget *range,
 				       AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble attack_x;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  attack_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "attack", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  attack_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "attack", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_attack_y_callback(GtkWidget *range,
 				       AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble attack_y;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  attack_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "attack", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + attack_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "attack", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_decay_x_callback(GtkWidget *range,
 				      AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble decay_x;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  decay_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "decay", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  decay_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "decay", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_decay_y_callback(GtkWidget *range,
 				      AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble decay_y;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  decay_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "decay", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + decay_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "decay", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
 					AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble sustain_x;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  sustain_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "sustain", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  sustain_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "sustain", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
 					AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble sustain_y;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  sustain_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "sustain", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + sustain_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "sustain", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_release_x_callback(GtkWidget *range,
 					AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble release_x;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  release_x = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "release", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  release_x + cimag(z) * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "release", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_release_y_callback(GtkWidget *range,
 					AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble release_y;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  release_y = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "release", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  creal(z) + release_y * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "release", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
 ags_pattern_envelope_ratio_callback(GtkWidget *range,
 				    AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsPreset *preset;
+  
+  AgsComplex *val;  
+
+  complex z;
+
+  gdouble ratio;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  /* get preset */
+  preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
+  
+  if(preset == NULL){
+    return;
+  }
+  
+  /* get value and update preset */
+  ratio = gtk_range_get_value((GtkRange *) range);
+
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+
+  error = NULL;
+  ags_preset_get_parameter(preset,
+			   "ratio", &value,
+			   &error);
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    return;
+  }
+  
+  val = (AgsComplex *) g_value_get_boxed(&value);
+  z = ags_complex_get(val);
+
+  /* add parameter */
+  ags_complex_set(val,
+		  ratio * I);
+
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "ratio", &value);
+
+  /* plot */
+  ags_pattern_envelope_plot(pattern_envelope);
 }
 
 void
@@ -253,7 +960,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
       gtk_tree_model_get(model, &iter,
-			 AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_edit,
+			 AGS_PATTERN_ENVELOPE_COLUMN_EDIT, &do_edit,
 			 -1);
       
       if(do_edit){
@@ -340,7 +1047,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
       gtk_tree_model_get(model, &iter,
-			 AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_edit,
+			 AGS_PATTERN_ENVELOPE_COLUMN_EDIT, &do_edit,
 			 -1);
       
       if(do_edit){

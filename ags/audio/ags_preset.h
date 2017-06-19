@@ -41,7 +41,7 @@ typedef enum{
 
 typedef enum{
   AGS_PRESET_ERROR_NO_SUCH_PARAMETER,
-};
+}AgsPresetError;
 
 struct _AgsPreset
 {

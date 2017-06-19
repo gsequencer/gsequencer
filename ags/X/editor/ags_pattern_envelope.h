@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/audio/ags_preset.h>
+
 #include <ags/widget/ags_cartesian.h>
 
 #define AGS_TYPE_PATTERN_ENVELOPE                (ags_pattern_envelope_get_type())
@@ -109,6 +111,8 @@ struct _AgsPatternEnvelopeClass
 };
 
 GType ags_pattern_envelope_get_type(void);
+
+AgsPreset* ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope);
 
 void ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope);
 void ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
