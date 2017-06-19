@@ -151,7 +151,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   AgsCartesian *cartesian;
   GtkLabel *label;
   
-  GtkCellRenderer *toggle_renderer;
+  GtkCellRenderer *edit_renderer;
+  GtkCellRenderer *plot_renderer;
   GtkCellRenderer *renderer;
 
   GtkListStore  *model;
@@ -164,11 +165,12 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   pattern_envelope->build_id = AGS_PATTERN_ENVELOPE_DEFAULT_BUILD_ID;
 
   /* enabled */
-  pattern_envelope->enabled = gtk_check_button_new_with_label(i18n("enabled"));
-  gtk_box_pack_start((GtkBox *) pattern_envelope,
-		     pattern_envelope->enabled,
-		     FALSE, FALSE,
-		     0);
+  //NOTE:JK: it is edited in place since only preset is used
+  pattern_envelope->enabled = NULL; // gtk_check_button_new_with_label(i18n("enabled"));
+    //  gtk_box_pack_start((GtkBox *) pattern_envelope,
+    //		     pattern_envelope->enabled,
+    //		     FALSE, FALSE,
+    //		     0);
 
   /* cartesian */
   cartesian = 
@@ -211,21 +213,22 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 			     G_TYPE_UINT);
   gtk_tree_view_set_model(pattern_envelope->tree_view,
 			  model);
-
-  toggle_renderer = gtk_cell_renderer_toggle_new();
+  
+  edit_renderer = gtk_cell_renderer_toggle_new();
+  plot_renderer = gtk_cell_renderer_toggle_new();
   renderer = gtk_cell_renderer_text_new();
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(pattern_envelope->tree_view),
 					      -1,
 					      i18n("edit"),
-					      toggle_renderer,
+					      edit_renderer,
 					      "active", AGS_PATTERN_ENVELOPE_COLUMN_EDIT,
 					      NULL);
 
   gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(pattern_envelope->tree_view),
 					      -1,
 					      i18n("plot"),
-					      toggle_renderer,
+					      plot_renderer,
 					      "active", AGS_PATTERN_ENVELOPE_COLUMN_PLOT,
 					      NULL);
 
@@ -282,6 +285,12 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     (GtkWidget *) pattern_envelope->tree_view,
 		     FALSE, FALSE,
 		     0);
+
+  g_signal_connect(G_OBJECT(edit_renderer), "toggled\0",
+		   G_CALLBACK(ags_pattern_envelope_edit_callback), pattern_envelope);
+
+  g_signal_connect(G_OBJECT(plot_renderer), "toggled\0",
+		   G_CALLBACK(ags_pattern_envelope_plot_callback), pattern_envelope);
 
   /* table */
   table = (GtkTable *) gtk_table_new(6, 2,
@@ -682,6 +691,72 @@ ags_pattern_envelope_connect(AgsConnectable *connectable)
   }
 
   pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_CONNECTED;
+
+  /* audio channel start/end */
+  g_signal_connect((GObject *) pattern_envelope->audio_channel_start, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_audio_channel_start_callback), (gpointer) pattern_envelope);
+
+  g_signal_connect((GObject *) pattern_envelope->audio_channel_end, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_audio_channel_end_callback), (gpointer) pattern_envelope);
+
+  /* pad start/end */
+  g_signal_connect((GObject *) pattern_envelope->pad_start, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_pad_start_callback), (gpointer) pattern_envelope);
+
+  g_signal_connect((GObject *) pattern_envelope->pad_end, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_pad_end_callback), (gpointer) pattern_envelope);
+
+  /* x start/end */
+  g_signal_connect((GObject *) pattern_envelope->x_start, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_x_start_callback), (gpointer) pattern_envelope);
+
+  g_signal_connect((GObject *) pattern_envelope->x_end, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_x_end_callback), (gpointer) pattern_envelope);
+
+  /* attack x,y */
+  g_signal_connect((GObject *) pattern_envelope->attack_x, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_attack_x_callback), (gpointer) pattern_envelope);
+
+  g_signal_connect((GObject *) pattern_envelope->attack_y, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_attack_y_callback), (gpointer) pattern_envelope);
+
+  /* decay x,y */
+  g_signal_connect((GObject *) pattern_envelope->decay_x, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_decay_x_callback), (gpointer) pattern_envelope);
+
+  g_signal_connect((GObject *) pattern_envelope->decay_y, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_decay_y_callback), (gpointer) pattern_envelope);
+
+  /* sustain x,y */
+  g_signal_connect((GObject *) pattern_envelope->sustain_x, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_sustain_x_callback), (gpointer) pattern_envelope);
+
+  g_signal_connect((GObject *) pattern_envelope->sustain_y, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_sustain_y_callback), (gpointer) pattern_envelope);
+
+  /* release x,y */
+  g_signal_connect((GObject *) pattern_envelope->release_x, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_release_x_callback), (gpointer) pattern_envelope);
+
+  g_signal_connect((GObject *) pattern_envelope->release_y, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_release_y_callback), (gpointer) pattern_envelope);
+
+  /* ratio y */
+  g_signal_connect((GObject *) pattern_envelope->ratio, "value-changed",
+		   G_CALLBACK(ags_pattern_envelope_ratio_callback), (gpointer) pattern_envelope);
+  
+  /* move up/down preset */
+  g_signal_connect((GObject *) pattern_envelope->move_up, "clicked",
+		   G_CALLBACK(ags_pattern_envelope_preset_move_up_callback), (gpointer) pattern_envelope);
+  g_signal_connect((GObject *) pattern_envelope->move_down, "clicked",
+		   G_CALLBACK(ags_pattern_envelope_preset_move_down_callback), (gpointer) pattern_envelope);
+
+  /* add/remove preset */
+  g_signal_connect((GObject *) pattern_envelope->add, "clicked",
+		   G_CALLBACK(ags_pattern_envelope_preset_add_callback), (gpointer) pattern_envelope);
+  g_signal_connect((GObject *) pattern_envelope->remove, "clicked",
+		   G_CALLBACK(ags_pattern_envelope_preset_remove_callback), (gpointer) pattern_envelope);
+
 }
 
 void
@@ -696,6 +771,121 @@ ags_pattern_envelope_disconnect(AgsConnectable *connectable)
   }
 
   pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_CONNECTED);
+
+  /* audio channel start/end */
+  g_object_disconnect((GObject *) pattern_envelope->audio_channel_start,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_audio_channel_start_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->audio_channel_end,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_audio_channel_end_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* pad start/end */
+  g_object_disconnect((GObject *) pattern_envelope->pad_start,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_pad_start_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->pad_end,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_pad_end_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* x start/end */
+  g_object_disconnect((GObject *) pattern_envelope->x_start,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_x_start_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->x_end,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_x_end_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* attack x,y */
+  g_object_disconnect((GObject *) pattern_envelope->attack_x,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_attack_x_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->attack_y,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_attack_y_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* decay x,y */
+  g_object_disconnect((GObject *) pattern_envelope->decay_x,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_decay_x_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->decay_y,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_decay_y_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* sustain x,y */
+  g_object_disconnect((GObject *) pattern_envelope->sustain_x,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_sustain_x_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->sustain_y,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_sustain_y_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* release x,y */
+  g_object_disconnect((GObject *) pattern_envelope->release_x,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_release_x_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->release_y,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_release_y_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* ratio */
+  g_object_disconnect((GObject *) pattern_envelope->ratio,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_ratio_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* move up/down preset */
+  g_object_disconnect((GObject *) pattern_envelope->move_up,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_preset_move_up_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->move_down,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_preset_move_down_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+
+  /* add/remove preset */
+  g_object_disconnect((GObject *) pattern_envelope->add,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_preset_add_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
+  g_object_disconnect((GObject *) pattern_envelope->remove,
+		      "clicked",
+		      G_CALLBACK(ags_pattern_envelope_preset_remove_callback),
+		      (gpointer) pattern_envelope,
+		      NULL);
 }
 
 void
@@ -720,7 +910,11 @@ ags_pattern_envelope_apply(AgsApplicable *applicable)
 void
 ags_pattern_envelope_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsPatternEnvelope *pattern_envelope;
+
+  pattern_envelope = AGS_PATTERN_ENVELOPE(applicable);
+  
+  ags_pattern_envelope_load_preset(pattern_envelope);
 }
 
 gchar*

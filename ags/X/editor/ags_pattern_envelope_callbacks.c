@@ -19,6 +19,11 @@
 
 #include <ags/X/editor/ags_pattern_envelope_callbacks.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_preset.h>
+
+#include <ags/X/editor/ags_envelope_dialog.h>
+
 #include <ags/i18n.h>
 
 void
@@ -108,17 +113,282 @@ ags_pattern_envelope_plot_callback(GtkCellRendererToggle *cell_renderer,
 }
 
 void
+ags_pattern_envelope_audio_channel_start_callback(GtkWidget *spin_button,
+						  AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_audio_channel_end_callback(GtkWidget *spin_button,
+						AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_pad_start_callback(GtkWidget *spin_button,
+					AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_pad_end_callback(GtkWidget *spin_button,
+				      AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_x_start_callback(GtkWidget *spin_button,
+				      AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_x_end_callback(GtkWidget *spin_button,
+				    AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_attack_x_callback(GtkWidget *range,
+				       AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_attack_y_callback(GtkWidget *range,
+				       AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_decay_x_callback(GtkWidget *range,
+				      AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_decay_y_callback(GtkWidget *range,
+				      AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
+					AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
+					AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_release_x_callback(GtkWidget *range,
+					AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_release_y_callback(GtkWidget *range,
+					AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_envelope_ratio_callback(GtkWidget *range,
+				    AgsPatternEnvelope *pattern_envelope)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 					     AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  AgsAudio *audio;
+  AgsPreset *current;
+  
+  GList *preset, *prev;
+
+  gchar *preset_name, *prev_name;
+  
+  guint nth;
+  gboolean do_edit;
+
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* get model */
+  model = gtk_tree_view_get_model(pattern_envelope->tree_view);
+  
+  /* get position */
+  nth = 0;
+  do_edit = FALSE;
+  
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_edit,
+			 -1);
+      
+      if(do_edit){
+	break;
+      }
+      
+      nth++;
+    }while(gtk_tree_model_iter_next(model, &iter));
+  }
+
+  /* move position */
+  if(!do_edit ||
+     nth == 0){
+    return;
+  }
+
+  /* get prev and current preset name */
+  gtk_tree_model_get(model, &iter,
+		     AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, &preset_name,
+		     -1);
+
+  gtk_tree_model_iter_nth_child(model,
+				&iter,
+				NULL,
+				nth - 1);
+  gtk_tree_model_get(model, &iter,
+		     AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, &prev_name,
+		     -1);
+
+  /* find preset */
+  preset = ags_preset_find_name(audio->preset,
+				preset_name);
+
+  prev = ags_preset_find_name(audio->preset,
+			      prev_name);
+
+  /* reorder list */
+  current = preset->data;
+  
+  audio->preset = g_list_delete_link(audio->preset,
+				     preset);
+
+  audio->preset = g_list_insert_before(audio->preset,
+				       prev,
+				       current);
+  
+  /* load preset */
+  ags_pattern_envelope_load_preset(pattern_envelope);    
 }
 
 void
 ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 					       AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  AgsAudio *audio;
+  AgsPreset *current;
+  
+  GList *preset, *next;
+
+  gchar *preset_name, *next_name;
+  
+  guint nth;
+  gboolean do_edit;
+
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* get model */
+  model = gtk_tree_view_get_model(pattern_envelope->tree_view);
+  
+  /* get position */
+  nth = 0;
+  do_edit = FALSE;
+  
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      gtk_tree_model_get(model, &iter,
+			 AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_edit,
+			 -1);
+      
+      if(do_edit){
+	break;
+      }
+      
+      nth++;
+    }while(gtk_tree_model_iter_next(model, &iter));
+  }
+
+  /* move position */
+  if(!do_edit){
+    return;
+  }
+
+  /* get next and current preset name */
+  gtk_tree_model_get(model, &iter,
+		     AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, &preset_name,
+		     -1);
+
+  if(!gtk_tree_model_iter_next(model, &iter)){
+    return;
+  }
+  
+  gtk_tree_model_iter_next(model, &iter);
+  gtk_tree_model_get(model, &iter,
+		     AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, &next_name,
+		     -1);
+
+  /* find preset */
+  preset = ags_preset_find_name(audio->preset,
+				preset_name);
+
+  next = ags_preset_find_name(audio->preset,
+			      next_name);
+
+  /* reorder list */
+  current = next->data;
+  
+  audio->preset = g_list_delete_link(audio->preset,
+				     preset);
+
+  audio->preset = g_list_insert_before(audio->preset,
+				       preset,
+				       current);
+
+  /* load preset */
+  ags_pattern_envelope_load_preset(pattern_envelope);    
 }
 
 void

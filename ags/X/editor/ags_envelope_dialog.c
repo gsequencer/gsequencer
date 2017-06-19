@@ -354,7 +354,7 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
   ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->envelope_info));
   
-  /* Applicable */
+  /* applicable */
   g_object_disconnect((GObject *) envelope_dialog->apply,
 		      "clicked",
 		      G_CALLBACK(ags_envelope_dialog_apply_callback),

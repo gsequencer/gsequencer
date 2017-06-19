@@ -34,6 +34,47 @@ void ags_pattern_envelope_plot_callback(GtkCellRendererToggle *cell_renderer,
 					gchar *path_str,
 					AgsPatternEnvelope *pattern_envelope);
 
+/* range */
+void ags_pattern_envelope_audio_channel_start_callback(GtkWidget *spin_button,
+						       AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_audio_channel_end_callback(GtkWidget *spin_button,
+						     AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_pad_start_callback(GtkWidget *spin_button,
+					     AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_pad_end_callback(GtkWidget *spin_button,
+					   AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_x_start_callback(GtkWidget *spin_button,
+					   AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_x_end_callback(GtkWidget *spin_button,
+					 AgsPatternEnvelope *pattern_envelope);
+
+/* envelope */
+void ags_pattern_envelope_attack_x_callback(GtkWidget *range,
+					    AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_attack_y_callback(GtkWidget *range,
+					    AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_decay_x_callback(GtkWidget *range,
+					   AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_decay_y_callback(GtkWidget *range,
+					   AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
+					     AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
+					     AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_release_x_callback(GtkWidget *range,
+					     AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_release_y_callback(GtkWidget *range,
+					     AgsPatternEnvelope *pattern_envelope);
+
+void ags_pattern_envelope_ratio_callback(GtkWidget *range,
+					 AgsPatternEnvelope *pattern_envelope);
+
+/* actions */
 void ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 						  AgsPatternEnvelope *pattern_envelope);
 void ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
