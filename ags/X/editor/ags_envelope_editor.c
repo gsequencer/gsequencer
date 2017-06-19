@@ -640,6 +640,14 @@ ags_envelope_editor_y_label_func(gdouble value,
   return(str);
 }
 
+/**
+ * ags_envelope_editor_load_preset:
+ * @envelope_editor: the #AgsPatternEnvelope
+ *
+ * Load preset.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
 {
@@ -679,6 +687,15 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
   }
 }
 
+/**
+ * ags_envelope_editor_add_preset:
+ * @envelope_editor: the #AgsPatternEnvelope
+ * @preset_name: the preset name
+ *
+ * Add preset.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 			       gchar *preset_name)
@@ -708,6 +725,15 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 		       preset);
 }
 
+/**
+ * ags_envelope_editor_remove_preset:
+ * @envelope_editor: the #AgsPatternEnvelope
+ * @nth: the nth preset to remove
+ *
+ * Remove preset.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
 				  guint nth)

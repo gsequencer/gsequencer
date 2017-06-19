@@ -757,6 +757,14 @@ ags_pattern_envelope_y_label_func(gdouble value,
   return(str);
 }
 
+/**
+ * ags_pattern_envelope_load_preset:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ *
+ * Load preset.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 {
@@ -806,6 +814,15 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   }
 }
 
+/**
+ * ags_pattern_envelope_add_preset:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ * @preset_name: the preset name
+ *
+ * Add preset.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 				gchar *preset_name)
@@ -835,6 +852,15 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 		       preset);
 }
 
+/**
+ * ags_pattern_envelope_remove_preset:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ * @nth: the nth preset to remove
+ *
+ * Remove preset.
+ * 
+ * Since: 0.8.5
+ */
 void
 ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 				   guint nth)
@@ -865,7 +891,193 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 void
 ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  AgsCartesian *cartesian;
+  AgsPlot *plot;
+
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  AgsAudio *audio;
+
+  GList *preset;
+
+  gchar *preset_name;
+  
+  complex z;
+  gdouble default_width, default_height;
+  gdouble offset;
+  gboolean do_plot;
+
+  GValue value = {0,};
+
+  GError *error;
+  
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
+    return;
+  }
+
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* get dimension of cartesian */
+  cartesian = pattern_envelope->cartesian;
+
+  default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
+  default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
+
+  /* get model */
+  model = GTK_TREE_MODEL(gtk_tree_view_get_model(pattern_envelope->tree_view));
+
+  /* clear old plot */
+  if(cartesian->plot != NULL){
+    g_list_free_full(cartesian->plot,
+		     ags_plot_free);
+    
+    cartesian->plot = NULL;
+  }
+
+  /* plot */
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    do{
+      gtk_tree_model_get(model,
+			 &iter,
+			 AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_plot,
+			 AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, &preset_name,
+			 -1);
+
+      if(do_plot){
+	preset = ags_preset_find_name(audio->preset,
+				      preset_name);
+
+	/* AgsPlot struct */
+	plot = ags_plot_alloc(5, 0, 0);
+	plot->join_points = TRUE;
+
+	plot->point_color[0][0] = 1.0;
+	plot->point_color[1][0] = 1.0;
+	plot->point_color[2][0] = 1.0;
+	plot->point_color[3][0] = 1.0;
+	plot->point_color[4][0] = 1.0;
+
+	/* set plot points - ratio */
+	g_value_init(&value,
+		     AGS_TYPE_COMPLEX);
+
+	error = NULL;
+	ags_preset_get_parameter(preset->data,
+				 "ratio", &value,
+				 &error);
+
+	if(error != NULL){
+	  g_message("%s", error->message);
+	  
+	  continue;
+	}
+	
+	z = ags_complex_get(g_value_get_boxed(&value));
+	
+	plot->point[0][0] = 0.0;
+	plot->point[0][1] = default_height * cimag(z);
+
+	/* set plot points - attack */
+	g_value_reset(&value);
+
+	error = NULL;
+	ags_preset_get_parameter(preset->data,
+				 "attack", &value,
+				 &error);
+
+	if(error != NULL){
+	  g_message("%s", error->message);
+	  
+	  continue;
+	}
+	
+	z = ags_complex_get(g_value_get_boxed(&value));
+	
+	plot->point[1][0] = default_width * creal(z);
+	plot->point[1][1] = default_height * cimag(z);
+
+	offset = default_width * creal(z);
+	
+	/* set plot points - decay */
+	g_value_reset(&value);
+
+	error = NULL;
+	ags_preset_get_parameter(preset->data,
+				 "decay", &value,
+				 &error);
+
+	if(error != NULL){
+	  g_message("%s", error->message);
+	  
+	  continue;
+	}
+	
+	z = ags_complex_get(g_value_get_boxed(&value));
+
+	plot->point[2][0] = offset + default_width * creal(z);
+	plot->point[2][1] = default_height * cimag(z);
+
+	offset += default_width * creal(z);
+
+	/* set plot points - sustain */
+	g_value_reset(&value);
+
+	error = NULL;
+	ags_preset_get_parameter(preset->data,
+				 "sustain", &value,
+				 &error);
+
+	if(error != NULL){
+	  g_message("%s", error->message);
+	  
+	  continue;
+	}
+	
+	z = ags_complex_get(g_value_get_boxed(&value));
+
+	plot->point[3][0] = offset + default_width * creal(z);
+	plot->point[3][1] = default_height * cimag(z);
+
+	offset += default_width * creal(z);
+
+	/* set plot points - release */
+	g_value_reset(&value);
+
+	error = NULL;
+	ags_preset_get_parameter(preset->data,
+				 "release", &value,
+				 &error);
+
+	if(error != NULL){
+	  g_message("%s", error->message);
+	  
+	  continue;
+	}
+	
+	z = ags_complex_get(g_value_get_boxed(&value));
+
+	plot->point[4][0] = offset + default_width * creal(z);
+	plot->point[4][1] = default_height * cimag(z);
+
+	/* add plot */
+	ags_cartesian_add_plot(cartesian,
+			       plot);
+      }
+    }while(gtk_tree_model_iter_next(model,
+				     &iter));
+  }
+
+  /* queue draw */
+  gtk_widget_queue_draw(cartesian);
 }
 
 /**
