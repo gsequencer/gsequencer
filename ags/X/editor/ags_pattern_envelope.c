@@ -832,6 +832,10 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   AgsAudio *audio;
   AgsPreset *preset;
+
+  AgsComplex *val;
+  
+  GValue value = {0,};
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope) ||
      preset_name == NULL){
@@ -850,6 +854,71 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 			NULL);
   ags_audio_add_preset(audio,
 		       preset);
+
+  /* preset - ratio */
+  val = ags_complex_alloc();
+  ags_complex_set(val,
+		  1.0 * I);
+  
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "ratio", &value);
+
+  /* preset - attack */
+  val = ags_complex_alloc();
+  ags_complex_set(val,
+		  0.25 + 1.0 * I);
+  
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "attack", &value);
+
+  /* preset - decay */
+  val = ags_complex_alloc();
+  ags_complex_set(val,
+		  0.25 + 1.0 * I);
+  
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "decay", &value);
+
+  /* preset - sustain */
+  val = ags_complex_alloc();
+  ags_complex_set(val,
+		  0.25 + 1.0 * I);
+  
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "sustain", &value);
+
+  /* preset - release */
+  val = ags_complex_alloc();
+  ags_complex_set(val,
+		  0.25 + 1.0 * I);
+  
+  g_value_init(&value,
+	       AGS_TYPE_COMPLEX);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "release", &value);
 }
 
 /**
