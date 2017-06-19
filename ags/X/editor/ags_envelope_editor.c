@@ -23,6 +23,9 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_preset.h>
+
 #include <ags/X/editor/ags_envelope_dialog.h>
 
 #include <complex.h>
@@ -640,21 +643,96 @@ ags_envelope_editor_y_label_func(gdouble value,
 void
 ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  GtkTreeModel *model;
+
+  AgsAudio *audio;
+  
+  GList *preset;
+  
+  if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
+    return;
+  }
+
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+  
+  /* get model */
+  model = GTK_TREE_MODEL(gtk_combo_box_get_model(envelope_editor->preset));
+
+  /* clear old */
+  gtk_list_store_clear(GTK_LIST_STORE(model));
+
+  /* create new */
+  preset = audio->preset;
+
+  while(preset != NULL){
+    gtk_combo_box_text_append_text(envelope_editor->preset,
+				   AGS_PRESET(preset->data)->preset_name);
+
+    preset = preset->next;
+  }
 }
 
 void
 ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 			       gchar *preset_name)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsPreset *preset;
+  
+  if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor) ||
+     preset_name == NULL){
+    return;
+  }
+  
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* create preset */
+  preset = g_object_new(AGS_TYPE_PRESET,
+			"preset-name", preset_name,
+			NULL);
+  ags_audio_add_preset(audio,
+		       preset);
 }
 
 void
 ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
 				  guint nth)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeDialog *envelope_dialog;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  AgsPreset *preset;
+  
+  if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
+    return;
+  }
+  
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  machine = envelope_dialog->machine;
+  audio = machine->audio;
+
+  /* create preset */
+  preset = g_list_nth_data(audio->preset,
+			   nth);
+  ags_audio_remove_preset(audio,
+			  preset);
 }
 
 void
