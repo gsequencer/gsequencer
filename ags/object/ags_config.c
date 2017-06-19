@@ -367,6 +367,10 @@ ags_config_finalize(GObject *gobject)
 
   config = (AgsConfig *) gobject;
 
+  if(ags_config == config){
+    ags_config = NULL;
+  }
+  
   if(config->application_context != NULL){
     g_object_unref(config->application_context);
   }
