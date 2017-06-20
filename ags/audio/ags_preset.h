@@ -68,7 +68,7 @@ struct _AgsPreset
 
 struct _AgsPresetClass
 {
-  GObject gobject;
+  GObjectClass gobject;
 };
 
 GType ags_preset_get_type();

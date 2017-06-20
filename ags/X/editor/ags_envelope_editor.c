@@ -456,7 +456,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,
-		      1.0);
+		      0.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(envelope_editor->ratio),
 		   1, 2,
@@ -862,6 +862,11 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   machine = envelope_dialog->machine;
   audio = machine->audio;
 
+  if(ags_preset_find_name(audio->preset,
+			  preset_name) != NULL){
+    return;
+  }
+  
   /* create preset */
   preset = g_object_new(AGS_TYPE_PRESET,
 			"preset-name", preset_name,
@@ -872,7 +877,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - attack */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + I * 1.0);
   
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -885,10 +890,9 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - decay */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + I * 1.0);
   
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
   g_value_set_boxed(&value,
 		    val);
 
@@ -898,10 +902,9 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - sustain */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + I * 1.0);
   
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
   g_value_set_boxed(&value,
 		    val);
 
@@ -911,15 +914,26 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - release */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + I * 1.0);
   
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
   g_value_set_boxed(&value,
 		    val);
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
+
+  /* preset - ratio */
+  val = ags_complex_alloc();
+  ags_complex_set(val,
+		  0.0);
+  
+  g_value_reset(&value);
+  g_value_set_boxed(&value,
+		    val);
+
+  ags_preset_add_parameter(preset,
+			   "ratio", &value);
 }
 
 /**
@@ -989,6 +1003,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   preset = ags_envelope_editor_get_active_preset(envelope_editor);
   
   if(preset == NULL){
+    envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
+    
     return;
   }
 
@@ -996,12 +1012,15 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "attack", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
     return;
   }
@@ -1015,15 +1034,17 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 		      cimag(z));
 
   /* decay */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "decay", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
     return;
   }
@@ -1037,15 +1058,17 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 		      cimag(z));
 
   /* sustain */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "sustain", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
     return;
   }
@@ -1059,15 +1082,17 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 		      cimag(z));
 
   /* release */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "release", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
     return;
   }
@@ -1081,15 +1106,17 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 		      cimag(z));
 
   /* ratio */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "ratio", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
     return;
   }

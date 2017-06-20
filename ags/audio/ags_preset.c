@@ -483,10 +483,17 @@ ags_preset_add_parameter(AgsPreset *preset,
   if(preset->parameter == NULL){
     preset->parameter = (GParameter *) malloc(sizeof(GParameter));
 
+    preset->parameter[0].name = NULL;
+    memset(&(preset->parameter[0].value), 0, sizeof(GValue));
+
+    g_value_init(&(preset->parameter[0].value),
+		 G_VALUE_TYPE(value));
+    
+    preset->n_params += 1;
     nth = 0;
   }else{
     for(i = 0; i < preset->n_params; i++){
-      if(!g_strcmp0(preset->parameter[0].name,
+      if(!g_strcmp0(preset->parameter[i].name,
 		    param_name)){
 	nth = i;
 	found = TRUE;
@@ -499,15 +506,25 @@ ags_preset_add_parameter(AgsPreset *preset,
       preset->parameter = (GParameter *) realloc(preset->parameter,
 						 (preset->n_params + 1) * sizeof(GParameter));
 
+      preset->parameter[preset->n_params].name = NULL;
+      memset(&(preset->parameter[preset->n_params].value), 0, sizeof(GValue));
+
+      g_value_init(&(preset->parameter[preset->n_params].value),
+		   G_VALUE_TYPE(value));
+      
       preset->n_params += 1;
       nth = i;
     }
   }
 
-  /* set value */
-  preset->parameter[0].name = g_strdup(param_name);
+  /* set value */  
+  if(preset->parameter[nth].name != NULL){
+    g_free(preset->parameter[nth].name);
+  }
+
+  preset->parameter[nth].name = g_strdup(param_name);
   g_value_copy(value,
-	       &(preset->parameter[0].value));
+	       &(preset->parameter[nth].value));
 
   return(!found);
 }
@@ -596,9 +613,9 @@ ags_preset_get_parameter(AgsPreset *preset,
   }
   
   for(i = 0; i < preset->n_params; i++){
-    if(!g_strcmp0(preset->parameter[0].name,
+    if(!g_strcmp0(preset->parameter[i].name,
 		  param_name)){
-      g_value_copy(&(preset->parameter[0].value),
+      g_value_copy(&(preset->parameter[i].value),
 		   value);
       
       return;

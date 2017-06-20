@@ -336,7 +336,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   0, 0);
 
   pattern_envelope->audio_channel_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-											 0.0,
+											 65535.0,
 											 1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->audio_channel_end),
@@ -354,17 +354,17 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   4, 5,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   pattern_envelope->pad_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									       0.0,
-									       1.0);
+										 65535.0,
+										 1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->pad_start),
 		   1, 2,
-		   4, 5,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -377,17 +377,17 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   5, 6,
+		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   pattern_envelope->pad_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									     0.0,
-									     1.0);
+									       65535.0,
+									       1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->pad_end),
 		   1, 2,
-		   5, 6,
+		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -400,17 +400,17 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   2, 3,
+		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   pattern_envelope->x_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									       0.0,
+									       65535.0,
 									       1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->x_start),
 		   1, 2,
-		   2, 3,
+		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -423,17 +423,17 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   3, 4,
+		   5, 6,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   pattern_envelope->x_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									     0.0,
+									     65535.0,
 									     1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->x_end),
 		   1, 2,
-		   3, 4,
+		   5, 6,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -630,7 +630,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
-		      1.0);
+		      0.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->ratio),
 		   1, 2,
@@ -999,7 +999,7 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
       gtk_tree_model_get(model, &iter,
-			 AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_edit,
+			 AGS_PATTERN_ENVELOPE_COLUMN_EDIT, &do_edit,
 			 -1);
       
       if(do_edit){
@@ -1060,7 +1060,7 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   audio = machine->audio;
   
   /* get model */
-  model = GTK_LIST_STORE(gtk_combo_box_get_model(pattern_envelope->tree_view));
+  model = GTK_LIST_STORE(gtk_tree_view_get_model(pattern_envelope->tree_view));
 
   /* clear old */
   gtk_list_store_clear(model);
@@ -1119,6 +1119,11 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   machine = envelope_dialog->machine;
   audio = machine->audio;
 
+  if(ags_preset_find_name(audio->preset,
+			  preset_name) != NULL){
+    return;
+  }
+  
   /* create preset */
   preset = g_object_new(AGS_TYPE_PRESET,
 			"preset-name", preset_name,
@@ -1129,7 +1134,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - ratio */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  1.0 * I);
+		  0.0);
   
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -1144,8 +1149,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_complex_set(val,
 		  0.25 + 1.0 * I);
   
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
   g_value_set_boxed(&value,
 		    val);
 
@@ -1157,8 +1161,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_complex_set(val,
 		  0.25 + 1.0 * I);
   
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
   g_value_set_boxed(&value,
 		    val);
 
@@ -1170,8 +1173,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_complex_set(val,
 		  0.25 + 1.0 * I);
   
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
   g_value_set_boxed(&value,
 		    val);
 
@@ -1183,8 +1185,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   ags_complex_set(val,
 		  0.25 + 1.0 * I);
   
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
   g_value_set_boxed(&value,
 		    val);
 
@@ -1243,7 +1244,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   AgsComplex *val;
   
-  complex z;
   guint audio_channel_start, audio_channel_end;
   guint pad_start, pad_end;
   guint x_start, x_end;
@@ -1262,6 +1262,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
   if(preset == NULL){
+    pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+    
     return;
   }
 
@@ -1293,109 +1295,115 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "attack", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
 
+    pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+    
     return;
   }
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
-  z = ags_complex_get(val);
   
   gtk_range_set_value(pattern_envelope->attack_x,
-		      creal(z));
+		      val[0][0]);
   gtk_range_set_value(pattern_envelope->attack_y,
-		      cimag(z));
+		      val[0][1]);
 
   /* decay */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "decay", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
     return;
   }
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
-  z = ags_complex_get(val);
   
   gtk_range_set_value(pattern_envelope->decay_x,
-		      creal(z));
+		      val[0][0]);
   gtk_range_set_value(pattern_envelope->decay_y,
-		      cimag(z));
+		      val[0][1]);
 
   /* sustain */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "sustain", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
     return;
   }
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
-  z = ags_complex_get(val);
   
   gtk_range_set_value(pattern_envelope->sustain_x,
-		      creal(z));
+		      val[0][0]);
   gtk_range_set_value(pattern_envelope->sustain_y,
-		      cimag(z));
+		      val[0][1]);
 
   /* release */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "release", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
     return;
   }
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
-  z = ags_complex_get(val);
   
   gtk_range_set_value(pattern_envelope->release_x,
-		      creal(z));
+		      val[0][0]);
   gtk_range_set_value(pattern_envelope->release_y,
-		      cimag(z));
+		      val[0][1]);
 
   /* ratio */
-  g_value_init(&value,
-	       AGS_TYPE_COMPLEX);
+  g_value_reset(&value);
 
+  error = NULL;
   ags_preset_get_parameter(preset,
 			   "ratio", &value,
 			   &error);
 
   if(error != NULL){
-    g_message("%s", error->message);
+    g_warning("%s", error->message);
+
+    pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
     return;
   }
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
-  z = ags_complex_get(val);
   
   gtk_range_set_value(pattern_envelope->ratio,
-		      cimag(z));
+		      val[0][1]);
 
   /* unset no update */
   pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
@@ -1429,6 +1437,8 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
   if(preset == NULL){
+    pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+    
     return;
   }
 
@@ -1502,9 +1512,10 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
   GList *preset;
 
+  AgsComplex *val;
+  
   gchar *preset_name;
   
-  complex z;
   gdouble default_width, default_height;
   gdouble offset;
   gboolean do_plot;
@@ -1543,6 +1554,9 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   /* plot */
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
+    g_value_init(&value,
+		 AGS_TYPE_COMPLEX);
+    
     do{
       gtk_tree_model_get(model,
 			 &iter,
@@ -1564,9 +1578,12 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	plot->point_color[3][0] = 1.0;
 	plot->point_color[4][0] = 1.0;
 
+	/* add plot */
+	ags_cartesian_add_plot(cartesian,
+			       plot);
+
 	/* set plot points - ratio */
-	g_value_init(&value,
-		     AGS_TYPE_COMPLEX);
+	g_value_reset(&value);
 
 	error = NULL;
 	ags_preset_get_parameter(preset->data,
@@ -1574,15 +1591,15 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 				 &error);
 
 	if(error != NULL){
-	  g_message("%s", error->message);
+	  g_warning("%s", error->message);
 	  
 	  continue;
 	}
 	
-	z = ags_complex_get(g_value_get_boxed(&value));
+	val = (AgsComplex *) g_value_get_boxed(&value);
 	
 	plot->point[0][0] = 0.0;
-	plot->point[0][1] = default_height * cimag(z);
+	plot->point[0][1] = default_height * val[0][1];
 
 	/* set plot points - attack */
 	g_value_reset(&value);
@@ -1593,17 +1610,19 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 				 &error);
 
 	if(error != NULL){
-	  g_message("%s", error->message);
+	  g_warning("%s", error->message);
 	  
 	  continue;
 	}
 	
-	z = ags_complex_get(g_value_get_boxed(&value));
-	
-	plot->point[1][0] = default_width * creal(z);
-	plot->point[1][1] = default_height * cimag(z);
+	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	offset = default_width * creal(z);
+	g_message("- %f", val[0][0]);
+	
+	plot->point[1][0] = default_width * val[0][0];
+	plot->point[1][1] = default_height * val[0][1];
+
+	offset = default_width * val[0][0];
 	
 	/* set plot points - decay */
 	g_value_reset(&value);
@@ -1614,17 +1633,17 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 				 &error);
 
 	if(error != NULL){
-	  g_message("%s", error->message);
+	  g_warning("%s", error->message);
 	  
 	  continue;
 	}
 	
-	z = ags_complex_get(g_value_get_boxed(&value));
+	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	plot->point[2][0] = offset + default_width * creal(z);
-	plot->point[2][1] = default_height * cimag(z);
+	plot->point[2][0] = offset + default_width * val[0][0];
+	plot->point[2][1] = default_height * val[0][1];
 
-	offset += default_width * creal(z);
+	offset += default_width * val[0][0];
 
 	/* set plot points - sustain */
 	g_value_reset(&value);
@@ -1635,17 +1654,17 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 				 &error);
 
 	if(error != NULL){
-	  g_message("%s", error->message);
+	  g_warning("%s", error->message);
 	  
 	  continue;
 	}
 	
-	z = ags_complex_get(g_value_get_boxed(&value));
+	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	plot->point[3][0] = offset + default_width * creal(z);
-	plot->point[3][1] = default_height * cimag(z);
+	plot->point[3][0] = offset + default_width * val[0][0];
+	plot->point[3][1] = default_height * val[0][1];
 
-	offset += default_width * creal(z);
+	offset += default_width * val[0][0];
 
 	/* set plot points - release */
 	g_value_reset(&value);
@@ -1656,22 +1675,18 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 				 &error);
 
 	if(error != NULL){
-	  g_message("%s", error->message);
+	  g_warning("%s", error->message);
 	  
 	  continue;
 	}
 	
-	z = ags_complex_get(g_value_get_boxed(&value));
+	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	plot->point[4][0] = offset + default_width * creal(z);
-	plot->point[4][1] = default_height * cimag(z);
-
-	/* add plot */
-	ags_cartesian_add_plot(cartesian,
-			       plot);
+	plot->point[4][0] = offset + default_width * val[0][0];
+	plot->point[4][1] = default_height * val[0][1];
       }
     }while(gtk_tree_model_iter_next(model,
-				     &iter));
+				    &iter));
   }
 
   /* queue draw */

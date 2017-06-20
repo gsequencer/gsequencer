@@ -45,7 +45,7 @@ ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
   /* get toggled iter */
   gtk_tree_model_get_iter(model, &iter, path);
   gtk_tree_model_get(model, &iter,
-		     AGS_PATTERN_ENVELOPE_COLUMN_PLOT, &do_edit,
+		     AGS_PATTERN_ENVELOPE_COLUMN_EDIT, &do_edit,
 		     -1);
 
   /* do something with the value */
@@ -53,7 +53,7 @@ ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
 
   /* set new value */
   gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-		     AGS_PATTERN_ENVELOPE_COLUMN_PLOT, do_edit,
+		     AGS_PATTERN_ENVELOPE_COLUMN_EDIT, do_edit,
 		     -1);
 
   /* clean up */
@@ -68,7 +68,7 @@ ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
       if(strcmp(path_str,
 		str) != 0){
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			   AGS_PATTERN_ENVELOPE_COLUMN_PLOT, FALSE,
+			   AGS_PATTERN_ENVELOPE_COLUMN_EDIT, FALSE,
 			   -1);
       }
 
@@ -317,8 +317,6 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
   
   AgsComplex *val;  
 
-  complex z;
-
   gdouble attack_x;
 
   GValue value = {0,};
@@ -337,7 +335,7 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
   }
   
   /* get value and update preset */
-  attack_x = gtk_range_get_value((GtkRange *) range);
+  attack_x = gtk_range_get_value(GTK_RANGE(range));
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -354,15 +352,9 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
-  ags_complex_set(val,
-		  attack_x + cimag(z) * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+  val[0][0] = attack_x;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -378,8 +370,6 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble attack_y;
 
@@ -416,15 +406,9 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
-  ags_complex_set(val,
-		  creal(z) + attack_y * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+  val[0][1] = attack_y;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -440,8 +424,6 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble decay_x;
 
@@ -478,15 +460,10 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
   ags_complex_set(val,
-		  decay_x + cimag(z) * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+		  decay_x + I * val[0][1]);
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -502,8 +479,6 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble decay_y;
 
@@ -540,15 +515,10 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
   ags_complex_set(val,
-		  creal(z) + decay_y * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+		  val[0][0] + decay_y * I);
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -564,8 +534,6 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble sustain_x;
 
@@ -602,15 +570,10 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
   ags_complex_set(val,
-		  sustain_x + cimag(z) * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+		  sustain_x + I * val[0][1]);
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -626,8 +589,6 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble sustain_y;
 
@@ -664,15 +625,10 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
   ags_complex_set(val,
-		  creal(z) + sustain_y * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+		  val[0][0] + sustain_y * I);
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -688,8 +644,6 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble release_x;
 
@@ -726,15 +680,10 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
   ags_complex_set(val,
-		  release_x + cimag(z) * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+		  release_x + I * val[0][1]);
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
@@ -750,8 +699,6 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble release_y;
 
@@ -788,15 +735,10 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
   ags_complex_set(val,
-		  creal(z) + release_y * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
+		  val[0][0] + release_y * I);
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
@@ -812,8 +754,6 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
   AgsPreset *preset;
   
   AgsComplex *val;  
-
-  complex z;
 
   gdouble ratio;
 
@@ -850,15 +790,10 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
   }
   
   val = (AgsComplex *) g_value_get_boxed(&value);
-  z = ags_complex_get(val);
 
   /* add parameter */
   ags_complex_set(val,
 		  ratio * I);
-
-  g_value_reset(&value);
-  g_value_set_boxed(&value,
-		    val);
 
   ags_preset_add_parameter(preset,
 			   "ratio", &value);
@@ -1015,7 +950,6 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
     return;
   }
   
-  gtk_tree_model_iter_next(model, &iter);
   gtk_tree_model_get(model, &iter,
 		     AGS_PATTERN_ENVELOPE_COLUMN_PRESET_NAME, &next_name,
 		     -1);

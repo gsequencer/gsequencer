@@ -21,6 +21,8 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
@@ -1207,6 +1209,8 @@ ags_xorg_application_context_load_config(AgsApplicationContext *application_cont
 void
 ags_xorg_application_context_register_types(AgsApplicationContext *application_context)
 {
+  ags_complex_get_type();
+
   ags_gui_thread_get_type();
 
   /* */
