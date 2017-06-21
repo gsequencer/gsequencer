@@ -1,7 +1,12 @@
 ags (0.8.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsPreset applicable to line ranges and store parameters
 	* implemented to persist AgsLiveDssiBridge and AgsLiveLv2Bridge
+	* TODO:JK: implemented to store presets in AgsSimpleFile
+	* extended ags-copy-pattern to use preset scope ags-envelope
+	* extended AgsEnvelopeDialog to support presets and apply to pattern
+	* improved ags-envelope to read frame count once
 
 ags (0.8.4)
 

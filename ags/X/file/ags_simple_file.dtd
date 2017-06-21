@@ -42,7 +42,7 @@
 <!-- machine -->
 <!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
 
-<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
+<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?)>
 <!ATTLIST ags-sf-machine
 	  id                      CDATA     #REQUIRED
 	  type                    CDATA     #REQUIRED
@@ -167,11 +167,27 @@
 	  x0              NMTOKEN  #REQUIRED
 	  x1              NMTOKEN  #REQUIRED
 	  y               NMTOKEN  #REQUIRED
+	  envelope        CDATA    "false"
 	  attack          NMTOKEN  #IMPLIED
 	  decay           NMTOKEN  #IMPLIED
 	  sustain         NMTOKEN  #IMPLIED
 	  release         NMTOKEN  #IMPLIED
 	  ratio           NMTOKEN  #IMPLIED
+	  >
+
+<!-- preset -->
+<!ELEMENT ags-sf-preset-list (ags-sf-preset*)>
+
+<!ELEMENT ags-sf-preset (ags-sf-property*)>
+<!ATTLIST ags-sf-preset
+	  scope                 CDATA    #REQUIRED
+	  preset-name           CDATA    #REQUIRED
+	  audio-channel-start   NMTOKEN  #REQUIRED
+	  audio-channel-end     NMTOKEN  #REQUIRED
+	  pad-start             NMTOKEN  #REQUIRED
+	  pad-end               NMTOKEN  #REQUIRED
+	  x-start               NMTOKEN  #REQUIRED
+	  x-end                 NMTOKEN  #REQUIRED
 	  >
 
 <!-- automation -->

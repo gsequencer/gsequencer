@@ -21,6 +21,8 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
@@ -53,6 +55,7 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_acceleration.h>
+#include <ags/audio/ags_preset.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_devout.h>
@@ -177,6 +180,8 @@ void ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *nod
 void ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNotation **notation);
 void ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 void ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation);
+void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
+void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
 
 xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config);
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
@@ -205,6 +210,8 @@ xmlNode* ags_simple_file_write_notation_list(AgsSimpleFile *simple_file, xmlNode
 xmlNode* ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotation *notation);
 xmlNode* ags_simple_file_write_automation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation);
 xmlNode* ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomation *automation);
+xmlNode* ags_simple_file_write_preset_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *preset);
+xmlNode* ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPreset *preset);
 
 /**
  * SECTION:ags_file
@@ -1418,6 +1425,16 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
 
       g_value_set_double(&(pointer->value),
 			 val);
+    }else if(!g_strcmp0(type,
+			"AgsComplex")){
+      AgsComplex z;
+      
+      g_value_init(&(pointer->value),
+		   AGS_TYPE_COMPLEX);
+
+      sscanf(str, "%f %f", &(z[0]), &(z[1]));
+      g_value_set_boxed(&(pointer->value),
+			&z);
     }else{
       g_value_init(&(pointer->value),
 		   G_TYPE_STRING);
@@ -4741,6 +4758,194 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
   }
 }
 
+void
+ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset)
+{
+  AgsPreset *current;
+  
+  xmlNode *child;
+
+  GList *list;
+  
+  guint i;
+  
+  child = node->children;
+  list = NULL;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-preset",
+		     11)){
+	current = NULL;
+
+	if(*preset != NULL){
+	  GList *iter;
+
+	  iter = g_list_nth(*preset,
+			    i);
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
+	}
+
+	ags_simple_file_read_preset(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+	
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *preset = list;
+}
+
+void
+ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset)
+{
+  AgsMachine *machine;
+
+  AgsPreset *gobject;
+
+  AgsFileIdRef *file_id_ref;
+
+  xmlNode *child;
+  
+  xmlChar *str;
+  
+  file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								     node->parent->parent);
+  machine = file_id_ref->ref;
+  
+  if(*preset != NULL){
+    gobject = *preset;
+  }else{
+    gobject = ags_preset_new();
+    
+    *preset = gobject;
+  }
+
+  /* scope */
+  str = xmlGetProp(node,
+		   "scope");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "scope", str,
+		 NULL);
+  }
+
+  /* preset name */
+  str = xmlGetProp(node,
+		   "preset-name");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "preset-name", str,
+		 NULL);
+  }
+
+  /* audio channel start */
+  str = xmlGetProp(node,
+		   "audio-channel-start");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "audio-channel-start", g_ascii_strtoull(str,
+							 NULL,
+							 10),
+		 NULL);
+  }
+
+  /* audio channel end */
+  str = xmlGetProp(node,
+		   "audio-channel-end");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "audio-channel-end", g_ascii_strtoull(str,
+						       NULL,
+						       10),
+		 NULL);
+  }
+
+  /* pad start */
+  str = xmlGetProp(node,
+		   "pad-start");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "pad-start", g_ascii_strtoull(str,
+					       NULL,
+					       10),
+		 NULL);
+  }
+
+  /* pad end */
+  str = xmlGetProp(node,
+		   "pad-end");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "pad-end", g_ascii_strtoull(str,
+					     NULL,
+					     10),
+		 NULL);
+  }
+
+  /* x start */
+  str = xmlGetProp(node,
+		   "x-start");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "x-start", g_ascii_strtoull(str,
+					     NULL,
+					     10),
+		 NULL);
+  }
+
+  /* x end */
+  str = xmlGetProp(node,
+		   "x-end");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "x-end", g_ascii_strtoull(str,
+					   NULL,
+					   10),
+		 NULL);
+  }
+
+  /* children */
+  child = node->children;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-property",
+		     15)){
+	GParameter *parameter;
+
+	parameter = NULL;
+
+	ags_simple_file_read_preset(simple_file, child, &parameter);
+
+	ags_preset_add_parameter(gobject,
+				 parameter->name, &(parameter->value));
+      }
+    }
+
+    child = child->next;
+  }
+}
+
 xmlNode*
 ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *ags_config)
 {
@@ -4851,6 +5056,15 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
 
     val = g_strdup_printf("%f",
 			  g_value_get_double(&(property->value)));
+  }else if(G_VALUE_HOLDS(&(property->value),
+			 AGS_TYPE_COMPLEX)){
+    AgsComplex *z;
+    
+    type_name = g_type_name(AGS_TYPE_COMPLEX);
+
+    z = g_value_get_boxed(&(property->value));
+    val = g_strdup_printf("%f %f",
+			  z[0][0], z[0][1]);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
     
@@ -6839,6 +7053,109 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   }
 
   if(found_automation){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+
+    return(node);
+  }else{
+    xmlFreeNode(node);
+    
+    return(NULL);
+  }
+}
+
+xmlNode*
+ags_simple_file_write_preset_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *preset)
+{
+  xmlNode *node;
+
+  gboolean found_node;
+  
+  node = xmlNewNode(NULL,
+		    "ags-sf-preset-list");
+
+  found_node = FALSE;
+  
+  while(preset != NULL){
+    if(ags_simple_file_write_preset(simple_file,
+				    node,
+				    preset->data) != NULL){
+      found_node = TRUE;
+    }
+
+    preset = preset->next;
+  }
+
+  if(found_node){
+    /* add to parent */
+    xmlAddChild(parent,
+		node);
+
+    return(node);
+  }else{
+    xmlFreeNode(node);
+
+    return(NULL);
+  }
+}
+
+xmlNode*
+ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPreset *preset)
+{
+  xmlNode *node;
+  xmlNode *child;
+  
+  guint i;
+  gboolean found_preset;
+  
+  node = xmlNewNode(NULL,
+		    "ags-sf-preset");
+
+  /* scope and preset name */
+  xmlNewProp(node,
+	     "scope",
+	     g_strdup(g_type_name(preset->scope)));
+
+  xmlNewProp(node,
+	     "preset-name",
+	     g_strdup(g_type_name(preset->preset_name)));
+
+  /* mapping */
+  xmlNewProp(node,
+	     "audio-channel-start",
+	     g_strdup_printf("%d", preset->audio_channel_start));
+
+  xmlNewProp(node,
+	     "audio-channel-end",
+	     g_strdup_printf("%d", preset->audio_channel_end));
+
+  xmlNewProp(node,
+	     "pad-start",
+	     g_strdup_printf("%d", preset->pad_start));
+
+  xmlNewProp(node,
+	     "pad-end",
+	     g_strdup_printf("%d", preset->pad_end));
+
+  xmlNewProp(node,
+	     "x-start",
+	     g_strdup_printf("%d", preset->x_start));
+
+  xmlNewProp(node,
+	     "x-end",
+	     g_strdup_printf("%d", preset->x_end));
+
+  /* parameter */
+  found_preset = FALSE;
+  
+  for(i = 0; i < preset->n_params; i++){
+    found_preset = TRUE;
+
+    ags_simple_file_write_property(simple_file, node, &(preset->parameter[i]));
+  }
+  
+  if(found_preset){
     /* add to parent */
     xmlAddChild(parent,
 		node);

@@ -1,3 +1,12 @@
+Overview of Changes in AGS 0.8.5
+================================
+
+* Envelope is ready now for use. Featuring envelope editor with presets,
+  pattern presets and information tab.
+* Envelope dialog available trough machine's context menu. Supported by
+  AgsDrum, AgsMatrix, AgsFFPlayer, AgsDssiBridge and AgsLv2Bridge.
+* Fixed missing persistence of AgsLiveDssiBridge and AgsLiveLv2Bridge
+
 Overview of Changes in AGS 0.8.2
 ================================
 
