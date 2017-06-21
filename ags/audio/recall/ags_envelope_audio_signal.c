@@ -48,6 +48,7 @@ void ags_envelope_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_co
 void ags_envelope_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_envelope_audio_signal_finalize(GObject *gobject);
 
+void ags_envelope_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_envelope_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 					       AgsRecallID *recall_id,
@@ -130,6 +131,7 @@ ags_envelope_audio_signal_class_init(AgsEnvelopeAudioSignalClass *envelope_audio
   /* AgsRecallClass */
   recall = (AgsRecallClass *) envelope_audio_signal;
 
+  recall->run_init_pre = ags_envelope_audio_signal_run_init_pre;
   recall->run_inter = ags_envelope_audio_signal_run_inter;  
   recall->duplicate = ags_envelope_audio_signal_duplicate;
 }
@@ -162,6 +164,8 @@ ags_envelope_audio_signal_init(AgsEnvelopeAudioSignal *envelope_audio_signal)
   AGS_RECALL(envelope_audio_signal)->port = NULL;
 
   AGS_RECALL(envelope_audio_signal)->child_type = G_TYPE_NONE;
+
+  envelope_audio_signal->frame_count = 0;
 }
 
 void
@@ -232,6 +236,20 @@ ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 }
 
 void
+ags_envelope_audio_signal_run_init_pre(AgsRecall *recall)
+{
+  AgsEnvelopeAudioSignal *envelope_audio_signal;
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_init_pre(recall);
+
+  /*  */
+  envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
+
+  envelope_audio_signal->frame_count = AGS_RECALL_AUDIO_SIGNAL(recall)->source->frame_count;
+}
+
+void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsEnvelopeChannel *envelope_channel;
@@ -252,6 +270,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   guint buffer_length[4];
   gboolean buffer_on[4];
 
+  guint frame_count;
   guint buffer_size;
 
   guint i, j;
@@ -281,9 +300,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     buffer_on[i] = FALSE;
   }
 
+  frame_count = envelope_audio_signal->frame_count;
   buffer_size = source->buffer_size;
 
-  if(source->note != NULL){
+  if(source->note != NULL &&
+     (AGS_NOTE_ENVELOPE & (AGS_NOTE(source->note)->flags)) != 0){
     gdouble x0, y0;
     gdouble x1, y1;
     gdouble current_x;
@@ -321,9 +342,9 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     x1 = attack[0][0];
     y1 = attack[0][1];
 
-    offset = (x1 - x0) * source->frame_count;
+    offset = (x1 - x0) * frame_count;
     
-    if(offset < source->frame_count){
+    if(offset < frame_count){
       if(offset > current_frame){
 	buffer_on[0] = TRUE;
 
@@ -334,11 +355,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	  
 	  buffer_length[0] = offset - (j * source->buffer_size) - current_frame;
 
-	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
 	}else{
 	  buffer_length[0] = offset - current_frame;
 
-	  current_x = source->frame_count / current_frame;
+	  current_x = frame_count / current_frame;
 	}
 
 	current_volume[0] = (y1 - y0) / (x1 - current_x);
@@ -355,9 +376,9 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     x1 = *decay[0];
     y1 = *decay[1];
 
-    offset += (x1 - x0) * source->frame_count;
+    offset += (x1 - x0) * frame_count;
 
-    if(offset < source->frame_count){
+    if(offset < frame_count){
       if(offset > current_frame){
 	buffer_on[1] = TRUE;
 
@@ -368,11 +389,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	  
 	  buffer_length[1] = offset - (j * source->buffer_size) - current_frame;
 
-	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
 	}else{
 	  buffer_length[1] = offset - current_frame;
 
-	  current_x = source->frame_count / current_frame;
+	  current_x = frame_count / current_frame;
 	}
 
 	current_volume[1] = (y1 - y0) / (x1 - current_x);
@@ -389,9 +410,9 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     x1 = *sustain[0];
     y1 = *sustain[1];
 
-    offset += (x1 - x0) * source->frame_count;
+    offset += (x1 - x0) * frame_count;
 
-    if(offset < source->frame_count){
+    if(offset < frame_count){
       if(offset > current_frame){
 	buffer_on[2] = TRUE;
 
@@ -402,11 +423,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	  
 	  buffer_length[2] = offset - (j * source->buffer_size) - current_frame;
 
-	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
 	}else{
 	  buffer_length[2] = offset - current_frame;
 
-	  current_x = source->frame_count / current_frame;
+	  current_x = frame_count / current_frame;
 	}
 
 	current_volume[2] = (y1 - y0) / (x1 - current_x);
@@ -423,7 +444,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     x1 = *release[0];
     y1 = *release[1];
     
-    if(offset < source->frame_count){
+    if(offset < frame_count){
       if(offset > current_frame){
 	buffer_on[3] = TRUE;
 
@@ -434,11 +455,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	  
 	  buffer_length[0] = offset - (j * source->buffer_size) - current_frame;
 
-	  current_x = source->frame_count / ((j * source->buffer_size) + current_frame);
+	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
 	}else{
 	  buffer_length[0] = offset - current_frame;
 
-	  current_x = source->frame_count / current_frame;
+	  current_x = frame_count / current_frame;
 	}
 
 	current_volume[0] = (y1 - y0) / (x1 - current_x);

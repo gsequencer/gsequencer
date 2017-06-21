@@ -24,6 +24,7 @@
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
 #include <stdlib.h>
+#include <complex.h>
 
 #include <ags/i18n.h>
 
@@ -313,23 +314,23 @@ ags_note_init(AgsNote *note)
   note->stream_delay = 0.0;
   note->stream_attack = 0;
 
-  z = 0.25 + 1.0 * I;
+  z = 0.25 + I * 1.0;
   ags_complex_set(&(note->attack),
 		  z);
 
-  z = 0.25 + 1.0 * I;
+  z = 0.25 + I * 1.0;
   ags_complex_set(&(note->decay),
 		  z);
 
-  z = 0.25 + 1.0 * I;
+  z = 0.25 + I * 1.0;
   ags_complex_set(&(note->sustain),
 		  z);
 
-  z = 0.25 + 1.0 * I;
+  z = 0.25 + I * 1.0;
   ags_complex_set(&(note->release),
 		  z);
 
-  z = 1.0 * I;
+  z = I * 1.0;
   ags_complex_set(&(note->ratio),
 		  z);
   

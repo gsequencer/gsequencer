@@ -48,6 +48,7 @@ static gpointer ags_preset_parent_class = NULL;
 enum{
   PROP_0,
   PROP_AUDIO,
+  PROP_SCOPE,
   PROP_PRESET_NAME,
   PROP_AUDIO_CHANNEL_START,
   PROP_AUDIO_CHANNEL_END,
@@ -115,6 +116,22 @@ ags_preset_class_init(AgsPresetClass *preset)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsPreset:scope:
+   *
+   * The preset's scope.
+   * 
+   * Since: 0.8.5
+   */
+  param_spec = g_param_spec_string("scope",
+				   i18n_pspec("scope"),
+				   i18n_pspec("The preset's scope"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCOPE,
 				  param_spec);
 
   /**
@@ -255,6 +272,7 @@ ags_preset_init(AgsPreset *preset)
 
   preset->audio = NULL;
   
+  preset->scope = NULL;
   preset->preset_name = NULL;
 
   preset->audio_channel_start = 0;
@@ -303,6 +321,19 @@ ags_preset_set_property(GObject *gobject,
       }
 
       preset->audio = audio;
+    }
+    break;
+  case PROP_SCOPE:
+    {
+      gchar *scope;
+      
+      scope = g_value_get_string(value);
+
+      if(preset->scope != NULL){
+	g_free(preset->scope);
+      }
+      
+      preset->scope = g_strdup(scope);
     }
     break;
   case PROP_PRESET_NAME:
@@ -369,6 +400,12 @@ ags_preset_get_property(GObject *gobject,
       g_value_set_object(value, preset->audio);
     }
     break;
+  case PROP_SCOPE:
+    {
+      g_value_set_string(value,
+			 preset->scope);
+    }
+    break;
   case PROP_PRESET_NAME:
     {
       g_value_set_string(value,
@@ -426,6 +463,36 @@ ags_preset_finalize(GObject *gobject)
   if(preset->audio != NULL){
     g_object_unref(preset->audio);
   }
+
+  g_free(preset->scope);
+  g_free(preset->preset_name);
+}
+
+/**
+ * ags_preset_find_scope:
+ * @preset: the #GList-struct containing #AgsPreset
+ * @scope: the preset's scope
+ * 
+ * Find preset's scope in @preset.
+ * 
+ * Returns: the next matching #AgsPreset
+ * 
+ * Since: 0.8.5
+ */
+GList*
+ags_preset_find_scope(GList *preset,
+		      gchar *scope)
+{
+  while(preset != NULL){
+    if(!g_strcmp0(AGS_PRESET(preset->data)->scope,
+		  scope)){
+      return(preset);
+    }
+
+    preset = preset->next;
+  }
+  
+  return(NULL);
 }
 
 /**

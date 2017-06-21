@@ -1801,9 +1801,11 @@ ags_channel_nth(AgsChannel *channel, guint nth)
     pthread_mutex_unlock(mutex);
   }
 
+#ifdef AGS_DEBUG
   if((nth != 0 && i != nth) || channel == NULL){
     g_message("ags_channel_nth:\n  nth channel does not exist\n  `- stopped @: i = %u; nth = %u\n", i, nth);
   }
+#endif
   
   return(channel);
 }
@@ -1953,11 +1955,11 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
     pthread_mutex_unlock(mutex);
   }
 
-  if(channel == NULL){
 #ifdef AGS_DEBUG
+  if(channel == NULL){
     g_message("ags_channel_nth_pad:\n  nth pad does not exist\n  `- stopped @: i = %u; nth = %u", i, nth);
-#endif
   }
+#endif
   
   return(channel);
 }

@@ -50,7 +50,8 @@ struct _AgsPreset
   guint flags;
 
   GObject *audio;
-  
+
+  gchar *scope;
   gchar *preset_name;
 
   guint audio_channel_start;
@@ -75,6 +76,8 @@ GType ags_preset_get_type();
 
 GQuark ags_preset_error_quark();
 
+GList* ags_preset_find_scope(GList *preset,
+			     gchar *scope);
 GList* ags_preset_find_name(GList *preset,
 			    gchar *preset_name);
 

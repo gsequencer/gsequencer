@@ -41,6 +41,8 @@ typedef struct _AgsEnvelopeAudioSignalClass AgsEnvelopeAudioSignalClass;
 struct _AgsEnvelopeAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  guint frame_count;
 };
 
 struct _AgsEnvelopeAudioSignalClass
