@@ -45,7 +45,8 @@ typedef struct _AgsEnvelopeDialog AgsEnvelopeDialog;
 typedef struct _AgsEnvelopeDialogClass AgsEnvelopeDialogClass;
 
 typedef enum{
-  AGS_ENVELOPE_DIALOG_CONNECTED      = 1,
+  AGS_ENVELOPE_DIALOG_CONNECTED     = 1,
+  AGS_ENVELOPE_DIALOG_PATTERN_TAB   = 1 <<  1,
 }AgsEnvelopeDialogFlags;
 
 struct _AgsEnvelopeDialog
@@ -81,6 +82,8 @@ struct _AgsEnvelopeDialogClass
 };
 
 GType ags_envelope_dialog_get_type(void);
+
+void ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog);
 
 AgsEnvelopeDialog* ags_envelope_dialog_new(AgsMachine *machine);
 

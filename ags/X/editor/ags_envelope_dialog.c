@@ -204,17 +204,6 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_editor_scrolled_window,
 					(GtkWidget *) envelope_dialog->envelope_editor);
 
-  /* pattern envelope */
-  envelope_dialog->pattern_envelope_scrolled_window =
-    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_notebook_append_page(notebook,
-			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(i18n("pattern")));
-
-  envelope_dialog->pattern_envelope = ags_pattern_envelope_new();
-  gtk_scrolled_window_add_with_viewport(envelope_dialog->pattern_envelope_scrolled_window,
-					(GtkWidget *) envelope_dialog->pattern_envelope);
-
   /* envelope info */
   envelope_dialog->envelope_info_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
@@ -225,6 +214,9 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   envelope_dialog->envelope_info = ags_envelope_info_new();
   gtk_scrolled_window_add_with_viewport(envelope_dialog->envelope_info_scrolled_window,
 					(GtkWidget *) envelope_dialog->envelope_info);
+
+  envelope_dialog->pattern_envelope_scrolled_window = NULL;
+  envelope_dialog->pattern_envelope = NULL;
   
   /* GtkButton's in GtkDialog->action_area  */
   envelope_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
@@ -320,8 +312,11 @@ ags_envelope_dialog_connect(AgsConnectable *connectable)
   envelope_dialog->flags |= AGS_ENVELOPE_DIALOG_CONNECTED;
 
   ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->envelope_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
   ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->envelope_info));
+
+  if(envelope_dialog->pattern_envelope != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
+  }
   
   /* applicable */
   g_signal_connect((GObject *) envelope_dialog->apply, "clicked",
@@ -351,8 +346,11 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
   envelope_dialog->flags &= (~AGS_ENVELOPE_DIALOG_CONNECTED);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->envelope_editor));
-  ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
   ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->envelope_info));
+
+  if(envelope_dialog->pattern_envelope != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(envelope_dialog->pattern_envelope));
+  }
   
   /* applicable */
   g_object_disconnect((GObject *) envelope_dialog->apply,
@@ -388,8 +386,11 @@ ags_envelope_dialog_apply(AgsApplicable *applicable)
   envelope_dialog = AGS_ENVELOPE_DIALOG(applicable);
 
   ags_applicable_apply(AGS_APPLICABLE(envelope_dialog->envelope_editor));
-  ags_applicable_apply(AGS_APPLICABLE(envelope_dialog->pattern_envelope));
   ags_applicable_apply(AGS_APPLICABLE(envelope_dialog->envelope_info));
+
+  if(envelope_dialog->pattern_envelope != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(envelope_dialog->pattern_envelope));
+  }
 }
 
 void
@@ -400,8 +401,43 @@ ags_envelope_dialog_reset(AgsApplicable *applicable)
   envelope_dialog = AGS_ENVELOPE_DIALOG(applicable);
 
   ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->envelope_editor));
-  ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->pattern_envelope));
   ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->envelope_info));
+
+  if(envelope_dialog->pattern_envelope != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(envelope_dialog->pattern_envelope));
+  }
+}
+
+/**
+ * ags_envelope_dialog_add_pattern_tab:
+ * @envelope_dialog: the #AgsEnvelopeDialog
+ * 
+ * Add pattern tab.
+ * 
+ * Since: 0.8.5
+ */
+void
+ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
+{
+  GtkNotebook *notebook;
+  GtkScrolledWindow *scrolled_window;
+  
+  if(!AGS_IS_ENVELOPE_DIALOG(envelope_dialog)){
+    return;
+  }
+  
+  notebook = envelope_dialog->notebook;
+  
+  /* pattern envelope */
+  envelope_dialog->pattern_envelope_scrolled_window =
+    scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_notebook_append_page(notebook,
+			   (GtkWidget *) scrolled_window,
+			   (GtkWidget *) gtk_label_new(i18n("pattern")));
+
+  envelope_dialog->pattern_envelope = ags_pattern_envelope_new();
+  gtk_scrolled_window_add_with_viewport(envelope_dialog->pattern_envelope_scrolled_window,
+					(GtkWidget *) envelope_dialog->pattern_envelope);
 }
 
 /**

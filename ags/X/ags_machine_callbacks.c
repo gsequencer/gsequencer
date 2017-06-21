@@ -463,6 +463,11 @@ ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
   
   if(machine->envelope_dialog == NULL){
     envelope_dialog = ags_envelope_dialog_new(machine);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
+      ags_envelope_dialog_add_pattern_tab(envelope_dialog);
+    }
+    
     machine->envelope_dialog = envelope_dialog;
     
     ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog));

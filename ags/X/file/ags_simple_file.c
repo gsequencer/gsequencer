@@ -2113,6 +2113,20 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			 g_object_unref);
 
 	gobject->audio->notation = notation;
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-preset-list",
+			   21)){
+	GList *preset;
+
+	preset = NULL;
+	ags_simple_file_read_preset_list(simple_file,
+					 child,
+					 &preset);
+
+	g_list_free_full(gobject->audio->preset,
+			 g_object_unref);
+
+	gobject->audio->preset = preset;
       }
     }
 
@@ -4544,45 +4558,35 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "attack");
 
 	if(str != NULL){
-	  ags_complex_set(&(note->attack),
-			  g_ascii_strtod(str,
-					 NULL));
+	  sscanf(str, "%f %f", &(note->attack[0]), &(note->attack[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "decay");
 
 	if(str != NULL){
-	  ags_complex_set(&(note->decay),
-			  g_ascii_strtod(str,
-					 NULL));
+	  sscanf(str, "%f %f", &(note->decay[0]), &(note->decay[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "sustain");
 
 	if(str != NULL){
-	  ags_complex_set(&(note->sustain),
-			  g_ascii_strtod(str,
-					 NULL));
+	  sscanf(str, "%f %f", &(note->sustain[0]), &(note->sustain[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "release");
 
 	if(str != NULL){
-	  ags_complex_set(&(note->release),
-			  g_ascii_strtod(str,
-					 NULL));
+	  sscanf(str, "%f %f", &(note->release[0]), &(note->release[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "ratio");
 
 	if(str != NULL){
-	  ags_complex_set(&(note->ratio),
-			  g_ascii_strtod(str,
-					 NULL));
+	  sscanf(str, "%f %f", &(note->ratio[0]), &(note->ratio[1]));
 	}
 
 	
@@ -5906,7 +5910,13 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 					  node,
 					  machine->audio->automation);
   }
-  
+
+  if(machine->audio->preset != NULL){
+    ags_simple_file_write_preset_list(simple_file,
+				      node,
+				      machine->audio->preset);
+  }
+
   /* add to parent */
   xmlAddChild(parent,
 	      node);
@@ -6925,33 +6935,35 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
 	       g_strdup_printf("%d",
 			       AGS_NOTE(list->data)->y));
 
-    //TODO:JK: uncomment me if implemented
-    /*
     xmlNewProp(child,
 	       "attack",
-	       g_strdup_printf("%f",
-			       AGS_NOTE(list->data)->attack));
+	       g_strdup_printf("%f %f",
+			       AGS_NOTE(list->data)->attack[0],
+			       AGS_NOTE(list->data)->attack[1]));
     
     xmlNewProp(child,
 	       "decay",
-	       g_strdup_printf("%f",
-			       AGS_NOTE(list->data)->decay));
+	       g_strdup_printf("%f %f",
+			       AGS_NOTE(list->data)->decay[0],
+			       AGS_NOTE(list->data)->decay[1]));
     
     xmlNewProp(child,
 	       "sustain",
-	       g_strdup_printf("%f",
-			       AGS_NOTE(list->data)->sustain));
+	       g_strdup_printf("%f %f",
+			       AGS_NOTE(list->data)->sustain[0],
+			       AGS_NOTE(list->data)->sustain[1]));
     
     xmlNewProp(child,
 	       "release",
-	       g_strdup_printf("%f",
-    			       AGS_NOTE(list->data)->release));
+	       g_strdup_printf("%f %f",
+    			       AGS_NOTE(list->data)->release[0],
+			       AGS_NOTE(list->data)->release[1]));
 			       
     xmlNewProp(child,
 	       "ratio",
-	       g_strdup_printf("%f",
-			       AGS_NOTE(list->data)->ratio));
-    */
+	       g_strdup_printf("%f %f",
+			       AGS_NOTE(list->data)->ratio[0],
+			       AGS_NOTE(list->data)->ratio[1]));
     
     /* add to parent */
     xmlAddChild(node,
