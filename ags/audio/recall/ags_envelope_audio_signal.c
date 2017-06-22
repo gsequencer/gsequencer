@@ -542,10 +542,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
       current_frame += current_buffer_size;
     }
-  }else{
-    //TODO:JK: implement me
-    
-    return;
   }
 }
 

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.8.4\n"
+"Project-Id-Version: gsequencer 0.8.5\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-06-13 12:11+0200\n"
+"POT-Creation-Date: 2017-06-22 20:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -270,7 +270,7 @@ msgstr ""
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:2131 ags/X/ags_machine_callbacks.c:293
+#: ags/X/ags_machine.c:2131 ags/X/ags_machine_callbacks.c:295
 msgid "rename"
 msgstr ""
 
@@ -358,27 +358,27 @@ msgstr ""
 msgid "Automation"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:220
+#: ags/X/ags_midi_dialog.c:219
 msgid "midi channel"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:263
+#: ags/X/ags_midi_dialog.c:262
 msgid "audio start mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:285
+#: ags/X/ags_midi_dialog.c:284
 msgid "audio end mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:307
+#: ags/X/ags_midi_dialog.c:306
 msgid "midi start mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:329
+#: ags/X/ags_midi_dialog.c:328
 msgid "midi end mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:365
+#: ags/X/ags_midi_dialog.c:364
 msgid "midi device"
 msgstr ""
 
@@ -386,7 +386,7 @@ msgstr ""
 msgid "bpm"
 msgstr ""
 
-#: ags/X/ags_navigation.c:253 ags/X/machine/ags_drum.c:340
+#: ags/X/ags_navigation.c:253 ags/X/machine/ags_drum.c:336
 msgid "loop"
 msgstr ""
 
@@ -399,6 +399,7 @@ msgid "loop R"
 msgstr ""
 
 #: ags/X/ags_output_collection_editor.c:272
+#: ags/X/editor/ags_envelope_info.c:226
 msgid "audio channel"
 msgstr ""
 
@@ -438,7 +439,7 @@ msgstr ""
 msgid "server"
 msgstr ""
 
-#: ags/X/ags_property_editor.c:100
+#: ags/X/ags_property_editor.c:100 ags/X/editor/ags_envelope_editor.c:165
 #: ags/X/export/ags_machine_collection_entry.c:173
 #: ags/X/import/ags_track_collection_mapper.c:234
 msgid "enabled"
@@ -492,21 +493,21 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:459
+#: ags/X/ags_xorg_application_context.c:464
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:469
+#: ags/X/ags_xorg_application_context.c:474
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:612
+#: ags/X/ags_xorg_application_context.c:617
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:622
+#: ags/X/ags_xorg_application_context.c:627
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -514,51 +515,64 @@ msgstr ""
 msgid "zoom"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_dialog.c:181
+#: ags/X/editor/ags_envelope_dialog.c:180
 msgid "Envelope"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_dialog.c:202
+#: ags/X/editor/ags_envelope_dialog.c:201
 msgid "editor"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_dialog.c:213
+#: ags/X/editor/ags_envelope_dialog.c:212
 msgid "info"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:240 ags/X/machine/ags_oscillator.c:172
+#: ags/X/editor/ags_envelope_dialog.c:436 ags/X/machine/ags_drum.c:330
+msgid "pattern"
+msgstr ""
+
+#: ags/X/editor/ags_envelope_editor.c:175 ags/X/machine/ags_ffplayer.c:307
+#: ags/X/machine/ags_live_lv2_bridge.c:1438 ags/X/machine/ags_lv2_bridge.c:1676
+msgid "preset"
+msgstr ""
+
+#: ags/X/editor/ags_envelope_editor.c:276 ags/X/machine/ags_oscillator.c:172
 msgid "attack"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:281
+#: ags/X/editor/ags_envelope_editor.c:318
 msgid "decay"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:322
+#: ags/X/editor/ags_envelope_editor.c:360
 msgid "sustain"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:363
+#: ags/X/editor/ags_envelope_editor.c:402
 msgid "release"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:404
+#: ags/X/editor/ags_envelope_editor.c:444
 msgid "ratio"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_info.c:194
+#: ags/X/editor/ags_envelope_editor_callbacks.c:48
+msgid "preset name"
+msgstr ""
+
+#: ags/X/editor/ags_envelope_info.c:219
 msgid "plot"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_info.c:201
+#: ags/X/editor/ags_envelope_info.c:233
 msgid "Note:x0"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_info.c:208
+#: ags/X/editor/ags_envelope_info.c:240
 msgid "Note:x1"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_info.c:215
+#: ags/X/editor/ags_envelope_info.c:247
 msgid "Note:y"
 msgstr ""
 
@@ -632,23 +646,19 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:318
+#: ags/X/machine/ags_drum.c:314
 msgid "kit"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:325
+#: ags/X/machine/ags_drum.c:321
 msgid "default"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:334
-msgid "pattern"
-msgstr ""
-
-#: ags/X/machine/ags_drum.c:346
+#: ags/X/machine/ags_drum.c:342
 msgid "run"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:399 ags/X/machine/ags_oscillator.c:179
+#: ags/X/machine/ags_drum.c:395 ags/X/machine/ags_oscillator.c:179
 msgid "length"
 msgstr ""
 
@@ -661,16 +671,11 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:353 ags/X/machine/ags_live_dssi_bridge.c:355
-#: ags/X/machine/ags_live_lv2_bridge.c:1377 ags/X/machine/ags_lv2_bridge.c:1566
+#: ags/X/machine/ags_live_lv2_bridge.c:1377 ags/X/machine/ags_lv2_bridge.c:1615
 msgid "program"
 msgstr ""
 
-#: ags/X/machine/ags_ffplayer.c:307 ags/X/machine/ags_live_lv2_bridge.c:1438
-#: ags/X/machine/ags_lv2_bridge.c:1627
-msgid "preset"
-msgstr ""
-
-#: ags/X/machine/ags_live_lv2_bridge.c:488 ags/X/machine/ags_lv2_bridge.c:465
+#: ags/X/machine/ags_live_lv2_bridge.c:488 ags/X/machine/ags_lv2_bridge.c:467
 msgid "show GUI"
 msgstr ""
 

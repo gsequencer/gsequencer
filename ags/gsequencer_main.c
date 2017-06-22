@@ -1256,6 +1256,7 @@ main(int argc, char **argv)
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
   
+  putenv("LANG=C");
   putenv("LC_ALL=C");
 
   single_thread_enabled = FALSE;
@@ -1390,8 +1391,8 @@ main(int argc, char **argv)
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
 #endif
-  g_log_set_fatal_mask("GLib-GObject", // "Gtk" G_LOG_DOMAIN, // 
-		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+  //  g_log_set_fatal_mask("GLib-GObject", // "Gtk" G_LOG_DOMAIN, // 
+  //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
   /* animate */
   animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
