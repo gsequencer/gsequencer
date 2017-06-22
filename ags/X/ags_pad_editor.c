@@ -27,6 +27,8 @@
 
 #include <ags/X/ags_line_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_pad_editor_class_init(AgsPadEditorClass *pad_editor);
 void ags_pad_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pad_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -92,7 +94,7 @@ ags_pad_editor_get_type(void)
     };
 
     ags_type_pad_editor = g_type_register_static(GTK_TYPE_VBOX,
-						 "AgsPadEditor\0", &ags_pad_editor_info,
+						 "AgsPadEditor", &ags_pad_editor_info,
 						 0);
 
     g_type_add_interface_static(ags_type_pad_editor,
@@ -118,9 +120,9 @@ ags_pad_editor_class_init(AgsPadEditorClass *pad_editor)
   gobject->set_property = ags_pad_editor_set_property;
   gobject->get_property = ags_pad_editor_get_property;
 
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel which this pad editor is assigned with\0",
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel which this pad editor is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -219,7 +221,7 @@ ags_pad_editor_connect(AgsConnectable *connectable)
   /* AgsAudio */
   audio = AGS_AUDIO(pad_editor->pad->audio);
 
-  pad_editor->set_audio_channels_handler = g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
+  pad_editor->set_audio_channels_handler = g_signal_connect_after(G_OBJECT(audio), "set_audio_channels",
 								  G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
 
   /* AgsLineEditor */
@@ -339,6 +341,8 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 
     AgsMutexManager *mutex_manager;
 
+    gchar *str;
+    
     guint pad;
     guint i;
 
@@ -365,9 +369,14 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
     pthread_mutex_unlock(channel_mutex);
 
     /* set label */
+    str = g_strdup_printf("%s: %u",
+			  i18n("pad"),
+			  pad + 1);
     gtk_expander_set_label(pad_editor->line_editor_expander,
-			   g_strdup_printf("pad: %u\0", pad));
+			   str);
 
+    g_free(str);
+    
     pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
 		      GTK_WIDGET(pad_editor->line_editor));
@@ -391,7 +400,7 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
       }
 
       g_object_set(line_editor,
-		   "channel\0", channel,
+		   "channel", channel,
 		   NULL);
       
       gtk_box_pack_start(GTK_BOX(pad_editor->line_editor),
@@ -428,7 +437,7 @@ ags_pad_editor_new(AgsChannel *channel)
   AgsPadEditor *pad_editor;
 
   pad_editor = (AgsPadEditor *) g_object_new(AGS_TYPE_PAD_EDITOR,
-					     "channel\0", channel,
+					     "channel", channel,
 					     NULL);
 
   return(pad_editor);

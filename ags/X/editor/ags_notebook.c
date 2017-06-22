@@ -75,7 +75,7 @@ ags_notebook_get_type(void)
     };
 
     ags_type_notebook = g_type_register_static(GTK_TYPE_VBOX,
-					       "AgsNotebook\0", &ags_notebook_info,
+					       "AgsNotebook", &ags_notebook_info,
 					       0);
     
     g_type_add_interface_static(ags_type_notebook,
@@ -131,8 +131,8 @@ ags_notebook_init(AgsNotebook *notebook)
   arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_LEFT,
 				     GTK_SHADOW_NONE);
   notebook->scroll_prev = g_object_new(GTK_TYPE_BUTTON,
-				       "child\0", arrow,
-				       "relief\0", GTK_RELIEF_NONE,
+				       "child", arrow,
+				       "relief", GTK_RELIEF_NONE,
 				       NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(notebook->scroll_prev),
@@ -142,8 +142,8 @@ ags_notebook_init(AgsNotebook *notebook)
   arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_RIGHT,
 				     GTK_SHADOW_NONE);
   notebook->scroll_next = g_object_new(GTK_TYPE_BUTTON,
-				       "child\0", arrow,
-				       "relief\0", GTK_RELIEF_NONE,
+				       "child", arrow,
+				       "relief", GTK_RELIEF_NONE,
 				       NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(notebook->scroll_next),
@@ -344,9 +344,9 @@ ags_notebook_connect(AgsConnectable *connectable)
 
   notebook = AGS_NOTEBOOK(connectable);
 
-  notebook->scroll_prev_handler = g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked\0",
+  notebook->scroll_prev_handler = g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked",
 						   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);
-  notebook->scroll_next_handler = g_signal_connect(G_OBJECT(notebook->scroll_next), "clicked\0",
+  notebook->scroll_next_handler = g_signal_connect(G_OBJECT(notebook->scroll_next), "clicked",
 						   G_CALLBACK(ags_notebook_scroll_next_callback), notebook);
 }
 
@@ -420,12 +420,12 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 				  tab);
   tab_index = g_list_length(notebook->tabs);
 
-  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d\0",
+  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d",
 										     notebook->prefix,
 										     tab_index));
   g_object_set(tab->toggle,
-	       "xalign\0", 0.0,
-	       "yalign\0", 0.0,
+	       "xalign", 0.0,
+	       "yalign", 0.0,
 	       NULL);
   gtk_toggle_button_set_active(tab->toggle, TRUE);
   gtk_widget_set_size_request((GtkWidget *) tab->toggle,
@@ -495,12 +495,12 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 				 tab,
 				 length - position);
 
-  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d\0",
+  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d",
 										     notebook->prefix,
 										     position + 1));
   g_object_set(tab->toggle,
-	       "xalign\0", 0.0,
-	       "yalign\0", 0.0,
+	       "xalign", 0.0,
+	       "yalign", 0.0,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) tab->toggle,
 			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);

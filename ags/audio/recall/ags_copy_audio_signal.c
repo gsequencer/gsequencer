@@ -101,7 +101,7 @@ ags_copy_audio_signal_get_type()
     };
 
     ags_type_copy_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsCopyAudioSignal\0",
+							"AgsCopyAudioSignal",
 							&ags_copy_audio_signal_info,
 							0);
 
@@ -160,10 +160,10 @@ ags_copy_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableIn
 void
 ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal)
 {
-  AGS_RECALL(copy_audio_signal)->name = "ags-copy\0";
+  AGS_RECALL(copy_audio_signal)->name = "ags-copy";
   AGS_RECALL(copy_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(copy_audio_signal)->xml_type = "ags-copy-audio-signal\0";
+  AGS_RECALL(copy_audio_signal)->xml_type = "ags-copy-audio-signal";
   AGS_RECALL(copy_audio_signal)->port = NULL;
 
   AGS_RECALL(copy_audio_signal)->child_type = G_TYPE_NONE;
@@ -269,7 +269,7 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
 				     (GObject *) parent_recall_id);
   
   g_object_set(copy_audio_signal,
-	       "destination\0", destination,
+	       "destination", destination,
 	       NULL);  
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
@@ -290,8 +290,8 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   pthread_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
-  g_message("copy %x to %x\0", destination, parent_recall_id);
-  g_message("creating destination\0");
+  g_message("copy %x to %x", destination, parent_recall_id);
+  g_message("creating destination");
 #endif
   
   /* call parent */
@@ -361,7 +361,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   //FIXME:JK: attack probably needs to be removed
 
   if(destination == NULL){
-    g_warning("no destination\0");
+    g_warning("no destination");
     return;
   }
 
@@ -491,9 +491,9 @@ ags_copy_audio_signal_new(AgsAudioSignal *destination,
   AgsCopyAudioSignal *copy_audio_signal;
 
   copy_audio_signal = (AgsCopyAudioSignal *) g_object_new(AGS_TYPE_COPY_AUDIO_SIGNAL,
-							  "destination\0", destination,
-							  "source\0", source,
-							  "soundcard\0", soundcard,
+							  "destination", destination,
+							  "source", source,
+							  "soundcard", soundcard,
 							  NULL);
 
   return(copy_audio_signal);

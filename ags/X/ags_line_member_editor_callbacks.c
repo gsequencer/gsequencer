@@ -108,7 +108,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 		       0);
 
     //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
+    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s",
 						       filename,
 						       effect));
     gtk_box_pack_start(GTK_BOX(hbox),
@@ -130,7 +130,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
       g_object_get(window,
-		   "application-context\0" , &application_context,
+		   "application-context" , &application_context,
 		   NULL);
 
       main_loop = (AgsThread *) application_context->main_loop;

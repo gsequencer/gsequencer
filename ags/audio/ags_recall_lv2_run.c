@@ -102,7 +102,7 @@ ags_recall_lv2_run_get_type (void)
     };
 
     ags_type_recall_lv2_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-						     "AgsRecallLv2Run\0",
+						     "AgsRecallLv2Run",
 						     &ags_recall_lv2_run_info,
 						     0);
 
@@ -284,7 +284,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 									  samplerate);
   
 #ifdef AGS_DEBUG
-  g_message("instantiate LV2 handle\0");
+  g_message("instantiate LV2 handle");
 #endif
 
   ags_recall_lv2_run_load_ports(recall_lv2_run);
@@ -293,7 +293,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* connect audio port */
   for(i = 0; i < recall_lv2->input_lines; i++){
 #ifdef AGS_DEBUG
-    g_message("connect port: %d\0", recall_lv2->input_port[i]);
+    g_message("connect port: %d", recall_lv2->input_port[i]);
 #endif
     
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
@@ -303,7 +303,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   for(i = 0; i < recall_lv2->output_lines; i++){
 #ifdef AGS_DEBUG
-    g_message("connect port: %d\0", recall_lv2->output_port[i]);
+    g_message("connect port: %d", recall_lv2->output_port[i]);
 #endif
     
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
@@ -396,7 +396,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 	  current->port_value.ags_port_float = port_data[i];
 	  i++;
 	  
-	  //	  g_message("%s %f\0", current->specifier, port_data[i]);
+	  //	  g_message("%s %f", current->specifier, port_data[i]);
 	
 	  break;
 	}
@@ -461,7 +461,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
       ((AGS_NOTE(recall_lv2_run->note)->x[1] <= count_beats_audio_run->notation_counter &&
 	(AGS_NOTE_FEED & (AGS_NOTE(recall_lv2_run->note)->flags)) == 0) ||
        AGS_NOTE(recall_lv2_run->note)->x[0] > count_beats_audio_run->notation_counter))){
-    //    g_message("done\0");
+    //    g_message("done");
     /* deactivate */
     if(recall_lv2->plugin_descriptor->deactivate != NULL){
       recall_lv2->plugin_descriptor->deactivate(recall_lv2_run->lv2_handle[0]);
@@ -559,7 +559,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   buffer_size = audio_signal->buffer_size;
 
   if(audio_signal->stream_current == NULL){
-    //    g_message("done\0");
+    //    g_message("done");
     /* deactivate */
     if(recall_lv2->plugin_descriptor->deactivate != NULL){
       recall_lv2->plugin_descriptor->deactivate(recall_lv2_run->lv2_handle[0]);
@@ -664,7 +664,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 	}
 
 #ifdef AGS_DEBUG
-	g_message("connect port: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+	g_message("connect port: %d", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
 #endif
 	recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						    (uint32_t) AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
@@ -692,7 +692,7 @@ ags_recall_lv2_run_new(AgsAudioSignal *audio_signal)
   AgsRecallLv2Run *recall_lv2_run;
 
   recall_lv2_run = (AgsRecallLv2Run *) g_object_new(AGS_TYPE_RECALL_LV2_RUN,
-						    "source\0", audio_signal,
+						    "source", audio_signal,
 						    NULL);
 
   return(recall_lv2_run);

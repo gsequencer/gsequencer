@@ -173,6 +173,70 @@
   </sect1>
 
   <sect1>
+    <title>Audio connection dialog</title>
+    <para>
+      The audio connection dialog allows you to specify to what soundcard to output. This can be
+      modified either by assigning single channels or in bulk mode.
+    </para>
+
+    <sect2>
+      <title></title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_audio_connection_output_line.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The audio connection output line screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	Select the desired soundcard and don't forget to click enable. In order apply your modifications.
+	After click OK.
+      </para>    
+    </sect2>
+
+    <sect2>
+      <title></title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_audio_connection_bulk_line.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The audio connection output bulk screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	The output connection tab allows you to link a bunch of channel at once.
+      </para>    
+    </sect2>
+    
+  </sect1>
+  
+  <sect1>
+    <title>MIDI dialog</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_midi_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The MIDI dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The MIDI dialog allows you to select the MIDI sequencer to assign of the current machine.
+	You might want to perform start and end key. Further you can adjust the start and end channel.
+      </para>    
+  </sect1>
+  
+  <sect1>
     <title>Panel</title>
     <mediaobject>
       <imageobject>

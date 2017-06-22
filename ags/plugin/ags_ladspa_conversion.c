@@ -23,6 +23,14 @@
 
 #include <math.h>
 
+void ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion);
+void ags_ladspa_conversion_init (AgsLadspaConversion *conversion);
+void ags_ladspa_conversion_finalize(GObject *gobject);
+
+gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
+				      gdouble value,
+				      gboolean reverse);
+
 /**
  * SECTION:ags_ladspa_conversion
  * @short_description: Conversion of values
@@ -32,14 +40,6 @@
  *
  * The #AgsLadspaConversion converts values.
  */
-
-void ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion);
-void ags_ladspa_conversion_init (AgsLadspaConversion *conversion);
-void ags_ladspa_conversion_finalize(GObject *gobject);
-
-gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
-				      gdouble value,
-				      gboolean reverse);
 
 static gpointer ags_ladspa_conversion_parent_class = NULL;
 
@@ -62,7 +62,7 @@ ags_ladspa_conversion_get_type(void)
     };
 
     ags_type_ladspa_conversion = g_type_register_static(AGS_TYPE_CONVERSION,
-							"AgsLadspaConversion\0",
+							"AgsLadspaConversion",
 							&ags_ladspa_conversion_info,
 							0);
   }
@@ -103,12 +103,12 @@ ags_ladspa_conversion_init(AgsLadspaConversion *ladspa_conversion)
 
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
+			     "samplerate");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
+			       "samplerate");
   }
   
   if(str != NULL){

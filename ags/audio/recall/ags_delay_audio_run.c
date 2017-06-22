@@ -126,7 +126,7 @@ ags_delay_audio_run_get_type()
     };
 
     ags_type_delay_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-						      "AgsDelayAudioRun\0",
+						      "AgsDelayAudioRun",
 						      &ags_delay_audio_run_info,
 						      0);
 
@@ -191,7 +191,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * notation output.
    */
   delay_audio_run_signals[NOTATION_ALLOC_OUTPUT] =
-    g_signal_new("notation-alloc-output\0",
+    g_signal_new("notation-alloc-output",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_output),
@@ -212,7 +212,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * notation input.
    */
   delay_audio_run_signals[NOTATION_ALLOC_INPUT] =
-    g_signal_new("notation-alloc-input\0",
+    g_signal_new("notation-alloc-input",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_input),
@@ -233,7 +233,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * notation.
    */
   delay_audio_run_signals[NOTATION_COUNT] =
-    g_signal_new("notation-count\0",
+    g_signal_new("notation-count",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_count),
@@ -254,7 +254,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * sequencer output.
    */
   delay_audio_run_signals[SEQUENCER_ALLOC_OUTPUT] =
-    g_signal_new("sequencer-alloc-output\0",
+    g_signal_new("sequencer-alloc-output",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_output),
@@ -275,7 +275,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * sequencer input.
    */
   delay_audio_run_signals[SEQUENCER_ALLOC_INPUT] =
-    g_signal_new("sequencer-alloc-input\0",
+    g_signal_new("sequencer-alloc-input",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_input),
@@ -296,7 +296,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
    * sequencer.
    */
   delay_audio_run_signals[SEQUENCER_COUNT] =
-    g_signal_new("sequencer-count\0",
+    g_signal_new("sequencer-count",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_count),
@@ -340,10 +340,10 @@ ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 {
   AGS_RECALL(delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
 
-  AGS_RECALL(delay_audio_run)->name = "ags-delay\0";
+  AGS_RECALL(delay_audio_run)->name = "ags-delay";
   AGS_RECALL(delay_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(delay_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(delay_audio_run)->xml_type = "ags-delay-audio-run\0";
+  AGS_RECALL(delay_audio_run)->xml_type = "ags-delay-audio-run";
   AGS_RECALL(delay_audio_run)->port = NULL;
 
   delay_audio_run->dependency_ref = 0;
@@ -456,7 +456,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
 
-  //  g_message("ags_delay_audio_run_run_pre()\0");
+  //  g_message("ags_delay_audio_run_run_pre()");
   
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
@@ -526,7 +526,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     run_order = 0; //NOTE:JK: old hide_ref style
 
-    //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
+    //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]",
     //	      delay_audio_run,
     //	      run_order);
       
@@ -566,7 +566,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     run_order = 0;
 
-    //    g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]\0",
+    //    g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]",
     //	      delay_audio_run,
     //	      run_order);
 
@@ -661,7 +661,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     delay_audio_run->hide_ref += count;
-    //  g_message("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
+    //  g_message("delay_audio_run->hide_ref: %u\n", delay_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;
@@ -674,7 +674,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
 
     break;
   default:
-    g_message("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify\0");
+    g_message("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify");
   }
 }
 

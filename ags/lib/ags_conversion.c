@@ -21,15 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-/**
- * SECTION:ags_conversion
- * @short_description: Conversion of values
- * @title: AgsConversion
- * @section_id:
- * @include: ags/lib/ags_conversion.h
- *
- * The #AgsConversion converts values.
- */
+#include <ags/i18n.h>
 
 void ags_conversion_class_init(AgsConversionClass *conversion);
 void ags_conversion_init (AgsConversion *conversion);
@@ -46,6 +38,17 @@ void ags_conversion_finalize(GObject *gobject);
 gdouble ags_conversion_real_convert(AgsConversion *conversion,
 				    gdouble value,
 				    gboolean reverse);
+
+/**
+ * SECTION:ags_conversion
+ * @short_description: abstract conversion
+ * @title: AgsConversion
+ * @section_id:
+ * @include: ags/lib/ags_conversion.h
+ *
+ * AgsConversion does a zero conversion it returns
+ * during ::convert() the very same value.
+ */
 
 enum{
   CONVERT,
@@ -80,7 +83,7 @@ ags_conversion_get_type(void)
     };
 
     ags_type_conversion = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsConversion\0",
+						 "AgsConversion",
 						 &ags_conversion_info,
 						 0);
   }
@@ -112,9 +115,9 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    * 
    * Since: 0.7.8
    */
-  param_spec = g_param_spec_string("name\0",
-				   "name of conversion\0",
-				   "The name of the conversion\0",
+  param_spec = g_param_spec_string("name",
+				   i18n_pspec("name of conversion"),
+				   i18n_pspec("The name of the conversion"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -128,9 +131,9 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    * 
    * Since: 0.7.8
    */
-  param_spec = g_param_spec_string("description\0",
-				   "description of conversion\0",
-				   "The description of the conversion\0",
+  param_spec = g_param_spec_string("description",
+				   i18n_pspec("description of conversion"),
+				   i18n_pspec("The description of the conversion"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,7 +158,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    * Since: 0.7.8
    */
   conversion_signals[CONVERT] =
-    g_signal_new("convert\0",
+    g_signal_new("convert",
 		 G_TYPE_FROM_CLASS(conversion),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsConversionClass, convert),

@@ -81,7 +81,7 @@ ags_add_bulk_member_get_type()
     };
 
     ags_type_add_bulk_member = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsAddBulkMember\0",
+						 "AgsAddBulkMember",
 						 &ags_add_bulk_member_info,
 						 0);
 

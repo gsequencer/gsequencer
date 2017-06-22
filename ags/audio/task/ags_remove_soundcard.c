@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
+#include <ags/i18n.h>
+
 void ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard);
 void ags_remove_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_soundcard_init(AgsRemoveSoundcard *remove_soundcard);
@@ -85,7 +87,7 @@ ags_remove_soundcard_get_type()
     };
 
     ags_type_remove_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsRemoveSoundcard\0",
+						       "AgsRemoveSoundcard",
 						       &ags_remove_soundcard_info,
 						       0);
 
@@ -122,9 +124,9 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of remove soundcard\0",
-				   "The application context of remove soundcard task\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("application context of remove soundcard"),
+				   i18n_pspec("The application context of remove soundcard task"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -138,9 +140,9 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of remove soundcard\0",
-				   "The soundcard of remove soundcard task\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard of remove soundcard"),
+				   i18n_pspec("The soundcard of remove soundcard task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

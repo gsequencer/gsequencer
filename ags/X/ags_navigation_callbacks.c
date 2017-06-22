@@ -182,7 +182,7 @@ ags_navigation_play_callback(GtkWidget *widget,
     if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0) ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
-      printf("found machine to play!\n\0");
+      printf("found machine to play!\n");
 #endif
       
       if(!initialized_time){
@@ -219,7 +219,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-      printf("found machine to stop!\n\0");
+      printf("found machine to stop!\n");
 
       ags_machine_set_run_extended(machine,
 				   FALSE,
@@ -328,7 +328,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-      g_message("found machine to loop!\n\0");
+      g_message("found machine to loop!\n");
 
       audio = machine->audio;
 
@@ -457,7 +457,7 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-      g_message("found machine to loop!\n\0");
+      g_message("found machine to loop!\n");
 
       audio = machine->audio;
       
@@ -538,7 +538,7 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-      g_message("found machine to loop!\n\0");
+      g_message("found machine to loop!\n");
 
       audio = machine->audio;
       

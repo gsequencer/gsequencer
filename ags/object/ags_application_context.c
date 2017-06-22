@@ -30,6 +30,8 @@
 #include <string.h>
 #include <pwd.h>
 
+#include <ags/i18n.h>
+
 void ags_application_context_class_init(AgsApplicationContextClass *application_context);
 void ags_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_application_context_init(AgsApplicationContext *application_context);
@@ -108,7 +110,7 @@ ags_application_context_get_type()
     };
 
     ags_type_application_context = g_type_register_static(G_TYPE_OBJECT,
-							  "AgsApplicationContext\0",
+							  "AgsApplicationContext",
 							  &ags_application_context_info,
 							  0);
 
@@ -145,9 +147,9 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * 
    * Since: 0.5.0
    */
-  param_spec = g_param_spec_object("main-loop\0",
-				   "main-loop of application context\0",
-				   "The main-loop what application context is running in\0",
+  param_spec = g_param_spec_object("main-loop",
+				   i18n_pspec("main-loop of application context"),
+				   i18n_pspec("The main-loop what application context is running in"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -161,9 +163,9 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * 
    * Since: 0.5.0
    */
-  param_spec = g_param_spec_object("config\0",
-				   "config of application context\0",
-				   "The config what application context is running in\0",
+  param_spec = g_param_spec_object("config",
+				   i18n_pspec("config of application context"),
+				   i18n_pspec("The config what application context is running in"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,9 +179,9 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * 
    * Since: 0.5.0
    */
-  param_spec = g_param_spec_object("file\0",
-				   "file of application context\0",
-				   "The file what application context does persist\0",
+  param_spec = g_param_spec_object("file",
+				   i18n_pspec("file of application context"),
+				   i18n_pspec("The file what application context does persist"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -203,7 +205,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * Since: 0.7.68
    */
   application_context_signals[LOAD_CONFIG] =
-    g_signal_new("load-config\0",
+    g_signal_new("load-config",
 		 G_TYPE_FROM_CLASS (application_context),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsApplicationContextClass, load_config),
@@ -221,7 +223,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * Since: 0.7.68
    */
   application_context_signals[REGISTER_TYPES] =
-    g_signal_new("register-types\0",
+    g_signal_new("register-types",
 		 G_TYPE_FROM_CLASS (application_context),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsApplicationContextClass, register_types),
@@ -238,7 +240,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * Since: 0.7.68
    */
   application_context_signals[QUIT] =
-    g_signal_new("quit\0",
+    g_signal_new("quit",
 		 G_TYPE_FROM_CLASS (application_context),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsApplicationContextClass, quit),
@@ -295,7 +297,7 @@ ags_application_context_init(AgsApplicationContext *application_context)
   
   application_context->history = NULL;
   
-  // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
+  // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n");
 }
 
 void
@@ -454,7 +456,7 @@ ags_application_context_dispose(GObject *gobject)
   /* config */
   if(application_context->config != NULL){
     g_object_set(application_context->config,
-		 "application-context\0", NULL,
+		 "application-context", NULL,
 		 NULL);
     
     g_object_unref(application_context->config);
@@ -465,7 +467,7 @@ ags_application_context_dispose(GObject *gobject)
   /* main loop */
   if(application_context->main_loop != NULL){
     g_object_set(application_context->main_loop,
-		 "application-context\0", NULL,
+		 "application-context", NULL,
 		 NULL);
 
     g_object_unref(application_context->main_loop);
@@ -476,7 +478,7 @@ ags_application_context_dispose(GObject *gobject)
   /* autosave thread */
   if(application_context->autosave_thread != NULL){
     g_object_set(application_context->autosave_thread,
-		 "application-context\0", NULL,
+		 "application-context", NULL,
 		 NULL);
 
     g_object_unref(application_context->autosave_thread);
@@ -494,7 +496,7 @@ ags_application_context_dispose(GObject *gobject)
   /* file */
   if(application_context->file != NULL){
     g_object_set(application_context->file,
-		 "application-context\0", NULL,
+		 "application-context", NULL,
 		 NULL);
 
     g_object_unref(application_context->file);
@@ -528,7 +530,7 @@ ags_application_context_finalize(GObject *gobject)
   /* config */
   if(application_context->config != NULL){
     g_object_set(application_context->config,
-		 "application-context\0", NULL,
+		 "application-context", NULL,
 		 NULL);
 
     g_object_unref(application_context->config);
@@ -537,7 +539,7 @@ ags_application_context_finalize(GObject *gobject)
   /* main loop */
   if(application_context->main_loop != NULL){
     g_object_set(application_context->main_loop,
-		 "application-context\0", NULL,
+		 "application-context", NULL,
 		 NULL);
 
     g_object_unref(application_context->main_loop);
@@ -546,7 +548,7 @@ ags_application_context_finalize(GObject *gobject)
   /* autosave thread */
   if(application_context->autosave_thread != NULL){
     g_object_set(application_context->autosave_thread,
-		 "application-context\0", NULL,
+		 "application-context", NULL,
 		 NULL);
 
     g_object_unref(application_context->autosave_thread);
@@ -755,8 +757,8 @@ ags_application_context_new(GObject *main_loop,
   AgsApplicationContext *application_context;
 
   application_context = (AgsApplicationContext *) g_object_new(AGS_TYPE_APPLICATION_CONTEXT,
-							       "main-loop\0", main_loop,
-							       "config\0", config,
+							       "main-loop", main_loop,
+							       "config", config,
 							       NULL);
 
   return(application_context);

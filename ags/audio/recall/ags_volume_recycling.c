@@ -88,7 +88,7 @@ ags_volume_recycling_get_type()
     };
 
     ags_type_volume_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						       "AgsVolumeRecycling\0",
+						       "AgsVolumeRecycling",
 						       &ags_volume_recycling_info,
 						       0);
 
@@ -145,10 +145,10 @@ ags_volume_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling)
 {
-  AGS_RECALL(volume_recycling)->name = "ags-volume\0";
+  AGS_RECALL(volume_recycling)->name = "ags-volume";
   AGS_RECALL(volume_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(volume_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(volume_recycling)->xml_type = "ags-volume-recycling\0";
+  AGS_RECALL(volume_recycling)->xml_type = "ags-volume-recycling";
   AGS_RECALL(volume_recycling)->port = NULL;
 
   AGS_RECALL(volume_recycling)->child_type = AGS_TYPE_VOLUME_AUDIO_SIGNAL;
@@ -231,7 +231,7 @@ ags_volume_recycling_new(AgsRecycling *recycling)
   AgsVolumeRecycling *volume_recycling;
 
   volume_recycling = (AgsVolumeRecycling *) g_object_new(AGS_TYPE_VOLUME_RECYCLING,
-							 "source\0", recycling,
+							 "source", recycling,
 							 NULL);
 
   return(volume_recycling);

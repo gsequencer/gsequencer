@@ -114,7 +114,7 @@ ags_mixer_get_type(void)
     };
     
     ags_type_mixer = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsMixer\0", &ags_mixer_info,
+					    "AgsMixer", &ags_mixer_info,
 					    0);
     
     g_type_add_interface_static(ags_type_mixer,
@@ -173,7 +173,7 @@ ags_mixer_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_mixer_init(AgsMixer *mixer)
 {
-  g_signal_connect_after((GObject *) mixer, "parent_set\0",
+  g_signal_connect_after((GObject *) mixer, "parent_set",
 			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
 
   AGS_MACHINE(mixer)->audio->flags |= (AGS_AUDIO_ASYNC);
@@ -184,15 +184,15 @@ ags_mixer_init(AgsMixer *mixer)
   AGS_MACHINE(mixer)->output_line_type = G_TYPE_NONE;
   
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_audio_channels",
 			 G_CALLBACK(ags_mixer_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_pads",
 			 G_CALLBACK(ags_mixer_set_pads), NULL);
 
   /*  */
   mixer->name = NULL;
-  mixer->xml_type = "ags-mixer\0";
+  mixer->xml_type = "ags-mixer";
 
   mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
@@ -269,11 +269,11 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   list = file->lookup;
@@ -289,7 +289,7 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			     NULL,
 			     ags_file_read_machine_resolve_audio,
 			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
 			     G_CALLBACK(ags_mixer_read_resolve_audio), gobject);
       
       break;
@@ -308,10 +308,10 @@ ags_mixer_read_resolve_audio(AgsFileLookup *file_lookup,
 
   mixer = AGS_MIXER(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
 			 G_CALLBACK(ags_mixer_set_audio_channels), mixer);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
 			 G_CALLBACK(ags_mixer_set_pads), mixer);
 }
 
@@ -328,18 +328,18 @@ ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-mixer\0");
+		    "ags-mixer");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", mixer,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", mixer,
 				   NULL));
 
   xmlAddChild(parent,
@@ -383,7 +383,7 @@ ags_mixer_new(GObject *soundcard)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(mixer)->audio),
-	       "soundcard\0", soundcard,
+	       "soundcard", soundcard,
 	       NULL);
 
   return(mixer);

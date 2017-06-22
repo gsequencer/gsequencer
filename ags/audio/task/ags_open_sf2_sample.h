@@ -20,6 +20,7 @@
 #ifndef __AGS_OPEN_SF2_SAMPLE_H__
 #define __AGS_OPEN_SF2_SAMPLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>

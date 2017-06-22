@@ -31,14 +31,6 @@ void ags_ffplayer_input_line_class_init(AgsFFPlayerInputLineClass *ffplayer_inpu
 void ags_ffplayer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_input_line_init(AgsFFPlayerInputLine *ffplayer_input_line);
-void ags_ffplayer_input_line_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_ffplayer_input_line_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
 void ags_ffplayer_input_line_connect(AgsConnectable *connectable);
 void ags_ffplayer_input_line_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_input_line_finalize(GObject *gobject);
@@ -95,7 +87,7 @@ ags_ffplayer_input_line_get_type(void)
     };
 
     ags_type_ffplayer_input_line = g_type_register_static(AGS_TYPE_EFFECT_LINE,
-							  "AgsFFPlayerInputLine\0", &ags_ffplayer_input_line_info,
+							  "AgsFFPlayerInputLine", &ags_ffplayer_input_line_info,
 							  0);
 
     g_type_add_interface_static(ags_type_ffplayer_input_line,
@@ -150,7 +142,7 @@ ags_ffplayer_input_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_input_line_init(AgsFFPlayerInputLine *ffplayer_input_line)
 {
-  g_signal_connect_after(ffplayer_input_line, "notify::channel\0",
+  g_signal_connect_after(ffplayer_input_line, "notify::channel",
 			 G_CALLBACK(ags_ffplayer_input_line_notify_channel_callback), NULL);
 }
 
@@ -196,7 +188,7 @@ ags_ffplayer_input_line_new(AgsChannel *channel)
   AgsFFPlayerInputLine *ffplayer_input_line;
 
   ffplayer_input_line = (AgsFFPlayerInputLine *) g_object_new(AGS_TYPE_FFPLAYER_INPUT_LINE,
-							      "channel\0", channel,
+							      "channel", channel,
 							      NULL);
 
   return(ffplayer_input_line);

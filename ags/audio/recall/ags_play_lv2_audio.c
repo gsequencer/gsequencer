@@ -47,6 +47,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio);
 void ags_play_lv2_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_lv2_audio_plugin_interface_init(AgsPluginInterface *plugin);
@@ -92,7 +94,7 @@ static gpointer ags_play_lv2_audio_parent_class = NULL;
 static AgsConnectableInterface* ags_play_lv2_audio_parent_connectable_interface;
 static AgsPluginInterface *ags_play_lv2_parent_plugin_interface;
 
-static const gchar *ags_play_lv2_audio_plugin_name = "ags-play-lv2\0";
+static const gchar *ags_play_lv2_audio_plugin_name = "ags-play-lv2";
 static const gchar *ags_play_lv2_audio_specifier[] = {
 };
 static const gchar *ags_play_lv2_audio_control_port[] = {
@@ -129,7 +131,7 @@ ags_play_lv2_audio_get_type()
     };    
 
     ags_type_play_lv2_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-						     "AgsPlayLv2Audio\0",
+						     "AgsPlayLv2Audio",
 						     &ags_play_lv2_audio_info,
 						     0);
 
@@ -170,9 +172,9 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec = g_param_spec_object("turtle\0",
-				   "turtle of recall lv2\0",
-				   "The turtle which this recall lv2 is described by\0",
+  param_spec = g_param_spec_object("turtle",
+				   i18n_pspec("turtle of recall lv2"),
+				   i18n_pspec("The turtle which this recall lv2 is described by"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -186,9 +188,9 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_string("filename\0",
-				    "the object file\0",
-				    "The filename as string of object file\0",
+  param_spec =  g_param_spec_string("filename",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -202,9 +204,9 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_string("effect\0",
-				    "the effect\0",
-				    "The effect's string representation\0",
+  param_spec =  g_param_spec_string("effect",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -218,9 +220,9 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_string("uri\0",
-				    "the uri\0",
-				    "The uri's string representation\0",
+  param_spec =  g_param_spec_string("uri",
+				    i18n_pspec("the uri"),
+				    i18n_pspec("The uri's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -234,9 +236,9 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_ulong("index\0",
-				   "index of uri\0",
-				   "The numerical index of uri\0",
+  param_spec =  g_param_spec_ulong("index",
+				   i18n_pspec("index of uri"),
+				   i18n_pspec("The numerical index of uri"),
 				   0,
 				   65535,
 				   0,
@@ -270,10 +272,10 @@ ags_play_lv2_audio_init(AgsPlayLv2Audio *play_lv2_audio)
 {
   GList *port;
 
-  AGS_RECALL(play_lv2_audio)->name = "ags-play-lv2\0";
+  AGS_RECALL(play_lv2_audio)->name = "ags-play-lv2";
   AGS_RECALL(play_lv2_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_lv2_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_lv2_audio)->xml_type = "ags-play-lv2-audio\0";
+  AGS_RECALL(play_lv2_audio)->xml_type = "ags-play-lv2-audio";
 
   play_lv2_audio->turtle = NULL;
 
@@ -566,7 +568,7 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 									      FALSE);
 	
 #ifdef AGS_DEBUG
-	  g_message("connecting port: %d/%d\0", i, port_count);      
+	  g_message("connecting port: %d/%d", i, port_count);      
 #endif
 	}
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -614,29 +616,29 @@ ags_play_lv2_audio_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   filename = xmlGetProp(node,
-			"filename\0");
+			"filename");
   effect = xmlGetProp(node,
-		      "effect\0");
+		      "effect");
   uri = xmlGetProp(node,
-		   "uri\0");
+		   "uri");
   index = g_ascii_strtoull(xmlGetProp(node,
-				      "index\0"),
+				      "index"),
 			   NULL,
 			   10);
 
   g_object_set(gobject,
-	       "filename\0", filename,
-	       "effect\0", effect,
-	       "uri\0", uri,
-	       "index\0", index,
+	       "filename", filename,
+	       "effect", effect,
+	       "uri", uri,
+	       "index", index,
 	       NULL);
 
   ags_play_lv2_audio_load(gobject);
@@ -655,35 +657,35 @@ ags_play_lv2_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-recall-lv2\0");
+		    "ags-recall-lv2");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", play_lv2_audio,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", play_lv2_audio,
 				   NULL));
 
   xmlNewProp(node,
-	     "filename\0",
+	     "filename",
 	     g_strdup(play_lv2_audio->filename));
   
   xmlNewProp(node,
-	     "effect\0",
+	     "effect",
 	     g_strdup(play_lv2_audio->effect));
 
   xmlNewProp(node,
-	     "uri\0",
+	     "uri",
 	     g_strdup(play_lv2_audio->uri));
 
   xmlNewProp(node,
-	     "index\0",
-	     g_strdup_printf("%d\0", play_lv2_audio->index));
+	     "index",
+	     g_strdup_printf("%d", play_lv2_audio->index));
 
   xmlAddChild(parent,
 	      node);
@@ -716,7 +718,7 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						     "lv2_descriptor\0");
+						     "lv2_descriptor");
 
     if(dlerror() == NULL && lv2_descriptor){
       play_lv2_audio->plugin_descriptor = 
@@ -755,7 +757,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       play_lv2_audio->filename, play_lv2_audio->effect);
 #ifdef AGS_DEBUG
-  g_message("ports from ttl: %s\0", lv2_plugin->turtle->filename);
+  g_message("ports from ttl: %s", lv2_plugin->turtle->filename);
 #endif
   
   port = NULL;
@@ -766,7 +768,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
     
     for(i = 0; i < port_count; i++){
 #ifdef AGS_DEBUG
-      g_message("Lv2 plugin port-index: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+      g_message("Lv2 plugin port-index: %d", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
 #endif
       
       if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -795,16 +797,16 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	  continue;
 	}
 	
-	plugin_name = g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri);
+	plugin_name = g_strdup_printf("lv2-<%s>", lv2_plugin->uri);
 
 	current = g_object_new(AGS_TYPE_PORT,
-			       "plugin-name\0", plugin_name,
-			       "specifier\0", specifier,
-			       "control-port\0", g_strdup_printf("%u/%u\0",
+			       "plugin-name", plugin_name,
+			       "specifier", specifier,
+			       "control-port", g_strdup_printf("%u/%u",
 								 i,
 								 port_count),
-			       "port-value-is-pointer\0", FALSE,
-			       "port-value-type\0", G_TYPE_FLOAT,
+			       "port-value-is-pointer", FALSE,
+			       "port-value-type", G_TYPE_FLOAT,
 			       NULL);
 	g_object_ref(current);
 	
@@ -830,7 +832,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 									    FALSE);
 
 #ifdef AGS_DEBUG
-	g_message("connecting port: %s %d/%d\0", specifier, i, port_count);
+	g_message("connecting port: %s %d/%d", specifier, i, port_count);
 #endif
 	
 	port = g_list_prepend(port,
@@ -898,7 +900,7 @@ ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
   if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
     lv2_conversion = ags_lv2_conversion_new();
     g_object_set(port,
-		 "conversion\0", lv2_conversion,
+		 "conversion", lv2_conversion,
 		 NULL);
     
     lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;

@@ -53,7 +53,7 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
     return(AGS_AUDIO_BUFFER_UTIL_S64);
   default:
     {
-      g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format\0");
+      g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format");
       
       return(0);
     }
@@ -96,7 +96,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -122,7 +122,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -149,7 +149,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -175,7 +175,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -201,7 +201,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -227,7 +227,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -253,7 +253,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE);
       default:
 	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format\0");
+	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
 	  
 	  return(0);
 	}
@@ -261,7 +261,7 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
     }
   default:
     {
-      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format\0");
+      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format");
       
       return(0);
     }
@@ -397,7 +397,7 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
       memset((signed long long *) buffer, 0, channels * count * sizeof(signed long long));
     }
   default:
-    g_critical("unsupported audio buffer format\0");
+    g_critical("unsupported audio buffer format");
   }
 }
 
@@ -444,7 +444,7 @@ ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
       
       buffer += (8 * channels);
       
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
@@ -453,7 +453,7 @@ ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -502,7 +502,7 @@ ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
@@ -511,7 +511,7 @@ ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -549,27 +549,27 @@ ags_audio_buffer_util_envelope_s24(signed long *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = (signed long) 0xffffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed long) 0xffffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed long) 0xffffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed long) 0xffffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed long) 0xffffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed long) 0xffffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed long) 0xffffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed long) 0xffffff & ((signed long) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = (signed long) 0xffffff & ((signed long) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -607,27 +607,27 @@ ags_audio_buffer_util_envelope_s32(signed long *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = (signed long) 0xffffffff & ((signed long long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = (signed long) 0xffffffff & ((signed long long) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -665,27 +665,27 @@ ags_audio_buffer_util_envelope_s64(signed long long *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = (signed long long) 0xffffffffffffffff & ((signed long long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = (signed long long) 0xffffffffffffffff & ((signed long long) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -723,27 +723,27 @@ ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = ((double) ((*buffer) * current_volume));
+      buffer[1 * channels] = ((double) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = ((double) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = ((double) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = ((double) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = ((double) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = ((double) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = ((double) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = ((double) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -781,27 +781,27 @@ ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = ((double) ((*buffer) * current_volume));
+      buffer[1 * channels] = ((double) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = ((double) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = ((double) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = ((double) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = ((double) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = ((double) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = ((double) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = ((double) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -889,7 +889,7 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
     }
     break;
   default:
-    g_warning("ags_audio_buffer_util_envelope() - unknown format\0");
+    g_warning("ags_audio_buffer_util_envelope() - unknown format");
   }
 
   return(retval);
@@ -1286,7 +1286,7 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
     }
     break;
   default:
-    g_warning("ags_audio_buffer_util_volume() - unknown format\0");
+    g_warning("ags_audio_buffer_util_volume() - unknown format");
   }
 }
 
@@ -1696,7 +1696,7 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
     }
     break;
   default:
-    g_warning("ags_audio_buffer_util_resample() - unknown format\0");
+    g_warning("ags_audio_buffer_util_resample() - unknown format");
   }
 
   return(retval);
@@ -4549,7 +4549,7 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
     break;
   default:
     {
-      g_warning("ags_audio_buffer_util.c - unknown copy mode\0");
+      g_warning("ags_audio_buffer_util.c - unknown copy mode");
     }
   }
 }

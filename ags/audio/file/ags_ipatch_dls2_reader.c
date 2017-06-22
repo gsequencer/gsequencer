@@ -23,6 +23,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader);
 void ags_ipatch_dls2_reader_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ipatch_dls2_reader_init(AgsIpatchDLS2Reader *ipatch_dls2_reader);
@@ -82,7 +84,7 @@ ags_ipatch_dls2_reader_get_type()
     };
 
     ags_type_ipatch_dls2_reader = g_type_register_static(G_TYPE_OBJECT,
-							 "AgsIpatchDLS2Reader\0",
+							 "AgsIpatchDLS2Reader",
 							 &ags_ipatch_dls2_reader_info,
 							 0);
 
@@ -98,7 +100,8 @@ void
 ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_ipatch_dls2_reader_parent_class = g_type_class_peek_parent(ipatch_dls2_reader);
 
   gobject = (GObjectClass *) ipatch_dls2_reader;
@@ -107,6 +110,23 @@ ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader)
   gobject->get_property = ags_ipatch_dls2_reader_get_property;
 
   gobject->finalize = ags_ipatch_dls2_reader_finalize;
+
+  /* properties */
+  /**
+   * AgsIpatchDLS2Reader:ipatch:
+   *
+   * The assigned #AgsIpatch
+   * 
+   * Since: 0.8.2
+   */
+  param_spec = g_param_spec_object("ipatch",
+				   i18n_pspec("the ipatch"),
+				   i18n_pspec("The assigned ipatch"),
+				   AGS_TYPE_IPATCH,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IPATCH,
+				  param_spec);
 }
 
 void

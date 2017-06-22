@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,10 @@ void ags_menu_bar_add_live_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar 
 
 void ags_menu_bar_automation_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+
+void ags_menu_bar_midi_import_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_midi_export_track_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_midi_playback_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 

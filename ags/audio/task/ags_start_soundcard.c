@@ -25,6 +25,8 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard);
 void ags_start_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_start_soundcard_init(AgsStartSoundcard *start_soundcard);
@@ -85,7 +87,7 @@ ags_start_soundcard_get_type()
     };
 
     ags_type_start_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						      "AgsStartSoundcard\0",
+						      "AgsStartSoundcard",
 						      &ags_start_soundcard_info,
 						      0);
 
@@ -122,9 +124,9 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of start soundcard\0",
-				   "The application context of start soundcard task\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("application context of start soundcard"),
+				   i18n_pspec("The application context of start soundcard task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -287,7 +289,7 @@ ags_start_soundcard_launch(AgsTask *task)
     /* append to AgsSoundcard */
     AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
 
-    g_message("start soundcard\0");
+    g_message("start soundcard");
 
     start_queue = NULL;    
     start_queue = g_list_prepend(start_queue,

@@ -35,6 +35,8 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch.h>
 
+#include <ags/i18n.h>
+
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_input_set_property(GObject *gobject,
@@ -95,7 +97,7 @@ ags_input_get_type (void)
     };
 
     ags_type_input = g_type_register_static(AGS_TYPE_CHANNEL,
-					    "AgsInput\0",
+					    "AgsInput",
 					    &ags_input_info,
 					    0);
 
@@ -131,9 +133,9 @@ ags_input_class_init(AgsInputClass *input)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("file-link\0",
-				   "file link assigned to\0",
-				   "The file link to read from\0",
+  param_spec = g_param_spec_object("file-link",
+				   i18n_pspec("file link assigned to"),
+				   i18n_pspec("The file link to read from"),
 				   AGS_TYPE_FILE_LINK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,9 +149,9 @@ ags_input_class_init(AgsInputClass *input)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("synth-generator\0",
-				   "the synth generator\0",
-				   "The synth generator to be used\0",
+  param_spec = g_param_spec_object("synth-generator",
+				   i18n_pspec("the synth generator"),
+				   i18n_pspec("The synth generator to be used"),
 				   AGS_TYPE_SYNTH_GENERATOR,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -368,9 +370,9 @@ ags_input_open_file(AgsInput *input,
     success = TRUE;
     
     ipatch = g_object_new(AGS_TYPE_IPATCH,
-			  "soundcard\0", AGS_CHANNEL(input)->soundcard,
-			  "mode\0", AGS_IPATCH_READ,
-			  "filename\0", filename,
+			  "soundcard", AGS_CHANNEL(input)->soundcard,
+			  "mode", AGS_IPATCH_READ,
+			  "filename", filename,
 			  NULL);
 
     playable = AGS_PLAYABLE(ipatch);
@@ -431,13 +433,13 @@ ags_input_open_file(AgsInput *input,
   if(success){
     if(audio_signal != NULL){
       file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
-			       "filename\0", filename,
-			       "preset\0", preset,
-			       "instrument\0", instrument,
-			       "audio-channel\0", audio_channel,
+			       "filename", filename,
+			       "preset", preset,
+			       "instrument", instrument,
+			       "audio-channel", audio_channel,
 			       NULL);
       g_object_set(input,
-		   "file-link\0", file_link,
+		   "file-link", file_link,
 		   NULL);
     
       /* mark as template */
@@ -670,7 +672,7 @@ ags_input_new(GObject *audio)
   AgsInput *input;
 
   input = (AgsInput *) g_object_new(AGS_TYPE_INPUT,
-				    "audio\0", audio,
+				    "audio", audio,
 				    NULL);
 
   return(input);

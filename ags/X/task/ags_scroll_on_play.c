@@ -89,7 +89,7 @@ ags_scroll_on_play_get_type()
     };
     
     ags_type_scroll_on_play = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsScrollOnPlay\0",
+						     "AgsScrollOnPlay",
 						     &ags_scroll_on_play_info,
 						     0);
 

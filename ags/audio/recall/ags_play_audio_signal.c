@@ -100,7 +100,7 @@ ags_play_audio_signal_get_type()
     };
 
     ags_type_play_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsPlayAudioSignal\0",
+							"AgsPlayAudioSignal",
 							&ags_play_audio_signal_info,
 							0);
 
@@ -251,7 +251,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   stream = source->stream_current;
 
   if(soundcard == NULL){
-    g_warning("no soundcard\0");
+    g_warning("no soundcard");
     return;
   }
   
@@ -292,7 +292,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
      buffer1 == NULL){
     pthread_mutex_unlock(soundcard_mutex);
     
-    g_warning("no output buffer\0");
+    g_warning("no output buffer");
     
     return;
   }
@@ -418,9 +418,9 @@ ags_play_audio_signal_new(AgsAudioSignal *source,
   AgsPlayAudioSignal *play_audio_signal;
 
   play_audio_signal = (AgsPlayAudioSignal *) g_object_new(AGS_TYPE_PLAY_AUDIO_SIGNAL,
-							  "source\0", source,
-							  "soundcard\0", soundcard,
-							  "audio_channel\0", audio_channel,
+							  "source", source,
+							  "soundcard", soundcard,
+							  "audio_channel", audio_channel,
 							  NULL);
 
   return(play_audio_signal);

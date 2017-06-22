@@ -98,7 +98,7 @@ ags_stream_channel_run_get_type()
     };    
 
     ags_type_stream_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							 "AgsStreamChannelRun\0",
+							 "AgsStreamChannelRun",
 							 &ags_stream_channel_run_info,
 							 0);
 
@@ -164,10 +164,10 @@ ags_stream_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run)
 {
-  AGS_RECALL(stream_channel_run)->name = "ags-stream\0";
+  AGS_RECALL(stream_channel_run)->name = "ags-stream";
   AGS_RECALL(stream_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(stream_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(stream_channel_run)->xml_type = "ags-stream-channel-run\0";
+  AGS_RECALL(stream_channel_run)->xml_type = "ags-stream-channel-run";
   AGS_RECALL(stream_channel_run)->port = NULL;
 
   AGS_RECALL(stream_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;

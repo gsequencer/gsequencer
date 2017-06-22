@@ -32,6 +32,7 @@
 #include <ags/X/ags_export_window.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard);
 void ags_export_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -92,7 +93,7 @@ ags_export_soundcard_get_type()
     };
 
     ags_type_export_soundcard = g_type_register_static(GTK_TYPE_VBOX,
-						       "AgsExportSoundcard\0", &ags_export_soundcard_info,
+						       "AgsExportSoundcard", &ags_export_soundcard_info,
 						       0);
     
     g_type_add_interface_static(ags_type_export_soundcard,
@@ -127,9 +128,9 @@ ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard)
    * 
    * Since: 0.7.119
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("assigned soundcard"),
+				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -165,8 +166,8 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "backend\0",
-				    "xalign\0", 0.0,
+				    "label", i18n("backend"),
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -184,16 +185,16 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		   0, 0);
 
   gtk_combo_box_text_append_text(export_soundcard->backend,
-				 "jack\0");
+				 "jack");
   
 #ifdef AGS_WITH_ALSA
   gtk_combo_box_text_append_text(export_soundcard->backend,
-				 "alsa\0");
+				 "alsa");
 #endif
   
 #ifdef AGS_WITH_OSS
   gtk_combo_box_text_append_text(export_soundcard->backend,
-				 "oss\0");
+				 "oss");
 #endif
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
@@ -201,8 +202,8 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   
   /* sound card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "sound card\0",
-				    "xalign\0", 0.0,
+				    "label", i18n("soundcard"),
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -221,9 +222,9 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   
   /* filename */
-  label = (GtkLabel *) gtk_label_new("file\0");
+  label = (GtkLabel *) gtk_label_new(i18n("file"));
   g_object_set(G_OBJECT(label),
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -243,22 +244,22 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 
   export_soundcard->filename = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(export_soundcard->filename,
-		     "out.wav\0");
+		     "out.wav");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_soundcard->filename),
 		     TRUE, TRUE,
 		     0);
 
-  export_soundcard->file_chooser_button = (GtkButton *) gtk_button_new_with_label("open\0");
+  export_soundcard->file_chooser_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_soundcard->file_chooser_button),
 		     TRUE, TRUE,
 		     0);
 
   /* output format */
-  label = (GtkLabel *) gtk_label_new("output format\0");
+  label = (GtkLabel *) gtk_label_new(i18n("output format"));
   g_object_set(G_OBJECT(label),
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -355,13 +356,13 @@ ags_export_soundcard_connect(AgsConnectable *connectable)
 
   export_soundcard->flags |= AGS_EXPORT_SOUNDCARD_CONNECTED;
 
-  g_signal_connect_after(G_OBJECT(export_soundcard->backend), "changed\0",
+  g_signal_connect_after(G_OBJECT(export_soundcard->backend), "changed",
 			 G_CALLBACK(ags_export_soundcard_backend_callback), export_soundcard);
 
-  g_signal_connect_after(G_OBJECT(export_soundcard->card), "changed\0",
+  g_signal_connect_after(G_OBJECT(export_soundcard->card), "changed",
 			 G_CALLBACK(ags_export_soundcard_card_callback), export_soundcard);
 
-  g_signal_connect_after(G_OBJECT(export_soundcard->file_chooser_button), "clicked\0",
+  g_signal_connect_after(G_OBJECT(export_soundcard->file_chooser_button), "clicked",
 			 G_CALLBACK(ags_export_soundcard_file_chooser_button_callback), export_soundcard);
 }
 
@@ -379,19 +380,19 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
   export_soundcard->flags &= (~AGS_EXPORT_SOUNDCARD_CONNECTED);
 
   g_object_disconnect(G_OBJECT(export_soundcard->backend),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_export_soundcard_backend_callback),
 		      export_soundcard,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(export_soundcard->card),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_export_soundcard_card_callback),
 		      export_soundcard,
 		      NULL);
   
   g_object_disconnect(G_OBJECT(export_soundcard->file_chooser_button),
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_export_soundcard_file_chooser_button_callback),
 		      export_soundcard,
 		      NULL);
@@ -491,7 +492,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
 
   if(!g_ascii_strncasecmp(backend,
-			  "alsa\0",
+			  "alsa",
 			  5)){
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
@@ -503,7 +504,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
       soundcard = soundcard->next;
     }
   }else if(!g_ascii_strncasecmp(backend,
-				"oss\0",
+				"oss",
 				4)){    
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
@@ -515,7 +516,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
       soundcard = soundcard->next;
     }
   }else if(!g_ascii_strncasecmp(backend,
-				"jack\0",
+				"jack",
 				5)){
     while(soundcard != NULL){
       if(AGS_IS_JACK_DEVOUT(soundcard->data)){

@@ -85,7 +85,7 @@ ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
   
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
-			     "engine-mode\0");
+			     "engine-mode");
   performance_mode = FALSE;
 
   if(channel_type == AGS_TYPE_INPUT){
@@ -97,13 +97,13 @@ ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
 
       if(str != NULL &&
 	 !g_ascii_strncasecmp(str,
-			      "performance\0",
+			      "performance",
 			      12)){
 	while(input != NULL){
 	  /* ags-copy */
 	  ags_recall_factory_create(audio,
 				    NULL, NULL,
-				    "ags-copy\0",
+				    "ags-copy",
 				    0, audio->audio_channels, 
 				    input->pad, input->pad + 1,
 				    (AGS_RECALL_FACTORY_INPUT |
@@ -121,7 +121,7 @@ ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
 	  /* ags-buffer */
 	  ags_recall_factory_create(audio,
 				    NULL, NULL,
-				    "ags-buffer\0",
+				    "ags-buffer",
 				    0, audio->audio_channels, 
 				    input->pad, input->pad + 1,
 				    (AGS_RECALL_FACTORY_INPUT |

@@ -30,6 +30,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread);
 void ags_channel_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_channel_thread_init(AgsChannelThread *channel_thread);
@@ -94,7 +96,7 @@ ags_channel_thread_get_type()
     };
 
     ags_type_channel_thread = g_type_register_static(AGS_TYPE_THREAD,
-						     "AgsChannelThread\0",
+						     "AgsChannelThread",
 						     &ags_channel_thread_info,
 						     0);
     
@@ -132,9 +134,9 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard assigned to\0",
-				   "The AgsSoundcard it is assigned to.\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to."),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -148,9 +150,9 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel assigned to\0",
-				   "The AgsChannel it is assigned to.\0",
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("channel assigned to"),
+				   i18n_pspec("The AgsChannel it is assigned to."),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -192,22 +194,22 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate\0");
+			      "samplerate");
 
   if(str0 == NULL){
     str0 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate\0");
+				"samplerate");
   }
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size\0");
+			      "buffer-size");
 
   if(str1 == NULL){
     str1 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size\0");
+				"buffer-size");
   }
   
   if(str0 == NULL || str1 == NULL){
@@ -424,7 +426,7 @@ ags_channel_thread_finalize(GObject *gobject)
 void
 ags_channel_thread_start(AgsThread *thread)
 {
-  g_message("channel thread start\0");
+  g_message("channel thread start");
   
   /* reset status */
   g_atomic_int_or(&(AGS_CHANNEL_THREAD(thread)->flags),
@@ -462,7 +464,7 @@ ags_channel_thread_run(AgsThread *thread)
     param.sched_priority = AGS_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -473,7 +475,7 @@ ags_channel_thread_run(AgsThread *thread)
     return;
   }
 
-  //  g_message("eer\0");
+  //  g_message("eer");
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
@@ -578,7 +580,7 @@ ags_channel_thread_stop(AgsThread *thread)
 {
   AgsChannelThread *channel_thread;
 
-  g_message("channel thread stop\0");
+  g_message("channel thread stop");
   
   /*  */
   channel_thread = AGS_CHANNEL_THREAD(thread);
@@ -617,8 +619,8 @@ ags_channel_thread_new(GObject *soundcard,
   AgsChannelThread *channel_thread;
 
   channel_thread = (AgsChannelThread *) g_object_new(AGS_TYPE_CHANNEL_THREAD,
-						     "soundcard\0", soundcard,
-						     "channel\0", channel,
+						     "soundcard", soundcard,
+						     "channel", channel,
 						     NULL);
 
 

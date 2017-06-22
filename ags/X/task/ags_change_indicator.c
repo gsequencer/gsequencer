@@ -67,7 +67,7 @@ ags_change_indicator_get_type()
     };
 
     ags_type_change_indicator = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsChangeIndicator\0",
+						       "AgsChangeIndicator",
 						       &ags_change_indicator_info,
 						       0);
 
@@ -148,7 +148,7 @@ ags_change_indicator_launch(AgsTask *task)
   change_indicator = AGS_CHANGE_INDICATOR(task);
 
   g_object_get(change_indicator->indicator,
-	       "adjustment\0", &adjustment,
+	       "adjustment", &adjustment,
 	       NULL);
 
   gtk_adjustment_set_value(adjustment,

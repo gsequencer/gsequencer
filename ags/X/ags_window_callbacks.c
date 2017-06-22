@@ -46,7 +46,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_QUESTION,
 						GTK_BUTTONS_YES_NO,
-						"Do you want to save '%s'?\0", window->name);
+						"Do you want to save '%s'?", window->name);
   cancel_button = gtk_dialog_add_button(dialog,
 					GTK_STOCK_CANCEL,
 					GTK_RESPONSE_CANCEL);
@@ -61,15 +61,15 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 
     if(g_strcmp0(ags_config_get_value(application_context->config,
 				      AGS_CONFIG_GENERIC,
-				      "simple-file\0"),
-		 "false\0")){
+				      "simple-file"),
+		 "false")){
       AgsSimpleFile *simple_file;
 
       GError *error;
       
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "application-context\0", window->application_context,
-						   "filename\0", window->name,
+						   "application-context", window->application_context,
+						   "filename", window->name,
 						   NULL);
       
       error = NULL;
@@ -85,8 +85,8 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
       GError *error;
       
       file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				      "application-context\0", window->application_context,
-				      "filename\0", window->name,
+				      "application-context", window->application_context,
+				      "filename", window->name,
 				      NULL);
       
       error = NULL;

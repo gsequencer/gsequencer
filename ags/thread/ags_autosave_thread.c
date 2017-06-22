@@ -27,6 +27,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+#include <ags/i18n.h>
+
 void ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread);
 void ags_autosave_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_autosave_thread_main_loop_interface_init(AgsMainLoopInterface *main_loop);
@@ -99,7 +101,7 @@ ags_autosave_thread_get_type()
     };
 
     ags_type_autosave_thread = g_type_register_static(AGS_TYPE_THREAD,
-						      "AgsAutosaveThread\0",
+						      "AgsAutosaveThread",
 						      &ags_autosave_thread_info,
 						      0);
     
@@ -133,9 +135,9 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
   gobject->finalize = ags_autosave_thread_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context to check against\0",
-				   "The application context to check against serialization.\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("application context to check against"),
+				   i18n_pspec("The application context to check against serialization"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -328,15 +330,15 @@ ags_autosave_thread_run(AgsThread *thread)
     uid = getuid();
     pw = getpwuid(uid);
 
-    filename = g_strdup_printf("%s/%s/%d-%s\0",
+    filename = g_strdup_printf("%s/%s/%d-%s",
 			       pw->pw_dir,
 			       AGS_DEFAULT_DIRECTORY,
 			       getpid(),
 			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
     
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", autosave_thread->application_context,
-				    "filename\0", filename,
+				    "application-context", autosave_thread->application_context,
+				    "filename", filename,
 				    NULL);
     ags_file_write_concurrent(file);
     g_object_unref(file);
@@ -361,7 +363,7 @@ ags_autosave_thread_new(GObject *application_context)
   AgsAutosaveThread *autosave_thread;
 
   autosave_thread = (AgsAutosaveThread *) g_object_new(AGS_TYPE_AUTOSAVE_THREAD,
-						       "application-context\0", application_context,
+						       "application-context", application_context,
 						       NULL);
 
   return(autosave_thread);

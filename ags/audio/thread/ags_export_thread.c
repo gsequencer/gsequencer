@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
 void ags_export_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_thread_init(AgsExportThread *export_thread);
@@ -93,7 +95,7 @@ ags_export_thread_get_type()
     };
 
     ags_type_export_thread = g_type_register_static(AGS_TYPE_THREAD,
-						    "AgsExportThread\0",
+						    "AgsExportThread",
 						    &ags_export_thread_info,
 						    0);
     
@@ -131,9 +133,9 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard assigned to\0",
-				   "The AgsSoundcard it is assigned to.\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,9 +149,9 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("audio-file\0",
-				   "audio file to write\0",
-				   "The audio file to write output.\0",
+  param_spec = g_param_spec_object("audio-file",
+				   i18n_pspec("audio file to write"),
+				   i18n_pspec("The audio file to write output"),
 				   AGS_TYPE_AUDIO_FILE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -191,22 +193,22 @@ ags_export_thread_init(AgsExportThread *export_thread)
   
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate\0");
+			      "samplerate");
 
   if(str0 == NULL){
     str0 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate\0");
+				"samplerate");
   }
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size\0");
+			      "buffer-size");
 
   if(str1 == NULL){
     str1 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size\0");
+				"buffer-size");
   }
 
   if(str0 == NULL || str1 == NULL){
@@ -272,7 +274,7 @@ ags_export_thread_set_property(GObject *gobject,
 				  NULL);
 	
 	g_object_set(export_thread,
-		     "frequency\0", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		     "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		     NULL);
 
 	if(AGS_IS_DEVOUT(soundcard)){
@@ -535,8 +537,8 @@ ags_export_thread_new(GObject *soundcard, AgsAudioFile *audio_file)
   AgsExportThread *export_thread;
 
   export_thread = (AgsExportThread *) g_object_new(AGS_TYPE_EXPORT_THREAD,
-						   "soundcard\0", soundcard,
-						   "audio-file\0", audio_file,
+						   "soundcard", soundcard,
+						   "audio-file", audio_file,
 						   NULL);
   
   return(export_thread);

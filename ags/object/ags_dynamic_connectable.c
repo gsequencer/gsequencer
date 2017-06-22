@@ -49,7 +49,7 @@ ags_dynamic_connectable_get_type()
     };
 
     ags_type_dynamic_connectable = g_type_register_static(G_TYPE_INTERFACE,
-							  "AgsDynamicConnectable\0", &ags_dynamic_connectable_info,
+							  "AgsDynamicConnectable", &ags_dynamic_connectable_info,
 							  0);
   }
 

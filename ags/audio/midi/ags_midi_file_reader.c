@@ -19,6 +19,8 @@
 
 #include <ags/audio/midi/ags_midi_file_reader.h>
 
+#include <ags/i18n.h>
+
 void ags_midi_file_reader_class_init(AgsMidiFileReaderClass *midi_file_reader);
 void ags_midi_file_reader_init(AgsMidiFileReader *midi_file_reader);
 void ags_midi_file_reader_set_property(GObject *gobject,
@@ -67,7 +69,7 @@ ags_midi_file_reader_get_type(void)
     };
 
     ags_type_midi_file_reader = g_type_register_static(G_TYPE_OBJECT,
-						       "AgsMidiFileReader\0", &ags_midi_file_reader_info,
+						       "AgsMidiFileReader", &ags_midi_file_reader_info,
 						       0);
   }
 
@@ -98,9 +100,9 @@ ags_midi_file_reader_class_init(AgsMidiFileReaderClass *midi_file_reader)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_object("midi-file\0",
-				   "assigned midi file\0",
-				   "The midi file to read\0",
+  param_spec = g_param_spec_object("midi-file",
+				   i18n_pspec("assigned midi file"),
+				   i18n_pspec("The midi file to read"),
 				   AGS_TYPE_MIDI_FILE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -218,7 +220,7 @@ ags_midi_file_reader_new(gchar *filename)
 
   if(filename != NULL){
     midi_file_reader->midi_file = g_object_new(AGS_TYPE_MIDI_FILE,
-					       "filename\0", filename,
+					       "filename", filename,
 					       NULL);
   }
   

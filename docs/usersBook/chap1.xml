@@ -197,6 +197,30 @@
       </sect3>
 
       <sect3>
+	<title>MIDI</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_midi_preferences.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The preferences dialog screenshot - midi tab
+	    </para>
+	  </caption>
+	</mediaobject>
+	<para>
+	  You can add MIDI sequencers to the configured project. These are intended to connect by the MIDI
+	  dialog, later.
+	</para>
+	<para>
+	  There is a combo box availabe to choose your backend like ALSA, OSS or JACK.
+	</para>
+	<para>
+	  The second combo box lets you choose the device. The JACK backend allows you to add MIDI ports.
+	</para>
+      </sect3>
+
+      <sect3>
 	<title>Performance</title>
 	<mediaobject>
 	  <imageobject>
@@ -212,6 +236,109 @@
 	  Auto-sense on stream is required for certain plugins and recalls but may cause additional performance
 	  losses.
 	</para>
+      </sect3>
+
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>MIDI</title>
+    <para>
+      The MIDI sub-menu provides functionality related to MIDI like the import or export wizards.
+    </para>
+    
+    <sect2>
+      <title>The MIDI import wizard</title>
+      <para>
+	The MIDI import wizard allows you to import Standard MIDI Files. You might choose
+	the machine which will be added after import. The notation is available within the
+	pattern or notation editor.
+      </para>
+
+      <sect3>
+	<title>Step #1 - file chooser</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_midi_import_wizard_no1.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The MIDI import wizard - step #1
+	    </para>
+	  </caption>
+	</mediaobject>	
+	<para>
+	  First you have to choose the Standard MIDI File you would like to import. As selected
+	  the desired file you might want to click Forward.
+	</para>	
+      </sect3>
+      
+      <sect3>
+	<title>Step #2 - mapping</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_midi_import_wizard_no2.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The MIDI import wizard - step #2
+	    </para>
+	  </caption>
+	</mediaobject>
+	
+	<para>
+	  After parsing the MIDI file there is one more step involved. You have to enable the
+	  appropriate track. There are 2 labels visible showing meta information. Below there is
+	  a combo box allowing you to choose the machine getting mapped. The spin buttons let you
+	  adjust the number of audio channels to create. As well the first offset.
+	</para>	
+
+      </sect3>
+
+    </sect2>
+    <sect2>
+      <title>The MIDI export wizard</title>
+      <para>
+	The MIDI export wizard allows you to export Standard MIDI Files. You might choose
+	the machine which will be exported.
+      </para>
+
+      <sect3>
+	<title>Step #1 - select machines</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_midi_export_wizard_no1.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The MIDI import wizard - step #1
+	    </para>
+	  </caption>
+	</mediaobject>	
+	<para>
+	  First you have to enable the machines you wish to export. The entry allows you to
+	  set the sequence meta information.
+	</para>	
+      </sect3>
+
+      <sect3>
+	<title>Step #2 - file chooser</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_midi_export_wizard_no2.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The MIDI import wizard - step #2
+	    </para>
+	  </caption>
+	</mediaobject>
+	
+	<para>
+	  After enabled the machines to export you shall specify the filename. As next you
+	  click OK in order to write the MIDI file.
+	</para>	
+
       </sect3>
 
     </sect2>

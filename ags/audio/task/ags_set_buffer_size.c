@@ -30,6 +30,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/i18n.h>
+
 void ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size);
 void ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size);
@@ -97,7 +99,7 @@ ags_set_buffer_size_get_type()
     };
 
     ags_type_set_buffer_size = g_type_register_static(AGS_TYPE_TASK,
-						      "AgsSetBufferSize\0",
+						      "AgsSetBufferSize",
 						      &ags_set_buffer_size_info,
 						      0);
     
@@ -134,9 +136,9 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of set buffer size\0",
-				   "The scope of set buffer size\0",
+  param_spec = g_param_spec_object("scope",
+				   i18n_pspec("scope of set buffer size"),
+				   i18n_pspec("The scope of set buffer size"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -150,9 +152,9 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("buffer-size\0",
-				 "buffer size\0",
-				 "The buffer size to apply\0",
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -336,8 +338,8 @@ ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *chann
 			    NULL);
   
   g_object_set(channel,
-	       "samplerate\0", samplerate,
-	       "buffer-size\0", buffer_size,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
 	       NULL);
 }
 
@@ -427,7 +429,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
     ags_main_loop_change_frequency(AGS_MAIN_LOOP(application_context->main_loop),
 				   thread_frequency);
   }else{
-    g_warning("buffer size can only adjusted of your very first soundcard\0");
+    g_warning("buffer size can only adjusted of your very first soundcard");
   }
   
   /* AgsAudio */

@@ -66,11 +66,14 @@ struct _AgsMidiParser
   FILE *file;
   guint nth_chunk;
 
+  unsigned char *buffer;
+  
   size_t file_length;
   size_t offset;
 
   guint current_time;
-
+  unsigned char current_status;
+  
   xmlDoc *doc;
 };
 

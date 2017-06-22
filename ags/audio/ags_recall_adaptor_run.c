@@ -31,6 +31,8 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_adaptor_run_class_init(AgsRecallAdaptorRunClass *recall_adaptor_run);
 void ags_recall_adaptor_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_adaptor_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -101,7 +103,7 @@ ags_recall_adaptor_run_get_type()
     };
 
     ags_type_recall_adaptor_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-							 "AgsRecallAdaptorRun\0",
+							 "AgsRecallAdaptorRun",
 							 &ags_recall_adaptor_run_info,
 							 0);
 

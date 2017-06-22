@@ -28,6 +28,8 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_channel.h>
 
+#include <ags/i18n.h>
+
 void ags_add_recall_class_init(AgsAddRecallClass *add_recall);
 void ags_add_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_recall_init(AgsAddRecall *add_recall);
@@ -90,7 +92,7 @@ ags_add_recall_get_type()
     };
 
     ags_type_add_recall = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsAddRecall\0",
+						 "AgsAddRecall",
 						 &ags_add_recall_info,
 						 0);
 
@@ -126,9 +128,9 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("context\0",
-				   "context of add recall\0",
-				   "The context of add recall task\0",
+  param_spec = g_param_spec_object("context",
+				   i18n_pspec("context of add recall"),
+				   i18n_pspec("The context of add recall task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -142,9 +144,9 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("recall\0",
-				   "recall of add recall\0",
-				   "The recall of add recall task\0",
+  param_spec = g_param_spec_object("recall",
+				   i18n_pspec("recall of add recall"),
+				   i18n_pspec("The recall of add recall task"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -158,9 +160,9 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("is-play\0",
-				     "is play context\0",
-				     "Add recall to play context\0",
+  param_spec =  g_param_spec_boolean("is-play",
+				     i18n_pspec("is play context"),
+				     i18n_pspec("Add recall to play context"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -282,6 +282,6 @@ ags_toolbar_mode_callback(GtkWidget *widget, AgsToolbar *toolbar)
     }
     break;
   default:
-    g_message("unknown editor mode\0");
+    g_message("unknown editor mode");
   }
 }

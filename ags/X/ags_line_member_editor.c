@@ -30,6 +30,8 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_line_member_editor_class_init(AgsLineMemberEditorClass *line_member_editor);
 void ags_line_member_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_member_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -84,7 +86,7 @@ ags_line_member_editor_get_type(void)
     };
 
     ags_type_line_member_editor = g_type_register_static(GTK_TYPE_VBOX,
-							 "AgsLineMemberEditor\0", &ags_line_member_editor_info,
+							 "AgsLineMemberEditor", &ags_line_member_editor_info,
 							 0);
 
     g_type_add_interface_static(ags_type_line_member_editor,
@@ -167,15 +169,15 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 
   line_member_editor->flags |= AGS_LINE_MEMBER_EDITOR_CONNECTED;
   
-  g_signal_connect(G_OBJECT(line_member_editor->add), "clicked\0",
+  g_signal_connect(G_OBJECT(line_member_editor->add), "clicked",
 		   G_CALLBACK(ags_line_member_editor_add_callback), line_member_editor);
 
-  g_signal_connect(G_OBJECT(line_member_editor->remove), "clicked\0",
+  g_signal_connect(G_OBJECT(line_member_editor->remove), "clicked",
 		   G_CALLBACK(ags_line_member_editor_remove_callback), line_member_editor);
 
   ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
 
-  g_signal_connect(G_OBJECT(line_member_editor->plugin_browser), "response\0",
+  g_signal_connect(G_OBJECT(line_member_editor->plugin_browser), "response",
 		   G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback), line_member_editor);
 }
 
@@ -193,13 +195,13 @@ ags_line_member_editor_disconnect(AgsConnectable *connectable)
   line_member_editor->flags &= (~AGS_LINE_MEMBER_EDITOR_CONNECTED);
 
   g_object_disconnect(G_OBJECT(line_member_editor->add),
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_line_member_editor_add_callback),
 		      line_member_editor,
 		      NULL);
   
   g_object_disconnect(G_OBJECT(line_member_editor->remove),
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_line_member_editor_remove_callback),
 		      line_member_editor,
 		      NULL);
@@ -207,7 +209,7 @@ ags_line_member_editor_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
 
   g_object_disconnect(G_OBJECT(line_member_editor->plugin_browser),
-		      "response\0",
+		      "response",
 		      G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback),
 		      line_member_editor,
 		      NULL);
@@ -236,6 +238,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
   GList *recall;
 
+  gchar *str;
   gchar *filename, *effect;
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
@@ -256,16 +259,16 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
     }
     
     g_object_get(G_OBJECT(recall->data),
-		 "filename\0", &filename,
+		 "filename", &filename,
 		 NULL);
 
     if(AGS_IS_RECALL_LADSPA(recall->data)){
       g_object_get(G_OBJECT(recall->data),
-		   "effect\0", &effect,
+		   "effect", &effect,
 		   NULL);
     }else if(AGS_IS_RECALL_LV2(recall->data)){
       g_object_get(G_OBJECT(recall->data),
-		   "uri\0", &effect,
+		   "uri", &effect,
 		   NULL);
     }
     
@@ -291,18 +294,21 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
       filename = AGS_RECALL_LV2(recall->data)->filename;
       effect = AGS_RECALL_LV2(recall->data)->effect;
     }else{
-      g_critical("unsupported recall\0");
+      g_critical("unsupported recall");
     }
-    
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
-						       filename,
-						       effect));
+
+    str = g_strdup_printf("%s - %s",
+			  filename,
+			  effect);
+    label = (GtkLabel *) gtk_label_new(str);
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(label),
 		       FALSE, FALSE,
 		       0);
     gtk_widget_show_all((GtkWidget *) hbox);
 
+    g_free(str);
+    
     recall = recall->next;
   }
 }

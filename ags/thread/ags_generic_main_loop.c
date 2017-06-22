@@ -84,7 +84,7 @@ ags_generic_main_loop_get_type()
     };
 
     ags_type_generic_main_loop = g_type_register_static(AGS_TYPE_THREAD,
-						 "AgsGenericMainLoop\0",
+						 "AgsGenericMainLoop",
 						 &ags_generic_main_loop_info,
 						 0);
     

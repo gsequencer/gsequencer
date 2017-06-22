@@ -28,6 +28,8 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/i18n.h>
+
 void ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_connection);
 void ags_reset_audio_connection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_reset_audio_connection_init(AgsResetAudioConnection *reset_audio_connection);
@@ -93,7 +95,7 @@ ags_reset_audio_connection_get_type()
     };
     
     ags_type_reset_audio_connection = g_type_register_static(AGS_TYPE_TASK,
-							     "AgsResetAudioConnection\0",
+							     "AgsResetAudioConnection",
 							     &ags_reset_audio_connection_info,
 							     0);
     
@@ -130,9 +132,9 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of reset audio connection\0",
-				   "The soundcard of reset audio connection task\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard of reset audio connection"),
+				   i18n_pspec("The soundcard of reset audio connection task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,9 +148,9 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of reset audio connection\0",
-				   "The audio of reset audio connection task\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of reset audio connection"),
+				   i18n_pspec("The audio of reset audio connection task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,9 +164,9 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_gtype("channel-type\0",
-				  "channel type\0",
-				  "The channel type of connection\0",
+  param_spec = g_param_spec_gtype("channel-type",
+				  i18n_pspec("channel type"),
+				  i18n_pspec("The channel type of connection"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -179,9 +181,9 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("pad\0",
-				 "nth pad\0",
-				 "The nth pad of audio\0",
+  param_spec = g_param_spec_uint("pad",
+				 i18n_pspec("nth pad"),
+				 i18n_pspec("The nth pad of audio"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -198,9 +200,9 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("audio-channel\0",
-				 "nth audio channel\0",
-				 "The nth audio channel of audio\0",
+  param_spec = g_param_spec_uint("audio-channel",
+				 i18n_pspec("nth audio channel"),
+				 i18n_pspec("The nth audio channel of audio"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -216,9 +218,9 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("mapped-line\0",
-				 "nth mapped line\0",
-				 "The nth mapped line of connection\0",
+  param_spec = g_param_spec_uint("mapped-line",
+				 i18n_pspec("nth mapped line"),
+				 i18n_pspec("The nth mapped line of connection"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -434,7 +436,7 @@ ags_reset_audio_connection_launch(AgsTask *task)
     GObject *data_object;
 
     g_object_get(G_OBJECT(list->data),
-		 "data-object\0", &data_object,
+		 "data-object", &data_object,
 		 NULL);
 	    
     if(AGS_IS_SOUNDCARD(data_object)){
@@ -456,12 +458,12 @@ ags_reset_audio_connection_launch(AgsTask *task)
   }
 
   g_object_set(audio_connection,
-	       "data-object\0", reset_audio_connection->soundcard,
-	       "audio\0", audio,
-	       "channel-type\0", reset_audio_connection->channel_type,
-	       "pad\0", reset_audio_connection->pad,
-	       "audio-channel\0", reset_audio_connection->audio_channel,
-	       "mapped-line\0", reset_audio_connection->mapped_line,
+	       "data-object", reset_audio_connection->soundcard,
+	       "audio", audio,
+	       "channel-type", reset_audio_connection->channel_type,
+	       "pad", reset_audio_connection->pad,
+	       "audio-channel", reset_audio_connection->audio_channel,
+	       "mapped-line", reset_audio_connection->mapped_line,
 	       NULL);
 
   if(g_type_is_a(reset_audio_connection->channel_type,
@@ -476,7 +478,7 @@ ags_reset_audio_connection_launch(AgsTask *task)
   parameter = g_new0(GParameter,
 		     1);
 
-  parameter[0].name = "soundcard\0";
+  parameter[0].name = "soundcard";
 
   g_value_init(&(parameter[0].value),
 	       G_TYPE_OBJECT);

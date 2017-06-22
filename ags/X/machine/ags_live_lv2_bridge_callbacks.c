@@ -117,7 +117,7 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
     
     if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so){
       lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so,
-						    "lv2ui_descriptor\0");
+						    "lv2ui_descriptor");
       
       if(dlerror() == NULL && lv2ui_descriptor){
 	ui_descriptor = lv2ui_descriptor(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect_index);
@@ -182,7 +182,7 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
   live_lv2_bridge = (AgsLiveLv2Bridge *) controller;
   
   if(live_lv2_bridge == NULL){
-    g_warning("ags_live_lv2_bridge_lv2ui_write_function() - live_lv2_bridge == NULL\0");
+    g_warning("ags_live_lv2_bridge_lv2ui_write_function() - live_lv2_bridge == NULL");
     return;
   }
 
@@ -201,7 +201,7 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
     }
     break;
   default:
-    g_warning("unknown lv2 port protocol\0");
+    g_warning("unknown lv2 port protocol");
   }
     
   recall = ags_recall_get_by_effect(audio->play,
@@ -211,7 +211,7 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
     play_lv2_audio = recall->data;
 
     port = AGS_RECALL(play_lv2_audio)->port;
-    control_port = g_strdup_printf("%d/%d\0",
+    control_port = g_strdup_printf("%d/%d",
 				   port_index + 1,
 				   g_list_length(port));
 	
@@ -270,7 +270,7 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 		       -1);    
     
 #ifdef AGS_DEBUG
-    g_message("%d %d\0", bank, program);
+    g_message("%d %d", bank, program);
 #endif
     
     program_interface = live_lv2_bridge->lv2_descriptor->extension_data(LV2_PROGRAMS__Interface);
@@ -302,7 +302,7 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 		GValue value = {0,};
 
 #ifdef AGS_DEBUG
-		g_message("%s %f\0", specifier, live_lv2_bridge->port_value[i]);
+		g_message("%s %f", specifier, live_lv2_bridge->port_value[i]);
 #endif
 		  
 		g_value_init(&value,
@@ -342,7 +342,7 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 	  specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 
 #ifdef AGS_DEBUG
-	  g_message("%s\0", specifier);
+	  g_message("%s", specifier);
 #endif
       
 	  while(bulk_member != NULL){
@@ -372,7 +372,7 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 		ags_dial_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
-		g_message(" --- %f\0", live_lv2_bridge->port_value[i]);
+		g_message(" --- %f", live_lv2_bridge->port_value[i]);
 #endif
 	      }
 	

@@ -45,7 +45,7 @@
 #include <ags/audio/thread/ags_recycling_thread.h>
 #include <ags/audio/thread/ags_iterator_thread.h>
 
-#include <fontconfig/fontconfig.h>
+#include <ags/i18n.h>
 
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
 void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -149,7 +149,7 @@ ags_audio_loop_get_type()
     };
 
     ags_type_audio_loop = g_type_register_static(AGS_TYPE_THREAD,
-						 "AgsAudioLoop\0",
+						 "AgsAudioLoop",
 						 &ags_audio_loop_info,
 						 0);
     
@@ -191,9 +191,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -207,9 +207,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard assigned to\0",
-				   "The AgsSoundcard it is assigned to.\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -223,9 +223,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("play-recall\0",
-				   "recall to run\0",
-				   "A recall to run\0",
+  param_spec = g_param_spec_object("play-recall",
+				   i18n_pspec("recall to run"),
+				   i18n_pspec("A recall to run"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -239,9 +239,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("play-channel\0",
-				   "channel to run\0",
-				   "A channel to run\0",
+  param_spec = g_param_spec_object("play-channel",
+				   i18n_pspec("channel to run"),
+				   i18n_pspec("A channel to run"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -255,9 +255,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("play-audio\0",
-				   "audio to run\0",
-				   "A audio to run\0",
+  param_spec = g_param_spec_object("play-audio",
+				   i18n_pspec("audio to run"),
+				   i18n_pspec("A audio to run"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -312,7 +312,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   /* calculate frequency */
   thread = (AgsThread *) audio_loop;
 
-  g_signal_connect_after(thread, "notify::frequency\0",
+  g_signal_connect_after(thread, "notify::frequency",
 			 G_CALLBACK(ags_audio_loop_notify_frequency), NULL);
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -325,22 +325,22 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate\0");
+			      "samplerate");
 
   if(str0 == NULL){
     str0 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate\0");
+				"samplerate");
   }
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size\0");
+			      "buffer-size");
 
   if(str1 == NULL){
     str1 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size\0");
+				"buffer-size");
   }
 
   pthread_mutex_unlock(application_mutex);
@@ -648,7 +648,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
   audio_loop = AGS_THREAD(main_loop);
   
   g_object_set(audio_loop,
-	       "frequency\0", frequency,
+	       "frequency", frequency,
 	       NULL);
 
   /* reset soundcard thread */
@@ -656,7 +656,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -667,7 +667,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_SEQUENCER_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -678,7 +678,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_EXPORT_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -689,7 +689,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_AUDIO_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -700,7 +700,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_CHANNEL_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -863,7 +863,7 @@ ags_audio_loop_run(AgsThread *thread)
     param.sched_priority = AGS_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -1036,7 +1036,7 @@ ags_audio_loop_timing_thread(void *ptr)
     //			    AGS_THREAD_SUSPEND_SIG,
     //			    audio_loop->time_cycle, &time_spent);
     
-    //    g_message("inter\0");    
+    //    g_message("inter");    
   }
   
   pthread_exit(NULL);
@@ -1946,7 +1946,7 @@ ags_audio_loop_new(GObject *soundcard, GObject *application_context)
   AgsAudioLoop *audio_loop;
 
   audio_loop = (AgsAudioLoop *) g_object_new(AGS_TYPE_AUDIO_LOOP,
-					     "soundcard\0", soundcard,
+					     "soundcard", soundcard,
 					     NULL);
 
   if(application_context != NULL){

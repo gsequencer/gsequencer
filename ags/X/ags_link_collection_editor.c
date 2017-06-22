@@ -38,6 +38,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_link_collection_editor_class_init(AgsLinkCollectionEditorClass *link_collection_editor);
 void ags_link_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_link_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -105,7 +107,7 @@ ags_link_collection_editor_get_type(void)
     };
 
     ags_type_link_collection_editor = g_type_register_static(GTK_TYPE_TABLE,
-							     "AgsLinkCollectionEditor\0",
+							     "AgsLinkCollectionEditor",
 							     &ags_link_collection_editor_info,
 							     0);
     
@@ -143,11 +145,11 @@ ags_link_collection_editor_class_init(AgsLinkCollectionEditorClass *link_collect
    * 
    * Since: 0.3
    */
-  param_spec = g_param_spec_gtype("channel-type\0",
-				   "assigned channel type\0",
-				   "The channel type which this channel link collection editor is assigned with\0",
-				   G_TYPE_NONE,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_gtype("channel-type",
+				  i18n_pspec("assigned channel type"),
+				  i18n_pspec("The channel type which this channel link collection editor is assigned with"),
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL_TYPE,
 				  param_spec);
@@ -182,7 +184,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 
   link_collection_editor->flags = 0;
   
-  g_signal_connect_after(GTK_WIDGET(link_collection_editor), "parent_set\0",
+  g_signal_connect_after(GTK_WIDGET(link_collection_editor), "parent_set",
 			 G_CALLBACK(ags_link_collection_editor_parent_set_callback), link_collection_editor);
 
   link_collection_editor->channel_type = G_TYPE_NONE;
@@ -204,7 +206,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("link\0");
+  label = (GtkLabel *) gtk_label_new(i18n("link"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -225,7 +227,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		    
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "NULL\0",
+		     0, "NULL",
 		     1, NULL,
 		     -1);
   
@@ -235,7 +237,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(link_collection_editor->link),
 				 cell_renderer,
-				 "text\0", 0,
+				 "text", 0,
 				 NULL);
 
   gtk_combo_box_set_model(link_collection_editor->link,
@@ -251,7 +253,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first line\0");
+  label = (GtkLabel *) gtk_label_new(i18n("first line"));
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -278,7 +280,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first link line\0");
+  label = (GtkLabel *) gtk_label_new(i18n("first link line"));
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -304,7 +306,7 @@ ags_link_collection_editor_init(AgsLinkCollectionEditor *link_collection_editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("count\0");
+  label = (GtkLabel *) gtk_label_new(i18n("count"));
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -375,13 +377,13 @@ ags_link_collection_editor_connect(AgsConnectable *connectable)
   link_collection_editor->flags |= AGS_LINK_COLLECTION_EDITOR_CONNECTED;
   
   /* AgsLinkCollectionEditor */
-  g_signal_connect_after(G_OBJECT(link_collection_editor->link), "changed\0",
+  g_signal_connect_after(G_OBJECT(link_collection_editor->link), "changed",
 			 G_CALLBACK(ags_link_collection_editor_link_callback), link_collection_editor);
 
-  g_signal_connect_after(G_OBJECT(link_collection_editor->first_line), "value-changed\0",
+  g_signal_connect_after(G_OBJECT(link_collection_editor->first_line), "value-changed",
 			 G_CALLBACK(ags_link_collection_editor_first_line_callback), link_collection_editor);
 
-  g_signal_connect_after(G_OBJECT(link_collection_editor->first_link), "value-changed\0",
+  g_signal_connect_after(G_OBJECT(link_collection_editor->first_link), "value-changed",
 			 G_CALLBACK(ags_link_collection_editor_first_link_callback), link_collection_editor);
 }
 
@@ -400,19 +402,19 @@ ags_link_collection_editor_disconnect(AgsConnectable *connectable)
   
   /* AgsLinkCollectionEditor */
   g_object_disconnect(G_OBJECT(link_collection_editor->link),
-		      "changed\0",
+		      "changed",
 			 G_CALLBACK(ags_link_collection_editor_link_callback),
 		      link_collection_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(link_collection_editor->first_line),
-		      "value-changed\0",
+		      "value-changed",
 		      G_CALLBACK(ags_link_collection_editor_first_line_callback),
 		      link_collection_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(link_collection_editor->first_link),
-		      "value-changed\0",
+		      "value-changed",
 		      G_CALLBACK(ags_link_collection_editor_first_link_callback),
 		      link_collection_editor,
 		      NULL);
@@ -733,7 +735,7 @@ ags_link_collection_editor_new(GType channel_type)
   AgsLinkCollectionEditor *link_collection_editor;
   
   link_collection_editor = (AgsLinkCollectionEditor *) g_object_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-								    "channel_type\0", channel_type,
+								    "channel_type", channel_type,
 								    NULL);
   
   return(link_collection_editor);

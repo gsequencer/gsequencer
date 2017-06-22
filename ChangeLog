@@ -1,3 +1,58 @@
+ags (0.8.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsPreset applicable to line ranges and store parameters
+	* implemented to persist AgsLiveDssiBridge and AgsLiveLv2Bridge
+	* implemented to store presets in AgsSimpleFile
+	* extended ags-copy-pattern to use preset scope ags-envelope
+	* extended AgsEnvelopeDialog to support presets and apply to pattern
+	* improved ags-envelope to read frame count once
+
+ags (0.8.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsAddSoundcardEditor and AgsAddSequencerEditor dereference to wrong type
+	* fixed not showing AgsPad as resize from 0
+	* fixed crash in AgsMeter as resize to 0
+	* fixed resize of AgsNotebook in AgsPatternEdit and AgsNoteEdit related resize to/from 0
+	* fixed shrink of AgsNotebook in AgsAutomationEdit
+
+ags (0.8.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiParser to don't skip length of status messages
+	* fixed libags-audio.h to not include removed header
+	* fixed Makefile.am to use correct symlink of gtk-doc
+
+ags (0.8.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags.rc to support AgsMidiExportWizard and AgsMidiImportWizard
+	* improved ags.rc to provide better color of active text
+	* improved Makefile.am
+	* added gettext support
+
+ags (0.8.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* optional libinstpatch dependency
+	* implemented AgsEnvelopeDialog
+	* refactored ags-envelope recall to use AgsComplex fields of AgsNote
+	* added AgsEnvelopeDialog to AgsDrum, AgsMatrix, AgsDssiBridge and AgsLv2Bridge
+	* added ags-envelope recall to ags_recall_factory.c
+	* fixed unavailable AgsMidiDialog as doing delete-event
+	* fixed functional test timed access to widget
+
+ags (0.8.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented MIDI import tracks
+	* implemented MIDI export tracks
+	* fixed AgsMidiBuilder serious problems
+	* fixed ags_midi_buffer_util_seek()
+	* fixed AgsMidiParser using wrong tempo and time signature allocation
+	* fixed ags_midi_buffer_util.c same issue as above with tempo and time signature
+
 ags (0.7.136)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

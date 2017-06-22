@@ -54,7 +54,7 @@ ags_timestamp_get_type (void)
     };
 
     ags_type_timestamp = g_type_register_static(G_TYPE_OBJECT,
-						"AgsTimestamp\0",
+						"AgsTimestamp",
 						&ags_timestamp_info,
 						0);
   }

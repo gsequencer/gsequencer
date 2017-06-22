@@ -19,6 +19,8 @@
 
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/i18n.h>
+
 void ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref);
 void ags_file_id_ref_init(AgsFileIdRef *file_id_ref);
 void ags_file_id_ref_set_property(GObject *gobject,
@@ -79,7 +81,7 @@ ags_file_id_ref_get_type()
     };
 
     ags_type_file_id_ref = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsFileIdRef\0",
+						  "AgsFileIdRef",
 						  &ags_file_id_ref_info,
 						  0);
   }
@@ -111,9 +113,9 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("node\0",
-				    "the node\0",
-				    "The node to find the element\0",
+  param_spec = g_param_spec_pointer("node",
+				    i18n_pspec("the node"),
+				    i18n_pspec("The node to find the element"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NODE,
@@ -126,9 +128,9 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_string("xpath\0",
-				   "the xpath\0",
-				   "The xpath to find the element\0",
+  param_spec = g_param_spec_string("xpath",
+				   i18n_pspec("the xpath"),
+				   i18n_pspec("The xpath to find the element"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -142,9 +144,9 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("reference\0",
-				    "reference of the locator\0",
-				    "The reference resulted by the xpath locator\0",
+  param_spec = g_param_spec_pointer("reference",
+				    i18n_pspec("reference of the locator"),
+				    i18n_pspec("The reference resulted by the xpath locator"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_REFERENCE,
@@ -158,9 +160,9 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("file\0",
-				   "file assigned to\0",
-				   "The entire file assigned to\0",
+  param_spec = g_param_spec_object("file",
+				   i18n_pspec("file assigned to"),
+				   i18n_pspec("The entire file assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,9 +176,9 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context access\0",
-				   "The application-context object to access the tree\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("application context access"),
+				   i18n_pspec("The application-context object to access the tree"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -193,7 +195,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    * Since: 0.7.0
    */
   file_id_ref_signals[RESOLVED] = 
-    g_signal_new("resolved\0",
+    g_signal_new("resolved",
 		 G_TYPE_FROM_CLASS(file_id_ref),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileIdRefClass, resolved),

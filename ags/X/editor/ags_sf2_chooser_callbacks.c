@@ -44,7 +44,7 @@ ags_sf2_chooser_preset_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
 			    &error);
 
   if(error != NULL){
-    g_error("%s\0", error->message);
+    g_error("%s", error->message);
   }
 }
 
@@ -70,7 +70,7 @@ ags_sf2_chooser_instrument_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_ch
 			    &error);
 
   if(error != NULL){
-    g_error("%s\0", error->message);
+    g_error("%s", error->message);
   }
 }
 
@@ -96,6 +96,6 @@ ags_sf2_chooser_sample_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
 			    &error);
 
   if(error != NULL){
-    g_error("%s\0", error->message);
+    g_error("%s", error->message);
   }
 }

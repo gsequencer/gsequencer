@@ -110,23 +110,24 @@ ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
   
   if(audio_channels_old < audio_channels){
     notation = g_list_nth(audio->notation,
-			  audio_channels_old - 1);
+			  audio_channels_old);
 
     for(i = audio_channels_old; i < audio_channels; i++){
       ags_notebook_insert_tab(editor_child->notebook,
 			      i);
       tabs = editor_child->notebook->tabs;
-      notation = notation->next;
       AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tabs->data)->toggle,
 				   TRUE);
+
+      notation = notation->next;
     }
 
     gtk_widget_show_all((GtkWidget *) editor_child->notebook);
   }else{
     for(i = audio_channels; i < audio_channels_old; i++){
       ags_notebook_remove_tab(editor_child->notebook,
-			      i);
+			      audio_channels);
     }
   }
 
@@ -490,7 +491,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     }
 
 #ifdef DEBUG
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
 #endif
   }
   void ags_note_edit_drawing_area_button_release_event_draw_control(cairo_t *cr){
@@ -589,7 +590,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     y = (guint) floor((double) y / (double) (note_edit->control_height));
 
 #ifdef AGS_DEBUG
-    g_message("%d, %d\0", x, y);
+    g_message("%d, %d", x, y);
 #endif
     
     /* select notes */
@@ -920,7 +921,7 @@ ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
     note_x1 = (note_x * tact) + (note_offset_x1 * tact);
 
 #ifdef AGS_DEBUG
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
 #endif
   }
   void ags_note_edit_drawing_area_motion_notify_event_draw_control(cairo_t *cr){
@@ -1304,7 +1305,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     pthread_mutex_unlock(application_mutex);
 
     if(no_soundcard){
-      g_message("No soundcard available\0");
+      g_message("No soundcard available");
       
       return;
     }
@@ -1367,7 +1368,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     /* init channel for playback */
     init_channel = ags_init_channel_new(channel, FALSE,
 					TRUE, FALSE, FALSE);
-    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+    g_signal_connect_after(G_OBJECT(init_channel), "launch",
 			   G_CALLBACK(ags_note_edit_init_channel_launch_callback), note);
     tasks = g_list_prepend(tasks, init_channel);
     
@@ -1649,7 +1650,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
       gtk_widget_queue_draw((GtkWidget *) note_edit);
 
-      fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+      fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
     }
     break;
   case GDK_KEY_Delete:
@@ -1781,7 +1782,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 						       AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
-  g_message("launch\0");
+  g_message("launch");
 #endif
   
   if(AGS_PLAYBACK(channel->playback) == NULL ||

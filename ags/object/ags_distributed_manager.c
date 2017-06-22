@@ -38,7 +38,7 @@ ags_distributed_manager_get_type()
 
   if(!ags_type_distributed_manager){
     ags_type_distributed_manager = g_type_register_static_simple(G_TYPE_INTERFACE,
-								 "AgsDistributedManager\0",
+								 "AgsDistributedManager",
 								 sizeof(AgsDistributedManagerInterface),
 								 (GClassInitFunc) ags_distributed_manager_class_init,
 								 0, NULL, 0);

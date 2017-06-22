@@ -58,9 +58,9 @@ ags_turtle_manager_get_type (void)
     };
 
     ags_type_turtle_manager = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsTurtleManager\0",
-						  &ags_turtle_manager_info,
-						  0);
+						     "AgsTurtleManager",
+						     &ags_turtle_manager_info,
+						     0);
   }
 
   return (ags_type_turtle_manager);

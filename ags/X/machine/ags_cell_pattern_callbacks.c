@@ -132,7 +132,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 						    channel->line,
 						    0, index1,
 						    j);
-    g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+    g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui",
 		     G_CALLBACK(ags_cell_pattern_refresh_gui_callback), cell_pattern);
 
     ags_task_thread_append_task(task_thread,
@@ -231,7 +231,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     pthread_mutex_unlock(application_mutex);
 
     if(no_soundcard){
-      g_message("No soundcard available\0");
+      g_message("No soundcard available");
       
       return;
     }
@@ -273,7 +273,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     /* init channel for playback */
     init_channel = ags_init_channel_new(channel, FALSE,
 					TRUE, FALSE, FALSE);
-    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+    g_signal_connect_after(G_OBJECT(init_channel), "launch",
 			   G_CALLBACK(ags_cell_pattern_init_channel_launch_callback), NULL);
     tasks = g_list_prepend(tasks, init_channel);
     
@@ -410,7 +410,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 						      channel->line,
 						      0, index1,
 						      j);
-      g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+      g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui",
 		       G_CALLBACK(ags_cell_pattern_refresh_gui_callback), cell_pattern);
 
 
@@ -499,7 +499,7 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
 						       AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
-  g_message("launch\0");
+  g_message("launch");
 #endif
   
   if(AGS_PLAYBACK(channel->playback) == NULL ||

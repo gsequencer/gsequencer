@@ -89,7 +89,7 @@ ags_mute_recycling_get_type()
     };
 
     ags_type_mute_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						     "AgsMuteRecycling\0",
+						     "AgsMuteRecycling",
 						     &ags_mute_recycling_info,
 						     0);
 
@@ -149,10 +149,10 @@ ags_mute_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInter
 void
 ags_mute_recycling_init(AgsMuteRecycling *mute_recycling)
 {
-  AGS_RECALL(mute_recycling)->name = "ags-mute\0";
+  AGS_RECALL(mute_recycling)->name = "ags-mute";
   AGS_RECALL(mute_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(mute_recycling)->xml_type = "ags-mute-recycling\0";
+  AGS_RECALL(mute_recycling)->xml_type = "ags-mute-recycling";
   AGS_RECALL(mute_recycling)->port = NULL;
 
   AGS_RECALL(mute_recycling)->child_type = AGS_TYPE_MUTE_AUDIO_SIGNAL;
@@ -253,7 +253,7 @@ ags_mute_recycling_new(AgsRecycling *source)
   AgsMuteRecycling *mute_recycling;
 
   mute_recycling = (AgsMuteRecycling *) g_object_new(AGS_TYPE_MUTE_RECYCLING,
-						     "source\0", source,
+						     "source", source,
 						     NULL);
 
   return(mute_recycling);

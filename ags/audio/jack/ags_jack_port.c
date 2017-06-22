@@ -34,6 +34,7 @@
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_jack_port_class_init(AgsJackPortClass *jack_port);
 void ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -96,7 +97,7 @@ ags_jack_port_get_type()
     };
     
     ags_type_jack_port = g_type_register_static(G_TYPE_OBJECT,
-						"AgsJackPort\0",
+						"AgsJackPort",
 						&ags_jack_port_info,
 						0);
 
@@ -133,9 +134,9 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    * 
    * Since: 0.7.1
    */
-  param_spec = g_param_spec_object("jack-client\0",
-				   "assigned JACK client\0",
-				   "The assigned JACK client.\0",
+  param_spec = g_param_spec_object("jack-client",
+				   i18n_pspec("assigned JACK client"),
+				   i18n_pspec("The assigned JACK client"),
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -149,10 +150,10 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_string("port-name\0",
-				   "port name\0",
-				   "The port name\0",
-				   "hw:0\0",
+  param_spec = g_param_spec_string("port-name",
+				   i18n_pspec("port name"),
+				   i18n_pspec("The port name"),
+				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_NAME,
@@ -390,7 +391,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
   }
 
   if(jack_port->jack_client == NULL){
-    g_warning("ags_jack_port.c - no assigned AgsJackClient\0");
+    g_warning("ags_jack_port.c - no assigned AgsJackClient");
     
     return;
   }
@@ -481,7 +482,7 @@ ags_jack_port_new(GObject *jack_client)
   AgsJackPort *jack_port;
 
   jack_port = (AgsJackPort *) g_object_new(AGS_TYPE_JACK_PORT,
-					   "jack-client\0", jack_client,
+					   "jack-client", jack_client,
 					   NULL);
 
   return(jack_port);

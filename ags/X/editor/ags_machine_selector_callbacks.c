@@ -109,7 +109,7 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   }
   
   ags_machine_selection_load_defaults(machine_selection);
-  g_signal_connect(G_OBJECT(machine_selection), "response\0",
+  g_signal_connect(G_OBJECT(machine_selection), "response",
 		   G_CALLBACK(ags_machine_selector_selection_response), machine_selector);
   gtk_widget_show_all((GtkWidget *) machine_selection);
 }

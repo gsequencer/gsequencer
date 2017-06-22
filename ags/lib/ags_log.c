@@ -57,7 +57,7 @@ ags_log_get_type(void)
     };
 
     ags_type_log = g_type_register_static(G_TYPE_OBJECT,
-					  "AgsLog\0",
+					  "AgsLog",
 					  &ags_log_info,
 					  0);
   }
@@ -126,9 +126,15 @@ ags_log_finalize(GObject *gobject)
 AgsLog*
 ags_log_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+  
   if(ags_log == NULL){
     ags_log = ags_log_new();
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_log);
 }

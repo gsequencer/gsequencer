@@ -23,6 +23,8 @@
 
 #include <ags/X/editor/ags_machine_selector.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_button);
 void ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button);
@@ -80,7 +82,7 @@ ags_machine_radio_button_get_type(void)
     };
 
     ags_type_machine_radio_button = g_type_register_static(GTK_TYPE_RADIO_BUTTON,
-							   "AgsMachineRadioButton\0", &ags_machine_radio_button_info,
+							   "AgsMachineRadioButton", &ags_machine_radio_button_info,
 							   0);
     
     g_type_add_interface_static(ags_type_machine_radio_button,
@@ -122,11 +124,11 @@ ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_bu
    *
    * The assigned #AgsMachine
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("machine\0",
-				   "assigned machine\0",
-				   "The machine it is assigned to\0",
+  param_spec = g_param_spec_object("machine",
+				   i18n_pspec("assigned machine"),
+				   i18n_pspec("The machine it is assigned to"),
 				   AGS_TYPE_MACHINE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -168,7 +170,7 @@ ags_machine_radio_button_set_property(GObject *gobject,
 
       if(machine != NULL){
 	g_object_set(gobject,
-		     "label\0", g_strdup_printf("%s: %s\0", G_OBJECT_TYPE_NAME(machine), machine->name),
+		     "label", g_strdup_printf("%s: %s", G_OBJECT_TYPE_NAME(machine), machine->name),
 		     NULL);
 
 	g_object_ref(machine);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,6 +45,10 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_export_window.h>
 
+#include <ags/X/import/ags_midi_import_wizard.h>
+
+#include <ags/X/export/ags_midi_export_wizard.h>
+
 #include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -77,7 +81,7 @@ ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("open file\0",
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("open file",
 								      (GtkWindow *) window,
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
 								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -86,7 +90,7 @@ ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
-  g_signal_connect((GObject *) file_chooser, "response\0",
+  g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_menu_bar_open_response_callback), menu_bar);
 }
 
@@ -96,18 +100,23 @@ ags_menu_bar_open_response_callback(GtkFileChooserDialog *file_chooser, gint res
   if(response == GTK_RESPONSE_ACCEPT){
     AgsFile *file;
     AgsSaveFile *save_file;
-    char *filename;
 
+    char *filename;
+    gchar *str;
+    
     GError *error;
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     error = NULL;
 
-    g_spawn_command_line_async(g_strdup_printf("gsequencer --filename %s\0",
-					       filename),
+    str = g_strdup_printf("gsequencer --filename %s",
+			  filename);
+    g_spawn_command_line_async(str,
 			       &error);
+
     g_free(filename);
+    g_free(str);
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);
@@ -126,13 +135,13 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   if(g_strcmp0(ags_config_get_value(application_context->config,
 				    AGS_CONFIG_GENERIC,
-				    "simple-file\0"),
-	       "false\0")){
+				    "simple-file"),
+	       "false")){
     AgsSimpleFile *simple_file;
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context\0", window->application_context,
-						 "filename\0", window->name,
+						 "application-context", window->application_context,
+						 "filename", window->name,
 						 NULL);
       
     error = NULL;
@@ -146,8 +155,8 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     AgsFile *file;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", window->application_context,
-				    "filename\0", window->name,
+				    "application-context", window->application_context,
+				    "filename", window->name,
 				    NULL);
       
     error = NULL;
@@ -170,7 +179,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
         
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("save file as\0",
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("save file as",
 								      (GtkWindow *) window,
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
 								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -186,6 +195,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     AgsApplicationContext *application_context;
 
     gchar *filename;
+    gchar *str;
     
     GError *error;
     
@@ -194,13 +204,13 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     
     if(g_strcmp0(ags_config_get_value(application_context->config,
 				      AGS_CONFIG_GENERIC,
-				      "simple-file\0"),
-		 "false\0")){
+				      "simple-file"),
+		 "false")){
       AgsSimpleFile *simple_file;
 
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						   "application-context\0", window->application_context,
-						   "filename\0", filename,
+						   "application-context", window->application_context,
+						   "filename", filename,
 						   NULL);
       
       error = NULL;
@@ -214,8 +224,8 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
       AgsFile *file;
 
       file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				      "application-context\0", window->application_context,
-				      "filename\0", filename,
+				      "application-context", window->application_context,
+				      "filename", filename,
 				      NULL);
       
       error = NULL;
@@ -232,7 +242,11 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     }
     
     window->name = g_strdup(filename);
-    gtk_window_set_title((GtkWindow *) window, g_strconcat("GSequencer - \0", window->name, NULL));
+
+    str = g_strconcat("GSequencer - ", window->name, NULL);
+    gtk_window_set_title((GtkWindow *) window, str);
+
+    g_free(str);
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);
@@ -263,7 +277,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_QUESTION,
 						GTK_BUTTONS_YES_NO,
-						"Do you want to save '%s'?\0", window->name);
+						"Do you want to save '%s'?", window->name);
   cancel_button = gtk_dialog_add_button(dialog,
 					GTK_STOCK_CANCEL,
 					GTK_RESPONSE_CANCEL);
@@ -276,8 +290,8 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     //TODO:JK: revise me
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", window->application_context,
-				    "filename\0", window->name,
+				    "application-context", window->application_context,
+				    "filename", window->name,
 				    NULL);
 
     ags_file_write(file);
@@ -824,10 +838,10 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 					      AGS_AUDIO_NOTATION_DEFAULT |
 					      AGS_AUDIO_REVERSE_MAPPING);
     g_object_set(AGS_MACHINE(lv2_bridge)->audio,
-		 "audio-start-mapping\0", 0,
-		 "audio-end-mapping\0", 128,
-		 "midi-start-mapping\0", 0,
-		 "midi-end-mapping\0", 128,
+		 "audio-start-mapping", 0,
+		 "audio-end-mapping", 128,
+		 "midi-start-mapping", 0,
+		 "midi-end-mapping", 128,
 		 NULL);
     
     AGS_MACHINE(lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
@@ -835,6 +849,9 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     ags_machine_popup_add_connection_options((AgsMachine *) lv2_bridge,
 					     (AGS_MACHINE_POPUP_MIDI_DIALOG));
+
+    ags_machine_popup_add_edit_options((AgsMachine *) lv2_bridge,
+				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
   
   /* get audio loop */
@@ -1065,6 +1082,58 @@ ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 }
 
 void
+ags_menu_bar_midi_import_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+
+  if(window->midi_import_wizard != NULL){
+    return;
+  }
+
+  window->midi_import_wizard = ags_midi_import_wizard_new();
+  g_object_set(window->midi_import_wizard,
+	       "application-context", window->application_context,
+	       "main-window", window,
+	       NULL);
+
+  ags_connectable_connect(AGS_CONNECTABLE(window->midi_import_wizard));
+  ags_applicable_reset(AGS_APPLICABLE(window->midi_import_wizard));
+
+  gtk_widget_show_all(GTK_WIDGET(window->midi_import_wizard));
+}
+
+void
+ags_menu_bar_midi_export_track_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+
+  if(window->midi_export_wizard != NULL){
+    return;
+  }
+
+  window->midi_export_wizard = ags_midi_export_wizard_new();
+  g_object_set(window->midi_export_wizard,
+	       "application-context", window->application_context,
+	       "main-window", window,
+	       NULL);
+
+  ags_connectable_connect(AGS_CONNECTABLE(window->midi_export_wizard));
+  ags_applicable_reset(AGS_APPLICABLE(window->midi_export_wizard));
+
+  gtk_widget_show_all(GTK_WIDGET(window->midi_export_wizard));
+}
+
+void
+ags_menu_bar_midi_playback_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   static FILE *file = NULL;
@@ -1072,23 +1141,25 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   static gchar *license;
   static GdkPixbuf *logo;
 
+  gchar *str;
+  
   int n_read;
   
   GError *error;
 
-  gchar *authors[] = { "Joël Krähemann\0", NULL }; 
+  gchar *authors[] = { "Joël Krähemann", NULL }; 
 
-  if(g_file_test("/usr/share/common-licenses/GPL-3\0",
+  if(g_file_test("/usr/share/common-licenses/GPL-3",
 		 G_FILE_TEST_EXISTS)){
     if(file == NULL){
-      file = fopen("/usr/share/common-licenses/GPL-3\0", "r\0");
-      stat("/usr/share/common-licenses/GPL-3\0", &sb);
+      file = fopen("/usr/share/common-licenses/GPL-3", "r");
+      stat("/usr/share/common-licenses/GPL-3", &sb);
       license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
 
       n_read = fread(license, sizeof(char), sb.st_size, file);
 
       if(n_read != sb.st_size){
-	g_critical("fread() number of bytes returned doesn't match buffer size\0");
+	g_critical("fread() number of bytes returned doesn't match buffer size");
       }
       
       license[sb.st_size] = '\0';
@@ -1096,17 +1167,20 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
       error = NULL;
 
-      logo = gdk_pixbuf_new_from_file(g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags.png\0"), &error);
+      str = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png");
+      logo = gdk_pixbuf_new_from_file(str, &error);
+
+      g_free(str);
     }
   }
   
   gtk_show_about_dialog((GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, GTK_TYPE_WINDOW),
-			"program-name\0", "gsequencer\0",
-			"authors\0", authors,
-			"license\0", license,
-			"version\0", AGS_VERSION,
-			"website\0", "http://gsequencer.org\0",
-			"title\0", "Advanced Gtk+ Sequencer\0",
-			"logo\0", logo,
+			"program-name", "gsequencer",
+			"authors", authors,
+			"license", license,
+			"version", AGS_VERSION,
+			"website", "http://nongnu.org/gsequencer",
+			"title", "Advanced Gtk+ Sequencer",
+			"logo", logo,
 			NULL);
 }

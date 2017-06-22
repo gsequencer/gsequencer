@@ -38,6 +38,7 @@
 #include <ags/X/ags_line_member.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_automation_toolbar_class_init(AgsAutomationToolbarClass *automation_toolbar);
 void ags_automation_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -80,7 +81,7 @@ ags_automation_toolbar_get_type(void)
     };
 
     ags_type_automation_toolbar = g_type_register_static(GTK_TYPE_TOOLBAR,
-							 "AgsAutomationToolbar\0", &ags_automation_toolbar_info,
+							 "AgsAutomationToolbar", &ags_automation_toolbar_info,
 							 0);
     
     g_type_add_interface_static(ags_type_automation_toolbar,
@@ -114,80 +115,80 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   GtkCellRenderer *cell_renderer;
   
   automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					      "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
+					      "image", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
 										  GTK_ICON_SIZE_LARGE_TOOLBAR),
-					      "relief\0", GTK_RELIEF_NONE,
+					      "relief", GTK_RELIEF_NONE,
 					      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->position,
-			    "position cursor\0",
+			    "position cursor",
 			    NULL);
 
   automation_toolbar->edit = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					  "image\0", gtk_image_new_from_stock(GTK_STOCK_EDIT,
+					  "image", gtk_image_new_from_stock(GTK_STOCK_EDIT,
 									      GTK_ICON_SIZE_LARGE_TOOLBAR),
-					  "relief\0", GTK_RELIEF_NONE,
+					  "relief", GTK_RELIEF_NONE,
 					  NULL);
   automation_toolbar->selected_edit_mode = automation_toolbar->edit;
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->edit,
-			    "edit automation\0",
+			    "edit automation",
 			    NULL);
 
   automation_toolbar->clear = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					   "image\0", gtk_image_new_from_stock(GTK_STOCK_CLEAR,
+					   "image", gtk_image_new_from_stock(GTK_STOCK_CLEAR,
 									       GTK_ICON_SIZE_LARGE_TOOLBAR),
-					   "relief\0", GTK_RELIEF_NONE,
+					   "relief", GTK_RELIEF_NONE,
 					   NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->clear,
-			    "select automation\0",
+			    "select automation",
 			    NULL);
   
   automation_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					    "image\0", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
+					    "image", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
 										GTK_ICON_SIZE_LARGE_TOOLBAR),
-					    "relief\0", GTK_RELIEF_NONE,
+					    "relief", GTK_RELIEF_NONE,
 					    NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->select,
-			    "select automation\0",
+			    "select automation",
 			    NULL);
 
   automation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					     "image\0", gtk_image_new_from_stock(GTK_STOCK_COPY,
+					     "image", gtk_image_new_from_stock(GTK_STOCK_COPY,
 										 GTK_ICON_SIZE_LARGE_TOOLBAR),
-					     "relief\0", GTK_RELIEF_NONE,
+					     "relief", GTK_RELIEF_NONE,
 					     NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->copy,
-			    "copy automation\0",
+			    "copy automation",
 			    NULL);
 
   automation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						       "image\0", gtk_image_new_from_stock(GTK_STOCK_CUT,
+						       "image", gtk_image_new_from_stock(GTK_STOCK_CUT,
 											   GTK_ICON_SIZE_LARGE_TOOLBAR),
-						       "relief\0", GTK_RELIEF_NONE,
+						       "relief", GTK_RELIEF_NONE,
 						       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->cut,
-			    "cut automation\0",
+			    "cut automation",
 			    NULL);
 
   automation_toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-							 "image\0", gtk_image_new_from_stock(GTK_STOCK_PASTE,
+							 "image", gtk_image_new_from_stock(GTK_STOCK_PASTE,
 											     GTK_ICON_SIZE_LARGE_TOOLBAR),
-							 "relief\0", GTK_RELIEF_NONE,
+							 "relief", GTK_RELIEF_NONE,
 							 NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->paste,
-			    "paste automation\0",
+			    "paste automation",
 			    NULL);
 
   /*  */
   automation_toolbar->zoom_history = 4;
   
-  label = (GtkLabel *) gtk_label_new("zoom\0");
+  label = (GtkLabel *) gtk_label_new(i18n("zoom"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 
@@ -200,7 +201,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  label = (GtkLabel *) gtk_label_new("port\0");
+  label = (GtkLabel *) gtk_label_new(i18n("port"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 
@@ -211,7 +212,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			     cell_renderer,
 			     FALSE);
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
-				 "active\0", 0,
+				 "active", 0,
 				 NULL);
   gtk_cell_renderer_toggle_set_activatable(GTK_CELL_RENDERER_TOGGLE(cell_renderer),
 					   TRUE);
@@ -221,7 +222,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			     cell_renderer,
 			     FALSE);
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
-				 "text\0", 1,
+				 "text", 1,
 				 NULL);
 
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
@@ -241,38 +242,38 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
   /*  */
-  g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed\0",
+  g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed",
 			 G_CALLBACK(ags_automation_toolbar_machine_changed_callback), automation_toolbar);
 
   /* tool */
-  g_signal_connect_after((GObject *) automation_toolbar->position, "toggled\0",
+  g_signal_connect_after((GObject *) automation_toolbar->position, "toggled",
 			 G_CALLBACK(ags_automation_toolbar_position_callback), (gpointer) automation_toolbar);
 
-  g_signal_connect_after((GObject *) automation_toolbar->edit, "toggled\0",
+  g_signal_connect_after((GObject *) automation_toolbar->edit, "toggled",
 			 G_CALLBACK(ags_automation_toolbar_edit_callback), (gpointer) automation_toolbar);
 
-  g_signal_connect_after((GObject *) automation_toolbar->clear, "toggled\0",
+  g_signal_connect_after((GObject *) automation_toolbar->clear, "toggled",
 			 G_CALLBACK(ags_automation_toolbar_clear_callback), (gpointer) automation_toolbar);
 
-  g_signal_connect_after((GObject *) automation_toolbar->select, "toggled\0",
+  g_signal_connect_after((GObject *) automation_toolbar->select, "toggled",
 			 G_CALLBACK(ags_automation_toolbar_select_callback), (gpointer) automation_toolbar);
 
   /* edit */
-  g_signal_connect((GObject *) automation_toolbar->copy, "clicked\0",
+  g_signal_connect((GObject *) automation_toolbar->copy, "clicked",
 		   G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback), (gpointer) automation_toolbar);
 
-  g_signal_connect((GObject *) automation_toolbar->cut, "clicked\0",
+  g_signal_connect((GObject *) automation_toolbar->cut, "clicked",
 		   G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback), (gpointer) automation_toolbar);
 
-  g_signal_connect((GObject *) automation_toolbar->paste, "clicked\0",
+  g_signal_connect((GObject *) automation_toolbar->paste, "clicked",
 		   G_CALLBACK(ags_automation_toolbar_paste_callback), (gpointer) automation_toolbar);
 
   /* zoom */
-  g_signal_connect_after((GObject *) automation_toolbar->zoom, "changed\0",
+  g_signal_connect_after((GObject *) automation_toolbar->zoom, "changed",
 			 G_CALLBACK(ags_automation_toolbar_zoom_callback), (gpointer) automation_toolbar);
 
   /* port */
-  g_signal_connect_after(automation_toolbar->port, "changed\0",
+  g_signal_connect_after(automation_toolbar->port, "changed",
 			 G_CALLBACK(ags_automation_toolbar_port_changed_callback), automation_toolbar);
 }
 
@@ -362,7 +363,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   gtk_list_store_append(list_store, &iter);
   gtk_list_store_set(list_store, &iter,
 		     0, FALSE,
-		     1, g_strdup("\0"),
+		     1, g_strdup(""),
 		     -1);
   gtk_combo_box_set_active_iter(automation_toolbar->port,
 				&iter);
@@ -487,7 +488,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
   /* apply */
   if(!g_ascii_strncasecmp(control_name,
-			  "\0",
+			  "",
 			  1)){
     return;
   }

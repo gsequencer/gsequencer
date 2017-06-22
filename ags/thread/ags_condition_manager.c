@@ -70,7 +70,7 @@ ags_condition_manager_get_type()
     };
 
     ags_type_condition_manager = g_type_register_static(G_TYPE_OBJECT,
-							"AgsConditionManager\0",
+							"AgsConditionManager",
 							&ags_condition_manager_info,
 							0);
 

@@ -31,6 +31,9 @@
 #include <pthread.h>
 
 #include <stdlib.h>
+
+#include <ags/i18n.h>
+
 #include <errno.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
@@ -126,7 +129,7 @@ ags_notation_get_type()
     };
 
     ags_type_notation = g_type_register_static(G_TYPE_OBJECT,
-					       "AgsNotation\0",
+					       "AgsNotation",
 					       &ags_notation_info,
 					       0);
 
@@ -170,9 +173,9 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of notation\0",
-				   "The audio of notation\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of notation"),
+				   i18n_pspec("The audio of notation"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,9 +190,9 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_uint("audio-channel\0",
-				  "audio-channel of effect\0",
-				  "The numerical audio-channel of effect\0",
+  param_spec =  g_param_spec_uint("audio-channel",
+				  i18n_pspec("audio-channel of effect"),
+				  i18n_pspec("The numerical audio-channel of effect"),
 				  0,
 				  65535,
 				  0,
@@ -205,9 +208,9 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("port\0",
-				   "port of notation\0",
-				   "The port of notation\0",
+  param_spec = g_param_spec_object("port",
+				   i18n_pspec("port of notation"),
+				   i18n_pspec("The port of notation"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -221,9 +224,9 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_object("note\0",
-				   "note of notation\0",
-				   "The note of notation\0",
+  param_spec = g_param_spec_object("note",
+				   i18n_pspec("note of notation"),
+				   i18n_pspec("The note of notation"),
 				   AGS_TYPE_NOTE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -237,9 +240,9 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_pointer("current-notes\0",
-				    "current notes for offset\0",
-				    "The current notes for offset\0",
+  param_spec = g_param_spec_pointer("current-notes",
+				    i18n_pspec("current notes for offset"),
+				    i18n_pspec("The current notes for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CURRENT_NOTES,
@@ -252,9 +255,9 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_pointer("next-notes\0",
-				    "next notes for offset\0",
-				    "The next notes for offset\0",
+  param_spec = g_param_spec_pointer("next-notes",
+				    i18n_pspec("next notes for offset"),
+				    i18n_pspec("The next notes for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NEXT_NOTES,
@@ -267,9 +270,9 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 0.7.12
    */
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp of pattern\0",
-				   "The timestamp of pattern\0",
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp of pattern"),
+				   i18n_pspec("The timestamp of pattern"),
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -313,7 +316,7 @@ ags_notation_init(AgsNotation *notation)
   notation->audio_channel = 0;
   notation->audio = NULL;
 
-  notation->key = g_strdup("violine\0");
+  notation->key = g_strdup("violine");
   notation->base_note = g_strdup("A");
   notation->base_frequency = 440.0;
 
@@ -764,7 +767,7 @@ void
 ags_notation_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
-	       "port\0", port,
+	       "port", port,
 	       NULL);
 }
 
@@ -774,7 +777,7 @@ ags_notation_get_port(AgsPortlet *portlet)
   AgsPort *port;
 
   g_object_get(G_OBJECT(portlet),
-	       "port\0", &port,
+	       "port", &port,
 	       NULL);
 
   return((GObject *) port);
@@ -790,8 +793,8 @@ ags_notation_list_safe_properties(AgsPortlet *portlet)
   pthread_mutex_lock(&mutex);
 
   if(list == NULL){
-    list = g_list_prepend(list, "current-notes\0");
-    list = g_list_prepend(list, "next-notes\0");
+    list = g_list_prepend(list, "current-notes");
+    list = g_list_prepend(list, "next-notes");
   }
 
   pthread_mutex_unlock(&mutex);
@@ -965,7 +968,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
       
       if(note->y == y){
 #ifdef AGS_DEBUG
-	g_message("remove\0");
+	g_message("remove");
 #endif
 	//TODO:JK: work-around
 	//	notation->notes = g_list_delete_link(notation->notes, notes);
@@ -1006,7 +1009,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
     if(note->y == y){
       if(note->x[0] < x){
 #ifdef AGS_DEBUG
-	g_message("remove\0");
+	g_message("remove");
 #endif
 
 	//TODO:JK: work-around
@@ -1459,14 +1462,14 @@ ags_notation_copy_selection(AgsNotation *notation)
   selection = notation->selection;
 
   /* create root node */
-  notation_node = xmlNewNode(NULL, BAD_CAST "notation\0");
+  notation_node = xmlNewNode(NULL, BAD_CAST "notation");
 
-  xmlNewProp(notation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
-  xmlNewProp(notation_node, BAD_CAST "type\0", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
-  xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
-  xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-  xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup_printf("%f\0", notation->base_frequency));
-  xmlNewProp(notation_node, BAD_CAST "audio-channel\0", BAD_CAST g_strdup_printf("%u\0", notation->audio_channel));
+  xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
+  xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+  xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+  xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+  xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup_printf("%f", notation->base_frequency));
+  xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST g_strdup_printf("%u", notation->audio_channel));
 
   selection = notation->selection;
 
@@ -1480,11 +1483,11 @@ ags_notation_copy_selection(AgsNotation *notation)
 
   while(selection != NULL){
     note = AGS_NOTE(selection->data);
-    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note\0", NULL);
+    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
 
-    xmlNewProp(current_note, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", note->x[0]));
-    xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", note->x[1]));
-    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", note->y));
+    xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", note->x[0]));
+    xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", note->x[1]));
+    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", note->y));
 
     if(y_boundary > note->y)
       y_boundary = note->y;
@@ -1492,8 +1495,8 @@ ags_notation_copy_selection(AgsNotation *notation)
     selection = selection->next;
   }
 
-  xmlNewProp(notation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
-  xmlNewProp(notation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
+  xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
+  xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
 
   return(notation_node);
 }
@@ -1644,9 +1647,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     }
     
     for(; node != NULL; ){
-      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note\0", node->name, 5)){
+      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note", node->name, 5)){
 	/* retrieve x0 offset */
-	x0 = xmlGetProp(node, "x\0");
+	x0 = xmlGetProp(node, "x");
 
 	if(x0 == NULL){
 	  node = node->next;
@@ -1670,7 +1673,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	}
 
 	/* retrieve x1 offset */
-	x1 = xmlGetProp(node, "x1\0");
+	x1 = xmlGetProp(node, "x1");
 
 	if(x1 == NULL){
 	  node = node->next;
@@ -1694,7 +1697,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	}
 
 	/* retrieve y offset */
-	y = xmlGetProp(node, "y\0");
+	y = xmlGetProp(node, "y");
 
 	if(y == NULL){
 	  node = node->next;
@@ -1783,7 +1786,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 	note->y = y_val;
 
-	g_message("adding note at: [%u,%u|%u]\n\0", x0_val, x1_val, y_val);
+	g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
 
 	ags_notation_add_note(notation,
 			      note,
@@ -1794,9 +1797,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     }
   }
 
-  if(!xmlStrncmp("0.3.12\0", version, 7)){
+  if(!xmlStrncmp("0.3.12", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
-  }else if(!xmlStrncmp("0.4.2\0", version, 7)){
+  }else if(!xmlStrncmp("0.4.2", version, 7)){
     /* changes contain only for UI relevant new informations */
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }
@@ -1826,25 +1829,25 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
   char *x_boundary, *y_boundary;
 
   while(notation_node != NULL){
-    if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation\0", notation_node->name, 9))
+    if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation", notation_node->name, 9))
       break;
 
     notation_node = notation_node->next;
   }
 
   if(notation_node != NULL){
-    program = xmlGetProp(notation_node, "program\0");
+    program = xmlGetProp(notation_node, "program");
 
-    if(!xmlStrncmp("ags\0", program, 4)){
-      version = xmlGetProp(notation_node, "version\0");
-      type = xmlGetProp(notation_node, "type\0");
-      format = xmlGetProp(notation_node, "format\0");
+    if(!xmlStrncmp("ags", program, 4)){
+      version = xmlGetProp(notation_node, "version");
+      type = xmlGetProp(notation_node, "type");
+      format = xmlGetProp(notation_node, "format");
 
-      if(!xmlStrncmp("AgsNotationNativePiano\0", format, 22)){
-	base_frequency = xmlGetProp(notation_node, "base_frequency\0");
+      if(!xmlStrncmp("AgsNotationNativePiano", format, 22)){
+	base_frequency = xmlGetProp(notation_node, "base_frequency");
 
-	x_boundary = xmlGetProp(notation_node, "x_boundary\0");
-	y_boundary = xmlGetProp(notation_node, "y_boundary\0");
+	x_boundary = xmlGetProp(notation_node, "x_boundary");
+	y_boundary = xmlGetProp(notation_node, "y_boundary");
 
 	ags_notation_insert_native_piano_from_clipboard(notation,
 							notation_node, version,
@@ -1887,8 +1890,8 @@ ags_notation_new(GObject *audio,
   AgsNotation *notation;
 
   notation = (AgsNotation *) g_object_new(AGS_TYPE_NOTATION,
-					  "audio\0", audio,
-					  "audio-channel\0", audio_channel,
+					  "audio", audio,
+					  "audio-channel", audio_channel,
 					  NULL);
 
   return(notation);

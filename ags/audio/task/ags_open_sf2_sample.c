@@ -30,6 +30,14 @@
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_ipatch.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
+#include <ags/i18n.h>
+
 void ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample);
 void ags_open_sf2_sample_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample);
@@ -93,7 +101,7 @@ ags_open_sf2_sample_get_type()
     };
 
     ags_type_open_sf2_sample = g_type_register_static(AGS_TYPE_TASK,
-						"AgsOpenSf2Sample\0",
+						"AgsOpenSf2Sample",
 						&ags_open_sf2_sample_info,
 						0);
 
@@ -130,9 +138,9 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel of open sf2 sample\0",
-				   "The channel of open sf2 sample task\0",
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("channel of open sf2 sample"),
+				   i18n_pspec("The channel of open sf2 sample task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,9 +154,9 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "the filename\0",
-				   "The filename containing the sf2 sample\0",
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename containing the sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,9 +170,9 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_string("preset\0",
-				   "the preset\0",
-				   "The preset containing the sf2 sample\0",
+  param_spec = g_param_spec_string("preset",
+				   i18n_pspec("the preset"),
+				   i18n_pspec("The preset containing the sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,9 +186,9 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_string("instrument\0",
-				   "the instrument\0",
-				   "The instrument containing the sf2 sample\0",
+  param_spec = g_param_spec_string("instrument",
+				   i18n_pspec("the instrument"),
+				   i18n_pspec("The instrument containing the sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -194,9 +202,9 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_string("sample\0",
-				   "the sample\0",
-				   "The sf2 sample\0",
+  param_spec = g_param_spec_string("sample",
+				   i18n_pspec("the sample"),
+				   i18n_pspec("The sf2 sample"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -415,8 +423,10 @@ ags_open_sf2_sample_launch(AgsTask *task)
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
   
+#ifdef AGS_WITH_LIBINSTPATCH
   AgsIpatch *ipatch;
-
+#endif
+  
   AgsPlayable *playable;
 
   GList *list;
@@ -425,7 +435,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(task);
 
-  g_message("Open Soundfont2 [%s] - %s %s %s\0",
+#ifdef AGS_WITH_LIBINSTPATCH
+  g_message("Open Soundfont2 [%s] - %s %s %s",
 	    open_sf2_sample->filename,
 	    open_sf2_sample->preset,
 	    open_sf2_sample->instrument,
@@ -439,18 +450,18 @@ ags_open_sf2_sample_launch(AgsTask *task)
     }
 
     g_object_set(AGS_INPUT(channel)->file_link,
-		 "filename\0", open_sf2_sample->filename,
-		 "preset\0", open_sf2_sample->preset,
-		 "instrument\0", open_sf2_sample->instrument,
-		 "sample\0", open_sf2_sample->sample,
-		 "channel\0", channel->audio_channel,
+		 "filename", open_sf2_sample->filename,
+		 "preset", open_sf2_sample->preset,
+		 "instrument", open_sf2_sample->instrument,
+		 "sample", open_sf2_sample->sample,
+		 "channel", channel->audio_channel,
 		 NULL);
   }
   
   ipatch = g_object_new(AGS_TYPE_IPATCH,
-			"soundcard\0", channel->soundcard,
-			"mode\0", AGS_IPATCH_READ,
-			"filename\0", open_sf2_sample->filename,
+			"soundcard", channel->soundcard,
+			"mode", AGS_IPATCH_READ,
+			"filename", open_sf2_sample->filename,
 			NULL);
 
   playable = AGS_PLAYABLE(ipatch);
@@ -504,7 +515,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
 			 &error);
     
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
     }
   }
 
@@ -520,6 +531,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
 				 audio_signal); 
 
   g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex);
+
+  #endif
 }
 
 /**

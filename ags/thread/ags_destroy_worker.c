@@ -73,7 +73,7 @@ ags_destroy_worker_get_type()
     };
 
     ags_type_destroy_worker = g_type_register_static(AGS_TYPE_WORKER_THREAD,
-						     "AgsDestroyWorker\0",
+						     "AgsDestroyWorker",
 						     &ags_destroy_worker_info,
 						     0);
     

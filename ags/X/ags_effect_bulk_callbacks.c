@@ -40,6 +40,8 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include <ags/i18n.h>
+
 void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)
@@ -99,6 +101,8 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
     GtkCheckButton *check_button;
     GtkLabel *label;
 
+    gchar *str;
+    
     /* create entry */
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(effect_bulk->bulk_member),
@@ -113,14 +117,17 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 		       0);
 
     //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
-						       filename,
-						       effect));
+    str = g_strdup_printf("%s - %s",
+			  filename,
+			  effect);
+    label = (GtkLabel *) gtk_label_new(str);
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(label),
 		       FALSE, FALSE,
 		       0);
 
+    g_free(str);
+    
     gtk_widget_show_all((GtkWidget *) hbox);
   }
   
@@ -310,7 +317,7 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	}
       }else{
 	g_object_get(child,
-		     "adjustment\0", &adjustment,
+		     "adjustment", &adjustment,
 		     NULL);
 	
 	gtk_adjustment_set_value(adjustment,

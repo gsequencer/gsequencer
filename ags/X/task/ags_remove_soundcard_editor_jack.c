@@ -80,7 +80,7 @@ ags_remove_soundcard_editor_jack_get_type()
     };
 
     ags_type_remove_soundcard_editor_jack = g_type_register_static(AGS_TYPE_TASK,
-								"AgsRemoveSoundcardEditorJack\0",
+								"AgsRemoveSoundcardEditorJack",
 								&ags_remove_soundcard_editor_jack_info,
 								0);
 

@@ -35,6 +35,8 @@
 #include <sndfile.h>
 #include <string.h>
 
+#include <ags/i18n.h>
+
 void ags_audio_file_class_init(AgsAudioFileClass *audio_file);
 void ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_file_init(AgsAudioFile *audio_file);
@@ -106,7 +108,7 @@ ags_audio_file_get_type()
     };
 
     ags_type_audio_file = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsAudioFile\0",
+						 "AgsAudioFile",
 						 &ags_audio_file_info,
 						 0);
 
@@ -141,9 +143,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of audio file\0",
-				   "The soundcard what audio file has it's presets\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard of audio file"),
+				   i18n_pspec("The soundcard what audio file has it's presets"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -157,9 +159,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "filename of lv2 manager\0",
-				   "The filename this lv2 manager is assigned to\0",
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("filename of lv2 manager"),
+				   i18n_pspec("The filename this lv2 manager is assigned to"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -173,9 +175,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_uint("start-channel\0",
-				 "start-channel is the start offset\0",
-				 "The start-channel indicates what audio channel should be read\0",
+  param_spec = g_param_spec_uint("start-channel",
+				 i18n_pspec("start-channel is the start offset"),
+				 i18n_pspec("The start-channel indicates what audio channel should be read"),
 				 0, G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -191,9 +193,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_uint("audio-channels\0",
-				 "read audio-channels of channels\0",
-				 "The audio-channels indicates how many channels should be read\0",
+  param_spec = g_param_spec_uint("audio-channels",
+				 i18n_pspec("read audio-channels of channels"),
+				 i18n_pspec("The audio-channels indicates how many channels should be read"),
 				 0, G_MAXUINT,
 				 1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -208,9 +210,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_uint("samplerate\0",
-				 "using samplerate\0",
-				 "The samplerate to be used\0",
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("using samplerate"),
+				 i18n_pspec("The samplerate to be used"),
 				 0,
 				 65535,
 				 0,
@@ -226,9 +228,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_uint("buffer-size\0",
-				 "using buffer size\0",
-				 "The buffer size to be used\0",
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("using buffer size"),
+				 i18n_pspec("The buffer size to be used"),
 				 0,
 				 65535,
 				 0,
@@ -244,9 +246,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_object("playable\0",
-				   "containing playable\0",
-				   "The playable it contains\0",
+  param_spec = g_param_spec_object("playable",
+				   i18n_pspec("containing playable"),
+				   i18n_pspec("The playable it contains"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -260,9 +262,9 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * 
    * Since: 0.4.3
    */
-  param_spec = g_param_spec_object("audio-signal\0",
-				   "containing audio signal\0",
-				   "The audio signal it contains\0",
+  param_spec = g_param_spec_object("audio-signal",
+				   i18n_pspec("containing audio signal"),
+				   i18n_pspec("The audio signal it contains"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -441,9 +443,9 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
 gboolean
 ags_audio_file_check_suffix(gchar *filename)
 {
-  if(g_str_has_suffix(filename, ".wav\0") ||
-     g_str_has_suffix(filename, ".ogg\0") ||
-     g_str_has_suffix(filename, ".flac\0")){
+  if(g_str_has_suffix(filename, ".wav") ||
+     g_str_has_suffix(filename, ".ogg") ||
+     g_str_has_suffix(filename, ".flac")){
     return(TRUE);
   }
 
@@ -464,13 +466,13 @@ gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
 #ifdef AGS_DEBUG
-  g_message("ags_audio_file_open: %s\0", audio_file->filename);
+  g_message("ags_audio_file_open: %s", audio_file->filename);
 #endif
 
   if(g_file_test(audio_file->filename, G_FILE_TEST_EXISTS)){
-    if(g_str_has_suffix(audio_file->filename, ".wav\0") ||
-       g_str_has_suffix(audio_file->filename, ".ogg\0") ||
-       g_str_has_suffix(audio_file->filename, ".flac\0")){
+    if(g_str_has_suffix(audio_file->filename, ".wav") ||
+       g_str_has_suffix(audio_file->filename, ".ogg") ||
+       g_str_has_suffix(audio_file->filename, ".flac")){
       GError *error;
       guint loop_start, loop_end;
 
@@ -488,7 +490,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 			  &error);
 
 	if(error != NULL){
-	  g_error("%s\0", error->message);
+	  g_error("%s", error->message);
 	}
 
 	return(TRUE);
@@ -496,7 +498,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 	return(FALSE);
       }
     }else{
-      g_message("ags_audio_file_open: unknown file type\n\0");
+      g_message("ags_audio_file_open: unknown file type\n");
       return(FALSE);
     }
   }
@@ -518,7 +520,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 		       gboolean create)
 {
 #ifdef AGS_DEBUG
-  g_message("ags_audio_file_rw_open: %s\0", audio_file->filename);
+  g_message("ags_audio_file_rw_open: %s", audio_file->filename);
 #endif
 
   if(!create &&
@@ -526,9 +528,9 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
     return(FALSE);
   }
 
-  if(g_str_has_suffix(audio_file->filename, ".wav\0") ||
-     g_str_has_suffix(audio_file->filename, ".ogg\0") ||
-     g_str_has_suffix(audio_file->filename, ".flac\0")){
+  if(g_str_has_suffix(audio_file->filename, ".wav") ||
+     g_str_has_suffix(audio_file->filename, ".ogg") ||
+     g_str_has_suffix(audio_file->filename, ".flac")){
     GError *error;
     guint loop_start, loop_end;
 
@@ -553,7 +555,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
       error = NULL;
 
       if(error != NULL){
-	g_error("%s\0", error->message);
+	g_error("%s", error->message);
       }
 
       return(TRUE);
@@ -561,7 +563,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
       return(FALSE);
     }
   }else{
-    g_message("ags_audio_file_open: unknown file type\n\0");
+    g_message("ags_audio_file_open: unknown file type\n");
     return(FALSE);
   }
 }
@@ -581,13 +583,13 @@ gboolean
 ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 {
 #ifdef AGS_DEBUG
-  g_message("ags_audio_file_open_from_data:\0");
+  g_message("ags_audio_file_open_from_data:");
 #endif
 
   if(data != NULL){
-    if(g_str_has_suffix(audio_file->filename, ".wav\0") ||
-       g_str_has_suffix(audio_file->filename, ".ogg\0") ||
-       g_str_has_suffix(audio_file->filename, ".flac\0")){
+    if(g_str_has_suffix(audio_file->filename, ".wav") ||
+       g_str_has_suffix(audio_file->filename, ".ogg") ||
+       g_str_has_suffix(audio_file->filename, ".flac")){
       GError *error;
       guint loop_start, loop_end;
 
@@ -608,7 +610,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 			  &error);
 
 	if(error != NULL){
-	  g_error("%s\0", error->message);
+	  g_error("%s", error->message);
 	}
 
 	return(TRUE);
@@ -616,7 +618,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 	return(FALSE);
       }
     }else{
-      g_message("ags_audio_file_open: unknown file type\n\0");
+      g_message("ags_audio_file_open: unknown file type\n");
       return(FALSE);
     }
   }
@@ -751,10 +753,10 @@ ags_audio_file_new(gchar *filename,
   AgsAudioFile *audio_file;
 
   audio_file = (AgsAudioFile *) g_object_new(AGS_TYPE_AUDIO_FILE,
-					     "filename\0", filename,
-					     "soundcard\0", soundcard,
-					     "start-channel\0", start_channel,
-					     "audio-channels\0", audio_channels,
+					     "filename", filename,
+					     "soundcard", soundcard,
+					     "start-channel", start_channel,
+					     "audio-channels", audio_channels,
 					     NULL);
 
   return(audio_file);

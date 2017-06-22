@@ -78,7 +78,7 @@ ags_mute_channel_run_get_type()
     };
 
     ags_type_mute_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-						       "AgsMuteChannelRun\0",
+						       "AgsMuteChannelRun",
 						       &ags_mute_channel_run_info,
 						       0);
 
@@ -128,10 +128,10 @@ ags_mute_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_mute_channel_run_init(AgsMuteChannelRun *mute_channel_run)
 {
-  AGS_RECALL(mute_channel_run)->name = "ags-mute\0";
+  AGS_RECALL(mute_channel_run)->name = "ags-mute";
   AGS_RECALL(mute_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(mute_channel_run)->xml_type = "ags-mute-channel-run\0";
+  AGS_RECALL(mute_channel_run)->xml_type = "ags-mute-channel-run";
   AGS_RECALL(mute_channel_run)->port = NULL;
 
   AGS_RECALL(mute_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
@@ -200,7 +200,7 @@ ags_mute_channel_run_new(AgsChannel *source)
   AgsMuteChannelRun *mute_channel_run;
 
   mute_channel_run = (AgsMuteChannelRun *) g_object_new(AGS_TYPE_MUTE_CHANNEL_RUN,
-							"source\0", source,
+							"source", source,
 							NULL);
 
   return(mute_channel_run);

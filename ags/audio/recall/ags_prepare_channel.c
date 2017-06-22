@@ -45,7 +45,7 @@ static gpointer ags_prepare_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_prepare_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_prepare_channel_parent_plugin_interface;
 
-static const gchar *ags_prepare_channel_plugin_name = "ags-prepare\0";
+static const gchar *ags_prepare_channel_plugin_name = "ags-prepare";
 
 GType
 ags_prepare_channel_get_type()
@@ -78,7 +78,7 @@ ags_prepare_channel_get_type()
     };
 
     ags_type_prepare_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						      "AgsPrepareChannel\0",
+						      "AgsPrepareChannel",
 						      &ags_prepare_channel_info,
 						      0);
 
@@ -129,10 +129,10 @@ ags_prepare_channel_class_init(AgsPrepareChannelClass *prepare_channel)
 void
 ags_prepare_channel_init(AgsPrepareChannel *prepare_channel)
 {
-  AGS_RECALL(prepare_channel)->name = "ags-prepare\0";
+  AGS_RECALL(prepare_channel)->name = "ags-prepare";
   AGS_RECALL(prepare_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(prepare_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(prepare_channel)->xml_type = "ags-prepare-channel\0";
+  AGS_RECALL(prepare_channel)->xml_type = "ags-prepare-channel";
 }
 
 void

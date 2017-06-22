@@ -113,7 +113,7 @@ ags_cell_pattern_get_type(void)
     };
     
     ags_type_cell_pattern = g_type_register_static(GTK_TYPE_TABLE,
-						   "AgsCellPattern\0", &ags_cell_pattern_info,
+						   "AgsCellPattern", &ags_cell_pattern_info,
 						   0);
     
     g_type_add_interface_static(ags_type_cell_pattern,
@@ -149,7 +149,7 @@ ags_accessible_cell_pattern_get_type(void)
     };
     
     ags_type_accessible_cell_pattern = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-							      "AgsAccessibleCellPattern\0", &ags_accesssible_cell_pattern_info,
+							      "AgsAccessibleCellPattern", &ags_accesssible_cell_pattern_info,
 							      0);
 
     g_type_add_interface_static(ags_type_accessible_cell_pattern,
@@ -168,7 +168,7 @@ ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern)
 
   ags_cell_pattern_parent_class = g_type_class_peek_parent(cell_pattern);
 
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 
   /* GObjectClass */
   gobject = (GObjectClass *) cell_pattern;
@@ -218,10 +218,10 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   guint i;
 
   g_object_set(cell_pattern,
-	       "can-focus\0", TRUE,
-	       "n-columns\0", 2,
+	       "can-focus", TRUE,
+	       "n-columns", 2,
 	       "n-rows", 2,
-	       "homogeneous\0", FALSE,
+	       "homogeneous", FALSE,
 	       NULL);
 
   cell_pattern->flags = 0;
@@ -278,9 +278,9 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 
   cell_pattern->hled_array = (GtkHBox *) ags_hled_array_new();
   g_object_set(cell_pattern->hled_array,
-	       "led-width\0", cell_pattern->cell_width,
-	       "led-height\0", AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT,
-	       "led-count\0", cell_pattern->n_cols,
+	       "led-width", cell_pattern->cell_width,
+	       "led-height", AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT,
+	       "led-count", cell_pattern->n_cols,
 	       NULL);
   gtk_table_attach((GtkTable *) cell_pattern,
 		   (GtkWidget *) cell_pattern->hled_array,
@@ -324,25 +324,25 @@ ags_cell_pattern_connect(AgsConnectable *connectable)
 
   cell_pattern->flags |= AGS_CELL_PATTERN_CONNECTED;
 
-  g_signal_connect_after(G_OBJECT(cell_pattern), "focus_in_event\0",
+  g_signal_connect_after(G_OBJECT(cell_pattern), "focus_in_event",
 			 G_CALLBACK(ags_cell_pattern_focus_in_callback), (gpointer) cell_pattern);
   
-  g_signal_connect(G_OBJECT(cell_pattern), "key_press_event\0",
+  g_signal_connect(G_OBJECT(cell_pattern), "key_press_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event), (gpointer) cell_pattern);
 
-  g_signal_connect(G_OBJECT(cell_pattern), "key_release_event\0",
+  g_signal_connect(G_OBJECT(cell_pattern), "key_release_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_key_release_event), (gpointer) cell_pattern);
 
-  g_signal_connect_after(G_OBJECT(cell_pattern->drawing_area), "configure_event\0",
+  g_signal_connect_after(G_OBJECT(cell_pattern->drawing_area), "configure_event",
 			 G_CALLBACK(ags_cell_pattern_drawing_area_configure_callback), (gpointer) cell_pattern);
 
-  g_signal_connect_after(G_OBJECT(cell_pattern->drawing_area), "expose_event\0",
+  g_signal_connect_after(G_OBJECT(cell_pattern->drawing_area), "expose_event",
 			 G_CALLBACK(ags_cell_pattern_drawing_area_expose_callback), (gpointer) cell_pattern);
 
-  g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "button_press_event\0",
+  g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "button_press_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_button_press_callback), (gpointer) cell_pattern);
 
-  g_signal_connect(G_OBJECT(GTK_RANGE(cell_pattern->vscrollbar)->adjustment), "value_changed\0",
+  g_signal_connect(G_OBJECT(GTK_RANGE(cell_pattern->vscrollbar)->adjustment), "value_changed",
 		   G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback), (gpointer) cell_pattern);
 }
 
@@ -361,31 +361,31 @@ ags_cell_pattern_disconnect(AgsConnectable *connectable)
   cell_pattern->flags &= (~AGS_CELL_PATTERN_CONNECTED);
 
   g_object_disconnect(G_OBJECT(cell_pattern),
-		      "focus_in_event\0",
+		      "focus_in_event",
 		      G_CALLBACK(ags_cell_pattern_focus_in_callback),
 		      (gpointer) cell_pattern,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(cell_pattern->drawing_area),
-		      "key_press_event\0",
+		      "key_press_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event),
 		      (gpointer) cell_pattern,
-		      "key_release_event\0",
+		      "key_release_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_key_release_event),
 		      (gpointer) cell_pattern,
-		      "configure_event\0",
+		      "configure_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_configure_callback),
 		      (gpointer) cell_pattern,
-		      "expose_event\0",
+		      "expose_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_expose_callback),
 		      (gpointer) cell_pattern,
-		      "button_press_event\0",
+		      "button_press_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_button_press_callback),
 		      (gpointer) cell_pattern,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(GTK_RANGE(cell_pattern->vscrollbar)->adjustment),
-		      "value_changed\0",
+		      "value_changed",
 		      G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback),
 		      (gpointer) cell_pattern,
 		      NULL);
@@ -547,12 +547,12 @@ ags_accessible_cell_pattern_get_description(AtkAction *action,
 					    gint i)
 {
   static const gchar **actions = {
-    "move cursor left\0",
-    "move cursor right\0",
-    "move cursor up\0",
-    "move cursor down\0",
-    "toggle audio pattern\0"
-    "copy pattern to clipboard\0",
+    "move cursor left",
+    "move cursor right",
+    "move cursor up",
+    "move cursor down",
+    "toggle audio pattern"
+    "copy pattern to clipboard",
   };
 
   if(i >= 0 && i < 6){
@@ -567,12 +567,12 @@ ags_accessible_cell_pattern_get_name(AtkAction *action,
 				     gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
-    "toggle\0",
-    "copy\0",
+    "left",
+    "right",
+    "up",
+    "down",
+    "toggle",
+    "copy",
   };
   
   if(i >= 0 && i < 6){
@@ -587,10 +587,10 @@ ags_accessible_cell_pattern_get_keybinding(AtkAction *action,
 					   gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
+    "left",
+    "right",
+    "up",
+    "down",
     "space",
     "Ctrl+c",
   };
@@ -997,7 +997,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     }
 
     g_object_get(audio,
-		 "play\0", &list_start,
+		 "play", &list_start,
 		 NULL);
     
     play_count_beats_audio = NULL;

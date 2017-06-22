@@ -48,6 +48,7 @@ typedef enum{
   AGS_NOTE_DEFAULT_LENGTH  = 1 <<  4,
   AGS_NOTE_IS_SELECTED     = 1 <<  5,
   AGS_NOTE_FEED            = 1 <<  6,
+  AGS_NOTE_ENVELOPE        = 1 <<  7,
 }AgsNoteFlags;
 
 struct _AgsNote

@@ -45,7 +45,7 @@ void ags_feed_channel_finalize(GObject *gobject);
 static gpointer ags_feed_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_feed_channel_parent_connectable_interface;
 
-static const gchar *ags_feed_channel_plugin_name = "ags-feed\0";
+static const gchar *ags_feed_channel_plugin_name = "ags-feed";
 
 GType
 ags_feed_channel_get_type()
@@ -78,7 +78,7 @@ ags_feed_channel_get_type()
     };
 
     ags_type_feed_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsFeedChannel\0",
+						   "AgsFeedChannel",
 						   &ags_feed_channel_info,
 						   0);
     
@@ -129,10 +129,10 @@ ags_feed_channel_init(AgsFeedChannel *feed_channel)
 {
   GList *port;
 
-  AGS_RECALL(feed_channel)->name = "ags-feed\0";
+  AGS_RECALL(feed_channel)->name = "ags-feed";
   AGS_RECALL(feed_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(feed_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(feed_channel)->xml_type = "ags-feed-channel\0";
+  AGS_RECALL(feed_channel)->xml_type = "ags-feed-channel";
 }
 
 void

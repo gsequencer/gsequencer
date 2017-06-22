@@ -53,7 +53,7 @@ ags_file_util_read_value(AgsFile *file,
     *id = xmlGetProp(node, AGS_FILE_ID_PROP);
   }
   
-  type_str = xmlGetProp(node, "type\0");
+  type_str = xmlGetProp(node, "type");
 
   content = xmlNodeGetContent(node);
 
@@ -153,7 +153,7 @@ ags_file_util_read_value(AgsFile *file,
     gboolean *arr;
     guint i;
 
-    str_arr = g_strsplit(content, " \0", -1);
+    str_arr = g_strsplit(content, " ", -1);
     
     g_value_init(value, G_TYPE_POINTER);
 
@@ -191,7 +191,7 @@ ags_file_util_read_value(AgsFile *file,
     gint64 *arr;
     guint i;
 
-    str_arr = g_strsplit(content, " \0", -1);
+    str_arr = g_strsplit(content, " ", -1);
     
     g_value_init(value, G_TYPE_POINTER);
 
@@ -225,7 +225,7 @@ ags_file_util_read_value(AgsFile *file,
     guint64 *arr;
     guint i;
 
-    str_arr = g_strsplit(content, " \0", -1);
+    str_arr = g_strsplit(content, " ", -1);
 
     g_value_init(value, G_TYPE_POINTER);
 
@@ -259,7 +259,7 @@ ags_file_util_read_value(AgsFile *file,
     gfloat *arr;
     guint i;
 
-    str_arr = g_strsplit(content, " \0", -1);
+    str_arr = g_strsplit(content, " ", -1);
 
     g_value_init(value, G_TYPE_POINTER);
 
@@ -293,7 +293,7 @@ ags_file_util_read_value(AgsFile *file,
     gdouble *arr;
     guint i;
 
-    str_arr = g_strsplit(content, " \0", -1);
+    str_arr = g_strsplit(content, " ", -1);
 
     g_value_init(value, G_TYPE_POINTER);
 
@@ -327,18 +327,18 @@ ags_file_util_read_value(AgsFile *file,
 
     /* gpointer */
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file\0", file,
-						 "node\0", node,
-						 "reference\0", value,
+						 "file", file,
+						 "node", node,
+						 "reference", value,
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+    g_signal_connect(G_OBJECT(file_lookup), "resolve",
 		     G_CALLBACK(ags_file_util_read_value_resolve), value);
 
     /* xpath */
     if(xpath != NULL){
       *xpath = xmlGetProp(node,
-			  "link\0");
+			  "link");
     }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_OBJECT_PROP,
@@ -347,21 +347,21 @@ ags_file_util_read_value(AgsFile *file,
 
     /* GObject */
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file\0", file,
-						 "node\0", node,
-						 "reference\0", value,
+						 "file", file,
+						 "node", node,
+						 "reference", value,
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+    g_signal_connect(G_OBJECT(file_lookup), "resolve",
 		     G_CALLBACK(ags_file_util_read_value_resolve), value);
 
     /* xpath */
     if(xpath != NULL){
       *xpath = xmlGetProp(node,
-			  "link\0");
+			  "link");
     }
   }else{
-    g_warning("ags_file_util_read_value: unsupported type: %s\0", type_str);
+    g_warning("ags_file_util_read_value: unsupported type: %s", type_str);
     return;
   }
 
@@ -376,7 +376,7 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
   gchar *xpath;
 
   xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "link\0");
+			       "link");
 
   if(xpath == NULL || value == NULL){
     return;
@@ -385,7 +385,7 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref == NULL){
-    g_warning("can't resolve xpath: %s\0", xpath);
+    g_warning("can't resolve xpath: %s", xpath);
     return;
   }
 
@@ -396,7 +396,7 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
   }else if(G_VALUE_HOLDS(value, G_TYPE_STRING)){
     g_value_set_string(value, (gchar *) id_ref->ref);
   }else{
-    g_warning("ags_file_util_read_value_resolve: unknown type of GValue %s\0", G_VALUE_TYPE_NAME(value));
+    g_warning("ags_file_util_read_value_resolve: unknown type of GValue %s", G_VALUE_TYPE_NAME(value));
   }
 }
 
@@ -415,7 +415,7 @@ ags_file_util_write_value(AgsFile *file,
   }
 
   node = xmlNewNode(NULL,
-		    "ags-value\0");  
+		    "ags-value");  
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -425,43 +425,43 @@ ags_file_util_write_value(AgsFile *file,
   switch(G_VALUE_TYPE(value)){
   case G_TYPE_CHAR:
     {
-      content = BAD_CAST g_strdup_printf("%c\0", g_value_get_schar(value));
+      content = BAD_CAST g_strdup_printf("%c", g_value_get_schar(value));
       type_str = AGS_FILE_CHAR_PROP;
     }
     break;
   case G_TYPE_BOOLEAN:
     {
-      content = BAD_CAST g_strdup_printf("%s\0", ((g_value_get_boolean(value)) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
+      content = BAD_CAST g_strdup_printf("%s", ((g_value_get_boolean(value)) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
       type_str = AGS_FILE_BOOLEAN_PROP;
     }
     break;
   case G_TYPE_INT64:
     {
-      content = BAD_CAST g_strdup_printf("%ld\0", g_value_get_int64(value));
+      content = BAD_CAST g_strdup_printf("%ld", g_value_get_int64(value));
       type_str = AGS_FILE_INT64_PROP;
     }
     break;
   case G_TYPE_UINT64:
     {
-      content = BAD_CAST g_strdup_printf("%ld\0", g_value_get_uint64(value));
+      content = BAD_CAST g_strdup_printf("%ld", g_value_get_uint64(value));
       type_str = AGS_FILE_UINT64_PROP;
     }
     break;
   case G_TYPE_FLOAT:
     {
-      content = BAD_CAST g_strdup_printf("%f\0", g_value_get_float(value));
+      content = BAD_CAST g_strdup_printf("%f", g_value_get_float(value));
       type_str = AGS_FILE_FLOAT_PROP;
     }
     break;
   case G_TYPE_DOUBLE:
     {
-      content = BAD_CAST g_strdup_printf("%f\0", g_value_get_double(value));
+      content = BAD_CAST g_strdup_printf("%f", g_value_get_double(value));
       type_str = AGS_FILE_DOUBLE_PROP;
     }
     break;
   case G_TYPE_STRING:
     {
-      content = BAD_CAST g_strdup_printf("%s\0", g_value_get_string(value));
+      content = BAD_CAST g_strdup_printf("%s", g_value_get_string(value));
       type_str = AGS_FILE_CHAR_POINTER_PROP;
     }
     break;
@@ -471,7 +471,7 @@ ags_file_util_write_value(AgsFile *file,
       guint i;
 
       if(pointer_type == G_TYPE_CHAR){
-	content = BAD_CAST g_strdup_printf("%s\0", g_value_get_string(value));
+	content = BAD_CAST g_strdup_printf("%s", g_value_get_string(value));
 	type_str = AGS_FILE_CHAR_POINTER_PROP;
       }else if(pointer_type == G_TYPE_INT64){
 	gint64 *arr;
@@ -480,11 +480,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%ld\0", arr[i]);
+	    content = g_strdup_printf("%ld", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %ld\0", str, arr[i]);
+	    content = g_strdup_printf("%s %ld", str, arr[i]);
 
 	    g_free(str);
 	  }
@@ -498,11 +498,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%lu\0", arr[i]);
+	    content = g_strdup_printf("%lu", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %lu\0", str, arr[i]);
+	    content = g_strdup_printf("%s %lu", str, arr[i]);
 
 	    g_free(str);
 	  }
@@ -516,11 +516,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%f\0", arr[i]);
+	    content = g_strdup_printf("%f", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %f\0", str, arr[i]);
+	    content = g_strdup_printf("%s %f", str, arr[i]);
 
 	    g_free(str);
 	  }
@@ -534,11 +534,11 @@ ags_file_util_write_value(AgsFile *file,
 
 	for(i = 0; i < array_length; i++){
 	  if(i == 0){
-	    content = g_strdup_printf("%f\0", arr[i]);
+	    content = g_strdup_printf("%f", arr[i]);
 	  }else{
 	    str = content;
 
-	    content = g_strdup_printf("%s %f\0", str, arr[i]);
+	    content = g_strdup_printf("%s %f", str, arr[i]);
 
 	    g_free(str);
 	  }
@@ -547,12 +547,12 @@ ags_file_util_write_value(AgsFile *file,
 	type_str = AGS_FILE_DOUBLE_POINTER_PROP;
       }else{
 	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						     "file\0", file,
-						     "node\0", node,
-						     "reference\0", value,
+						     "file", file,
+						     "node", node,
+						     "reference", value,
 						     NULL);
 	ags_file_add_lookup(file, (GObject *) file_lookup);
-	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+	g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
 			       G_CALLBACK(ags_file_util_write_value_resolve), value);
 
 	type_str = AGS_FILE_POINTER_PROP;
@@ -562,19 +562,19 @@ ags_file_util_write_value(AgsFile *file,
   case G_TYPE_OBJECT:
     {
       file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						   "file\0", file,
-						   "node\0", node,
-						   "reference\0", value,
+						   "file", file,
+						   "node", node,
+						   "reference", value,
 						   NULL);
       ags_file_add_lookup(file, (GObject *) file_lookup);
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
 			     G_CALLBACK(ags_file_util_write_value_resolve), value);
 
       type_str = AGS_FILE_OBJECT_PROP;
     }
     break;
   default:
-    g_warning("ags_file_util_write_value %s\0", G_VALUE_TYPE_NAME(value));
+    g_warning("ags_file_util_write_value %s", G_VALUE_TYPE_NAME(value));
   }
 
   xmlNewProp(node,
@@ -610,8 +610,8 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
   xmlNewProp(file_lookup->node,
-	     "link\0",
-	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
+	     "link",
+	     g_strdup_printf("xpath=//*[@id='%s']", id));
 
   //  g_value_unset(value);
   //  g_free(value);
@@ -628,7 +628,7 @@ ags_file_util_read_parameter(AgsFile *file,
   xmlChar **xpath_arr, **xpath_iter;
   guint i;
 
-  name_arr = g_strsplit(xmlGetProp(node, AGS_FILE_NAME_PROP), " \0", -1);
+  name_arr = g_strsplit(xmlGetProp(node, AGS_FILE_NAME_PROP), " ", -1);
   parameter_arr = NULL;
   xpath_arr = NULL;
 
@@ -640,7 +640,7 @@ ags_file_util_read_parameter(AgsFile *file,
   while(*name_iter != NULL && child != NULL){
     if(child->type == XML_ELEMENT_NODE &&
        !xmlStrncmp(child->name,
-		   "ags-value\0",
+		   "ags-value",
 		   11)){
       if(parameter_arr == NULL){
 	parameter_arr = (GParameter *) g_new(GParameter, 1);
@@ -665,7 +665,7 @@ ags_file_util_read_parameter(AgsFile *file,
   while(*name_iter != NULL && child != NULL){
     if(child->type == XML_ELEMENT_NODE &&
        !xmlStrncmp(child->name,
-		   "ags-value\0",
+		   "ags-value",
 		   11)){
       xpath_iter = xpath_arr + i;
 
@@ -720,7 +720,7 @@ ags_file_util_write_parameter(AgsFile *file,
   }
 
   node = xmlNewNode(NULL,
-		    "ags-parameter\0");  
+		    "ags-parameter");  
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -733,7 +733,7 @@ ags_file_util_write_parameter(AgsFile *file,
       name = g_strdup(parameter[i].name);
     }else{
       old_name = name;
-      name = (xmlChar *) g_strdup_printf("%s %s\0", name, parameter[i].name);
+      name = (xmlChar *) g_strdup_printf("%s %s", name, parameter[i].name);
       free(old_name);
     }
 
@@ -772,7 +772,7 @@ ags_file_util_write_dependency(AgsFile *file,
   xmlNode *node;
 
   node = xmlNewNode(NULL,
-		    "ags-dependency\0");
+		    "ags-dependency");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -807,10 +807,10 @@ ags_file_util_read_object(AgsFile *file,
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   /* child elements */
@@ -819,7 +819,7 @@ ags_file_util_read_object(AgsFile *file,
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "ags-parameter\0",
+		     "ags-parameter",
 		     14)){
 	GParameter *parameter;
 	guint n_params;
@@ -837,7 +837,7 @@ ags_file_util_read_object(AgsFile *file,
 				parameter[i].name, &(parameter[i].value));
 	}
       }else if(!xmlStrncmp(child->name,
-			   "ags-widget\0",
+			   "ags-widget",
 			   11)){
 	//FIXME:JK: 
 	/*
@@ -871,7 +871,7 @@ ags_file_util_write_object(AgsFile *file,
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-object\0");
+		    "ags-object");
     
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -879,10 +879,10 @@ ags_file_util_write_object(AgsFile *file,
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//[@id='%s']", id),
+				   "reference", gobject,
 				   NULL));
 
 
@@ -963,11 +963,11 @@ ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   /* iterate children */
@@ -1004,7 +1004,7 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-file-link\0");
+		    "ags-file-link");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -1012,31 +1012,31 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
   /* add reference and node to file object */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", file_link,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", file_link,
 				   NULL));
 
   /* write type with URL */
   xmlNewProp(node,
-	     "type\0",
-	     g_strdup("url\0"));
+	     "type",
+	     g_strdup("url"));
 
   /* write filename */
   if(file_link->filename != NULL){
 #ifdef AGS_DEBUG
-    g_message("XML outputting: %s\0", file_link->filename);
+    g_message("XML outputting: %s", file_link->filename);
 #endif
     
     xmlNewProp(node,
-	       "filename\0",
+	       "filename",
 	       g_strdup(file_link->filename));
   }else{
     xmlNewProp(node,
-	       "filename\0",
-	       g_strdup("(null)\0"));
+	       "filename",
+	       g_strdup("(null)"));
   }
 
   /* add to parent node */
@@ -1069,7 +1069,7 @@ ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link)
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "ags-file-link\0",
+		     "ags-file-link",
 		     11)){
 	/* read current file link */
 	current = NULL;
@@ -1094,11 +1094,11 @@ ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link)
   /* add reference and node to file object */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", list,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", list,
 				   NULL));
 }
 
@@ -1114,7 +1114,7 @@ ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link)
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-file-link-list\0");
+		    "ags-file-link-list");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -1122,11 +1122,11 @@ ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link)
   /* add reference and node to file object */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", list,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", list,
 				   NULL));
 
   /* add to parent node */

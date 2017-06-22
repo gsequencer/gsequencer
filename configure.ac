@@ -6,11 +6,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.136],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.8.5],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
-AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
-AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_MACRO_DIR([m4])
+
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
@@ -22,6 +25,11 @@ AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
 				   [enable oss (default is yes)])],
 	      [],
 	      [enable_oss=yes])
+
+AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
+					    [enable libinstpatch (default is yes)])],
+	      [],
+	      [enable_libinstpatch=yes])
 
 AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],
@@ -51,18 +59,18 @@ AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
-AC_CHECK_LIB([X11], [main])
+AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
 # FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main])
+AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
 # FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
+AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
 # FIXME: Replace `main' with a function in `-lrt':
-AC_CHECK_LIB([rt], [main])
+AC_CHECK_LIB([rt], [main], , AC_MSG_ERROR("No rt library present"))
 
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h])
+AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -138,9 +146,12 @@ AC_SUBST(GIO_LIBS)
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
 
-PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
-AC_SUBST(LIBINSTPATCH_CFLAGS)
-AC_SUBST(LIBINSTPATCH_LIBS)
+AS_IF([test "x$enable_libinstpatch" != xno],
+      [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
+      AC_SUBST(LIBINSTPATCH_CFLAGS)
+      AC_SUBST(LIBINSTPATCH_LIBS)
+      AC_DEFINE([AGS_WITH_LIBINSTPATCH], [1], [Disable if you don't want libinstpatch])],
+      AC_MSG_NOTICE([libinstpatch disabled]))
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
@@ -175,7 +186,6 @@ AS_IF([test "x$enable_xmlrpc" != xno],
       AC_MSG_NOTICE([xmlrpc-c disabled]))
 
 # Checks for library functions.
-# AM_GNU_GETTEXT
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
@@ -196,6 +206,8 @@ docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile
 docs/reference/libgsequencer/Makefile
+m4/Makefile
+po/Makefile.in
 libags.pc
 libags_audio.pc
 libags_gui.pc

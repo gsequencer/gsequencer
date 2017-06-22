@@ -48,16 +48,7 @@
 #include <stdlib.h>
 
 #include <ags/config.h>
-
-/**
- * SECTION:ags_jack_midiin
- * @short_description: Input from sequencer
- * @title: AgsJackMidiin
- * @section_id:
- * @include: ags/audio/jack/ags_jack_midiin.h
- *
- * #AgsJackMidiin represents a sequencer and supports midi input.
- */
+#include <ags/i18n.h>
 
 void ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin);
 void ags_jack_midiin_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -127,6 +118,16 @@ void ags_jack_midiin_set_audio(AgsSequencer *sequencer,
 			       GList *audio);
 GList* ags_jack_midiin_get_audio(AgsSequencer *sequencer);
 
+/**
+ * SECTION:ags_jack_midiin
+ * @short_description: Input from sequencer
+ * @title: AgsJackMidiin
+ * @section_id:
+ * @include: ags/audio/jack/ags_jack_midiin.h
+ *
+ * #AgsJackMidiin represents a sequencer and supports midi input.
+ */
+
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
@@ -178,7 +179,7 @@ ags_jack_midiin_get_type (void)
     };
 
     ags_type_jack_midiin = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsJackMidiin\0",
+						  "AgsJackMidiin",
 						  &ags_jack_midiin_info,
 						  0);
 
@@ -219,9 +220,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -235,9 +236,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("application-mutex\0",
-				    "the application mutex object\0",
-				    "The application mutex object\0",
+  param_spec = g_param_spec_pointer("application-mutex",
+				    i18n_pspec("the application mutex object"),
+				    i18n_pspec("The application mutex object"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_APPLICATION_MUTEX,
@@ -250,10 +251,10 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_string("device\0",
-				   "the device identifier\0",
-				   "The device to perform output to\0",
-				   "hw:0\0",
+  param_spec = g_param_spec_string("device",
+				   i18n_pspec("the device identifier"),
+				   i18n_pspec("The device to perform output to"),
+				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -266,9 +267,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("buffer\0",
-				    "the buffer\0",
-				    "The buffer to record\0",
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to record"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -281,9 +282,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_double("bpm\0",
-				   "beats per minute\0",
-				   "Beats per minute to use\0",
+  param_spec = g_param_spec_double("bpm",
+				   i18n_pspec("beats per minute"),
+				   i18n_pspec("Beats per minute to use"),
 				   1.0,
 				   240.0,
 				   120.0,
@@ -299,9 +300,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_double("delay-factor\0",
-				   "delay factor\0",
-				   "The delay factor\0",
+  param_spec = g_param_spec_double("delay-factor",
+				   i18n_pspec("delay factor"),
+				   i18n_pspec("The delay factor"),
 				   0.0,
 				   16.0,
 				   1.0,
@@ -317,9 +318,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("attack\0",
-				    "attack of buffer\0",
-				    "The attack to use for the buffer\0",
+  param_spec = g_param_spec_pointer("attack",
+				    i18n_pspec("attack of buffer"),
+				    i18n_pspec("The attack to use for the buffer"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
@@ -333,9 +334,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.3
    */
-  param_spec = g_param_spec_object("jack-client\0",
-				   "jack client object\0",
-				   "The jack client object\0",
+  param_spec = g_param_spec_object("jack-client",
+				   i18n_pspec("jack client object"),
+				   i18n_pspec("The jack client object"),
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -349,9 +350,9 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("jack-port\0",
-				   "jack port object\0",
-				   "The jack port object\0",
+  param_spec = g_param_spec_object("jack-port",
+				   i18n_pspec("jack port object"),
+				   i18n_pspec("The jack port object"),
 				   AGS_TYPE_JACK_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -364,7 +365,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 GQuark
 ags_jack_midiin_error_quark()
 {
-  return(g_quark_from_static_string("ags-jack_midiin-error-quark\0"));
+  return(g_quark_from_static_string("ags-jack_midiin-error-quark"));
 }
 
 void
@@ -724,7 +725,7 @@ ags_jack_midiin_dispose(GObject *gobject)
 
     while(list != NULL){
       g_object_set(list->data,
-		   "sequencer\0", NULL,
+		   "sequencer", NULL,
 		   NULL);
 
       list = list->next;
@@ -787,7 +788,7 @@ ags_jack_midiin_finalize(GObject *gobject)
 
     while(list != NULL){
       g_object_set(list->data,
-		   "sequencer\0", NULL,
+		   "sequencer", NULL,
 		   NULL);
 
       list = list->next;
@@ -973,14 +974,14 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
   }
 
   if(!g_str_has_prefix(device,
-		       "ags-jack-midiin-\0")){
+		       "ags-jack-midiin-")){
     g_warning("invalid JACK device prefix");
 
     return;
   }
 
   ret = sscanf(device,
-	       "ags-jack-midiin-%u\0",
+	       "ags-jack-midiin-%u",
 	       &nth_card);
 
   if(ret != 1){
@@ -999,11 +1000,11 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
   jack_port_start = 
     jack_port = g_list_copy(jack_midiin->jack_port);
   
-  str = g_strdup_printf("ags-sequencer%d\0",
+  str = g_strdup_printf("ags-sequencer%d",
 			nth_card);
     
   g_object_set(jack_port->data,
-	       "port-name\0", str,
+	       "port-name", str,
 	       NULL);
   g_free(str);
 
@@ -1068,9 +1069,9 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 				      g_strdup(AGS_JACK_CLIENT(AGS_JACK_MIDIIN(list->data)->jack_client)->name));
 	}else{
 	  *card_name = g_list_prepend(*card_name,
-				      g_strdup("(null)\0"));
+				      g_strdup("(null)"));
 
-	  g_warning("ags_jack_midiin_list_cards() - JACK client not connected (null)\0");
+	  g_warning("ags_jack_midiin_list_cards() - JACK client not connected (null)");
 	}
       }      
     }
@@ -1622,7 +1623,7 @@ ags_jack_midiin_new(GObject *application_context)
   AgsJackMidiin *jack_midiin;
 
   jack_midiin = (AgsJackMidiin *) g_object_new(AGS_TYPE_JACK_MIDIIN,
-					       "application-context\0", application_context,
+					       "application-context", application_context,
 					       NULL);
   
   return(jack_midiin);

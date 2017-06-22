@@ -56,14 +56,16 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad *pad);
 void ags_drum_input_pad_open_play_done(AgsRecall *recall, AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *pad);
 
 void ags_drum_input_pad_init_channel_launch_callback(AgsTask *task, AgsDrumInputPad *drum_input_pad);
 
-#define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName\0"
-#define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton\0"
+#define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName"
+#define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton"
 
 void
 ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_pad)
@@ -78,12 +80,12 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
     return;
 
   drum_input_pad->file_chooser =
-    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new (g_strdup("Open File\0"),
-									 (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum_input_pad),
-									 GTK_FILE_CHOOSER_ACTION_OPEN,
-									 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-									 GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-									 NULL);
+    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open File"),
+									(GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum_input_pad),
+									GTK_FILE_CHOOSER_ACTION_OPEN,
+									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+									GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+									NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
   g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);
@@ -93,7 +95,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   gtk_file_chooser_set_extra_widget((GtkFileChooser *) file_chooser,
 				    (GtkWidget *) hbox);
   
-  label = (GtkLabel *) gtk_label_new(g_strdup("channel: \0"));
+  label = (GtkLabel *) gtk_label_new(i18n("channel: "));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -111,18 +113,18 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 			     FALSE);
 
   //  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-  //					  "label\0", GTK_STOCK_MEDIA_PLAY,
-  //					  "use-stock\0", TRUE,
-  //					  "use-underline\0", TRUE,
+  //					  "label", GTK_STOCK_MEDIA_PLAY,
+  //					  "use-stock", TRUE,
+  //					  "use-underline", TRUE,
   //					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, 0);
 
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
-  g_signal_connect((GObject *) file_chooser, "response\0",
+  g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_drum_input_pad_open_response_callback), (gpointer) drum_input_pad);
-  //  g_signal_connect((GObject *) play, "toggled\0",
+  //  g_signal_connect((GObject *) play, "toggled",
   //		   G_CALLBACK(ags_drum_input_pad_open_play_callback), (gpointer) drum_input_pad);
 }
 
@@ -210,7 +212,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
       ags_audio_file_open(audio_file);
       ags_audio_file_read_audio_signal(audio_file);
-      g_message("ags_drum_input_pad_open_play:\0");
+      g_message("ags_drum_input_pad_open_play:");
     }
 
     /* task */
@@ -231,7 +233,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
       drum_input_pad->pad_open_recalls = g_list_prepend(drum_input_pad->pad_open_recalls,
 							play_audio_signal);
-      g_signal_connect(G_OBJECT(play_audio_signal), "done\0",
+      g_signal_connect(G_OBJECT(play_audio_signal), "done",
 		       G_CALLBACK(ags_drum_input_pad_open_play_done), drum_input_pad);
 
       /* AgsAppendRecall */
@@ -252,7 +254,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
       drum_input_pad->pad_open_recalls = g_list_prepend(drum_input_pad->pad_open_recalls,
 							stream_audio_signal);
-      g_signal_connect_after(G_OBJECT(stream_audio_signal), "done\0",
+      g_signal_connect_after(G_OBJECT(stream_audio_signal), "done",
 			     G_CALLBACK(ags_drum_input_pad_open_play_done), drum_input_pad);
 
       /* AgsAppendRecall */

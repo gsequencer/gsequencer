@@ -48,6 +48,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run);
 void ags_play_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -102,7 +104,7 @@ static AgsConnectableInterface *ags_play_channel_run_parent_connectable_interfac
 static AgsDynamicConnectableInterface *ags_play_channel_run_parent_dynamic_connectable_interface;
 static AgsPluginInterface *ags_play_channel_run_parent_plugin_interface;
 
-static const gchar *ags_play_channel_run_plugin_name = "ags-play\0";
+static const gchar *ags_play_channel_run_plugin_name = "ags-play";
 
 GType
 ags_play_channel_run_get_type()
@@ -141,7 +143,7 @@ ags_play_channel_run_get_type()
     };    
 
     ags_type_play_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-						       "AgsPlayChannelRun\0",
+						       "AgsPlayChannelRun",
 						       &ags_play_channel_run_info,
 						       0);
 
@@ -187,9 +189,9 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("stream-channel-run\0",
-				   "assigned AgsStreamChannelRun\0",
-				   "the assigned AgsStreamChannelRun\0",
+  param_spec = g_param_spec_object("stream-channel-run",
+				   i18n_pspec("assigned AgsStreamChannelRun"),
+				   i18n_pspec("the assigned AgsStreamChannelRun"),
 				   AGS_TYPE_STREAM_CHANNEL_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -235,10 +237,10 @@ ags_play_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
 {
-  AGS_RECALL(play_channel_run)->name = "ags-play\0";
+  AGS_RECALL(play_channel_run)->name = "ags-play";
   AGS_RECALL(play_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_channel_run)->xml_type = "ags-play-channel-run\0";
+  AGS_RECALL(play_channel_run)->xml_type = "ags-play-channel-run";
   AGS_RECALL(play_channel_run)->port = NULL;
 
   AGS_RECALL(play_channel_run)->flags |= (AGS_RECALL_INPUT_ORIENTATED);
@@ -519,7 +521,7 @@ ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "stream_channel_run\0", stream_channel_run,
+	       "stream_channel_run", stream_channel_run,
 	       NULL);
 }
 
@@ -619,7 +621,7 @@ ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)
   AgsPlayChannelRun *play_channel_run;
 
   play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
-							"stream-channel-run\0", stream_channel_run,
+							"stream-channel-run", stream_channel_run,
 							NULL);
   
   return(play_channel_run);

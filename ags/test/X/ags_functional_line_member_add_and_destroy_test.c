@@ -26,6 +26,12 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/gsequencer_main.h>
 
 #include <ags/test/X/libgsequencer.h>
@@ -41,7 +47,9 @@ void ags_functional_line_member_add_and_destroy_test_mixer();
 void ags_functional_line_member_add_and_destroy_test_drum();
 void ags_functional_line_member_add_and_destroy_test_matrix();
 void ags_functional_line_member_add_and_destroy_test_synth();
+#ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_line_member_add_and_destroy_test_ffplayer();
+#endif
 
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT "/usr/lib/ladspa/cmt.so\0"
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY "Echo Delay Line (Maximum Delay 1s)\0"
@@ -1050,6 +1058,7 @@ ags_functional_line_member_add_and_destroy_test_synth()
   CU_ASSERT(success == TRUE);
 }
 
+#ifdef AGS_WITH_LIBINSTPATCH
 void
 ags_functional_line_member_add_and_destroy_test_ffplayer()
 {
@@ -1326,6 +1335,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   
   CU_ASSERT(success == TRUE);
 }
+#endif
 
 int
 main(int argc, char **argv)
@@ -1422,7 +1432,9 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL);
   
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
+#endif
   //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
 		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
@@ -1457,8 +1469,11 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMixer\0", ags_functional_line_member_add_and_destroy_test_mixer) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsDrum\0", ags_functional_line_member_add_and_destroy_test_drum) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMatrix\0", ags_functional_line_member_add_and_destroy_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsSynth\0", ags_functional_line_member_add_and_destroy_test_synth) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsFFPlayer\0", ags_functional_line_member_add_and_destroy_test_ffplayer) == NULL)){
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsSynth\0", ags_functional_line_member_add_and_destroy_test_synth) == NULL)
+#ifdef AGS_WITH_LIBINSTPATCH
+     || (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsFFPlayer\0", ags_functional_line_member_add_and_destroy_test_ffplayer) == NULL)
+#endif
+     ){
     CU_cleanup_registry();
       
     return CU_get_error();

@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall);
 void ags_remove_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_recall_init(AgsRemoveRecall *remove_recall);
@@ -92,7 +94,7 @@ ags_remove_recall_get_type()
     };
 
     ags_type_remove_recall = g_type_register_static(AGS_TYPE_TASK,
-						    "AgsRemoveRecall\0",
+						    "AgsRemoveRecall",
 						    &ags_remove_recall_info,
 						    0);
 
@@ -128,9 +130,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("context\0",
-				   "context of remove recall\0",
-				   "The context of remove recall task\0",
+  param_spec = g_param_spec_object("context",
+				   i18n_pspec("context of remove recall"),
+				   i18n_pspec("The context of remove recall task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -144,9 +146,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("recall\0",
-				   "recall of remove recall\0",
-				   "The recall of remove recall task\0",
+  param_spec = g_param_spec_object("recall",
+				   i18n_pspec("recall of remove recall"),
+				   i18n_pspec("The recall of remove recall task"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -160,9 +162,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("is-play\0",
-				     "is play context\0",
-				     "Remove recall to play context\0",
+  param_spec =  g_param_spec_boolean("is-play",
+				     i18n_pspec("is play context"),
+				     i18n_pspec("Remove recall to play context"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -176,9 +178,9 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("remove-all\0",
-				     "remove all\0",
-				     "Remove all related recall\0",
+  param_spec =  g_param_spec_boolean("remove-all",
+				     i18n_pspec("remove all"),
+				     i18n_pspec("Remove all related recall"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -100,6 +100,7 @@ check_PROGRAMS = ags_thread_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_port_test$(EXEEXT) ags_pattern_test$(EXEEXT) \
 	ags_notation_test$(EXEEXT) ags_automation_test$(EXEEXT) \
 	ags_midi_buffer_util_test$(EXEEXT) \
+	ags_midi_builder_test$(EXEEXT) \
 	ags_xorg_application_context_test$(EXEEXT) \
 	ags_functional_audio_test$(EXEEXT) \
 	ags_functional_machine_add_and_destroy_test$(EXEEXT) \
@@ -115,19 +116,23 @@ check_PROGRAMS = ags_thread_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_functional_note_edit_test$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/gtk-doc.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/gtk-doc.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
 	$(am__configure_deps) $(nobase_include_HEADERS) \
-	$(am__DIST_COMMON)
+	$(noinst_HEADERS) $(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
-mkinstalldirs = $(install_sh) -d
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/ags/config.h
 CONFIG_CLEAN_FILES = libags.pc libags_audio.pc libags_gui.pc \
 	libgsequencer.pc
@@ -249,6 +254,7 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_playback.lo \
 	ags/audio/libags_audio_la-ags_playback_domain.lo \
 	ags/audio/libags_audio_la-ags_port.lo \
+	ags/audio/libags_audio_la-ags_preset.lo \
 	ags/audio/libags_audio_la-ags_recall_audio.lo \
 	ags/audio/libags_audio_la-ags_recall_audio_run.lo \
 	ags/audio/libags_audio_la-ags_recall_audio_signal.lo \
@@ -434,7 +440,6 @@ am__objects_13 = $(am__objects_1) \
 	ags/audio/recall/libags_audio_la-ags_route_lv2_audio.lo \
 	ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo \
-	ags/audio/recall/libags_audio_la-ags_stream.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_channel.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_channel_run.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_recycling.lo \
@@ -553,7 +558,7 @@ libgsequencer_la_DEPENDENCIES = libags_audio.la libags_server.la \
 am__objects_19 = $(am__objects_1)
 am__objects_20 = $(am__objects_19) $(am__objects_19) $(am__objects_19) \
 	$(am__objects_19) $(am__objects_19) $(am__objects_19) \
-	$(am__objects_19)
+	$(am__objects_19) $(am__objects_19)
 am__objects_21 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_automation_editor.lo \
 	ags/X/libgsequencer_la-ags_automation_editor_callbacks.lo \
@@ -628,6 +633,8 @@ am__objects_21 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_pad_editor_callbacks.lo \
 	ags/X/libgsequencer_la-ags_performance_preferences.lo \
 	ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo \
+	ags/X/libgsequencer_la-ags_playback_window.lo \
+	ags/X/libgsequencer_la-ags_playback_window_callbacks.lo \
 	ags/X/libgsequencer_la-ags_plugin_browser.lo \
 	ags/X/libgsequencer_la-ags_plugin_browser_callbacks.lo \
 	ags/X/libgsequencer_la-ags_plugin_preferences.lo \
@@ -679,6 +686,13 @@ am__objects_25 = $(am__objects_1) \
 	ags/X/import/libgsequencer_la-ags_track_collection_mapper.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection_mapper_callbacks.lo
 am__objects_26 = $(am__objects_1) \
+	ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo \
+	ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo \
+	ags/X/export/libgsequencer_la-ags_machine_collection.lo \
+	ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo \
+	ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo \
+	ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo
+am__objects_27 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_cell_pattern.lo \
 	ags/X/machine/libgsequencer_la-ags_cell_pattern_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_drum.lo \
@@ -734,13 +748,19 @@ am__objects_26 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_synth_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_synth_input_line.lo \
 	ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo
-am__objects_27 = $(am__objects_1) \
+am__objects_28 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_automation_edit.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_edit_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_toolbar.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_toolbar_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_area.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_area_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_envelope_dialog_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_envelope_dialog.lo \
+	ags/X/editor/libgsequencer_la-ags_envelope_editor_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_envelope_editor.lo \
+	ags/X/editor/libgsequencer_la-ags_envelope_info_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_envelope_info.lo \
 	ags/X/editor/libgsequencer_la-ags_file_selection_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_file_selection.lo \
 	ags/X/editor/libgsequencer_la-ags_inline_player.lo \
@@ -757,6 +777,8 @@ am__objects_27 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_note_edit_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_pattern_edit.lo \
 	ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo \
 	ags/X/editor/libgsequencer_la-ags_scale_area.lo \
 	ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_scale.lo \
@@ -767,7 +789,8 @@ am__objects_27 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_toolbar_callbacks.lo
 am_libgsequencer_la_OBJECTS = $(am__objects_20) $(am__objects_21) \
 	$(am__objects_22) $(am__objects_23) $(am__objects_24) \
-	$(am__objects_25) $(am__objects_26) $(am__objects_27)
+	$(am__objects_25) $(am__objects_26) $(am__objects_27) \
+	$(am__objects_28)
 libgsequencer_la_OBJECTS = $(am_libgsequencer_la_OBJECTS)
 libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -985,6 +1008,17 @@ ags_midi_buffer_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_midi_buffer_util_test_CFLAGS) $(CFLAGS) \
 	$(ags_midi_buffer_util_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_midi_builder_test_OBJECTS = ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.$(OBJEXT)
+ags_midi_builder_test_OBJECTS = $(am_ags_midi_builder_test_OBJECTS)
+ags_midi_builder_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_midi_builder_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_midi_builder_test_CFLAGS) $(CFLAGS) \
+	$(ags_midi_builder_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_notation_test_OBJECTS =  \
 	ags/test/audio/ags_notation_test-ags_notation_test.$(OBJEXT)
 ags_notation_test_OBJECTS = $(am_ags_notation_test_OBJECTS)
@@ -1078,8 +1112,8 @@ ags_xorg_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) \
 	$(ags_xorg_application_context_test_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_28 = ags/gsequencer-gsequencer_main.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_28) $(am__objects_1)
+am__objects_29 = ags/gsequencer-gsequencer_main.$(OBJEXT)
+am_gsequencer_OBJECTS = $(am__objects_29) $(am__objects_1)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
 	libags_server.la libags_gui.la libags_thread.la libags.la \
@@ -1155,10 +1189,10 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_functional_panel_test_SOURCES) \
 	$(ags_functional_synth_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
-	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
-	$(ags_port_test_SOURCES) $(ags_recall_test_SOURCES) \
-	$(ags_recycling_test_SOURCES) $(ags_thread_test_SOURCES) \
-	$(ags_turtle_test_SOURCES) \
+	$(ags_midi_builder_test_SOURCES) $(ags_notation_test_SOURCES) \
+	$(ags_pattern_test_SOURCES) $(ags_port_test_SOURCES) \
+	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
+	$(ags_thread_test_SOURCES) $(ags_turtle_test_SOURCES) \
 	$(ags_xorg_application_context_test_SOURCES) \
 	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
 DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
@@ -1182,12 +1216,20 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_functional_panel_test_SOURCES) \
 	$(ags_functional_synth_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
-	$(ags_notation_test_SOURCES) $(ags_pattern_test_SOURCES) \
-	$(ags_port_test_SOURCES) $(ags_recall_test_SOURCES) \
-	$(ags_recycling_test_SOURCES) $(ags_thread_test_SOURCES) \
-	$(ags_turtle_test_SOURCES) \
+	$(ags_midi_builder_test_SOURCES) $(ags_notation_test_SOURCES) \
+	$(ags_pattern_test_SOURCES) $(ags_port_test_SOURCES) \
+	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
+	$(ags_thread_test_SOURCES) $(ags_turtle_test_SOURCES) \
 	$(ags_xorg_application_context_test_SOURCES) \
 	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
+RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
+	ctags-recursive dvi-recursive html-recursive info-recursive \
+	install-data-recursive install-dvi-recursive \
+	install-exec-recursive install-html-recursive \
+	install-info-recursive install-pdf-recursive \
+	install-ps-recursive install-recursive installcheck-recursive \
+	installdirs-recursive pdf-recursive ps-recursive \
+	tags-recursive uninstall-recursive
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1197,7 +1239,15 @@ man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man1_MANS)
 DATA = $(appdata_DATA) $(doc_DATA) $(pkgconfig_DATA)
-HEADERS = $(nobase_include_HEADERS)
+HEADERS = $(nobase_include_HEADERS) $(noinst_HEADERS)
+RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
+  distclean-recursive maintainer-clean-recursive
+am__recursive_targets = \
+  $(RECURSIVE_TARGETS) \
+  $(RECURSIVE_CLEAN_TARGETS) \
+  $(am__extra_recursive_targets)
+AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
+	cscope check recheck distdir dist dist-all distcheck
 am__extra_recursive_targets = ags-docs-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -1219,7 +1269,6 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
-AM_RECURSIVE_TARGETS = cscope check recheck
 am__tty_colors_dummy = \
   mgn= red= grn= lgn= blu= brg= std=; \
   am__color_tests=no
@@ -1396,13 +1445,14 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
+DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(srcdir)/libags_audio.pc.in $(srcdir)/libags_gui.pc.in \
 	$(srcdir)/libgsequencer.pc.in $(top_srcdir)/ags/config.h.in \
 	$(top_srcdir)/functional-tests.mk $(top_srcdir)/unit-tests.mk \
-	AUTHORS COPYING ChangeLog INSTALL NEWS README TODO compile \
-	config.guess config.rpath config.sub depcomp install-sh \
-	ltmain.sh missing test-driver
+	ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL NEWS README TODO \
+	compile config.guess config.rpath config.sub depcomp \
+	install-sh ltmain.sh missing mkinstalldirs test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -1413,6 +1463,31 @@ am__remove_distdir = \
       || { sleep 5 && rm -rf "$(distdir)"; }; \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
+am__relativize = \
+  dir0=`pwd`; \
+  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
+  sed_rest='s,^[^/]*/*,,'; \
+  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
+  sed_butlast='s,/*[^/]*$$,,'; \
+  while test -n "$$dir1"; do \
+    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
+    if test "$$first" != "."; then \
+      if test "$$first" = ".."; then \
+        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
+        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
+      else \
+        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
+        if test "$$first2" = "$$first"; then \
+          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
+        else \
+          dir2="../$$dir2"; \
+        fi; \
+        dir0="$$dir0"/"$$first"; \
+      fi; \
+    fi; \
+    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
+  done; \
+  reldir="$$dir2"
 DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 DIST_TARGETS = dist-gzip
@@ -1439,7 +1514,7 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
 DSYMUTIL = @DSYMUTIL@
@@ -1454,8 +1529,11 @@ FONTCONFIG_CFLAGS = @FONTCONFIG_CFLAGS@
 FONTCONFIG_LIBS = @FONTCONFIG_LIBS@
 GDKPIXBUF_CFLAGS = @GDKPIXBUF_CFLAGS@
 GDKPIXBUF_LIBS = @GDKPIXBUF_LIBS@
+GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GIO_CFLAGS = @GIO_CFLAGS@
 GIO_LIBS = @GIO_LIBS@
+GMSGFMT = @GMSGFMT@
+GMSGFMT_015 = @GMSGFMT_015@
 GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GREP = @GREP@
@@ -1476,15 +1554,19 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+INTLLIBS = @INTLLIBS@
+INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 JACK_CFLAGS = @JACK_CFLAGS@
 JACK_LIBS = @JACK_LIBS@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LTLIBINTL)
 LIBASOUND2_CFLAGS = @LIBASOUND2_CFLAGS@
 LIBASOUND2_LIBS = @LIBASOUND2_LIBS@
 LIBGSEQUENCER_TEST_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
+LIBICONV = @LIBICONV@
 LIBINSTPATCH_CFLAGS = @LIBINSTPATCH_CFLAGS@
 LIBINSTPATCH_LIBS = @LIBINSTPATCH_LIBS@
+LIBINTL = @LIBINTL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -1493,6 +1575,8 @@ LIBXML2_CFLAGS = @LIBXML2_CFLAGS@
 LIBXML2_LIBS = @LIBXML2_LIBS@
 LIPO = @LIPO@
 LN_S = @LN_S@
+LTLIBICONV = @LTLIBICONV@
+LTLIBINTL = @LTLIBINTL@
 LTLIBOBJS = @LTLIBOBJS@
 LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAKEINFO = @MAKEINFO@
@@ -1500,6 +1584,9 @@ MANIFEST_TOOL = @MANIFEST_TOOL@
 MIDI2XML_CFLAGS = @MIDI2XML_CFLAGS@
 MIDI2XML_LDFLAGS = @MIDI2XML_LDFLAGS@
 MKDIR_P = @MKDIR_P@
+MSGFMT = @MSGFMT@
+MSGFMT_015 = @MSGFMT_015@
+MSGMERGE = @MSGMERGE@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -1517,6 +1604,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+POSUB = @POSUB@
 RANLIB = @RANLIB@
 SAMPLERATE_CFLAGS = @SAMPLERATE_CFLAGS@
 SAMPLERATE_LIBS = @SAMPLERATE_LIBS@
@@ -1526,9 +1614,13 @@ SHELL = @SHELL@
 SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
 STRIP = @STRIP@
+USE_NLS = @USE_NLS@
 UUID_CFLAGS = @UUID_CFLAGS@
 UUID_LIBS = @UUID_LIBS@
 VERSION = @VERSION@
+XGETTEXT = @XGETTEXT@
+XGETTEXT_015 = @XGETTEXT_015@
+XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMKMF = @XMKMF@
 XMLRPC_SERVER_ABYSS_CFLAGS = @XMLRPC_SERVER_ABYSS_CFLAGS@
 XMLRPC_SERVER_ABYSS_LIBS = @XMLRPC_SERVER_ABYSS_LIBS@
@@ -1576,7 +1668,10 @@ infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
-localedir = @localedir@
+
+# 
+# TARGETS = gsequencer
+localedir = $(datadir)/locale
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
@@ -1600,7 +1695,7 @@ top_srcdir = @top_srcdir@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 AUTOMAKE_OPTIONS = foreign
-# SUBDIRS = . docs/reference/ags
+SUBDIRS = po
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
@@ -1616,9 +1711,6 @@ midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@ -I./ -I/usr/include \
 midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@ -ldl $(LIBXML2_LIBS) \
 	$(GOBJECT_LIBS)
 
-# 
-# TARGETS = gsequencer
-
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la
@@ -1627,10 +1719,11 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 # pkgconfig_DATA += libgsequencer.pc
 
 # extra
-EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make \
+EXTRA_DIST = config.rpath COPYING.docs ags/config.h.in gtk-doc.make \
 	gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README \
 	ags_example.xml gsequencer-documentation midi2xml.1 \
-	ags_functional_note_edit_test.xml \
+	ags_functional_note_edit_test.xml mkinstalldirs m4/Makefile.am \
+	m4/Makefile.in ags/i18n.h ags/gettext.h \
 	functional-system-tests.mk.am functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
@@ -1682,7 +1775,7 @@ EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make \
 man1_MANS = gsequencer.1 midi2xml.1
 
 # clean
-CLEANFILES = functional-system-tests.mk $(appdata_DATA) \
+CLEANFILES = functional-system-tests.mk m4/Makefile $(appdata_DATA) \
 	$(pkgconfig_DATA)
 
 # pkg-config
@@ -1772,6 +1865,14 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_navigation.png \
 	$(top_srcdir)/docs/images/ags_synth.png \
 	$(top_srcdir)/docs/images/ags_audio_preferences.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_bulk.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_line.png \
+	$(top_srcdir)/docs/images/ags_midi_dialog.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_preferences.png \
 	$(top_srcdir)/docs/images/ags_ffplayer.png \
 	$(top_srcdir)/docs/images/ags_ladspa_browser.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-link_input.png \
@@ -1797,8 +1898,8 @@ libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_client_c_sour
 libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_client_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
-libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -1918,6 +2019,12 @@ ags_midi_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS
 ags_midi_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# midi builder unit test
+ags_midi_builder_test_SOURCES = ags/test/audio/midi/ags_midi_builder_test.c
+ags_midi_builder_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_midi_builder_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_midi_builder_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
 ags_xorg_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
@@ -2030,6 +2137,9 @@ ags_functional_note_edit_test_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\"
 ags_functional_note_edit_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_note_edit_test_LDADD = $(gsequencer_functional_test_LDADD)
 TESTS = $(check_PROGRAMS)
+
+# internationalization
+noinst_HEADERS = ags/i18n.h
 
 # libags all files
 deprecated_libags_h_sources = 
@@ -2276,6 +2386,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
+	ags/audio/ags_preset.h \
 	ags/audio/ags_recall_audio.h \
 	ags/audio/ags_recall_audio_run.h \
 	ags/audio/ags_recall_audio_signal.h \
@@ -2327,6 +2438,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
+	ags/audio/ags_preset.c \
 	ags/audio/ags_recall_audio.c \
 	ags/audio/ags_recall_audio_run.c \
 	ags/audio/ags_recall_audio_signal.c \
@@ -2588,7 +2700,6 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_stream_audio_signal.h \
 	ags/audio/recall/ags_stream_channel.h \
 	ags/audio/recall/ags_stream_channel_run.h \
-	ags/audio/recall/ags_stream.h \
 	ags/audio/recall/ags_stream_recycling.h \
 	ags/audio/recall/ags_volume_audio_signal.h \
 	ags/audio/recall/ags_volume_channel.h \
@@ -2661,7 +2772,6 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_route_lv2_audio.c \
 	ags/audio/recall/ags_route_lv2_audio_run.c \
 	ags/audio/recall/ags_stream_audio_signal.c \
-	ags/audio/recall/ags_stream.c \
 	ags/audio/recall/ags_stream_channel.c \
 	ags/audio/recall/ags_stream_channel_run.c \
 	ags/audio/recall/ags_stream_recycling.c \
@@ -2918,6 +3028,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_pad.h \
 	ags/X/ags_performance_preferences_callbacks.h \
 	ags/X/ags_performance_preferences.h \
+	ags/X/ags_playback_window_callbacks.h \
+	ags/X/ags_playback_window.h \
 	ags/X/ags_plugin_browser_callbacks.h \
 	ags/X/ags_plugin_browser.h \
 	ags/X/ags_plugin_preferences_callbacks.h \
@@ -3016,6 +3128,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_pad_editor_callbacks.c \
 	ags/X/ags_performance_preferences.c \
 	ags/X/ags_performance_preferences_callbacks.c \
+	ags/X/ags_playback_window.c \
+	ags/X/ags_playback_window_callbacks.c \
 	ags/X/ags_plugin_browser.c \
 	ags/X/ags_plugin_browser_callbacks.c \
 	ags/X/ags_plugin_preferences.c \
@@ -3127,6 +3241,28 @@ libgsequencer_import_c_sources = \
 	ags/X/import/ags_track_collection_callbacks.c \
 	ags/X/import/ags_track_collection_mapper.c \
 	ags/X/import/ags_track_collection_mapper_callbacks.c
+
+
+# libgsequencer - export
+deprecated_libgsequencer_export_h_sources = 
+libgsequencer_export_h_sources = \
+	$(deprecated_libgsequencer_export_h_sources) \
+	ags/X/export/ags_midi_export_wizard.h \
+	ags/X/export/ags_midi_export_wizard_callbacks.h \
+	ags/X/export/ags_machine_collection.h \
+	ags/X/export/ags_machine_collection_callbacks.h \
+	ags/X/export/ags_machine_collection_entry.h \
+	ags/X/export/ags_machine_collection_entry_callbacks.h
+
+deprecated_libgsequencer_export_c_sources = 
+libgsequencer_export_c_sources = \
+	$(deprecated_libgsequencer_export_c_sources) \
+	ags/X/export/ags_midi_export_wizard.c \
+	ags/X/export/ags_midi_export_wizard_callbacks.c \
+	ags/X/export/ags_machine_collection.c \
+	ags/X/export/ags_machine_collection_callbacks.c \
+	ags/X/export/ags_machine_collection_entry.c \
+	ags/X/export/ags_machine_collection_entry_callbacks.c
 
 
 # libgsequencer - machine
@@ -3259,6 +3395,12 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_toolbar.h \
 	ags/X/editor/ags_automation_area_callbacks.h \
 	ags/X/editor/ags_automation_area.h \
+	ags/X/editor/ags_envelope_dialog_callbacks.h \
+	ags/X/editor/ags_envelope_dialog.h \
+	ags/X/editor/ags_envelope_editor_callbacks.h \
+	ags/X/editor/ags_envelope_editor.h \
+	ags/X/editor/ags_envelope_info_callbacks.h \
+	ags/X/editor/ags_envelope_info.h \
 	ags/X/editor/ags_file_selection_callbacks.h \
 	ags/X/editor/ags_file_selection.h \
 	ags/X/editor/ags_inline_player_callbacks.h \
@@ -3275,6 +3417,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_note_edit.h \
 	ags/X/editor/ags_pattern_edit_callbacks.h \
 	ags/X/editor/ags_pattern_edit.h \
+	ags/X/editor/ags_pattern_envelope_callbacks.h \
+	ags/X/editor/ags_pattern_envelope.h \
 	ags/X/editor/ags_scale_area_callbacks.h \
 	ags/X/editor/ags_scale_area.h \
 	ags/X/editor/ags_scale_callbacks.h \
@@ -3294,6 +3438,12 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
 	ags/X/editor/ags_automation_area.c \
 	ags/X/editor/ags_automation_area_callbacks.c \
+	ags/X/editor/ags_envelope_dialog_callbacks.c \
+	ags/X/editor/ags_envelope_dialog.c \
+	ags/X/editor/ags_envelope_editor_callbacks.c \
+	ags/X/editor/ags_envelope_editor.c \
+	ags/X/editor/ags_envelope_info_callbacks.c \
+	ags/X/editor/ags_envelope_info.c \
 	ags/X/editor/ags_file_selection_callbacks.c \
 	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \
@@ -3310,6 +3460,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_note_edit_callbacks.c \
 	ags/X/editor/ags_pattern_edit.c \
 	ags/X/editor/ags_pattern_edit_callbacks.c \
+	ags/X/editor/ags_pattern_envelope_callbacks.c \
+	ags/X/editor/ags_pattern_envelope.c \
 	ags/X/editor/ags_scale_area.c \
 	ags/X/editor/ags_scale_area_callbacks.c \
 	ags/X/editor/ags_scale.c \
@@ -3329,7 +3481,7 @@ gsequencer_c_sources = \
 
 midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 midi2xml_SOURCES = ags/midi2xml_main.c
-all: all-am
+all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
@@ -3634,6 +3786,8 @@ ags/audio/libags_audio_la-ags_playback.lo: ags/audio/$(am__dirstamp) \
 ags/audio/libags_audio_la-ags_playback_domain.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_port.lo: ags/audio/$(am__dirstamp) \
+	ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_preset.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_recall_audio.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
@@ -4192,9 +4346,6 @@ ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo:  \
 ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
-ags/audio/recall/libags_audio_la-ags_stream.lo:  \
-	ags/audio/recall/$(am__dirstamp) \
-	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/recall/libags_audio_la-ags_stream_channel.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
@@ -4588,6 +4739,10 @@ ags/X/libgsequencer_la-ags_performance_preferences.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_playback_window.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_playback_window_callbacks.lo:  \
+	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_plugin_browser.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_plugin_browser_callbacks.lo:  \
@@ -4729,6 +4884,30 @@ ags/X/import/libgsequencer_la-ags_track_collection_mapper.lo:  \
 ags/X/import/libgsequencer_la-ags_track_collection_mapper_callbacks.lo:  \
 	ags/X/import/$(am__dirstamp) \
 	ags/X/import/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/$(am__dirstamp):
+	@$(MKDIR_P) ags/X/export
+	@: > ags/X/export/$(am__dirstamp)
+ags/X/export/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/X/export/$(DEPDIR)
+	@: > ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_machine_collection.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
+ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo:  \
+	ags/X/export/$(am__dirstamp) \
+	ags/X/export/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/$(am__dirstamp):
 	@$(MKDIR_P) ags/X/machine
 	@: > ags/X/machine/$(am__dirstamp)
@@ -4924,6 +5103,24 @@ ags/X/editor/libgsequencer_la-ags_automation_area.lo:  \
 ags/X/editor/libgsequencer_la-ags_automation_area_callbacks.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_envelope_dialog_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_envelope_dialog.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_envelope_editor_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_envelope_editor.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_envelope_info_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_envelope_info.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_file_selection_callbacks.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
@@ -4970,6 +5167,12 @@ ags/X/editor/libgsequencer_la-ags_pattern_edit.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_scale_area.lo:  \
@@ -5223,6 +5426,13 @@ ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.$(OBJEXT
 ags_midi_buffer_util_test$(EXEEXT): $(ags_midi_buffer_util_test_OBJECTS) $(ags_midi_buffer_util_test_DEPENDENCIES) $(EXTRA_ags_midi_buffer_util_test_DEPENDENCIES) 
 	@rm -f ags_midi_buffer_util_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_midi_buffer_util_test_LINK) $(ags_midi_buffer_util_test_OBJECTS) $(ags_midi_buffer_util_test_LDADD) $(LIBS)
+ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.$(OBJEXT):  \
+	ags/test/audio/midi/$(am__dirstamp) \
+	ags/test/audio/midi/$(DEPDIR)/$(am__dirstamp)
+
+ags_midi_builder_test$(EXEEXT): $(ags_midi_builder_test_OBJECTS) $(ags_midi_builder_test_DEPENDENCIES) $(EXTRA_ags_midi_builder_test_DEPENDENCIES) 
+	@rm -f ags_midi_builder_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_midi_builder_test_LINK) $(ags_midi_builder_test_OBJECTS) $(ags_midi_builder_test_LDADD) $(LIBS)
 ags/test/audio/ags_notation_test-ags_notation_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -5317,6 +5527,8 @@ mostlyclean-compile:
 	-rm -f ags/X/*.lo
 	-rm -f ags/X/editor/*.$(OBJEXT)
 	-rm -f ags/X/editor/*.lo
+	-rm -f ags/X/export/*.$(OBJEXT)
+	-rm -f ags/X/export/*.lo
 	-rm -f ags/X/file/*.$(OBJEXT)
 	-rm -f ags/X/file/*.lo
 	-rm -f ags/X/import/*.$(OBJEXT)
@@ -5449,6 +5661,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_pad_editor_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_performance_preferences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_performance_preferences_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_preferences.Plo@am__quote@
@@ -5476,6 +5690,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_automation_edit_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_automation_toolbar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_automation_toolbar_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_file_selection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_file_selection_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_inline_player.Plo@am__quote@
@@ -5492,6 +5712,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_notebook_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_edit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_edit_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area_callbacks.Plo@am__quote@
@@ -5500,6 +5722,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_toolbar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_toolbar_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/file/$(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/file/$(DEPDIR)/libgsequencer_la-ags_simple_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard.Plo@am__quote@
@@ -5602,6 +5830,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_playback.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_playback_domain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_port.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_preset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_adaptor_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_audio.Plo@am__quote@
@@ -5711,7 +5940,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_dssi_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_lv2_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_lv2_audio_run.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel_run.Plo@am__quote@
@@ -5878,6 +6106,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recall_test-ags_recall_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recycling_test-ags_recycling_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/midi/$(DEPDIR)/ags_midi_buffer_util_test-ags_midi_buffer_util_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/midi/$(DEPDIR)/ags_midi_builder_test-ags_midi_builder_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/ags_turtle_test-ags_turtle_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_thread_test-ags_thread_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Plo@am__quote@
@@ -6387,6 +6616,13 @@ ags/audio/libags_audio_la-ags_port.lo: ags/audio/ags_port.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_port.c' object='ags/audio/libags_audio_la-ags_port.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_port.lo `test -f 'ags/audio/ags_port.c' || echo '$(srcdir)/'`ags/audio/ags_port.c
+
+ags/audio/libags_audio_la-ags_preset.lo: ags/audio/ags_preset.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_preset.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_preset.Tpo -c -o ags/audio/libags_audio_la-ags_preset.lo `test -f 'ags/audio/ags_preset.c' || echo '$(srcdir)/'`ags/audio/ags_preset.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_preset.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_preset.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_preset.c' object='ags/audio/libags_audio_la-ags_preset.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_preset.lo `test -f 'ags/audio/ags_preset.c' || echo '$(srcdir)/'`ags/audio/ags_preset.c
 
 ags/audio/libags_audio_la-ags_recall_audio.lo: ags/audio/ags_recall_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_recall_audio.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_recall_audio.Tpo -c -o ags/audio/libags_audio_la-ags_recall_audio.lo `test -f 'ags/audio/ags_recall_audio.c' || echo '$(srcdir)/'`ags/audio/ags_recall_audio.c
@@ -7634,13 +7870,6 @@ ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo: ags/audio/recall/ag
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo `test -f 'ags/audio/recall/ags_stream_audio_signal.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream_audio_signal.c
 
-ags/audio/recall/libags_audio_la-ags_stream.lo: ags/audio/recall/ags_stream.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_stream.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Tpo -c -o ags/audio/recall/libags_audio_la-ags_stream.lo `test -f 'ags/audio/recall/ags_stream.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_stream.c' object='ags/audio/recall/libags_audio_la-ags_stream.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_stream.lo `test -f 'ags/audio/recall/ags_stream.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream.c
-
 ags/audio/recall/libags_audio_la-ags_stream_channel.lo: ags/audio/recall/ags_stream_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_stream_channel.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel.Tpo -c -o ags/audio/recall/libags_audio_la-ags_stream_channel.lo `test -f 'ags/audio/recall/ags_stream_channel.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel.Plo
@@ -8649,6 +8878,20 @@ ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo: ags/X/ags_perfo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_performance_preferences_callbacks.lo `test -f 'ags/X/ags_performance_preferences_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_performance_preferences_callbacks.c
 
+ags/X/libgsequencer_la-ags_playback_window.lo: ags/X/ags_playback_window.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_playback_window.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Tpo -c -o ags/X/libgsequencer_la-ags_playback_window.lo `test -f 'ags/X/ags_playback_window.c' || echo '$(srcdir)/'`ags/X/ags_playback_window.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_playback_window.c' object='ags/X/libgsequencer_la-ags_playback_window.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_playback_window.lo `test -f 'ags/X/ags_playback_window.c' || echo '$(srcdir)/'`ags/X/ags_playback_window.c
+
+ags/X/libgsequencer_la-ags_playback_window_callbacks.lo: ags/X/ags_playback_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_playback_window_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_playback_window_callbacks.lo `test -f 'ags/X/ags_playback_window_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_playback_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_playback_window_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_playback_window_callbacks.c' object='ags/X/libgsequencer_la-ags_playback_window_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_playback_window_callbacks.lo `test -f 'ags/X/ags_playback_window_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_playback_window_callbacks.c
+
 ags/X/libgsequencer_la-ags_plugin_browser.lo: ags/X/ags_plugin_browser.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_plugin_browser.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser.Tpo -c -o ags/X/libgsequencer_la-ags_plugin_browser.lo `test -f 'ags/X/ags_plugin_browser.c' || echo '$(srcdir)/'`ags/X/ags_plugin_browser.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_plugin_browser.Plo
@@ -8970,6 +9213,48 @@ ags/X/import/libgsequencer_la-ags_track_collection_mapper_callbacks.lo: ags/X/im
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/import/ags_track_collection_mapper_callbacks.c' object='ags/X/import/libgsequencer_la-ags_track_collection_mapper_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/import/libgsequencer_la-ags_track_collection_mapper_callbacks.lo `test -f 'ags/X/import/ags_track_collection_mapper_callbacks.c' || echo '$(srcdir)/'`ags/X/import/ags_track_collection_mapper_callbacks.c
+
+ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo: ags/X/export/ags_midi_export_wizard.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Tpo -c -o ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo `test -f 'ags/X/export/ags_midi_export_wizard.c' || echo '$(srcdir)/'`ags/X/export/ags_midi_export_wizard.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_midi_export_wizard.c' object='ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo `test -f 'ags/X/export/ags_midi_export_wizard.c' || echo '$(srcdir)/'`ags/X/export/ags_midi_export_wizard.c
+
+ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo: ags/X/export/ags_midi_export_wizard_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Tpo -c -o ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo `test -f 'ags/X/export/ags_midi_export_wizard_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_midi_export_wizard_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_midi_export_wizard_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_midi_export_wizard_callbacks.c' object='ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo `test -f 'ags/X/export/ags_midi_export_wizard_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_midi_export_wizard_callbacks.c
+
+ags/X/export/libgsequencer_la-ags_machine_collection.lo: ags/X/export/ags_machine_collection.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_machine_collection.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection.Tpo -c -o ags/X/export/libgsequencer_la-ags_machine_collection.lo `test -f 'ags/X/export/ags_machine_collection.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_machine_collection.c' object='ags/X/export/libgsequencer_la-ags_machine_collection.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_machine_collection.lo `test -f 'ags/X/export/ags_machine_collection.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection.c
+
+ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo: ags/X/export/ags_machine_collection_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_callbacks.Tpo -c -o ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo `test -f 'ags/X/export/ags_machine_collection_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_callbacks.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_machine_collection_callbacks.c' object='ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo `test -f 'ags/X/export/ags_machine_collection_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection_callbacks.c
+
+ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo: ags/X/export/ags_machine_collection_entry.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry.Tpo -c -o ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo `test -f 'ags/X/export/ags_machine_collection_entry.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection_entry.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_machine_collection_entry.c' object='ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo `test -f 'ags/X/export/ags_machine_collection_entry.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection_entry.c
+
+ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo: ags/X/export/ags_machine_collection_entry_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo -MD -MP -MF ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Tpo -c -o ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo `test -f 'ags/X/export/ags_machine_collection_entry_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection_entry_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Tpo ags/X/export/$(DEPDIR)/libgsequencer_la-ags_machine_collection_entry_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/export/ags_machine_collection_entry_callbacks.c' object='ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo `test -f 'ags/X/export/ags_machine_collection_entry_callbacks.c' || echo '$(srcdir)/'`ags/X/export/ags_machine_collection_entry_callbacks.c
 
 ags/X/machine/libgsequencer_la-ags_cell_pattern.lo: ags/X/machine/ags_cell_pattern.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_cell_pattern.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_cell_pattern.Tpo -c -o ags/X/machine/libgsequencer_la-ags_cell_pattern.lo `test -f 'ags/X/machine/ags_cell_pattern.c' || echo '$(srcdir)/'`ags/X/machine/ags_cell_pattern.c
@@ -9398,6 +9683,48 @@ ags/X/editor/libgsequencer_la-ags_automation_area_callbacks.lo: ags/X/editor/ags
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_automation_area_callbacks.lo `test -f 'ags/X/editor/ags_automation_area_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_automation_area_callbacks.c
 
+ags/X/editor/libgsequencer_la-ags_envelope_dialog_callbacks.lo: ags/X/editor/ags_envelope_dialog_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_envelope_dialog_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_envelope_dialog_callbacks.lo `test -f 'ags/X/editor/ags_envelope_dialog_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_dialog_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_envelope_dialog_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_envelope_dialog_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_envelope_dialog_callbacks.lo `test -f 'ags/X/editor/ags_envelope_dialog_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_dialog_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_envelope_dialog.lo: ags/X/editor/ags_envelope_dialog.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_envelope_dialog.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog.Tpo -c -o ags/X/editor/libgsequencer_la-ags_envelope_dialog.lo `test -f 'ags/X/editor/ags_envelope_dialog.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_dialog.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_dialog.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_envelope_dialog.c' object='ags/X/editor/libgsequencer_la-ags_envelope_dialog.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_envelope_dialog.lo `test -f 'ags/X/editor/ags_envelope_dialog.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_dialog.c
+
+ags/X/editor/libgsequencer_la-ags_envelope_editor_callbacks.lo: ags/X/editor/ags_envelope_editor_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_envelope_editor_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_envelope_editor_callbacks.lo `test -f 'ags/X/editor/ags_envelope_editor_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_editor_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_envelope_editor_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_envelope_editor_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_envelope_editor_callbacks.lo `test -f 'ags/X/editor/ags_envelope_editor_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_editor_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_envelope_editor.lo: ags/X/editor/ags_envelope_editor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_envelope_editor.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor.Tpo -c -o ags/X/editor/libgsequencer_la-ags_envelope_editor.lo `test -f 'ags/X/editor/ags_envelope_editor.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_editor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_editor.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_envelope_editor.c' object='ags/X/editor/libgsequencer_la-ags_envelope_editor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_envelope_editor.lo `test -f 'ags/X/editor/ags_envelope_editor.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_editor.c
+
+ags/X/editor/libgsequencer_la-ags_envelope_info_callbacks.lo: ags/X/editor/ags_envelope_info_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_envelope_info_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_envelope_info_callbacks.lo `test -f 'ags/X/editor/ags_envelope_info_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_info_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_envelope_info_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_envelope_info_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_envelope_info_callbacks.lo `test -f 'ags/X/editor/ags_envelope_info_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_info_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_envelope_info.lo: ags/X/editor/ags_envelope_info.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_envelope_info.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info.Tpo -c -o ags/X/editor/libgsequencer_la-ags_envelope_info.lo `test -f 'ags/X/editor/ags_envelope_info.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_info.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_envelope_info.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_envelope_info.c' object='ags/X/editor/libgsequencer_la-ags_envelope_info.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_envelope_info.lo `test -f 'ags/X/editor/ags_envelope_info.c' || echo '$(srcdir)/'`ags/X/editor/ags_envelope_info.c
+
 ags/X/editor/libgsequencer_la-ags_file_selection_callbacks.lo: ags/X/editor/ags_file_selection_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_file_selection_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_file_selection_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_file_selection_callbacks.lo `test -f 'ags/X/editor/ags_file_selection_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_file_selection_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_file_selection_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_file_selection_callbacks.Plo
@@ -9509,6 +9836,20 @@ ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo: ags/X/editor/ags_pa
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_pattern_edit_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_pattern_edit_callbacks.lo `test -f 'ags/X/editor/ags_pattern_edit_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_edit_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo: ags/X/editor/ags_pattern_envelope_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo `test -f 'ags/X/editor/ags_pattern_envelope_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_pattern_envelope_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope_callbacks.lo `test -f 'ags/X/editor/ags_pattern_envelope_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo: ags/X/editor/ags_pattern_envelope.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Tpo -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo `test -f 'ags/X/editor/ags_pattern_envelope.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_pattern_envelope.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_pattern_envelope.c' object='ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_pattern_envelope.lo `test -f 'ags/X/editor/ags_pattern_envelope.c' || echo '$(srcdir)/'`ags/X/editor/ags_pattern_envelope.c
 
 ags/X/editor/libgsequencer_la-ags_scale_area.lo: ags/X/editor/ags_scale_area.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_scale_area.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Tpo -c -o ags/X/editor/libgsequencer_la-ags_scale_area.lo `test -f 'ags/X/editor/ags_scale_area.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_area.c
@@ -9846,6 +10187,20 @@ ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.obj: ags
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.obj `if test -f 'ags/test/audio/midi/ags_midi_buffer_util_test.c'; then $(CYGPATH_W) 'ags/test/audio/midi/ags_midi_buffer_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/midi/ags_midi_buffer_util_test.c'; fi`
 
+ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.o: ags/test/audio/midi/ags_midi_builder_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_builder_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.o -MD -MP -MF ags/test/audio/midi/$(DEPDIR)/ags_midi_builder_test-ags_midi_builder_test.Tpo -c -o ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.o `test -f 'ags/test/audio/midi/ags_midi_builder_test.c' || echo '$(srcdir)/'`ags/test/audio/midi/ags_midi_builder_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/midi/$(DEPDIR)/ags_midi_builder_test-ags_midi_builder_test.Tpo ags/test/audio/midi/$(DEPDIR)/ags_midi_builder_test-ags_midi_builder_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/midi/ags_midi_builder_test.c' object='ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_builder_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.o `test -f 'ags/test/audio/midi/ags_midi_builder_test.c' || echo '$(srcdir)/'`ags/test/audio/midi/ags_midi_builder_test.c
+
+ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.obj: ags/test/audio/midi/ags_midi_builder_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_builder_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.obj -MD -MP -MF ags/test/audio/midi/$(DEPDIR)/ags_midi_builder_test-ags_midi_builder_test.Tpo -c -o ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.obj `if test -f 'ags/test/audio/midi/ags_midi_builder_test.c'; then $(CYGPATH_W) 'ags/test/audio/midi/ags_midi_builder_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/midi/ags_midi_builder_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/midi/$(DEPDIR)/ags_midi_builder_test-ags_midi_builder_test.Tpo ags/test/audio/midi/$(DEPDIR)/ags_midi_builder_test-ags_midi_builder_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/midi/ags_midi_builder_test.c' object='ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_builder_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.obj `if test -f 'ags/test/audio/midi/ags_midi_builder_test.c'; then $(CYGPATH_W) 'ags/test/audio/midi/ags_midi_builder_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/midi/ags_midi_builder_test.c'; fi`
+
 ags/test/audio/ags_notation_test-ags_notation_test.o: ags/test/audio/ags_notation_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_notation_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_notation_test-ags_notation_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_notation_test-ags_notation_test.Tpo -c -o ags/test/audio/ags_notation_test-ags_notation_test.o `test -f 'ags/test/audio/ags_notation_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_notation_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_notation_test-ags_notation_test.Tpo ags/test/audio/$(DEPDIR)/ags_notation_test-ags_notation_test.Po
@@ -9993,6 +10348,7 @@ clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf ags/X/.libs ags/X/_libs
 	-rm -rf ags/X/editor/.libs ags/X/editor/_libs
+	-rm -rf ags/X/export/.libs ags/X/export/_libs
 	-rm -rf ags/X/file/.libs ags/X/file/_libs
 	-rm -rf ags/X/import/.libs ags/X/import/_libs
 	-rm -rf ags/X/machine/.libs ags/X/machine/_libs
@@ -10148,16 +10504,63 @@ uninstall-nobase_includeHEADERS:
 	@list='$(nobase_include_HEADERS)'; test -n "$(includedir)" || list=; \
 	$(am__nobase_strip_setup); files=`$(am__nobase_strip)`; \
 	dir='$(DESTDIR)$(includedir)'; $(am__uninstall_files_from_dir)
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run 'make' without going through this Makefile.
+# To change the values of 'make' variables: instead of editing Makefiles,
+# (1) if the variable is set in 'config.status', edit 'config.status'
+#     (which will cause the Makefiles to be regenerated when you run 'make');
+# (2) otherwise, pass the desired values on the 'make' command line.
+$(am__recursive_targets):
+	@fail=; \
+	if $(am__make_keepgoing); then \
+	  failcom='fail=yes'; \
+	else \
+	  failcom='exit 1'; \
+	fi; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
 ags-docs-local: 
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
-tags: tags-am
+tags: tags-recursive
 TAGS: tags
 
 tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	set x; \
 	here=`pwd`; \
+	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
+	  include_option=--etags-include; \
+	  empty_fix=.; \
+	else \
+	  include_option=--include; \
+	  empty_fix=; \
+	fi; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test ! -f $$subdir/TAGS || \
+	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
 	$(am__define_uniq_tagged_files); \
 	shift; \
 	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
@@ -10170,7 +10573,7 @@ tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	      $$unique; \
 	  fi; \
 	fi
-ctags: ctags-am
+ctags: ctags-recursive
 
 CTAGS: ctags
 ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
@@ -10189,7 +10592,7 @@ cscope: cscope.files
 clean-cscope:
 	-rm -f cscope.files
 cscope.files: clean-cscope cscopelist
-cscopelist: cscopelist-am
+cscopelist: cscopelist-recursive
 
 cscopelist-am: $(am__tagged_files)
 	list='$(am__tagged_files)'; \
@@ -10448,6 +10851,13 @@ ags_midi_buffer_util_test.log: ags_midi_buffer_util_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_midi_builder_test.log: ags_midi_builder_test$(EXEEXT)
+	@p='ags_midi_builder_test$(EXEEXT)'; \
+	b='ags_midi_builder_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_xorg_application_context_test.log: ags_xorg_application_context_test$(EXEEXT)
 	@p='ags_xorg_application_context_test$(EXEEXT)'; \
 	b='ags_xorg_application_context_test'; \
@@ -10586,6 +10996,31 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    $(am__make_dryrun) \
+	      || test -d "$(distdir)/$$subdir" \
+	      || $(MKDIR_P) "$(distdir)/$$subdir" \
+	      || exit 1; \
+	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
+	    $(am__relativize); \
+	    new_distdir=$$reldir; \
+	    dir1=$$subdir; dir2="$(top_distdir)"; \
+	    $(am__relativize); \
+	    new_top_distdir=$$reldir; \
+	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
+	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
+	    ($(am__cd) $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$$new_top_distdir" \
+	        distdir="$$new_distdir" \
+		am__remove_distdir=: \
+		am__skip_length_check=: \
+		am__skip_mode_fix=: \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -10720,23 +11155,24 @@ distcleancheck: distclean
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_LTLIBRARIES) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-check: check-am
+check: check-recursive
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) $(HEADERS)
 install-binPROGRAMS: install-libLTLIBRARIES
 
-installdirs:
+installdirs: installdirs-recursive
+installdirs-am:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libgsequencerdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-am
+installcheck: installcheck-recursive
 install-strip:
 	if test -z '$(STRIP)'; then \
 	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
@@ -10764,6 +11200,8 @@ distclean-generic:
 	-rm -f ags/X/$(am__dirstamp)
 	-rm -f ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/X/editor/$(am__dirstamp)
+	-rm -f ags/X/export/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ags/X/export/$(am__dirstamp)
 	-rm -f ags/X/file/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/X/file/$(am__dirstamp)
 	-rm -f ags/X/import/$(DEPDIR)/$(am__dirstamp)
@@ -10826,31 +11264,31 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-ags-docs: ags-docs-am
+ags-docs: ags-docs-recursive
 
 ags-docs-am: ags-docs-local
 
-clean: clean-am
+clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-checkLTLIBRARIES clean-checkPROGRAMS \
 	clean-generic clean-libLTLIBRARIES \
 	clean-libgsequencerLTLIBRARIES clean-libtool clean-local \
 	mostlyclean-am
 
-distclean: distclean-am
+distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/export/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
 
-dvi: dvi-am
+dvi: dvi-recursive
 
 dvi-am:
 
 html-am:
 
-info: info-am
+info: info-recursive
 
 info-am:
 
@@ -10858,7 +11296,7 @@ install-data-am: install-appdataDATA install-data-local \
 	install-docDATA install-libgsequencerLTLIBRARIES install-man \
 	install-nobase_includeHEADERS install-pkgconfigDATA
 
-install-dvi: install-dvi-am
+install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
@@ -10866,39 +11304,39 @@ install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
 
 install-html-am:
 
-install-info: install-info-am
+install-info: install-info-recursive
 
 install-info-am:
 
 install-man: install-man1
 
-install-pdf: install-pdf-am
+install-pdf: install-pdf-recursive
 
 install-pdf-am:
 
-install-ps: install-ps-am
+install-ps: install-ps-recursive
 
 install-ps-am:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-am
+maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/export/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-am
+mostlyclean: mostlyclean-recursive
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-am
+pdf: pdf-recursive
 
 pdf-am:
 
-ps: ps-am
+ps: ps-recursive
 
 ps-am:
 
@@ -10910,32 +11348,34 @@ uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS \
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 uninstall-man: uninstall-man1
 
-.MAKE: check-am install-am install-strip uninstall-am
+.MAKE: $(am__recursive_targets) check-am install-am install-strip \
+	uninstall-am
 
-.PHONY: CTAGS GTAGS TAGS ags-docs-am ags-docs-local all all-am \
-	am--refresh check check-TESTS check-am clean clean-binPROGRAMS \
-	clean-checkLTLIBRARIES clean-checkPROGRAMS clean-cscope \
-	clean-generic clean-libLTLIBRARIES \
-	clean-libgsequencerLTLIBRARIES clean-libtool clean-local \
-	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
-	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
-	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags distcleancheck \
-	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-appdataDATA \
-	install-binPROGRAMS install-data install-data-am \
-	install-data-local install-docDATA install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
+.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS ags-docs-am \
+	ags-docs-local all all-am am--refresh check check-TESTS \
+	check-am clean clean-binPROGRAMS clean-checkLTLIBRARIES \
+	clean-checkPROGRAMS clean-cscope clean-generic \
+	clean-libLTLIBRARIES clean-libgsequencerLTLIBRARIES \
+	clean-libtool clean-local cscope cscopelist-am ctags ctags-am \
+	dist dist-all dist-bzip2 dist-gzip dist-lzip dist-shar \
+	dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-compile distclean-generic distclean-hdr \
+	distclean-libtool distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-appdataDATA install-binPROGRAMS \
+	install-data install-data-am install-data-local \
+	install-docDATA install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-libLTLIBRARIES \
 	install-libgsequencerLTLIBRARIES install-man install-man1 \
 	install-nobase_includeHEADERS install-pdf install-pdf-am \
 	install-pkgconfigDATA install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am \
-	uninstall-appdataDATA uninstall-binPROGRAMS uninstall-docDATA \
-	uninstall-hook uninstall-libLTLIBRARIES \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am recheck tags tags-am uninstall \
+	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
+	uninstall-docDATA uninstall-hook uninstall-libLTLIBRARIES \
 	uninstall-libgsequencerLTLIBRARIES uninstall-man \
 	uninstall-man1 uninstall-nobase_includeHEADERS \
 	uninstall-pkgconfigDATA
@@ -10945,16 +11385,6 @@ uninstall-man: uninstall-man1
 
 ags-integration-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
-
-ags-docs-local:
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-gui
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
-	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
@@ -10973,6 +11403,14 @@ html:
 	mkdir -p $(top_builddir)/html/{developer-docs,user-docs}
 	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
 	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags-gui
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
+	cd $(top_srcdir)
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
@@ -10993,28 +11431,26 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
-install-html: html
+install-html: html 
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
-
-install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	ln -s ../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	ln -s ../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	ln -s ../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	ln -s ../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
-	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
-	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
@@ -11023,10 +11459,12 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-gui-doc
+	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
@@ -11085,6 +11523,34 @@ gen-symbols-ags-gui:
 
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-gui
 	echo "Generated all symbols"
+
+check-gettext:
+	@if test x$(USE_NLS) != "xyes" ; then echo "Missing gettext. Rerun configure and check for" \
+	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
+
+update-po: check-gettext
+	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
+	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
+		rm -f $(srcdir)/po/POTFILES.in.2 ; \
+	else \
+		mv $(srcdir)/po/POTFILES.in.2 $(srcdir)/po/POTFILES.in ; \
+	fi
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
+
+update-gmo: check-gettext
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+
+force-update-gmo: check-gettext
+	touch po/*.po
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+
+force-update-gmo-%: check-gettext
+	@language=`echo $@ | sed s/force-update-gmo-//` ; \
+	if test ! -f po/$$language.po ; then echo "file po/$$language.po does not exist" ; exit 1 ; fi ; \
+	touch po/$$language.po ; \
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+
+.PHONY: check-gettext update-po update-gmo force-update-gmo
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

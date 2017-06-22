@@ -50,7 +50,7 @@ ags_remote_channel_get_type(void)
     };
 
     ags_type_remote_channel = g_type_register_static(G_TYPE_OBJECT,
-						     "AgsRemoteChannel\0",
+						     "AgsRemoteChannel",
 						     &ags_remote_channel_info, 0);
 
     g_type_add_interface_static(ags_type_remote_channel,

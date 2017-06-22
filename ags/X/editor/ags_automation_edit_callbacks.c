@@ -119,7 +119,7 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
     for(j = 0; j < pads; j++){
       for(i = audio_channels; i < audio_channels_old; i++){
 	ags_notebook_remove_tab(notebook,
-				j * audio_channels + i);
+				pads * audio_channels);
       }
     }
   }
@@ -368,7 +368,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 
 	if(range == 0.0){
 	  automation = automation->next;
-	  g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	  g_warning("ags_automation_edit_callbacks.c - range = 0.0");
 	
 	  continue;
 	}
@@ -436,7 +436,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 
 	  if(range == 0.0){
 	    automation = automation->next;
-	    g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	    g_warning("ags_automation_edit_callbacks.c - range = 0.0");
 	
 	    continue;
 	  }
@@ -469,7 +469,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 					    FALSE);
 
 #ifdef AGS_DEBUG
-	    g_message("add acceleration x -> %d; f(x) = %f\0", x, val);
+	    g_message("add acceleration x -> %d; f(x) = %f", x, val);
 #endif
 	  }
 
@@ -666,7 +666,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
 	if(range == 0.0){
 	  automation = automation->next;
-	  g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	  g_warning("ags_automation_edit_callbacks.c - range = 0.0");
 	
 	  continue;
 	}
@@ -740,7 +740,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
 	  if(range == 0.0){
 	    automation = automation->next;
-	    g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	    g_warning("ags_automation_edit_callbacks.c - range = 0.0");
 	
 	    continue;
 	  }
@@ -883,7 +883,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
 	    if(range == 0.0){
 	      automation = automation->next;
-	      g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	      g_warning("ags_automation_edit_callbacks.c - range = 0.0");
 	      
 	      continue;
 	    }
@@ -923,7 +923,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	    }
 
 #ifdef AGS_DEBUG
-	    g_message("%s %u %f %u %f\0",
+	    g_message("%s %u %f %u %f",
 		      AGS_AUTOMATION_AREA(list->data)->control_name,
 		      x0, c_y0,
 		      x1, c_y1);
@@ -1383,7 +1383,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	if(range == 0.0){
 	  automation = automation->next;
-	  g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	  g_warning("ags_automation_edit_callbacks.c - range = 0.0");
 	
 	  continue;
 	}
@@ -1477,7 +1477,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	  if(range == 0.0){
 	    automation = automation->next;
-	    g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	    g_warning("ags_automation_edit_callbacks.c - range = 0.0");
 	
 	    continue;
 	  }
@@ -1822,7 +1822,7 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
-  //  g_message("%f\0", GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
+  //  g_message("%f", GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
   
   /* reset ruler */
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,

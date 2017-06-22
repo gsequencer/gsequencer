@@ -74,7 +74,7 @@ ags_plugin_preferences_get_type(void)
     };
     
     ags_type_plugin_preferences = g_type_register_static(GTK_TYPE_VBOX,
-							 "AgsPluginPreferences\0", &ags_plugin_preferences_info,
+							 "AgsPluginPreferences", &ags_plugin_preferences_info,
 							 0);
     
     g_type_add_interface_static(ags_type_plugin_preferences,
@@ -140,7 +140,7 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
   GtkTreeIter iter;
   gchar **filenames, **filenames_start;
     
-  static const gchar *default_ladspa_path = "/usr/lib/ladspa\0";
+  static const gchar *default_ladspa_path = "/usr/lib/ladspa";
 
   ladspa_plugin_preferences = (AgsLadspaPluginPreferences *) malloc(sizeof(AgsLadspaPluginPreferences));
 

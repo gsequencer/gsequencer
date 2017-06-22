@@ -40,7 +40,7 @@ ags_concurrency_provider_get_type()
 
   if(!ags_type_concurrency_provider){
     ags_type_concurrency_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
-								  "AgsConcurrencyProvider\0",
+								  "AgsConcurrencyProvider",
 								  sizeof(AgsConcurrencyProviderInterface),
 								  (GClassInitFunc) ags_concurrency_provider_class_init,
 								  0, NULL, 0);

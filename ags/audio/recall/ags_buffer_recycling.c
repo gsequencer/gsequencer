@@ -84,7 +84,7 @@ ags_buffer_recycling_get_type()
     };
 
     ags_type_buffer_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						       "AgsBufferRecycling\0",
+						       "AgsBufferRecycling",
 						       &ags_buffer_recycling_info,
 						       0);
 
@@ -141,10 +141,10 @@ ags_buffer_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling)
 {
-  AGS_RECALL(buffer_recycling)->name = "ags-buffer\0";
+  AGS_RECALL(buffer_recycling)->name = "ags-buffer";
   AGS_RECALL(buffer_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(buffer_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(buffer_recycling)->xml_type = "ags-buffer-recycling\0";
+  AGS_RECALL(buffer_recycling)->xml_type = "ags-buffer-recycling";
   AGS_RECALL(buffer_recycling)->port = NULL;
 
   AGS_RECALL(buffer_recycling)->child_type = AGS_TYPE_BUFFER_AUDIO_SIGNAL;
@@ -229,7 +229,7 @@ ags_buffer_recycling_new(AgsRecycling *recycling)
   AgsBufferRecycling *buffer_recycling;
 
   buffer_recycling = (AgsBufferRecycling *) g_object_new(AGS_TYPE_BUFFER_RECYCLING,
-							 "source\0", recycling,
+							 "source", recycling,
 							 NULL);
 
   return(buffer_recycling);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,5 +29,8 @@
 int ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 int ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
 int ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog);
+
+gboolean ags_midi_dialog_delete_event(GtkWidget *widget, GdkEventAny *event,
+				      AgsMidiDialog *midi_dialog);
 
 #endif /*__AGS_MIDI_DIALOG_CALLBACKS_H__*/

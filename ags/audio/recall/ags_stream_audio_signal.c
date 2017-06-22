@@ -91,7 +91,7 @@ ags_stream_audio_signal_get_type()
     };
 
     ags_type_stream_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							  "AgsStreamAudioSignal\0",
+							  "AgsStreamAudioSignal",
 							  &ags_stream_audio_signal_info,
 							  0);
 
@@ -151,10 +151,10 @@ ags_stream_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectable
 void
 ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 {
-  AGS_RECALL(stream_audio_signal)->name = "ags-stream\0";
+  AGS_RECALL(stream_audio_signal)->name = "ags-stream";
   AGS_RECALL(stream_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(stream_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(stream_audio_signal)->xml_type = "ags-stream-audio-signal\0";
+  AGS_RECALL(stream_audio_signal)->xml_type = "ags-stream-audio-signal";
   AGS_RECALL(stream_audio_signal)->port = NULL;
 
   AGS_RECALL(stream_audio_signal)->child_type = G_TYPE_NONE;
@@ -246,7 +246,7 @@ ags_stream_audio_signal_run_init_pre(AgsRecall *recall)
   /* call parent */
   AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_init_pre(recall);
 
-  //  g_message("stream\0");
+  //  g_message("stream");
 }
 
 void
@@ -324,7 +324,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 	    }
 	    break;
 	  default:
-	    g_critical("unsupported soundcard format\0");
+	    g_critical("unsupported soundcard format");
 	  }
 	}
 	
@@ -336,7 +336,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
       g_value_unset(&value);
     }
 
-    //g_message("stream %x %x\0", AGS_RECALL_AUDIO_SIGNAL(recall)->source, AGS_RECALL_ID(AGS_RECALL_AUDIO_SIGNAL(recall)->source->recall_id)->recycling_container);
+    //g_message("stream %x %x", AGS_RECALL_AUDIO_SIGNAL(recall)->source, AGS_RECALL_ID(AGS_RECALL_AUDIO_SIGNAL(recall)->source->recall_id)->recycling_container);
     AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current = AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->next;
 
     /* call parent */
@@ -379,7 +379,7 @@ ags_stream_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsStreamAudioSignal *stream_audio_signal;
 
   stream_audio_signal = (AgsStreamAudioSignal *) g_object_new(AGS_TYPE_STREAM_AUDIO_SIGNAL,
-							      "source\0", audio_signal,
+							      "source", audio_signal,
 							      NULL);
 
   return(stream_audio_signal);

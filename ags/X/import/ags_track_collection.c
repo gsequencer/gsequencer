@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
+
+#include <ags/i18n.h>
 
 void ags_track_collection_class_init(AgsTrackCollectionClass *track_collection);
 void ags_track_collection_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -98,7 +100,7 @@ ags_track_collection_get_type(void)
     };
 
     ags_type_track_collection = g_type_register_static(GTK_TYPE_VBOX,
-						       "AgsTrackCollection\0", &ags_track_collection_info,
+						       "AgsTrackCollection", &ags_track_collection_info,
 						       0);
     
     g_type_add_interface_static(ags_type_track_collection,
@@ -133,11 +135,11 @@ ags_track_collection_class_init(AgsTrackCollectionClass *track_collection)
    *
    * The assigned midi document.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("midi-document\0",
-				    "midi document of track collection\0",
-				    "The midi document this track collection is assigned to\0",
+  param_spec = g_param_spec_pointer("midi-document",
+				    i18n_pspec("midi document of track collection"),
+				    i18n_pspec("The midi document this track collection is assigned to"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MIDI_DOCUMENT,
@@ -168,6 +170,11 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
 
   track_collection->midi_doc = NULL;
 
+  track_collection->first_offset = 0;
+  track_collection->bpm = 120.0;
+  
+  track_collection->default_length = 4;
+  
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 								  NULL);
   gtk_box_pack_start(GTK_BOX(track_collection),
@@ -223,7 +230,9 @@ ags_track_collection_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MIDI_DOCUMENT:
-    g_value_set_pointer(value, track_collection->midi_doc);
+    {
+      g_value_set_pointer(value, track_collection->midi_doc);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -339,16 +348,20 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   xmlXPathContext *xpath_context;
   xmlXPathObject *xpath_object;
   xmlNode *header_node, *tempo_node;
+  xmlNode *time_signature_node;
   xmlNode **node, **instrument_node, **sequence_node;
   GList *list, *list_start;
   
   gchar *instrument, *sequence;
   gdouble sec_val;
+  guint denominator, numerator;
   guint i, j;
 
   /* bpm and first_offset */
+  header_node = NULL;
+  
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);
-  xpath_object = xmlXPathEval((xmlChar *) "//midi-header\0",
+  xpath_object = xmlXPathEval((xmlChar *) "//midi-header",
 			      xpath_context);
 
   if(xpath_object->nodesetval != NULL){
@@ -361,8 +374,10 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     }
   }
 
+  tempo_node = NULL;
+  
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);
-  xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track/midi-message[@event=\"tempo-number\"]\0",
+  xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track/midi-message[@event=\"tempo-number\"]",
 			      xpath_context);
 
   if(xpath_object->nodesetval != NULL){
@@ -374,28 +389,66 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
       }
     }
   }
+
+  if(header_node == NULL ||
+     tempo_node == NULL){
+    return;
+  }
   
   track_collection->first_offset = 0;
   sec_val = ags_midi_parser_ticks_to_sec(NULL,
 					 (guint) g_ascii_strtoull(xmlGetProp(header_node,
-									     "division\0"),
+									     "division"),
 								  NULL,
 								  10),
 					 (gint) g_ascii_strtoll(xmlGetProp(header_node,
-									   "division\0"),
+									   "division"),
 								NULL,
 								10),
 					 (guint) g_ascii_strtoull(xmlGetProp(tempo_node,
-									     "tempo\0"),
+									     "tempo"),
 								  NULL,
 								  10));
   //  g_message("", sec_val);
   track_collection->bpm = 60.0 / sec_val;
-  g_message("bpm %f\0\0", track_collection->bpm);
+  //  g_message("bpm %f", track_collection->bpm);
+
+  /* default length */
+  time_signature_node = NULL;
+  
+  denominator = 4;
+  numerator = 4;
+
+  xpath_context = xmlXPathNewContext(track_collection->midi_doc);
+  xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track/midi-message[@event=\"time-signature\"]",
+			      xpath_context);
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+    
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	time_signature_node = node[i];	
+      }
+    }
+
+    if(time_signature_node != NULL){
+      xmlChar *str;
+
+      str = xmlGetProp(time_signature_node,
+		       "timesig");
+
+      if(str != NULL){
+	sscanf(str, "%d/%d", &numerator, &denominator);
+      }
+    }
+  }
+  
+  track_collection->default_length = numerator * (numerator / denominator);
   
   /* collect */
   xpath_context = xmlXPathNewContext(track_collection->midi_doc);
-  xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track\0",
+  xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track",
 			      xpath_context);
 
   if(xpath_object->nodesetval != NULL){
@@ -415,7 +468,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	//		     xpath_context);
 	xpath_context->node = node[i];
 	      
-	xpath_object = xmlXPathEval((xmlChar *) "./midi-message[boolean(@instrument-name)]\0",
+	xpath_object = xmlXPathEval((xmlChar *) "./midi-message[boolean(@instrument-name)]",
 				    xpath_context);
 
 	if(xpath_object->nodesetval != NULL){
@@ -424,7 +477,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
 	    if(instrument_node[j]->type == XML_ELEMENT_NODE){
 	      instrument = xmlGetProp(instrument_node[j],
-				      "instrument-name\0");
+				      "instrument-name");
 	      break;
 	    }
 	  }
@@ -435,7 +488,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	//		     xpath_context);
 	xpath_context->node = node[i];
 	      
-	xpath_object = xmlXPathEval((xmlChar *) "./midi-message[boolean(@sequence-name)]\0",
+	xpath_object = xmlXPathEval((xmlChar *) "./midi-message[boolean(@sequence-name)]",
 				    xpath_context);
 	
 	if(xpath_object->nodesetval != NULL){
@@ -444,12 +497,21 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 	  for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
 	    if(sequence_node[j]->type == XML_ELEMENT_NODE){
 	      sequence = xmlGetProp(sequence_node[j],
-				    "sequence-name\0");
+				    "sequence-name");
 	      break;
 	    }
 	  }
 	}
 
+	if(instrument == NULL){
+	  instrument = g_strdup("GSequencer - instrument default");
+	}
+	
+	if(sequence == NULL){
+	  sequence = g_strdup("GSequencer - sequence default");
+	}
+
+	
 	list = gtk_container_get_children((GtkContainer *) track_collection->child);
 	track_collection_mapper = ags_track_collection_mapper_find_instrument_with_sequence(list,
 											    instrument, sequence);
@@ -459,10 +521,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 					  node[i],
 					  instrument, sequence);
 	}else{
-	  g_message("%s\0", instrument);
-	  g_message("%s\0", sequence);
 	  g_object_set(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data),
-		       "track\0", node[i],
+		       "track", node[i],
 		       NULL);
 	}
 	
@@ -471,7 +531,7 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
     }
   }
 
-  //  xmlSaveFormatFileEnc("-\0", track_collection->midi_doc, "UTF-8\0", 1);
+  //  xmlSaveFormatFileEnc("-", track_collection->midi_doc, "UTF-8", 1);
   
   /* map */
   list_start =
@@ -494,19 +554,20 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
-  if(track == NULL ||
-     instrument == NULL ||
-     sequence == NULL){
+  if(track == NULL){
     return;
   }
-  
+
+  g_message("%s", instrument);
+  g_message("%s", sequence);
+
   track_collection_mapper = (AgsTrackCollectionMapper *) g_object_newv(track_collection->child_type,
 								       track_collection->child_parameter_count,
 								       track_collection->child_parameter);
   g_object_set(track_collection_mapper,
-	       "track\0", track,
-	       "instrument\0", instrument,
-	       "sequence\0", sequence,
+	       "track", track,
+	       "instrument", instrument,
+	       "sequence", sequence,
 	       NULL);
   gtk_box_pack_start(GTK_BOX(track_collection->child),
 		     GTK_WIDGET(track_collection_mapper),
@@ -524,7 +585,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
  *
  * Returns: a new #AgsTrackCollection
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsTrackCollection*
 ags_track_collection_new(GType child_type,

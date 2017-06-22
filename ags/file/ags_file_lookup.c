@@ -19,6 +19,8 @@
 
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/i18n.h>
+
 void ags_file_lookup_class_init(AgsFileLookupClass *file_lookup);
 void ags_file_lookup_init (AgsFileLookup *file_lookup);
 void ags_file_lookup_set_property(GObject *gobject,
@@ -75,7 +77,7 @@ ags_file_lookup_get_type (void)
     };
 
     ags_type_file_lookup = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsFileLookup\0",
+						  "AgsFileLookup",
 						  &ags_file_lookup_info,
 						  0);
   }
@@ -107,9 +109,9 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("file\0",
-				   "assigned file\0",
-				   "The file it is assigned with\0",
+  param_spec = g_param_spec_object("file",
+				   i18n_pspec("assigned file"),
+				   i18n_pspec("The file it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -123,9 +125,9 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("node\0",
-				    "assigned node\0",
-				    "The node it is assigned with\0",
+  param_spec = g_param_spec_pointer("node",
+				    i18n_pspec("assigned node"),
+				    i18n_pspec("The node it is assigned with"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NODE,
@@ -138,9 +140,9 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("reference\0",
-				    "assigned reference\0",
-				    "The reference it is assigned with\0",
+  param_spec = g_param_spec_pointer("reference",
+				    i18n_pspec("assigned reference"),
+				    i18n_pspec("The reference it is assigned with"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_REFERENCE,
@@ -159,7 +161,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    * Since: 0.4.2
    */
   file_lookup_signals[RESOLVE] =
-    g_signal_new("resolve\0",
+    g_signal_new("resolve",
 		 G_TYPE_FROM_CLASS(file_lookup),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileLookupClass, resolve),

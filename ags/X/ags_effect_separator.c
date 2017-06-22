@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator);
 void ags_effect_separator_init(AgsEffectSeparator *effect_separator);
 void ags_effect_separator_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -77,7 +79,7 @@ ags_effect_separator_get_type(void)
     };
 
     ags_type_effect_separator = g_type_register_static(GTK_TYPE_HBOX,
-						       "AgsEffectSeparator\0", &ags_effect_separator_info,
+						       "AgsEffectSeparator", &ags_effect_separator_info,
 						       0);
 
     g_type_add_interface_static(ags_type_effect_separator,
@@ -110,9 +112,9 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * 
    * Since: 0.7.122.19
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "filename\0",
-				   "The filename\0",
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("filename"),
+				   i18n_pspec("The filename"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -126,9 +128,9 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * 
    * Since: 0.7.122.19
    */
-  param_spec = g_param_spec_string("effect\0",
-				   "effect\0",
-				   "The effect\0",
+  param_spec = g_param_spec_string("effect",
+				   i18n_pspec("effect"),
+				   i18n_pspec("The effect"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -142,9 +144,9 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    * 
    * Since: 0.7.122.19
    */
-  param_spec = g_param_spec_string("text\0",
-				   "text\0",
-				   "The text\0",
+  param_spec = g_param_spec_string("text",
+				   i18n_pspec("text"),
+				   i18n_pspec("The text"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -207,6 +209,10 @@ ags_effect_separator_set_property(GObject *gobject,
       
       filename = g_value_get_string(value);
 
+      if(effect_separator->filename != NULL){
+	g_free(effect_separator->filename);
+      }
+      
       effect_separator->filename = g_strdup(filename);
     }
     break;
@@ -216,6 +222,10 @@ ags_effect_separator_set_property(GObject *gobject,
       
       effect = g_value_get_string(value);
 
+      if(effect_separator->effect != NULL){
+	g_free(effect_separator->effect);
+      }
+      
       effect_separator->effect = g_strdup(effect);
     }
     break;

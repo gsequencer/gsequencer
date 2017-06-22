@@ -27,6 +27,8 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/i18n.h>
+
 void ags_file_link_class_init(AgsFileLinkClass *file_link);
 void ags_file_link_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_file_link_init(AgsFileLink *file_link);
@@ -93,7 +95,7 @@ ags_file_link_get_type()
     };
 
     ags_type_file_link = g_type_register_static(G_TYPE_OBJECT,
-						"AgsFileLink\0",
+						"AgsFileLink",
 						&ags_file_link_info,
 						0);
 
@@ -129,9 +131,9 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "the filename\0",
-				   "The filename to locate the file\0",
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename to locate the file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -145,9 +147,9 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_string("data\0",
-				   "the data\0",
-				   "The embedded data\0",
+  param_spec = g_param_spec_string("data",
+				   i18n_pspec("the data"),
+				   i18n_pspec("The embedded data"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -336,10 +338,10 @@ ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", file_link,
+				   "application-context", file->application_context,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", file_link,
 				   NULL));
 }
 
@@ -362,10 +364,10 @@ ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", file_link,
+				   "application-context", file->application_context,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", file_link,
 				   NULL));
 
   xmlAddChild(parent,

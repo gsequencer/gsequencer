@@ -35,6 +35,7 @@
 #include <ags/X/ags_soundcard_editor.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 int
 ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
@@ -48,7 +49,7 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  audio_preferences->connect_jack = (GtkButton *) gtk_button_new_with_label("connect jack\0");
+  audio_preferences->connect_jack = (GtkButton *) gtk_button_new_with_label(i18n("connect jack"));
   gtk_box_pack_end((GtkBox *) GTK_DIALOG(preferences)->action_area,
 		   (GtkWidget *) audio_preferences->connect_jack,
 		   TRUE, FALSE,
@@ -158,13 +159,13 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   
   ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
   ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
-  g_signal_connect(soundcard_editor->remove, "clicked\0",
+  g_signal_connect(soundcard_editor->remove, "clicked",
 		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
   gtk_widget_show_all((GtkWidget *) soundcard_editor);
 
   /* reset default card */  
   g_object_set(window,
-	       "soundcard\0", soundcard,
+	       "soundcard", soundcard,
 	       NULL);
 }
 
@@ -214,7 +215,7 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   pthread_mutex_unlock(application_mutex);
   
   g_object_set(window,
-	       "soundcard\0", soundcard,
+	       "soundcard", soundcard,
 	       NULL);
 
   /*  */

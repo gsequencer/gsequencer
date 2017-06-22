@@ -68,7 +68,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 
 
 #ifdef AGS_DEBUG
-    g_message("%d %d\0", bank, program);
+    g_message("%d %d", bank, program);
 #endif
     
     /* update ports */
@@ -95,7 +95,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 		  GValue value = {0,};
 
 #ifdef AGS_DEBUG
-		  g_message("%s %f\0", specifier, live_dssi_bridge->port_values[i]);
+		  g_message("%s %f", specifier, live_dssi_bridge->port_values[i]);
 #endif
 		  
 		  g_value_init(&value,
@@ -130,7 +130,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
       specifier = live_dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
 
 #ifdef AGS_DEBUG
-      g_message("%s\0", specifier);
+      g_message("%s", specifier);
 #endif
       
       while(bulk_member != NULL){
@@ -168,7 +168,7 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
 	    ags_dial_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
-	    g_message(" --- %f\0", live_dssi_bridge->port_values[i]);
+	    g_message(" --- %f", live_dssi_bridge->port_values[i]);
 #endif
 	  }
 	

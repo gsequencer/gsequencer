@@ -70,7 +70,7 @@ ags_simple_file_read_get_type()
     };
 
     ags_type_simple_file_read = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsSimpleFileRead\0",
+						       "AgsSimpleFileRead",
 						       &ags_simple_file_read_info,
 						       0);
 

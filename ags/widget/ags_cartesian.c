@@ -373,7 +373,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("x-start\0",
 				   "x start\0",
 				   "The x start\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_START,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -391,7 +391,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("x-end\0",
 				   "x end\0",
 				   "The x end\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_END,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -409,7 +409,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("y-start\0",
 				   "y start\0",
 				   "The y start\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_START,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -427,7 +427,7 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   param_spec = g_param_spec_double("y-end\0",
 				   "y end\0",
 				   "The y end\0",
-				   0.0,
+				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_END,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -1366,22 +1366,35 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 			       plot->point_color[i][1],
 			       plot->point_color[i][2]);
 	}
-
+	
+#ifdef AGS_DEBUG
+	g_message("%f %f\0", plot->point[i][0], plot->point[i][1]);
+#endif
+	
 	cairo_arc(cr,
-		  plot->point[i][0] - cartesian->point_radius,
-		  plot->point[i][1] - cartesian->point_radius,
+		  x_offset + plot->point[i][0] - cartesian->point_radius,
+		  y_offset - (plot->point[i][1] - cartesian->point_radius),
 		  cartesian->point_radius,
 		  -1.0 * M_PI,
 		  1.0 * M_PI);
 
 	if(plot->join_points){
-	  cairo_line_to(cr,
-			plot->point[i][0], plot->point[i][1]);
+	  if(i == 0){
+	    cairo_move_to(cr,
+			  x_offset, y_offset);
+	    
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
+	  }else{
+	    cairo_line_to(cr,
+			  x_offset + plot->point[i][0], y_offset - plot->point[i][1]);
+	  }
 	}
       }
     }
 
     cairo_stroke(cr);
+    cairo_fill(cr);
     
     /* bitmaps */
     for(i = 0; i < plot->n_bitmaps; i++){
@@ -1460,8 +1473,17 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   data = cairo_image_surface_get_data(cartesian->surface);
   stride = cairo_image_surface_get_stride(cartesian->surface);
   
-  memset(data, 0xaf, (4 * width * height * sizeof(unsigned char)));
-  
+  memset(data, 0xaf, (4 * width * height * sizeof(unsigned char)));    
+  cairo_surface_flush(cartesian->surface);
+
+  /* surface */
+  cairo_set_source_surface(cr,
+  			   cartesian->surface,
+  			   cartesian->x_margin, cartesian->y_margin);
+  cairo_surface_mark_dirty(cartesian->surface);
+
+  cairo_paint(cr);
+
   /* draw plot */
   list = cartesian->plot;
 
@@ -1470,16 +1492,6 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 
     list = list->next;
   }
-  
-  cairo_surface_flush(cartesian->surface);
-  
-  /* surface */
-  cairo_set_source_surface(cr,
-			   cartesian->surface,
-  			   cartesian->x_margin, cartesian->y_margin);
-  cairo_surface_mark_dirty(cartesian->surface);
-
-  cairo_paint(cr);
 
   /* push group */
   cairo_push_group(cr);
@@ -1646,8 +1658,7 @@ void
 ags_cartesian_add_plot(AgsCartesian *cartesian,
 		       AgsPlot *plot)
 {
-  if(cartesian != NULL ||
-     !AGS_IS_CARTESIAN(cartesian)){
+  if(!AGS_IS_CARTESIAN(cartesian)){
     return;
   }
 
@@ -1659,8 +1670,7 @@ void
 ags_cartesian_remove_plot(AgsCartesian *cartesian,
 			  AgsPlot *plot)
 {
-  if(cartesian != NULL ||
-     !AGS_IS_CARTESIAN(cartesian)){
+  if(!AGS_IS_CARTESIAN(cartesian)){
     return;
   }
 

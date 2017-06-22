@@ -72,7 +72,7 @@ ags_iterator_thread_get_type()
     };
     
     ags_type_iterator_thread = g_type_register_static(AGS_TYPE_THREAD,
-						      "AgsIteratorThread\0",
+						      "AgsIteratorThread",
 						      &ags_iterator_thread_info,
 						      0);
     
@@ -107,7 +107,7 @@ ags_iterator_thread_class_init(AgsIteratorThreadClass *iterator_thread)
 
   /* signals */
   iterator_thread_signals[CHILDREN_READY] = 
-    g_signal_new("children_ready\0",
+    g_signal_new("children_ready",
 		 G_TYPE_FROM_CLASS(iterator_thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsIteratorThreadClass, children_ready),

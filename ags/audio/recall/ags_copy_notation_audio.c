@@ -19,6 +19,8 @@
 
 #include <ags/audio/recall/ags_copy_notation_audio.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audio);
 void ags_copy_notation_audio_init(AgsCopyNotationAudio *copy_notation_audio);
 void ags_copy_notation_audio_set_property(GObject *gobject,
@@ -69,7 +71,7 @@ ags_copy_notation_audio_get_type()
     };
 
     ags_type_copy_notation_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-							  "AgsCopyNotationAudio\0",
+							  "AgsCopyNotationAudio",
 							  &ags_copy_notation_audio_info,
 							  0);
   }
@@ -101,9 +103,9 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("notation\0",
-				   "the assigned notation\0",
-				   "The AgsNotation it is assigned to\0",
+  param_spec = g_param_spec_object("notation",
+				   i18n_pspec("the assigned notation"),
+				   i18n_pspec("The AgsNotation it is assigned to"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -117,9 +119,9 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_uint("audio_channel\0",
-				 "the audio channel to play\0",
-				 "The audio channel to play of audio object\0",
+  param_spec = g_param_spec_uint("audio_channel",
+				 i18n_pspec("the audio channel to play"),
+				 i18n_pspec("The audio channel to play of audio object"),
 				 0,
 				 65535,
 				 0,
@@ -262,9 +264,9 @@ ags_copy_notation_audio_new(GObject *soundcard,
   AgsCopyNotationAudio *copy_notation_audio;
 
   copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
-							      "soundcard\0", soundcard,
-							      "notation\0", notation,
-							      "audio_channel\0", audio_channel,
+							      "soundcard", soundcard,
+							      "notation", notation,
+							      "audio_channel", audio_channel,
 							      NULL);
   
   return(copy_notation_audio);

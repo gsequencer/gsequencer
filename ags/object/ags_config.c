@@ -35,6 +35,7 @@
 #include <pwd.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_config_class_init(AgsConfigClass *config_class);
 void ags_config_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -116,7 +117,7 @@ ags_config_get_type (void)
 
 
     ags_type_config = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsConfig\0",
+					     "AgsConfig",
 					     &ags_config_info,
 					     0);
 
@@ -153,9 +154,9 @@ ags_config_class_init(AgsConfigClass *config)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of config\0",
-				   "The application context which this config is packed into\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("application context of config"),
+				   i18n_pspec("The application context which this config is packed into"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,7 +178,7 @@ ags_config_class_init(AgsConfigClass *config)
    * Since: 0.4.2
    */
   config_signals[LOAD_DEFAULTS] =
-    g_signal_new("load-defaults\0",
+    g_signal_new("load-defaults",
 		 G_TYPE_FROM_CLASS (config),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConfigClass, load_defaults),
@@ -197,7 +198,7 @@ ags_config_class_init(AgsConfigClass *config)
    * Since: 0.4.2
    */
   config_signals[SET_VALUE] =
-    g_signal_new("set-value\0",
+    g_signal_new("set-value",
 		 G_TYPE_FROM_CLASS (config),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConfigClass, set_value),
@@ -219,7 +220,7 @@ ags_config_class_init(AgsConfigClass *config)
    * Since: 0.4.2
    */
   config_signals[GET_VALUE] =
-    g_signal_new("get-value\0",
+    g_signal_new("get-value",
 		 G_TYPE_FROM_CLASS (config),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConfigClass, get_value),
@@ -366,6 +367,10 @@ ags_config_finalize(GObject *gobject)
 
   config = (AgsConfig *) gobject;
 
+  if(ags_config == config){
+    ags_config = NULL;
+  }
+  
   if(config->application_context != NULL){
     g_object_unref(config->application_context);
   }
@@ -405,27 +410,27 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_real_load_defaults(AgsConfig *config)
 {
-  ags_config_set_value(config, AGS_CONFIG_GENERIC, "autosave-thread\0", "false\0");
-  ags_config_set_value(config, AGS_CONFIG_GENERIC, "simple-file\0", "true\0");
-  ags_config_set_value(config, AGS_CONFIG_GENERIC, "disable-feature\0", "experimental\0");
-  ags_config_set_value(config, AGS_CONFIG_GENERIC, "engine-mode\0", "performance\0");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "autosave-thread", "false");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "simple-file", "true");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "disable-feature", "experimental");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "engine-mode", "performance");
 
-  ags_config_set_value(config, AGS_CONFIG_THREAD, "model\0", "super-threaded\0");
-  ags_config_set_value(config, AGS_CONFIG_THREAD, "super-threaded-scope\0", "channel\0");
-  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global\0", "ags-thread\0");
-  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "model", "super-threaded");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "super-threaded-scope", "channel");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global", "ags-thread");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent", "ags-recycling-thread");
 
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend\0", "jack\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device\0", "ags-jack-devout-0\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels\0", "2\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate\0", "48000\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size\0", "1024\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format\0", "16\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "jack");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-jack-devout-0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "1024");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 
-  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend\0", "jack\0");
-  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device\0", "ags-jack-midiin-0\0");
+  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
+  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
 
-  ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
+  ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense", "true");
 }
 
 /**
@@ -463,7 +468,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 
   file = g_file_new_for_path(filename);
 
-  g_message("loading preferences for: %s\0", filename);
+  g_message("loading preferences for: %s", filename);
 
   if(!g_file_query_exists(file,
 			  NULL)){
@@ -485,7 +490,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 			      &error);
 
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
 
       g_error_free(error);
     }
@@ -541,7 +546,7 @@ ags_config_load_from_data(AgsConfig *config,
 			  char *buffer, gsize buffer_length)
 {
   //#ifdef AGS_DEBUG
-  g_message("loading preferences from data[0x%x]\0", (unsigned int) buffer);
+  g_message("loading preferences from data[0x%x]", (unsigned int) buffer);
   //#endif
   
   if(buffer == NULL){
@@ -568,7 +573,7 @@ ags_config_load_from_data(AgsConfig *config,
 			      &error);
 
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
 
       g_error_free(error);
     }
@@ -592,8 +597,8 @@ ags_config_load_from_data(AgsConfig *config,
 			     groups[i],
 			     keys[j],
 			     value);
-	g_message("%s\0", keys[j]);
-    	g_message("%s\0", value);
+	g_message("%s", keys[j]);
+    	g_message("%s", value);
       }
 
       g_strfreev(keys);
@@ -629,7 +634,7 @@ ags_config_to_data(AgsConfig *config,
 			    &error);
 
   if(error != NULL){
-    g_warning("%s\0", error->message);
+    g_warning("%s", error->message);
   }
 
   if(buffer != NULL){
@@ -663,7 +668,7 @@ ags_config_save(AgsConfig *config)
   pw = getpwuid(uid);
 
   /* open conf dir */
-  path = g_strdup_printf("%s/%s\0",
+  path = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
 
@@ -849,7 +854,7 @@ ags_config_new(GObject *application_context)
   AgsConfig *config;
 
   config = (AgsConfig *) g_object_new(AGS_TYPE_CONFIG,
-				      "application-context\0", application_context,
+				      "application-context", application_context,
 				      NULL);
 
   return(config);

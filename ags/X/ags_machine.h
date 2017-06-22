@@ -68,6 +68,7 @@ typedef enum{
 typedef enum{
   AGS_MACHINE_POPUP_COPY_PATTERN          = 1,
   AGS_MACHINE_POPUP_PASTE_PATTERN         = 1 <<  1,
+  AGS_MACHINE_POPUP_ENVELOPE              = 1 <<  2,
 }AgsMachineEditOptions;
 
 typedef enum{
@@ -124,7 +125,9 @@ struct _AgsMachine
   GtkDialog *rename;
   GtkDialog *connection_editor;
   GtkDialog *midi_dialog;
-
+  GtkDialog *envelope_dialog;
+  GtkDialog *envelope_info;
+  
   GObject *application_context;
 };
 

@@ -26,6 +26,12 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <ags/gsequencer_main.h>
 
 #include <ags/X/ags_xorg_application_context.h>
@@ -276,7 +282,9 @@ main(int argc, char **argv)
 				  NULL,
 				  NULL);
   
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
+#endif
   //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
 		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 

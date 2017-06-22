@@ -76,6 +76,8 @@
 #include <ladspa.h>
 #include <dssi.h>
 
+#include <ags/i18n.h>
+
 void ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge);
 void ags_live_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_live_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -165,7 +167,7 @@ ags_live_dssi_bridge_get_type(void)
     };
 
     ags_type_live_dssi_bridge = g_type_register_static(AGS_TYPE_MACHINE,
-						       "AgsLiveDssiBridge\0", &ags_live_dssi_bridge_info,
+						       "AgsLiveDssiBridge", &ags_live_dssi_bridge_info,
 						       0);
 
     g_type_add_interface_static(ags_type_live_dssi_bridge,
@@ -205,9 +207,9 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_string("filename\0",
-				    "the object file\0",
-				    "The filename as string of object file\0",
+  param_spec =  g_param_spec_string("filename",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -221,9 +223,9 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_string("effect\0",
-				    "the effect\0",
-				    "The effect's string representation\0",
+  param_spec =  g_param_spec_string("effect",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -237,9 +239,9 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    * 
    * Since: 0.7.134
    */
-  param_spec =  g_param_spec_uint("index\0",
-				  "index of effect\0",
-				  "The numerical index of effect\0",
+  param_spec =  g_param_spec_uint("index",
+				  i18n_pspec("index of effect"),
+				  i18n_pspec("The numerical index of effect"),
 				  0,
 				  65535,
 				  0,
@@ -302,10 +304,10 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		   AGS_AUDIO_REVERSE_MAPPING);
   audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   g_object_set(audio,
-	       "audio-start-mapping\0", 0,
-	       "audio-end-mapping\0", 128,
-	       "midi-start-mapping\0", 0,
-	       "midi-end-mapping\0", 128,
+	       "audio-start-mapping", 0,
+	       "audio-end-mapping", 128,
+	       "midi-start-mapping", 0,
+	       "midi-end-mapping", 128,
 	       NULL);
   
   AGS_MACHINE(live_dssi_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
@@ -314,10 +316,10 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   ags_machine_popup_add_connection_options((AgsMachine *) live_dssi_bridge,
 					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
-  g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
+  g_signal_connect_after(G_OBJECT(audio), "set-audio-channels",
 			 G_CALLBACK(ags_live_dssi_bridge_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
+  g_signal_connect_after(G_OBJECT(audio), "set-pads",
 			 G_CALLBACK(ags_live_dssi_bridge_set_pads), NULL);
     
   live_dssi_bridge->flags = 0;
@@ -327,7 +329,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
   live_dssi_bridge->version = AGS_LIVE_DSSI_BRIDGE_DEFAULT_VERSION;
   live_dssi_bridge->build_id = AGS_LIVE_DSSI_BRIDGE_DEFAULT_BUILD_ID;
 
-  live_dssi_bridge->xml_type = "ags-live-dssi-bridge\0";
+  live_dssi_bridge->xml_type = "ags-live-dssi-bridge";
   
   live_dssi_bridge->mapped_output_pad = 0;
   live_dssi_bridge->mapped_input_pad = 0;
@@ -350,7 +352,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("program\0");
+  label = (GtkLabel *) gtk_label_new(i18n("program"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) label,
 		     FALSE, FALSE,
@@ -401,6 +403,7 @@ ags_live_dssi_bridge_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
+      gchar *str;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -420,9 +423,13 @@ ags_live_dssi_bridge_set_property(GObject *gobject,
 
 	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) live_dssi_bridge);
 
+	  str = g_strdup_printf("%s %s",
+				i18n("Plugin file not present"),
+				filename);
 	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s\0",
-						filename));
+				str);
+
+	  g_free(str);
 	}
       }
 
@@ -510,7 +517,7 @@ ags_live_dssi_bridge_connect(AgsConnectable *connectable)
 
   live_dssi_bridge = AGS_LIVE_DSSI_BRIDGE(connectable);
 
-  g_signal_connect_after(G_OBJECT(live_dssi_bridge->program), "changed\0",
+  g_signal_connect_after(G_OBJECT(live_dssi_bridge->program), "changed",
 			 G_CALLBACK(ags_live_dssi_bridge_program_changed_callback), live_dssi_bridge);
 }
 
@@ -528,7 +535,7 @@ ags_live_dssi_bridge_disconnect(AgsConnectable *connectable)
   live_dssi_bridge = AGS_LIVE_DSSI_BRIDGE(connectable);
 
   g_object_disconnect(G_OBJECT(live_dssi_bridge->program),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_live_dssi_bridge_program_changed_callback),
 		      live_dssi_bridge,
 		      NULL);
@@ -587,17 +594,17 @@ ags_live_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   gobject = AGS_LIVE_DSSI_BRIDGE(plugin);
 
   g_object_set(gobject,
-	       "filename\0", xmlGetProp(node,
-					"filename\0"),
-	       "effect\0", xmlGetProp(node,
-				      "effect\0"),
+	       "filename", xmlGetProp(node,
+					"filename"),
+	       "effect", xmlGetProp(node,
+				      "effect"),
 	       NULL);
 
   /* launch */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node\0", node,
+					       "node", node,
 					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start\0",
+  g_signal_connect(G_OBJECT(file_launch), "start",
 		   G_CALLBACK(ags_live_dssi_bridge_launch_task), gobject);
   ags_file_add_launch(file,
 		      G_OBJECT(file_launch));
@@ -631,7 +638,7 @@ ags_live_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveDssiBridge *
   
   /* update program */
   str = xmlGetProp(file_launch->node,
-		   "program\0");
+		   "program");
 
   model = gtk_combo_box_get_model((GtkComboBox *) live_dssi_bridge->program);
 
@@ -727,32 +734,32 @@ ags_live_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
     
   node = xmlNewNode(NULL,
-		    "ags-live_dssi-bridge\0");
+		    "ags-live_dssi-bridge");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   xmlNewProp(node,
-	     "filename\0",
+	     "filename",
 	     g_strdup(live_dssi_bridge->filename));
 
   xmlNewProp(node,
-	     "effect\0",
+	     "effect",
 	     g_strdup(live_dssi_bridge->effect));
 
   if((program = gtk_combo_box_text_get_active_text(live_dssi_bridge->program)) != NULL){
     xmlNewProp(node,
-	       "program\0",
+	       "program",
 	       g_strdup(program));
   }
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", live_dssi_bridge,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", live_dssi_bridge,
 				   NULL));
 
   xmlAddChild(parent,
@@ -769,10 +776,10 @@ ags_live_dssi_bridge_finalize(GObject *gobject)
   live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
   
   g_object_disconnect(G_OBJECT(AGS_MACHINE(live_dssi_bridge)->audio),
-		      "set-audio-channels\0",
+		      "set-audio-channels",
 		      G_CALLBACK(ags_live_dssi_bridge_set_audio_channels),
 		      NULL,
-		      "set-pads\0",
+		      "set-pads",
 		      G_CALLBACK(ags_live_dssi_bridge_set_pads),
 		      NULL,
 		      NULL);
@@ -983,7 +990,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   /* ags-delay */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-delay\0",
+			    "ags-delay",
 			    0, 0,
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
@@ -1005,7 +1012,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   /* ags-count-beats */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-count-beats\0",
+			    "ags-count-beats",
 			    0, 0,
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
@@ -1022,7 +1029,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 
     /* set dependency */  
     g_object_set(G_OBJECT(play_count_beats_audio_run),
-		 "delay-audio-run\0", play_delay_audio_run,
+		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
 		      window->navigation->position_tact->adjustment->value,
@@ -1034,7 +1041,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-record-midi\0",
+			    "ags-record-midi",
 			    0, 0,
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -1049,19 +1056,19 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "delay-audio-run\0", play_delay_audio_run,
+		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
 
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }  
 
   /* ags-play-dssi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-play-dssi\0",
+			    "ags-play-dssi",
 			    0, 0,
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
@@ -1077,8 +1084,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     play_dssi_audio = AGS_PLAY_DSSI_AUDIO(list->data);
     
     g_object_set(play_dssi_audio,
-		 "filename\0", live_dssi_bridge->filename,
-		 "effect\0", live_dssi_bridge->effect,
+		 "filename", live_dssi_bridge->filename,
+		 "effect", live_dssi_bridge->effect,
 		 NULL);
 
     ags_play_dssi_audio_load(play_dssi_audio);
@@ -1093,12 +1100,12 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 
     /* set dependency */
     g_object_set(G_OBJECT(play_dssi_audio_run),
-		 "delay-audio-run\0", play_delay_audio_run,
+		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
 
     /* set dependency */
     g_object_set(G_OBJECT(play_dssi_audio_run),
-		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }
 
@@ -1179,12 +1186,12 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
+			     "samplerate");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
+			       "samplerate");
   }
   
   if(str != NULL){
@@ -1196,7 +1203,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
 
-  g_message("ags_live_dssi_bridge.c - load %s %s\0", live_dssi_bridge->filename, live_dssi_bridge->effect);
+  g_message("ags_live_dssi_bridge.c - load %s %s", live_dssi_bridge->filename, live_dssi_bridge->effect);
  
   /* load plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
@@ -1220,7 +1227,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   if(effect_index != -1 &&
      plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor\0");
+						       "dssi_descriptor");
 
     if(dlerror() == NULL && dssi_descriptor){
       live_dssi_bridge->dssi_descriptor = 
@@ -1312,6 +1319,9 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1347,20 +1357,26 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("dssi-%u",
+				    dssi_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("dssi-%u\0", dssi_plugin->unique_id),
-						   "filename\0", live_dssi_bridge->filename,
-						   "effect\0", live_dssi_bridge->effect,
-						   "specifier\0", AGS_PORT_DESCRIPTOR(port->data)->port_name,
-						   "control-port\0", g_strdup_printf("%u/%u\0",
-										     k,
-										     port_count),
-						   "steps\0", step_count,
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port->data)->port_name,
+						   "plugin-name", plugin_name,
+						   "filename", live_dssi_bridge->filename,
+						   "effect", live_dssi_bridge->effect,
+						   "specifier", AGS_PORT_DESCRIPTOR(port->data)->port_name,
+						   "control-port", control_port,
+						   "steps", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      g_free(plugin_name);
+      g_free(control_port);
+      
       /* ladspa conversion */
       ladspa_conversion = NULL;
 
@@ -1460,7 +1476,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 				 default_value);
 
 #ifdef AGS_DEBUG
-	g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
+	g_message("dssi bounds: %f %f", lower_bound, upper_bound);
 #endif
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
@@ -1512,13 +1528,13 @@ ags_live_dssi_bridge_new(GObject *soundcard,
 
   if(soundcard != NULL){
     g_object_set(G_OBJECT(AGS_MACHINE(live_dssi_bridge)->audio),
-		 "soundcard\0", soundcard,
+		 "soundcard", soundcard,
 		 NULL);
   }
 
   g_object_set(live_dssi_bridge,
-	       "filename\0", filename,
-	       "effect\0", effect,
+	       "filename", filename,
+	       "effect", effect,
 	       NULL);
 
   return(live_dssi_bridge);

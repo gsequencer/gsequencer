@@ -36,6 +36,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread);
 void ags_recycling_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recycling_thread_init(AgsRecyclingThread *recycling_thread);
@@ -115,7 +117,7 @@ ags_recycling_thread_get_type()
     };
     
     ags_type_recycling_thread = g_type_register_static(AGS_TYPE_THREAD,
-						       "AgsRecyclingThread\0",
+						       "AgsRecyclingThread",
 						       &ags_recycling_thread_info,
 						       0);
     
@@ -145,32 +147,32 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
   gobject->finalize = ags_recycling_thread_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("iterator-thread\0",
-				   "assigned iterator thread\0",
-				   "The iterator thread object it is assigned to\0",
-				    AGS_TYPE_ITERATOR_THREAD,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-   g_object_class_install_property(gobject,
-				   PROP_ITERATOR_THREAD,
-				   param_spec);
+  param_spec = g_param_spec_object("iterator-thread",
+				   i18n_pspec("assigned iterator thread"),
+				   i18n_pspec("The iterator thread object it is assigned to"),
+				   AGS_TYPE_ITERATOR_THREAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ITERATOR_THREAD,
+				  param_spec);
 
-   param_spec = g_param_spec_object("first-recycling\0",
-				    "assigned first recycling\0",
-				    "The first recycling to acquire lock\0",
-				    AGS_TYPE_RECYCLING,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-   g_object_class_install_property(gobject,
-				   PROP_FIRST_RECYCLING,
-				   param_spec);
+  param_spec = g_param_spec_object("first-recycling",
+				   i18n_pspec("assigned first recycling"),
+				   i18n_pspec("The first recycling to acquire lock"),
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FIRST_RECYCLING,
+				  param_spec);
 
-   param_spec = g_param_spec_object("last-recycling\0",
-				    "assigned last recycling\0",
-				    "The last recycling to acquire lock\0",
-				    AGS_TYPE_RECYCLING,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-   g_object_class_install_property(gobject,
-				   PROP_LAST_RECYCLING,
-				   param_spec);
+  param_spec = g_param_spec_object("last-recycling",
+				   i18n_pspec("assigned last recycling"),
+				   i18n_pspec("The last recycling to acquire lock"),
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LAST_RECYCLING,
+				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) recycling_thread;
@@ -184,7 +186,7 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
 
   /* signals */
   recycling_thread_signals[PLAY_CHANNEL] = 
-    g_signal_new("play_channel\0",
+    g_signal_new("play_channel",
 		 G_TYPE_FROM_CLASS(recycling_thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsRecyclingThreadClass, play_channel),
@@ -197,7 +199,7 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
 		 G_TYPE_INT, G_TYPE_BOOLEAN);
 
   recycling_thread_signals[PLAY_AUDIO] = 
-    g_signal_new("play_audio\0",
+    g_signal_new("play_audio",
 		 G_TYPE_FROM_CLASS(recycling_thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsRecyclingThreadClass, play_audio),
@@ -715,8 +717,8 @@ ags_recycling_thread_new(GObject *first_recycling,
   AgsRecyclingThread *recycling_thread;
   
   recycling_thread = (AgsRecyclingThread *) g_object_new(AGS_TYPE_RECYCLING_THREAD,
-							 "first-recycling\0", first_recycling,
-							 "last-recycling\0", last_recycling,
+							 "first-recycling", first_recycling,
+							 "last-recycling", last_recycling,
 							 NULL);
 
   return(recycling_thread);

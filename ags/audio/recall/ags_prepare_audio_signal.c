@@ -97,7 +97,7 @@ ags_prepare_audio_signal_get_type()
     };
 
     ags_type_prepare_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							   "AgsPrepareAudioSignal\0",
+							   "AgsPrepareAudioSignal",
 							   &ags_prepare_audio_signal_info,
 							   0);
 
@@ -155,10 +155,10 @@ ags_prepare_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectabl
 void
 ags_prepare_audio_signal_init(AgsPrepareAudioSignal *prepare_audio_signal)
 {
-  AGS_RECALL(prepare_audio_signal)->name = "ags-prepare\0";
+  AGS_RECALL(prepare_audio_signal)->name = "ags-prepare";
   AGS_RECALL(prepare_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(prepare_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(prepare_audio_signal)->xml_type = "ags-prepare-audio-signal\0";
+  AGS_RECALL(prepare_audio_signal)->xml_type = "ags-prepare-audio-signal";
   AGS_RECALL(prepare_audio_signal)->port = NULL;
 }
 
@@ -265,7 +265,7 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
 				     (GObject *) parent_recall_id);
   
   g_object_set(prepare_audio_signal,
-	       "destination\0", destination,
+	       "destination", destination,
 	       NULL);  
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
@@ -286,8 +286,8 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
   pthread_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
-  g_message("prepare %x to %x\0", destination, parent_recall_id);
-  g_message("creating destination\0");
+  g_message("prepare %x to %x", destination, parent_recall_id);
+  g_message("creating destination");
 #endif
   
   /* call parent */

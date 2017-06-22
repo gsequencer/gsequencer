@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ags/i18n.h>
+
 void ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context_class);
 void ags_recycling_context_init(AgsRecyclingContext *recycling_context);
 void ags_recycling_context_set_property(GObject *gobject,
@@ -76,7 +78,7 @@ ags_recycling_context_get_type (void)
     };
 
     ags_type_recycling_context = g_type_register_static(G_TYPE_OBJECT,
-							"AgsRecyclingContext\0",
+							"AgsRecyclingContext",
 							&ags_recycling_context_info,
 							0);
   }
@@ -108,9 +110,9 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("parent\0",
-				   "parent context\0",
-				   "The context this one is packed into\0",
+  param_spec = g_param_spec_object("parent",
+				   i18n_pspec("parent context"),
+				   i18n_pspec("The context this one is packed into"),
 				   AGS_TYPE_RECYCLING_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -124,9 +126,9 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint64("length\0",
-				   "length of the array of assigned recycling\0",
-				   "The recycling array length\0",
+  param_spec = g_param_spec_uint64("length",
+				   i18n_pspec("length of the array of assigned recycling"),
+				   i18n_pspec("The recycling array length"),
 				   0, G_MAXUINT64,
 				   0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -141,9 +143,9 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recall-id\0",
-				   "the default recall id\0",
-				   "The recall id located in audio object as destiny\0",
+  param_spec = g_param_spec_object("recall-id",
+				   i18n_pspec("the default recall id"),
+				   i18n_pspec("The recall id located in audio object as destiny"),
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -406,7 +408,7 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
 
   new_length = recycling_context->length + 1;
   new_recycling_context = (AgsRecyclingContext *) g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-							       "length\0", new_length,
+							       "length", new_length,
 							       NULL);
 
   memcpy(new_recycling_context->recycling, recycling_context->recycling, new_length * sizeof(AgsRecycling *));
@@ -775,11 +777,11 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
   /* instantiate */
   if(new_context){
     new_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-					 "length\0", new_length,
+					 "length", new_length,
 					 NULL);
   }else{
     new_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-					 "length\0", (recycling_context->length -
+					 "length", (recycling_context->length -
 						      (last_index - first_index) +
 						      new_length),
 					 NULL);
@@ -855,7 +857,7 @@ ags_recycling_context_new(guint64 length)
   gint i;
 
   recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-				   "length\0", length,
+				   "length", length,
 				   NULL);
 
   return(recycling_context);

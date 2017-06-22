@@ -75,14 +75,14 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   
   while(soundcard != NULL){
     if(!g_ascii_strncasecmp(backend,
-			    "alsa\0",
+			    "alsa",
 			    5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
-		     "soundcard\0", soundcard->data,
+		     "soundcard", soundcard->data,
 		     NULL);
 
 	found_card = TRUE;
@@ -90,14 +90,14 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 	break;
       }
     }else if(!g_ascii_strncasecmp(backend,
-				  "oss\0",
+				  "oss",
 				  4)){    
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
-		     "soundcard\0", soundcard->data,
+		     "soundcard", soundcard->data,
 		     NULL);
 
 	found_card = TRUE;	
@@ -105,13 +105,13 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 	break;
       }
     }else if(!g_ascii_strncasecmp(backend,
-				  "jack\0",
+				  "jack",
 				  5)){
       if(AGS_IS_JACK_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
-		     "soundcard\0", soundcard->data,
+		     "soundcard", soundcard->data,
 		     NULL);
 
 	found_card = TRUE;	
@@ -125,7 +125,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 
   if(!found_card){
     g_object_set(export_soundcard,
-		 "soundcard\0", NULL,
+		 "soundcard", NULL,
 		 NULL);
   }
 }
@@ -172,14 +172,14 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   while(soundcard != NULL){
     if(!g_ascii_strncasecmp(backend,
-			    "alsa\0",
+			    "alsa",
 			    5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
-		     "soundcard\0", soundcard->data,
+		     "soundcard", soundcard->data,
 		     NULL);
 
 	found_card = TRUE;
@@ -187,14 +187,14 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 	break;
       }
     }else if(!g_ascii_strncasecmp(backend,
-				  "oss\0",
+				  "oss",
 				  4)){    
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
-		     "soundcard\0", soundcard->data,
+		     "soundcard", soundcard->data,
 		     NULL);
 
 	found_card = TRUE;
@@ -202,13 +202,13 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 	break;
       }
     }else if(!g_ascii_strncasecmp(backend,
-				  "jack\0",
+				  "jack",
 				  5)){
       if(AGS_IS_JACK_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
-		     "soundcard\0", soundcard->data,
+		     "soundcard", soundcard->data,
 		     NULL);
 
 	found_card = TRUE;
@@ -222,7 +222,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   if(!found_card){
     g_object_set(export_soundcard,
-		 "soundcard\0", NULL,
+		 "soundcard", NULL,
 		 NULL);
   }
 }
@@ -237,7 +237,7 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   export_window = (AgsExportWindow *) gtk_widget_get_ancestor(export_soundcard,
 							      AGS_TYPE_EXPORT_WINDOW);
   
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...\0",
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...",
 								      GTK_WINDOW(export_window),
 								      GTK_FILE_CHOOSER_ACTION_SAVE,
 								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,

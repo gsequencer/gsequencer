@@ -77,7 +77,7 @@ ags_matrix_bulk_input_get_type(void)
     };
 
     ags_type_matrix_bulk_input = g_type_register_static(AGS_TYPE_EFFECT_BULK,
-							"AgsMatrixBulkInput\0", &ags_matrix_bulk_input_info,
+							"AgsMatrixBulkInput", &ags_matrix_bulk_input_info,
 							0);
 
     g_type_add_interface_static(ags_type_matrix_bulk_input,
@@ -183,8 +183,8 @@ ags_matrix_bulk_input_new(AgsAudio *audio,
   AgsMatrixBulkInput *matrix_bulk_input;
 
   matrix_bulk_input = (AgsMatrixBulkInput *) g_object_new(AGS_TYPE_MATRIX_BULK_INPUT,
-							  "audio\0", audio,
-							  "channel-type\0", channel_type,
+							  "audio", audio,
+							  "channel-type", channel_type,
 							  NULL);
 
   return(matrix_bulk_input);

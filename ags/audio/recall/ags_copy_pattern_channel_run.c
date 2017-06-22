@@ -28,6 +28,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_preset.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
@@ -116,7 +117,7 @@ ags_copy_pattern_channel_run_get_type()
     };    
 
     ags_type_copy_pattern_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							       "AgsCopyPatternChannelRun\0",
+							       "AgsCopyPatternChannelRun",
 							       &ags_copy_pattern_channel_run_info,
 							       0);
     
@@ -191,10 +192,10 @@ ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
-  AGS_RECALL(copy_pattern_channel_run)->name = "ags-copy-pattern\0";
+  AGS_RECALL(copy_pattern_channel_run)->name = "ags-copy-pattern";
   AGS_RECALL(copy_pattern_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_pattern_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(copy_pattern_channel_run)->xml_type = "ags-copy-pattern-channel-run\0";
+  AGS_RECALL(copy_pattern_channel_run)->xml_type = "ags-copy-pattern-channel-run";
   AGS_RECALL(copy_pattern_channel_run)->port = NULL;
 
   AGS_RECALL(copy_pattern_channel_run)->child_type = G_TYPE_NONE;
@@ -248,7 +249,7 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
   delay_audio_run = copy_pattern_audio_run->delay_audio_run;
 
   copy_pattern_channel_run->sequencer_alloc_handler =
-    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input\0",
+    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input",
 		     G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
 }
 
@@ -365,6 +366,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 						      gdouble delay, guint attack,
 						      AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
+  AgsAudio *audio;
   AgsChannel *source;
   AgsPattern *pattern;
   AgsCopyPatternAudio *copy_pattern_audio;
@@ -373,6 +375,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   AgsMutexManager *mutex_manager;
 
+  guint sequencer_counter;
   gboolean current_bit;
 
   GValue pattern_value = { 0, };  
@@ -380,8 +383,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   GValue j_value = { 0, };
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *pattern_mutex;
+  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *source_mutex;
+  pthread_mutex_t *pattern_mutex;
   
   if(delay != 0.0){
     return;
@@ -421,12 +425,16 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   /* write pattern port - current offset */
   ags_port_safe_set_property(copy_pattern_channel->pattern,
-			     "first-index\0", &i_value);
+			     "first-index", &i_value);
   g_value_unset(&i_value);
   
   ags_port_safe_set_property(copy_pattern_channel->pattern,
-			     "second-index\0", &j_value);
+			     "second-index", &j_value);
   g_value_unset(&j_value);
+
+  /* get sequencer counter */
+  //FIXME:JK: check thread safety
+  sequencer_counter = copy_pattern_audio_run->count_beats_audio_run->sequencer_counter;
   
   /* read pattern port - current bit */
   pthread_mutex_lock(pattern_mutex);
@@ -434,7 +442,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   current_bit = ags_pattern_get_bit(pattern,
 				    pattern->i,
 				    pattern->j,
-				    copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
+				    sequencer_counter);
   
   pthread_mutex_unlock(pattern_mutex);
 
@@ -446,16 +454,31 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     AgsRecycling *recycling;
     AgsRecycling *end_recycling;
     AgsAudioSignal *audio_signal;
+    AgsNote *note;
 
+    GList *preset;
+
+    guint pad;
+    guint audio_channel;
     gdouble delay;
     guint attack;
   
     pthread_mutex_t *link_mutex;
     
-    //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
+    //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
     //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
 
+    /* get audio */
+    audio = AGS_RECALL_AUDIO(copy_pattern_audio)->audio;
+
+    pthread_mutex_lock(application_mutex);
+  
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) audio);
+    
+    pthread_mutex_unlock(application_mutex);
+    
     /* get source */
     source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;
 
@@ -476,8 +499,32 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     if(recycling != NULL){
       end_recycling = source->last_recycling->next;
     }
+
+    pad = source->pad;
+    audio_channel = source->audio_channel;
     
     pthread_mutex_unlock(source_mutex);
+
+    /* find preset scope envelope */
+    pthread_mutex_lock(audio_mutex);
+
+    preset = audio->preset;
+
+    while((preset = ags_preset_find_scope(preset,
+					  "ags-envelope")) != NULL){
+      if(audio_channel >= AGS_PRESET(preset->data)->audio_channel_start &&
+	 audio_channel < AGS_PRESET(preset->data)->audio_channel_end &&
+	 pad >= AGS_PRESET(preset->data)->pad_start &&
+	 pad < AGS_PRESET(preset->data)->pad_end &&
+	 sequencer_counter >= AGS_PRESET(preset->data)->x_start &&
+	 sequencer_counter < AGS_PRESET(preset->data)->x_end){
+	break;
+      }
+
+      preset = preset->next;
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
 
     /* link */
     if(link != NULL){
@@ -519,6 +566,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  pthread_mutex_unlock(link_mutex);
 	}
 
+	/* create audio signal */
 	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
 					    (GObject *) recycling,
 					    (GObject *) child_recall_id);
@@ -527,13 +575,110 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 							0.0, attack);
 	audio_signal->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
 	audio_signal->stream_current = audio_signal->stream_beginning;
+
+	/* apply preset */
+	if(preset != NULL){
+	  AgsComplex *val;
+	  
+	  GValue value = {0,};
+
+	  GError *error;
+	  
+	  note = ags_note_new();
+
+	  note->flags |= AGS_NOTE_ENVELOPE;
+
+	  note->x[0] = sequencer_counter;
+	  note->x[1] = sequencer_counter + 1;
+
+	  note->y = pad;
+
+	  audio_signal->note = note;
+	  
+	  /* get attack */
+	  g_value_init(&value,
+		       AGS_TYPE_COMPLEX);
+
+	  error = NULL;
+	  ags_preset_get_parameter((AgsPreset *) preset->data,
+				   "attack", &value,
+				   &error);
+
+	  if(error == NULL){
+	    val = (AgsComplex *) g_value_get_boxed(&value);
+
+	    note->attack[0] = val[0][0];
+	    note->attack[1] = val[0][1];
+	  }
+
+	  /* get decay */
+	  g_value_reset(&value);
+
+	  error = NULL;
+	  ags_preset_get_parameter((AgsPreset *) preset->data,
+				   "decay", &value,
+				   &error);
+
+	  if(error == NULL){
+	    val = (AgsComplex *) g_value_get_boxed(&value);
+
+	    note->decay[0] = val[0][0];
+	    note->decay[1] = val[0][1];
+	  }
+
+	  /* get sustain */
+	  g_value_reset(&value);
+
+	  error = NULL;
+	  ags_preset_get_parameter((AgsPreset *) preset->data,
+				   "sustain", &value,
+				   &error);
+
+	  if(error == NULL){
+	    val = (AgsComplex *) g_value_get_boxed(&value);
+
+	    note->sustain[0] = val[0][0];
+	    note->sustain[1] = val[0][1];
+	  }
+
+	  /* get release */
+	  g_value_reset(&value);
+
+	  error = NULL;
+	  ags_preset_get_parameter((AgsPreset *) preset->data,
+				   "release", &value,
+				   &error);
+
+	  if(error == NULL){
+	    val = (AgsComplex *) g_value_get_boxed(&value);
+
+	    note->release[0] = val[0][0];
+	    note->release[1] = val[0][1];
+	  }
+
+	  /* get ratio */
+	  g_value_reset(&value);
+
+	  error = NULL;
+	  ags_preset_get_parameter((AgsPreset *) preset->data,
+				   "ratio", &value,
+				   &error);
+
+	  if(error == NULL){
+	    val = (AgsComplex *) g_value_get_boxed(&value);
+
+	    note->ratio[0] = val[0][0];
+	    note->ratio[1] = val[0][1];
+	  }
+	}
+	
 	ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 	
 	/*
 	 * emit add_audio_signal on AgsRecycling
 	 */
 #ifdef AGS_DEBUG
-	g_message("play %x\0", AGS_RECALL(copy_pattern_channel_run)->recall_id);
+	g_message("play %x", AGS_RECALL(copy_pattern_channel_run)->recall_id);
 #endif
 
 	audio_signal->recall_id = (GObject *) child_recall_id;
@@ -551,7 +696,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     }
   }
   
-      //      g_message("%u\n\0", copy_pattern->shared_audio_run->bit);
+      //      g_message("%u\n", copy_pattern->shared_audio_run->bit);
       //      copy_pattern->shared_audio_run->bit++;
   //  }
 }

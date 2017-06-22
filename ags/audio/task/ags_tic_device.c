@@ -24,6 +24,8 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/i18n.h>
+
 void ags_tic_device_class_init(AgsTicDeviceClass *tic_device);
 void ags_tic_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_tic_device_init(AgsTicDevice *tic_device);
@@ -71,7 +73,7 @@ ags_tic_device_get_type()
     };
 
     ags_type_tic_device = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsTicDevice\0",
+						 "AgsTicDevice",
 						 &ags_tic_device_info,
 						 0);
 

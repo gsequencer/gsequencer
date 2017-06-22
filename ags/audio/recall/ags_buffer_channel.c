@@ -25,6 +25,8 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel);
 void ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable);
@@ -68,12 +70,12 @@ static AgsConnectableInterface *ags_buffer_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_buffer_channel_parent_mutable_interface;
 static AgsPluginInterface *ags_buffer_channel_parent_plugin_interface;
 
-static const gchar *ags_buffer_channel_plugin_name = "ags-buffer\0";
+static const gchar *ags_buffer_channel_plugin_name = "ags-buffer";
 static const gchar *ags_buffer_channel_plugin_specifier[] = {
-  "./muted[0]\0",
+  "./muted[0]",
 };
 static const gchar *ags_buffer_channel_plugin_control_port[] = {
-  "1/1\0",
+  "1/1",
 };
 
 GType
@@ -113,7 +115,7 @@ ags_buffer_channel_get_type()
     };
 
     ags_type_buffer_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						     "AgsBufferChannel\0",
+						     "AgsBufferChannel",
 						     &ags_buffer_channel_info,
 						     0);
 
@@ -184,9 +186,9 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("muted\0",
-				   "mute channel\0",
-				   "Mute the channel\0",
+  param_spec = g_param_spec_object("muted",
+				   i18n_pspec("mute channel"),
+				   i18n_pspec("Mute the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -199,22 +201,22 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
 {
   GList *port;
 
-  AGS_RECALL(buffer_channel)->name = "ags-buffer\0";
+  AGS_RECALL(buffer_channel)->name = "ags-buffer";
   AGS_RECALL(buffer_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(buffer_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(buffer_channel)->xml_type = "ags-buffer-channel\0";
+  AGS_RECALL(buffer_channel)->xml_type = "ags-buffer-channel";
 
   port = NULL;
 
   buffer_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", ags_buffer_channel_plugin_name,
-				     "specifier\0", ags_buffer_channel_plugin_specifier[0],
-				     "control-port\0", ags_buffer_channel_plugin_control_port[0],
-				     "port-value-is-pointer\0", FALSE,
-				     "port-value-type\0", G_TYPE_FLOAT,
-				     "port-value-size\0", sizeof(gfloat),
-				     "port-value-length\0", 1,
-				     NULL);
+				       "plugin-name", ags_buffer_channel_plugin_name,
+				       "specifier", ags_buffer_channel_plugin_specifier[0],
+				       "control-port", ags_buffer_channel_plugin_control_port[0],
+				       "port-value-is-pointer", FALSE,
+				       "port-value-type", G_TYPE_FLOAT,
+				       "port-value-size", sizeof(gfloat),
+				       "port-value-length", 1,
+				       NULL);
   g_object_ref(buffer_channel->muted);
   buffer_channel->muted->port_value.ags_port_float = (float) FALSE;
 
@@ -233,9 +235,9 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
 
 void
 ags_buffer_channel_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
 {
   AgsBufferChannel *buffer_channel;
 
@@ -271,9 +273,9 @@ ags_buffer_channel_set_property(GObject *gobject,
 
 void
 ags_buffer_channel_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
 {
   AgsBufferChannel *buffer_channel;
 
@@ -355,10 +357,10 @@ ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./muted[0]\0",
+		"./muted[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "muted\0", AGS_PORT(port->data),
+		   "muted", AGS_PORT(port->data),
 		   NULL);
     }
 

@@ -71,7 +71,7 @@ ags_lv2_urid_manager_get_type()
     };
 
     ags_type_lv2_urid_manager = g_type_register_static(G_TYPE_OBJECT,
-						       "AgsLv2UridManager\0",
+						       "AgsLv2UridManager",
 						       &ags_lv2_urid_manager_info,
 						       0);
 
@@ -232,7 +232,7 @@ ags_lv2_urid_manager_lookup(AgsLv2UridManager *lv2_urid_manager,
 					 uri);
 
   if(value == NULL){
-    g_message("new uri %s\0", uri);
+    g_message("new uri %s", uri);
     
     value = g_new0(GValue,
 		   1);

@@ -66,3 +66,12 @@ ags_connection_editor_cancel_callback(GtkWidget *widget, AgsConnectionEditor *co
 
   return(0);
 }
+
+gboolean
+ags_connection_editor_delete_event(GtkWidget *dialog, gint response,
+				   AgsConnectionEditor *connection_editor)
+{
+  connection_editor->machine->connection_editor = NULL;
+
+  return(TRUE);
+}

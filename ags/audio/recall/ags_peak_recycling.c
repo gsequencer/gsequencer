@@ -88,7 +88,7 @@ ags_peak_recycling_get_type()
     };
 
     ags_type_peak_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						     "AgsPeakRecycling\0",
+						     "AgsPeakRecycling",
 						     &ags_peak_recycling_info,
 						     0);
 
@@ -145,10 +145,10 @@ ags_peak_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInter
 void
 ags_peak_recycling_init(AgsPeakRecycling *peak_recycling)
 {
-  AGS_RECALL(peak_recycling)->name = "ags-peak\0";
+  AGS_RECALL(peak_recycling)->name = "ags-peak";
   AGS_RECALL(peak_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(peak_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(peak_recycling)->xml_type = "ags-peak-recycling\0";
+  AGS_RECALL(peak_recycling)->xml_type = "ags-peak-recycling";
   AGS_RECALL(peak_recycling)->port = NULL;
 
   AGS_RECALL(peak_recycling)->child_type = AGS_TYPE_PEAK_AUDIO_SIGNAL;
@@ -231,7 +231,7 @@ ags_peak_recycling_new(AgsRecycling *recycling)
   AgsPeakRecycling *peak_recycling;
 
   peak_recycling = (AgsPeakRecycling *) g_object_new(AGS_TYPE_PEAK_RECYCLING,
-						     "source\0", recycling,
+						     "source", recycling,
 						     NULL);
 
   return(peak_recycling);

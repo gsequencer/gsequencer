@@ -45,7 +45,9 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <math.h>
 
@@ -67,7 +69,7 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   audio = ffplayer->machine.audio;
   audio->soundcard = (GObject *) window->soundcard;
   
-  AGS_MACHINE(ffplayer)->name = g_strdup_printf("Default %d\0",
+  AGS_MACHINE(ffplayer)->name = g_strdup_printf("Default %d",
 						ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_FFPLAYER);
@@ -91,7 +93,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 
-  g_signal_connect((GObject *) file_chooser, "response\0",
+  g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_ffplayer_open_dialog_response_callback), AGS_MACHINE(ffplayer));
 
   gtk_widget_show_all((GtkWidget *) file_chooser);
@@ -242,7 +244,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 			    &error);
 
   if(error != NULL){
-    g_error("%s\0", error->message);
+    g_error("%s", error->message);
   }
   
   /* select first sample */
@@ -264,6 +266,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   n_pads = 0;
   n_audio_channels = 2;
   
+#ifdef AGS_WITH_LIBINSTPATCH
   for(sample_iter = sample; *sample_iter != NULL; sample_iter++){
     IpatchSF2Sample *sf2_sample;
     
@@ -273,7 +276,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 							    *sample_iter,
 							    NULL);
     g_object_get(sf2_sample,
-		 "channel\0", &sample_channel,
+		 "channel", &sample_channel,
 		 NULL);
 
     if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
@@ -281,6 +284,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
       n_pads++;
     }
   }
+#endif
 
   resize_audio = ags_resize_audio_new(audio,
 				      audio->output_pads,
@@ -300,6 +304,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   i = 0;
   
+#ifdef AGS_WITH_LIBINSTPATCH
   while(*sample_iter != NULL){
     IpatchSF2Sample *sf2_sample;
     
@@ -309,7 +314,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 							    *sample_iter,
 							    NULL);
     g_object_get(sf2_sample,
-		 "channel\0", &sample_channel,
+		 "channel", &sample_channel,
 		 NULL);
 
     if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
@@ -327,7 +332,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     }
 
     if(channel == NULL){
-      g_critical("channel == NULL - Soundfont 2 sample channel %d\0", sample_channel);
+      g_critical("channel == NULL - Soundfont 2 sample channel %d", sample_channel);
 
       /* iterate */
       sample_iter++;
@@ -352,6 +357,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   task = g_list_reverse(task);
   ags_task_thread_append_tasks(task_thread,
 			       task);
+#endif
 }
 
 gboolean

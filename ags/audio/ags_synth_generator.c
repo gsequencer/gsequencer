@@ -38,6 +38,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator);
 void ags_synth_generator_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_generator_init(AgsSynthGenerator *synth_generator);
@@ -83,7 +85,7 @@ enum{
 static gpointer ags_synth_generator_parent_class = NULL;
 static AgsPluginInterface *ags_synth_generator_parent_plugin_interface;
 
-static const gchar *ags_synth_generator_plugin_name = "ags-synth-generator\0";
+static const gchar *ags_synth_generator_plugin_name = "ags-synth-generator";
 
 GType
 ags_synth_generator_get_type()
@@ -110,7 +112,7 @@ ags_synth_generator_get_type()
     };
 
     ags_type_synth_generator = g_type_register_static(AGS_TYPE_FUNCTION,
-						      "AgsSynthGenerator\0",
+						      "AgsSynthGenerator",
 						      &ags_synth_generator_info,
 						      0);
 
@@ -146,9 +148,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_uint("samplerate\0",
-				 "using samplerate\0",
-				 "The samplerate to be used\0",
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("using samplerate"),
+				 i18n_pspec("The samplerate to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -164,9 +166,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_uint("buffer-size\0",
-				 "using buffer size\0",
-				 "The buffer size to be used\0",
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("using buffer size"),
+				 i18n_pspec("The buffer size to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -182,9 +184,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_uint("format\0",
-				 "using format\0",
-				 "The format to be used\0",
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("using format"),
+				 i18n_pspec("The format to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -200,9 +202,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_uint("n-frames\0",
-				 "apply n-frames\0",
-				 "To apply n-frames\0",
+  param_spec = g_param_spec_uint("n-frames",
+				 i18n_pspec("apply n-frames"),
+				 i18n_pspec("To apply n-frames"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -218,9 +220,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_uint("oscillator\0",
-				 "using oscillator\0",
-				 "The oscillator to be used\0",
+  param_spec = g_param_spec_uint("oscillator",
+				 i18n_pspec("using oscillator"),
+				 i18n_pspec("The oscillator to be used"),
 				 0,
 				 G_MAXUINT32,
 				 0,
@@ -236,9 +238,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_double("frequency\0",
-				   "using frequency\0",
-				   "The frequency to be used\0",
+  param_spec = g_param_spec_double("frequency",
+				   i18n_pspec("using frequency"),
+				   i18n_pspec("The frequency to be used"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -254,9 +256,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_double("phase\0",
-				   "using phase\0",
-				   "The phase to be used\0",
+  param_spec = g_param_spec_double("phase",
+				   i18n_pspec("using phase"),
+				   i18n_pspec("The phase to be used"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -272,9 +274,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_double("volume\0",
-				   "using volume\0",
-				   "The volume to be used\0",
+  param_spec = g_param_spec_double("volume",
+				   i18n_pspec("using volume"),
+				   i18n_pspec("The volume to be used"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -290,9 +292,9 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp\0",
-				   "The timestamp\0",
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp"),
+				   i18n_pspec("The timestamp"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -329,12 +331,12 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
   /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
+			     "samplerate");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
+			       "samplerate");
   }
   
   if(str != NULL){
@@ -348,12 +350,12 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
   /* buffer size */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size\0");
+			     "buffer-size");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size\0");
+			       "buffer-size");
   }
   
   if(str != NULL){
@@ -367,12 +369,12 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
   /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "format\0");
+			     "format");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "format\0");
+			       "format");
   }
   
   if(str != NULL){
@@ -565,7 +567,7 @@ ags_synth_generator_write(AgsFile *file,
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-synth-generator\0");
+		    "ags-synth-generator");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -573,11 +575,11 @@ ags_synth_generator_write(AgsFile *file,
   /* add reference and node to file object */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", synth_generator,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", synth_generator,
 				   NULL));
 
   //TODO:JK: implement me

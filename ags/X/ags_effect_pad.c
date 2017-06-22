@@ -28,6 +28,8 @@
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_line.h>
 
+#include <ags/i18n.h>
+
 void ags_effect_pad_class_init(AgsEffectPadClass *effect_pad);
 void ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin);
@@ -111,7 +113,7 @@ ags_effect_pad_get_type(void)
     };
 
     ags_type_effect_pad = g_type_register_static(GTK_TYPE_VBOX,
-						 "AgsEffectPad\0", &ags_effect_pad_info,
+						 "AgsEffectPad", &ags_effect_pad_info,
 						 0);
 
     g_type_add_interface_static(ags_type_effect_pad,
@@ -151,9 +153,9 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel it is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -176,7 +178,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    * The ::resize-lines is emitted as count of lines pack is modified.
    */
   effect_pad_signals[RESIZE_LINES] =
-    g_signal_new("resize-lines\0",
+    g_signal_new("resize-lines",
 		 G_TYPE_FROM_CLASS(effect_pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectPadClass, resize_lines),
@@ -192,7 +194,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    * The ::map-recall should be used to add the effect_pad's default recall.
    */
   effect_pad_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+    g_signal_new("map-recall",
                  G_TYPE_FROM_CLASS (effect_pad),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsEffectPadClass, map_recall),
@@ -208,7 +210,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    * The ::find-port as recall should be mapped
    */
   effect_pad_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(effect_pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectPadClass, find_port),
@@ -302,7 +304,7 @@ ags_effect_pad_set_property(GObject *gobject,
 
       while(effect_line != NULL){
 	g_object_set(G_OBJECT(effect_line->data),
-		     "channel\0", channel,
+		     "channel", channel,
 		     NULL);
 
 	effect_line = effect_line->next;
@@ -478,7 +480,7 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
     for(i = audio_channels_old; i < audio_channels;){
       for(j = audio_channels_old % effect_pad->cols; j < effect_pad->cols && i < audio_channels; j++, i++){
 	effect_line = (AgsEffectLine *) g_object_new(effect_line_type,
-						     "channel\0", channel,
+						     "channel", channel,
 						     NULL);
 	gtk_table_attach(effect_pad->table,
 			 (GtkWidget *) effect_line,
@@ -624,7 +626,7 @@ ags_effect_pad_new(AgsChannel *channel)
   AgsEffectPad *effect_pad;
 
   effect_pad = (AgsEffectPad *) g_object_new(AGS_TYPE_EFFECT_PAD,
-					     "channel\0", channel,
+					     "channel", channel,
 					     NULL);
 
   return(effect_pad);

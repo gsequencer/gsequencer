@@ -3,14 +3,14 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 AUTOMAKE_OPTIONS = foreign
-# SUBDIRS = . docs/reference/ags
+SUBDIRS = po
 
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security
 
 # what flags you want to pass to the C compiler & linker
 CFLAGS = @CFLAGS@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(LTLIBINTL)
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@
@@ -22,6 +22,9 @@ midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@
 # 
 # TARGETS = gsequencer
 
+localedir = $(datadir)/locale
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
+
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la
@@ -32,7 +35,24 @@ bin_PROGRAMS = gsequencer midi2xml
 libgsequencerdir = $(libdir)/gsequencer
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
-EXTRA_DIST = COPYING.docs config.h config.h.in gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README ags_example.xml gsequencer-documentation midi2xml.1 ags_functional_note_edit_test.xml
+EXTRA_DIST = config.rpath \
+	COPYING.docs \
+	ags/config.h.in \
+	gtk-doc.make \
+	gsequencer.share \
+	acsite.m4 \
+	aclocal.m4 \
+	gsequencer.1 \
+	README \
+	ags_example.xml \
+	gsequencer-documentation \
+	midi2xml.1 \
+	ags_functional_note_edit_test.xml \
+	mkinstalldirs \
+	m4/Makefile.am \
+	m4/Makefile.in \
+	ags/i18n.h \
+	ags/gettext.h
 
 EXTRA_DIST += \
 	functional-system-tests.mk.am \
@@ -51,7 +71,9 @@ EXTRA_DIST += \
 
 man1_MANS = gsequencer.1 midi2xml.1
 
-CLEANFILES = functional-system-tests.mk
+CLEANFILES = \
+	functional-system-tests.mk \
+	m4/Makefile
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -172,6 +194,14 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_navigation.png \
 	$(top_srcdir)/docs/images/ags_synth.png \
 	$(top_srcdir)/docs/images/ags_audio_preferences.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_bulk.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_output_line.png \
+	$(top_srcdir)/docs/images/ags_midi_dialog.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_export_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no1.png \
+	$(top_srcdir)/docs/images/ags_midi_import_wizard_no2.png \
+	$(top_srcdir)/docs/images/ags_midi_preferences.png \
 	$(top_srcdir)/docs/images/ags_ffplayer.png \
 	$(top_srcdir)/docs/images/ags_ladspa_browser.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-link_input.png \
@@ -209,8 +239,8 @@ libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libag
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 
-libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -256,6 +286,9 @@ include $(top_srcdir)/unit-tests.mk
 include $(top_srcdir)/functional-tests.mk
 
 TESTS = $(check_PROGRAMS)
+
+# internationalization
+noinst_HEADERS = ags/i18n.h
 
 # libags all files
 deprecated_libags_h_sources =
@@ -511,6 +544,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
+	ags/audio/ags_preset.h \
 	ags/audio/ags_recall_audio.h \
 	ags/audio/ags_recall_audio_run.h \
 	ags/audio/ags_recall_audio_signal.h \
@@ -563,6 +597,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
+	ags/audio/ags_preset.c \
 	ags/audio/ags_recall_audio.c \
 	ags/audio/ags_recall_audio_run.c \
 	ags/audio/ags_recall_audio_signal.c \
@@ -830,7 +865,6 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_stream_audio_signal.h \
 	ags/audio/recall/ags_stream_channel.h \
 	ags/audio/recall/ags_stream_channel_run.h \
-	ags/audio/recall/ags_stream.h \
 	ags/audio/recall/ags_stream_recycling.h \
 	ags/audio/recall/ags_volume_audio_signal.h \
 	ags/audio/recall/ags_volume_channel.h \
@@ -904,7 +938,6 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_route_lv2_audio.c \
 	ags/audio/recall/ags_route_lv2_audio_run.c \
 	ags/audio/recall/ags_stream_audio_signal.c \
-	ags/audio/recall/ags_stream.c \
 	ags/audio/recall/ags_stream_channel.c \
 	ags/audio/recall/ags_stream_channel_run.c \
 	ags/audio/recall/ags_stream_recycling.c \
@@ -1163,6 +1196,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_pad.h \
 	ags/X/ags_performance_preferences_callbacks.h \
 	ags/X/ags_performance_preferences.h \
+	ags/X/ags_playback_window_callbacks.h \
+	ags/X/ags_playback_window.h \
 	ags/X/ags_plugin_browser_callbacks.h \
 	ags/X/ags_plugin_browser.h \
 	ags/X/ags_plugin_preferences_callbacks.h \
@@ -1262,6 +1297,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_pad_editor_callbacks.c \
 	ags/X/ags_performance_preferences.c \
 	ags/X/ags_performance_preferences_callbacks.c \
+	ags/X/ags_playback_window.c \
+	ags/X/ags_playback_window_callbacks.c \
 	ags/X/ags_plugin_browser.c \
 	ags/X/ags_plugin_browser_callbacks.c \
 	ags/X/ags_plugin_preferences.c \
@@ -1377,6 +1414,29 @@ libgsequencer_import_c_sources = \
 	ags/X/import/ags_track_collection_callbacks.c \
 	ags/X/import/ags_track_collection_mapper.c \
 	ags/X/import/ags_track_collection_mapper_callbacks.c
+
+# libgsequencer - export
+deprecated_libgsequencer_export_h_sources =
+
+libgsequencer_export_h_sources = \
+	$(deprecated_libgsequencer_export_h_sources) \
+	ags/X/export/ags_midi_export_wizard.h \
+	ags/X/export/ags_midi_export_wizard_callbacks.h \
+	ags/X/export/ags_machine_collection.h \
+	ags/X/export/ags_machine_collection_callbacks.h \
+	ags/X/export/ags_machine_collection_entry.h \
+	ags/X/export/ags_machine_collection_entry_callbacks.h
+
+deprecated_libgsequencer_export_c_sources =
+
+libgsequencer_export_c_sources = \
+	$(deprecated_libgsequencer_export_c_sources) \
+	ags/X/export/ags_midi_export_wizard.c \
+	ags/X/export/ags_midi_export_wizard_callbacks.c \
+	ags/X/export/ags_machine_collection.c \
+	ags/X/export/ags_machine_collection_callbacks.c \
+	ags/X/export/ags_machine_collection_entry.c \
+	ags/X/export/ags_machine_collection_entry_callbacks.c
 
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =
@@ -1510,6 +1570,12 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_toolbar.h \
 	ags/X/editor/ags_automation_area_callbacks.h \
 	ags/X/editor/ags_automation_area.h \
+	ags/X/editor/ags_envelope_dialog_callbacks.h \
+	ags/X/editor/ags_envelope_dialog.h \
+	ags/X/editor/ags_envelope_editor_callbacks.h \
+	ags/X/editor/ags_envelope_editor.h \
+	ags/X/editor/ags_envelope_info_callbacks.h \
+	ags/X/editor/ags_envelope_info.h \
 	ags/X/editor/ags_file_selection_callbacks.h \
 	ags/X/editor/ags_file_selection.h \
 	ags/X/editor/ags_inline_player_callbacks.h \
@@ -1526,6 +1592,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_note_edit.h \
 	ags/X/editor/ags_pattern_edit_callbacks.h \
 	ags/X/editor/ags_pattern_edit.h \
+	ags/X/editor/ags_pattern_envelope_callbacks.h \
+	ags/X/editor/ags_pattern_envelope.h \
 	ags/X/editor/ags_scale_area_callbacks.h \
 	ags/X/editor/ags_scale_area.h \
 	ags/X/editor/ags_scale_callbacks.h \
@@ -1546,6 +1614,12 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
 	ags/X/editor/ags_automation_area.c \
 	ags/X/editor/ags_automation_area_callbacks.c \
+	ags/X/editor/ags_envelope_dialog_callbacks.c \
+	ags/X/editor/ags_envelope_dialog.c \
+	ags/X/editor/ags_envelope_editor_callbacks.c \
+	ags/X/editor/ags_envelope_editor.c \
+	ags/X/editor/ags_envelope_info_callbacks.c \
+	ags/X/editor/ags_envelope_info.c \
 	ags/X/editor/ags_file_selection_callbacks.c \
 	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \
@@ -1562,6 +1636,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_note_edit_callbacks.c \
 	ags/X/editor/ags_pattern_edit.c \
 	ags/X/editor/ags_pattern_edit_callbacks.c \
+	ags/X/editor/ags_pattern_envelope_callbacks.c \
+	ags/X/editor/ags_pattern_envelope.c \
 	ags/X/editor/ags_scale_area.c \
 	ags/X/editor/ags_scale_area_callbacks.c \
 	ags/X/editor/ags_scale.c \
@@ -1587,16 +1663,6 @@ midi2xml_SOURCES = ags/midi2xml_main.c
 ags-integration-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system
 
-ags-docs-local:
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libags-gui
-	cd $(top_srcdir)
-	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
-	cd $(top_srcdir)
-
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
@@ -1614,6 +1680,14 @@ html:
 	mkdir -p $(top_builddir)/html/{developer-docs,user-docs}
 	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
 	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libags-gui
+	cd $(top_srcdir)
+	$(MAKE) -C $(top_srcdir)/docs/reference/libgsequencer
+	cd $(top_srcdir)
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
@@ -1634,28 +1708,26 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
-install-html: html
+install-html: html 
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
-
-install-ags-docs: ags-docs
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	ln -s ../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	ln -s ../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	ln -s ../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	ln -s ../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../doc/libags-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	ln -s ../../doc/libags-audio-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
-	ln -s ../../doc/libags-gui-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
-	ln -s ../../doc/libgsequencer-doc/api $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
@@ -1664,10 +1736,12 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-gui-doc
+	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-doc
 	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags-audio
-	rm -f $(DESTDIR)/$(datadir)/gtk-doc/html/libags-gui
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui
+	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
@@ -1727,3 +1801,30 @@ gen-symbols-ags-gui:
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-gui
 	echo "Generated all symbols"
 
+check-gettext:
+	@if test x$(USE_NLS) != "xyes" ; then echo "Missing gettext. Rerun configure and check for" \
+	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
+
+update-po: check-gettext
+	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
+	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
+		rm -f $(srcdir)/po/POTFILES.in.2 ; \
+	else \
+		mv $(srcdir)/po/POTFILES.in.2 $(srcdir)/po/POTFILES.in ; \
+	fi
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
+
+update-gmo: check-gettext
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+
+force-update-gmo: check-gettext
+	touch po/*.po
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+
+force-update-gmo-%: check-gettext
+	@language=`echo $@ | sed s/force-update-gmo-//` ; \
+	if test ! -f po/$$language.po ; then echo "file po/$$language.po does not exist" ; exit 1 ; fi ; \
+	touch po/$$language.po ; \
+	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+
+.PHONY: check-gettext update-po update-gmo force-update-gmo

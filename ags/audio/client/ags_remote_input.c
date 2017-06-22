@@ -50,7 +50,7 @@ ags_remote_input_get_type (void)
     };
 
     ags_type_remote_input = g_type_register_static(AGS_TYPE_REMOTE_CHANNEL,
-						   "AgsRemoteInput\0",
+						   "AgsRemoteInput",
 						   &ags_remote_input_info, 0);
 
     g_type_add_interface_static(ags_type_remote_input,

@@ -92,7 +92,7 @@ ags_output_editor_get_type(void)
     };
 
     ags_type_output_editor = g_type_register_static(GTK_TYPE_HBOX,
-						    "AgsOutputEditor\0", &ags_output_editor_info,
+						    "AgsOutputEditor", &ags_output_editor_info,
 						    0);
 
     g_type_add_interface_static(ags_type_output_editor,
@@ -133,7 +133,7 @@ ags_output_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_output_editor_init(AgsOutputEditor *output_editor)
 {
-  g_signal_connect_after((GObject *) output_editor, "parent_set\0",
+  g_signal_connect_after((GObject *) output_editor, "parent_set",
 			 G_CALLBACK(ags_output_editor_parent_set_callback), (gpointer) output_editor);
 
   output_editor->flags = 0;
@@ -169,7 +169,7 @@ ags_output_editor_connect(AgsConnectable *connectable)
 
   output_editor->flags |= AGS_OUTPUT_EDITOR_CONNECTED;
 
-  g_signal_connect(G_OBJECT(output_editor->soundcard), "changed\0",
+  g_signal_connect(G_OBJECT(output_editor->soundcard), "changed",
 		   G_CALLBACK(ags_output_editor_soundcard_callback), output_editor);
 }
 
@@ -187,7 +187,7 @@ ags_output_editor_disconnect(AgsConnectable *connectable)
   output_editor->flags &= (~AGS_OUTPUT_EDITOR_CONNECTED);
 
   g_object_disconnect(G_OBJECT(output_editor->soundcard),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_output_editor_soundcard_callback),
 		      output_editor,
 		      NULL);
@@ -379,7 +379,7 @@ ags_output_editor_reset(AgsApplicable *applicable)
 	GObject *data_object;
 
 	g_object_get(G_OBJECT(list->data),
-		     "data-object\0", &data_object,
+		     "data-object", &data_object,
 		     NULL);
 	
 	if(AGS_IS_SOUNDCARD(data_object)){

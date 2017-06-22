@@ -57,7 +57,7 @@ ags_connection_manager_get_type (void)
     };
 
     ags_type_connection_manager = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsConnectionManager\0",
+						  "AgsConnectionManager",
 						  &ags_connection_manager_info,
 						  0);
   }

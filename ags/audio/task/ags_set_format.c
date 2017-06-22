@@ -27,6 +27,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/i18n.h>
+
 void ags_set_format_class_init(AgsSetFormatClass *set_format);
 void ags_set_format_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_format_init(AgsSetFormat *set_format);
@@ -94,7 +96,7 @@ ags_set_format_get_type()
     };
 
     ags_type_set_format = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsSetFormat\0",
+						 "AgsSetFormat",
 						 &ags_set_format_info,
 						 0);
     
@@ -131,9 +133,9 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of set format\0",
-				   "The scope of set format\0",
+  param_spec = g_param_spec_object("scope",
+				   i18n_pspec("scope of set format"),
+				   i18n_pspec("The scope of set format"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,9 +149,9 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("format\0",
-				 "format\0",
-				 "The format to apply\0",
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -301,7 +303,7 @@ void
 ags_set_format_audio_signal(AgsSetFormat *set_format, AgsAudioSignal *audio_signal)
 {
   g_object_set(audio_signal,
-	       "format\0", set_format->format,
+	       "format", set_format->format,
 	       NULL);
 }
 
@@ -323,7 +325,7 @@ void
 ags_set_format_channel(AgsSetFormat *set_format, AgsChannel *channel)
 {
   g_object_set(channel,
-	       "format\0", set_format->format,
+	       "format", set_format->format,
 	       NULL);
 }
 

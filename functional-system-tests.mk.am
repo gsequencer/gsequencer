@@ -1,3 +1,10 @@
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+AUTOMAKE_OPTIONS = foreign
+SUBDIRS = po
+
 # libadd and ldadd
 libgsequencer_check_system_test_LIBADD = -L$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(libdir)/gsequencer/ -lgsequencer -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 

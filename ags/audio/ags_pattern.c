@@ -116,7 +116,7 @@ ags_pattern_get_type (void)
     };
 
     ags_type_pattern = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsPattern\0",
+					      "AgsPattern",
 					      &ags_pattern_info,
 					      0);
 
@@ -160,9 +160,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("port\0",
-				   "port of pattern\0",
-				   "The port of pattern\0",
+  param_spec = g_param_spec_object("port",
+				   "port of pattern",
+				   "The port of pattern",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -176,9 +176,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("first-index\0",
-				 "the first index\0",
-				 "The first index to select pattern\0",
+  param_spec = g_param_spec_uint("first-index",
+				 "the first index",
+				 "The first index to select pattern",
 				 0, 256,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -193,9 +193,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("second-index\0",
-				 "the second index\0",
-				 "The second index to select pattern\0",
+  param_spec = g_param_spec_uint("second-index",
+				 "the second index",
+				 "The second index to select pattern",
 				 0, 256,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -210,9 +210,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("offset\0",
-				 "the offset\0",
-				 "The offset within the pattern\0",
+  param_spec = g_param_spec_uint("offset",
+				 "the offset",
+				 "The offset within the pattern",
 				 0, 65535,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -227,9 +227,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_boolean("current-bit\0",
-				    "current bit for offset\0",
-				    "The current bit for offset\0",
+  param_spec = g_param_spec_boolean("current-bit",
+				    "current bit for offset",
+				    "The current bit for offset",
 				    FALSE,
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -243,9 +243,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.7.12
    */
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp of pattern\0",
-				   "The timestamp of pattern\0",
+  param_spec = g_param_spec_object("timestamp",
+				   "timestamp of pattern",
+				   "The timestamp of pattern",
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -619,7 +619,7 @@ void
 ags_pattern_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
-	       "port\0", port,
+	       "port", port,
 	       NULL);
 }
 
@@ -629,7 +629,7 @@ ags_pattern_get_port(AgsPortlet *portlet)
   AgsPort *port;
 
   g_object_get(G_OBJECT(portlet),
-	       "port\0", &port,
+	       "port", &port,
 	       NULL);
 
   return((GObject *) port);
@@ -645,10 +645,10 @@ ags_pattern_list_safe_properties(AgsPortlet *portlet)
   pthread_mutex_lock(&mutex);
 
   if(list == NULL){
-    list = g_list_prepend(list, "first-index\0");
-    list = g_list_prepend(list, "second-index\0");
-    list = g_list_prepend(list, "offset\0");
-    list = g_list_prepend(list, "current-bit\0");
+    list = g_list_prepend(list, "first-index");
+    list = g_list_prepend(list, "second-index");
+    list = g_list_prepend(list, "offset");
+    list = g_list_prepend(list, "current-bit");
  }
 
   pthread_mutex_unlock(&mutex);

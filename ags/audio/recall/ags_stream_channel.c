@@ -23,6 +23,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin);
@@ -60,12 +62,12 @@ static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_stream_channel_parent_plugin_interface;
 
-static const gchar *ags_stream_channel_plugin_name = "ags-stream\0";
+static const gchar *ags_stream_channel_plugin_name = "ags-stream";
 static const gchar *ags_stream_channel_plugin_specifier[] = {
-  "./auto-sense[0]\0",
+  "./auto-sense[0]",
 };
 static const gchar *ags_stream_channel_plugin_control_port[] = {
-  "1/1\0",
+  "1/1",
 };
 
 GType
@@ -99,7 +101,7 @@ ags_stream_channel_get_type()
     };    
 
     ags_type_stream_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						     "AgsStreamChannel\0",
+						     "AgsStreamChannel",
 						     &ags_stream_channel_info,
 						     0);
 
@@ -141,9 +143,9 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("auto-sense\0",
-				   "mute channel\0",
-				   "Mute the channel\0",
+  param_spec = g_param_spec_object("auto-sense",
+				   i18n_pspec("mute channel"),
+				   i18n_pspec("Mute the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,23 +180,23 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
   
   gchar *str;
   
-  AGS_RECALL(stream_channel)->name = "ags-stream\0";
+  AGS_RECALL(stream_channel)->name = "ags-stream";
   AGS_RECALL(stream_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(stream_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(stream_channel)->xml_type = "ags-stream-channel\0";
+  AGS_RECALL(stream_channel)->xml_type = "ags-stream-channel";
 
   /* initialize port */
   port = NULL;
 
   /* auto-sense */
   stream_channel->auto_sense = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", ags_stream_channel_plugin_name,
-				     "specifier\0", ags_stream_channel_plugin_specifier[0],
-				     "control-port\0", ags_stream_channel_plugin_control_port[0],
-				     "port-value-is-pointer\0", FALSE,
-				     "port-value-type\0", G_TYPE_BOOLEAN,
-				     "port-value-size\0", sizeof(gboolean),
-				     "port-value-length\0", 1,
+				     "plugin-name", ags_stream_channel_plugin_name,
+				     "specifier", ags_stream_channel_plugin_specifier[0],
+				     "control-port", ags_stream_channel_plugin_control_port[0],
+				     "port-value-is-pointer", FALSE,
+				     "port-value-type", G_TYPE_BOOLEAN,
+				     "port-value-size", sizeof(gboolean),
+				     "port-value-length", 1,
 				     NULL);
   g_object_ref(stream_channel->auto_sense);
   
@@ -202,8 +204,8 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
   
   str = ags_config_get_value(config,
 			     AGS_CONFIG_RECALL,
-			     "auto-sense\0");
-  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(str, "true\0")
+			     "auto-sense");
+  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(str, "true")
 							      ) ? TRUE: FALSE);
   free(str);
 
@@ -336,10 +338,10 @@ ags_stream_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./auto-sense[0]\0",
+		"./auto-sense[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "auto-sense\0", AGS_PORT(port->data),
+		   "auto-sense", AGS_PORT(port->data),
 		   NULL);
     }
 

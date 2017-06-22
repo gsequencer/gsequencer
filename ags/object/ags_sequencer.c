@@ -40,7 +40,7 @@ ags_sequencer_get_type()
 
   if(!ags_type_sequencer){
     ags_type_sequencer = g_type_register_static_simple(G_TYPE_INTERFACE,
-						       "AgsSequencer\0",
+						       "AgsSequencer",
 						       sizeof(AgsSequencerInterface),
 						       (GClassInitFunc) ags_sequencer_class_init,
 						       0, NULL, 0);
@@ -52,7 +52,7 @@ ags_sequencer_get_type()
 GQuark
 ags_sequencer_error_quark()
 {
-  return(g_quark_from_static_string("ags-sequencer-error-quark\0"));
+  return(g_quark_from_static_string("ags-sequencer-error-quark"));
 }
 
 void
@@ -64,8 +64,10 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    *
    * The ::tic signal is emitted every tic of the sequencer. This notifies
    * about a newly played buffer.
+   * 
+   * Since: 0.7.122
    */
-  g_signal_new("tic\0",
+  g_signal_new("tic",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsSequencerInterface, tic),
@@ -80,8 +82,10 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    *
    * The ::offset-changed signal notifies about changed position within
    * notation.
+   * 
+   * Since: 0.7.122
    */
-  g_signal_new("offset-changed\0",
+  g_signal_new("offset-changed",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsSequencerInterface, offset_changed),

@@ -35,13 +35,15 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
+#include <ags/i18n.h>
+
 int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response, AgsLinkEditor *link_editor);
 int ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLinkEditor *link_editor);
 
 void ags_link_editor_file_chooser_play_done(AgsRecall *recall, AgsLinkEditor *link_editor);
 void ags_link_editor_file_chooser_play_cancel(AgsRecall *recall, AgsLinkEditor *link_editor);
 
-#define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton\0"
+#define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton"
 
 int
 ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLinkEditor *link_editor)
@@ -82,14 +84,14 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 
 	  if(AGS_INPUT(channel)->file_link != NULL){
 	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			       0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
+			       0, g_strdup_printf("file://%s", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
 			       1, NULL,
 			       -1);
 	    gtk_combo_box_set_active_iter(link_editor->combo,
 					  &iter);
 	  }else{
 	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			       0, "file://\0",
+			       0, "file://",
 			       1, NULL,
 			       -1);
 	  }
@@ -165,7 +167,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
 				 FALSE);
 
-      link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("select audio file\0"),
+      link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("select audio file"),
 										       (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) link_editor),
 										       GTK_FILE_CHOOSER_ACTION_OPEN,
 										       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -180,7 +182,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gtk_file_chooser_set_extra_widget((GtkFileChooser *) link_editor->file_chooser,
 					(GtkWidget *) hbox);
 
-      label = (GtkLabel *) gtk_label_new(g_strdup("audio channel: \0"));
+      label = (GtkLabel *) gtk_label_new(i18n("audio channel: "));
       gtk_box_pack_start((GtkBox *) hbox,
 			 (GtkWidget *) label,
 			 FALSE, FALSE,
@@ -204,10 +206,10 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       
       tmp = g_strdup(str + 7);
 
-      if(g_strcmp0(tmp, "\0")){
+      if(g_strcmp0(tmp, "")){
 	char *tmp0, *name, *dir;
 
-	tmp0 = g_strrstr(tmp, "/\0");
+	tmp0 = g_strrstr(tmp, "/");
 	name = g_strdup(tmp0 + 1);
 	dir = g_strndup(tmp, tmp0 - tmp);
 
@@ -215,7 +217,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 	gtk_file_chooser_set_current_name((GtkFileChooser *) link_editor->file_chooser, name);
       }
 
-      g_signal_connect((GObject *) link_editor->file_chooser, "response\0",
+      g_signal_connect((GObject *) link_editor->file_chooser, "response",
 		       G_CALLBACK(ags_link_editor_file_chooser_response_callback), (gpointer) link_editor);
 
       gtk_widget_show_all((GtkWidget *) link_editor->file_chooser);
@@ -266,7 +268,7 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
 				  gtk_tree_model_iter_n_children(model,
 								 NULL) - 1);
     gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-		       0, g_strdup_printf("file://%s\0", name),
+		       0, g_strdup_printf("file://%s", name),
 		       -1);
 
     /* set audio channel */
@@ -304,9 +306,9 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
 
     g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_PLAY_AUDIO_FILE), play_audio_file);
 
-    g_signal_connect((GObject *) play_audio_file, "done\0",
+    g_signal_connect((GObject *) play_audio_file, "done",
 		     G_CALLBACK(ags_link_editor_file_chooser_play_done), link_editor);
-    g_signal_connect((GObject *) play_audio_file, "cancel\0",
+    g_signal_connect((GObject *) play_audio_file, "cancel",
 		     G_CALLBACK(ags_link_editor_file_chooser_play_cancel), link_editor);
 
     /* AgsAudioFile * /

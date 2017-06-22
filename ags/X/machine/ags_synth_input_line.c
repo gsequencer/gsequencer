@@ -110,7 +110,7 @@ ags_synth_input_line_get_type()
     };
 
     ags_type_synth_input_line = g_type_register_static(AGS_TYPE_LINE,
-						       "AgsSynthInputLine\0", &ags_synth_input_line_info,
+						       "AgsSynthInputLine", &ags_synth_input_line_info,
 						       0);
 
     g_type_add_interface_static(ags_type_synth_input_line,
@@ -172,7 +172,7 @@ ags_synth_input_line_init(AgsSynthInputLine *synth_input_line)
   AgsOscillator *oscillator;
 
   synth_input_line->name = NULL;
-  synth_input_line->xml_type = "ags-synth-input-line\0";
+  synth_input_line->xml_type = "ags-synth-input-line";
 
   /* oscillator */
   oscillator = ags_oscillator_new();
@@ -290,22 +290,22 @@ ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   gobject->oscillator = ags_oscillator_new();
 
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", gobject,
+					       "file", file,
+					       "node", node,
+					       "reference", gobject,
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+  g_signal_connect(G_OBJECT(file_lookup), "resolve",
 		   G_CALLBACK(ags_synth_input_line_resolve_line), gobject);
 
   /* child elements */
@@ -314,7 +314,7 @@ ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   while(child != NULL){
     if(XML_ELEMENT_NODE == child->type){
       if(!xmlStrncmp(child->name,
-		     "ags-oscillator\0",
+		     "ags-oscillator",
 		     15)){
 	ags_file_read_oscillator(file, child, &(gobject->oscillator));
       }
@@ -346,18 +346,18 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-synth-input-line\0");
+		    "ags-synth-input-line");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", synth_input_line,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", synth_input_line,
 				   NULL));
 
   ags_file_write_oscillator(file, node, synth_input_line->oscillator);
@@ -382,7 +382,7 @@ ags_synth_input_line_new(AgsChannel *channel)
   AgsSynthInputLine *synth_input_line;
 
   synth_input_line = (AgsSynthInputLine *) g_object_new(AGS_TYPE_SYNTH_INPUT_LINE,
-							"channel\0", channel,
+							"channel", channel,
 							NULL);
 
   return(synth_input_line);

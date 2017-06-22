@@ -29,6 +29,8 @@
 
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency);
 void ags_recall_dependency_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_dependency_init(AgsRecallDependency *recall_dependency);
@@ -88,7 +90,7 @@ ags_recall_dependency_get_type(void)
     };
 
     ags_type_recall_dependency = g_type_register_static(G_TYPE_OBJECT,
-							"AgsRecallDependency\0",
+							"AgsRecallDependency",
 							&ags_recall_dependency_info,
 							0);
     
@@ -124,9 +126,9 @@ ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("dependency\0",
-				   "dependency of recall\0",
-				   "A dependency of the recall\0",
+  param_spec = g_param_spec_object("dependency",
+				   i18n_pspec("dependency of recall"),
+				   i18n_pspec("A dependency of the recall"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -383,7 +385,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       if(recall_list != NULL){
 	return(G_OBJECT(recall_list->data));
       }else{
-	g_warning("dependency not found!\0");
+	g_warning("dependency not found!");
       }
     }
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){
@@ -439,7 +441,7 @@ ags_recall_dependency_new(GObject *dependency)
   AgsRecallDependency *recall_dependency;
 
   recall_dependency = (AgsRecallDependency *) g_object_new(AGS_TYPE_RECALL_DEPENDENCY,
-							   "dependency\0", dependency,
+							   "dependency", dependency,
 							   NULL);
 
   return(recall_dependency);

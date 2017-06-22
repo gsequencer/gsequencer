@@ -80,7 +80,7 @@ ags_remove_sequencer_editor_jack_get_type()
     };
 
     ags_type_remove_sequencer_editor_jack = g_type_register_static(AGS_TYPE_TASK,
-								"AgsRemoveSequencerEditorJack\0",
+								"AgsRemoveSequencerEditorJack",
 								&ags_remove_sequencer_editor_jack_info,
 								0);
 

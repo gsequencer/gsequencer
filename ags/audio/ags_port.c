@@ -23,6 +23,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <ags/i18n.h>
+
 void ags_port_class_init(AgsPortClass *port_class);
 void ags_port_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_port_init(AgsPort *port);
@@ -104,7 +106,7 @@ ags_port_get_type (void)
     };
 
     ags_type_port = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsPort\0",
+					   "AgsPort",
 					   &ags_port_info,
 					   0);
 
@@ -138,9 +140,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_string("plugin-name\0",
-				   "plugin-name of port\0",
-				   "The plugin-name this port belongs to\0",
+  param_spec = g_param_spec_string("plugin-name",
+				   i18n_pspec("plugin-name of port"),
+				   i18n_pspec("The plugin-name this port belongs to"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -154,9 +156,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_string("specifier\0",
-				   "specifier of port\0",
-				   "The specifier this port is identified by\0",
+  param_spec = g_param_spec_string("specifier",
+				   i18n_pspec("specifier of port"),
+				   i18n_pspec("The specifier this port is identified by"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -170,9 +172,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_string("control-port\0",
-				   "control-port of port\0",
-				   "The control-port this port is numbered\0",
+  param_spec = g_param_spec_string("control-port",
+				   i18n_pspec("control-port of port"),
+				   i18n_pspec("The control-port this port is numbered"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -186,9 +188,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_boolean("port-value-is-pointer\0",
-				    "port-value-is-pointer indicates if value is a pointer\0",
-				    "The port-value-is-pointer indicates if value is a pointer\0",
+  param_spec = g_param_spec_boolean("port-value-is-pointer",
+				    i18n_pspec("port-value-is-pointer indicates if value is a pointer"),
+				    i18n_pspec("The port-value-is-pointer indicates if value is a pointer"),
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -202,9 +204,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_gtype("port-value-type\0",
-				  "port-value-type tells you the type of the values\0",
-				  "The port-value-type tells you the type of the values\0",
+  param_spec = g_param_spec_gtype("port-value-type",
+				  i18n_pspec("port-value-type tells you the type of the values"),
+				  i18n_pspec("The port-value-type tells you the type of the values"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -218,9 +220,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("port-value-size\0",
-				 "port-value-size is the size of a single entry\0",
-				 "The port-value-size is the size of a single entry\0",
+  param_spec = g_param_spec_uint("port-value-size",
+				 i18n_pspec("port-value-size is the size of a single entry"),
+				 i18n_pspec("The port-value-size is the size of a single entry"),
 				 1, 8,
 				 sizeof(gdouble),
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -235,9 +237,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("port-value-length\0",
-				 "port-value-length is the array size\0",
-				 "The port-value-length is the array size\0",
+  param_spec = g_param_spec_uint("port-value-length",
+				 i18n_pspec("port-value-length is the array size"),
+				 i18n_pspec("The port-value-length is the array size"),
 				 0, 65535,
 				 1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -252,9 +254,9 @@ ags_port_class_init(AgsPortClass *port)
    * 
    * Since: 0.7.9
    */
-  param_spec = g_param_spec_object("conversion\0",
-				   "conversion converts values\0",
-				   "The conversion is able to translate values\0",
+  param_spec = g_param_spec_object("conversion",
+				   i18n_pspec("conversion converts values"),
+				   i18n_pspec("The conversion is able to translate values"),
 				   AGS_TYPE_CONVERSION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -276,7 +278,7 @@ ags_port_class_init(AgsPortClass *port)
    * The ::safe-read signal is emited while doing safe read operation.
    */
   port_signals[SAFE_READ] =
-    g_signal_new("safe-read\0",
+    g_signal_new("safe-read",
 		 G_TYPE_FROM_CLASS (port),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPortClass, safe_read),
@@ -292,7 +294,7 @@ ags_port_class_init(AgsPortClass *port)
    * The ::safe-write signal is emited while doing safe write operation.
    */
   port_signals[SAFE_WRITE] =
-    g_signal_new("safe-write\0",
+    g_signal_new("safe-write",
 		 G_TYPE_FROM_CLASS (port),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPortClass, safe_write),
@@ -308,7 +310,7 @@ ags_port_class_init(AgsPortClass *port)
    * The ::safe-get-property signal is emited while safe get property.
    */
   port_signals[SAFE_GET_PROPERTY] =
-    g_signal_new("safe-get-property\0",
+    g_signal_new("safe-get-property",
 		 G_TYPE_FROM_CLASS (port),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPortClass, safe_get_property),
@@ -324,7 +326,7 @@ ags_port_class_init(AgsPortClass *port)
    * The ::safe-set-property signal is emited while safe set property.
    */
   port_signals[SAFE_SET_PROPERTY] =
-    g_signal_new("safe-set-property\0",
+    g_signal_new("safe-set-property",
 		 G_TYPE_FROM_CLASS (port),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPortClass, safe_set_property),
@@ -706,7 +708,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_OBJECT){
       port->port_value.ags_port_object = g_value_get_object(value);
     }else{
-      g_warning("ags_port.c: unknown type\0");
+      g_warning("ags_port.c: unknown type");
     }
   }else{
     data = g_value_get_pointer(value);
@@ -727,7 +729,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
       if(port->port_value_type == G_TYPE_OBJECT){
 	port->port_value.ags_port_object = data;
       }else{
-	g_warning("ags_port.c: unknown type\0");
+	g_warning("ags_port.c: unknown type");
       }
     }
   }
@@ -789,7 +791,7 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_OBJECT){
       port->port_value.ags_port_object = g_value_get_object(value);
     }else{
-      g_warning("ags_port.c: unknown type\0");
+      g_warning("ags_port.c: unknown type");
     }
   }else{
     data = g_value_get_pointer(value);
@@ -810,7 +812,7 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
       if(port->port_value_type == G_TYPE_OBJECT){
 	port->port_value.ags_port_object = data;
       }else{
-	g_warning("ags_port.c: unknown type\0");
+	g_warning("ags_port.c: unknown type");
       }
     }
   }

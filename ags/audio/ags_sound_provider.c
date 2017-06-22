@@ -40,7 +40,7 @@ ags_sound_provider_get_type()
 
   if(!ags_type_sound_provider){
     ags_type_sound_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
-							    "AgsSoundProvider\0",
+							    "AgsSoundProvider",
 							    sizeof(AgsSoundProviderInterface),
 							    (GClassInitFunc) ags_sound_provider_class_init,
 							    0, NULL, 0);

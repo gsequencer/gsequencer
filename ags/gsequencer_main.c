@@ -23,8 +23,6 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
-#include <libinstpatch/libinstpatch.h>
-
 #include "gsequencer_main.h"
 
 #include <ags/lib/ags_log.h>
@@ -69,6 +67,12 @@
 
 #include <ags/X/task/ags_simple_file_read.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -77,10 +81,13 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#include <pthread.h>
 #include <string.h>
 
 #include <unistd.h>
 #include <sys/types.h>
+
+#include <stdlib.h>
 
 #include "config.h"
 
@@ -130,7 +137,7 @@ ags_signal_handler(int signr)
     exit(-1);
   }else{
     sigemptyset(&(ags_sigact.sa_mask));
-
+    
     //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
     // pthread_yield();
     //    }
@@ -196,20 +203,24 @@ ags_start_animation_thread(void *ptr)
   
   gdk_cr = gdk_cairo_create(window->window);
   
-  filename = g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png\0");
+  filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
 
   surface = cairo_image_surface_create_from_png(filename);
   image_data = cairo_image_surface_get_data(surface);
-  
-  bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
 
+  if(image_size > 0){
+    bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
+  }else{
+    bg_data = NULL;
+  }
+  
   if(image_data != NULL){
     memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
   }
   
   cr = cairo_create(surface);
   
-  cairo_select_font_face(cr, "Georgia\0",
+  cairo_select_font_face(cr, "Georgia",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, (gdouble) 11.0);
   
@@ -264,7 +275,7 @@ ags_start_animation_thread(void *ptr)
 
       cairo_move_to(cr,
 		    x0, 4.0 + (i + 1) * 12.0);
-      cairo_show_text(cr, "...\0");
+      cairo_show_text(cr, "...");
       
       nth = g_list_length(start);
     }
@@ -293,7 +304,7 @@ ags_start_animation(pthread_t *thread)
 
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   g_object_set(window,
-	       "decorated\0", FALSE,
+	       "decorated", FALSE,
 	       0);
   gtk_widget_set_size_request(window,
 			      800, 450);
@@ -329,10 +340,10 @@ ags_setup(int argc, char **argv)
   filename = NULL;
 
   ags_log_add_message(log,
-		      "Welcome to Advanced Gtk+ Sequencer\0");
+		      "Welcome to Advanced Gtk+ Sequencer");
   
   for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--filename\0", 11)){
+    if(!strncmp(argv[i], "--filename", 11)){
       AgsSimpleFile *simple_file;
 
       xmlXPathContext *xpath_context; 
@@ -347,7 +358,7 @@ ags_setup(int argc, char **argv)
       filename = argv[i + 1];
       simple_file = ags_simple_file_new();
       g_object_set(simple_file,
-		   "filename\0", filename,
+		   "filename", filename,
 		   NULL);
       ags_simple_file_open(simple_file,
 			   NULL);
@@ -358,7 +369,7 @@ ags_setup(int argc, char **argv)
       xpath_context = xmlXPathNewContext(simple_file->doc);
 
       if(xpath_context == NULL) {
-	g_warning("Error: unable to create new XPath context\0");
+	g_warning("Error: unable to create new XPath context");
 
 	break;
       }
@@ -367,7 +378,7 @@ ags_setup(int argc, char **argv)
       xpath_object = xmlXPathEval(xpath, xpath_context);
 
       if(xpath_object == NULL) {
-	g_warning("Error: unable to evaluate xpath expression \"%s\"\0", xpath);
+	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
 	xmlXPathFreeContext(xpath_context); 
 
 	break;
@@ -401,28 +412,28 @@ ags_setup(int argc, char **argv)
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist\0",
+  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
 				       pw->pw_dir,
 				       AGS_DEFAULT_DIRECTORY);
   ags_ladspa_manager_load_blacklist(ladspa_manager,
 				    blacklist_filename);
 
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading LADSPA plugins\0");
+		      "* Loading LADSPA plugins");
   
   ags_ladspa_manager_load_default_directory(ladspa_manager);
 
   /* load dssi manager */
   dssi_manager = ags_dssi_manager_get_instance();
 
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist\0",
+  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
 				       pw->pw_dir,
 				       AGS_DEFAULT_DIRECTORY);
   ags_dssi_manager_load_blacklist(dssi_manager,
 				  blacklist_filename);
 
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading DSSI plugins\0");
+		      "* Loading DSSI plugins");
 
   ags_dssi_manager_load_default_directory(dssi_manager);
 
@@ -430,28 +441,28 @@ ags_setup(int argc, char **argv)
   lv2_manager = ags_lv2_manager_get_instance();
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist\0",
+  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
 				       pw->pw_dir,
 				       AGS_DEFAULT_DIRECTORY);
   ags_lv2_manager_load_blacklist(lv2_manager,
 				 blacklist_filename);
 
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading Lv2 plugins\0");
+		      "* Loading Lv2 plugins");
 
   ags_lv2_manager_load_default_directory(lv2_manager);
 
   /* load lv2ui manager */
   lv2ui_manager = ags_lv2ui_manager_get_instance();  
 
-  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist\0",
+  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist",
 				       pw->pw_dir,
 				       AGS_DEFAULT_DIRECTORY);
   ags_lv2ui_manager_load_blacklist(lv2ui_manager,
 				   blacklist_filename);
   
   ags_log_add_message(ags_log_get_instance(),
-		      "* Loading Lv2ui plugins\0");
+		      "* Loading Lv2ui plugins");
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
   
@@ -568,8 +579,8 @@ ags_launch(gboolean single_thread)
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
 				       AGS_CONFIG_GENERIC,
-				       "autosave-thread\0"),
-		  "true\0")){
+				       "autosave-thread"),
+		  "true")){
       pthread_mutex_lock(audio_loop->start_mutex);
 
       start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
@@ -599,8 +610,8 @@ ags_launch(gboolean single_thread)
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
 				       AGS_CONFIG_GENERIC,
-				       "autosave-thread\0"),
-		  "true\0")){
+				       "autosave-thread"),
+		  "true")){
       pthread_mutex_lock(audio_loop->start_mutex);
 
       start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
@@ -656,8 +667,8 @@ ags_launch_filename(gchar *filename,
   /* open file */
   if(g_strcmp0(ags_config_get_value(config,
 				    AGS_CONFIG_GENERIC,
-				    "simple-file\0"),
-	       "false\0")){
+				    "simple-file"),
+	       "false")){
     AgsSimpleFile *simple_file;
 
     AgsSimpleFileRead *simple_file_read;
@@ -665,8 +676,8 @@ ags_launch_filename(gchar *filename,
     GError *error;
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context\0", ags_application_context,
-						 "filename\0", filename,
+						 "application-context", ags_application_context,
+						 "filename", filename,
 						 NULL);
     error = NULL;
     ags_simple_file_open(simple_file,
@@ -740,8 +751,8 @@ ags_launch_filename(gchar *filename,
       /* autosave thread */
       if(!g_strcmp0(ags_config_get_value(config,
 					 AGS_CONFIG_GENERIC,
-					 "autosave-thread\0"),
-		    "true\0")){
+					 "autosave-thread"),
+		    "true")){
 	pthread_mutex_lock(audio_loop->start_mutex);
 
 	start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
@@ -764,8 +775,8 @@ ags_launch_filename(gchar *filename,
       GError *error;
     
       file = g_object_new(AGS_TYPE_FILE,
-			  "application-context\0", ags_application_context,
-			  "filename\0", filename,
+			  "application-context", ags_application_context,
+			  "filename", filename,
 			  NULL);
       error = NULL;
       ags_file_open(file,
@@ -806,7 +817,7 @@ ags_timer_setup()
   sigemptyset(&ags_sigact_timer.sa_mask);
   
   if(sigaction(SIGRTMIN, &ags_sigact_timer, NULL) == -1){
-    perror("sigaction\0");
+    perror("sigaction");
     exit(EXIT_FAILURE);
   }
   
@@ -815,7 +826,7 @@ ags_timer_setup()
   sigaddset(&ags_timer_mask, SIGRTMIN);
   
   if(sigprocmask(SIG_SETMASK, &ags_timer_mask, NULL) == -1){
-    perror("sigprocmask\0");
+    perror("sigprocmask");
     exit(EXIT_FAILURE);
   }
 
@@ -825,7 +836,7 @@ ags_timer_setup()
   ags_sev_timer.sigev_value.sival_ptr = timer_id;
   
   if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, timer_id) == -1){
-    perror("timer_create\0");
+    perror("timer_create");
     exit(EXIT_FAILURE);
   }  
 
@@ -846,13 +857,13 @@ ags_timer_start(timer_t *timer_id)
   its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
   if(timer_settime(timer_id, 0, &its, NULL) == -1){
-    perror("timer_settime\0");
+    perror("timer_settime");
     exit(EXIT_FAILURE);
     
   }
 
   if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
-    perror("sigprocmask\0");
+    perror("sigprocmask");
     exit(EXIT_FAILURE);
   }  
 }
@@ -961,8 +972,8 @@ ags_timer_launch(timer_t *timer_id,
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
 				       AGS_CONFIG_GENERIC,
-				       "autosave-thread\0"),
-		  "true\0")){
+				       "autosave-thread"),
+		  "true")){
       pthread_mutex_lock(audio_loop->start_mutex);
 
       start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
@@ -991,8 +1002,8 @@ ags_timer_launch(timer_t *timer_id,
     /* autosave thread */
     if(!g_strcmp0(ags_config_get_value(config,
 				       AGS_CONFIG_GENERIC,
-				       "autosave-thread\0"),
-		  "true\0")){
+				       "autosave-thread"),
+		  "true")){
       pthread_mutex_lock(audio_loop->start_mutex);
 
       start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
@@ -1048,8 +1059,8 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
   /* open file */
   if(g_strcmp0(ags_config_get_value(config,
 				    AGS_CONFIG_GENERIC,
-				    "simple-file\0"),
-	       "false\0")){
+				    "simple-file"),
+	       "false")){
     AgsSimpleFile *simple_file;
 
     AgsSimpleFileRead *simple_file_read;
@@ -1057,8 +1068,8 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
     GError *error;    
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context\0", ags_application_context,
-						 "filename\0", filename,
+						 "application-context", ags_application_context,
+						 "filename", filename,
 						 NULL);
     error = NULL;
     ags_simple_file_open(simple_file,
@@ -1136,8 +1147,8 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
       /* autosave thread */
       if(!g_strcmp0(ags_config_get_value(config,
 					 AGS_CONFIG_GENERIC,
-					 "autosave-thread\0"),
-		    "true\0")){
+					 "autosave-thread"),
+		    "true")){
 	pthread_mutex_lock(audio_loop->start_mutex);
 
 	start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
@@ -1161,8 +1172,8 @@ ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
     GError *error;
     
     file = g_object_new(AGS_TYPE_FILE,
-			"application-context\0", ags_application_context,
-			"filename\0", filename,
+			"application-context", ags_application_context,
+			"filename", filename,
 			NULL);
     error = NULL;
     ags_file_open(file,
@@ -1196,16 +1207,16 @@ ags_show_file_error(gchar *filename,
 {
   GtkDialog *dialog;
       
-  g_warning("could not parse file %s\0", filename);
+  g_warning("could not parse file %s", filename);
       
   dialog = gtk_message_dialog_new(NULL,
 				  0,
 				  GTK_MESSAGE_WARNING,
 				  GTK_BUTTONS_OK,
-				  "Failed to open '%s'\0",
+				  "Failed to open '%s'",
 				  filename);
   gtk_widget_show_all((GtkWidget *) dialog);
-  g_signal_connect(dialog, "response\0",
+  g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_main_quit), NULL);
   gtk_main();
 }
@@ -1240,9 +1251,13 @@ main(int argc, char **argv)
 #ifdef AGS_USE_TIMER
   timer_t *timer_id
 #endif
+
+  setlocale(LC_ALL, "");
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
   
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LANG=C");
+  putenv("LC_ALL=C");
 
   single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
@@ -1267,7 +1282,7 @@ main(int argc, char **argv)
   param.sched_priority = GSEQUENCER_RT_PRIORITY;
       
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed\0");
+    perror("sched_setscheduler failed");
   }
 
   /* Ignore interactive and job-control signals.  */
@@ -1294,34 +1309,34 @@ main(int argc, char **argv)
   filename = NULL;
 
   for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--help\0", 7)){
-      printf("GSequencer is an audio sequencer and notation editor\n\n\0");
+    if(!strncmp(argv[i], "--help", 7)){
+      printf("GSequencer is an audio sequencer and notation editor\n\n");
 
       printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
-	     "Report bugs to <jkraehemann@gmail.com>\n\0",
-	     "--filename file     open file\0",
-	     "--single-thread     run in single thread mode\0",
-	     "--no-builtin-theme  disable built-in theme\0",
-	     "--help              display this help and exit\0",
-	     "--version           output version information and exit\0");
+	     "Report bugs to <jkraehemann@gmail.com>\n",
+	     "--filename file     open file",
+	     "--single-thread     run in single thread mode",
+	     "--no-builtin-theme  disable built-in theme",
+	     "--help              display this help and exit",
+	     "--version           output version information and exit");
       
       exit(0);
-    }else if(!strncmp(argv[i], "--version\0", 10)){
-      printf("GSequencer %s\n\n\0", AGS_VERSION);
+    }else if(!strncmp(argv[i], "--version", 10)){
+      printf("GSequencer %s\n\n", AGS_VERSION);
       
-      printf("%s\n%s\n%s\n\n\0",
-	     "Copyright (C) 2005-2017 Joël Krähemann\0",
-	     "This is free software; see the source for copying conditions.  There is NO\0",
-	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\0");
+      printf("%s\n%s\n%s\n\n",
+	     "Copyright (C) 2005-2017 Joël Krähemann",
+	     "This is free software; see the source for copying conditions.  There is NO",
+	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
-      printf("Written by Joël Krähemann\n\0");
+      printf("Written by Joël Krähemann\n");
 
       exit(0);
-    }else if(!strncmp(argv[i], "--single-thread\0", 16)){
+    }else if(!strncmp(argv[i], "--single-thread", 16)){
       single_thread_enabled = TRUE;
-    }else if(!strncmp(argv[i], "--no-builtin-theme\0", 19)){
+    }else if(!strncmp(argv[i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
-    }else if(!strncmp(argv[i], "--filename\0", 11)){
+    }else if(!strncmp(argv[i], "--filename", 11)){
       filename = argv[i + 1];
       i++;
     }
@@ -1334,16 +1349,16 @@ main(int argc, char **argv)
     
   /* parse rc file */
   if(!builtin_theme_disabled){
-    rc_filename = g_strdup_printf("%s/%s/ags.rc\0",
+    rc_filename = g_strdup_printf("%s/%s/ags.rc",
 				  pw->pw_dir,
 				  AGS_DEFAULT_DIRECTORY);
 
     if(!g_file_test(rc_filename,
 		    G_FILE_TEST_IS_REGULAR)){
       g_free(rc_filename);
-      rc_filename = g_strdup_printf("%s%s\0",
+      rc_filename = g_strdup_printf("%s%s",
 				    DESTDIR,
-				    "/gsequencer/styles/ags.rc\0");
+				    "/gsequencer/styles/ags.rc");
     }
   
     gtk_rc_parse(rc_filename);
@@ -1361,21 +1376,23 @@ main(int argc, char **argv)
 
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),
-		 "gtk-theme-name\0", "Raleigh\0",
+		 "gtk-theme-name", "Raleigh",
 		 NULL);
     g_signal_handlers_block_matched(gtk_settings_get_default(),
 				    G_SIGNAL_MATCH_DETAIL,
-				    g_signal_lookup("set-property\0",
+				    g_signal_lookup("set-property",
 						    GTK_TYPE_SETTINGS),
-				    g_quark_from_string("gtk-theme-name\0"),
+				    g_quark_from_string("gtk-theme-name"),
 				    NULL,
 				    NULL,
 				    NULL);
   }
   
+#ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
-  //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
-		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+#endif
+  //  g_log_set_fatal_mask("GLib-GObject", // "Gtk" G_LOG_DOMAIN, // 
+  //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
   /* animate */
   animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
@@ -1385,11 +1402,11 @@ main(int argc, char **argv)
   ags_start_animation(animation_thread);
   
   /* setup */
-  wdir = g_strdup_printf("%s/%s\0",
+  wdir = g_strdup_printf("%s/%s",
 			 pw->pw_dir,
 			 AGS_DEFAULT_DIRECTORY);
 
-  config_file = g_strdup_printf("%s/%s\0",
+  config_file = g_strdup_printf("%s/%s",
 				wdir,
 				AGS_DEFAULT_CONFIG);
 

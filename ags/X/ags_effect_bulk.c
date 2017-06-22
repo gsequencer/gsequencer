@@ -87,6 +87,8 @@
 #include <dssi.h>
 #include <lv2.h>
 
+#include <ags/i18n.h>
+
 void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
 void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_effect_bulk_plugin_interface_init(AgsPluginInterface *plugin);
@@ -201,7 +203,7 @@ ags_effect_bulk_get_type(void)
     };
 
     ags_type_effect_bulk = g_type_register_static(GTK_TYPE_VBOX,
-						  "AgsEffectBulk\0", &ags_effect_bulk_info,
+						  "AgsEffectBulk", &ags_effect_bulk_info,
 						  0);
 
     g_type_add_interface_static(ags_type_effect_bulk,
@@ -239,11 +241,11 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The #AgsAudio to visualize.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "assigned audio\0",
-				   "The audio it is assigned with\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned with"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -255,11 +257,11 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The target channel.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_gtype("channel-type\0",
-				  "assigned channel type\0",
-				  "The channel type it is assigned with\0",
+  param_spec = g_param_spec_gtype("channel-type",
+				  i18n_pspec("assigned channel type"),
+				  i18n_pspec("The channel type it is assigned with"),
 				  AGS_TYPE_CHANNEL,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -290,7 +292,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * The ::add-effect signal notifies about added effect.
    */
   effect_bulk_signals[ADD_EFFECT] =
-    g_signal_new("add-effect\0",
+    g_signal_new("add-effect",
 		 G_TYPE_FROM_CLASS(effect_bulk),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, add_effect),
@@ -309,7 +311,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * The ::remove-effect signal notifies about removed effect.
    */
   effect_bulk_signals[REMOVE_EFFECT] =
-    g_signal_new("remove-effect\0",
+    g_signal_new("remove-effect",
 		 G_TYPE_FROM_CLASS(effect_bulk),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, remove_effect),
@@ -328,7 +330,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * alignment.
    */
   effect_bulk_signals[RESIZE_AUDIO_CHANNELS] = 
-    g_signal_new("resize-audio-channels\0",
+    g_signal_new("resize-audio-channels",
 		 G_TYPE_FROM_CLASS(effect_bulk),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, resize_audio_channels),
@@ -347,7 +349,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * alignment.
    */
   effect_bulk_signals[RESIZE_PADS] = 
-    g_signal_new("resize_pads\0",
+    g_signal_new("resize_pads",
 		 G_TYPE_FROM_CLASS(effect_bulk),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, resize_pads),
@@ -363,7 +365,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * The ::map-recall should be used to add the effect_bulk's default recall.
    */
   effect_bulk_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+    g_signal_new("map-recall",
                  G_TYPE_FROM_CLASS (effect_bulk),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsEffectBulkClass, map_recall),
@@ -379,7 +381,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    * The ::find-port as recall should be mapped
    */
   effect_bulk_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(effect_bulk),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, find_port),
@@ -439,7 +441,7 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   effect_bulk->plugin = NULL;
 
   alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
-					    "xalign\0", 1.0,
+					    "xalign", 1.0,
 					    NULL);
   gtk_box_pack_start((GtkBox *) effect_bulk,
 		     (GtkWidget *) alignment,
@@ -541,10 +543,10 @@ ags_effect_bulk_set_property(GObject *gobject,
 
       if(audio != NULL){
       	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
-	  g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
+	  g_signal_connect_after(effect_bulk->audio, "set-audio-channels",
 				 G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
 
-	  g_signal_connect_after(effect_bulk->audio, "set-pads\0",
+	  g_signal_connect_after(effect_bulk->audio, "set-pads",
 				 G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
 	  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
 	    ags_effect_bulk_resize_pads(effect_bulk,
@@ -619,22 +621,22 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
   effect_bulk->flags |= AGS_EFFECT_BULK_CONNECTED;
   
   /*  */
-  g_signal_connect(G_OBJECT(effect_bulk->add), "clicked\0",
+  g_signal_connect(G_OBJECT(effect_bulk->add), "clicked",
 		   G_CALLBACK(ags_effect_bulk_add_callback), effect_bulk);
 
-  g_signal_connect(G_OBJECT(effect_bulk->remove), "clicked\0",
+  g_signal_connect(G_OBJECT(effect_bulk->remove), "clicked",
 		   G_CALLBACK(ags_effect_bulk_remove_callback), effect_bulk);
 
   ags_connectable_connect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
 
-  g_signal_connect(G_OBJECT(effect_bulk->plugin_browser), "response\0",
+  g_signal_connect(G_OBJECT(effect_bulk->plugin_browser), "response",
 		   G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
 
   if(effect_bulk->audio != NULL){
-    g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
+    g_signal_connect_after(effect_bulk->audio, "set-audio-channels",
 			   G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
 
-    g_signal_connect_after(effect_bulk->audio, "set-pads\0",
+    g_signal_connect_after(effect_bulk->audio, "set-pads",
 			   G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
   }
 
@@ -982,8 +984,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					    AGS_BASE_PLUGIN(ladspa_plugin)->effect_index);
 
       g_object_set(G_OBJECT(recall_ladspa),
-		   "soundcard\0", soundcard,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "recall-container", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= (AGS_RECALL_TEMPLATE |
 					   AGS_RECALL_INPUT_ORIENTATED |
@@ -1017,9 +1019,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard\0", soundcard,
-		   "recall-container\0", recall_container,
-		   "recall-channel\0", recall_ladspa,
+		   "soundcard", soundcard,
+		   "recall-container", recall_container,
+		   "recall-channel", recall_ladspa,
 		   NULL);
       AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
 						      AGS_RECALL_INPUT_ORIENTATED |
@@ -1042,8 +1044,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					    effect,
 					    AGS_BASE_PLUGIN(ladspa_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_ladspa),
-		   "soundcard\0", soundcard,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "recall-container", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= (AGS_RECALL_TEMPLATE |
 					   AGS_RECALL_INPUT_ORIENTATED |
@@ -1073,9 +1075,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard\0", soundcard,
-		   "recall-container\0", recall_container,
-		   "recall-channel\0", recall_ladspa,
+		   "soundcard", soundcard,
+		   "recall-container", recall_container,
+		   "recall-channel", recall_ladspa,
 		   NULL);
       AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
 						      AGS_RECALL_INPUT_ORIENTATED |
@@ -1127,6 +1129,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1164,20 +1169,26 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%u/%u\0",
-										     k,
-										     port_count),
-						   "steps\0", step_count,
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name", plugin_name,
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
+						   "steps", step_count,
 						   NULL);
+
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      g_free(plugin_name);
+      g_free(control_port);
+      
       /* ladspa conversion */
       ladspa_conversion = NULL;
 
@@ -1285,7 +1296,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }
 
 #ifdef AGS_DEBUG
-      g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("ladspa bounds: %f %f", lower_bound, upper_bound);
 #endif
 
       gtk_table_attach(effect_bulk->table,
@@ -1450,9 +1461,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 					effect,
 					AGS_BASE_PLUGIN(dssi_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_dssi),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-container", recall_container,
 		   NULL);
       ags_recall_set_flags(AGS_RECALL(recall_dssi), (AGS_RECALL_TEMPLATE |
 						     AGS_RECALL_INPUT_ORIENTATED |
@@ -1491,10 +1502,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 								  AGS_RECALL_NOTATION |
 								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-channel\0", recall_dssi,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-channel", recall_dssi,
+		   "recall-container", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
 			     (GObject *) recall_channel_run_dummy,
@@ -1516,9 +1527,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 					effect,
 					AGS_BASE_PLUGIN(dssi_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_dssi),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-container", recall_container,
 		   NULL);
       ags_recall_set_flags(AGS_RECALL(recall_dssi), (AGS_RECALL_TEMPLATE |
 						     AGS_RECALL_INPUT_ORIENTATED |
@@ -1553,10 +1564,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 								  AGS_RECALL_NOTATION |
 								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-channel\0", recall_dssi,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-channel", recall_dssi,
+		   "recall-container", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
 			     (GObject *) recall_channel_run_dummy,
@@ -1600,6 +1611,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1635,19 +1649,25 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("dssi-%u",
+				    dssi_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("dssi-%u\0", dssi_plugin->unique_id),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "control-port\0", g_strdup_printf("%u/%u\0",
-										     k,
-										     port_count),
-						   "steps\0", step_count,
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name", plugin_name,
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
+						   "steps", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* ladspa conversion */
       ladspa_conversion = NULL;
@@ -1748,7 +1768,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 				 default_value);
 
 #ifdef AGS_DEBUG
-	g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
+	g_message("dssi bounds: %f %f", lower_bound, upper_bound);
 #endif
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
@@ -1931,9 +1951,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->uri,
 				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_lv2),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-container", recall_container,
 		   NULL);
       ags_recall_set_flags(AGS_RECALL(recall_lv2), (AGS_RECALL_TEMPLATE |
 						    AGS_RECALL_INPUT_ORIENTATED |
@@ -1972,10 +1992,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 								  AGS_RECALL_NOTATION |
 								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-channel\0", recall_lv2,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-channel", recall_lv2,
+		   "recall-container", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
 			     (GObject *) recall_channel_run_dummy,
@@ -1999,9 +2019,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->uri,
 				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_lv2),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-container", recall_container,
 		   NULL);
       ags_recall_set_flags(AGS_RECALL(recall_lv2), (AGS_RECALL_TEMPLATE |
 						    AGS_RECALL_INPUT_ORIENTATED |
@@ -2036,10 +2056,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 								  AGS_RECALL_NOTATION |
 								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard\0", soundcard,
-		   "source\0", current,
-		   "recall-channel\0", recall_lv2,
-		   "recall-container\0", recall_container,
+		   "soundcard", soundcard,
+		   "source", current,
+		   "recall-channel", recall_lv2,
+		   "recall-container", recall_container,
 		   NULL);
       ags_channel_add_recall(current,
 			     (GObject *) recall_channel_run_dummy,
@@ -2083,6 +2103,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -2120,19 +2143,25 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       }
 
       /* add bulk member */
+      plugin_name = g_strdup_printf("lv2-<%s>",
+				    lv2_plugin->uri);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%u/%u\0",
-										     k,
-										     port_count),
-						   "steps\0", step_count,
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name", plugin_name,
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
+						   "steps", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* lv2 conversion */
       lv2_conversion = NULL;
@@ -2204,7 +2233,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       }
 
 #ifdef AGS_DEBUG
-      g_message("lv2 bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("lv2 bounds: %f %f", lower_bound, upper_bound);
 #endif
       
       gtk_table_attach(effect_bulk->table,
@@ -2923,8 +2952,8 @@ ags_effect_bulk_new(AgsAudio *audio,
   AgsEffectBulk *effect_bulk;
 
   effect_bulk = (AgsEffectBulk *) g_object_new(AGS_TYPE_EFFECT_BULK,
-					       "audio\0", audio,
-					       "channel-type\0", channel_type,
+					       "audio", audio,
+					       "channel-type", channel_type,
 					       NULL);
 
   return(effect_bulk);

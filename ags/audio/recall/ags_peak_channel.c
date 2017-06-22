@@ -34,6 +34,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
 void ags_peak_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_peak_channel_plugin_interface_init(AgsPluginInterface *plugin);
@@ -73,12 +75,12 @@ static gpointer ags_peak_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_peak_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_peak_channel_parent_plugin_interface;
 
-static const gchar *ags_peak_channel_plugin_name = "ags-peak\0";
+static const gchar *ags_peak_channel_plugin_name = "ags-peak";
 static const gchar *ags_peak_channel_plugin_specifier[] = {
-  "./peak[0]\0",
+  "./peak[0]",
 };
 static const gchar *ags_peak_channel_plugin_control_port[] = {
-  "1/1\0",
+  "1/1",
 };
 
 GType
@@ -112,7 +114,7 @@ ags_peak_channel_get_type()
     };
     
     ags_type_peak_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsPeakChannel\0",
+						   "AgsPeakChannel",
 						   &ags_peak_channel_info,
 						   0);
 
@@ -170,9 +172,9 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("peak\0",
-				   "peak of channel\0",
-				   "The peak of channel\0",
+  param_spec = g_param_spec_object("peak",
+				   i18n_pspec("peak of channel"),
+				   i18n_pspec("The peak of channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -187,22 +189,22 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
   
   AGS_RECALL(peak_channel)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
 
-  AGS_RECALL(peak_channel)->name = "ags-peak\0";
+  AGS_RECALL(peak_channel)->name = "ags-peak";
   AGS_RECALL(peak_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(peak_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(peak_channel)->xml_type = "ags-peak-channel\0";
+  AGS_RECALL(peak_channel)->xml_type = "ags-peak-channel";
 
   port = NULL;
 
   /* peak */
   peak_channel->peak = g_object_new(AGS_TYPE_PORT,
-				    "plugin-name\0", ags_peak_channel_plugin_name,
-				    "specifier\0", ags_peak_channel_plugin_specifier[0],
-				    "control-port\0", ags_peak_channel_plugin_control_port[0],
-				    "port-value-is-pointer\0", FALSE,
-				    "port-value-type\0", G_TYPE_FLOAT,
-				    "port-value-size\0", sizeof(gfloat),
-				    "port-value-length\0", 1,
+				    "plugin-name", ags_peak_channel_plugin_name,
+				    "specifier", ags_peak_channel_plugin_specifier[0],
+				    "control-port", ags_peak_channel_plugin_control_port[0],
+				    "port-value-is-pointer", FALSE,
+				    "port-value-type", G_TYPE_FLOAT,
+				    "port-value-size", sizeof(gfloat),
+				    "port-value-length", 1,
 				    NULL);
   g_object_ref(peak_channel->peak);
   
@@ -339,10 +341,10 @@ ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak[0]\0",
+		"./peak[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "peak\0", AGS_PORT(port->data),
+		   "peak", AGS_PORT(port->data),
 		   NULL);
     }
 
@@ -541,7 +543,7 @@ ags_peak_channel_new(AgsChannel *source)
   AgsPeakChannel *peak_channel;
 
   peak_channel = (AgsPeakChannel *) g_object_new(AGS_TYPE_PEAK_CHANNEL,
-						 "channel\0", source,
+						 "channel", source,
 						 NULL);
 
   return(peak_channel);

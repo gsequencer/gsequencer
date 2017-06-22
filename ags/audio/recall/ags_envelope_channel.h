@@ -40,6 +40,11 @@ struct _AgsEnvelopeChannel
 {
   AgsRecallChannel recall_channel;
 
+  AgsPort *use_note_length;
+  AgsPort *use_fixed_length;
+
+  AgsPort *fixed_length;
+  
   AgsPort *attack;
   AgsPort *decay;
   AgsPort *sustain;

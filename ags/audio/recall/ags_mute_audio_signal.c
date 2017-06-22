@@ -96,7 +96,7 @@ ags_mute_audio_signal_get_type()
     };
 
     ags_type_mute_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsMuteAudioSignal\0",
+							"AgsMuteAudioSignal",
 							&ags_mute_audio_signal_info,
 							0);
 
@@ -153,10 +153,10 @@ ags_mute_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableIn
 void
 ags_mute_audio_signal_init(AgsMuteAudioSignal *mute_audio_signal)
 {
-  AGS_RECALL(mute_audio_signal)->name = "ags-mute\0";
+  AGS_RECALL(mute_audio_signal)->name = "ags-mute";
   AGS_RECALL(mute_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(mute_audio_signal)->xml_type = "ags-mute-audio-signal\0";
+  AGS_RECALL(mute_audio_signal)->xml_type = "ags-mute-audio-signal";
   AGS_RECALL(mute_audio_signal)->port = NULL;
 
   AGS_RECALL(mute_audio_signal)->child_type = G_TYPE_NONE;
@@ -301,7 +301,7 @@ ags_mute_audio_signal_new(AgsAudioSignal *source)
   AgsMuteAudioSignal *mute_audio_signal;
 
   mute_audio_signal = (AgsMuteAudioSignal *) g_object_new(AGS_TYPE_MUTE_AUDIO_SIGNAL,
-							  "source\0", source,
+							  "source", source,
 							  NULL);
 
   return(mute_audio_signal);

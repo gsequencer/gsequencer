@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,7 @@
 #include <ags/X/ags_export_soundcard.h>
 
 #include <stdlib.h>
+#include <ags/i18n.h>
 
 void ags_export_window_class_init(AgsExportWindowClass *export_window);
 void ags_export_window_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -98,7 +99,7 @@ ags_export_window_get_type()
     };
 
     ags_type_export_window = g_type_register_static(GTK_TYPE_WINDOW,
-						    "AgsExportWindow\0", &ags_export_window_info,
+						    "AgsExportWindow", &ags_export_window_info,
 						    0);
     
     g_type_add_interface_static(ags_type_export_window,
@@ -134,9 +135,9 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "assigned application context\0",
-				   "The AgsApplicationContext it is assigned with\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("assigned application context"),
+				   i18n_pspec("The AgsApplicationContext it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -150,9 +151,9 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    * 
    * Since: 0.7.119
    */
-  param_spec = g_param_spec_object("main-window\0",
-				   "assigned main window\0",
-				   "The assigned main window\0",
+  param_spec = g_param_spec_object("main-window",
+				   i18n_pspec("assigned main window"),
+				   i18n_pspec("The assigned main window"),
 				   AGS_TYPE_WINDOW,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,7 +190,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->flags = 0;
 
   g_object_set(export_window,
-	       "title\0", "export to audio data\0",
+	       "title", i18n("export to audio data"),
 	       NULL);
 
   export_window->application_context = NULL;
@@ -205,15 +206,15 @@ ags_export_window_init(AgsExportWindow *export_window)
   /* live export */
   str = ags_config_get_value(ags_config_get_instance(),
 			     AGS_CONFIG_GENERIC,
-			     "disable-feature\0");
+			     "disable-feature");
   
   if(str == NULL ||
      !g_ascii_strncasecmp(str,
-			  "experimental\0",
+			  "experimental",
 			  13)){
     export_window->live_export = NULL;
   }else{
-    export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label("live export\0");
+    export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("live export"));
     gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
 				 TRUE);
     gtk_box_pack_start(GTK_BOX(vbox),
@@ -225,7 +226,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   g_free(str);
   
   /* exclude sequencer */
-  export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers\0");
+  export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("exclude sequencers"));
   gtk_toggle_button_set_active((GtkToggleButton *) export_window->exclude_sequencer,
 			       TRUE);
   gtk_box_pack_start(GTK_BOX(vbox),
@@ -241,9 +242,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     0);
 
   /* mode */
-  label = (GtkLabel *) gtk_label_new("mode\0");
+  label = (GtkLabel *) gtk_label_new(i18n("mode"));
   g_object_set(G_OBJECT(label),
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -254,10 +255,10 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   export_window->mode = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(export_window->mode,
-				 "tact\0");
+				 "tact");
   //TODO:JK: uncomment me
   //  gtk_combo_box_text_append_text(export_window->mode,
-  //				 "time\0");
+  //				 "time");
   gtk_combo_box_set_active((GtkComboBox *) export_window->mode,
 			   0);
   gtk_table_attach(table,
@@ -268,9 +269,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   0, 0);
 
   /* tact */
-  label = (GtkLabel *) gtk_label_new("tact\0");
+  label = (GtkLabel *) gtk_label_new(i18n("tact"));
   g_object_set(G_OBJECT(label),
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -290,9 +291,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   0, 0);
 
   /* time */
-  label = (GtkLabel *) gtk_label_new("time\0");
+  label = (GtkLabel *) gtk_label_new(i18n("time"));
   g_object_set(G_OBJECT(label),
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -347,7 +348,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
-  export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label("export\0");
+  export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("export"));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->export),
 		     FALSE, FALSE,
@@ -455,13 +456,13 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   export_window->flags |= AGS_EXPORT_WINDOW_CONNECTED;
 
-  g_signal_connect(G_OBJECT(export_window->add), "clicked\0",
+  g_signal_connect(G_OBJECT(export_window->add), "clicked",
 		   G_CALLBACK(ags_export_window_add_export_soundcard_callback), export_window);
 
-  g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed\0",
+  g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed",
 			 G_CALLBACK(ags_export_window_tact_callback), export_window);
 
-  g_signal_connect_after(G_OBJECT(export_window->export), "clicked\0",
+  g_signal_connect_after(G_OBJECT(export_window->export), "clicked",
 			 G_CALLBACK(ags_export_window_export_callback), export_window);
 
   /* export soundcard */
@@ -500,19 +501,19 @@ ags_export_window_disconnect(AgsConnectable *connectable)
   export_window->flags &= (~AGS_EXPORT_WINDOW_CONNECTED);
 
   g_object_disconnect(G_OBJECT(export_window->add),
-		      "add\0",
+		      "add",
 		      G_CALLBACK(ags_export_window_add_export_soundcard_callback),
 		      export_window,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(export_window->tact),
-		      "value-changed\0",
+		      "value-changed",
 		      G_CALLBACK(ags_export_window_tact_callback),
 		      export_window,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(export_window->export),
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_export_window_export_callback),
 		      export_window,
 		      NULL);
@@ -629,7 +630,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     
     /* instantiate export soundcard */
     export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
-							   "soundcard\0", list->data,
+							   "soundcard", list->data,
 							   NULL);
     gtk_box_pack_start((GtkBox *) hbox,
 		       (GtkWidget *) export_soundcard,
@@ -649,7 +650,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     gtk_container_add((GtkContainer *) alignment,
 		      (GtkWidget *) remove_button);
     
-    g_signal_connect(G_OBJECT(remove_button), "clicked\0",
+    g_signal_connect(G_OBJECT(remove_button), "clicked",
 		     G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
     
     /* set backend */
@@ -657,12 +658,12 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 
     if(AGS_IS_DEVOUT(list->data)){
       if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(list->data)->flags)) != 0){
-	backend = "alsa\0";
+	backend = "alsa";
       }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(list->data)->flags)) != 0){
-	backend = "oss\0";
+	backend = "oss";
       }
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
-      backend = "jack\0";
+      backend = "jack";
     }
 
     ags_export_soundcard_set_backend(export_soundcard,
@@ -680,7 +681,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 				  str);
 
     /* filename */
-    str = g_strdup_printf("out-%d.wav\0",
+    str = g_strdup_printf("out-%d.wav",
 			  i);
     
     ags_export_soundcard_set_filename(export_soundcard,

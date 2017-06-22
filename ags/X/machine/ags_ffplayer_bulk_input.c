@@ -76,7 +76,7 @@ ags_ffplayer_bulk_input_get_type(void)
     };
 
     ags_type_ffplayer_bulk_input = g_type_register_static(AGS_TYPE_EFFECT_BULK,
-							  "AgsFFPlayerBulkInput\0", &ags_ffplayer_bulk_input_info,
+							  "AgsFFPlayerBulkInput", &ags_ffplayer_bulk_input_info,
 							  0);
 
     g_type_add_interface_static(ags_type_ffplayer_bulk_input,
@@ -169,8 +169,8 @@ ags_ffplayer_bulk_input_new(AgsAudio *audio,
   AgsFFPlayerBulkInput *ffplayer_bulk_input;
 
   ffplayer_bulk_input = (AgsFFPlayerBulkInput *) g_object_new(AGS_TYPE_FFPLAYER_BULK_INPUT,
-							      "audio\0", audio,
-							      "channel-type\0", channel_type,
+							      "audio", audio,
+							      "channel-type", channel_type,
 							      NULL);
 
   return(ffplayer_bulk_input);
