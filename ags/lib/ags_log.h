@@ -39,6 +39,8 @@ struct _AgsLog
 
   guint flags;
 
+  pthread_mutex_t *mutex;
+  
   volatile GList *messages;
 };
 

@@ -81,8 +81,21 @@ ags_log_class_init(AgsLogClass *log)
 void
 ags_log_init(AgsLog *log)
 {
+  pthread_mutexattr_t *attr;
+
   log->flags = 0;
 
+  /* create mutex */
+  //FIXME:JK: memory leak
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  log->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(log->mutex,
+		     attr);
+  
   log->messages = NULL;
 }
 
@@ -133,9 +146,13 @@ void
 ags_log_add_message(AgsLog *log,
 		    gchar *str)
 {
+  pthread_mutex_lock(log->mutex);
+  
   g_atomic_pointer_set(&(log->messages),
 		       g_list_prepend(g_atomic_pointer_get(&(log->messages)),
 				      str));
+
+  pthread_mutex_unlock(log->mutex);
 }
 
 /**
