@@ -50,6 +50,8 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_envelope_channel.h>
+#include <ags/audio/recall/ags_envelope_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
@@ -1032,6 +1034,18 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
+    /* ags-envelope */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-envelope",
+			      audio_channels_old, audio_channels, 
+			      0, audio->input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1201,6 +1215,25 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-feed",
+			      0, audio->audio_channels, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  /*  */
+  current = source;
+
+  while(current != NULL){
+    /* ags-envelope */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-envelope",
 			      0, audio->audio_channels, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |

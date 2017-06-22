@@ -1026,11 +1026,11 @@ ags_audio_signal_finalize(GObject *gobject)
 
 #ifdef AGS_DEBUG
   g_message("finalize AgsAudioSignal");
-#endif
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
     g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n");
   }
+#endif
 
   /* disconnect */
   ids = g_signal_list_ids(AGS_TYPE_AUDIO_SIGNAL,

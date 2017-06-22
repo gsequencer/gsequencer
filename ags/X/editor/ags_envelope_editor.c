@@ -871,6 +871,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   
   /* create preset */
   preset = g_object_new(AGS_TYPE_PRESET,
+			"scope", "ags-envelope",
 			"preset-name", preset_name,
 			NULL);
   ags_audio_add_preset(audio,

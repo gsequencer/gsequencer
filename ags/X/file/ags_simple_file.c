@@ -4553,7 +4553,16 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 	}
 
 	/* envelope */
-	//FIXME:JK: missing imaginary part
+	str = xmlGetProp(child,
+			 "envelope");
+
+	if(str != NULL &&
+	   !g_ascii_strncasecmp(str,
+				"true",
+				5)){
+	  note->flags |= AGS_NOTE_ENVELOPE;
+	}
+
 	str = xmlGetProp(child,
 			 "attack");
 
@@ -6935,6 +6944,12 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
 	       g_strdup_printf("%d",
 			       AGS_NOTE(list->data)->y));
 
+    if((AGS_NOTE_ENVELOPE & (AGS_NOTE(list->data)->flags)) != 0){
+      xmlNewProp(child,
+		 "envelope",
+		 "true");
+    }
+    
     xmlNewProp(child,
 	       "attack",
 	       g_strdup_printf("%f %f",

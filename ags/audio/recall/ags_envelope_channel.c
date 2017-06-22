@@ -54,6 +54,9 @@ void ags_envelope_channel_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_USE_NOTE_LENGTH,
+  PROP_USE_FIXED_LENGTH,
+  PROP_FIXED_LENGTH,
   PROP_ATTACK,
   PROP_DECAY,
   PROP_SUSTAIN,
@@ -144,6 +147,54 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
   gobject->finalize = ags_envelope_channel_finalize;
 
   /* properties */
+  /**
+   * AgsEnvelopeChannel:use-note-length:
+   *
+   * Use note length to compute envelope.
+   * 
+   * Since: 0.8.5
+   */
+  param_spec = g_param_spec_object("use-note-length",
+				   i18n_pspec("use note length"),
+				   i18n_pspec("Use note length to compute envelope"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_USE_NOTE_LENGTH,
+				  param_spec);
+
+  /**
+   * AgsEnvelopeChannel:use-fixed-length:
+   *
+   * Use fixed length to compute envelope.
+   * 
+   * Since: 0.8.5
+   */
+  param_spec = g_param_spec_object("use-fixed-length",
+				   i18n_pspec("use fixed length"),
+				   i18n_pspec("Use fixed length to compute envelope"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_USE_FIXED_LENGTH,
+				  param_spec);
+
+  /**
+   * AgsEnvelopeChannel:fixed-length:
+   *
+   * The fixed length to compute envelope.
+   * 
+   * Since: 0.8.5
+   */
+  param_spec = g_param_spec_object("fixed-length",
+				   i18n_pspec("fixed length"),
+				   i18n_pspec("The fixed length to compute envelope"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FIXED_LENGTH,
+				  param_spec);
+  
   /**
    * AgsEnvelopeChannel:attack:
    *
@@ -237,12 +288,54 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* ports */
   port = NULL;
+  
+  /* use note length */
+  envelope_channel->use_note_length = g_object_new(AGS_TYPE_PORT,
+						   "plugin-name", "ags-envelope",
+						   "specifier", "./use-note-length[0]",
+						   "control-port", "1/8",
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_BOOLEAN,
+						   "port-value-size", sizeof(gboolean),
+						   "port-value-length", 1,
+						   NULL);
+  g_object_ref(envelope_channel->use_note_length);
+  
+  envelope_channel->use_note_length->port_value.ags_port_boolean = FALSE;
+
+  /* use fixed length */
+  envelope_channel->use_fixed_length = g_object_new(AGS_TYPE_PORT,
+						    "plugin-name", "ags-envelope",
+						    "specifier", "./use-fixed-length[0]",
+						    "control-port", "2/8",
+						    "port-value-is-pointer", FALSE,
+						    "port-value-type", G_TYPE_BOOLEAN,
+						    "port-value-size", sizeof(gboolean),
+						    "port-value-length", 1,
+						    NULL);
+  g_object_ref(envelope_channel->use_fixed_length);
+  
+  envelope_channel->use_fixed_length->port_value.ags_port_boolean = FALSE;
+
+  /* fixed length */
+  envelope_channel->fixed_length = g_object_new(AGS_TYPE_PORT,
+						"plugin-name", "ags-envelope",
+						"specifier", "./fixed-length[0]",
+						"control-port", "3/8",
+						"port-value-is-pointer", FALSE,
+						"port-value-type", G_TYPE_UINT,
+						"port-value-size", sizeof(guint),
+						"port-value-length", 1,
+						NULL);
+  g_object_ref(envelope_channel->fixed_length);
+  
+  envelope_channel->fixed_length->port_value.ags_port_uint = 0;
 
   /* attack */
   envelope_channel->attack = g_object_new(AGS_TYPE_PORT,
 					  "plugin-name", "ags-envelope",
 					  "specifier", "./attack[0]",
-					  "control-port", "1/5",
+					  "control-port", "4/8",
 					  "port-value-is-pointer", FALSE,
 					  "port-value-type", G_TYPE_DOUBLE,
 					  "port-value-size", sizeof(gdouble),
@@ -260,7 +353,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
   envelope_channel->decay = g_object_new(AGS_TYPE_PORT,
 					 "plugin-name", "ags-envelope",
 					 "specifier", "./decay[0]",
-					 "control-port", "2/5",
+					 "control-port", "5/8",
 					 "port-value-is-pointer", FALSE,
 					 "port-value-type", G_TYPE_DOUBLE,
 					 "port-value-size", sizeof(gdouble),
@@ -278,7 +371,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
   envelope_channel->sustain = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name", "ags-envelope",
 					   "specifier", "./sustain[0]",
-					   "control-port", "3/5",
+					   "control-port", "6/8",
 					   "port-value-is-pointer", FALSE,
 					   "port-value-type", G_TYPE_DOUBLE,
 					   "port-value-size", sizeof(gdouble),
@@ -296,7 +389,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
   envelope_channel->release = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name", "ags-envelope",
 					   "specifier", "./release[0]",
-					   "control-port", "4/5",
+					   "control-port", "7/8",
 					   "port-value-is-pointer", FALSE,
 					   "port-value-type", G_TYPE_DOUBLE,
 					   "port-value-size", sizeof(gdouble),
@@ -314,7 +407,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
   envelope_channel->ratio = g_object_new(AGS_TYPE_PORT,
 					 "plugin-name", "ags-envelope",
 					 "specifier", "./ratio[0]",
-					 "control-port", "5/5",
+					 "control-port", "8/8",
 					 "port-value-is-pointer", FALSE,
 					 "port-value-type", G_TYPE_DOUBLE,
 					 "port-value-size", sizeof(gdouble),
@@ -343,6 +436,69 @@ ags_envelope_channel_set_property(GObject *gobject,
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
 
   switch(prop_id){
+  case PROP_USE_NOTE_LENGTH:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == envelope_channel->use_note_length){
+	return;
+      }
+
+      if(envelope_channel->use_note_length != NULL){
+	g_object_unref(G_OBJECT(envelope_channel->use_note_length));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      envelope_channel->use_note_length = port;
+    }
+    break;
+  case PROP_USE_FIXED_LENGTH:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == envelope_channel->use_fixed_length){
+	return;
+      }
+
+      if(envelope_channel->use_fixed_length != NULL){
+	g_object_unref(G_OBJECT(envelope_channel->use_fixed_length));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      envelope_channel->use_fixed_length = port;
+    }
+    break;
+  case PROP_FIXED_LENGTH:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == envelope_channel->fixed_length){
+	return;
+      }
+
+      if(envelope_channel->fixed_length != NULL){
+	g_object_unref(G_OBJECT(envelope_channel->fixed_length));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      envelope_channel->fixed_length = port;
+    }
+    break;
   case PROP_ATTACK:
     {
       AgsPort *port;
@@ -465,6 +621,21 @@ ags_envelope_channel_get_property(GObject *gobject,
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
 
   switch(prop_id){
+  case PROP_USE_NOTE_LENGTH:
+    {
+      g_value_set_object(value, envelope_channel->use_note_length);
+    }
+    break;
+  case PROP_USE_FIXED_LENGTH:
+    {
+      g_value_set_object(value, envelope_channel->use_fixed_length);
+    }
+    break;
+  case PROP_FIXED_LENGTH:
+    {
+      g_value_set_object(value, envelope_channel->fixed_length);
+    }
+    break;
   case PROP_ATTACK:
     {
       g_value_set_object(value, envelope_channel->attack);
@@ -560,6 +731,24 @@ ags_envelope_channel_dispose(GObject *gobject)
 
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
 
+  if(envelope_channel->use_note_length != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->use_note_length));
+
+    envelope_channel->use_note_length = NULL;
+  }
+
+  if(envelope_channel->use_fixed_length != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->use_fixed_length));
+
+    envelope_channel->use_fixed_length = NULL;
+  }
+
+  if(envelope_channel->fixed_length != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->fixed_length));
+
+    envelope_channel->fixed_length = NULL;
+  }
+
   if(envelope_channel->attack != NULL){
     g_object_unref(G_OBJECT(envelope_channel->attack));
 
@@ -600,6 +789,18 @@ ags_envelope_channel_finalize(GObject *gobject)
   AgsEnvelopeChannel *envelope_channel;
 
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
+
+  if(envelope_channel->use_note_length != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->use_note_length));
+  }
+
+  if(envelope_channel->use_fixed_length != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->use_fixed_length));
+  }
+
+  if(envelope_channel->fixed_length != NULL){
+    g_object_unref(G_OBJECT(envelope_channel->fixed_length));
+  }
 
   if(envelope_channel->attack != NULL){
     g_object_unref(G_OBJECT(envelope_channel->attack));

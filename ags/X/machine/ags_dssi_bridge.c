@@ -51,6 +51,8 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_envelope_channel.h>
+#include <ags/audio/recall/ags_envelope_channel_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_record_midi_audio.h>
@@ -1222,6 +1224,25 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge, guint audio_channel
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  /*  */
+  current = source;
+
+  while(current != NULL){
+    /* ags-envelope */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-envelope",
+			      audio_channel_start, audio->audio_channels, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
