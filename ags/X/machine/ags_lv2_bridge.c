@@ -1304,6 +1304,53 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
   config = ags_config_get_instance();
 
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+    /*  */
+    current = source;
+
+    while(current != NULL){
+      /* ags-envelope */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-envelope",
+				audio_channel_start, audio->audio_channels, 
+				current->pad, current->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      /* play - use note length */
+      list = ags_recall_template_find_type(current->play, AGS_TYPE_ENVELOPE_CHANNEL);
+
+      if(list != NULL){
+	GValue use_note_length_value = {0,};
+
+	g_value_init(&use_note_length_value, G_TYPE_BOOLEAN);
+	g_value_set_boolean(&use_note_length_value,
+			    TRUE);
+
+	ags_port_safe_write(AGS_ENVELOPE_CHANNEL(list->data)->use_note_length,
+			    &use_note_length_value);
+      }
+      
+      /* recall - use note length */
+      list = ags_recall_template_find_type(current->recall, AGS_TYPE_ENVELOPE_CHANNEL);
+
+      if(list != NULL){
+	GValue use_note_length_value = {0,};
+
+	g_value_init(&use_note_length_value, G_TYPE_BOOLEAN);
+	g_value_set_boolean(&use_note_length_value,
+			    TRUE);
+
+	ags_port_safe_write(AGS_ENVELOPE_CHANNEL(list->data)->use_note_length,
+			    &use_note_length_value);
+      }
+
+      current = current->next_pad;
+    }
+
     /* map dependending on output */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_GENERIC,
@@ -1364,25 +1411,6 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
 				current->pad, current->pad + 1,
 				(AGS_RECALL_FACTORY_INPUT |
 				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      current = current->next_pad;
-    }
-
-    /*  */
-    current = source;
-
-    while(current != NULL){
-      /* ags-envelope */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-envelope",
-				audio_channel_start, audio->audio_channels, 
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_RECALL | 
 				 AGS_RECALL_FACTORY_ADD),
 				0);
 

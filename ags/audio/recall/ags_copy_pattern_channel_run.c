@@ -593,6 +593,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  note->y = pad;
 
+	  audio_signal->note = note;
+	  
 	  /* get attack */
 	  g_value_init(&value,
 		       AGS_TYPE_COMPLEX);
@@ -610,8 +612,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 
 	  /* get decay */
-	  g_value_init(&value,
-		       AGS_TYPE_COMPLEX);
+	  g_value_reset(&value);
 
 	  error = NULL;
 	  ags_preset_get_parameter((AgsPreset *) preset->data,
@@ -626,8 +627,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 
 	  /* get sustain */
-	  g_value_init(&value,
-		       AGS_TYPE_COMPLEX);
+	  g_value_reset(&value);
 
 	  error = NULL;
 	  ags_preset_get_parameter((AgsPreset *) preset->data,
@@ -642,8 +642,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 
 	  /* get release */
-	  g_value_init(&value,
-		       AGS_TYPE_COMPLEX);
+	  g_value_reset(&value);
 
 	  error = NULL;
 	  ags_preset_get_parameter((AgsPreset *) preset->data,
@@ -658,8 +657,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 
 	  /* get ratio */
-	  g_value_init(&value,
-		       AGS_TYPE_COMPLEX);
+	  g_value_reset(&value);
 
 	  error = NULL;
 	  ags_preset_get_parameter((AgsPreset *) preset->data,

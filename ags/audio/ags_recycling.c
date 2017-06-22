@@ -1010,10 +1010,11 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 
   ags_audio_signal_stream_resize(audio_signal,
 				 template->length);
+  audio_signal->frame_count = template->frame_count;
 
   ags_audio_signal_duplicate_stream(audio_signal,
 				    template);
-
+  
   /* release lock */
   pthread_mutex_unlock(recycling_mutex);
 }

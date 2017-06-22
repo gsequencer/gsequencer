@@ -444,7 +444,7 @@ ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
       
       buffer += (8 * channels);
       
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
@@ -453,7 +453,7 @@ ags_audio_buffer_util_envelope_s8(signed char *buffer, guint channels,
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -502,7 +502,7 @@ ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
@@ -511,7 +511,7 @@ ags_audio_buffer_util_envelope_s16(signed short *buffer, guint channels,
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -549,27 +549,27 @@ ags_audio_buffer_util_envelope_s24(signed long *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = (signed long) 0xffffff & ((signed long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed long) 0xffffff & ((signed long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed long) 0xffffff & ((signed long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed long) 0xffffff & ((signed long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed long) 0xffffff & ((signed long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed long) 0xffffff & ((signed long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed long) 0xffffff & ((signed long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed long) 0xffffff & ((signed long) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = (signed long) 0xffffff & ((signed long) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -607,27 +607,27 @@ ags_audio_buffer_util_envelope_s32(signed long *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = (signed long) 0xffffffff & ((signed long long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed long) 0xffffffff & ((signed long long) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = (signed long) 0xffffffff & ((signed long long) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -665,27 +665,27 @@ ags_audio_buffer_util_envelope_s64(signed long long *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = (signed long long) 0xffffffffffffffff & ((signed long long) ((*buffer) * current_volume));
+      buffer[1 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = (signed long long) 0xffffffffffffffff & ((signed long long) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = (signed long long) 0xffffffffffffffff & ((signed long long) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -723,27 +723,27 @@ ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = ((double) ((*buffer) * current_volume));
+      buffer[1 * channels] = ((double) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = ((double) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = ((double) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = ((double) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = ((double) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = ((double) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = ((double) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = ((double) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);
@@ -781,27 +781,27 @@ ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
     limit = buffer_length - 8;
   
     for(; i < limit; i += 8){
-      *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
-      buffer[1 * channels] = (signed short) 0xffff & ((signed long) (buffer[1 * channels] * current_volume));
-      buffer[2 * channels] = (signed short) 0xffff & ((signed long) (buffer[2 * channels] * current_volume));
-      buffer[3 * channels] = (signed short) 0xffff & ((signed long) (buffer[3 * channels] * current_volume));
-      buffer[4 * channels] = (signed short) 0xffff & ((signed long) (buffer[4 * channels] * current_volume));
-      buffer[5 * channels] = (signed short) 0xffff & ((signed long) (buffer[5 * channels] * current_volume));
-      buffer[6 * channels] = (signed short) 0xffff & ((signed long) (buffer[6 * channels] * current_volume));
-      buffer[7 * channels] = (signed short) 0xffff & ((signed long) (buffer[7 * channels] * current_volume));
+      *buffer = ((double) ((*buffer) * current_volume));
+      buffer[1 * channels] = ((double) (buffer[1 * channels] * current_volume));
+      buffer[2 * channels] = ((double) (buffer[2 * channels] * current_volume));
+      buffer[3 * channels] = ((double) (buffer[3 * channels] * current_volume));
+      buffer[4 * channels] = ((double) (buffer[4 * channels] * current_volume));
+      buffer[5 * channels] = ((double) (buffer[5 * channels] * current_volume));
+      buffer[6 * channels] = ((double) (buffer[6 * channels] * current_volume));
+      buffer[7 * channels] = ((double) (buffer[7 * channels] * current_volume));
 
       buffer += (8 * channels);
 
-      current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+      current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
     }
   }
 
   for(; i < buffer_length; i++){
-    *buffer = (signed short) 0xffff & ((signed long) ((*buffer) * current_volume));
+    *buffer = ((double) ((*buffer) * current_volume));
 
     buffer += channels;
 
-    current_volume = start_volume + ((double) i / (double) buffer_length) * (1.0 / ratio);
+    current_volume = start_volume + ((double) i / (double) buffer_length) * ratio;
   }
 
   return(current_volume);

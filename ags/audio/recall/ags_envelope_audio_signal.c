@@ -238,21 +238,72 @@ ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 void
 ags_envelope_audio_signal_run_init_pre(AgsRecall *recall)
 {
+  AgsEnvelopeChannel *envelope_channel;
   AgsEnvelopeAudioSignal *envelope_audio_signal;
 
+  AgsAudioSignal *source;
+  AgsNote *note;
+
+  gdouble delay;
+  gdouble fixed_length;
+  guint buffer_size;
+  gboolean use_note_length, use_fixed_length;
+  
+  GValue value = {0,};
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_init_pre(recall);
 
   /*  */
+  envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
+  
+  source = AGS_RECALL_AUDIO_SIGNAL(envelope_audio_signal)->source;
+  note = source->note;
 
-  envelope_audio_signal->frame_count = AGS_RECALL_AUDIO_SIGNAL(recall)->source->frame_count;
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(source->soundcard));
+  buffer_size = source->buffer_size;
+
+  /* get use note length port */
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(envelope_channel->use_note_length,
+		     &value);
+  
+  use_note_length = g_value_get_boolean(&value);
+  g_value_unset(&value);
+
+  /* get use fixed length port */
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(envelope_channel->use_fixed_length,
+		     &value);
+  
+  use_fixed_length = g_value_get_boolean(&value);
+  g_value_unset(&value);
+  
+  /* set frame count */
+  if(use_note_length){
+    envelope_audio_signal->frame_count = (note->x[1] - note->x[0]) * (delay * buffer_size);
+  }else if(use_fixed_length){
+    g_value_init(&value,
+		 G_TYPE_DOUBLE);
+
+    ags_port_safe_read(envelope_channel->fixed_length,
+		       &value);
+
+    fixed_length = g_value_get_double(&value);
+    g_value_unset(&value);
+
+    envelope_audio_signal->frame_count = fixed_length * (delay * buffer_size);
+  }else{
+    envelope_audio_signal->frame_count = AGS_RECALL_AUDIO_SIGNAL(recall)->source->frame_count;
+  }
 }
 
 void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsEnvelopeChannel *envelope_channel;
   AgsEnvelopeAudioSignal *envelope_audio_signal;
 
   AgsAudioSignal *source;
@@ -266,9 +317,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   GList *stream_source;
 
-  gdouble current_volume[4], current_ratio[4];
-  guint buffer_length[4];
-  gboolean buffer_on[4];
+  gdouble current_volume, current_ratio;
 
   guint frame_count;
   guint buffer_size;
@@ -277,6 +326,31 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   GValue audio_value = {0,};
   GValue channel_value = {0,};
+
+  auto gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+							     guint x1, gdouble y1);
+  auto gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+							      guint start_x, guint current_x,
+							      guint length);
+    
+  gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+							guint x1, gdouble y1){
+    if(x1 - x0 == 0){
+      return(1.0);
+    }else{
+      return((y1 - y0) / (x1 - x0));
+    }
+  }
+
+  gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+							 guint start_x, guint current_x,
+							 guint length){
+    if(current_x - start_x == 0){
+      return(volume);
+    }else{
+      return(volume + ratio * (length / (current_x - start_x)));
+    }
+  }
 
   AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter(recall);
 
@@ -292,25 +366,16 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   }
 
   /* initialize some control values */
-  for(i = 0; i < 4; i++){
-    current_volume[i] = 1.0;
-    current_ratio[i] = 1.0;
-    
-    buffer_length[i] = 0;
-    buffer_on[i] = FALSE;
-  }
-
   frame_count = envelope_audio_signal->frame_count;
-  buffer_size = source->buffer_size;
 
   if(source->note != NULL &&
      (AGS_NOTE_ENVELOPE & (AGS_NOTE(source->note)->flags)) != 0){
     gdouble x0, y0;
     gdouble x1, y1;
-    gdouble current_x;
-    guint current_position;
-    guint current_frame, first_frame, buffer_size;
-    guint offset;
+    guint start_position;
+    guint start_frame, first_frame, buffer_size;
+    guint current_frame, current_buffer_size;
+    guint offset, prev_offset;
     
     note = source->note;
 
@@ -322,51 +387,52 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     ratio = &(note->ratio);
 
     /* get offsets */
-    current_position = g_list_position(source->stream_beginning,
+    start_position = g_list_position(source->stream_beginning,
 				       source->stream_current);
 
-    if(current_position == 0){
-      current_frame = 0;
+    if(start_position == 0){
+      start_frame = 0;
       first_frame = source->first_frame;
       buffer_size = source->buffer_size - source->first_frame;
     }else{
-      current_frame = current_position * source->buffer_size - source->first_frame;
+      start_frame = start_position * source->buffer_size - source->first_frame;
       first_frame = 0;
       buffer_size = source->buffer_size;
     }
 
     /* attack */
     x0 = 0.0;
-    y0 = ratio[0][0];
+    y0 = ratio[0][1];
 
     x1 = attack[0][0];
     y1 = attack[0][1];
 
-    offset = (x1 - x0) * frame_count;
+    offset = x1 * frame_count;
+    current_frame = first_frame;
     
-    if(offset < frame_count){
-      if(offset > current_frame){
-	buffer_on[0] = TRUE;
-
-	if(offset - current_frame > buffer_size){
-	  guint j;
-
-	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
-	  
-	  buffer_length[0] = offset - (j * source->buffer_size) - current_frame;
-
-	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
+    if(offset >= start_frame){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
 	}else{
-	  buffer_length[0] = offset - current_frame;
-
-	  current_x = frame_count / current_frame;
+	  current_buffer_size = x1 * frame_count;
 	}
-
-	current_volume[0] = (y1 - y0) / (x1 - current_x);
-	current_ratio[0] = (y1 - y0) / (x1 - x0);
       }
-    }else{
-      g_message("ags-envelope - invalid offset");
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, start_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
     }
     
     /* decay */
@@ -376,31 +442,33 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     x1 = *decay[0];
     y1 = *decay[1];
 
-    offset += (x1 - x0) * frame_count;
+    prev_offset = offset;
+    offset += (x1 * frame_count);
 
-    if(offset < frame_count){
-      if(offset > current_frame){
-	buffer_on[1] = TRUE;
-
-	if(offset - current_frame > buffer_size){
-	  guint j;
-
-	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
-	  
-	  buffer_length[1] = offset - (j * source->buffer_size) - current_frame;
-
-	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
+    if(offset >= start_frame &&
+       prev_offset < start_frame + buffer_size){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
 	}else{
-	  buffer_length[1] = offset - current_frame;
-
-	  current_x = frame_count / current_frame;
+	  current_buffer_size = x1 * frame_count;
 	}
-
-	current_volume[1] = (y1 - y0) / (x1 - current_x);
-	current_ratio[1] = (y1 - y0) / (x1 - x0);
       }
-    }else{
-      g_message("ags-envelope - invalid offset");
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, prev_offset + current_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
     }
 
     /* sustain */
@@ -410,31 +478,33 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     x1 = *sustain[0];
     y1 = *sustain[1];
 
-    offset += (x1 - x0) * frame_count;
+    prev_offset = offset;
+    offset += (x1 * frame_count);
 
-    if(offset < frame_count){
-      if(offset > current_frame){
-	buffer_on[2] = TRUE;
-
-	if(offset - current_frame > buffer_size){
-	  guint j;
-
-	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
-	  
-	  buffer_length[2] = offset - (j * source->buffer_size) - current_frame;
-
-	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
+    if(offset >= start_frame &&
+       prev_offset < start_frame + buffer_size){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
 	}else{
-	  buffer_length[2] = offset - current_frame;
-
-	  current_x = frame_count / current_frame;
+	  current_buffer_size = x1 * frame_count;
 	}
-
-	current_volume[2] = (y1 - y0) / (x1 - current_x);
-	current_ratio[2] = (y1 - y0) / (x1 - x0);
       }
-    }else{
-      g_message("ags-envelope - invalid offset");
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, prev_offset + current_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
     }
     
     /* release */
@@ -443,47 +513,40 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
     x1 = *release[0];
     y1 = *release[1];
+
+    prev_offset = offset;
+    offset += (x1 * frame_count);
     
-    if(offset < frame_count){
-      if(offset > current_frame){
-	buffer_on[3] = TRUE;
-
-	if(offset - current_frame > buffer_size){
-	  guint j;
-
-	  for(j = 0; j < floor((offset - current_frame) / source->buffer_size); j++);
-	  
-	  buffer_length[0] = offset - (j * source->buffer_size) - current_frame;
-
-	  current_x = frame_count / ((j * source->buffer_size) + current_frame);
+    if(offset >= start_frame &&
+       prev_offset < start_frame + buffer_size){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
 	}else{
-	  buffer_length[0] = offset - current_frame;
-
-	  current_x = frame_count / current_frame;
+	  current_buffer_size = x1 * frame_count;
 	}
-
-	current_volume[0] = (y1 - y0) / (x1 - current_x);
-	current_ratio[0] = (y1 - y0) / (x1 - x0);
       }
-    }else{
-      g_message("ags-envelope - invalid offset");
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, prev_offset + current_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
     }
   }else{
     //TODO:JK: implement me
     
     return;
   }
-  
-  for(i = 0, j = 0; i < 4; i++){
-    if(buffer_on[i]){
-      ags_audio_buffer_util_envelope(stream_source->data + j, 1,
-				     ags_audio_buffer_util_format_from_soundcard(source->format),
-				     current_volume[i],
-				     current_ratio[i]);
-
-      j += buffer_length[i];
-    }
-  }  
 }
 
 /**

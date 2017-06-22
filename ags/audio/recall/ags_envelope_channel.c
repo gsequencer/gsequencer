@@ -323,13 +323,13 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 						"specifier", "./fixed-length[0]",
 						"control-port", "3/8",
 						"port-value-is-pointer", FALSE,
-						"port-value-type", G_TYPE_UINT,
-						"port-value-size", sizeof(guint),
+						"port-value-type", G_TYPE_DOUBLE,
+						"port-value-size", sizeof(gdouble),
 						"port-value-length", 1,
 						NULL);
   g_object_ref(envelope_channel->fixed_length);
   
-  envelope_channel->fixed_length->port_value.ags_port_uint = 0;
+  envelope_channel->fixed_length->port_value.ags_port_double = 0.0;
 
   /* attack */
   envelope_channel->attack = g_object_new(AGS_TYPE_PORT,

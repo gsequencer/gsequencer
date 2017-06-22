@@ -1618,8 +1618,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
-	g_message("- %f", val[0][0]);
-	
 	plot->point[1][0] = default_width * val[0][0];
 	plot->point[1][1] = default_height * val[0][1];
 

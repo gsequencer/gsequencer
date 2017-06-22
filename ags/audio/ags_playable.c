@@ -688,6 +688,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 		 "samplerate", target_samplerate,
 		 "buffer-size", buffer_size,
 		 "format", format,
+		 "frame-count", resampled_frames,
 		 NULL);
     
     list = g_list_prepend(list, audio_signal);
