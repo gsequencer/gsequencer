@@ -1163,6 +1163,75 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 }
 
 /**
+ * ags_pattern_envelope_set_preset_property:
+ * @pattern_envelope: the #AgsPatternEnvelope
+ * @preset_name: the preset name
+ * @property_name: the property name
+ * @value: the #GValue-struct 
+ * 
+ * Set preset property.
+ * 
+ * Since: 0.8.6
+ */
+void
+ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
+					 AgsPreset *preset,
+					 gchar *property_name, GValue *value)
+{
+  AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
+    return;
+  }
+  
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* set property */  
+  pthread_mutex_lock(audio_mutex);
+
+  g_object_set_property(preset,
+			property_name, value);
+
+  pthread_mutex_unlock(audio_mutex);
+  
+  /* reset */
+  ags_pattern_envelope_reset_tree_view(pattern_envelope);
+}
+
+/**
  * ags_pattern_envelope_add_preset:
  * @pattern_envelope: the #AgsPatternEnvelope
  * @preset_name: the preset name
@@ -1206,6 +1275,8 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
+  audio = machine->audio;
+  
   /* application context and mutex manager */
   application_context = window->application_context;
 
@@ -1222,8 +1293,6 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   /* check if already present */
   pthread_mutex_lock(audio_mutex);
-
-  audio = machine->audio;
 
   if(ags_preset_find_name(audio->preset,
 			  preset_name) != NULL){

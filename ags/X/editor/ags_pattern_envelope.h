@@ -113,6 +113,10 @@ struct _AgsPatternEnvelopeClass
 
 GType ags_pattern_envelope_get_type(void);
 
+void ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
+					      AgsPreset *preset,
+					      gchar *property_name, GValue *value);
+
 AgsPreset* ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope);
 
 void ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope);
