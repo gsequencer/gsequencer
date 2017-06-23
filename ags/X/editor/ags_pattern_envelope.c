@@ -20,10 +20,19 @@
 #include <ags/X/editor/ags_pattern_envelope.h>
 #include <ags/X/editor/ags_pattern_envelope_callbacks.h>
 
+#include <ags/lib/ags_complex.h>
+
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_preset.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
@@ -971,24 +980,55 @@ AgsPreset*
 ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
 {
   AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
   AgsMachine *machine;
 
   GtkTreeModel *model;
   GtkTreeIter iter;
 
   AgsAudio *audio;
+  AgsPreset *current;
+  
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
 
   GList *preset;
 
   gchar *preset_name;
   
   gboolean do_edit;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
+    return;
+  }
   
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
+
   audio = machine->audio;
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* get model */
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
@@ -1018,14 +1058,21 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
 		     -1);
 
   /* find preset */
-  preset = ags_preset_find_name(audio->preset,
+  pthread_mutex_lock(audio_mutex);
+
+  preset = audio->preset;
+  current = NULL;
+  
+  preset = ags_preset_find_name(preset,
 				preset_name);
 
   if(preset != NULL){
-    return(preset->data);
+    current = preset->data;
   }
 
-  return(NULL);
+  pthread_mutex_unlock(audio_mutex);
+
+  return(current);
 }
 
 /**
@@ -1040,14 +1087,23 @@ void
 ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 {
   AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
   AgsMachine *machine;
 
   GtkListStore *model;
   GtkTreeIter iter;
 
   AgsAudio *audio;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
   
   GList *preset;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1056,8 +1112,25 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
+
   audio = machine->audio;
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
   
   /* get model */
   model = GTK_LIST_STORE(gtk_tree_view_get_model(pattern_envelope->tree_view));
@@ -1066,6 +1139,8 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   gtk_list_store_clear(model);
 
   /* create new */
+  pthread_mutex_lock(audio_mutex);
+
   preset = audio->preset;
 
   while(preset != NULL){
@@ -1083,6 +1158,8 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 
     preset = preset->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1099,14 +1176,23 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 				gchar *preset_name)
 {
   AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
   AgsPreset *preset;
 
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
   AgsComplex *val;
   
   GValue value = {0,};
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope) ||
      preset_name == NULL){
@@ -1116,11 +1202,33 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* check if already present */
+  pthread_mutex_lock(audio_mutex);
+
   audio = machine->audio;
 
   if(ags_preset_find_name(audio->preset,
 			  preset_name) != NULL){
+    pthread_mutex_unlock(audio_mutex);
+    
     return;
   }
   
@@ -1192,6 +1300,9 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
+
+  /* release mutex */
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1208,10 +1319,19 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 				   guint nth)
 {
   AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
   AgsPreset *preset;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1220,12 +1340,34 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
+
   audio = machine->audio;
 
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* create preset */
+  pthread_mutex_lock(audio_mutex);
+
   preset = g_list_nth_data(audio->preset,
 			   nth);
+  
+  pthread_mutex_unlock(audio_mutex);
+
   ags_audio_remove_preset(audio,
 			  preset);
 }
@@ -1241,7 +1383,17 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 void
 ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 {
+  AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
   AgsPreset *preset;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
 
   AgsComplex *val;
   
@@ -1252,13 +1404,26 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   GValue value = {0,};
 
   GError *error;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
   }
 
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+
+  /* disable update */
   pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_NO_UPDATE;
-  
+ 
   /* get preset */
   preset = ags_pattern_envelope_get_active_preset(pattern_envelope);
   
@@ -1267,6 +1432,23 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     
     return;
   }
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get preset properties  */
+  pthread_mutex_lock(audio_mutex);
 
   g_object_get(preset,
 	       "audio-channel-start", &audio_channel_start,
@@ -1306,6 +1488,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
     
+    pthread_mutex_unlock(audio_mutex);
+
     return;
   }
 
@@ -1328,6 +1512,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     g_warning("%s", error->message);
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+
+    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -1352,6 +1538,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
+    pthread_mutex_unlock(audio_mutex);
+
     return;
   }
 
@@ -1374,6 +1562,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     g_warning("%s", error->message);
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+
+    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -1398,6 +1588,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
+    pthread_mutex_unlock(audio_mutex);
+
     return;
   }
 
@@ -1408,6 +1600,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   /* unset no update */
   pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+
+  /* release mutex */
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1421,17 +1616,40 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 void
 ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
 {
+  AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
+  AgsMachine *machine;
+
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  AgsAudio *audio;
   AgsPreset *preset;
 
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
   gboolean do_edit;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
   }
 
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+
+  /* disable update */
   pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_NO_UPDATE;
   
   /* get preset */
@@ -1443,7 +1661,21 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
     return;
   }
 
-  /* get model */
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get model and get editing iter */
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
 
   do_edit = FALSE;
@@ -1466,6 +1698,8 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
     guint pad_start, pad_end;
     guint x_start, x_end;
     
+    pthread_mutex_lock(audio_mutex);
+    
     g_object_get(preset,
 		 "audio-channel-start", &audio_channel_start,
 		 "audio-channel-end", &audio_channel_end,
@@ -1483,6 +1717,8 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
 		       AGS_PATTERN_ENVELOPE_COLUMN_X_START, x_start,
 		       AGS_PATTERN_ENVELOPE_COLUMN_X_END, x_end,
 		       -1);
+
+    pthread_mutex_unlock(audio_mutex);
   }
   
   /* unset no update */
@@ -1501,6 +1737,8 @@ void
 ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 {
   AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
   AgsMachine *machine;
 
   AgsCartesian *cartesian;
@@ -1510,6 +1748,10 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   GtkTreeIter iter;
 
   AgsAudio *audio;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
 
   GList *preset;
 
@@ -1524,6 +1766,9 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   GValue value = {0,};
 
   GError *error;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1532,8 +1777,25 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
+
   audio = machine->audio;
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* get dimension of cartesian */
   cartesian = pattern_envelope->cartesian;
@@ -1555,6 +1817,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   /* plot */
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
+    pthread_mutex_lock(audio_mutex);
+    
     g_value_init(&value,
 		 AGS_TYPE_COMPLEX);
     
@@ -1686,6 +1950,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   /* queue draw */

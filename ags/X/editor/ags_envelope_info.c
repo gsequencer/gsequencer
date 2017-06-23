@@ -30,11 +30,13 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_note.h>
 
 #include <ags/widget/ags_cartesian.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
@@ -320,6 +322,7 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   AgsEnvelopeDialog *envelope_dialog;
   AgsEnvelopeInfo *envelope_info;
 
+  AgsWindow *window;
   AgsMachine *machine;
 
   GtkListStore *model;
@@ -327,20 +330,46 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   
   AgsAudio *audio;
 
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
   GList *notation;
   GList *selection;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   envelope_info = AGS_ENVELOPE_INFO(applicable);
   envelope_dialog = gtk_widget_get_ancestor(envelope_info,
 					    AGS_TYPE_ENVELOPE_DIALOG);
   
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
 
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get tree model */
   model = GTK_LIST_STORE(gtk_tree_view_get_model(envelope_info->tree_view));
 
   /* fill tree view */
+  pthread_mutex_lock(audio_mutex);
+
   notation = audio->notation;
 
   while(notation != NULL){
@@ -368,6 +397,8 @@ ags_envelope_info_reset(AgsApplicable *applicable)
 
     notation = notation->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 gchar*
@@ -415,13 +446,23 @@ ags_envelope_info_y_label_func(gdouble value,
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 {
+  AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
+  AgsMachine *machine;
+
   AgsCartesian *cartesian;
   AgsPlot *plot;
 
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  AgsAudio *audio;
   AgsNote *note;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
   
   GList *selection;
 
@@ -430,10 +471,37 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   gdouble offset;
   gboolean do_plot;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
   if(!AGS_IS_ENVELOPE_INFO(envelope_info)){
     return;
   }
 
+  envelope_dialog = gtk_widget_get_ancestor(envelope_info,
+					    AGS_TYPE_ENVELOPE_DIALOG);
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* cartesian */
   cartesian = envelope_info->cartesian;
 
   default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
@@ -452,6 +520,8 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   /* plot */
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
+    pthread_mutex_lock(audio_mutex);
+    
     selection = envelope_info->selection;
 
     while(selection != NULL){
@@ -518,6 +588,8 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	break;
       }
     }
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   /* queue draw */

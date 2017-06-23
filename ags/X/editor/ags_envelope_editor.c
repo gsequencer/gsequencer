@@ -836,26 +836,22 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
   /* preset name */
   preset_name = gtk_combo_box_text_get_active_text(envelope_editor->preset);
   
+  /* find preset */
   pthread_mutex_lock(audio_mutex);
 
-  preset = audio->preset;
-  
-  pthread_mutex_unlock(audio_mutex);
-
-  /* find preset */
+  preset = audio->preset;  
   current = NULL;
+  
   preset = ags_preset_find_name(preset,
 				preset_name);
 
   g_free(preset_name);
   
   if(preset != NULL){
-    pthread_mutex_lock(audio_mutex);
-
     current = preset->data;
-
-    pthread_mutex_unlock(audio_mutex);
   }
+
+  pthread_mutex_unlock(audio_mutex);
 
   return(current);
 }
