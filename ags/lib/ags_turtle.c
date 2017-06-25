@@ -28,6 +28,8 @@
 
 #include <pthread.h>
 
+#include <ags/lib/ags_regex.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -67,6 +69,8 @@ enum{
 };
 
 static gpointer ags_turtle_parent_class = NULL;
+
+static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_turtle_get_type(void)
@@ -274,13 +278,17 @@ ags_turtle_read_iriref(gchar *offset,
   
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+  
   if(!regex_compiled){
     regex_compiled = TRUE;
     
-    regcomp(&iriref_regex, iriref_pattern, REG_EXTENDED);
+    ags_regcomp(&iriref_regex, iriref_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&iriref_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&iriref_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
 
@@ -515,13 +523,17 @@ ags_turtle_read_langtag(gchar *offset,
   
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    regcomp(&langtag_regex, langtag_pattern, REG_EXTENDED);
+    ags_regcomp(&langtag_regex, langtag_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&langtag_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&langtag_regex, offset, max_matches, match_arr, 0) == 0){
     if(match_arr[0].rm_eo > match_arr[0].rm_so){
       str = g_strndup(offset,
 		      match_arr[0].rm_eo - match_arr[0].rm_so);
@@ -560,13 +572,17 @@ ags_turtle_read_boolean(gchar *offset,
   
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    regcomp(&boolean_literal_regex, boolean_literal_pattern, REG_EXTENDED);
+    ags_regcomp(&boolean_literal_regex, boolean_literal_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&boolean_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&boolean_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -603,13 +619,17 @@ ags_turtle_read_integer(gchar *offset,
   
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    regcomp(&integer_literal_regex, integer_literal_pattern, REG_EXTENDED);
+    ags_regcomp(&integer_literal_regex, integer_literal_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&integer_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&integer_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -646,13 +666,17 @@ ags_turtle_read_decimal(gchar *offset,
     
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    regcomp(&decimal_literal_regex, decimal_literal_pattern, REG_EXTENDED);
+    ags_regcomp(&decimal_literal_regex, decimal_literal_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&decimal_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&decimal_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -689,13 +713,17 @@ ags_turtle_read_double(gchar *offset,
     
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    regcomp(&double_literal_regex, double_literal_pattern, REG_EXTENDED);
+    ags_regcomp(&double_literal_regex, double_literal_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&double_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&double_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -732,13 +760,17 @@ ags_turtle_read_exponent(gchar *offset,
     
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
 
-    regcomp(&exponent_literal_regex, exponent_literal_pattern, REG_EXTENDED);
+    ags_regcomp(&exponent_literal_regex, exponent_literal_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&exponent_literal_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&exponent_literal_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -826,14 +858,18 @@ ags_turtle_read_string_literal_quote(gchar *offset,
   }
   
   str = NULL;
+
+  pthread_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    regcomp(&string_literal_double_quote_regex, string_literal_double_quote_pattern, REG_EXTENDED);
+    ags_regcomp(&string_literal_double_quote_regex, string_literal_double_quote_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&string_literal_double_quote_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&string_literal_double_quote_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -873,14 +909,18 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
   }
   
   str = NULL;
+
+  pthread_mutex_lock(&regex_mutex);
   
   if(!regex_compiled){
     regex_compiled = TRUE;
       
-    regcomp(&string_literal_single_quote_regex, string_literal_single_quote_pattern, REG_EXTENDED);
+    ags_regcomp(&string_literal_single_quote_regex, string_literal_single_quote_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&string_literal_single_quote_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&string_literal_single_quote_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -1205,15 +1245,19 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 
   str = NULL;
 
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
     
-    if(regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED)){
+    if(ags_regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED)){
       g_warning("failed to compile regex: %s", chars_base_pattern);
     }
   }
 
-  if(regexec(&chars_base_regex, offset, max_matches, match_arr, 0) == 0){
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&chars_base_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -1288,13 +1332,17 @@ ags_turtle_read_pn_chars(gchar *offset,
 
   if(str == NULL &&
      offset < end_ptr){
+    pthread_mutex_lock(&regex_mutex);
+    
     if(!regex_compiled){
       regex_compiled = TRUE;
     
-      regcomp(&chars_regex, chars_pattern, REG_EXTENDED);
+      ags_regcomp(&chars_regex, chars_pattern, REG_EXTENDED);
     }
 
-    if(regexec(&chars_regex, offset, max_matches, match_arr, 0) == 0){
+    pthread_mutex_unlock(&regex_mutex);
+
+    if(ags_regexec(&chars_regex, offset, max_matches, match_arr, 0) == 0){
       str = g_strndup(offset,
 		      match_arr[0].rm_eo - match_arr[0].rm_so);
     }
@@ -2154,17 +2202,21 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
+    pthread_mutex_lock(&regex_mutex);
+
     if(!regex_compiled){
       regex_compiled = TRUE;
       
-      regcomp(&prefix_id_regex, prefix_id_pattern, REG_EXTENDED);
+      ags_regcomp(&prefix_id_regex, prefix_id_pattern, REG_EXTENDED);
     }
+
+    pthread_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 
     /* match @prefix */
-    if(regexec(&prefix_id_regex, look_ahead, max_matches, match_arr, 0) == 0){
+    if(ags_regexec(&prefix_id_regex, look_ahead, max_matches, match_arr, 0) == 0){
       look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
       
       rdf_pname_ns_node = ags_turtle_load_read_pname_ns(&look_ahead);
@@ -2207,17 +2259,21 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
+    pthread_mutex_lock(&regex_mutex);
+
     if(!regex_compiled){
       regex_compiled = TRUE;
       
-      regcomp(&base_regex, base_pattern, REG_EXTENDED);      
+      ags_regcomp(&base_regex, base_pattern, REG_EXTENDED);      
     }
+
+    pthread_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 
     /* match @base */
-    if(regexec(&base_regex, look_ahead, max_matches, match_arr, 0) == 0){
+    if(ags_regexec(&base_regex, look_ahead, max_matches, match_arr, 0) == 0){
       look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
       
       rdf_iriref_node = ags_turtle_load_read_iriref(&look_ahead);
@@ -2255,17 +2311,21 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
+    pthread_mutex_lock(&regex_mutex);
+
     if(!regex_compiled){
       regex_compiled = TRUE;
       
-      regcomp(&sparql_prefix_regex, sparql_prefix_pattern, REG_EXTENDED);
+      ags_regcomp(&sparql_prefix_regex, sparql_prefix_pattern, REG_EXTENDED);
     }
+
+    pthread_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 
     /* match @prefix */
-    if(regexec(&sparql_prefix_regex, look_ahead, max_matches, match_arr, 0) == 0){
+    if(ags_regexec(&sparql_prefix_regex, look_ahead, max_matches, match_arr, 0) == 0){
       look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
       
       rdf_pname_ns_node = ags_turtle_load_read_pname_ns(&look_ahead);
@@ -2308,17 +2368,21 @@ ags_turtle_load(AgsTurtle *turtle,
     node = NULL;
     look_ahead = *iter;
 
+    pthread_mutex_lock(&regex_mutex);
+
     if(!regex_compiled){
       regex_compiled = TRUE;
       
-      regcomp(&sparql_base_regex, sparql_base_pattern, REG_EXTENDED);      
+      ags_regcomp(&sparql_base_regex, sparql_base_pattern, REG_EXTENDED);      
     }
+
+    pthread_mutex_unlock(&regex_mutex);
 
     /* skip blanks and comments */
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 
     /* match @base */
-    if(regexec(&sparql_base_regex, look_ahead, max_matches, match_arr, 0) == 0){
+    if(ags_regexec(&sparql_base_regex, look_ahead, max_matches, match_arr, 0) == 0){
       look_ahead += (match_arr[0].rm_eo - match_arr[0].rm_so);
       
       rdf_iriref_node = ags_turtle_load_read_iriref(&look_ahead);;
