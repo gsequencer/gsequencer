@@ -1899,6 +1899,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 			 -1);
 
       if(do_plot){
+	gdouble ratio;
+	
 	preset = ags_preset_find_name(audio->preset,
 				      preset_name);
 
@@ -1906,11 +1908,25 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	plot = ags_plot_alloc(5, 0, 0);
 	plot->join_points = TRUE;
 
-	plot->point_color[0][0] = 1.0;
-	plot->point_color[1][0] = 1.0;
-	plot->point_color[2][0] = 1.0;
-	plot->point_color[3][0] = 1.0;
-	plot->point_color[4][0] = 1.0;
+	plot->point_color[0][0] = 0.125;
+	plot->point_color[0][1] = 0.5;
+	plot->point_color[0][2] = 1.0;
+
+	plot->point_color[1][0] = 0.125;
+	plot->point_color[1][1] = 0.5;
+	plot->point_color[1][2] = 1.0;
+
+	plot->point_color[2][0] = 0.125;
+	plot->point_color[2][1] = 0.5;
+	plot->point_color[2][2] = 1.0;
+
+	plot->point_color[3][0] = 0.125;
+	plot->point_color[3][1] = 0.5;
+	plot->point_color[3][2] = 1.0;
+
+	plot->point_color[4][0] = 0.125;
+	plot->point_color[4][1] = 0.5;
+	plot->point_color[4][2] = 1.0;
 
 	/* add plot */
 	ags_cartesian_add_plot(cartesian,
@@ -1931,6 +1947,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	}
 	
 	val = (AgsComplex *) g_value_get_boxed(&value);
+	ratio = val[0][1];
 	
 	plot->point[0][0] = 0.0;
 	plot->point[0][1] = default_height * val[0][1];
@@ -1952,7 +1969,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
 	plot->point[1][0] = default_width * val[0][0];
-	plot->point[1][1] = default_height * val[0][1];
+	plot->point[1][1] = default_height * (val[0][1] + ratio);
 
 	offset = default_width * val[0][0];
 	
@@ -1973,7 +1990,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
 	plot->point[2][0] = offset + default_width * val[0][0];
-	plot->point[2][1] = default_height * val[0][1];
+	plot->point[2][1] = default_height * (val[0][1] + ratio);
 
 	offset += default_width * val[0][0];
 
@@ -1994,7 +2011,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
 	plot->point[3][0] = offset + default_width * val[0][0];
-	plot->point[3][1] = default_height * val[0][1];
+	plot->point[3][1] = default_height * (val[0][1] + ratio);
 
 	offset += default_width * val[0][0];
 
@@ -2015,7 +2032,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 	val = (AgsComplex *) g_value_get_boxed(&value);
 
 	plot->point[4][0] = offset + default_width * val[0][0];
-	plot->point[4][1] = default_height * val[0][1];
+	plot->point[4][1] = default_height * (val[0][1] + ratio);
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));

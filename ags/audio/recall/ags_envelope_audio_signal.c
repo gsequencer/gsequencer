@@ -405,7 +405,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     y0 = ratio[0][1];
 
     x1 = attack[0][0];
-    y1 = attack[0][1];
+    y1 = attack[0][1] + ratio[0][1];
 
     offset = x1 * frame_count;
     current_frame = first_frame;
@@ -437,10 +437,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     
     /* decay */
     x0 = *attack[0];
-    y0 = *attack[1];
+    y0 = *attack[1] + ratio[0][1];
 
     x1 = *decay[0];
-    y1 = *decay[1];
+    y1 = *decay[1] + ratio[0][1];
 
     prev_offset = offset;
     offset += (x1 * frame_count);
@@ -473,10 +473,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
     /* sustain */
     x0 = *decay[0];
-    y0 = *decay[1];
+    y0 = *decay[1] + ratio[0][1];
 
     x1 = *sustain[0];
-    y1 = *sustain[1];
+    y1 = *sustain[1] + ratio[0][1];
 
     prev_offset = offset;
     offset += (x1 * frame_count);
@@ -509,10 +509,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     
     /* release */
     x0 = *sustain[0];
-    y0 = *sustain[1];
+    y0 = *sustain[1] + ratio[0][1];
 
     x1 = *release[0];
-    y1 = *release[1];
+    y1 = *release[1] + ratio[0][1];
 
     prev_offset = offset;
     offset += (x1 * frame_count);

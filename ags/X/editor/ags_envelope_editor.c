@@ -223,11 +223,25 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   plot = ags_plot_alloc(5, 0, 0);
   plot->join_points = TRUE;
 
-  plot->point_color[0][0] = 1.0;
-  plot->point_color[1][0] = 1.0;
-  plot->point_color[2][0] = 1.0;
-  plot->point_color[3][0] = 1.0;
-  plot->point_color[4][0] = 1.0;
+  plot->point_color[0][0] = 0.125;
+  plot->point_color[0][1] = 0.5;
+  plot->point_color[0][2] = 1.0;
+
+  plot->point_color[1][0] = 0.125;
+  plot->point_color[1][1] = 0.5;
+  plot->point_color[1][2] = 1.0;
+
+  plot->point_color[2][0] = 0.125;
+  plot->point_color[2][1] = 0.5;
+  plot->point_color[2][2] = 1.0;
+
+  plot->point_color[3][0] = 0.125;
+  plot->point_color[3][1] = 0.5;
+  plot->point_color[3][2] = 1.0;
+
+  plot->point_color[4][0] = 0.125;
+  plot->point_color[4][1] = 0.5;
+  plot->point_color[4][2] = 1.0;
 
   width = cartesian->x_end - cartesian->x_start;
   height = cartesian->y_end - cartesian->y_start;
@@ -737,7 +751,11 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
 void
 ags_envelope_editor_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsEnvelopeEditor *envelope_editor;
+
+  envelope_editor = AGS_ENVELOPE_EDITOR(applicable);
+  
+  ags_envelope_editor_load_preset(envelope_editor);
 }
 
 gchar*
@@ -1192,6 +1210,9 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
     
     return;
   }
+
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
 						 AGS_TYPE_WINDOW);

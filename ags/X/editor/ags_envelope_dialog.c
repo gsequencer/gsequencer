@@ -409,6 +409,24 @@ ags_envelope_dialog_reset(AgsApplicable *applicable)
 }
 
 /**
+ * ags_envelope_dialog_load_preset:
+ * @envelope_dialog: the #AgsEnvelopeDialog
+ * 
+ * Load presets.
+ * 
+ * Since: 0.8.6
+ */
+void
+ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog)
+{
+  ags_envelope_editor_load_preset(envelope_dialog->envelope_editor);
+
+  if(envelope_dialog->pattern_envelope != NULL){
+    ags_pattern_envelope_load_preset(envelope_dialog->pattern_envelope);
+  }
+}
+
+/**
  * ags_envelope_dialog_add_pattern_tab:
  * @envelope_dialog: the #AgsEnvelopeDialog
  * 

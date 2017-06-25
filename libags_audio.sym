@@ -1122,6 +1122,7 @@ ags_audio_application_context_get_type
 ags_audio_application_context_new
 ags_preset_get_type
 ags_preset_error_quark
+ags_preset_find_scope
 ags_preset_find_name
 ags_preset_add_parameter
 ags_preset_remove_parameter

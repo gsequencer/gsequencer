@@ -552,8 +552,7 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  decay_x + I * val[0][1]);
+  val[0][0] = decay_x;
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -617,9 +616,8 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  val[0][0] + decay_y * I);
-
+  val[0][1] = decay_y;
+  
   ags_preset_add_parameter(preset,
 			   "decay", &value);
 
@@ -682,9 +680,8 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  sustain_x + I * val[0][1]);
-
+  val[0][0] = sustain_x;
+  
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
 
@@ -747,9 +744,8 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  val[0][0] + sustain_y * I);
-
+  val[0][1] = sustain_y;
+  
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
 
@@ -812,9 +808,8 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  release_x + I * val[0][1]);
-
+  val[0][0] = release_x;
+  
   ags_preset_add_parameter(preset,
 			   "release", &value);
 
@@ -877,9 +872,8 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  val[0][0] + release_y * I);
-
+  val[0][1] = release_y;
+  
   ags_preset_add_parameter(preset,
 			   "release", &value);
 
@@ -942,8 +936,7 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  ratio * I);
+  val[0][1] = ratio;
 
   ags_preset_add_parameter(preset,
 			   "ratio", &value);
@@ -1068,7 +1061,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   pthread_mutex_unlock(audio_mutex);
   
   /* load preset */
-  ags_pattern_envelope_load_preset(pattern_envelope);    
+  ags_envelope_dialog_load_preset(envelope_dialog);    
 }
 
 void
@@ -1184,7 +1177,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   pthread_mutex_unlock(audio_mutex);
 
   /* load preset */
-  ags_pattern_envelope_load_preset(pattern_envelope);    
+  ags_envelope_dialog_load_preset(envelope_dialog);    
 }
 
 void
@@ -1248,8 +1241,16 @@ ags_pattern_envelope_preset_remove_callback(GtkWidget *button,
   
   /* remove preset */
   if(do_edit){
+    AgsEnvelopeDialog *envelope_dialog;
+
+    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								    AGS_TYPE_ENVELOPE_DIALOG);
+    
     ags_pattern_envelope_remove_preset(pattern_envelope,
 				       nth);
+
+    /* load preset */
+    ags_envelope_dialog_load_preset(envelope_dialog);
   }
 }
 
@@ -1258,7 +1259,12 @@ ags_pattern_envelope_preset_rename_response_callback(GtkWidget *widget, gint res
 						     AgsPatternEnvelope *pattern_envelope)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsEnvelopeDialog *envelope_dialog;
+    
     gchar *text;
+
+    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */
     text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
@@ -1269,7 +1275,7 @@ ags_pattern_envelope_preset_rename_response_callback(GtkWidget *widget, gint res
 				    text);
     
     /* load preset */
-    ags_pattern_envelope_load_preset(pattern_envelope);    
+    ags_envelope_dialog_load_preset(envelope_dialog);
   }
   
   pattern_envelope->rename = NULL;

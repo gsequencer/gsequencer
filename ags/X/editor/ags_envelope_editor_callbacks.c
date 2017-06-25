@@ -122,9 +122,17 @@ void
 ags_envelope_editor_preset_remove_callback(GtkWidget *button,
 					   AgsEnvelopeEditor *envelope_editor)
 {
+  AgsEnvelopeDialog *envelope_dialog;
+
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+								  AGS_TYPE_ENVELOPE_DIALOG);
+  
   /* remove preset */
   ags_envelope_editor_remove_preset(envelope_editor,
 				    gtk_combo_box_get_active(envelope_editor->preset));
+
+  /* load preset */
+  ags_envelope_dialog_load_preset(envelope_dialog);
 }
 
 void
@@ -132,7 +140,12 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 						    AgsEnvelopeEditor *envelope_editor)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsEnvelopeDialog *envelope_dialog;
+    
     gchar *text;
+
+    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */
     text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
@@ -143,7 +156,7 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
 				   text);
     
     /* load preset */
-    ags_envelope_editor_load_preset(envelope_editor);    
+    ags_envelope_dialog_load_preset(envelope_dialog);
   }
   
   envelope_editor->rename = NULL;
@@ -204,8 +217,7 @@ ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  attack_x + val[0][1]);
+  val[0][0] = attack_x;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -268,8 +280,7 @@ ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  val[0][1] + attack_y * I);
+  val[0][1] = attack_y;
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
@@ -332,8 +343,7 @@ ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  decay_x + val[0][1]);
+  val[0][0] = decay_x;
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -396,8 +406,7 @@ ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  val[0][1] + decay_y * I);
+  val[0][1] = decay_y;
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
@@ -460,8 +469,7 @@ ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  sustain_x + val[0][1]);
+  val[0][0] = sustain_x;
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -524,8 +532,7 @@ ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  val[0][1] + sustain_y * I);
+  val[0][1] = sustain_y;
 
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
@@ -588,8 +595,7 @@ ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  release_x + val[0][1]);
+  val[0][0] = release_x;
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
@@ -652,9 +658,8 @@ ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  val[0][1] + release_y * I);
-
+  val[0][1] = release_y;
+  
   ags_preset_add_parameter(preset,
 			   "release", &value);
 
@@ -716,8 +721,7 @@ ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope
   val = (AgsComplex *) g_value_get_boxed(&value);
 
   /* add parameter */
-  ags_complex_set(val,
-		  ratio * I);
+  val[0][1] = ratio;
 
   ags_preset_add_parameter(preset,
 			   "ratio", &value);

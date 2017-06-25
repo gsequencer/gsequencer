@@ -1,3 +1,9 @@
+ags (0.8.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-envelope to apply ratio
+	* fixed various issues related to AgsEnvelopeDialog
+
 ags (0.8.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

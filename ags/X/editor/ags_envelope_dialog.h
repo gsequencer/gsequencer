@@ -83,6 +83,8 @@ struct _AgsEnvelopeDialogClass
 
 GType ags_envelope_dialog_get_type(void);
 
+void ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog);
+
 void ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog);
 
 AgsEnvelopeDialog* ags_envelope_dialog_new(AgsMachine *machine);
