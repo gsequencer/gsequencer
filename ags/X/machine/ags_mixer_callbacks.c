@@ -26,13 +26,23 @@ ags_mixer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMixer
 {
   AgsWindow *window;
 
-  if(old_parent != NULL)
+  gchar *str;  
+
+  if(old_parent != NULL){
     return;
+  }
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
 
-  AGS_MACHINE(mixer)->name = g_strdup_printf("Default %d",
-					     ags_window_find_machine_counter(window, AGS_TYPE_MIXER)->counter);
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_MIXER)->counter);
+
+  g_object_set(AGS_MACHINE(mixer),
+	       "machine-name", str,
+	       NULL);
+
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_MIXER);
+
+  g_free(str);
 }

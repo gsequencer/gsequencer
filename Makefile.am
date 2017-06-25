@@ -1583,6 +1583,7 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_inline_player_callbacks.h \
 	ags/X/editor/ags_inline_player.h \
 	ags/X/editor/ags_machine_radio_button.h \
+	ags/X/editor/ags_machine_radio_button_callbacks.h \
 	ags/X/editor/ags_machine_selection.h \
 	ags/X/editor/ags_machine_selector_callbacks.h \
 	ags/X/editor/ags_machine_selector.h \
@@ -1627,6 +1628,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_inline_player.c \
 	ags/X/editor/ags_inline_player_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \
+	ags/X/editor/ags_machine_radio_button_callbacks.c \
 	ags/X/editor/ags_machine_selection.c \
 	ags/X/editor/ags_machine_selector.c \
 	ags/X/editor/ags_machine_selector_callbacks.c \

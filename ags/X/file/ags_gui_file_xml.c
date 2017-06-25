@@ -723,7 +723,9 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 		   AGS_FILE_NAME_PROP);
 
   if(str != NULL){
-    machine->name = g_strdup(str);
+    g_object_set(machine,
+		 "machine-name", str,
+		 NULL);
   }
 }
 
@@ -813,7 +815,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 
   xmlNewProp(node,
 	     AGS_FILE_NAME_PROP,
-	     machine->name);
+	     machine->machine_name);
 
   xmlAddChild(parent,
 	      node);  

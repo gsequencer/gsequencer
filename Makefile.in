@@ -767,6 +767,7 @@ am__objects_28 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_inline_player.lo \
 	ags/X/editor/libgsequencer_la-ags_inline_player_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_machine_radio_button.lo \
+	ags/X/editor/libgsequencer_la-ags_machine_radio_button_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_machine_selection.lo \
 	ags/X/editor/libgsequencer_la-ags_machine_selector.lo \
 	ags/X/editor/libgsequencer_la-ags_machine_selector_callbacks.lo \
@@ -3409,6 +3410,7 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_inline_player_callbacks.h \
 	ags/X/editor/ags_inline_player.h \
 	ags/X/editor/ags_machine_radio_button.h \
+	ags/X/editor/ags_machine_radio_button_callbacks.h \
 	ags/X/editor/ags_machine_selection.h \
 	ags/X/editor/ags_machine_selector_callbacks.h \
 	ags/X/editor/ags_machine_selector.h \
@@ -3452,6 +3454,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_inline_player.c \
 	ags/X/editor/ags_inline_player_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \
+	ags/X/editor/ags_machine_radio_button_callbacks.c \
 	ags/X/editor/ags_machine_selection.c \
 	ags/X/editor/ags_machine_selector.c \
 	ags/X/editor/ags_machine_selector_callbacks.c \
@@ -5141,6 +5144,9 @@ ags/X/editor/libgsequencer_la-ags_inline_player_callbacks.lo:  \
 ags/X/editor/libgsequencer_la-ags_machine_radio_button.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_machine_radio_button_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_machine_selection.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
@@ -5706,6 +5712,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_inline_player.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_inline_player_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_radio_button.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_radio_button_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_selection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_selector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_selector_callbacks.Plo@am__quote@
@@ -9772,6 +9779,13 @@ ags/X/editor/libgsequencer_la-ags_machine_radio_button.lo: ags/X/editor/ags_mach
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_machine_radio_button.c' object='ags/X/editor/libgsequencer_la-ags_machine_radio_button.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_machine_radio_button.lo `test -f 'ags/X/editor/ags_machine_radio_button.c' || echo '$(srcdir)/'`ags/X/editor/ags_machine_radio_button.c
+
+ags/X/editor/libgsequencer_la-ags_machine_radio_button_callbacks.lo: ags/X/editor/ags_machine_radio_button_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_machine_radio_button_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_radio_button_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_machine_radio_button_callbacks.lo `test -f 'ags/X/editor/ags_machine_radio_button_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_machine_radio_button_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_radio_button_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_radio_button_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_machine_radio_button_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_machine_radio_button_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_machine_radio_button_callbacks.lo `test -f 'ags/X/editor/ags_machine_radio_button_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_machine_radio_button_callbacks.c
 
 ags/X/editor/libgsequencer_la-ags_machine_selection.lo: ags/X/editor/ags_machine_selection.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_machine_selection.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_machine_selection.Tpo -c -o ags/X/editor/libgsequencer_la-ags_machine_selection.lo `test -f 'ags/X/editor/ags_machine_selection.c' || echo '$(srcdir)/'`ags/X/editor/ags_machine_selection.c

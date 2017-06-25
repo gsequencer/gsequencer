@@ -19,3 +19,30 @@
 
 #include <ags/X/machine/ags_ladspa_bridge_callbacks.h>
 
+#include <ags/X/ags_window.h>
+
+void
+ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLadspaBridge *ladspa_bridge)
+{
+  AgsWindow *window;
+
+  gchar *str;
+
+  if(old_parent != NULL){
+    return;
+  }
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
+
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_LADSPA_BRIDGE)->counter);
+
+  g_object_set(AGS_MACHINE(ladspa_bridge),
+	       "machine-name", str,
+	       NULL);
+
+  ags_window_increment_machine_counter(window,
+				       AGS_TYPE_LADSPA_BRIDGE);
+
+  g_free(str);
+}

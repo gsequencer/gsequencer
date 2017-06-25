@@ -376,6 +376,9 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   AgsAudio *audio;
 
+  g_signal_connect_after((GObject *) lv2_bridge, "parent-set",
+			 G_CALLBACK(ags_lv2_bridge_parent_set_callback), (gpointer) lv2_bridge);
+
   if(ags_lv2_bridge_lv2ui_idle == NULL){
     ags_lv2_bridge_lv2ui_idle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 						      NULL,
