@@ -1,3 +1,9 @@
+ags (0.8.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsEnvelopeInfo plot
+	* enable grid lines of tree view
+
 ags (0.8.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

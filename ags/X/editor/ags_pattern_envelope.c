@@ -208,7 +208,10 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 
   /* tree view */
   pattern_envelope->tree_view = (GtkTreeView *) gtk_tree_view_new();
-
+  g_object_set(pattern_envelope->tree_view,
+	       "enable-grid-lines", TRUE,
+	       NULL);
+  
   model = gtk_list_store_new(AGS_PATTERN_ENVELOPE_COLUMN_LAST,
 			     G_TYPE_BOOLEAN,
 			     G_TYPE_BOOLEAN,

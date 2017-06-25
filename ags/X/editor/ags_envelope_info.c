@@ -203,6 +203,9 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 
   /* tree view */
   envelope_info->tree_view = (GtkTreeView *) gtk_tree_view_new();
+  g_object_set(envelope_info->tree_view,
+	       "enable-grid-lines", TRUE,
+	       NULL);
 
   model = gtk_list_store_new(AGS_ENVELOPE_INFO_COLUMN_LAST,
 			     G_TYPE_BOOLEAN,
@@ -531,20 +534,37 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 			 -1);
 
       if(do_plot){
+	gdouble ratio;
+	
 	note = AGS_NOTE(selection->data);
 
 	/* AgsPlot struct */
 	plot = ags_plot_alloc(5, 0, 0);
 	plot->join_points = TRUE;
 
-	plot->point_color[0][0] = 1.0;
-	plot->point_color[1][0] = 1.0;
-	plot->point_color[2][0] = 1.0;
-	plot->point_color[3][0] = 1.0;
-	plot->point_color[4][0] = 1.0;
+	plot->point_color[0][0] = 0.125;
+	plot->point_color[0][1] = 0.5;
+	plot->point_color[0][2] = 1.0;
+
+	plot->point_color[1][0] = 0.125;
+	plot->point_color[1][1] = 0.5;
+	plot->point_color[1][2] = 1.0;
+
+	plot->point_color[2][0] = 0.125;
+	plot->point_color[2][1] = 0.5;
+	plot->point_color[2][2] = 1.0;
+
+	plot->point_color[3][0] = 0.125;
+	plot->point_color[3][1] = 0.5;
+	plot->point_color[3][2] = 1.0;
+
+	plot->point_color[4][0] = 0.125;
+	plot->point_color[4][1] = 0.5;
+	plot->point_color[4][2] = 1.0;
 
 	/* set plot points */
 	z = ags_complex_get(&(note->ratio));
+	ratio = cimag(z);
 	
 	plot->point[0][0] = 0.0;
 	plot->point[0][1] = default_height * cimag(z);
@@ -552,28 +572,28 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	z = ags_complex_get(&(note->attack));
 	
 	plot->point[1][0] = default_width * creal(z);
-	plot->point[1][1] = default_height * cimag(z);
+	plot->point[1][1] = default_height * (cimag(z) + ratio);
 
 	offset = default_width * creal(z);
 	
 	z = ags_complex_get(&(note->decay));
 
 	plot->point[2][0] = offset + default_width * creal(z);
-	plot->point[2][1] = default_height * cimag(z);
+	plot->point[2][1] = default_height * (cimag(z) + ratio);
 
 	offset += default_width * creal(z);
 
 	z = ags_complex_get(&(note->sustain));
 
 	plot->point[3][0] = offset + default_width * creal(z);
-	plot->point[3][1] = default_height * cimag(z);
+	plot->point[3][1] = default_height * (cimag(z) + ratio);
 
 	offset += default_width * creal(z);
 
 	z = ags_complex_get(&(note->release));
 
 	plot->point[4][0] = offset + default_width * creal(z);
-	plot->point[4][1] = default_height * cimag(z);
+	plot->point[4][1] = default_height * (cimag(z) + ratio);
 
 	/* add plot */
 	ags_cartesian_add_plot(cartesian,
