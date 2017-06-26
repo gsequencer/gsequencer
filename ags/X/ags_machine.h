@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/audio/ags_audio.h>
@@ -89,7 +90,7 @@ struct _AgsMachine
   guint mapping_flags;
   guint connection_flags;
 
-  char *name;
+  char *machine_name;
 
   gchar *version;
   gchar *build_id;

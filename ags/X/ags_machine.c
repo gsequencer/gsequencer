@@ -112,6 +112,7 @@ enum{
 enum{
   PROP_0,
   PROP_AUDIO,
+  PROP_MACHINE_NAME,
 };
 
 static gpointer ags_machine_parent_class = NULL;
@@ -195,6 +196,22 @@ ags_machine_class_init(AgsMachineClass *machine)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsMachine:machine-name:
+   *
+   * The machine's name.
+   * 
+   * Since: 0.8.7
+   */
+  param_spec = g_param_spec_string("machine-name",
+				   i18n_pspec("machine name"),
+				   i18n_pspec("The machine's name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MACHINE_NAME,
 				  param_spec);
 
   /* GtkWidgetClass */
@@ -316,7 +333,7 @@ ags_machine_init(AgsMachine *machine)
   GtkVBox *vbox;
   GtkFrame *frame;
 
-  machine->name = NULL;
+  machine->machine_name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;
   machine->build_id = AGS_MACHINE_DEFAULT_BUILD_ID;
@@ -599,6 +616,34 @@ ags_machine_set_property(GObject *gobject,
       }
     }
     break;
+  case PROP_MACHINE_NAME:
+    {
+      gchar *machine_name;
+      gchar *str;
+      
+      machine_name = g_value_get_string(value);
+
+      if(machine_name == machine->machine_name){
+	return;
+      }
+
+      if(machine->machine_name != NULL){
+	g_free(machine->machine_name);
+      }
+
+      machine->machine_name = g_strdup(machine_name);
+
+      /* update UI */
+      str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
+			": ",
+			machine_name,
+			NULL);
+      
+      g_object_set(machine->menu_tool_button,
+		   "label", str,
+		   NULL);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -617,7 +662,14 @@ ags_machine_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO:
-    g_value_set_object(value, machine->audio);
+    {
+      g_value_set_object(value, machine->audio);
+    }
+    break;
+  case PROP_MACHINE_NAME:
+    {
+      g_value_set_string(value, machine->machine_name);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -839,8 +891,8 @@ ags_machine_finalize(GObject *gobject)
     gtk_widget_destroy((GtkWidget *) machine->rename);
   }
   
-  if(machine->name != NULL){
-    g_free(machine->name);
+  if(machine->machine_name != NULL){
+    g_free(machine->machine_name);
   }
   
   if(machine->audio != NULL){
@@ -1523,7 +1575,7 @@ AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
 {
   while(list != NULL){
-    if(!g_strcmp0(AGS_MACHINE(list->data)->name, name))
+    if(!g_strcmp0(AGS_MACHINE(list->data)->machine_name, name))
       return((AgsMachine *) list->data);
 
     list = list->next;
@@ -1805,7 +1857,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("%s: %s", 
 					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
-					      AGS_MACHINE(list->data)->name),
+					      AGS_MACHINE(list->data)->machine_name),
 			   1, list->data,
 			   -1);
       }

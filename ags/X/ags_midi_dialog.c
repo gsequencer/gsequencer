@@ -674,6 +674,7 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   AgsAudio *audio;
 
   AgsMutexManager *mutex_manager;
+  
   AgsApplicationContext *application_context;
   
   GtkTreeIter iter;

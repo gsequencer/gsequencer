@@ -302,7 +302,7 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
 						       NULL);
 
   entry = (GtkEntry *) gtk_entry_new();
-  gtk_entry_set_text(entry, machine->name);
+  gtk_entry_set_text(entry, machine->machine_name);
   gtk_box_pack_start((GtkBox *) dialog->vbox,
 		     (GtkWidget *) entry,
 		     FALSE, FALSE,
@@ -319,95 +319,14 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
 int
 ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
-  gchar *text;
-
   if(response == GTK_RESPONSE_ACCEPT){
-    AgsWindow *window;
-    GtkMenuToolButton *menu_tool_button;
-
-    GList *list, *list_start;
-
     gchar *str;
     
-    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-    
-    if(machine->name != NULL){
-      g_free(machine->name);
-    }
-
-    text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
-				  0, -1);
-    machine->name = g_strdup(text);
-
-    gtk_menu_tool_button_set_menu((GtkMenuToolButton *) gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)),
-				  NULL);
-    gtk_widget_destroy(gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)));
-
-    str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
-		      ": ",
-		      text,
-		      NULL);
-    menu_tool_button = 
-      machine->menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-					       "label", str,
-					       "menu", machine->popup,
-					       NULL);
-    gtk_frame_set_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
-			       (GtkWidget *) menu_tool_button);
-    gtk_widget_show_all((GtkWidget *) menu_tool_button);
-
-    g_free(str);
-    
-    /* update editor */
-    list =
-      list_start = gtk_container_get_children((GtkContainer *) window->editor->machine_selector);
-
-    while(list != NULL){
-      if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
-	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
-	str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
-			  ": ",
-			  text,
-			  NULL);
-	g_object_set(list->data,
-		     "label", str,
-		     NULL);
-
-	g_free(str);
-	
-	break;
-      }
-
-      list = list->next;
-    }
-    
-    g_list_free(list_start);
-
-    /* update automation editor */
-    list =
-      list_start = gtk_container_get_children((GtkContainer *) window->automation_window->automation_editor->machine_selector);
-    list = list->next;
-
-    while(list != NULL){
-      if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
-	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
-	str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
-			  ": ",
-			  text,
-			  NULL);
-	g_object_set(list->data,
-		     "label", str,
-		     NULL);
-
-	g_free(str);
-
-	break;
-      }
-
-      list = list->next;
-    }
-    
-    g_list_free(list_start);
+    str = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
+				 0, -1);
+    g_object_set(machine,
+		 "machine-name", str,
+		 NULL);        
   }
   
   machine->rename = NULL;

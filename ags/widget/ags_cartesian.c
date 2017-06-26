@@ -924,12 +924,14 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   GList *list;
   
   unsigned char *data;
+  guint32 *data_ptr;
   
   gdouble x, y;
   gdouble x_offset, y_offset;
   gdouble width, height;
   gdouble factor;
   gdouble scale_point;
+  guint32 clear_color;
   guint stride;
   guint i_stop;
   guint i;
@@ -1472,8 +1474,17 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   /* clear surface to white */
   data = cairo_image_surface_get_data(cartesian->surface);
   stride = cairo_image_surface_get_stride(cartesian->surface);
+
+  data_ptr = data;
+  clear_color = (cartesian_style->base[0].red << 16) |
+    (cartesian_style->base[0].green << 8) |
+    (cartesian_style->base[0].blue);
   
-  memset(data, 0xaf, (4 * width * height * sizeof(unsigned char)));    
+  //  memset(data, clear_color, (4 * width * height * sizeof(unsigned char)));
+  for(i = 0; i < width * height; i++){
+    data_ptr[i] = clear_color;
+  }
+  
   cairo_surface_flush(cartesian->surface);
 
   /* surface */

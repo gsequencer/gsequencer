@@ -301,6 +301,7 @@ libags_h_sources = \
 	ags/lib/ags_function.h \
 	ags/lib/ags_log.h \
 	ags/lib/ags_parameter.h \
+	ags/lib/ags_regex.h \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
 	ags/lib/ags_turtle.h \
@@ -316,6 +317,7 @@ libags_c_sources = \
 	ags/lib/ags_function.c \
 	ags/lib/ags_log.c \
 	ags/lib/ags_parameter.c \
+	ags/lib/ags_regex.c \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
 	ags/lib/ags_turtle.c \
@@ -1581,6 +1583,7 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_inline_player_callbacks.h \
 	ags/X/editor/ags_inline_player.h \
 	ags/X/editor/ags_machine_radio_button.h \
+	ags/X/editor/ags_machine_radio_button_callbacks.h \
 	ags/X/editor/ags_machine_selection.h \
 	ags/X/editor/ags_machine_selector_callbacks.h \
 	ags/X/editor/ags_machine_selector.h \
@@ -1625,6 +1628,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_inline_player.c \
 	ags/X/editor/ags_inline_player_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \
+	ags/X/editor/ags_machine_radio_button_callbacks.c \
 	ags/X/editor/ags_machine_selection.c \
 	ags/X/editor/ags_machine_selector.c \
 	ags/X/editor/ags_machine_selector_callbacks.c \

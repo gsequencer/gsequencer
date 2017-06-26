@@ -62,6 +62,12 @@ style "scale_widget" = "inverse_widget"
 	fg[ACTIVE] = { 0.66, 0.87, 1.0 }
 }
 
+style "cartesian_widget" = "default_widget"
+{
+	base[NORMAL] = { 0.0, 0.0, 0.1 }
+	base[ACTIVE] = { 0.0, 0.0, 0.1 }
+}
+
 style "main_window" = "default_widget"
 {
 	bg[NORMAL] = { 0.125, 0.25, 0.3 }
@@ -97,6 +103,7 @@ widget_class "*AgsNaviation*" style "inverse_widget"
 widget_class "*GtkMenu*" style "inverse_widget"
 widget_class "*Gtk*Scale*" style "scale_widget"
 widget_class "*Gtk*Scrollbar*" style "inverse_widget"
+widget_class "*GtkTreeView" style "inverse_widget"
 widget_class "*GtkButton*" style "inverse_widget"
 widget_class "*GtkToggleButton*" style "inverse_widget"
 widget_class "*GtkRadioButton*" style "default_widget"
@@ -109,5 +116,7 @@ widget_class "*AgsDial*" style "inverse_widget"
 widget_class "*Ags*Indicator*" style "inverse_widget"
 widget_class "*GtkArrow" style "default_widget"
 widget_class "*GtkComboBox*" style "inverse_widget"
+
+widget_class "*AgsCartesian" style "cartesian_widget"
 
 widget "*.ags-navigation-expander" style "default_widget"

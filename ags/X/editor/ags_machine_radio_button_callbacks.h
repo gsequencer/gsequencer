@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,15 +17,17 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_LADSPA_BRIDGE_CALLBACKS_H__
-#define __AGS_LADSPA_BRIDGE_CALLBACKS_H__
+#ifndef __AGS_MACHINE_RADIO_BUTTON_CALLBACKS_H__
+#define __AGS_MACHINE_RADIO_BUTTON_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/X/machine/ags_ladspa_bridge.h>
+#include <ags/X/editor/ags_machine_radio_button.h>
 
-void ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLadspaBridge *ladspa_bridge);
+void ags_machine_radio_button_notify_machine_name_callback(GObject *machine, GParamSpec *pspec,
+							   AgsMachineRadioButton *machine_radio_button);
 
-#endif /*__AGS_LADSPA_BRIDGE_CALLBACKS_H__*/
+#endif /*__AGS_MACHINE_RADIO_BUTTON_CALLBACKS_H__*/

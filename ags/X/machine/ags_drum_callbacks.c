@@ -77,15 +77,24 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 {
   AgsWindow *window;
 
-  if(old_parent != NULL)
+  gchar *str;
+  
+  if(old_parent != NULL){
     return;
+  }
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
-  AGS_MACHINE(drum)->name = g_strdup_printf("Default %d",
-					    ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
+
+  g_object_set(AGS_MACHINE(drum),
+	       "machine-name", str,
+	       NULL);
+
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_DRUM);
+  g_free(str);
 }
 
 void

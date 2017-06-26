@@ -18,6 +18,7 @@
  */
 
 #include <ags/X/editor/ags_machine_radio_button.h>
+#include <ags/X/editor/ags_machine_radio_button_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -169,11 +170,18 @@ ags_machine_radio_button_set_property(GObject *gobject,
       }
 
       if(machine != NULL){
+	gchar *str;
+
+	str = g_strdup_printf("%s: %s", G_OBJECT_TYPE_NAME(machine), machine->machine_name);	
 	g_object_set(gobject,
-		     "label", g_strdup_printf("%s: %s", G_OBJECT_TYPE_NAME(machine), machine->name),
+		     "label", str,
 		     NULL);
 
+	g_signal_connect_after(machine, "notify::machine-name",
+			       G_CALLBACK(ags_machine_radio_button_notify_machine_name_callback), machine_radio_button);
 	g_object_ref(machine);
+
+	g_free(str);
       }
 
       machine_radio_button->machine = machine;
@@ -202,7 +210,9 @@ ags_machine_radio_button_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MACHINE:
-    g_value_set_object(value, machine_radio_button->machine);
+    {
+      g_value_set_object(value, machine_radio_button->machine);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

@@ -55,15 +55,25 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 {
   AgsWindow *window;
 
-  if(old_parent != NULL)
+  gchar *str;
+
+  if(old_parent != NULL){
     return;
+  }
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
 
-  AGS_MACHINE(matrix)->name = g_strdup_printf("Default %d",
-					      ags_window_find_machine_counter(window, AGS_TYPE_MATRIX)->counter);
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_MATRIX)->counter);
+
+  g_object_set(AGS_MACHINE(matrix),
+	       "machine-name", str,
+	       NULL);
+
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_MATRIX);
+
+  g_free(str);
 }
 
 void

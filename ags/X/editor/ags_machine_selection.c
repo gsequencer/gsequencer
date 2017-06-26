@@ -33,6 +33,8 @@
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 #include <ags/X/machine/ags_live_lv2_bridge.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
 void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selection_init(AgsMachineSelection *machine_selection);
@@ -117,7 +119,7 @@ ags_machine_selection_init(AgsMachineSelection *machine_selection)
   
   g_object_set(G_OBJECT(machine_selection),
 	       "modal", TRUE,
-	       "title", g_strdup("select machines"),
+	       "title", i18n("select machines"),
 	       NULL);
 
   gtk_dialog_add_buttons(GTK_DIALOG(machine_selection),
@@ -178,7 +180,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
 	 AGS_IS_LIVE_LV2_BRIDGE(list->data)){
 	str = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(list->data),
-			      AGS_MACHINE(list->data)->name);
+			      AGS_MACHINE(list->data)->machine_name);
 	radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										      str);
 	g_object_set_data((GObject *) radio_button,
@@ -197,7 +199,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
     }else if((AGS_MACHINE_SELECTION_AUTOMATION & (machine_selection->flags)) != 0){
       str = g_strdup_printf("%s: %s",
 			    G_OBJECT_TYPE_NAME(list->data),
-			    AGS_MACHINE(list->data)->name);
+			    AGS_MACHINE(list->data)->machine_name);
       radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										    str);
       g_object_set_data((GObject *) radio_button,

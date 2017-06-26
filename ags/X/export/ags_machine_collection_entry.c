@@ -264,13 +264,13 @@ ags_machine_collection_entry_set_property(GObject *gobject,
 	gtk_label_set_text(machine_collection_entry->label,
 			   g_strdup_printf("%s: %s",
 					   G_OBJECT_TYPE_NAME(machine),
-					   AGS_MACHINE(machine)->name));
+					   AGS_MACHINE(machine)->machine_name));
 	
 	//	gtk_entry_set_text(machine_collection_entry->instrument,
 	//		   G_OBJECT_TYPE_NAME(machine));
 
       	gtk_entry_set_text(machine_collection_entry->sequence,
-			   AGS_MACHINE(machine)->name);
+			   AGS_MACHINE(machine)->machine_name);
       }
 
       machine_collection_entry->machine = machine;

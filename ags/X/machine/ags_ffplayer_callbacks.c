@@ -60,19 +60,26 @@ void
 ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
-  AgsAudio *audio;
 
-  if(old_parent != NULL)
+  gchar *str;
+
+  if(old_parent != NULL){
     return;
+  }
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-  audio = ffplayer->machine.audio;
-  audio->soundcard = (GObject *) window->soundcard;
   
-  AGS_MACHINE(ffplayer)->name = g_strdup_printf("Default %d",
-						ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
+
+  g_object_set(AGS_MACHINE(ffplayer),
+	       "machine-name", str,
+	       NULL);
+
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_FFPLAYER);
+
+  g_free(str);
 }
 
 void

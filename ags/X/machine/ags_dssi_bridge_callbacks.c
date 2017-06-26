@@ -29,9 +29,36 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
+
+void
+ags_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDssiBridge *dssi_bridge)
+{
+  AgsWindow *window;
+
+  gchar *str;
+
+  if(old_parent != NULL){
+    return;
+  }
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
+
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_DSSI_BRIDGE)->counter);
+
+  g_object_set(AGS_MACHINE(dssi_bridge),
+	       "machine-name", str,
+	       NULL);
+
+  ags_window_increment_machine_counter(window,
+				       AGS_TYPE_DSSI_BRIDGE);
+
+  g_free(str);
+}
 
 void
 ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge)

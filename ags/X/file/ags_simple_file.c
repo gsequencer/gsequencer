@@ -1735,7 +1735,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		   AGS_FILE_NAME_PROP);
 
   if(str != NULL){
-    gobject->name = g_strdup(str);
+    g_object_set(gobject,
+		 "machine-name", str,
+		 NULL);
   }
   
   /* retrieve window */  
@@ -5482,7 +5484,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
   xmlNewProp(node,
 	     (xmlChar *) AGS_FILE_NAME_PROP,
-	     (xmlChar *) machine->name);
+	     (xmlChar *) machine->machine_name);
 
   ags_simple_file_add_id_ref(simple_file,
 			     g_object_new(AGS_TYPE_FILE_ID_REF,

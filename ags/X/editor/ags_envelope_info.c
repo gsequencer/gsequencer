@@ -30,11 +30,13 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_note.h>
 
 #include <ags/widget/ags_cartesian.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
@@ -201,6 +203,9 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 
   /* tree view */
   envelope_info->tree_view = (GtkTreeView *) gtk_tree_view_new();
+  g_object_set(envelope_info->tree_view,
+	       "enable-grid-lines", TRUE,
+	       NULL);
 
   model = gtk_list_store_new(AGS_ENVELOPE_INFO_COLUMN_LAST,
 			     G_TYPE_BOOLEAN,
@@ -320,6 +325,7 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   AgsEnvelopeDialog *envelope_dialog;
   AgsEnvelopeInfo *envelope_info;
 
+  AgsWindow *window;
   AgsMachine *machine;
 
   GtkListStore *model;
@@ -327,20 +333,46 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   
   AgsAudio *audio;
 
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
   GList *notation;
   GList *selection;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   envelope_info = AGS_ENVELOPE_INFO(applicable);
   envelope_dialog = gtk_widget_get_ancestor(envelope_info,
 					    AGS_TYPE_ENVELOPE_DIALOG);
   
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
 
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get tree model */
   model = GTK_LIST_STORE(gtk_tree_view_get_model(envelope_info->tree_view));
 
   /* fill tree view */
+  pthread_mutex_lock(audio_mutex);
+
   notation = audio->notation;
 
   while(notation != NULL){
@@ -368,6 +400,8 @@ ags_envelope_info_reset(AgsApplicable *applicable)
 
     notation = notation->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 gchar*
@@ -415,13 +449,23 @@ ags_envelope_info_y_label_func(gdouble value,
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 {
+  AgsEnvelopeDialog *envelope_dialog;
+
+  AgsWindow *window;
+  AgsMachine *machine;
+
   AgsCartesian *cartesian;
   AgsPlot *plot;
 
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  AgsAudio *audio;
   AgsNote *note;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
   
   GList *selection;
 
@@ -430,10 +474,37 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   gdouble offset;
   gboolean do_plot;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
   if(!AGS_IS_ENVELOPE_INFO(envelope_info)){
     return;
   }
 
+  envelope_dialog = gtk_widget_get_ancestor(envelope_info,
+					    AGS_TYPE_ENVELOPE_DIALOG);
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
+						 AGS_TYPE_WINDOW);
+  machine = envelope_dialog->machine;
+
+  audio = machine->audio;
+
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* cartesian */
   cartesian = envelope_info->cartesian;
 
   default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
@@ -452,6 +523,8 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   /* plot */
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
+    pthread_mutex_lock(audio_mutex);
+    
     selection = envelope_info->selection;
 
     while(selection != NULL){
@@ -461,20 +534,37 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 			 -1);
 
       if(do_plot){
+	gdouble ratio;
+	
 	note = AGS_NOTE(selection->data);
 
 	/* AgsPlot struct */
 	plot = ags_plot_alloc(5, 0, 0);
 	plot->join_points = TRUE;
 
-	plot->point_color[0][0] = 1.0;
-	plot->point_color[1][0] = 1.0;
-	plot->point_color[2][0] = 1.0;
-	plot->point_color[3][0] = 1.0;
-	plot->point_color[4][0] = 1.0;
+	plot->point_color[0][0] = 0.125;
+	plot->point_color[0][1] = 0.5;
+	plot->point_color[0][2] = 1.0;
+
+	plot->point_color[1][0] = 0.125;
+	plot->point_color[1][1] = 0.5;
+	plot->point_color[1][2] = 1.0;
+
+	plot->point_color[2][0] = 0.125;
+	plot->point_color[2][1] = 0.5;
+	plot->point_color[2][2] = 1.0;
+
+	plot->point_color[3][0] = 0.125;
+	plot->point_color[3][1] = 0.5;
+	plot->point_color[3][2] = 1.0;
+
+	plot->point_color[4][0] = 0.125;
+	plot->point_color[4][1] = 0.5;
+	plot->point_color[4][2] = 1.0;
 
 	/* set plot points */
 	z = ags_complex_get(&(note->ratio));
+	ratio = cimag(z);
 	
 	plot->point[0][0] = 0.0;
 	plot->point[0][1] = default_height * cimag(z);
@@ -482,28 +572,28 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	z = ags_complex_get(&(note->attack));
 	
 	plot->point[1][0] = default_width * creal(z);
-	plot->point[1][1] = default_height * cimag(z);
+	plot->point[1][1] = default_height * (cimag(z) + ratio);
 
 	offset = default_width * creal(z);
 	
 	z = ags_complex_get(&(note->decay));
 
 	plot->point[2][0] = offset + default_width * creal(z);
-	plot->point[2][1] = default_height * cimag(z);
+	plot->point[2][1] = default_height * (cimag(z) + ratio);
 
 	offset += default_width * creal(z);
 
 	z = ags_complex_get(&(note->sustain));
 
 	plot->point[3][0] = offset + default_width * creal(z);
-	plot->point[3][1] = default_height * cimag(z);
+	plot->point[3][1] = default_height * (cimag(z) + ratio);
 
 	offset += default_width * creal(z);
 
 	z = ags_complex_get(&(note->release));
 
 	plot->point[4][0] = offset + default_width * creal(z);
-	plot->point[4][1] = default_height * cimag(z);
+	plot->point[4][1] = default_height * (cimag(z) + ratio);
 
 	/* add plot */
 	ags_cartesian_add_plot(cartesian,
@@ -518,6 +608,8 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	break;
       }
     }
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   /* queue draw */
