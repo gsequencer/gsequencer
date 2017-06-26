@@ -3,6 +3,7 @@ ags (0.8.7)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsEnvelopeInfo plot
 	* enable grid lines of tree view
+	* added property AgsMachine:machine-name and thus did a small refactoring
 
 ags (0.8.6)
 

@@ -207,7 +207,7 @@ ags_functional_editor_workflow_test_drum()
 
   machine_str = g_strdup_printf("%s: %s\0",
 				G_OBJECT_TYPE_NAME(machine),
-				machine->name);
+				machine->machine_name);
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -299,7 +299,7 @@ ags_functional_editor_workflow_test_matrix()
 
   machine_str = g_strdup_printf("%s: %s\0",
 				G_OBJECT_TYPE_NAME(machine),
-				machine->name);
+				machine->machine_name);
   
   pthread_mutex_unlock(task_thread->launch_mutex);
   
@@ -392,7 +392,7 @@ ags_functional_editor_workflow_test_ffplayer()
 
   machine_str = g_strdup_printf("%s: %s\0",
 				G_OBJECT_TYPE_NAME(machine),
-				machine->name);
+				machine->machine_name);
   
   pthread_mutex_unlock(task_thread->launch_mutex);
 

@@ -282,7 +282,7 @@ ags_functional_machine_link_test_master_mixer()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(panel),
-			      AGS_MACHINE(panel)->name);
+			      AGS_MACHINE(panel)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -383,7 +383,7 @@ ags_functional_machine_link_test_slave_mixer()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(master_mixer),
-			      AGS_MACHINE(master_mixer)->name);
+			      AGS_MACHINE(master_mixer)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -486,7 +486,7 @@ ags_functional_machine_link_test_drum()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
-			      AGS_MACHINE(drum)->name);
+			      AGS_MACHINE(drum)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -628,7 +628,7 @@ ags_functional_machine_link_test_matrix()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(matrix),
-			      AGS_MACHINE(matrix)->name);
+			      AGS_MACHINE(matrix)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -731,7 +731,7 @@ ags_functional_machine_link_test_synth()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(synth),
-			      AGS_MACHINE(synth)->name);
+			      AGS_MACHINE(synth)->machine_name);
 
   input_line_count = matrix->audio->input_lines;  
 
@@ -841,7 +841,7 @@ ags_functional_machine_link_test_ffplayer_0()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
-			      AGS_MACHINE(ffplayer_0)->name);
+			      AGS_MACHINE(ffplayer_0)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -944,7 +944,7 @@ ags_functional_machine_link_test_ffplayer_1()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_1),
-			      AGS_MACHINE(ffplayer_1)->name);
+			      AGS_MACHINE(ffplayer_1)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -1025,7 +1025,7 @@ ags_functional_machine_link_test_relink_all()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
-			      AGS_MACHINE(ffplayer_0)->name);
+			      AGS_MACHINE(ffplayer_0)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -1084,7 +1084,7 @@ ags_functional_machine_link_test_relink_all()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
-			      AGS_MACHINE(drum)->name);
+			      AGS_MACHINE(drum)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -1142,7 +1142,7 @@ ags_functional_machine_link_test_relink_all()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(matrix),
-			      AGS_MACHINE(matrix)->name);
+			      AGS_MACHINE(matrix)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -1217,7 +1217,7 @@ ags_functional_machine_link_test_reset_link_all()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
-			      AGS_MACHINE(ffplayer_0)->name);
+			      AGS_MACHINE(ffplayer_0)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -1276,7 +1276,7 @@ ags_functional_machine_link_test_reset_link_all()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
-			      AGS_MACHINE(drum)->name);
+			      AGS_MACHINE(drum)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -1334,7 +1334,7 @@ ags_functional_machine_link_test_reset_link_all()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(matrix),
-			      AGS_MACHINE(matrix)->name);
+			      AGS_MACHINE(matrix)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
@@ -1392,7 +1392,7 @@ ags_functional_machine_link_test_reset_link_all()
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
-			      AGS_MACHINE(drum)->name);
+			      AGS_MACHINE(drum)->machine_name);
 
   pthread_mutex_unlock(task_thread->launch_mutex);
 
