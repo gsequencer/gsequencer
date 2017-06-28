@@ -152,8 +152,8 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   machine_selector->popup = NULL;
 
   machine_selector->menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-			     "stock-id", GTK_STOCK_EXECUTE,
-			     NULL);
+					       "stock-id", GTK_STOCK_EXECUTE,
+					       NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(machine_selector->menu_button),
 		     FALSE, FALSE,
@@ -166,10 +166,18 @@ void
 ags_machine_selector_connect(AgsConnectable *connectable)
 {
   AgsMachineSelector *machine_selector;
+
   GList *list, *list_start;
   
   machine_selector = AGS_MACHINE_SELECTOR(connectable);
+
+  if((AGS_MACHINE_SELECTOR_CONNECTED & (machine_selector->flags)) != 0){
+    return;
+  }
+
+  machine_selector->flags |= AGS_MACHINE_SELECTOR_CONNECTED;
   
+  /* machine radio button */
   list =
     list_start = gtk_container_get_children((GtkContainer *) machine_selector);
   
@@ -188,7 +196,35 @@ ags_machine_selector_connect(AgsConnectable *connectable)
 void
 ags_machine_selector_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsMachineSelector *machine_selector;
+
+  GList *list, *list_start;
+  
+  machine_selector = AGS_MACHINE_SELECTOR(connectable);
+
+  if((AGS_MACHINE_SELECTOR_CONNECTED & (machine_selector->flags)) == 0){
+    return;
+  }
+
+  machine_selector->flags &= (~AGS_MACHINE_SELECTOR_CONNECTED);
+
+  /* machine radio button */
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) machine_selector);
+  
+  list = list->next;
+  
+  while(list != NULL){
+    g_object_disconnect(G_OBJECT(list->data),
+			"clicked",
+			G_CALLBACK(ags_machine_selector_radio_changed),
+			machine_selector,
+			NULL);
+
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
 }
 
 void

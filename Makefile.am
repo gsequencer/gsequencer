@@ -1572,6 +1572,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_automation_toolbar.h \
 	ags/X/editor/ags_automation_area_callbacks.h \
 	ags/X/editor/ags_automation_area.h \
+	ags/X/editor/ags_crop_note_dialog_callbacks.h \
+	ags/X/editor/ags_crop_note_dialog.h \
 	ags/X/editor/ags_envelope_dialog_callbacks.h \
 	ags/X/editor/ags_envelope_dialog.h \
 	ags/X/editor/ags_envelope_editor_callbacks.h \
@@ -1589,6 +1591,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_machine_selector.h \
 	ags/X/editor/ags_meter_callbacks.h \
 	ags/X/editor/ags_meter.h \
+	ags/X/editor/ags_move_note_dialog_callbacks.h \
+	ags/X/editor/ags_move_note_dialog.h \
 	ags/X/editor/ags_notebook_callbacks.h \
 	ags/X/editor/ags_notebook.h \
 	ags/X/editor/ags_note_edit_callbacks.h \
@@ -1617,6 +1621,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
 	ags/X/editor/ags_automation_area.c \
 	ags/X/editor/ags_automation_area_callbacks.c \
+	ags/X/editor/ags_crop_note_dialog_callbacks.c \
+	ags/X/editor/ags_crop_note_dialog.c \
 	ags/X/editor/ags_envelope_dialog_callbacks.c \
 	ags/X/editor/ags_envelope_dialog.c \
 	ags/X/editor/ags_envelope_editor_callbacks.c \
@@ -1634,6 +1640,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_machine_selector_callbacks.c \
 	ags/X/editor/ags_meter.c \
 	ags/X/editor/ags_meter_callbacks.c \
+	ags/X/editor/ags_move_note_dialog_callbacks.c \
+	ags/X/editor/ags_move_note_dialog.c \
 	ags/X/editor/ags_notebook.c \
 	ags/X/editor/ags_notebook_callbacks.c \
 	ags/X/editor/ags_note_edit.c \

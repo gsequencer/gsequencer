@@ -34,6 +34,9 @@ void ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_invert_callback(GtkWidget *widget, AgsToolbar *toolbar);
 
+void ags_toolbar_tool_popup_move_note_callback(GtkWidget *item, AgsToolbar *toolbar);
+void ags_toolbar_tool_popup_crop_note_callback(GtkWidget *item, AgsToolbar *toolbar);
+
 void ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar);
 
 void ags_toolbar_mode_callback(GtkWidget *widget, AgsToolbar *toolbar);
