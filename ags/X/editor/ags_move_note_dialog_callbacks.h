@@ -27,9 +27,11 @@
 
 #include <ags/X/editor/ags_move_note_dialog.h>
 
-void ags_move_note_dialog_relative_callback(GtkWidget *button,
+void ags_move_note_dialog_response_callback(GtkWidget *dialog, gint response,
 					    AgsMoveNoteDialog *move_note_dialog);
 
+void ags_move_note_dialog_relative_callback(GtkWidget *button,
+					    AgsMoveNoteDialog *move_note_dialog);
 void ags_move_note_dialog_absolute_callback(GtkWidget *button,
 					    AgsMoveNoteDialog *move_note_dialog);
 

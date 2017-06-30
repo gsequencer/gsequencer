@@ -27,4 +27,7 @@
 
 #include <ags/X/editor/ags_crop_note_dialog.h>
 
+void ags_crop_note_dialog_response_callback(GtkWidget *dialog, gint response,
+					    AgsCropNoteDialog *crop_note_dialog);
+
 #endif /*__AGS_CROP_NOTE_DIALOG_CALLBACKS_H__*/

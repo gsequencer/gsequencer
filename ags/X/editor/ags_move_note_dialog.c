@@ -22,6 +22,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
 
@@ -29,6 +30,7 @@
 
 void ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog);
 void ags_move_note_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_move_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog);
 void ags_move_note_dialog_set_property(GObject *gobject,
 				       guint prop_id,
@@ -41,6 +43,10 @@ void ags_move_note_dialog_get_property(GObject *gobject,
 void ags_move_note_dialog_finalize(GObject *gobject);
 void ags_move_note_dialog_connect(AgsConnectable *connectable);
 void ags_move_note_dialog_disconnect(AgsConnectable *connectable);
+void ags_move_note_dialog_set_update(AgsApplicable *applicable, gboolean update);
+void ags_move_note_dialog_apply(AgsApplicable *applicable);
+void ags_move_note_dialog_reset(AgsApplicable *applicable);
+gboolean ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_move_note_dialog
@@ -84,6 +90,12 @@ ags_move_note_dialog_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_move_note_dialog_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_move_note_dialog = g_type_register_static(GTK_TYPE_DIALOG,
 						       "AgsMoveNoteDialog", &ags_move_note_dialog_info,
 						       0);
@@ -91,6 +103,10 @@ ags_move_note_dialog_get_type(void)
     g_type_add_interface_static(ags_type_move_note_dialog,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_move_note_dialog,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return (ags_type_move_note_dialog);
@@ -101,6 +117,7 @@ ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_move_note_dialog_parent_class = g_type_class_peek_parent(move_note_dialog);
@@ -145,6 +162,11 @@ ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
   g_object_class_install_property(gobject,
 				  PROP_MAIN_WINDOW,
 				  param_spec);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) move_note_dialog;
+
+  widget->delete_event = ags_move_note_dialog_delete_event;
 }
 
 void
@@ -154,6 +176,14 @@ ags_move_note_dialog_connectable_interface_init(AgsConnectableInterface *connect
   connectable->is_connected = NULL;
   connectable->connect = ags_move_note_dialog_connect;
   connectable->disconnect = ags_move_note_dialog_disconnect;
+}
+
+void
+ags_move_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_move_note_dialog_set_update;
+  applicable->apply = ags_move_note_dialog_apply;
+  applicable->reset = ags_move_note_dialog_reset;
 }
 
 void
@@ -232,6 +262,13 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 		     (GtkWidget *) move_note_dialog->move_y,
 		     FALSE, FALSE,
 		     0);
+
+  /* dialog buttons */
+  gtk_dialog_add_buttons((GtkDialog *) move_note_dialog,
+			 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
+			 GTK_STOCK_OK, GTK_RESPONSE_OK,
+			 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			 NULL);
 }
 
 void
@@ -333,6 +370,9 @@ ags_move_note_dialog_connect(AgsConnectable *connectable)
 
   move_note_dialog->flags |= AGS_MOVE_NOTE_DIALOG_CONNECTED;
 
+  g_signal_connect(move_note_dialog, "response",
+		   G_CALLBACK(ags_move_note_dialog_response_callback), move_note_dialog);
+
   g_signal_connect_after(move_note_dialog->relative, "clicked",
 			 G_CALLBACK(ags_move_note_dialog_relative_callback), move_note_dialog);
 
@@ -352,6 +392,12 @@ ags_move_note_dialog_disconnect(AgsConnectable *connectable)
   }
 
   move_note_dialog->flags &= (~AGS_MOVE_NOTE_DIALOG_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(move_note_dialog),
+		      "response",
+		      G_CALLBACK(ags_move_note_dialog_response_callback),
+		      move_note_dialog,
+		      NULL);
 
   g_object_disconnect(G_OBJECT(move_note_dialog->relative),
 		      "clicked",
@@ -378,6 +424,34 @@ ags_move_note_dialog_finalize(GObject *gobject)
   }
   
   G_OBJECT_CLASS(ags_move_note_dialog_parent_class)->finalize(gobject);
+}
+
+void
+ags_move_note_dialog_set_update(AgsApplicable *applicable, gboolean update)
+{
+  /* empty */
+}
+
+void
+ags_move_note_dialog_apply(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_move_note_dialog_reset(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
+{
+  gtk_widget_hide(widget);
+
+  //  GTK_WIDGET_CLASS(ags_move_note_dialog_parent_class)->delete_event(widget, event);
+
+  return(TRUE);
 }
 
 /**

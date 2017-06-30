@@ -22,6 +22,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
 
@@ -29,6 +30,7 @@
 
 void ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog);
 void ags_crop_note_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_crop_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog);
 void ags_crop_note_dialog_set_property(GObject *gobject,
 				       guint prop_id,
@@ -41,6 +43,10 @@ void ags_crop_note_dialog_get_property(GObject *gobject,
 void ags_crop_note_dialog_finalize(GObject *gobject);
 void ags_crop_note_dialog_connect(AgsConnectable *connectable);
 void ags_crop_note_dialog_disconnect(AgsConnectable *connectable);
+void ags_crop_note_dialog_set_update(AgsApplicable *applicable, gboolean update);
+void ags_crop_note_dialog_apply(AgsApplicable *applicable);
+void ags_crop_note_dialog_reset(AgsApplicable *applicable);
+gboolean ags_crop_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
  * SECTION:ags_crop_note_dialog
@@ -84,6 +90,12 @@ ags_crop_note_dialog_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_crop_note_dialog_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_crop_note_dialog = g_type_register_static(GTK_TYPE_DIALOG,
 						       "AgsCropNoteDialog", &ags_crop_note_dialog_info,
 						       0);
@@ -91,6 +103,10 @@ ags_crop_note_dialog_get_type(void)
     g_type_add_interface_static(ags_type_crop_note_dialog,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_crop_note_dialog,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return (ags_type_crop_note_dialog);
@@ -101,6 +117,7 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_crop_note_dialog_parent_class = g_type_class_peek_parent(crop_note_dialog);
@@ -145,6 +162,11 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
   g_object_class_install_property(gobject,
 				  PROP_MAIN_WINDOW,
 				  param_spec);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) crop_note_dialog;
+
+  widget->delete_event = ags_crop_note_dialog_delete_event;
 }
 
 void
@@ -154,6 +176,14 @@ ags_crop_note_dialog_connectable_interface_init(AgsConnectableInterface *connect
   connectable->is_connected = NULL;
   connectable->connect = ags_crop_note_dialog_connect;
   connectable->disconnect = ags_crop_note_dialog_disconnect;
+}
+
+void
+ags_crop_note_dialog_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_crop_note_dialog_set_update;
+  applicable->apply = ags_crop_note_dialog_apply;
+  applicable->reset = ags_crop_note_dialog_reset;
 }
 
 void
@@ -223,6 +253,13 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 		     GTK_WIDGET(crop_note_dialog->crop_note),
 		     FALSE, FALSE,
 		     0);
+
+  /* dialog buttons */
+  gtk_dialog_add_buttons((GtkDialog *) crop_note_dialog,
+			 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
+			 GTK_STOCK_OK, GTK_RESPONSE_OK,
+			 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			 NULL);
 }
 
 void
@@ -324,7 +361,8 @@ ags_crop_note_dialog_connect(AgsConnectable *connectable)
 
   crop_note_dialog->flags |= AGS_CROP_NOTE_DIALOG_CONNECTED;
 
-  //TODO:JK: implement me
+  g_signal_connect(crop_note_dialog, "response",
+		   G_CALLBACK(ags_crop_note_dialog_response_callback), crop_note_dialog);
 }
 
 void
@@ -340,7 +378,11 @@ ags_crop_note_dialog_disconnect(AgsConnectable *connectable)
 
   crop_note_dialog->flags &= (~AGS_CROP_NOTE_DIALOG_CONNECTED);
 
-  //TODO:JK: implement me
+  g_object_disconnect(G_OBJECT(crop_note_dialog),
+		      "response",
+		      G_CALLBACK(ags_crop_note_dialog_response_callback),
+		      crop_note_dialog,
+		      NULL);
 }
 
 void
@@ -355,6 +397,34 @@ ags_crop_note_dialog_finalize(GObject *gobject)
   }
   
   G_OBJECT_CLASS(ags_crop_note_dialog_parent_class)->finalize(gobject);
+}
+
+void
+ags_crop_note_dialog_set_update(AgsApplicable *applicable, gboolean update)
+{
+  /* empty */
+}
+
+void
+ags_crop_note_dialog_apply(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_crop_note_dialog_reset(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_crop_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
+{
+  gtk_widget_hide(widget);
+
+  //  GTK_WIDGET_CLASS(ags_crop_note_dialog_parent_class)->delete_event(widget, event);
+
+  return(TRUE);
 }
 
 /**

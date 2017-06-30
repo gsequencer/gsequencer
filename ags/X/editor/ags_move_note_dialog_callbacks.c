@@ -19,6 +19,34 @@
 
 #include <ags/X/editor/ags_move_note_dialog_callbacks.h>
 
+#include <ags/object/ags_applicable.h>
+
+void
+ags_move_note_dialog_response_callback(GtkWidget *dialog, gint response,
+				       AgsMoveNoteDialog *move_note_dialog)
+{
+  gboolean hide_dialog;
+
+  hide_dialog = TRUE;
+  
+  switch(response){
+  case GTK_RESPONSE_APPLY:
+    {
+      hide_dialog = FALSE;
+    }
+  case GTK_RESPONSE_OK:
+    {
+      ags_applicable_apply(AGS_APPLICABLE(move_note_dialog));
+    }
+  case GTK_RESPONSE_CANCEL:
+    {
+      if(hide_dialog){
+	gtk_widget_hide(move_note_dialog);
+      }
+    }
+  }
+}
+
 void
 ags_move_note_dialog_relative_callback(GtkWidget *button,
 				       AgsMoveNoteDialog *move_note_dialog)
