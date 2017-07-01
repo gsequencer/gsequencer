@@ -1,3 +1,10 @@
+Overview of Changes in AGS 0.8.8
+================================
+
+* Additional editing tools available. After a Standard MIDI File import
+  you might want to move or crop notes. There are 2 dialogs available of
+  the toolbar allowing you to do so.
+
 Overview of Changes in AGS 0.8.5
 ================================
 

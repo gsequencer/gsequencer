@@ -254,6 +254,8 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
   crop_note_dialog->crop_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
 										 AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
 										 1.0);
+  gtk_spin_button_set_value(crop_note_dialog->crop_note,
+			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(crop_note_dialog->crop_note),
 		     FALSE, FALSE,
@@ -277,6 +279,8 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
   crop_note_dialog->padding_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
 										    AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
 										    1.0);
+  gtk_spin_button_set_value(crop_note_dialog->padding_note,
+			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(crop_note_dialog->padding_note),
 		     FALSE, FALSE,

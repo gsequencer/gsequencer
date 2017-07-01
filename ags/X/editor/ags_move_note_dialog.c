@@ -247,6 +247,8 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
   move_note_dialog->move_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									      AGS_MOVE_NOTE_DIALOG_MAX_X,
 									      1.0);
+  gtk_spin_button_set_value(move_note_dialog->move_x,
+			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) move_note_dialog->move_x,
 		     FALSE, FALSE,
@@ -270,6 +272,8 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
   move_note_dialog->move_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									      AGS_MOVE_NOTE_DIALOG_MAX_Y,
 									      1.0);
+  gtk_spin_button_set_value(move_note_dialog->move_y,
+			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) move_note_dialog->move_y,
 		     FALSE, FALSE,

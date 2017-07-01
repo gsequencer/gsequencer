@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.8.7\n"
+"Project-Id-Version: gsequencer 0.8.8\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-06-25 20:49+0200\n"
+"POT-Creation-Date: 2017-07-01 15:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -169,7 +169,7 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/X/ags_export_window.c:245 ags/X/editor/ags_toolbar.c:179
+#: ags/X/ags_export_window.c:245 ags/X/editor/ags_toolbar.c:208
 msgid "mode"
 msgstr ""
 
@@ -511,7 +511,7 @@ msgstr ""
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:191 ags/X/editor/ags_toolbar.c:170
+#: ags/X/editor/ags_automation_toolbar.c:191 ags/X/editor/ags_toolbar.c:199
 msgid "zoom"
 msgstr ""
 
@@ -580,56 +580,72 @@ msgstr ""
 msgid "select machines"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selector.c:462
+#: ags/X/editor/ags_machine_selector.c:498
 msgid "add index"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selector.c:465
+#: ags/X/editor/ags_machine_selector.c:501
 msgid "remove index"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selector.c:468
+#: ags/X/editor/ags_machine_selector.c:504
 msgid "link index"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selector.c:472
+#: ags/X/editor/ags_machine_selector.c:508
 msgid "reverse mapping"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selector.c:477
+#: ags/X/editor/ags_machine_selector.c:513
 msgid "shift piano"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:110
+#: ags/X/editor/ags_toolbar.c:116
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:118
+#: ags/X/editor/ags_toolbar.c:125
 msgid "edit notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:126
+#: ags/X/editor/ags_toolbar.c:134
 msgid "clear notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:135
+#: ags/X/editor/ags_toolbar.c:144
 msgid "select notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:145
+#: ags/X/editor/ags_toolbar.c:155
 msgid "copy notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:153
+#: ags/X/editor/ags_toolbar.c:164
 msgid "cut notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:160
+#: ags/X/editor/ags_toolbar.c:172
 msgid "paste notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:167
+#: ags/X/editor/ags_toolbar.c:180
 msgid "invert notes"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:184
+msgid "tool"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:187
+msgid "additional tools"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:379
+msgid "move notes"
+msgstr ""
+
+#: ags/X/editor/ags_toolbar.c:382
+msgid "crop notes"
 msgstr ""
 
 #: ags/X/export/ags_machine_collection_entry.c:216

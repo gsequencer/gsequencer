@@ -1,3 +1,10 @@
+ags (0.8.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMoveNoteDialog as additional editing tool
+	* implemented AgsCropNoteDialog as additional editing tool
+	* implmeneted missing ags_toolbar_disconnect() function
+
 ags (0.8.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
