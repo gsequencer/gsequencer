@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_TOOLBAR                (ags_toolbar_get_type())
@@ -34,10 +35,16 @@
 typedef struct _AgsToolbar AgsToolbar;
 typedef struct _AgsToolbarClass AgsToolbarClass;
 
+typedef enum{
+  AGS_TOOLBAR_CONNECTED   = 1,
+}AgsToolbarFlags;
+
 struct _AgsToolbar
 {
   GtkToolbar toolbar;
 
+  guint flags;
+  
   GtkToggleButton *selected_edit_mode;
   GtkToggleButton *position;
   GtkToggleButton *edit;
@@ -49,6 +56,12 @@ struct _AgsToolbar
   GtkButton *paste;
   GtkButton *invert;
 
+  GtkMenuToolButton *menu_tool;
+  GtkMenu *tool_popup;
+
+  GtkDialog *move_note;
+  GtkDialog *crop_note;  
+  
   guint zoom_history;
   GtkComboBoxText *zoom;
 
@@ -61,6 +74,8 @@ struct _AgsToolbarClass
 };
 
 GType ags_toolbar_get_type(void);
+
+GtkMenu* ags_toolbar_tool_popup_new(GtkToolbar *toolbar);
 
 AgsToolbar* ags_toolbar_new();
 

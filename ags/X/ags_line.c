@@ -712,7 +712,7 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
     /* set label */
     pthread_mutex_lock(channel_mutex);
 
-    str = g_strdup_printf("%s %d", i18n("channel"), channel->audio_channel);
+    str = g_strdup_printf("%s %d", i18n("channel"), channel->audio_channel + 1);
     gtk_label_set_label(line->label,
 			str);
 
