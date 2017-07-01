@@ -51,12 +51,24 @@ void
 ags_move_note_dialog_relative_callback(GtkWidget *button,
 				       AgsMoveNoteDialog *move_note_dialog)
 {
-  //TODO:JK: implement me
+  gtk_spin_button_set_range(move_note_dialog->move_x,
+			    -1 * AGS_MOVE_NOTE_DIALOG_MAX_X,
+			    AGS_MOVE_NOTE_DIALOG_MAX_X);
+
+  gtk_spin_button_set_range(move_note_dialog->move_y,
+			    -1 * AGS_MOVE_NOTE_DIALOG_MAX_Y,
+			    AGS_MOVE_NOTE_DIALOG_MAX_Y);
 }
 
 void
 ags_move_note_dialog_absolute_callback(GtkWidget *button,
 				       AgsMoveNoteDialog *move_note_dialog)
 {
-  //TODO:JK: implement me
+  gtk_spin_button_set_range(move_note_dialog->move_x,
+			    0,
+			    AGS_MOVE_NOTE_DIALOG_MAX_X);
+
+  gtk_spin_button_set_range(move_note_dialog->move_y,
+			    0,
+			    AGS_MOVE_NOTE_DIALOG_MAX_Y);
 }

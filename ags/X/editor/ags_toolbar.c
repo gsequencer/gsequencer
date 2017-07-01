@@ -264,6 +264,11 @@ ags_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) toolbar->zoom, "changed",
 			 G_CALLBACK(ags_toolbar_zoom_callback), (gpointer) toolbar);
 
+  /*  */
+  ags_connectable_connect(AGS_CONNECTABLE(toolbar->crop_note));
+
+  ags_connectable_connect(AGS_CONNECTABLE(toolbar->move_note));
+
   /* mode */
   g_signal_connect_after((GObject *) toolbar->mode, "changed",
 			 G_CALLBACK(ags_toolbar_mode_callback), (gpointer) toolbar);
@@ -282,7 +287,74 @@ ags_toolbar_disconnect(AgsConnectable *connectable)
 
   toolbar->flags &= (~AGS_TOOLBAR_CONNECTED);
 
-  //TODO:JK: implement me
+  /* tool */
+  g_object_disconnect(G_OBJECT(toolbar->position),
+		      "toggled",
+		      G_CALLBACK(ags_toolbar_position_callback),
+		      toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(toolbar->edit),
+		      "toggled",
+		      G_CALLBACK(ags_toolbar_edit_callback),
+		      toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(toolbar->clear),
+		      "toggled",
+		      G_CALLBACK(ags_toolbar_clear_callback),
+		      toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(toolbar->select),
+		      "toggled",
+		      G_CALLBACK(ags_toolbar_select_callback),
+		      toolbar,
+		      NULL);
+
+  /* edit */
+  g_object_disconnect(G_OBJECT(toolbar->copy),
+		      "clicked",
+		      G_CALLBACK(ags_toolbar_copy_or_cut_callback),
+		      toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(toolbar->cut),
+		      "clicked",
+		      G_CALLBACK(ags_toolbar_copy_or_cut_callback),
+		      toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(toolbar->paste),
+		      "clicked",
+		      G_CALLBACK(ags_toolbar_paste_callback),
+		      toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(toolbar->invert),
+		      "clicked",
+		      G_CALLBACK(ags_toolbar_invert_callback),
+		      toolbar,
+		      NULL);
+
+  /* zoom */
+  g_object_disconnect(G_OBJECT(toolbar->zoom),
+		      "changed",
+		      G_CALLBACK(ags_toolbar_zoom_callback),
+		      toolbar,
+		      NULL);
+  
+  /*  */
+  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->crop_note));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->move_note));
+
+  /* mode */
+  g_object_disconnect(G_OBJECT(toolbar->mode),
+		      "changed",
+		      G_CALLBACK(ags_toolbar_mode_callback),
+		      toolbar,
+		      NULL);
 }
 
 /**

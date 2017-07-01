@@ -46,3 +46,18 @@ ags_crop_note_dialog_response_callback(GtkWidget *dialog, gint response,
     }
   }
 }
+
+void
+ags_crop_note_dialog_absolute_callback(GtkWidget *button,
+				       AgsCropNoteDialog *crop_note_dialog)
+{
+  if(gtk_toggle_button_get_active(crop_note_dialog->absolute)){
+    gtk_spin_button_set_range(crop_note_dialog->crop_note,
+			      0.0,
+			      AGS_CROP_NOTE_DIALOG_MAX_WIDTH);
+  }else{
+    gtk_spin_button_set_range(crop_note_dialog->crop_note,
+			      -1.0 * AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
+			      AGS_CROP_NOTE_DIALOG_MAX_WIDTH);
+  }
+}

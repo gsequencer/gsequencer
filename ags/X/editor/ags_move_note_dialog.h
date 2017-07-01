@@ -32,6 +32,9 @@
 #define AGS_IS_MOVE_NOTE_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MOVE_NOTE_DIALOG))
 #define AGS_MOVE_NOTE_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_MOVE_NOTE_DIALOG, AgsMoveNoteDialogClass))
 
+#define AGS_MOVE_NOTE_DIALOG_MAX_X (16 * 19200)
+#define AGS_MOVE_NOTE_DIALOG_MAX_Y (1024)
+
 typedef struct _AgsMoveNoteDialog AgsMoveNoteDialog;
 typedef struct _AgsMoveNoteDialogClass AgsMoveNoteDialogClass;
 

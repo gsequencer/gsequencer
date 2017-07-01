@@ -613,6 +613,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 
   /* create export soundcard */
   for(i = 0; list != NULL; i++){
+    /* get soundcar mutex */
     pthread_mutex_lock(application_mutex);
 
     soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,

@@ -24,7 +24,15 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_note.h>
+
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_editor.h>
+#include <ags/X/ags_machine.h>
 
 #include <ags/i18n.h>
 
@@ -195,6 +203,10 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 
   move_note_dialog->flags = 0;
 
+  g_object_set(move_note_dialog,
+	       "title", i18n("move notes"),
+	       NULL);
+  
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) move_note_dialog->dialog.vbox,
 		     GTK_WIDGET(vbox),
@@ -210,7 +222,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 		     0);
 
   /* radio - absolute */
-  move_note_dialog->absolute = (GtkRadioButton *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(move_note_dialog->absolute),
+  move_note_dialog->absolute = (GtkRadioButton *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(move_note_dialog->relative),
 										  i18n("absolute"));
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) move_note_dialog->absolute,
@@ -233,7 +245,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 
   /* move x - spin button */
   move_note_dialog->move_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									      19200,
+									      AGS_MOVE_NOTE_DIALOG_MAX_X,
 									      1.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) move_note_dialog->move_x,
@@ -256,7 +268,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 
   /* move y - spin button */
   move_note_dialog->move_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									      128,
+									      AGS_MOVE_NOTE_DIALOG_MAX_Y,
 									      1.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) move_note_dialog->move_y,
@@ -435,7 +447,122 @@ ags_move_note_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_move_note_dialog_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsMoveNoteDialog *move_note_dialog;
+
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
+  GList *notation;
+  GList *selection;
+
+  guint first_x;
+  guint first_y;
+  guint move_x;
+  guint move_y;
+  
+  gboolean relative;
+  gboolean absolute;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  
+  move_note_dialog = AGS_MOVE_NOTE_DIALOG(applicable);
+
+  window = move_note_dialog->main_window;
+  editor = window->editor;
+
+  machine = editor->selected_machine;
+
+  if(machine == NULL){
+    return;
+  }
+
+  audio = machine->audio;
+
+  /* get some values */
+  move_x = gtk_spin_button_get_value_as_int(move_note_dialog->move_x);
+  move_y = gtk_spin_button_get_value_as_int(move_note_dialog->move_y);
+
+  relative = gtk_toggle_button_get_active(move_note_dialog->relative);
+  absolute = gtk_toggle_button_get_active(move_note_dialog->absolute);
+  
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get position and move note */
+  pthread_mutex_lock(audio_mutex);
+
+  first_x = 0;
+  first_y = 0;
+  
+  if(absolute){
+    notation = audio->notation;
+
+    first_x = G_MAXUINT;
+    first_y = G_MAXUINT;
+  
+    while(notation != NULL){
+      selection = AGS_NOTATION(notation->data);
+
+      while(selection != NULL){
+	if(AGS_NOTE(selection->data)->x[0] < first_x){
+	  first_x = AGS_NOTE(selection->data)->x[0];
+	}
+
+	if(AGS_NOTE(selection->data)->y < first_y){
+	  first_y = AGS_NOTE(selection->data)->y;
+	}
+
+	selection = selection->next;
+      }
+
+      notation = notation->next;
+    }
+  }
+  
+  notation = audio->notation;
+
+  while(notation != NULL){
+    selection = AGS_NOTATION(notation->data);
+    
+    while(selection != NULL){
+      if(relative){
+	AGS_NOTE(selection->data)->x[0] = AGS_NOTE(selection->data)->x[0] + move_x;
+	AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + move_x;
+
+	AGS_NOTE(selection->data)->y = AGS_NOTE(selection->data)->y + move_y;
+      }else if(absolute){
+	AGS_NOTE(selection->data)->x[0] = move_x + (AGS_NOTE(selection->data)->x[0] - first_x);
+	AGS_NOTE(selection->data)->x[1] = move_x + (AGS_NOTE(selection->data)->x[1] - first_x);
+
+	AGS_NOTE(selection->data)->y = move_y + (AGS_NOTE(selection->data)->y + first_y);
+      }
+
+      selection = selection->next;
+    }
+
+    notation = notation->next;
+  }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

@@ -24,7 +24,15 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_note.h>
+
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_editor.h>
+#include <ags/X/ags_machine.h>
 
 #include <ags/i18n.h>
 
@@ -195,16 +203,13 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 
   crop_note_dialog->flags = 0;
 
+  g_object_set(crop_note_dialog,
+	       "title", i18n("crop notes"),
+	       NULL);
+
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) crop_note_dialog->dialog.vbox,
 		     GTK_WIDGET(vbox),
-		     FALSE, FALSE,
-		     0);  
-
-  /* subtract */
-  crop_note_dialog->subtract = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("subtract"));
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(crop_note_dialog->subtract),
 		     FALSE, FALSE,
 		     0);  
 
@@ -224,7 +229,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 		     0);  
   
   /* radio - do resize */
-  crop_note_dialog->do_resize = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL,
+  crop_note_dialog->do_resize = (GtkRadioButton *) gtk_radio_button_new_with_label(gtk_radio_button_get_group(crop_note_dialog->in_place),
 										   i18n("do resize"));
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(crop_note_dialog->do_resize),
@@ -246,14 +251,37 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 		     0);
 
   /* crop note - spin button */
-  crop_note_dialog->crop_note = (GtkSpinButton *) gtk_spin_button_new_with_range(0,
-										 64.0,
+  crop_note_dialog->crop_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
+										 AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
 										 1.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(crop_note_dialog->crop_note),
 		     FALSE, FALSE,
 		     0);
 
+  /* padding note - hbox */
+  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  /* padding note - label */
+  label = (GtkLabel *) gtk_label_new(i18n("padding note"));
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  /* padding note - spin button */
+  crop_note_dialog->padding_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
+										    AGS_CROP_NOTE_DIALOG_MAX_WIDTH,
+										    1.0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(crop_note_dialog->padding_note),
+		     FALSE, FALSE,
+		     0);
+  
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) crop_note_dialog,
 			 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
@@ -363,6 +391,10 @@ ags_crop_note_dialog_connect(AgsConnectable *connectable)
 
   g_signal_connect(crop_note_dialog, "response",
 		   G_CALLBACK(ags_crop_note_dialog_response_callback), crop_note_dialog);
+
+  /* absolute */
+  g_signal_connect_after(crop_note_dialog->absolute, "clicked",
+			 G_CALLBACK(ags_crop_note_dialog_absolute_callback), crop_note_dialog);
 }
 
 void
@@ -381,6 +413,13 @@ ags_crop_note_dialog_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(crop_note_dialog),
 		      "response",
 		      G_CALLBACK(ags_crop_note_dialog_response_callback),
+		      crop_note_dialog,
+		      NULL);
+
+  /* absolute */
+  g_object_disconnect(G_OBJECT(crop_note_dialog->absolute),
+		      "clicked",
+		      G_CALLBACK(ags_crop_note_dialog_absolute_callback),
 		      crop_note_dialog,
 		      NULL);
 }
@@ -408,7 +447,106 @@ ags_crop_note_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_crop_note_dialog_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsCropNoteDialog *crop_note_dialog;
+
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+
+  AgsMutexManager *mutex_manager;
+  
+  AgsApplicationContext *application_context;
+
+  GList *notation;
+  GList *selection;
+
+  gint x_offset;
+  guint x_padding;
+  guint x_crop;
+  
+  gboolean absolute;
+  gboolean in_place;
+  gboolean do_resize;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  
+  crop_note_dialog = AGS_CROP_NOTE_DIALOG(applicable);
+
+  window = crop_note_dialog->main_window;
+  editor = window->editor;
+
+  machine = editor->selected_machine;
+
+  if(machine == NULL){
+    return;
+  }
+
+  audio = machine->audio;
+
+  /* get some values */
+  x_crop = gtk_spin_button_get_value_as_int(crop_note_dialog->crop_note);
+  x_padding = gtk_spin_button_get_value_as_int(crop_note_dialog->padding_note);
+
+  absolute = gtk_toggle_button_get_active(crop_note_dialog->absolute);
+
+  in_place = gtk_toggle_button_get_active(crop_note_dialog->in_place);
+  do_resize = gtk_toggle_button_get_active(crop_note_dialog->do_resize);
+  
+  /* application context and mutex manager */
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* crop note */
+  pthread_mutex_lock(audio_mutex);
+
+  notation = audio->notation;
+
+  while(notation != NULL){
+    selection = AGS_NOTATION(notation->data);
+
+    x_offset = 0;
+    
+    while(selection != NULL){
+      if(absolute){
+	if(in_place){
+	  AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[0] + x_crop;
+	}else if(do_resize){
+	  AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
+	  AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[0] + x_crop;
+
+	  x_offset += x_padding;
+	}
+      }else{
+	if(in_place){
+	  AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + x_crop;
+	}else if(do_resize){
+	  AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
+	  AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[1] + x_crop;
+
+	  x_offset += x_padding;
+	}
+      }
+
+      selection = selection->next;
+    }
+
+    notation = notation->next;
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

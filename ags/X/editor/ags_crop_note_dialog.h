@@ -32,6 +32,8 @@
 #define AGS_IS_CROP_NOTE_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CROP_NOTE_DIALOG))
 #define AGS_CROP_NOTE_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_CROP_NOTE_DIALOG, AgsCropNoteDialogClass))
 
+#define AGS_CROP_NOTE_DIALOG_MAX_WIDTH (128 * 16)
+
 typedef struct _AgsCropNoteDialog AgsCropNoteDialog;
 typedef struct _AgsCropNoteDialogClass AgsCropNoteDialogClass;
 
@@ -49,13 +51,13 @@ struct _AgsCropNoteDialog
   
   GtkWidget *main_window;
 
-  GtkCheckButton *subtract;
   GtkCheckButton *absolute;
   
   GtkRadioButton *in_place;
   GtkRadioButton *do_resize;
 
   GtkSpinButton *crop_note;
+  GtkSpinButton *padding_note;
 };
 
 struct _AgsCropNoteDialogClass
