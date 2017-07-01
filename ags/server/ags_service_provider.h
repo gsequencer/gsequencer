@@ -25,6 +25,10 @@
 
 #include <ags/server/ags_server_status.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
+#include <ags/server/security/ags_certificate_manager.h>
+#include <ags/server/security/ags_password_store_manager.h>
+
 #define AGS_TYPE_SERVICE_PROVIDER                    (ags_service_provider_get_type())
 #define AGS_SERVICE_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVICE_PROVIDER, AgsServiceProvider))
 #define AGS_SERVICE_PROVIDER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SERVICE_PROVIDER, AgsServiceProviderInterface))

@@ -100,7 +100,7 @@ AgsServerInfo* ags_server_info_alloc(gchar *server_name);
 
 void ags_server_start(AgsServer *server);
 
-AgsServer* ags_server_lookup(void *server_info);
+AgsServer* ags_server_lookup(AgsServerInfo *server_info);
 
 #ifdef AGS_WITH_XMLRPC_C
 xmlrpc_value* ags_server_create_object(xmlrpc_env *env,

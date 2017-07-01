@@ -22,7 +22,9 @@
 #include <ags/server/security/ags_password_store.h>
 
 #define __USE_GNU
+#define _GNU_SOURCE
 #include <crypt.h>
+#include <unistd.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>

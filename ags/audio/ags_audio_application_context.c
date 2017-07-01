@@ -121,7 +121,6 @@ void ags_audio_application_context_get_property(GObject *gobject,
 						GParamSpec *param_spec);
 void ags_audio_application_context_connect(AgsConnectable *connectable);
 void ags_audio_application_context_disconnect(AgsConnectable *connectable);
-void ags_audio_application_context_finalize(GObject *gobject);
 
 AgsThread* ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_audio_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
@@ -820,48 +819,6 @@ ags_audio_application_context_disconnect(AgsConnectable *connectable)
   }
 
   ags_audio_application_context_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_audio_application_context_finalize(GObject *gobject)
-{
-  AgsAudioApplicationContext *audio_application_context;
-
-  audio_application_context = AGS_AUDIO_APPLICATION_CONTEXT(gobject);
-
-  if(audio_application_context->thread_pool != NULL){
-    g_object_unref(audio_application_context->thread_pool);
-  }
-
-  if(audio_application_context->soundcard_thread != NULL){
-    g_object_unref(audio_application_context->soundcard_thread);
-  }
-
-  if(audio_application_context->export_thread != NULL){
-    g_object_unref(audio_application_context->export_thread);
-  }
-
-  if(audio_application_context->server != NULL){
-    g_object_unref(audio_application_context->server);
-  }
-
-  if(audio_application_context->soundcard != NULL){
-    g_list_free_full(audio_application_context->soundcard,
-		     g_object_unref);
-  }
-
-  if(audio_application_context->sequencer != NULL){
-    g_list_free_full(audio_application_context->sequencer,
-		     g_object_unref);
-  }
-  
-  if(audio_application_context->distributed_manager != NULL){
-    g_list_free_full(audio_application_context->distributed_manager,
-		     g_object_unref);
-  }
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_audio_application_context_parent_class)->finalize(gobject);
 }
 
 AgsThread*

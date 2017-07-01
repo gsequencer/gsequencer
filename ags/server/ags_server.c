@@ -153,6 +153,8 @@ ags_server_class_init(AgsServerClass *server)
   server->start = ags_server_real_start;
 
   /* signals */
+  /**
+   */
   server_signals[START] =
     g_signal_new("start\0",
 		 G_TYPE_FROM_CLASS(server),
@@ -189,7 +191,7 @@ ags_server_init(AgsServer *server)
 #endif
 
   
-  server->address = (struct sockaddr_in *) malloc(sizeof(sockaddr_in));
+  server->address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
   memset(server->address, 0, sizeof(struct sockaddr_in));
   
   server->address->sin_port = 8080;

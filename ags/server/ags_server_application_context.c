@@ -22,6 +22,7 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_main_loop.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -181,11 +182,11 @@ ags_server_application_context_service_provider_interface_init(AgsServiceProvide
   service_provider->set_certificate_manager = ags_server_application_context_set_certificate_manager;
   service_provider->get_certificate_manager = ags_server_application_context_get_certificate_manager;
 
-  service_provider-> = ags_server_application_context_;
-  service_provider-> = ags_server_application_context_;
+  service_provider->set_password_store_manager = ags_server_application_context_set_password_store_manager;
+  service_provider->get_password_store_manager = ags_server_application_context_get_password_store_manager;
 
-  service_provider-> = ags_server_application_context_;
-  service_provider-> = ags_server_application_context_;
+  service_provider->set_authentication_manager = ags_server_application_context_set_authentication_manager;
+  service_provider->get_authentication_manager = ags_server_application_context_get_authentication_manager;
 }
 
 void
@@ -200,6 +201,10 @@ ags_server_application_context_connectable_interface_init(AgsConnectableInterfac
 void
 ags_server_application_context_init(AgsServerApplicationContext *server_application_context)
 {
+  AgsGenericMainLoop *generic_main_loop;
+
+  AgsConfig *config;
+
   server_application_context->flags = 0;
 
   server_application_context->version = AGS_SERVER_DEFAULT_VERSION;
@@ -212,11 +217,11 @@ ags_server_application_context_init(AgsServerApplicationContext *server_applicat
 #endif
   
   /**/
-  AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
+  AGS_APPLICATION_CONTEXT(server_application_context)->log = NULL;
 
   /* set config */
   config = ags_config_get_instance();
-  AGS_APPLICATION_CONTEXT(audio_application_context)->config = config;
+  AGS_APPLICATION_CONTEXT(server_application_context)->config = config;
   g_object_set(config,
 	       "application-context\0", server_application_context,
 	       NULL);

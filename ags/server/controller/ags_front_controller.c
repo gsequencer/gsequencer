@@ -118,6 +118,14 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
   front_controller->do_request = ags_front_controller_real_do_request;
 
   /* signals */
+  /**
+   * AgsFrontController::authenticate:
+   * @front_controller: the #AgsFrontController
+   * 
+   * 
+   * 
+   * Since: 1.0.0
+   */
   front_controller_signals[AUTHENTICATE] =
     g_signal_new("authenticate\0",
 		 G_TYPE_FROM_CLASS(front_controller),

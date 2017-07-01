@@ -37,6 +37,10 @@
 #include <ags/server/ags_registry.h>
 #include <ags/server/ags_server.h>
 
+#include <ags/server/security/ags_authentication_manager.h>
+#include <ags/server/security/ags_certificate_manager.h>
+#include <ags/server/security/ags_password_store_manager.h>
+
 #define AGS_TYPE_SERVER_APPLICATION_CONTEXT                (ags_server_application_context_get_type())
 #define AGS_SERVER_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContext))
 #define AGS_SERVER_APPLICATION_CONTEXT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SERVER_APPLICATION_CONTEXT, AgsServerApplicationContextClass))
