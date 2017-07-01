@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,7 +71,7 @@ ags_mutex_manager_get_type()
     };
 
     ags_type_mutex_manager = g_type_register_static(G_TYPE_OBJECT,
-						    "AgsMutexManager\0",
+						    "AgsMutexManager",
 						    &ags_mutex_manager_info,
 						    0);
 

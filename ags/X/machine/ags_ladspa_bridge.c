@@ -42,6 +42,8 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
 
+#include <ags/i18n.h>
+
 void ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge);
 void ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ladspa_bridge_plugin_interface_init(AgsPluginInterface *plugin);
@@ -120,7 +122,7 @@ ags_ladspa_bridge_get_type(void)
     };
 
     ags_type_ladspa_bridge = g_type_register_static(AGS_TYPE_MACHINE,
-						    "AgsLadspaBridge\0", &ags_ladspa_bridge_info,
+						    "AgsLadspaBridge", &ags_ladspa_bridge_info,
 						    0);
 
     g_type_add_interface_static(ags_type_ladspa_bridge,
@@ -157,11 +159,11 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_string("filename\0",
-				    "the object file\0",
-				    "The filename as string of object file\0",
+  param_spec =  g_param_spec_string("filename",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -173,11 +175,11 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_string("effect\0",
-				    "the effect\0",
-				    "The effect's string representation\0",
+  param_spec =  g_param_spec_string("effect",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -189,11 +191,11 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's index.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_ulong("index\0",
-				   "index of effect\0",
-				   "The numerical index of effect\0",
+  param_spec =  g_param_spec_ulong("index",
+				   i18n_pspec("index of effect"),
+				   i18n_pspec("The numerical index of effect"),
 				   0,
 				   65535,
 				   0,
@@ -238,6 +240,9 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 
   AgsAudio *audio;
 
+  g_signal_connect_after((GObject *) ladspa_bridge, "parent-set",
+			 G_CALLBACK(ags_ladspa_bridge_parent_set_callback), (gpointer) ladspa_bridge);
+
   audio = AGS_MACHINE(ladspa_bridge)->audio;
   audio->flags |= (AGS_AUDIO_SYNC);
   
@@ -248,7 +253,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
   ladspa_bridge->version = AGS_LADSPA_BRIDGE_DEFAULT_VERSION;
   ladspa_bridge->build_id = AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID;
 
-  ladspa_bridge->xml_type = "ags-ladspa-bridge\0";
+  ladspa_bridge->xml_type = "ags-ladspa-bridge";
   
   ladspa_bridge->mapped_output = 0;
   ladspa_bridge->mapped_input = 0;
@@ -313,7 +318,7 @@ ags_ladspa_bridge_set_property(GObject *gobject,
 	  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ladspa_bridge);
 
 	  ags_window_show_error(window,
-				g_strdup_printf("Plugin file not present %s\0",
+				g_strdup_printf("Plugin file not present %s",
 						filename));
 	}
       }
@@ -477,17 +482,17 @@ ags_ladspa_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   gobject = AGS_LADSPA_BRIDGE(plugin);
 
   g_object_set(gobject,
-	       "filename\0", xmlGetProp(node,
-					"filename\0"),
-	       "effect\0", xmlGetProp(node,
-				      "effect\0"),
+	       "filename", xmlGetProp(node,
+					"filename"),
+	       "effect", xmlGetProp(node,
+				      "effect"),
 	       NULL);
 
   /* launch */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "node\0", node,
+					       "node", node,
 					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start\0",
+  g_signal_connect(G_OBJECT(file_launch), "start",
 		   G_CALLBACK(ags_ladspa_bridge_launch_task), gobject);
   ags_file_add_launch(file,
 		      G_OBJECT(file_launch));
@@ -588,26 +593,26 @@ ags_ladspa_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
     
   node = xmlNewNode(NULL,
-		    "ags-ladspa-bridge\0");
+		    "ags-ladspa-bridge");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   xmlNewProp(node,
-	     "filename\0",
+	     "filename",
 	     ladspa_bridge->filename);
 
   xmlNewProp(node,
-	     "effect\0",
+	     "effect",
 	     ladspa_bridge->effect);
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", ladspa_bridge,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", ladspa_bridge,
 				   NULL));
 
   xmlAddChild(parent,
@@ -621,7 +626,7 @@ ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
 {
   /* empty */
 #ifdef AGS_DEBUG
-  g_message("%s %s\0",ladspa_bridge->filename, ladspa_bridge->effect);
+  g_message("%s %s",ladspa_bridge->filename, ladspa_bridge->effect);
 #endif
   
   ags_effect_bulk_add_effect((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
@@ -640,7 +645,7 @@ ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
  *
  * Returns: a new #AgsLadspaBridge
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsLadspaBridge*
 ags_ladspa_bridge_new(GObject *soundcard,
@@ -657,13 +662,13 @@ ags_ladspa_bridge_new(GObject *soundcard,
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, soundcard);
     g_object_set_property(G_OBJECT(AGS_MACHINE(ladspa_bridge)->audio),
-			  "soundcard\0", &value);
+			  "soundcard", &value);
     g_value_unset(&value);
   }
 
   g_object_set(ladspa_bridge,
-	       "filename\0", filename,
-	       "effect\0", effect,
+	       "filename", filename,
+	       "effect", effect,
 	       NULL);
 
   return(ladspa_bridge);

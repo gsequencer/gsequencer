@@ -19,13 +19,18 @@
 
 #include <ags/X/task/ags_add_sequencer_editor_jack.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
-#include <ags/X/ags_effect_bridge.h>
-#include <ags/X/ags_effect_bulk.h>
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_preferences.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_add_sequencer_editor_jack_class_init(AgsAddSequencerEditorJackClass *add_sequencer_editor_jack);
 void ags_add_sequencer_editor_jack_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -74,7 +79,7 @@ ags_add_sequencer_editor_jack_get_type()
     };
 
     ags_type_add_sequencer_editor_jack = g_type_register_static(AGS_TYPE_TASK,
-								"AgsAddSequencerEditorJack\0",
+								"AgsAddSequencerEditorJack",
 								&ags_add_sequencer_editor_jack_info,
 								0);
 
@@ -147,8 +152,49 @@ ags_add_sequencer_editor_jack_finalize(GObject *gobject)
 void
 ags_add_sequencer_editor_jack_launch(AgsTask *task)
 {
+  AgsPreferences *preferences;
+  AgsWindow *window;
+
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+  
+  pthread_mutex_t *application_mutex;
+  
+  /* lock gdk threads */
+  gdk_threads_enter();
+
+  preferences = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SEQUENCER_EDITOR_JACK(task)->sequencer_editor);
+  window = preferences->window;
+  
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+  /*  */
+  gdk_threads_enter();
+
   ags_sequencer_editor_add_jack(AGS_ADD_SEQUENCER_EDITOR_JACK(task)->sequencer_editor,
 				NULL);
+
+  gdk_threads_leave();
+
+  /* unlock gdk threads */
+  gdk_threads_leave();
 }
 
 /**

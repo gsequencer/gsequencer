@@ -34,9 +34,10 @@ typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
 
 typedef enum{
-  AGS_AUDIO_SIGNAL_TEMPLATE             = 1,
-  AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 << 1,
-  AGS_AUDIO_SIGNAL_STANDALONE           = 1 << 2,
+  AGS_AUDIO_SIGNAL_CONNECTED            = 1,
+  AGS_AUDIO_SIGNAL_TEMPLATE             = 1 <<  1,
+  AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 <<  2,
+  AGS_AUDIO_SIGNAL_STANDALONE           = 1 <<  3,
 }AgsAudioSignalFlags;
 
 struct _AgsAudioSignal
@@ -125,6 +126,9 @@ void ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
 			       gdouble sustain,
 			       gdouble release,
 			       gdouble ratio);
+
+gboolean ags_audio_signal_is_active(GList *audio_signal,
+				    GObject *recall_id);
 
 AgsAudioSignal* ags_audio_signal_new(GObject *soundcard,
 				     GObject *recycling,

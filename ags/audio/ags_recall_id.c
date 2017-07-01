@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
 void ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_id_init(AgsRecallID *recall_id);
@@ -37,6 +39,7 @@ void ags_recall_id_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_recall_id_connect(AgsConnectable *connectable);
 void ags_recall_id_disconnect(AgsConnectable *connectable);
+void ags_recall_id_dispose(GObject *gobject);
 void ags_recall_id_finalize(GObject *gobject);
 
 /**
@@ -82,7 +85,7 @@ ags_recall_id_get_type(void)
     };
 
     ags_type_recall_id = g_type_register_static(G_TYPE_OBJECT,
-						"AgsRecallID\0",
+						"AgsRecallID",
 						&ags_recall_id_info,
 						0);
 
@@ -108,6 +111,7 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
   gobject->set_property = ags_recall_id_set_property;
   gobject->get_property = ags_recall_id_get_property;
 
+  gobject->dispose = ags_recall_id_dispose;
   gobject->finalize = ags_recall_id_finalize;
 
   /* properties */
@@ -118,9 +122,9 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recycling\0",
-				   "assigned recycling\0",
-				   "The recycling it is assigned with\0",
+  param_spec = g_param_spec_object("recycling",
+				   i18n_pspec("assigned recycling"),
+				   i18n_pspec("The recycling it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -134,9 +138,9 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("recycling-context\0",
-				   "assigned recycling context\0",
-				   "The recycling context it is assigned with\0",
+  param_spec = g_param_spec_object("recycling-context",
+				   i18n_pspec("assigned recycling context"),
+				   i18n_pspec("The recycling context it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,8 +181,9 @@ ags_recall_id_set_property(GObject *gobject,
 
       recycling = g_value_get_object(value);
 
-      if(recall_id->recycling == (GObject *) recycling)
+      if(recall_id->recycling == (GObject *) recycling){
 	return;
+      }
 
       if(recall_id->recycling != NULL){
 	g_object_unref(recycling);
@@ -230,10 +235,14 @@ ags_recall_id_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_RECYCLING:
-    g_value_set_object(value, recall_id->recycling);
+    {
+      g_value_set_object(value, recall_id->recycling);
+    }
     break;
   case PROP_RECYCLING_CONTEXT:
-    g_value_set_object(value, recall_id->recycling_context);
+    {
+      g_value_set_object(value, recall_id->recycling_context);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -244,18 +253,71 @@ ags_recall_id_get_property(GObject *gobject,
 void
 ags_recall_id_connect(AgsConnectable *connectable)
 {
+  AgsRecallID *recall_id;
+
+  recall_id = AGS_RECALL_ID(connectable);
+
+  if((AGS_RECALL_ID_CONNECTED & (recall_id->flags)) != 0){
+    return;
+  }
+
+  recall_id->flags |= AGS_RECALL_ID_CONNECTED;
 }
 
 void
 ags_recall_id_disconnect(AgsConnectable *connectable)
 {
+  AgsRecallID *recall_id;
+
+  recall_id = AGS_RECALL_ID(connectable);
+
+
+  if((AGS_RECALL_ID_CONNECTED & (recall_id->flags)) == 0){
+    return;
+  }
+
+  recall_id->flags &= (~AGS_RECALL_ID_CONNECTED);
+}
+
+void
+ags_recall_id_dispose(GObject *gobject)
+{
+  AgsRecallID *recall_id;
+
+  recall_id = AGS_RECALL_ID(gobject);
+
+  if(recall_id->recycling != NULL){
+    g_object_unref(recall_id->recycling);
+
+    recall_id->recycling = NULL;
+  }
+  
+  if(recall_id->recycling_context != NULL){
+    g_object_unref(recall_id->recycling_context);
+
+    recall_id->recycling_context = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_id_parent_class)->dispose(gobject);
 }
 
 void
 ags_recall_id_finalize(GObject *gobject)
 {
-  g_warning("ags_recall_id_finalize\0");
+  AgsRecallID *recall_id;
 
+  recall_id = AGS_RECALL_ID(gobject);
+
+  if(recall_id->recycling != NULL){
+    g_object_unref(recall_id->recycling);
+  }
+  
+  if(recall_id->recycling_context != NULL){
+    g_object_unref(recall_id->recycling_context);
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
 }
 
@@ -276,18 +338,25 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
 {
   switch(stage){
   case 0:
-    if((AGS_RECALL_ID_PRE & (id->flags)) == 0)
-      return(TRUE);
-
+    {
+      if((AGS_RECALL_ID_PRE & (id->flags)) == 0){
+	return(TRUE);
+      }
+    }
     break;
   case 1:
-    if((AGS_RECALL_ID_INTER & (id->flags)) == 0)
-      return(TRUE);
-
+    {
+      if((AGS_RECALL_ID_INTER & (id->flags)) == 0){
+	return(TRUE);
+      }
+    }
     break;
   case 2:
-    if((AGS_RECALL_ID_POST & (id->flags)) == 0)
-      return(TRUE);
+    {
+      if((AGS_RECALL_ID_POST & (id->flags)) == 0){
+	return(TRUE);
+      }
+    }
     break;
   }
 

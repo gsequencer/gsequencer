@@ -20,7 +20,10 @@
 #ifndef __AGS_CHANNEL_H__
 #define __AGS_CHANNEL_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall.h>
@@ -86,8 +89,11 @@ struct _AgsChannel
 
   // GObject *recycling_context; // contains child recycling
   GList *recall_id; // there may be several recall's running
-  GList *container;
 
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *play_mutex;
+
+  GList *container;
   GList *recall;
   GList *play;
 

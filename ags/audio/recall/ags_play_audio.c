@@ -54,7 +54,7 @@ ags_play_audio_get_type()
     };
 
     ags_type_play_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-						 "AgsPlayAudio\0",
+						 "AgsPlayAudio",
 						 &ags_play_audio_info,
 						 0);
   }
@@ -79,10 +79,10 @@ ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
 void
 ags_play_audio_init(AgsPlayAudio *play_audio)
 {
-  AGS_RECALL(play_audio)->name = "ags-play\0";
+  AGS_RECALL(play_audio)->name = "ags-play";
   AGS_RECALL(play_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_audio)->xml_type = "ags-play-audio\0";
+  AGS_RECALL(play_audio)->xml_type = "ags-play-audio";
 }
 
 void

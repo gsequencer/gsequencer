@@ -33,6 +33,8 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signal);
 void ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -49,6 +51,7 @@ void ags_recall_audio_signal_connect(AgsConnectable *connectable);
 void ags_recall_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_recall_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_recall_audio_signal_dispose(GObject *gobject);
 void ags_recall_audio_signal_finalize(GObject *gobject);
 
 void ags_recall_audio_signal_run_init_pre(AgsRecall *recall);
@@ -119,7 +122,7 @@ ags_recall_audio_signal_get_type()
     };
 
     ags_type_recall_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
-							  "AgsRecallAudioSignal\0",
+							  "AgsRecallAudioSignal",
 							  &ags_recall_audio_signal_info,
 							  0);
 
@@ -150,6 +153,7 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
   gobject->set_property = ags_recall_audio_signal_set_property;
   gobject->get_property = ags_recall_audio_signal_get_property;
 
+  gobject->dispose = ags_recall_audio_signal_dispose;
   gobject->finalize = ags_recall_audio_signal_finalize;
 
   /* for debugging purpose */
@@ -171,9 +175,9 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("audio-channel\0",
-				 "output to audio channel\0",
-				 "The audio channel to which it should write\0",
+  param_spec = g_param_spec_uint("audio-channel",
+				 i18n_pspec("output to audio channel"),
+				 i18n_pspec("The audio channel to which it should write"),
 				 0,
 				 65536,
 				 0,
@@ -189,9 +193,9 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("destination\0",
-				   "destination of output\0",
-				   "The destination where this recall will write the audio signal to\0",
+  param_spec = g_param_spec_object("destination",
+				   i18n_pspec("destination of output"),
+				   i18n_pspec("The destination where this recall will write the audio signal to"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -205,9 +209,9 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("source\0",
-				   "source of input\0",
-				   "The source where this recall will take the audio signal from\0",
+  param_spec = g_param_spec_object("source",
+				   i18n_pspec("source of input"),
+				   i18n_pspec("The source where this recall will take the audio signal from"),
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -244,9 +248,9 @@ ags_recall_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectable
 void
 ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal)
 {
-  //  g_signal_connect(G_OBJECT(recall_audio_signal), "notify::soundcard\0",
+  //  g_signal_connect(G_OBJECT(recall_audio_signal), "notify::soundcard",
   //		   G_CALLBACK(ags_recall_audio_signal_notify_soundcard), NULL);
-  //  g_signal_connect_after(G_OBJECT(recall_audio_signal), "notify::soundcard\0",
+  //  g_signal_connect_after(G_OBJECT(recall_audio_signal), "notify::soundcard",
   //			 G_CALLBACK(ags_recall_audio_signal_notify_soundcard_after), NULL);
 
   recall_audio_signal->flags = AGS_RECALL_INITIAL_RUN;
@@ -385,20 +389,45 @@ ags_recall_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connec
 }
 
 void
+ags_recall_audio_signal_dispose(GObject *gobject)
+{
+  AgsRecallAudioSignal *recall_audio_signal;
+
+  recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
+
+  /* destination */
+  if(recall_audio_signal->destination != NULL){
+    g_object_unref(recall_audio_signal->destination);
+
+    recall_audio_signal->destination = NULL;
+  }
+
+  /* source */
+  if(recall_audio_signal->source != NULL){
+    g_object_unref(recall_audio_signal->source);
+
+    recall_audio_signal->source = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_audio_signal_parent_class)->dispose(gobject);
+}
+
+void
 ags_recall_audio_signal_finalize(GObject *gobject)
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
-  
+
+  /* destination */
   if(recall_audio_signal->destination != NULL){
     g_object_unref(recall_audio_signal->destination);
-    recall_audio_signal->destination = NULL;
   }
 
+  /* source */
   if(recall_audio_signal->source != NULL){
     g_object_unref(recall_audio_signal->source);
-    recall_audio_signal->source = NULL;
   }
 
   /* call parent */
@@ -412,20 +441,22 @@ ags_recall_audio_signal_duplicate(AgsRecall *recall,
 {
   AgsRecallAudioSignal *recall_audio_signal, *copy;
 
+#if 0
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall);
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "soundcard\0", AGS_RECALL(recall_audio_signal)->soundcard,
-				 "audio_channel\0", recall_audio_signal->audio_channel,
-				 "destination\0", recall_audio_signal->destination,
-				 "source\0", recall_audio_signal->source,
+				 "soundcard", AGS_RECALL(recall_audio_signal)->soundcard,
+				 "audio_channel", recall_audio_signal->audio_channel,
+				 "destination", recall_audio_signal->destination,
+				 "source", recall_audio_signal->source,
 				 NULL);
 
   copy = (AgsRecallAudioSignal *) AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->duplicate(recall,
 												    recall_id,
 												    n_params, parameter);
-
-  return((AgsRecall *) copy);
+#endif
+  
+  return((AgsRecall *) NULL);
 }
 
 void
@@ -438,10 +469,10 @@ ags_recall_audio_signal_run_init_pre(AgsRecall *recall){
   AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_init_pre(recall);
 
   if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_pre\n\0");
+    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_pre\n");
 
   if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_pre\n\0");
+    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_pre\n");
 }
 
 void
@@ -454,10 +485,10 @@ ags_recall_audio_signal_run_init_inter(AgsRecall *recall){
   AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_init_inter(recall);
 
   if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_inter\n\0");
+    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_inter\n");
 
   if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_inter\n\0");
+    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_inter\n");
 }
 
 void
@@ -470,10 +501,10 @@ ags_recall_audio_signal_run_init_post(AgsRecall *recall){
   AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_init_post(recall);
 
   if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_post\n\0");
+    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_post\n");
 
   if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_post\n\0");
+    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_post\n");
 
 }
 
@@ -487,10 +518,10 @@ ags_recall_audio_signal_run_pre(AgsRecall *recall){
   AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_pre(recall);
 
   if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_pre\n\0");
+    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_pre\n");
 
   if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_pre\n\0");
+    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_pre\n");
 
 }
 
@@ -504,10 +535,10 @@ ags_recall_audio_signal_run_inter(AgsRecall *recall){
   AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_inter(recall);
 
   if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_inter\n\0");
+    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_inter\n");
 
   if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_inter\n\0");
+    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_inter\n");
 
 }
 
@@ -521,10 +552,10 @@ ags_recall_audio_signal_run_post(AgsRecall *recall){
   AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_post(recall);
 
   if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_post\n\0");
+    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_post\n");
 
   if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_post\n\0");
+    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_post\n");
 
 }
 
@@ -568,9 +599,9 @@ ags_recall_audio_signal_new(AgsAudioSignal *destination,
   AgsRecallAudioSignal *recall_audio_signal;
 
   recall_audio_signal = (AgsRecallAudioSignal *) g_object_new(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							      "soundcard\0", soundcard,
-							      "destination\0", destination,
-							      "source\0", source, 
+							      "soundcard", soundcard,
+							      "destination", destination,
+							      "source", source, 
 							      NULL);
 
   return(recall_audio_signal);

@@ -35,6 +35,8 @@
 #include <string.h>
 #include <pwd.h>
 
+#include <ags/i18n.h>
+
 void ags_preferences_class_init(AgsPreferencesClass *preferences);
 void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -91,7 +93,7 @@ ags_preferences_get_type(void)
     };
     
     ags_type_preferences = g_type_register_static(GTK_TYPE_DIALOG,
-						  "AgsPreferences\0", &ags_preferences_info,
+						  "AgsPreferences", &ags_preferences_info,
 						  0);
     
     g_type_add_interface_static(ags_type_preferences,
@@ -155,13 +157,13 @@ ags_preferences_init(AgsPreferences *preferences)
   preferences->window = NULL;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
-		       g_strdup("preferences\0"));
+		       i18n("preferences"));
   gtk_window_set_deletable(GTK_WINDOW(preferences),
 			   TRUE);
 
   preferences->notebook = (GtkNotebook *) gtk_notebook_new();
   g_object_set(G_OBJECT(preferences->notebook),
-	       "tab-pos\0", GTK_POS_LEFT,
+	       "tab-pos", GTK_POS_LEFT,
 	       NULL);
   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
 		    GTK_WIDGET(preferences->notebook));
@@ -169,37 +171,37 @@ ags_preferences_init(AgsPreferences *preferences)
   preferences->generic_preferences = ags_generic_preferences_new();
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->generic_preferences),
-			   gtk_label_new("generic\0"));
+			   gtk_label_new(i18n("generic")));
 
   preferences->audio_preferences = ags_audio_preferences_new();
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->audio_preferences),
-			   gtk_label_new("audio\0"));
+			   gtk_label_new(i18n("audio")));
 
   preferences->midi_preferences = ags_midi_preferences_new();
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->midi_preferences),
-			   gtk_label_new("midi\0"));
+			   gtk_label_new(i18n("midi")));
 
   preferences->performance_preferences = ags_performance_preferences_new();
   gtk_notebook_append_page(preferences->notebook,
 			   GTK_WIDGET(preferences->performance_preferences),
-			   gtk_label_new("performance\0"));
+			   gtk_label_new(i18n("performance")));
 
   str = ags_config_get_value(ags_config_get_instance(),
 			     AGS_CONFIG_GENERIC,
-			     "disable-feature\0");
+			     "disable-feature");
   
   if(str == NULL ||
      !g_ascii_strncasecmp(str,
-			  "experimental\0",
+			  "experimental",
 			  13)){
     preferences->server_preferences = NULL;
   }else{
     preferences->server_preferences = ags_server_preferences_new();
     gtk_notebook_append_page(preferences->notebook,
 			     GTK_WIDGET(preferences->server_preferences),
-			     gtk_label_new("server\0"));
+			     gtk_label_new(i18n("server")));
   }
   
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
@@ -231,10 +233,10 @@ ags_preferences_connect(AgsConnectable *connectable)
     ags_connectable_connect(AGS_CONNECTABLE(preferences->server_preferences));
   }
   
-  g_signal_connect_after(G_OBJECT(preferences), "response\0",
+  g_signal_connect_after(G_OBJECT(preferences), "response",
 			 G_CALLBACK(ags_preferences_response_callback), NULL);
 
-  g_signal_connect_after(G_OBJECT(preferences->notebook), "switch-page\0",
+  g_signal_connect_after(G_OBJECT(preferences->notebook), "switch-page",
 			 G_CALLBACK(ags_preferences_notebook_switch_page_callback), preferences);
 }
 

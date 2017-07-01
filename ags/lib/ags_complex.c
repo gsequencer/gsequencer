@@ -34,18 +34,16 @@
 GType
 ags_complex_get_type(void)
 {
-  static volatile gsize ags_define_type_id__volatile = 0;
+  static GType ags_type_complex = 0;
 
-  if(g_once_init_enter(&ags_define_type_id__volatile)){
-    GType ags_define_type_id =
-      g_boxed_type_register_static(g_intern_static_string ("AgsComplex\0"),
+  if(!ags_type_complex){
+    ags_type_complex =
+      g_boxed_type_register_static("AgsComplex",
 				   (GBoxedCopyFunc) ags_complex_copy,
 				   (GBoxedFreeFunc) ags_complex_free);
-    
-    g_once_init_leave(&ags_define_type_id__volatile, ags_define_type_id);
   }
   
-  return(ags_define_type_id__volatile);
+  return(ags_type_complex);
 }
 
 /**
@@ -64,8 +62,8 @@ ags_complex_alloc()
 
   ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
   
-  *ptr[0] = 0;
-  *ptr[1] = 0;
+  ptr[0][0] = 0.0;
+  ptr[0][1] = 0.0;
 
   return(ptr);
 }
@@ -87,8 +85,8 @@ ags_complex_copy(AgsComplex *ptr)
   
   new_ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
   
-  *new_ptr[0] = *ptr[0];
-  *new_ptr[1] = *ptr[1];
+  new_ptr[0][0] = ptr[0][0];
+  new_ptr[0][1] = ptr[0][1];
 
   return(new_ptr);
 }
@@ -122,7 +120,7 @@ ags_complex_get(AgsComplex *ptr)
 {
   complex z;
 
-  z = *ptr[0] + I * *ptr[1];
+  z = ptr[0][0] + I * ptr[0][1];
 
   return(z);
 }
@@ -139,7 +137,7 @@ ags_complex_get(AgsComplex *ptr)
 void
 ags_complex_set(AgsComplex *ptr, complex z)
 {
-  *ptr[0] = creal(z);
-  *ptr[1] = cimag(z);
+  ptr[0][0] = creal(z);
+  ptr[0][1] = cimag(z);
 }
 

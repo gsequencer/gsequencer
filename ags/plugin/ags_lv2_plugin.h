@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <stdarg.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/lib/ags_turtle.h>
 
 #include <alsa/seq_midi_event.h>
@@ -33,7 +34,18 @@
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/event/event.h>
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
+#include <lv2/lv2plug.in/ns/ext/atom/forge.h>
+#include <lv2/lv2plug.in/ns/ext/atom/util.h>
 #include <lv2/lv2plug.in/ns/ext/midi/midi.h>
+#include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
+#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
+#include <lv2/lv2plug.in/ns/ext/log/log.h>
+#include <lv2/lv2plug.in/ns/ext/event/event.h>
+#include <lv2/lv2plug.in/ns/ext/parameters/parameters.h>
+#include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
+#include <lv2/lv2plug.in/ns/ext/options/options.h>
+
+#include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
 
 #define AGS_TYPE_LV2_PLUGIN                (ags_lv2_plugin_get_type())
 #define AGS_LV2_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_PLUGIN, AgsLv2Plugin))
@@ -54,7 +66,9 @@ typedef struct _AgsLv2Plugin AgsLv2Plugin;
 typedef struct _AgsLv2PluginClass AgsLv2PluginClass;
 
 typedef enum{
-  AGS_LV2_PLUGIN_IS_SYNTHESIZER  = 1,
+  AGS_LV2_PLUGIN_IS_SYNTHESIZER            = 1,
+  AGS_LV2_PLUGIN_NEEDS_WORKER              = 1 <<  1,
+  AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE    = 1 <<  2,
 }AgsLv2PluginFlags;
 
 struct _AgsLv2Plugin
@@ -62,7 +76,8 @@ struct _AgsLv2Plugin
   AgsBasePlugin base_plugin;
 
   guint flags;
-  
+
+  gchar *pname;
   gchar *uri;
   gchar *ui_uri;
   
@@ -73,11 +88,22 @@ struct _AgsLv2Plugin
   gchar *foaf_name;
   gchar *foaf_homepage;
   gchar *foaf_mbox;
+
+  LV2_Feature **feature;
+
+  gchar *program;
+  
+  GList *preset;
 };
 
 struct _AgsLv2PluginClass
 {
   AgsBasePluginClass base_plugin;
+
+  void (*change_program)(AgsLv2Plugin *lv2_plugin,
+			 gpointer lv2_handle,
+			 guint bank_index,
+			 guint program_index);
 };
 
 GType ags_lv2_plugin_get_type(void);
@@ -89,6 +115,9 @@ gboolean ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 						 guint buffer_size,
 						 snd_seq_event_t *events,
 						 guint event_count);
+gboolean ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
+						 guint buffer_size,
+						 guint note);
 void ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 				       guint buffer_size);
 
@@ -99,8 +128,19 @@ gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 						  guint sequence_size,
 						  snd_seq_event_t *events,
 						  guint event_count);
+gboolean ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
+						  guint sequence_size,
+						  guint note);
 void ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 					guint sequence_size);
+
+GList* ags_lv2_plugin_find_pname(GList *lv2_plugin,
+				 gchar *pname);
+
+void ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
+				   gpointer ladspa_handle,
+				   guint bank_index,
+				   guint program_index);
 
 AgsLv2Plugin* ags_lv2_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index);
 

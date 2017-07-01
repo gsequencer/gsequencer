@@ -69,7 +69,7 @@ ags_lv2_event_manager_get_type()
     };
 
     ags_type_lv2_event_manager = g_type_register_static(G_TYPE_OBJECT,
-							"AgsLv2EventManager\0",
+							"AgsLv2EventManager",
 							&ags_lv2_event_manager_info,
 							0);
 
@@ -124,6 +124,9 @@ void
 ags_lv2_event_manager_finalize(GObject *gobject)
 {
   /* empty */
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_event_manager_parent_class)->finalize(gobject);
 }
 
 uint32_t

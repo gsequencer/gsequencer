@@ -24,16 +24,7 @@
 #include <regex.h>
 #include <pcre.h>
 
-/**
- * SECTION:ags_function
- * @short_description: Function to translate values
- * @title: AgsFunction
- * @section_id:
- * @include: ags/lib/ags_function.h
- *
- * The #AgsFunction translates values from linear math to a given
- * function.
- */
+#include <ags/i18n.h>
 
 void ags_function_class_init(AgsFunctionClass *function);
 void ags_function_init (AgsFunction *function);
@@ -47,7 +38,18 @@ void ags_function_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_function_finalize(GObject *gobject);
 
-#define ags_function_print_sin(str, term) (sprintf(str, "1 / 2 * %s * exp(- %s * (%s) * log(%s)) - 1 / 2 * %s * exp(%s * (%s) * log(%s))\0", \
+/**
+ * SECTION:ags_function
+ * @short_description: Function to translate values
+ * @title: AgsFunction
+ * @section_id:
+ * @include: ags/lib/ags_function.h
+ *
+ * The #AgsFunction translates values from linear math to a given
+ * function.
+ */
+
+#define ags_function_print_sin(str, term) (sprintf(str, "1 / 2 * %s * exp(- %s * (%s) * log(%s)) - 1 / 2 * %s * exp(%s * (%s) * log(%s))", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
@@ -56,7 +58,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
-#define ags_function_print_cos(str, term) (sprintf(str, "(%s * exp(- %s * (%s) * log(%s))) / 2 + (%s * exp(%s * (%s) * log(%s))) / 2\0", \
+#define ags_function_print_cos(str, term) (sprintf(str, "(%s * exp(- %s * (%s) * log(%s))) / 2 + (%s * exp(%s * (%s) * log(%s))) / 2", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
@@ -65,7 +67,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
-#define ags_function_print_tan(str, term) (sprintf(str, "(%s * (exp(- %s * (%s) * log(%s)) - exp(%s * (%s) *  log(%s)))) / (exp(- %s * (%s) *  log(%s)) + exp(%s * (%s) *  log(%s)))\0", \
+#define ags_function_print_tan(str, term) (sprintf(str, "(%s * (exp(- %s * (%s) * log(%s)) - exp(%s * (%s) *  log(%s)))) / (exp(- %s * (%s) *  log(%s)) + exp(%s * (%s) *  log(%s)))", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
@@ -113,7 +115,7 @@ ags_function_get_type(void)
     };
 
     ags_type_function = g_type_register_static(AGS_TYPE_CONVERSION,
-					       "AgsFunction\0",
+					       "AgsFunction",
 					       &ags_function_info,
 					       0);
   }
@@ -145,9 +147,9 @@ ags_function_class_init(AgsFunctionClass *function)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_string("source-function\0",
-				   "function as string\0",
-				   "The function to use to translate values\0",
+  param_spec = g_param_spec_string("source-function",
+				   i18n_pspec("function as string"),
+				   i18n_pspec("The function to use to translate values"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -161,9 +163,9 @@ ags_function_class_init(AgsFunctionClass *function)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_string("normalized-function\0",
-				   "normalized form of function as string\0",
-				   "The normalized form of function to use to translate values\0",
+  param_spec = g_param_spec_string("normalized-function",
+				   i18n_pspec("normalized form of function as string"),
+				   i18n_pspec("The normalized form of function to use to translate values"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,9 +179,9 @@ ags_function_class_init(AgsFunctionClass *function)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_pointer("pivot-table\0",
-				    "pivot table representation\0",
-				    "The original pivot table representation\0",
+  param_spec = g_param_spec_pointer("pivot-table",
+				    i18n_pspec("pivot table representation"),
+				    i18n_pspec("The original pivot table representation"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PIVOT_TABLE,
@@ -343,6 +345,9 @@ ags_function_finalize(GObject *gobject)
 
     free(function->pivot_table);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_function_parent_class)->finalize(gobject);
 }
 
 /**
@@ -731,7 +736,7 @@ ags_function_new(gchar *source_function)
   AgsFunction *function;
   
   function = g_object_new(AGS_TYPE_FUNCTION,
-			  "source-function\0", source_function,
+			  "source-function", source_function,
 			  NULL);
 
   return(function);

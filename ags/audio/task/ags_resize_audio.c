@@ -25,6 +25,8 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/i18n.h>
+
 void ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio);
 void ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_resize_audio_init(AgsResizeAudio *resize_audio);
@@ -88,7 +90,7 @@ ags_resize_audio_get_type()
     };
     
     ags_type_resize_audio = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsResizeAudio\0",
+						   "AgsResizeAudio",
 						   &ags_resize_audio_info,
 						   0);
     
@@ -125,9 +127,9 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of resize audio\0",
-				   "The audio of resize audio task\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of resize audio"),
+				   i18n_pspec("The audio of resize audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -141,9 +143,9 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("output-pads\0",
-				 "output pads\0",
-				 "The count of output pads\0",
+  param_spec = g_param_spec_uint("output-pads",
+				 i18n_pspec("output pads"),
+				 i18n_pspec("The count of output pads"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -159,9 +161,9 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("input-pads\0",
-				 "input pads\0",
-				 "The count of input pads\0",
+  param_spec = g_param_spec_uint("input-pads",
+				 i18n_pspec("input pads"),
+				 i18n_pspec("The count of input pads"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -177,9 +179,9 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("audio-channels\0",
-				 "audio channels\0",
-				 "The count of audio channels\0",
+  param_spec = g_param_spec_uint("audio-channels",
+				 i18n_pspec("audio channels"),
+				 i18n_pspec("The count of audio channels"),
 				 0,
 				 G_MAXUINT,
 				 0,

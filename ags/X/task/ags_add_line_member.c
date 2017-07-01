@@ -74,7 +74,7 @@ ags_add_line_member_get_type()
     };
 
     ags_type_add_line_member = g_type_register_static(AGS_TYPE_TASK,
-						      "AgsAddLineMember\0",
+						      "AgsAddLineMember",
 						      &ags_add_line_member_info,
 						      0);
 

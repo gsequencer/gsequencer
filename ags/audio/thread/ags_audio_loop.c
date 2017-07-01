@@ -42,8 +42,10 @@
 #include <ags/audio/thread/ags_export_thread.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
 
-#include <fontconfig/fontconfig.h>
+#include <ags/i18n.h>
 
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
 void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -70,6 +72,7 @@ gboolean ags_audio_loop_monitor(AgsMainLoop *main_loop,
 				guint time_cycle, guint *time_spent);
 void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 				     gdouble frequency);
+void ags_audio_loop_dispose(GObject *gobject);
 void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_start(AgsThread *thread);
@@ -105,6 +108,7 @@ void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop,
 
 enum{
   PROP_0,
+  PROP_APPLICATION_CONTEXT,
   PROP_SOUNDCARD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
@@ -145,7 +149,7 @@ ags_audio_loop_get_type()
     };
 
     ags_type_audio_loop = g_type_register_static(AGS_TYPE_THREAD,
-						 "AgsAudioLoop\0",
+						 "AgsAudioLoop",
 						 &ags_audio_loop_info,
 						 0);
     
@@ -176,9 +180,26 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   gobject->set_property = ags_audio_loop_set_property;
   gobject->get_property = ags_audio_loop_get_property;
 
+  gobject->dispose = ags_audio_loop_dispose;
   gobject->finalize = ags_audio_loop_finalize;
 
   /* properties */
+  /**
+   * AgsDevout:application-context:
+   *
+   * The assigned #AgsApplicationContext
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
   /**
    * AgsAudioLoop:soundcard:
    *
@@ -186,9 +207,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard assigned to\0",
-				   "The AgsSoundcard it is assigned to.\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -202,9 +223,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("play-recall\0",
-				   "recall to run\0",
-				   "A recall to run\0",
+  param_spec = g_param_spec_object("play-recall",
+				   i18n_pspec("recall to run"),
+				   i18n_pspec("A recall to run"),
 				   AGS_TYPE_RECALL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -218,9 +239,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("play-channel\0",
-				   "channel to run\0",
-				   "A channel to run\0",
+  param_spec = g_param_spec_object("play-channel",
+				   i18n_pspec("channel to run"),
+				   i18n_pspec("A channel to run"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -234,9 +255,9 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("play-audio\0",
-				   "audio to run\0",
-				   "A audio to run\0",
+  param_spec = g_param_spec_object("play-audio",
+				   i18n_pspec("audio to run"),
+				   i18n_pspec("A audio to run"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -291,7 +312,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   /* calculate frequency */
   thread = (AgsThread *) audio_loop;
 
-  g_signal_connect_after(thread, "notify::frequency\0",
+  g_signal_connect_after(thread, "notify::frequency",
 			 G_CALLBACK(ags_audio_loop_notify_frequency), NULL);
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -304,22 +325,22 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate\0");
+			      "samplerate");
 
   if(str0 == NULL){
     str0 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate\0");
+				"samplerate");
   }
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size\0");
+			      "buffer-size");
 
   if(str1 == NULL){
     str1 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size\0");
+				"buffer-size");
   }
 
   pthread_mutex_unlock(application_mutex);
@@ -409,6 +430,27 @@ ags_audio_loop_set_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(audio_loop->application_context == (GObject *) application_context){
+	return;
+      }
+
+      if(audio_loop->application_context != NULL){
+	g_object_unref(G_OBJECT(audio_loop->application_context));
+      }
+
+      if(application_context != NULL){
+	g_object_ref(G_OBJECT(application_context));
+      }
+      
+      audio_loop->application_context = (GObject *) application_context;
+    }
+    break;
   case PROP_SOUNDCARD:
     {
       GObject *soundcard;
@@ -479,6 +521,11 @@ ags_audio_loop_get_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, audio_loop->application_context);
+    }
+    break;
   case PROP_SOUNDCARD:
     {
       g_value_set_object(value, audio_loop->soundcard);
@@ -601,7 +648,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
   audio_loop = AGS_THREAD(main_loop);
   
   g_object_set(audio_loop,
-	       "frequency\0", frequency,
+	       "frequency", frequency,
 	       NULL);
 
   /* reset soundcard thread */
@@ -609,7 +656,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -620,7 +667,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_SEQUENCER_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -631,7 +678,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_EXPORT_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -642,7 +689,7 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_AUDIO_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
@@ -653,11 +700,65 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 
   while(ags_thread_find_type(thread, AGS_TYPE_CHANNEL_THREAD) != NULL){
     g_object_set(thread,
-		 "frequency\0", frequency,
+		 "frequency", frequency,
 		 NULL);
 
     thread = g_atomic_pointer_get(&(thread->next));
   }
+}
+
+void
+ags_audio_loop_dispose(GObject *gobject)
+{
+  AgsAudioLoop *audio_loop;
+
+  audio_loop = AGS_AUDIO_LOOP(gobject);
+
+  /* application context */
+  if(audio_loop->application_context != NULL){
+    g_object_unref(audio_loop->application_context);
+
+    audio_loop->application_context = NULL;
+  }
+
+  /* soundcard */
+  if(audio_loop->soundcard != NULL){
+    g_object_unref(audio_loop->soundcard);
+
+    audio_loop->soundcard = NULL;
+  }
+
+  /* async queue */
+  if(audio_loop->async_queue != NULL){
+    g_object_unref(audio_loop->async_queue);
+
+    audio_loop->async_queue = NULL;
+  }
+
+  /* unref AgsPlayback lists */
+  if(audio_loop->play_recall != NULL){
+    g_list_free_full(audio_loop->play_recall,
+		     g_object_unref);
+    
+    audio_loop->play_recall = NULL;
+  }
+
+  if(audio_loop->play_channel != NULL){
+    g_list_free_full(audio_loop->play_channel,
+		     g_object_unref);
+    
+    audio_loop->play_channel = NULL;
+  }
+
+  if(audio_loop->play_audio != NULL){
+    g_list_free_full(audio_loop->play_audio,
+		     g_object_unref);
+    
+    audio_loop->play_audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_loop_parent_class)->dispose(gobject);
 }
 
 void
@@ -667,6 +768,37 @@ ags_audio_loop_finalize(GObject *gobject)
 
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
+  /* application context */
+  if(audio_loop->application_context != NULL){
+    g_object_unref(audio_loop->application_context);
+  }
+
+  /* soundcard */
+  if(audio_loop->soundcard != NULL){
+    g_object_unref(audio_loop->soundcard);
+  }
+
+  /* async queue */
+  if(audio_loop->async_queue != NULL){
+    g_object_unref(audio_loop->async_queue);
+  }
+
+  /* tree lock and recall mutex */
+  pthread_mutex_destroy(audio_loop->tree_lock);
+  free(audio_loop->tree_lock);
+
+  pthread_mutex_destroy(audio_loop->recall_mutex);
+  free(audio_loop->recall_mutex);
+
+  /* timing mutex and cond */
+  pthread_mutex_destroy(audio_loop->timing_mutex);
+  free(audio_loop->timing_mutex);
+
+  pthread_cond_destroy(audio_loop->timing_cond);
+  free(audio_loop->timing_cond);
+
+  //FIXME:JK: destroy timing thread
+  
   /* unref AgsPlayback lists */
   g_list_free_full(audio_loop->play_recall,
 		   g_object_unref);
@@ -731,7 +863,7 @@ ags_audio_loop_run(AgsThread *thread)
     param.sched_priority = AGS_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -904,7 +1036,7 @@ ags_audio_loop_timing_thread(void *ptr)
     //			    AGS_THREAD_SUSPEND_SIG,
     //			    audio_loop->time_cycle, &time_spent);
     
-    //    g_message("inter\0");    
+    //    g_message("inter");    
   }
   
   pthread_exit(NULL);
@@ -1301,18 +1433,18 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 
 	  /* super threaded recycling level */
 	  if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0){
-	    playback->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(playback->iterator_thread[0]->tic_cond);
+	    AGS_ITERATOR_THREAD(playback->iterator_thread[0])->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(AGS_ITERATOR_THREAD(playback->iterator_thread[0])->tic_cond);
 	  }
 
 	  if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0){
-	    playback->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(playback->iterator_thread[1]->tic_cond);
+	    AGS_ITERATOR_THREAD(playback->iterator_thread[1])->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(AGS_ITERATOR_THREAD(playback->iterator_thread[1])->tic_cond);
 	  }
 
 	  if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) != 0){
-	    playback->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(playback->iterator_thread[2]->tic_cond);
+	    AGS_ITERATOR_THREAD(playback->iterator_thread[2])->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(AGS_ITERATOR_THREAD(playback->iterator_thread[2])->tic_cond);
 	  }
 	}else{
 	  gboolean remove_domain;
@@ -1814,7 +1946,7 @@ ags_audio_loop_new(GObject *soundcard, GObject *application_context)
   AgsAudioLoop *audio_loop;
 
   audio_loop = (AgsAudioLoop *) g_object_new(AGS_TYPE_AUDIO_LOOP,
-					     "soundcard\0", soundcard,
+					     "soundcard", soundcard,
 					     NULL);
 
   if(application_context != NULL){

@@ -43,6 +43,8 @@
 #include <libxml/xpath.h>
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link);
 void ags_audio_file_link_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audio_file_link_init(AgsAudioFileLink *audio_file_link);
@@ -88,7 +90,7 @@ enum{
 static gpointer ags_audio_file_link_parent_class = NULL;
 static AgsPluginInterface *ags_audio_file_link_parent_plugin_interface;
 
-static const gchar *ags_audio_file_link_plugin_name = "ags-audio-file-link\0";
+static const gchar *ags_audio_file_link_plugin_name = "ags-audio-file-link";
 
 GType
 ags_audio_file_link_get_type()
@@ -115,7 +117,7 @@ ags_audio_file_link_get_type()
     };
 
     ags_type_audio_file_link = g_type_register_static(AGS_TYPE_FILE_LINK,
-						      "AgsAudioFileLink\0",
+						      "AgsAudioFileLink",
 						      &ags_audio_file_link_info,
 						      0);
 
@@ -151,9 +153,9 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_string("preset\0",
-				   "the preset\0",
-				   "The preset to locate the file\0",
+  param_spec = g_param_spec_string("preset",
+				   i18n_pspec("the preset"),
+				   i18n_pspec("The preset to locate the file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -167,9 +169,9 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_string("instrument\0",
-				   "the instrument\0",
-				   "The instrument to locate the file\0",
+  param_spec = g_param_spec_string("instrument",
+				   i18n_pspec("the instrument"),
+				   i18n_pspec("The instrument to locate the file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -183,9 +185,9 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * 
    * Since: 0.7.45
    */
-  param_spec = g_param_spec_string("sample\0",
-				   "the sample\0",
-				   "The sample to locate the file\0",
+  param_spec = g_param_spec_string("sample",
+				   i18n_pspec("the sample"),
+				   i18n_pspec("The sample to locate the file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -199,9 +201,9 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_uint("audio-channel\0",
-				 "audio channel to read\0",
-				 "The selected audio channel to read\0",
+  param_spec = g_param_spec_uint("audio-channel",
+				 i18n_pspec("audio channel to read"),
+				 i18n_pspec("The selected audio channel to read"),
 				 0, 256,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -216,9 +218,9 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp\0",
-				   "The timestamp\0",
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp"),
+				   i18n_pspec("The timestamp"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -397,7 +399,7 @@ ags_audio_file_link_read(AgsFile *file,
   
   /* read audio channel */
   str = xmlGetProp(node,
-		   "audio-channel\0");
+		   "audio-channel");
 
   if(str != NULL){
     gobject->audio_channel = g_ascii_strtoull(str,
@@ -409,10 +411,10 @@ ags_audio_file_link_read(AgsFile *file,
   //TODO:JK: add missing
   
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-					       "file\0", file,
-					       "node\0", node,
+					       "file", file,
+					       "node", node,
 					       NULL);
-  g_signal_connect(G_OBJECT(file_launch), "start\0",
+  g_signal_connect(G_OBJECT(file_launch), "start",
 		   G_CALLBACK(ags_audio_file_link_read_launch), gobject);
   ags_file_add_launch(file,
 		      (GObject *) file_launch);
@@ -433,7 +435,7 @@ ags_audio_file_link_write(AgsFile *file,
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-audio-file-link\0");
+		    "ags-audio-file-link");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -441,17 +443,17 @@ ags_audio_file_link_write(AgsFile *file,
   /* add reference and node to file object */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", audio_file_link,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", audio_file_link,
 				   NULL));
 
   /* write audio channel */
   xmlNewProp(node,
-	     "audio-channel\0",
-	     g_strdup_printf("%d\0", audio_file_link->audio_channel));
+	     "audio-channel",
+	     g_strdup_printf("%d", audio_file_link->audio_channel));
 
   //TODO:JK: add missing
   
@@ -527,10 +529,10 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
   
   /* read file link using URL or embedded */
   type = xmlGetProp(node->parent,
-		    "type\0");
+		    "type");
 
   if(!xmlStrncmp(type,
-		 "url\0",
+		 "url",
 		 4)){
     //TODO:JK: add missing
     
@@ -566,14 +568,14 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 			   &error);
 
       if(error != NULL){
-	g_warning("%s\0", error->message);
+	g_warning("%s", error->message);
       }
     }
 
     /* set file link */
     g_object_set(G_OBJECT(input),
 		 "file-link", g_object_new(AGS_TYPE_FILE_LINK,
-					   "filename\0", filename,
+					   "filename", filename,
 					   NULL),
 		 NULL);
 
@@ -586,7 +588,7 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
     ags_recycling_add_audio_signal(input->first_recycling,
 				   AGS_AUDIO_SIGNAL(audio_signal->data));
   }else if(!xmlStrncmp(type,
-		       "embedded\0",
+		       "embedded",
 		       9)){
     xmlXPathContext *xpath_context;
     xmlXPathObject *xpath_object;
@@ -597,7 +599,7 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
     //			   xpath_context);
     xpath_context->node = node;  
 
-    xpath_object = xmlXPathEval("./ags-embedded-audio\0",
+    xpath_object = xmlXPathEval("./ags-embedded-audio",
 				xpath_context);
 
     child = NULL;
@@ -615,14 +617,14 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 
     if(child != NULL){    
       /**/
-      encoding = xmlGetProp(child, "encoding\0");
-      demuxer = xmlGetProp(child, "demuxer\0");
+      encoding = xmlGetProp(child, "encoding");
+      demuxer = xmlGetProp(child, "demuxer");
 
       if(!xmlStrncmp(encoding,
-		     "base64\0",
+		     "base64",
 		     7)){
 	if(!xmlStrncmp(demuxer,
-		       "raw\0",
+		       "raw",
 		       4)){
 	  gchar *data;
 

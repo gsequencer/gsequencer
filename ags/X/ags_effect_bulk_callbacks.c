@@ -19,6 +19,10 @@
 
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/plugin/ags_base_plugin.h>
 
 #include <ags/audio/ags_audio.h>
@@ -29,9 +33,14 @@
 #include <ags/widget/ags_vindicator.h>
 #include <ags/widget/ags_hindicator.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_plugin_browser.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
+
+#include <ags/i18n.h>
 
 void
 ags_effect_bulk_add_callback(GtkWidget *button,
@@ -92,6 +101,8 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
     GtkCheckButton *check_button;
     GtkLabel *label;
 
+    gchar *str;
+    
     /* create entry */
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(effect_bulk->bulk_member),
@@ -106,14 +117,17 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 		       0);
 
     //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
-						       filename,
-						       effect));
+    str = g_strdup_printf("%s - %s",
+			  filename,
+			  effect);
+    label = (GtkLabel *) gtk_label_new(str);
     gtk_box_pack_start(GTK_BOX(hbox),
 		       GTK_WIDGET(label),
 		       FALSE, FALSE,
 		       0);
 
+    g_free(str);
+    
     gtk_widget_show_all((GtkWidget *) hbox);
   }
   
@@ -142,9 +156,17 @@ ags_effect_bulk_set_audio_channels_callback(AgsAudio *audio,
 					    guint audio_channels_old,
 					    AgsEffectBulk *effect_bulk)
 {
+  AgsWindow *window;
+
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bulk);
+
   ags_effect_bulk_resize_audio_channels(effect_bulk,
 					audio_channels,
 					audio_channels_old);
+
+  gdk_threads_leave();
 }
 
 void
@@ -154,11 +176,19 @@ ags_effect_bulk_set_pads_callback(AgsAudio *audio,
 				  guint pads_old,
 				  AgsEffectBulk *effect_bulk)
 {
+  AgsWindow *window;
+  
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bulk);
+
   if(channel_type == effect_bulk->channel_type){
     ags_effect_bulk_resize_pads(effect_bulk,
 				pads,
 				pads_old);    
   }
+
+  gdk_threads_leave();
 }
 
 void
@@ -287,7 +317,7 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
 	}
       }else{
 	g_object_get(child,
-		     "adjustment\0", &adjustment,
+		     "adjustment", &adjustment,
 		     NULL);
 	
 	gtk_adjustment_set_value(adjustment,

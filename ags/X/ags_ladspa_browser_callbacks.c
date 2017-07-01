@@ -32,6 +32,8 @@
 
 #include <ladspa.h>
 
+#include <ags/i18n.h>
+
 void
 ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					    AgsLadspaBrowser *ladspa_browser)
@@ -42,6 +44,8 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   
   GList *list;
 
+  gchar *str;
+  
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
   filename = GTK_COMBO_BOX_TEXT(list->next->data);
@@ -53,9 +57,13 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   list = ladspa_manager->ladspa_plugin;
 
   while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename))) != NULL){
+    str = g_strdup_printf("%s",
+			  AGS_BASE_PLUGIN(list->data)->effect);
     gtk_combo_box_text_append_text(effect,
-				   g_strdup_printf("%s\0", AGS_BASE_PLUGIN(list->data)->effect));
+				   str);
 
+    g_free(str);
+    
     list = list->next;
   }
   
@@ -71,8 +79,11 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   GtkComboBoxText *filename, *effect;
   GtkLabel *label;
   AgsLadspaPlugin *ladspa_plugin;
+
   GList *list, *list_start, *child, *child_start;
+
   gchar *str, *tmp;
+
   guint port_count;
   guint y;
   unsigned long i;
@@ -109,7 +120,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
      plugin_index != -1 &&
      plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
+							   "ladspa_descriptor");
 
     if(dlerror() == NULL && ladspa_descriptor){
       plugin_descriptor = ladspa_descriptor(plugin_index);
@@ -118,33 +129,48 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
       /* update ui - reading plugin file */
       label = GTK_LABEL(list->data);
+      str = g_strconcat(i18n("Label"),
+			": ",
+			plugin_descriptor->Label,
+			NULL);
       gtk_label_set_text(label,
-			 g_strconcat("Label: \0",
-				     plugin_descriptor->Label,
-				     NULL));
+			 str);
+
+      g_free(str);
 
       list = list->next;
       label = GTK_LABEL(list->data);
+      str = g_strconcat(i18n("Maker"),
+			": ",
+			plugin_descriptor->Label,
+			NULL);
       gtk_label_set_text(label,
-			 g_strconcat("Maker: \0",
-				     plugin_descriptor->Maker,
-				     NULL));
+			 str);
+
+      g_free(str);
 
       list = list->next;
       label = GTK_LABEL(list->data);
+      str = g_strconcat(i18n("Copyright"),
+			": ",
+			plugin_descriptor->Label,
+			NULL);
       gtk_label_set_text(label,
-			 g_strconcat("Copyright: \0",
-				     plugin_descriptor->Copyright,
-				     NULL));
+			 str);
+
+      g_free(str);
 
       port_count = plugin_descriptor->PortCount;
 
       list = list->next;
       label = GTK_LABEL(list->data);
 
-      str = g_strdup("Ports: \0");
+      str = g_strdup_printf("%s: ",
+			    i18n("Ports"));
       gtk_label_set_text(label,
 			 str);
+
+      g_free(str);
 
       list = list->next;
       table = GTK_TABLE(list->data);
@@ -171,8 +197,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	str = g_strdup(plugin_descriptor->PortNames[i]);
 
 	label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-					  "xalign\0", 0.0,
-					  "label\0", str,
+					  "xalign", 0.0,
+					  "label", str,
 					  NULL);
 	gtk_table_attach_defaults(table,
 				  GTK_WIDGET(label),
@@ -213,23 +239,39 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   }else{
     /* update ui - empty */
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Label"));
     gtk_label_set_text(label,
-		       "Label: \0");
+		       str);
+
+    g_free(str);
+    
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Maker"));
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Copyright"));
     gtk_label_set_text(label,
-		       "Maker: \0");
+		       str);
+
+    g_free(str);
 
     list = list->next;
     label = GTK_LABEL(list->data);
+    str = g_strdup_printf("%s: ",
+			  i18n("Ports"));
     gtk_label_set_text(label,
-		       "Copyright: \0");
+		       str);
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       "Ports: \0");
+    g_free(str);
 
     list = list->next;
     table = GTK_TABLE(list->data);

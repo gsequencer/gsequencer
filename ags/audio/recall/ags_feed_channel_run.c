@@ -92,7 +92,7 @@ ags_feed_channel_run_get_type()
     };
 
     ags_type_feed_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-						       "AgsFeedChannelRun\0",
+						       "AgsFeedChannelRun",
 						       &ags_feed_channel_run_info,
 						       0);
 
@@ -148,10 +148,10 @@ ags_feed_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_feed_channel_run_init(AgsFeedChannelRun *feed_channel_run)
 {
-  AGS_RECALL(feed_channel_run)->name = "ags-feed\0";
+  AGS_RECALL(feed_channel_run)->name = "ags-feed";
   AGS_RECALL(feed_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(feed_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(feed_channel_run)->xml_type = "ags-feed-channel-run\0";
+  AGS_RECALL(feed_channel_run)->xml_type = "ags-feed-channel-run";
   AGS_RECALL(feed_channel_run)->port = NULL;
 
   AGS_RECALL(feed_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
@@ -249,7 +249,7 @@ ags_feed_channel_run_new(AgsChannel *channel)
   AgsFeedChannelRun *feed_channel_run;
 
   feed_channel_run = (AgsFeedChannelRun *) g_object_new(AGS_TYPE_FEED_CHANNEL_RUN,
-							"source\0", channel,
+							"source", channel,
 							NULL);
 
   return(feed_channel_run);

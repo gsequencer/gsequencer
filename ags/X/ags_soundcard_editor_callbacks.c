@@ -58,19 +58,19 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
-			    "jack\0",
+			    "jack",
 			    5)){
       ags_soundcard_editor_load_jack_card(soundcard_editor);
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
-				  "alsa\0",
+				  "alsa",
 				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
       gtk_widget_hide((GtkWidget *) soundcard_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
-				  "oss\0",
+				  "oss",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
 
@@ -134,18 +134,18 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   str = NULL;
   
   if(AGS_IS_JACK_DEVOUT(soundcard)){
-    str = "jack\0";
+    str = "jack";
   }else if(AGS_IS_DEVOUT(soundcard)){
     if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      str = "alsa\0";
+      str = "alsa";
     }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      str = "oss\0";
+      str = "oss";
     }
   }
 
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
-			  "alsa\0",
+			  "alsa",
 			  5)){
     use_alsa = TRUE;
   }
@@ -183,7 +183,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 							 GTK_DIALOG_MODAL,
 							 GTK_MESSAGE_ERROR,
 							 GTK_BUTTONS_CLOSE,
-							 "%s\0", error->message);
+							 "%s", error->message);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(GTK_WIDGET(dialog));
 

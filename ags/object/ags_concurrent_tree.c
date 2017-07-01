@@ -47,7 +47,7 @@ ags_concurrent_tree_get_type()
     };
 
     ags_type_concurrent_tree = g_type_register_static(G_TYPE_INTERFACE,
-						      "AgsConcurrentTree\0", &ags_concurrent_tree_info,
+						      "AgsConcurrentTree", &ags_concurrent_tree_info,
 						      0);
   }
 
@@ -174,8 +174,11 @@ ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
 
 
   pthread_mutex_lock(&exclusive_lock);
-  
+
+  //FIXME:JK: check depenendencies - probably should be pthread_mutex_trylock()
   pthread_mutex_lock(parent_mutex);
+  parent_locked = TRUE;
+  
   pthread_mutex_lock(mutex);
 
   pthread_mutex_unlock(&exclusive_lock);

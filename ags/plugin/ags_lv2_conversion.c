@@ -23,6 +23,14 @@
 
 #include <math.h>
 
+void ags_lv2_conversion_class_init(AgsLv2ConversionClass *conversion);
+void ags_lv2_conversion_init (AgsLv2Conversion *conversion);
+void ags_lv2_conversion_finalize(GObject *gobject);
+
+gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
+				   gdouble value,
+				   gboolean reverse);
+
 /**
  * SECTION:ags_lv2_conversion
  * @short_description: Conversion of values
@@ -32,14 +40,6 @@
  *
  * The #AgsLv2Conversion converts values.
  */
-
-void ags_lv2_conversion_class_init(AgsLv2ConversionClass *conversion);
-void ags_lv2_conversion_init (AgsLv2Conversion *conversion);
-void ags_lv2_conversion_finalize(GObject *gobject);
-
-gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
-				   gdouble value,
-				   gboolean reverse);
 
 static gpointer ags_lv2_conversion_parent_class = NULL;
 
@@ -62,7 +62,7 @@ ags_lv2_conversion_get_type(void)
     };
 
     ags_type_lv2_conversion = g_type_register_static(AGS_TYPE_CONVERSION,
-						     "AgsLv2Conversion\0",
+						     "AgsLv2Conversion",
 						     &ags_lv2_conversion_info,
 						     0);
   }

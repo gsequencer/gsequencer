@@ -91,7 +91,7 @@ ags_panel_input_pad_get_type()
     };
 
     ags_type_panel_input_pad = g_type_register_static(AGS_TYPE_PAD,
-						     "AgsPanelInputPad\0", &ags_panel_input_pad_info,
+						     "AgsPanelInputPad", &ags_panel_input_pad_info,
 						     0);
 
     g_type_add_interface_static(ags_type_panel_input_pad,
@@ -225,9 +225,11 @@ ags_panel_input_pad_show(GtkWidget *pad)
 {
   GTK_WIDGET_CLASS(ags_panel_input_pad_parent_class)->show(pad);
 
+  /*
   gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->group));
   gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->mute));
   gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->solo));
+  */
 }
 
 void
@@ -264,7 +266,7 @@ ags_panel_input_pad_new(AgsChannel *channel)
   AgsPanelInputPad *panel_input_pad;
 
   panel_input_pad = (AgsPanelInputPad *) g_object_new(AGS_TYPE_PANEL_INPUT_PAD,
-						      "channel\0", channel,
+						      "channel", channel,
 						      NULL);
 
   return(panel_input_pad);

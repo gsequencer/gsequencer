@@ -210,9 +210,9 @@ ags_dial_class_init(AgsDialClass *dial)
   /**
    * AgsDial:adjustment:
    *
-   * The adjustment of the dial.
+   * The adjustment storing current value and boundaries.
    * 
-   * Since: 0.4.2
+   * Since: 0.7.21
    */
   param_spec = g_param_spec_object("adjustment\0",
 				   "assigned adjustment\0",

@@ -36,7 +36,6 @@
 
 #include <gdk/gdkkeysyms.h>
 
-void ags_pattern_box_init_channel_launch_callback(AgsTask *task, AgsPatternBox *pattern_box);
 void ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 					  AgsPatternBox *pattern_box);
 
@@ -112,7 +111,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   /*  */
   if((AGS_PATTERN_BOX_BLOCK_PATTERN & (pattern_box->flags)) != 0){
 #ifdef AGS_DEBUG
-    g_message("AgsPatternBox pattern is blocked\n\0");
+    g_message("AgsPatternBox pattern is blocked\n");
 #endif
 
     return;
@@ -449,7 +448,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 							index0, index1,
 							offset);
 	
-	g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+	g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui",
 			 G_CALLBACK(ags_pattern_box_refresh_gui_callback), pattern_box);
 
 	tasks = g_list_prepend(tasks,

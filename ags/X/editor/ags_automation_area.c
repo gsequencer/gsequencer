@@ -34,6 +34,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_automation_area_class_init(AgsAutomationAreaClass *automation_area);
 void ags_automation_area_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_area_init(AgsAutomationArea *automation_area);
@@ -98,7 +100,7 @@ ags_automation_area_get_type(void)
     };
 
     ags_type_automation_area = g_type_register_static(G_TYPE_OBJECT,
-						      "AgsAutomationArea\0", &ags_automation_area_info,
+						      "AgsAutomationArea", &ags_automation_area_info,
 						      0);
     
     g_type_add_interface_static(ags_type_automation_area,
@@ -139,9 +141,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec =  g_param_spec_uint("y\0",
-				  "y offset\0",
-				  "The y offset\0",
+  param_spec =  g_param_spec_uint("y",
+				  i18n_pspec("y offset"),
+				  i18n_pspec("The y offset"),
 				  0,
 				  65535,
 				  0,
@@ -157,9 +159,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec =  g_param_spec_uint("height\0",
-				  "height of the area\0",
-				  "The height of the area\0",
+  param_spec =  g_param_spec_uint("height",
+				  i18n_pspec("height of the area"),
+				  i18n_pspec("The height of the area"),
 				  0,
 				  65535,
 				  0,
@@ -175,9 +177,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_object("drawing-area\0",
-				   "assigned drawing area\0",
-				   "The drawing area it is assigned with\0",
+  param_spec = g_param_spec_object("drawing-area",
+				   i18n_pspec("assigned drawing area"),
+				   i18n_pspec("The drawing area it is assigned with"),
 				   GTK_TYPE_DRAWING_AREA,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -191,9 +193,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "assigned audio\0",
-				   "The audio it is assigned with\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned with"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -207,9 +209,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_gtype("channel-type\0",
-				  "assigned channel type\0",
-				  "The channel type it is assigned with\0",
+  param_spec = g_param_spec_gtype("channel-type",
+				  i18n_pspec("assigned channel type"),
+				  i18n_pspec("The channel type it is assigned with"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -223,9 +225,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "filename assigned with\0",
-				   "The filename it is assigned with\0",
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("filename assigned with"),
+				   i18n_pspec("The filename it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -239,9 +241,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_string("effect\0",
-				   "effect assigned with\0",
-				   "The effect name it is assigned with\0",
+  param_spec = g_param_spec_string("effect",
+				   i18n_pspec("effect assigned with"),
+				   i18n_pspec("The effect name it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -255,9 +257,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_string("control-specifier\0",
-				   "assigned control specifier\0",
-				   "The control specifier it is assigned with\0",
+  param_spec = g_param_spec_string("control-specifier",
+				   i18n_pspec("assigned control specifier"),
+				   i18n_pspec("The control specifier it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -271,9 +273,9 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    * 
    * Since: 0.7.74
    */
-  param_spec = g_param_spec_string("control-name\0",
-				   "displayed control name\0",
-				   "The control name to display\0",
+  param_spec = g_param_spec_string("control-name",
+				   i18n_pspec("displayed control name"),
+				   i18n_pspec("The control name to display"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -920,7 +922,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 
       if(c_range == 0.0){
 	automation = automation->next;
-	g_warning("ags_automation_area.c - c_range = 0.0\0");
+	g_warning("ags_automation_area.c - c_range = 0.0");
 	
 	continue;
       }
@@ -1032,7 +1034,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  
 	if(c_range == 0.0){
 	  automation = automation->next;
-	  g_warning("ags_automation_area.c - c_range = 0.0\0");
+	  g_warning("ags_automation_area.c - c_range = 0.0");
 	
 	  continue;
 	}
@@ -1292,10 +1294,10 @@ ags_automation_area_new(GtkDrawingArea *drawing_area,
   AgsAutomationArea *automation_area;
 
   automation_area = (AgsAutomationArea *) g_object_new(AGS_TYPE_AUTOMATION_AREA,
-						       "drawing-area\0", drawing_area,
-						       "audio\0", audio,
-						       "channel-type\0", channel_type,
-						       "control-name\0", control_name,
+						       "drawing-area", drawing_area,
+						       "audio", audio,
+						       "channel-type", channel_type,
+						       "control-name", control_name,
 						       NULL);
   
   return(automation_area);

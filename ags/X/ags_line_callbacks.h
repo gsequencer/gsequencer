@@ -30,7 +30,7 @@ int ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLi
 
 void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
 
-int ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
+void ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
 
 void ags_line_add_effect_callback(AgsChannel *channel,
 				  gchar *filename,
@@ -45,9 +45,6 @@ void ags_line_volume_callback(GtkRange *range,
 			      AgsLine *line);
 
 /* AgsRecall - recall */
-void ags_line_output_port_run_post_callback(AgsRecall *recall,
-					    AgsLine *line);
-
 void ags_line_copy_pattern_done(AgsRecall *recall,
 				AgsLine *line);
 void ags_line_copy_pattern_cancel(AgsRecall *recall,

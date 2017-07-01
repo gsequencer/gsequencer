@@ -22,7 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <ags/config.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <ags/audio/file/ags_ipatch.h>
 
@@ -50,16 +55,27 @@ struct _AgsIpatchDLS2Reader
 
   gchar **selected;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchDLSReader *reader;
 
   IpatchDLS2 *dls2;
+#else
+  gpointer reader;
 
+  gpointer dls2;
+#endif
+  
   int bank;
   int program;
 
+#ifdef AGS_WITH_LIBINSTPATCH
   IpatchContainer *instrument;
   IpatchContainer *sample;
-
+#else
+  gpointer instrument;
+  gpointer sample;
+#endif
+  
   int count;
 };
 

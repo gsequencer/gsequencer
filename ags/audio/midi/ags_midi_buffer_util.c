@@ -330,9 +330,13 @@ ags_midi_buffer_util_put_header(unsigned char *buffer,
   /* put MThd */
   memcpy(buffer, header, 4 * sizeof(unsigned char));
 
-  /* offset */
+  /* chunk length */
+  if(offset != 6){
+    g_warning("invalid chunk length");
+  }
+  
   ags_midi_buffer_util_put_int32(buffer + 4,
-				 offset);
+				 6);
 
   /* format */
   ags_midi_buffer_util_put_int16(buffer + 8,
@@ -960,8 +964,6 @@ ags_midi_buffer_util_put_change_program(unsigned char *buffer,
 
   /* program */
   buffer[delta_time_size + 1] = 0x7f & program;
-
-  return(delta_time_size + 2);
 }
 
 /**
@@ -1711,7 +1713,7 @@ ags_midi_buffer_util_put_tempo(unsigned char *buffer,
   buffer[delta_time_size + 1] = 0x51;
 
   /* length */
-  buffer[delta_time_size + 2] = 3;
+  buffer[delta_time_size + 2] = 0x03;
   
   /* tempo */
   ags_midi_buffer_util_put_int24(buffer + delta_time_size + 3,
@@ -2157,7 +2159,7 @@ ags_midi_buffer_util_get_text_event(unsigned char *buffer,
     memcpy(*text, buffer + delta_time_size + 3, text_size * sizeof(unsigned char));
   }
 
-  return(delta_time_size + length + 3);
+  return(delta_time_size + text_size + 3);
 }
 
 /**
@@ -2247,83 +2249,236 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
   static gchar header[] = "MThd";
   static gchar track[] = "MTrk";
 
+  unsigned char *offset;
+  
   glong current_delta_time;
+  glong next_delta_time;
   guint delta_time_size;
-  unsigned char status;
+  unsigned char status, prev_status;
   unsigned char meta_type;
   guint n;
   guint i;
+  gboolean initial_run;
+  
+  if(buffer == NULL){
+    return(NULL);
+  }
+
+  offset = buffer;
   
   /* check for header */
-  if(!g_ascii_strncasecmp(buffer,
+  if(!g_ascii_strncasecmp(offset,
 			  header,
 			  4)){
-    buffer += 14;
+    offset += 14;
   }
 
   /* seek message count */
   current_delta_time = 0;
+  initial_run = TRUE;
   
-  for(i = 0; i < delta_time; i++){
+  for(i = 0; i < message_count; i++){
     /* check for track */
-    if(!g_ascii_strncasecmp(buffer,
-			    track,
-			    4)){
-      buffer += 8;
+    if(initial_run){
+      if(!g_ascii_strncasecmp(offset,
+			      track,
+			      4)){
+	offset += 8;
+      }
+
+      initial_run = FALSE;
     }
 
     /* read delta time */
-    delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
-							 &delta_time_size);
+    delta_time_size = ags_midi_buffer_util_get_varlength(offset,
+							 &current_delta_time);
     
     /* read status byte */
-    status = buffer[delta_time_size];
+    status = offset[delta_time_size];
+
+    n = 1;
+  ags_midi_buffer_util_seek_message_REPEAT_STATUS:
     
-    if((0xf0 & (0xf0 & status)) != 0xf0){
+    if((0xf0 & status) != 0xf0){
+      switch(status & 0xf0){
+      case 0x80:
+	{
+	  n += delta_time_size + 2;
+
+	  prev_status = status;
+	}
+	break;
+      case 0x90:
+	{
+	  n += delta_time_size + 2;
+
+	  prev_status = status;
+	}
+	break;
+      case 0xa0:
+	{
+	  n += delta_time_size + 2;
+
+	  prev_status = status;
+	}
+	break;
+      case 0xb0:
+	{
+	  n += delta_time_size + 2;
+
+	  prev_status = status;
+	}
+	break;
+      case 0xc0:
+	{
+	  n += delta_time_size + 1;
+
+	  prev_status = status;
+	}
+	break;
+      case 0xd0:
+	{
+	  n += delta_time_size + 1;
+
+	  prev_status = status;
+	}
+	break;
+      case 0xe0:
+	{
+	  n += delta_time_size + 2;
+
+	  prev_status = status;
+	}
+	break;
+      default:
+	{
+#ifdef AGS_DEBUG
+	  g_message("repeat status=0x%x", prev_status);
+#endif
+	  status = prev_status;
+	  
+	  goto ags_midi_buffer_util_seek_message_REPEAT_STATUS;
+	}
+      }
+
+      offset += n;
+
+      /* check if status is omitted */
+      delta_time_size = ags_midi_buffer_util_get_varlength(offset,
+							   &next_delta_time);
+      
+      if((0xf0 & offset[delta_time_size]) != 0xf0){
+	switch(status & 0xf0){
+	case 0x80:
+	case 0x90:
+	case 0xa0:
+	case 0xb0:
+	case 0xc0:
+	case 0xd0:
+	case 0xe0:
+	  break;
+	default:
+	  {
+	    n = 0;
+	    current_delta_time = next_delta_time;
+	    
+	    goto ags_midi_buffer_util_seek_message_REPEAT_STATUS;
+	  }
+	}
+      }      
+    }else{      
+      status = offset[delta_time_size];
+
       switch(status){
       case 0xf0:
 	{
-	}
-	break;
-      case 0xf1:
-      case 0xf2:
-      case 0xf3:
-      case 0xf4:
-      case 0xf5:
-      case 0xf6:
-	{
 	  /* start of system exclusive */
-	  n = ags_midi_buffer_util_get_sysex(buffer,
+	  n = ags_midi_buffer_util_get_sysex(offset,
 					     NULL,
 					     NULL, NULL);
 
-	  buffer += n;
+	  offset += n;
+	}
+	break;
+      case 0xf1:
+	{
+	  /* quarter frame */
+	  n = ags_midi_buffer_util_get_quarter_frame(offset,
+						     NULL,
+						     NULL, NULL);
+
+	  offset += n;
+	}
+	break;
+      case 0xf2:
+	{
+	  /* song position */
+	  n = ags_midi_buffer_util_get_song_position(offset,
+						     NULL,
+						     NULL);
+	  
+	  offset += n;
+	}
+	break;
+      case 0xf3:
+	{
+	  /* song select */
+	  n = ags_midi_buffer_util_get_song_select(offset,
+						   NULL,
+						   NULL);
+	  
+	  offset += n;
+	}
+	break;
+      case 0xf4:
+      case 0xf5:
+	{
+#ifdef AGS_DEBUG
+	  g_message("undefined");
+#endif
+	  
+	  offset += delta_time_size;
+	}
+	break;
+      case 0xf6:
+	{
+	  /* tune request */
+	  n = ags_midi_buffer_util_get_tune_request(offset,
+						    NULL);
+	  
+	  offset += n;
 	}
 	break;
       case 0xf7:
 	{
 	  /* sysex continuation or arbitrary stuff */
-	  buffer += (delta_time_size + 1);
+#ifdef AGS_DEBUG
+	  g_message("sysex end");
+#endif
 	}
 	break;
       case 0xff:
 	{
+	  guint meta_type;
+
+	  meta_type = offset[delta_time_size + 1];
+
+
+      
 	  switch(meta_type){
 	  case 0x00:
 	    {
 	      int c;
 
-	      c = buffer[delta_time_size + 1];
+	      //	  c = offset[delta_time_size + 1];
 
-	      if(c == 0x02){
-		n = ags_midi_buffer_util_get_sequence_number(buffer,
-							     NULL,
-							     NULL);
-
-		buffer += n;
-	      }else{
-		buffer += (delta_time_size + 1);
-	      }
+	      //	  if(c == 0x02){
+	      n = ags_midi_buffer_util_get_sequence_number(offset,
+							   NULL,
+							   NULL);
+	  
+	      offset += n;
+	      //	  }
 	    }
 	    break;
 	  case 0x01:      /* Text event */
@@ -2343,97 +2498,87 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 	  case 0x0f:
 	    {
 	      /* These are all text events */
-	      n = ags_midi_buffer_util_get_text_event(buffer,
+	      n = ags_midi_buffer_util_get_text_event(offset,
 						      NULL,
 						      NULL, NULL);
 
-	      buffer += n;
+	      offset += n;
 	    }
 	    break;
 	  case 0x2f:
 	    {
 	      int c;
 
-	      c = buffer[delta_time_size];
+	      //	      c = buffer[delta_time_size];
 
-	      if(c == 0x0){
-		/* End of Track */
-		n = ags_midi_buffer_util_get_end_of_track(buffer,
-							  NULL);
+	      //	      if(c == 0x0){
+	      /* End of Track */
+	      n = ags_midi_buffer_util_get_end_of_track(offset,
+							NULL);
 
-		buffer += n;
-	      }else{
-		buffer += (delta_time_size + 1);
-	      }
+	      offset = NULL;
 	    }
 	    break;
 	  case 0x51:
 	    {
 	      int c;
 
-	      c = buffer[delta_time_size];
+	      //	      c = offset[delta_time_size];
 
-	      if(c == 0x03){
-		/* Set tempo */
-		n = ags_midi_buffer_util_get_tempo(buffer,
-						   NULL,
-						   NULL);
+	      //	      if(c == 0x03){
+	      /* Set tempo */
+	      n = ags_midi_buffer_util_get_tempo(offset,
+						 NULL,
+						 NULL);
 		
-		buffer += n;
-	      }else{
-		buffer += (delta_time_size + 1);
-	      }
+	      offset += n;
+	      //	      }
 	    }
 	    break;
 	  case 0x54:
 	    {
 	      int c;
 
-	      c = buffer[delta_time_size];
+	      c = offset[delta_time_size];
 
-	      if(c == 0x05){
-		n = ags_midi_buffer_util_get_smtpe(buffer,
-						   NULL,
-						   NULL, NULL, NULL, NULL, NULL);
+	      //	      if(c == 0x05){
+	      n = ags_midi_buffer_util_get_smtpe(offset,
+						 NULL,
+						 NULL, NULL, NULL, NULL, NULL);
 
-		buffer += n;
-	      }else{
-		buffer += (delta_time_size + 1);
-	      }
+	      offset += n;
+	      //	      }
 	    }
 	    break;
 	  case 0x58:
 	    {
 	      int c;
 
-	      c = buffer[delta_time_size];
+	      //      c = ags_midi_parser_midi_getc(midi_parser);
       
-	      if(c == 0x04){
-		n = ags_midi_buffer_util_get_time_signature(buffer,
-							    NULL,
-							    NULL, NULL, NULL, NULL);
-		
-		buffer += n;
-	      }else{
-		buffer += (delta_time_size + 1);
-	      }
+	      n = ags_midi_buffer_util_get_time_signature(offset,
+							  NULL,
+							  NULL, NULL, NULL, NULL);
+
+	      offset += n;
+      
+	      //      if(c == 0x04){
+	      //      }
 	    }
 	    break;
 	  case 0x59:
 	    {
 	      int c;
 
-	      c = buffer[delta_time_size];
+	      //	      c = offset[delta_time_size];
 
-	      if(c == 0x02){
-		n = ags_midi_buffer_util_get_key_signature(buffer,
-							   NULL,
-							   NULL, NULL);
+	      //	      if(c == 0x02){
+	      n = ags_midi_buffer_util_get_key_signature(offset,
+							 NULL,
+							 NULL, NULL);
 
-		buffer += n;
-	      }else{
-		buffer += (delta_time_size + 1);
-	      }
+	      offset += n;
+	      //	      }
 	    }
 	    break;
 	  case 0x7f:
@@ -2442,23 +2587,16 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
 								NULL,
 								NULL, NULL, NULL);
 	      
-	      buffer += n;
+	      offset += n;
 	    }
 	    break;
 	  default:
-	    {
-	      buffer += (delta_time_size + 1);
-	    }
-
+	    offset += 5;
 	  }
-	  break;
-	default:
-	  buffer++;
-	  
-	  g_warning("bad byte\0");
-	  
-	  break;
-	}
+	}    
+	break;
+      default:
+	g_warning("bad byte");
       }
     }
   }
@@ -2467,7 +2605,7 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
     *delta_time = current_delta_time;
   }
   
-  return(buffer);
+  return(offset);
 }
 
 /**
@@ -2528,7 +2666,7 @@ ags_midi_buffer_util_decode(unsigned char *buffer,
     }
     break;
   default:
-    g_warning("ags_midi_buffer_util_decode() - unsupported MIDI event\0");
+    g_warning("ags_midi_buffer_util_decode() - unsupported MIDI event");
     break;
   }
   

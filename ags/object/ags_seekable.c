@@ -40,11 +40,11 @@ ags_seekable_get_type()
   static GType seekable_type = 0;
 
   if(!seekable_type){
-    seekable_type = g_type_register_static_simple (G_TYPE_INTERFACE,
-						   "AgsSeekable\0",
-						   sizeof (AgsSeekableInterface),
-						   (GClassInitFunc) ags_seekable_class_init,
-						   0, NULL, 0);
+    seekable_type = g_type_register_static_simple(G_TYPE_INTERFACE,
+						  "AgsSeekable",
+						  sizeof (AgsSeekableInterface),
+						  (GClassInitFunc) ags_seekable_class_init,
+						  0, NULL, 0);
   }
   
   return seekable_type;
@@ -61,8 +61,10 @@ ags_seekable_class_init(AgsSeekableInterface *interface)
    *
    * The ::seek signal notifies about changed position
    * of sequencer.
+   * 
+   * Since: 0.7.0
    */
-  g_signal_new("seek\0",
+  g_signal_new("seek",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsSeekableInterface, seek),

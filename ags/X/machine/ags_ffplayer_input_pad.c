@@ -80,7 +80,7 @@ ags_ffplayer_input_pad_get_type(void)
     };
 
     ags_type_ffplayer_input_pad = g_type_register_static(AGS_TYPE_EFFECT_PAD,
-							 "AgsFFPlayerInputPad\0", &ags_ffplayer_input_pad_info,
+							 "AgsFFPlayerInputPad", &ags_ffplayer_input_pad_info,
 							 0);
 
     g_type_add_interface_static(ags_type_ffplayer_input_pad,
@@ -184,7 +184,7 @@ ags_ffplayer_input_pad_new(AgsChannel *channel)
   AgsFFPlayerInputPad *ffplayer_input_pad;
 
   ffplayer_input_pad = (AgsFFPlayerInputPad *) g_object_new(AGS_TYPE_FFPLAYER_INPUT_PAD,
-							    "channel\0", channel,
+							    "channel", channel,
 							    NULL);
 
   return(ffplayer_input_pad);

@@ -19,6 +19,8 @@
 
 #include <ags/audio/recall/ags_copy_notation_audio.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audio);
 void ags_copy_notation_audio_init(AgsCopyNotationAudio *copy_notation_audio);
 void ags_copy_notation_audio_set_property(GObject *gobject,
@@ -29,6 +31,7 @@ void ags_copy_notation_audio_get_property(GObject *gobject,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *param_spec);
+void ags_copy_notation_audio_dispose(GObject *gobject);
 void ags_copy_notation_audio_finalize(GObject *gobject);
 
 /**
@@ -43,7 +46,6 @@ void ags_copy_notation_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_NOTATION,
   PROP_AUDIO_CHANNEL,
 };
@@ -69,7 +71,7 @@ ags_copy_notation_audio_get_type()
     };
 
     ags_type_copy_notation_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-							  "AgsCopyNotationAudio\0",
+							  "AgsCopyNotationAudio",
 							  &ags_copy_notation_audio_info,
 							  0);
   }
@@ -94,18 +96,32 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
   gobject->finalize = ags_copy_notation_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("notation\0",
-				   "the assigned notation\0",
-				   "The AgsNotation it is assigned to\0",
+  /**
+   * AgsCopyNotationAudio:notation:
+   *
+   * The notation.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("notation",
+				   i18n_pspec("the assigned notation"),
+				   i18n_pspec("The AgsNotation it is assigned to"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTATION,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("audio_channel\0",
-				 "the audio channel to play\0",
-				 "The audio channel to play of audio object\0",
+  /**
+   * AgsCopyNotationAudio:audio-channel:
+   *
+   * The audio channel.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_uint("audio_channel",
+				 i18n_pspec("the audio channel to play"),
+				 i18n_pspec("The audio channel to play of audio object"),
 				 0,
 				 65535,
 				 0,
@@ -136,24 +152,6 @@ ags_copy_notation_audio_set_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      GObject *soundcard;
-
-      soundcard = (GObject *) g_value_get_object(value);
-
-      if(copy_notation_audio->soundcard != soundcard)
-	return;
-
-      if(copy_notation_audio->soundcard != NULL)
-	g_object_unref(copy_notation_audio->soundcard);
-
-      if(soundcard != NULL)
-	g_object_ref(soundcard);
-
-      copy_notation_audio->soundcard = soundcard;
-    }
-    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -197,11 +195,6 @@ ags_copy_notation_audio_get_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, copy_notation_audio->soundcard);
-    }
-    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, copy_notation_audio->notation);
@@ -218,8 +211,35 @@ ags_copy_notation_audio_get_property(GObject *gobject,
 }
 
 void
+ags_copy_notation_audio_dispose(GObject *gobject)
+{
+  AgsCopyNotationAudio *copy_notation_audio;
+
+  copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
+  
+  /* notation */
+  if(copy_notation_audio->notation != NULL){
+    g_object_unref(copy_notation_audio->notation);
+
+    copy_notation_audio->notation = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_copy_notation_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_copy_notation_audio_finalize(GObject *gobject)
 {
+  AgsCopyNotationAudio *copy_notation_audio;
+
+  copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
+  
+  /* notation */
+  if(copy_notation_audio->notation != NULL){
+    g_object_unref(copy_notation_audio->notation);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_copy_notation_audio_parent_class)->finalize(gobject);
 }
@@ -244,9 +264,9 @@ ags_copy_notation_audio_new(GObject *soundcard,
   AgsCopyNotationAudio *copy_notation_audio;
 
   copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
-							      "soundcard\0", soundcard,
-							      "notation\0", notation,
-							      "audio_channel\0", audio_channel,
+							      "soundcard", soundcard,
+							      "notation", notation,
+							      "audio_channel", audio_channel,
 							      NULL);
   
   return(copy_notation_audio);

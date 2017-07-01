@@ -89,7 +89,7 @@ ags_lv2_option_manager_get_type()
     };
 
     ags_type_lv2_option_manager = g_type_register_static(G_TYPE_OBJECT,
-							 "AgsLv2OptionManager\0",
+							 "AgsLv2OptionManager",
 							 &ags_lv2_option_manager_info,
 							 0);
 
@@ -131,7 +131,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
    * Since: 0.7.128
    */
   lv2_option_manager_signals[GET_OPTION] =
-    g_signal_new("get-option\0",
+    g_signal_new("get-option",
 		 G_TYPE_FROM_CLASS(lv2_option_manager),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLv2OptionManagerClass, get_option),
@@ -154,7 +154,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
    * Since: 0.7.128
    */
   lv2_option_manager_signals[SET_OPTION] =
-    g_signal_new("set-option\0",
+    g_signal_new("set-option",
 		 G_TYPE_FROM_CLASS(lv2_option_manager),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLv2OptionManagerClass, set_option),

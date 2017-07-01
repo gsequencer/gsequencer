@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_dependency.h>
@@ -99,6 +101,8 @@ struct _AgsRecall
   GList *dependencies;
 
   AgsRecallID *recall_id;
+
+  pthread_mutex_t *children_mutex;
 
   AgsRecall *parent;
   GList *children;

@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_midiin.h>
 
+#include <ags/i18n.h>
+
 void ags_set_input_device_class_init(AgsSetInputDeviceClass *set_input_device);
 void ags_set_input_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_input_device_init(AgsSetInputDevice *set_input_device);
@@ -85,7 +87,7 @@ ags_set_input_device_get_type()
     };
 
     ags_type_set_input_device = g_type_register_static(AGS_TYPE_TASK,
-						       "AgsSetInputDevice\0",
+						       "AgsSetInputDevice",
 						       &ags_set_input_device_info,
 						       0);
     
@@ -122,9 +124,9 @@ ags_set_input_device_class_init(AgsSetInputDeviceClass *set_input_device)
    * 
    * Since: 0.7.111
    */
-  param_spec = g_param_spec_object("sequencer\0",
-				   "sequencer of set audio channels\0",
-				   "The sequencer of set audio channels\0",
+  param_spec = g_param_spec_object("sequencer",
+				   i18n_pspec("sequencer of set audio channels"),
+				   i18n_pspec("The sequencer of set audio channels"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -138,9 +140,9 @@ ags_set_input_device_class_init(AgsSetInputDeviceClass *set_input_device)
    * 
    * Since: 0.7.111
    */
-  param_spec = g_param_spec_string("device\0",
-				   "device identifier\0",
-				   "The device identifier to set\0",
+  param_spec = g_param_spec_string("device",
+				   i18n_pspec("device identifier"),
+				   i18n_pspec("The device identifier to set"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -292,7 +294,7 @@ ags_set_input_device_launch(AgsTask *task)
     if(index(device, ',') == NULL){
       gchar *tmp;
       
-      tmp = g_strdup_printf("%s,0\0",
+      tmp = g_strdup_printf("%s,0",
 			    device);
       
       g_free(device);

@@ -29,6 +29,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
+#include <ags/i18n.h>
+
 void ags_performance_preferences_class_init(AgsPerformancePreferencesClass *performance_preferences);
 void ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -84,7 +86,7 @@ ags_performance_preferences_get_type(void)
     };
 
     ags_type_performance_preferences = g_type_register_static(GTK_TYPE_VBOX,
-							      "AgsPerformancePreferences\0", &ags_performance_preferences_info,
+							      "AgsPerformancePreferences", &ags_performance_preferences_info,
 							      0);
     
     g_type_add_interface_static(ags_type_performance_preferences,
@@ -138,13 +140,13 @@ ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *ap
 void
 ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences)
 {
-  performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label("Auto-sense on stream\0");
+  performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Auto-sense on stream"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->stream_auto_sense),
 		     FALSE, FALSE,
 		     0);
   
-  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label("Super threaded\0");
+  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->super_threaded),
 		     FALSE, FALSE,
@@ -187,29 +189,29 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   /* restore thread config */
   ags_config_set_value(config,
 		       AGS_CONFIG_THREAD,
-		       "model\0",
-		       "super-threaded\0");
+		       "model",
+		       "super-threaded");
   
   ags_config_set_value(config,
 		       AGS_CONFIG_THREAD,
-		       "super-threaded-scope\0",
-		       "channel\0");
+		       "super-threaded-scope",
+		       "channel");
 
   ags_config_set_value(config,
 		       AGS_CONFIG_THREAD,
-		       "lock-global\0",
-		       "ags-thread\0");
+		       "lock-global",
+		       "ags-thread");
   
   ags_config_set_value(config,
 		       AGS_CONFIG_THREAD,
-		       "lock-parent\0",
-		       "ags-recycling-thread\0");
+		       "lock-parent",
+		       "ags-recycling-thread");
 
   /* auto-sense */
-  str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
+  str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true": "false"));
   ags_config_set_value(config,
 		       AGS_CONFIG_RECALL,
-		       "auto-sense\0",
+		       "auto-sense",
 		       str);
   g_free(str);
 
@@ -232,9 +234,9 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
 
   str = ags_config_get_value(config,
 			     AGS_CONFIG_RECALL,
-			     "auto-sense\0");
+			     "auto-sense");
   gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->stream_auto_sense,
-			       !g_strcmp0("true\0",
+			       !g_strcmp0("true",
 					  str));
   
   //TODO:JK: implement me

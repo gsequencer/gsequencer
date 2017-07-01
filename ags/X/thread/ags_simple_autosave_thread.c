@@ -95,7 +95,7 @@ ags_simple_autosave_thread_get_type()
     };
 
     ags_type_simple_autosave_thread = g_type_register_static(AGS_TYPE_THREAD,
-							     "AgsSimpleAutosaveThread\0",
+							     "AgsSimpleAutosaveThread",
 							     &ags_simple_autosave_thread_info,
 							     0);
     
@@ -125,9 +125,9 @@ ags_simple_autosave_thread_class_init(AgsSimpleAutosaveThreadClass *simple_autos
   gobject->finalize = ags_simple_autosave_thread_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context to check against\0",
-				   "The application context to check against serialization.\0",
+  param_spec = g_param_spec_object("application-context",
+				   "application context to check against",
+				   "The application context to check against serialization.",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -172,7 +172,7 @@ ags_simple_autosave_thread_init(AgsSimpleAutosaveThread *simple_autosave_thread)
   uid = getuid();
   pw = getpwuid(uid);
 
-  filename = g_strdup_printf("%s/%s/%s\0",
+  filename = g_strdup_printf("%s/%s/%s",
 			     pw->pw_dir,
 			     AGS_DEFAULT_DIRECTORY,
 			     AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
@@ -307,12 +307,12 @@ ags_simple_autosave_thread_run(AgsThread *thread)
     simple_autosave_thread->counter = 0;
     
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context\0", simple_autosave_thread->application_context,
-						 "filename\0", simple_autosave_thread->filename,
+						 "application-context", simple_autosave_thread->application_context,
+						 "filename", simple_autosave_thread->filename,
 						 NULL);
 
     simple_file_write = ags_simple_file_write_new((AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-										 "filename\0", simple_autosave_thread->filename,
+										 "filename", simple_autosave_thread->filename,
 										 NULL));
     ags_task_thread_append_task(task_thread,
 				(AgsTask *) simple_file_write);
@@ -337,7 +337,7 @@ ags_simple_autosave_thread_new(GObject *application_context)
   AgsSimpleAutosaveThread *simple_autosave_thread;
 
   simple_autosave_thread = (AgsSimpleAutosaveThread *) g_object_new(AGS_TYPE_SIMPLE_AUTOSAVE_THREAD,
-								    "application-context\0", application_context,
+								    "application-context", application_context,
 								    NULL);
 
   return(simple_autosave_thread);

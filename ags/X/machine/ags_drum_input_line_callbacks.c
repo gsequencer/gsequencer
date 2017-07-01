@@ -55,7 +55,7 @@ ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent
   if(drum != NULL &&
      G_OBJECT(AGS_MACHINE(drum)->audio) != NULL){
     /* AgsAudio */
-    g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
+    g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads",
 			   G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
   }
 }

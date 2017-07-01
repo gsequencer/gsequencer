@@ -1,0 +1,31 @@
+Overview of Changes in AGS 0.8.8
+================================
+
+* Additional editing tools available. After a Standard MIDI File import
+  you might want to move or crop notes. There are 2 dialogs available of
+  the toolbar allowing you to do so.
+
+Overview of Changes in AGS 0.8.5
+================================
+
+* Envelope is ready now for use. Featuring envelope editor with presets,
+  pattern presets and information tab.
+* Envelope dialog available trough machine's context menu. Supported by
+  AgsDrum, AgsMatrix, AgsFFPlayer, AgsDssiBridge and AgsLv2Bridge.
+* Fixed missing persistence of AgsLiveDssiBridge and AgsLiveLv2Bridge
+
+Overview of Changes in AGS 0.8.2
+================================
+
+* Added gettext support
+
+Overview of Changes in AGS 0.8.0
+================================
+
+* Added MIDI import wizard
+* Added MIDI export wizard
+
+Overview of Changes in AGS 0.7.0
+================================
+
+* provide GSequencer functionality as libraries

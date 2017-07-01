@@ -43,6 +43,7 @@
 #include <ags/X/ags_midi_preferences.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_sequencer_editor_class_init(AgsSequencerEditorClass *sequencer_editor);
 void ags_sequencer_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -98,7 +99,7 @@ ags_sequencer_editor_get_type(void)
     };
     
     ags_type_sequencer_editor = g_type_register_static(GTK_TYPE_VBOX,
-						       "AgsSequencerEditor\0", &ags_sequencer_editor_info,
+						       "AgsSequencerEditor", &ags_sequencer_editor_info,
 						       0);
     
     g_type_add_interface_static(ags_type_sequencer_editor,
@@ -163,8 +164,8 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 
   /* backend */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "backend\0",
-				    "xalign\0", 0.0,
+				    "label", i18n("backend"),
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -182,16 +183,16 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		   0, 0);
 
   gtk_combo_box_text_append_text(sequencer_editor->backend,
-				 "jack\0");
+				 "jack");
   
 #ifdef AGS_WITH_ALSA
   gtk_combo_box_text_append_text(sequencer_editor->backend,
-				 "alsa\0");
+				 "alsa");
 #endif
   
 #ifdef AGS_WITH_OSS
   gtk_combo_box_text_append_text(sequencer_editor->backend,
-				 "oss\0");
+				 "oss");
 #endif
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
@@ -199,8 +200,8 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   
   /* sound card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "MIDI card\0",
-				    "xalign\0", 0.0,
+				    "label", i18n("MIDI card"),
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -267,17 +268,17 @@ ags_sequencer_editor_connect(AgsConnectable *connectable)
   sequencer_editor->flags |= AGS_SEQUENCER_EDITOR_CONNECTED;
   
   /* backend and card */
-  g_signal_connect(G_OBJECT(sequencer_editor->backend), "changed\0",
+  g_signal_connect(G_OBJECT(sequencer_editor->backend), "changed",
 		   G_CALLBACK(ags_sequencer_editor_backend_changed_callback), sequencer_editor);
 
-  g_signal_connect(G_OBJECT(sequencer_editor->card), "changed\0",
+  g_signal_connect(G_OBJECT(sequencer_editor->card), "changed",
 		   G_CALLBACK(ags_sequencer_editor_card_changed_callback), sequencer_editor);
 
   /* add / remove jack */
-  g_signal_connect(G_OBJECT(sequencer_editor->add_jack), "clicked\0",
+  g_signal_connect(G_OBJECT(sequencer_editor->add_jack), "clicked",
 		   G_CALLBACK(ags_sequencer_editor_add_jack_callback), sequencer_editor);
 
-  g_signal_connect(G_OBJECT(sequencer_editor->remove_jack), "clicked\0",
+  g_signal_connect(G_OBJECT(sequencer_editor->remove_jack), "clicked",
 		   G_CALLBACK(ags_sequencer_editor_remove_jack_callback), sequencer_editor);
 }
 
@@ -296,26 +297,26 @@ ags_sequencer_editor_disconnect(AgsConnectable *connectable)
 
   /* backend and card */
   g_object_disconnect(G_OBJECT(sequencer_editor->backend),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_sequencer_editor_backend_changed_callback),
 		      sequencer_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(sequencer_editor->card),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_sequencer_editor_card_changed_callback),
 		      sequencer_editor,
 		      NULL);
 
   /* add / remove jack */
   g_object_disconnect(G_OBJECT(sequencer_editor->add_jack),
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_sequencer_editor_add_jack_callback),
 		      sequencer_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(sequencer_editor->remove_jack),
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_sequencer_editor_remove_jack_callback),
 		      sequencer_editor,
 		      NULL);
@@ -374,7 +375,7 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
     return;
   }
   
-  sequencer_group = g_strdup_printf("%s-%d\0",
+  sequencer_group = g_strdup_printf("%s-%d",
 				    AGS_CONFIG_SEQUENCER,
 				    nth);
   g_list_free(list);
@@ -387,20 +388,20 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
   backend = gtk_combo_box_text_get_active_text(sequencer_editor->backend);
   ags_config_set_value(config,
 		       sequencer_group,
-		       "backend\0",
+		       "backend",
 		       backend);
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
-			    "jack\0",
+			    "jack",
 			    5)){
       use_jack = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-			    "alsa\0",
+			    "alsa",
 			    5)){
       use_alsa = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-				  "oss\0",
+				  "oss",
 				  4)){
       use_oss = TRUE;
     }
@@ -421,22 +422,22 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
   }
 
   /* handle */
-  g_message("%s\0", device);
+  g_message("%s", device);
 
   if(use_jack){
     ags_config_set_value(config,
 			 sequencer_group,
-			 "device\0",
+			 "device",
 			 device);
   }else if(use_alsa){
     ags_config_set_value(config,
 			 sequencer_group,
-			 "device\0",
+			 "device",
 			 device);
   }else if(use_oss){
     ags_config_set_value(config,
 			 sequencer_group,
-			 "device\0",
+			 "device",
 			 device);
   }
 }
@@ -469,25 +470,25 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
   backend = NULL;
   
   if(AGS_IS_JACK_MIDIIN(sequencer)){
-    backend = "jack\0";
+    backend = "jack";
   }else if(AGS_IS_MIDIIN(sequencer)){
     if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      backend = "alsa\0";
+      backend = "alsa";
     }else if((AGS_MIDIIN_OSS & (AGS_MIDIIN(sequencer)->flags)) != 0){
-      backend = "oss\0";
+      backend = "oss";
     }
   }
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
-			    "jack\0",
+			    "jack",
 			    5)){
       gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
 			       0);
       
       ags_sequencer_editor_load_jack_card(sequencer_editor);
     }else if(!g_ascii_strncasecmp(backend,
-				  "alsa\0",
+				  "alsa",
 				  5)){
       use_alsa = TRUE;
 
@@ -498,7 +499,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
       
       ags_sequencer_editor_load_alsa_card(sequencer_editor);
     }else if(!g_ascii_strncasecmp(backend,
-				  "oss\0",
+				  "oss",
 				  4)){
 #ifdef AGS_WITH_ALSA
       gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
@@ -534,7 +535,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
     tmp = card_id->data;
     
     if(use_alsa){
-      tmp = g_strdup_printf("%s,0\0",
+      tmp = g_strdup_printf("%s,0",
 			    card_id->data);
     }
     
@@ -612,7 +613,7 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
   if(distributed_manager != NULL){
     jack_server = AGS_JACK_SERVER(distributed_manager->data);
   }else{
-    g_warning("distributed manager not found\0");
+    g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);
     
@@ -706,7 +707,7 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(distributed_manager == NULL){
-    g_warning("distributed manager not found\0");
+    g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);
     
@@ -795,15 +796,15 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   if(AGS_IS_MIDIIN(sequencer)){
     if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
       ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
-			       "hw:0,0\0");
+			       "hw:0,0");
     }else if((AGS_MIDIIN_OSS & (AGS_MIDIIN(sequencer)->flags)) != 0){
       ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
-			       "/dev/dsp0\0");
+			       "/dev/dsp0");
     }else{
-      g_warning("unknown sequencer implementation\0");
+      g_warning("unknown sequencer implementation");
     }
   }else{
-    g_warning("unknown sequencer implementation\0");
+    g_warning("unknown sequencer implementation");
   }
   
   /*  */
@@ -919,7 +920,7 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if(distributed_manager == NULL){
-    g_warning("distributed manager not found\0");
+    g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);
 
@@ -986,7 +987,7 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
   midiin->flags &= (~AGS_MIDIIN_OSS);
   midiin->flags |= AGS_MIDIIN_ALSA;
   g_object_set(midiin,
-	       "application-context\0", application_context,
+	       "application-context", application_context,
 	       NULL);
 
   card_id = NULL;
@@ -1046,7 +1047,7 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
   midiin->flags &= (~AGS_MIDIIN_ALSA);
   midiin->flags |= AGS_MIDIIN_OSS;
   g_object_set(midiin,
-	       "application-context\0", application_context,
+	       "application-context", application_context,
 	       NULL);
 
   card_id = NULL;

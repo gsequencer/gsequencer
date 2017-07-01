@@ -26,7 +26,10 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_polling_thread.h>
 #include <ags/thread/ags_poll_fd.h>
+#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
+
+#include <ags/X/ags_xorg_application_context.h>
 
 #include <gdk/gdk.h>
 
@@ -47,6 +50,8 @@ void ags_gui_thread_run(AgsThread *thread);
 void ags_gui_thread_suspend(AgsThread *thread);
 void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
+
+void* ags_gui_thread_do_poll_loop(void *ptr);
 
 guint ags_gui_thread_interrupted(AgsThread *thread,
 				 int sig,
@@ -109,7 +114,7 @@ ags_gui_thread_get_type()
     };
 
     ags_type_gui_thread = g_type_register_static(AGS_TYPE_THREAD,
-						    "AgsGuiThread\0",
+						    "AgsGuiThread",
 						    &ags_gui_thread_info,
 						    0);
     
@@ -143,7 +148,7 @@ ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread)
   thread->resume = ags_gui_thread_resume;
   thread->stop = ags_gui_thread_stop;
 
-  thread->interrupted = ags_gui_thread_interrupted;
+  //  thread->interrupted = ags_gui_thread_interrupted;
 }
 
 void
@@ -193,9 +198,14 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->task_completion_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(gui_thread->task_completion_mutex,
 		     &attr);
-    
+
   g_atomic_pointer_set(&(gui_thread->task_completion),
 		       NULL);
+
+  /*  */
+  gui_thread->dispatch_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(gui_thread->dispatch_mutex,
+		     &attr);
 }
 
 void
@@ -232,8 +242,85 @@ ags_gui_thread_start(AgsThread *thread)
 
   /*  */
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
-    AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
+    //    AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
   }
+
+  g_atomic_int_or(&(gui_thread->flags),
+		  AGS_GUI_THREAD_RUNNING);
+
+  pthread_create(thread->thread, thread->thread_attr,
+		 ags_gui_thread_do_poll_loop, thread);
+}
+
+void
+ags_gui_thread_stop(AgsThread *thread)
+{
+  AgsGuiThread *gui_thread;
+
+  gui_thread = AGS_GUI_THREAD(thread);
+
+  g_atomic_int_and(&(gui_thread->flags),
+		   (~(AGS_GUI_THREAD_RUNNING)));
+  
+  /*  */
+  gdk_flush();
+}
+
+void*
+ags_gui_thread_do_poll_loop(void *ptr)
+{
+  AgsGuiThread *gui_thread;
+  AgsTaskThread *task_thread;
+  AgsThread *thread;
+  
+  AgsXorgApplicationContext *xorg_application_context;
+
+  struct timespec idle = {
+    0,
+    4000000,
+  };
+  
+  guint i;
+  
+  gui_thread = (AgsGuiThread *) ptr;
+  thread = (AgsThread *) ptr;
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  /* notify start */
+  pthread_mutex_lock(thread->start_mutex);
+      
+  g_atomic_int_set(&(thread->start_done),
+		   TRUE);    
+      
+  if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
+    pthread_cond_broadcast(thread->start_cond);
+  }
+      
+  pthread_mutex_unlock(thread->start_mutex);
+  
+  /* wait for audio loop */
+  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
+    usleep(500000);
+  }
+
+  task_thread = ags_thread_find_type(AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  /* poll */
+  
+  while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
+    nanosleep(&idle,
+	      NULL);
+    
+    pthread_mutex_lock(task_thread->launch_mutex);
+    
+    AGS_THREAD_GET_CLASS(gui_thread)->run(gui_thread);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
+  }
+  
+  pthread_exit(NULL);
 }
 
 void
@@ -310,7 +397,7 @@ ags_gui_thread_run(AgsThread *thread)
     param.sched_priority = AGS_GUI_THREAD_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -340,7 +427,7 @@ ags_gui_thread_run(AgsThread *thread)
     
     g_main_context_push_thread_default(main_context);
 
-    g_signal_connect(polling_thread, "run\0",
+    g_signal_connect(polling_thread, "run",
 		     G_CALLBACK(ags_gui_thread_polling_thread_run_callback), gui_thread);
 
 
@@ -385,7 +472,11 @@ ags_gui_thread_run(AgsThread *thread)
   /* dispatch */  
   some_ready = g_main_context_check(main_context, gui_thread->max_priority, gui_thread->cached_poll_array, gui_thread->cached_poll_array_size);
 
+  gdk_threads_enter();
+  
   g_main_context_dispatch(main_context);
+
+  gdk_threads_leave();
   
   if(g_atomic_int_get(&(gui_thread->dispatching)) == TRUE){
     g_atomic_int_set(&(gui_thread->dispatching),
@@ -395,11 +486,16 @@ ags_gui_thread_run(AgsThread *thread)
   ags_gui_thread_complete_task();  
   
   g_main_context_release(main_context);
-  
+
+  gdk_threads_enter();
+
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);
+
   //  cairo_debug_reset_static_data();
   //  FcFini();
+  
+  gdk_threads_leave();
 }
 
 guint
@@ -420,9 +516,9 @@ ags_gui_thread_interrupted(AgsThread *thread,
 		   SIGIO);
 
 #ifdef AGS_PTHREAD_SUSPEND
-    pthread_suspend(thread->thread);
+      pthread_suspend(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
+      pthread_kill(*(thread->thread), AGS_THREAD_SUSPEND_SIG);
 #endif
     }
   }
@@ -463,16 +559,6 @@ ags_gui_thread_resume(AgsThread *thread)
 }
 
 void
-ags_gui_thread_stop(AgsThread *thread)
-{
-  /*  */
-  AGS_THREAD_CLASS(ags_gui_thread_parent_class)->stop(thread);  
-
-  /*  */
-  gdk_flush();
-}
-
-void
 ags_gui_thread_dispatch_callback(AgsPollFd *poll_fd,
 				 AgsGuiThread *gui_thread)
 {
@@ -487,9 +573,9 @@ ags_gui_thread_dispatch_callback(AgsPollFd *poll_fd,
 		     (~AGS_THREAD_INTERRUPTED));
 
 #ifdef AGS_PTHREAD_RESUME
-    pthread_resume(thread->thread);
+    //    pthread_resume(thread->thread);
 #else
-    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
+    //    pthread_kill(*(thread->thread), AGS_THREAD_RESUME_SIG);
 #endif
   }
 }
@@ -509,6 +595,10 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 
   gint position;
   guint i;
+
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
+    return;
+  }
 
   polling_thread = (AgsPollingThread *) thread;
   
@@ -531,8 +621,8 @@ ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 
       poll_fd->delay = 5.0;
       
-      g_signal_connect(poll_fd, "dispatch\0",
-		       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
+      //      g_signal_connect(poll_fd, "dispatch",
+      //	       G_CALLBACK(ags_gui_thread_dispatch_callback), gui_thread);
       
       ags_polling_thread_add_poll_fd(polling_thread,
 				     (GObject *) poll_fd);

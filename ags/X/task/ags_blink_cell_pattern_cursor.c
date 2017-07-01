@@ -69,7 +69,7 @@ ags_blink_cell_pattern_cursor_get_type()
     };
 
     ags_type_blink_cell_pattern_cursor = g_type_register_static(AGS_TYPE_TASK,
-								"AgsBlinkCellPatternCursor\0",
+								"AgsBlinkCellPatternCursor",
 								&ags_blink_cell_pattern_cursor_info,
 								0);
 

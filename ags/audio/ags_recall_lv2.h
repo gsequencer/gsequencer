@@ -27,6 +27,8 @@
 
 #include <ags/lib/ags_turtle.h>
 
+#include <ags/plugin/ags_lv2_plugin.h>
+
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_channel.h>
@@ -44,6 +46,7 @@ typedef struct _AgsRecallLv2Class AgsRecallLv2Class;
 typedef enum{
   AGS_RECALL_LV2_HAS_EVENT_PORT   = 1,
   AGS_RECALL_LV2_HAS_ATOM_PORT    = 1 <<  1,
+  AGS_RECALL_LV2_HAS_WORKER       = 1 <<  2,
 }AgsRecallLv2FLags;
 
 struct _AgsRecallLv2
@@ -59,6 +62,7 @@ struct _AgsRecallLv2
   gchar *uri;
   uint32_t index;
 
+  AgsLv2Plugin *plugin;
   LV2_Descriptor *plugin_descriptor;
 
   uint32_t *input_port;
@@ -69,6 +73,9 @@ struct _AgsRecallLv2
 
   uint32_t event_port;
   uint32_t atom_port;
+
+  uint32_t bank;
+  uint32_t program;
 };
 
 struct _AgsRecallLv2Class

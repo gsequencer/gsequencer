@@ -108,7 +108,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 		       0);
 
     //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s\0",
+    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s",
 						       filename,
 						       effect));
     gtk_box_pack_start(GTK_BOX(hbox),
@@ -130,7 +130,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
       g_object_get(window,
-		   "application-context\0" , &application_context,
+		   "application-context" , &application_context,
 		   NULL);
 
       main_loop = (AgsThread *) application_context->main_loop;
@@ -290,7 +290,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
 
-  GList *line_member;
+  GList *line_member, *line_member_next;
   GList *list, *list_start, *pad, *pad_start;
   GList *children;
   guint nth;
@@ -370,18 +370,19 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     /* iterate line member */
     if(line != NULL){
       for(nth = 0; line_member != NULL; nth++){
-
+	line_member_next = line_member->next;
+	
 	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
 	  ags_line_member_editor_plugin_browser_response_destroy_entry();
-	
+
 	  /* remove effect */
 	  ags_line_remove_effect(line,
 				 nth);
 	}
       
-	line_member = line_member->next;
+	line_member = line_member_next;
       }
     }
   }else{

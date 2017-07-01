@@ -69,7 +69,7 @@ ags_toggle_led_get_type()
     };
 
     ags_type_toggle_led = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsToggleLed\0",
+						 "AgsToggleLed",
 						 &ags_toggle_led_info,
 						 0);
 

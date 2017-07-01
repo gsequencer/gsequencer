@@ -39,6 +39,7 @@
 
 void ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager);
 void ags_dssi_manager_init (AgsDssiManager *dssi_manager);
+void ags_dssi_manager_dispose(GObject *gobject);
 void ags_dssi_manager_finalize(GObject *gobject);
 
 /**
@@ -81,7 +82,7 @@ ags_dssi_manager_get_type (void)
     };
 
     ags_type_dssi_manager = g_type_register_static(G_TYPE_OBJECT,
-						   "AgsDssiManager\0",
+						   "AgsDssiManager",
 						   &ags_dssi_manager_info,
 						   0);
   }
@@ -99,6 +100,7 @@ ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager)
   /* GObjectClass */
   gobject = (GObjectClass *) dssi_manager;
 
+  gobject->dispose = ags_dssi_manager_dispose;
   gobject->finalize = ags_dssi_manager_finalize;
 }
 
@@ -110,10 +112,28 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
   if(ags_dssi_default_path == NULL){
     ags_dssi_default_path = (gchar **) malloc(3 * sizeof(gchar *));
 
-    ags_dssi_default_path[0] = g_strdup("/usr/lib/dssi\0");
-    ags_dssi_default_path[1] = g_strdup("/usr/lib64/dssi\0");
+    ags_dssi_default_path[0] = g_strdup("/usr/lib/dssi");
+    ags_dssi_default_path[1] = g_strdup("/usr/lib64/dssi");
     ags_dssi_default_path[2] = NULL;
   }
+}
+
+void
+ags_dssi_manager_dispose(GObject *gobject)
+{
+  AgsDssiManager *dssi_manager;
+
+  dssi_manager = AGS_DSSI_MANAGER(gobject);
+
+  if(dssi_manager->dssi_plugin != NULL){
+    g_list_free_full(dssi_manager->dssi_plugin,
+		     (GDestroyNotify) g_object_unref);
+
+    dssi_manager->dssi_plugin = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_dssi_manager_parent_class)->dispose(gobject);
 }
 
 void
@@ -129,6 +149,9 @@ ags_dssi_manager_finalize(GObject *gobject)
 
   g_list_free_full(dssi_plugin,
 		   (GDestroyNotify) g_object_unref);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_dssi_manager_parent_class)->finalize(gobject);
 }
 
 /**
@@ -245,7 +268,7 @@ ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
     gchar *str;
     
     file = fopen(blacklist_filename,
-		 "r\0");
+		 "r");
 
     while(getline(&str, NULL, file) != -1){
       dssi_manager->dssi_plugin_blacklist = g_list_prepend(dssi_manager->dssi_plugin_blacklist,
@@ -283,17 +306,17 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
 
   pthread_mutex_lock(&(mutex));
 
-  path = g_strdup_printf("%s/%s\0",
+  path = g_strdup_printf("%s/%s",
 			 dssi_path,
 			 filename);
   
-  g_message("ags_dssi_manager.c loading - %s\0", path);
+  g_message("ags_dssi_manager.c loading - %s", path);
 
   plugin_so = dlopen(path,
 		     RTLD_NOW);
 	
   if(plugin_so == NULL){
-    g_warning("ags_dssi_manager.c - failed to load static object file\0");
+    g_warning("ags_dssi_manager.c - failed to load static object file");
       
     dlerror();
 
@@ -303,7 +326,7 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
   }
 
   dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						     "dssi_descriptor\0");
+						     "dssi_descriptor");
     
   if(dlerror() == NULL && dssi_descriptor){
     for(i = 0; (plugin_descriptor = dssi_descriptor(i)) != NULL; i++){
@@ -361,7 +384,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 		     &error);
 
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
 
       dssi_path++;
 
@@ -370,7 +393,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
-			  ".so\0") &&
+			  ".so") &&
 	 !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
 			     filename,
 			     strcmp)){

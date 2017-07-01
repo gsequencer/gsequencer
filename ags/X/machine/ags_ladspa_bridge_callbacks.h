@@ -26,6 +26,6 @@
 
 #include <ags/X/machine/ags_ladspa_bridge.h>
 
-
+void ags_ladspa_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLadspaBridge *ladspa_bridge);
 
 #endif /*__AGS_LADSPA_BRIDGE_CALLBACKS_H__*/

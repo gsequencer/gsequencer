@@ -29,6 +29,8 @@
 
 #include <ags/X/editor/ags_machine_radio_button.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
 void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selector_init(AgsMachineSelector *machine_selector);
@@ -79,7 +81,7 @@ ags_machine_selector_get_type(void)
     };
 
     ags_type_machine_selector = g_type_register_static(GTK_TYPE_VBOX,
-						       "AgsMachineSelector\0", &ags_machine_selector_info,
+						       "AgsMachineSelector", &ags_machine_selector_info,
 						       0);
     
     g_type_add_interface_static(ags_type_machine_selector,
@@ -117,7 +119,7 @@ ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector)
    * Since: 0.4.2
    */
   machine_selector_signals[CHANGED] =
-    g_signal_new("changed\0",
+    g_signal_new("changed",
                  G_TYPE_FROM_CLASS(machine_selector),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineSelectorClass, changed),
@@ -150,29 +152,39 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
   machine_selector->popup = NULL;
 
   machine_selector->menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-			     "stock-id\0", GTK_STOCK_EXECUTE,
-			     NULL);
+					       "stock-id", GTK_STOCK_EXECUTE,
+					       NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(machine_selector->menu_button),
 		     FALSE, FALSE,
 		     0);
+
+  machine_selector->machine_selection = NULL;
 }
 
 void
 ags_machine_selector_connect(AgsConnectable *connectable)
 {
   AgsMachineSelector *machine_selector;
+
   GList *list, *list_start;
   
   machine_selector = AGS_MACHINE_SELECTOR(connectable);
+
+  if((AGS_MACHINE_SELECTOR_CONNECTED & (machine_selector->flags)) != 0){
+    return;
+  }
+
+  machine_selector->flags |= AGS_MACHINE_SELECTOR_CONNECTED;
   
+  /* machine radio button */
   list =
     list_start = gtk_container_get_children((GtkContainer *) machine_selector);
   
   list = list->next;
   
   while(list != NULL){
-    g_signal_connect_after(G_OBJECT(list->data), "clicked\0",
+    g_signal_connect_after(G_OBJECT(list->data), "clicked",
 			   G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
 
     list = list->next;
@@ -184,7 +196,35 @@ ags_machine_selector_connect(AgsConnectable *connectable)
 void
 ags_machine_selector_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsMachineSelector *machine_selector;
+
+  GList *list, *list_start;
+  
+  machine_selector = AGS_MACHINE_SELECTOR(connectable);
+
+  if((AGS_MACHINE_SELECTOR_CONNECTED & (machine_selector->flags)) == 0){
+    return;
+  }
+
+  machine_selector->flags &= (~AGS_MACHINE_SELECTOR_CONNECTED);
+
+  /* machine radio button */
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) machine_selector);
+  
+  list = list->next;
+  
+  while(list != NULL){
+    g_object_disconnect(G_OBJECT(list->data),
+			"clicked",
+			G_CALLBACK(ags_machine_selector_radio_changed),
+			machine_selector,
+			NULL);
+
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
 }
 
 void
@@ -206,13 +246,13 @@ ags_machine_selector_add_index(AgsMachineSelector *machine_selector)
   g_list_free(list_start);
 
   machine_radio_button = (AgsMachineRadioButton *) g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
-								"group\0", group,
+								"group", group,
 								NULL);
   gtk_box_pack_start(GTK_BOX(machine_selector),
 		     GTK_WIDGET(machine_radio_button),
 		     FALSE, FALSE,
 		     0);
-  g_signal_connect_after(G_OBJECT(machine_radio_button), "clicked\0",
+  g_signal_connect_after(G_OBJECT(machine_radio_button), "clicked",
 			 G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
   gtk_widget_show_all((GtkWidget *) machine_radio_button);
 }
@@ -381,7 +421,7 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
     gtk_button_clicked((GtkButton *) existing_radio_button);
   }else{
     g_object_set(G_OBJECT(machine_radio_button),
-		 "machine\0", machine,
+		 "machine", machine,
 		 NULL);
   }
 }
@@ -448,69 +488,69 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   g_object_set_data((GObject *) popup, g_type_name(AGS_TYPE_MACHINE_SELECTOR), machine_selector);
 
   /*
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add tab\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("add tab"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove tab\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("remove tab"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
   */
   
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add index\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("add index"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove index\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("remove index"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("link index"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
   if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
-    item = (GtkMenuItem *) gtk_check_menu_item_new_with_label(g_strdup("reverse mapping\0"));
+    item = (GtkMenuItem *) gtk_check_menu_item_new_with_label(i18n("reverse mapping"));
     gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
   }
 
   if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("shift piano\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("shift piano"));
     gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
     keys = (GtkMenu *) gtk_menu_new();
     gtk_menu_item_set_submenu(item,
 			      (GtkWidget *) keys);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("A\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("A");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("A#\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("A#");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("H\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("H");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("C\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("C");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("C#\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("C#");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("D\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("D");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("D#\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("D#");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("E\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("E");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("F\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("F");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("F#\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("F#");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("G\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("G");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
 
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("G#\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label("G#");
     gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
   }
   
@@ -519,30 +559,30 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
     list = gtk_container_get_children((GtkContainer *) popup);
 
   /*
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_machine_selector_popup_add_tab_callback), (gpointer) machine_selector);
 
   list = list->next;
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_machine_selector_popup_remove_tab_callback), (gpointer) machine_selector);
 
   list = list->next;
   */
   
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_machine_selector_popup_add_index_callback), (gpointer) machine_selector);
 
   list = list->next;
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_machine_selector_popup_remove_index_callback), (gpointer) machine_selector);
 
   list = list->next;
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_machine_selector_popup_link_index_callback), (gpointer) machine_selector);
 
   if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
     list = list->next;
-    g_signal_connect_after(G_OBJECT(list->data), "activate\0",
+    g_signal_connect_after(G_OBJECT(list->data), "activate",
 			   G_CALLBACK(ags_machine_selector_popup_reverse_mapping_callback), (gpointer) machine_selector);
   }
 
@@ -554,7 +594,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
       list = gtk_container_get_children((GtkContainer *) keys);
 
     while(list != NULL){
-      g_signal_connect(G_OBJECT(list->data), "activate\0",
+      g_signal_connect(G_OBJECT(list->data), "activate",
 		       G_CALLBACK(ags_machine_selector_popup_shift_piano_callback), (gpointer) machine_selector);
 
       list = list->next;
@@ -564,7 +604,10 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   }
   
   /* show */
-  gtk_widget_show_all((GtkWidget *) keys);
+  if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
+    gtk_widget_show_all((GtkWidget *) keys);
+  }
+  
   gtk_widget_show_all((GtkWidget *) popup);
 
   return(popup);

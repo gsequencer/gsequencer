@@ -94,7 +94,7 @@ ags_init_channel_get_type()
     };
 
     ags_type_init_channel = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsInitChannel\0",
+						   "AgsInitChannel",
 						   &ags_init_channel_info,
 						   0);
 
@@ -131,9 +131,9 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel of init channel\0",
-				   "The channel of init channel task\0",
+  param_spec = g_param_spec_object("channel",
+				   "channel of init channel",
+				   "The channel of init channel task",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,9 +147,9 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("play-pad\0",
-				     "play pad\0",
-				     "play pad of channel\0",
+  param_spec =  g_param_spec_boolean("play-pad",
+				     "play pad",
+				     "play pad of channel",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -163,9 +163,9 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-playback\0",
-				     "do playback\0",
-				     "Do playback of channel\0",
+  param_spec =  g_param_spec_boolean("do-playback",
+				     "do playback",
+				     "Do playback of channel",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -179,9 +179,9 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-sequencer\0",
-				     "do sequencer\0",
-				     "Do sequencer of channel\0",
+  param_spec =  g_param_spec_boolean("do-sequencer",
+				     "do sequencer",
+				     "Do sequencer of channel",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -195,9 +195,9 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-notation\0",
-				     "do notation\0",
-				     "Do notation of channel\0",
+  param_spec =  g_param_spec_boolean("do-notation",
+				     "do notation",
+				     "Do notation of channel",
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

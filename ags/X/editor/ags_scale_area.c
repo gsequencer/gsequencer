@@ -79,7 +79,7 @@ ags_scale_area_get_type(void)
     };
 
     ags_type_scale_area = g_type_register_static(G_TYPE_OBJECT,
-						      "AgsScaleArea\0", &ags_scale_area_info,
+						      "AgsScaleArea", &ags_scale_area_info,
 						      0);
     
     g_type_add_interface_static(ags_type_scale_area,
@@ -210,7 +210,7 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
 
   cairo_save(cr);
   
-  cairo_select_font_face(cr, "Georgia\0",
+  cairo_select_font_face(cr, "Georgia",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, (gdouble) scale_area->font_size);
 

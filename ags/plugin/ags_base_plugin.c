@@ -22,6 +22,9 @@
 #include <ags/object/ags_marshal.h>
 
 #include <stdlib.h>
+#include <string.h>
+
+#include <ags/i18n.h>
 
 void ags_base_plugin_class_init(AgsBasePluginClass *base_plugin);
 void ags_base_plugin_init (AgsBasePlugin *base_plugin);
@@ -33,6 +36,7 @@ void ags_base_plugin_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_base_plugin_dispose(GObject *gobject);
 void ags_base_plugin_finalize(GObject *gobject);
 
 /**
@@ -88,7 +92,7 @@ ags_base_plugin_get_type (void)
     };
 
     ags_type_base_plugin = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsBasePlugin\0",
+						  "AgsBasePlugin",
 						  &ags_base_plugin_info,
 						  0);
   }
@@ -110,6 +114,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   gobject->set_property = ags_base_plugin_set_property;
   gobject->get_property = ags_base_plugin_get_property;
 
+  gobject->dispose = ags_base_plugin_dispose;
   gobject->finalize = ags_base_plugin_finalize;
 
   /* properties */
@@ -120,9 +125,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_string("filename\0",
-				   "filename of the plugin\0",
-				   "The filename this plugin is located in\0",
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("filename of the plugin"),
+				   i18n_pspec("The filename this plugin is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,9 +141,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_string("effect\0",
-				   "effect of the plugin\0",
-				   "The effect this plugin is assigned with\0",
+  param_spec = g_param_spec_string("effect",
+				   i18n_pspec("effect of the plugin"),
+				   i18n_pspec("The effect this plugin is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,9 +157,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_uint("effect-index\0",
-				 "effect-index of the plugin\0",
-				 "The effect-index this plugin is assigned with\0",
+  param_spec = g_param_spec_uint("effect-index",
+				 i18n_pspec("effect-index of the plugin"),
+				 i18n_pspec("The effect-index this plugin is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -170,9 +175,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Since: 0.7.127
    */
-  param_spec = g_param_spec_string("ui-filename\0",
-				   "UI filename of the plugin\0",
-				   "The UI filename this plugin is located in\0",
+  param_spec = g_param_spec_string("ui-filename",
+				   i18n_pspec("UI filename of the plugin"),
+				   i18n_pspec("The UI filename this plugin is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -186,9 +191,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Since: 0.7.127
    */
-  param_spec = g_param_spec_string("ui-effect\0",
-				   "UI effect of the plugin\0",
-				   "The UI effect this plugin is assigned with\0",
+  param_spec = g_param_spec_string("ui-effect",
+				   i18n_pspec("UI effect of the plugin"),
+				   i18n_pspec("The UI effect this plugin is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -202,9 +207,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Since: 0.7.127
    */
-  param_spec = g_param_spec_uint("ui-effect-index\0",
-				 "UI effect-index of the plugin\0",
-				 "The UI effect-index this plugin is assigned with\0",
+  param_spec = g_param_spec_uint("ui-effect-index",
+				 i18n_pspec("UI effect-index of the plugin"),
+				 i18n_pspec("The UI effect-index this plugin is assigned with"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -220,9 +225,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_object("ui-plugin\0",
-				   "ui-plugin of the plugin\0",
-				   "The ui-plugin this plugin is assigned with\0",
+  param_spec = g_param_spec_object("ui-plugin",
+				   i18n_pspec("ui-plugin of the plugin"),
+				   i18n_pspec("The ui-plugin this plugin is assigned with"),
 				   AGS_TYPE_BASE_PLUGIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -253,7 +258,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   base_plugin_signals[INSTANTIATE] =
-    g_signal_new("instantiate\0",
+    g_signal_new("instantiate",
 		 G_TYPE_FROM_CLASS (base_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, instantiate),
@@ -271,7 +276,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   base_plugin_signals[CONNECT_PORT] =
-    g_signal_new("connect-port\0",
+    g_signal_new("connect-port",
 		 G_TYPE_FROM_CLASS (base_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, connect_port),
@@ -291,7 +296,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   base_plugin_signals[ACTIVATE] =
-    g_signal_new("activate\0",
+    g_signal_new("activate",
 		 G_TYPE_FROM_CLASS (base_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, activate),
@@ -309,7 +314,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   base_plugin_signals[DEACTIVATE] =
-    g_signal_new("deactivate\0",
+    g_signal_new("deactivate",
 		 G_TYPE_FROM_CLASS (base_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, deactivate),
@@ -327,7 +332,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   base_plugin_signals[RUN] =
-    g_signal_new("run\0",
+    g_signal_new("run",
 		 G_TYPE_FROM_CLASS (base_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, run),
@@ -347,7 +352,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 0.7.6
    */
   base_plugin_signals[LOAD_PLUGIN] =
-    g_signal_new("load_plugin\0",
+    g_signal_new("load_plugin",
 		 G_TYPE_FROM_CLASS (base_plugin),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, load_plugin),
@@ -553,6 +558,23 @@ ags_base_plugin_get_property(GObject *gobject,
 }
 
 void
+ags_base_plugin_dispose(GObject *gobject)
+{
+  AgsBasePlugin *base_plugin;
+
+  base_plugin = AGS_BASE_PLUGIN(gobject);
+
+  if(base_plugin->ui_plugin != NULL){
+    g_object_unref(base_plugin->ui_plugin);
+
+    base_plugin->ui_plugin = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_base_plugin_parent_class)->dispose(gobject);
+}
+
+void
 ags_base_plugin_finalize(GObject *gobject)
 {
   AgsBasePlugin *base_plugin;
@@ -639,6 +661,37 @@ ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
   g_free(port_descriptor->default_value);
 
   free(port_descriptor);
+}
+
+/**
+ * ags_port_descriptor_find_symbol:
+ * @port_descriptor: the #GList-struct containing #AgsPortDescriptor
+ * @port_symbol: the port symbol
+ * 
+ * Find @port_symbol within @port_descriptor.
+ * 
+ * Returns: the matching #GList-struct containing #AgsPortDescriptor
+ * 
+ * Since: 0.7.122.8 
+ */
+GList*
+ags_port_descriptor_find_symbol(GList *port_descriptor,
+				gchar *port_symbol)
+{
+  if(port_symbol == NULL){
+    return(NULL);
+  }
+
+  while(port_descriptor != NULL){
+    if(!g_strcmp0(port_symbol,
+		  AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_symbol)){
+      return(port_descriptor);
+    }
+    
+    port_descriptor = port_descriptor->next;
+  }
+  
+  return(NULL);
 }
 
 /**
@@ -925,9 +978,9 @@ ags_base_plugin_new(gchar *filename, gchar *effect, guint effect_index)
   AgsBasePlugin *base_plugin;
 
   base_plugin = (AgsBasePlugin *) g_object_new(AGS_TYPE_BASE_PLUGIN,
-					       "filename\0", filename,
-					       "effect\0", effect,
-					       "effect-index\0", effect_index,
+					       "filename", filename,
+					       "effect", effect,
+					       "effect-index", effect_index,
 					       NULL);
 
   return(base_plugin);

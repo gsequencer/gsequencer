@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,8 @@ typedef struct _AgsEnvelopeAudioSignalClass AgsEnvelopeAudioSignalClass;
 struct _AgsEnvelopeAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  guint frame_count;
 };
 
 struct _AgsEnvelopeAudioSignalClass

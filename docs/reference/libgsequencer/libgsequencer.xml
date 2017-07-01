@@ -20,17 +20,29 @@
     <releaseinfo>
       for libgsequencer.
       The latest version of this documentation can be found on-line at
-      <ulink role="online-location" url="http://nongnu.org/gsequencer/libgsequencer/index.html">http://nongnu.org/gsequencer/libgsequencer/</ulink>.
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/api/libgsequencer/index.html">http://nongnu.org/gsequencer/api/libgsequencer/</ulink>.
     </releaseinfo>
   </bookinfo>
-
+  
   <part id="lib">
     <title>GSequencer UI Library</title>
 
     <xi:include href="xml/ags_audio_preferences.xml"/>
     <xi:include href="xml/ags_audio_preferences_callbacks.xml"/>
+
+    <xi:include href="xml/ags_automation_area.xml"/>
+    <xi:include href="xml/ags_automation_edit.xml"/>
+    <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
+    <xi:include href="xml/ags_automation_editor.xml"/>
+    <xi:include href="xml/ags_automation_editor_callbacks.xml"/>
+    <xi:include href="xml/ags_automation_toolbar.xml"/>
+    <xi:include href="xml/ags_automation_toolbar_callbacks.xml"/>
+    <xi:include href="xml/ags_automation_window.xml"/>
+
     <xi:include href="xml/ags_bulk_member.xml"/>
     <xi:include href="xml/ags_bulk_member_callbacks.xml"/>
+    <xi:include href="xml/ags_connection_editor.xml"/>
+    <xi:include href="xml/ags_connection_editor_callbacks.xml"/>
     <xi:include href="xml/ags_dssi_browser.xml"/>
     <xi:include href="xml/ags_dssi_browser_callbacks.xml"/>
     <xi:include href="xml/ags_editor.xml"/>
@@ -42,6 +54,8 @@
     <xi:include href="xml/ags_effect_line.xml"/>
     <xi:include href="xml/ags_effect_line_callbacks.xml"/>
     <xi:include href="xml/ags_effect_pad.xml"/>
+    <xi:include href="xml/ags_export_soundcard.xml"/>
+    <xi:include href="xml/ags_export_soundcard_callbacks.xml"/>
     <xi:include href="xml/ags_export_window.xml"/>
     <xi:include href="xml/ags_export_window_callbacks.xml"/>
     <xi:include href="xml/ags_generic_preferences.xml"/>
@@ -76,8 +90,16 @@
     <xi:include href="xml/ags_midi_dialog_callbacks.xml"/>
     <xi:include href="xml/ags_midi_import_wizard.xml"/>
     <xi:include href="xml/ags_midi_import_wizard_callbacks.xml"/>
+    <xi:include href="xml/ags_midi_preferences.xml"/>
+    <xi:include href="xml/ags_midi_preferences_callbacks.xml"/>
     <xi:include href="xml/ags_navigation.xml"/>
     <xi:include href="xml/ags_navigation_callbacks.xml"/>
+    <xi:include href="xml/ags_output_collection_editor.xml"/>
+    <xi:include href="xml/ags_output_collection_editor_callbacks.xml"/>
+    <xi:include href="xml/ags_output_editor.xml"/>
+    <xi:include href="xml/ags_output_editor_callbacks.xml"/>
+    <xi:include href="xml/ags_output_listing_editor.xml"/>
+    <xi:include href="xml/ags_output_listing_editor_callbacks.xml"/>
     <xi:include href="xml/ags_pad.xml"/>
     <xi:include href="xml/ags_pad_callbacks.xml"/>
     <xi:include href="xml/ags_pad_editor.xml"/>
@@ -94,9 +116,13 @@
     <xi:include href="xml/ags_property_editor_callbacks.xml"/>
     <xi:include href="xml/ags_property_listing_editor.xml"/>
     <xi:include href="xml/ags_resize_editor.xml"/>
+    <xi:include href="xml/ags_sequencer_editor.xml"/>
+    <xi:include href="xml/ags_sequencer_editor_callbacks.xml"/>
     <xi:include href="xml/ags_server_preferences.xml"/>
     <xi:include href="xml/ags_sf2_chooser.xml"/>
     <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>
+    <xi:include href="xml/ags_soundcard_editor.xml"/>
+    <xi:include href="xml/ags_soundcard_editor_callbacks.xml"/>
     <xi:include href="xml/ags_track_collection.xml"/>
     <xi:include href="xml/ags_track_collection_mapper.xml"/>
     <xi:include href="xml/ags_window.xml"/>
@@ -150,7 +176,6 @@
       <xi:include href="xml/ags_drum_output_line.xml"/>
       <xi:include href="xml/ags_drum_output_line_callbacks.xml"/>
       <xi:include href="xml/ags_drum_output_pad.xml"/>
-      <xi:include href="xml/ags_drum_output_pad_callbacks.xml"/>
       <xi:include href="xml/ags_dssi_bridge.xml"/>
       <xi:include href="xml/ags_dssi_bridge_callbacks.xml"/>
       <xi:include href="xml/ags_ffplayer.xml"/>
@@ -176,6 +201,7 @@
       <xi:include href="xml/ags_panel.xml"/>
       <xi:include href="xml/ags_panel_callbacks.xml"/>
       <xi:include href="xml/ags_panel_input_line.xml"/>
+      <xi:include href="xml/ags_panel_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_panel_input_pad.xml"/>
       <xi:include href="xml/ags_pattern_box.xml"/>
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
@@ -201,13 +227,18 @@
 
     <chapter id="task">
       <title>GUI tasks</title>
-
+  
       <xi:include href="xml/ags_add_bulk_member.xml"/>
       <xi:include href="xml/ags_add_line_member.xml"/>
+      <xi:include href="xml/ags_add_sequencer_editor_jack.xml"/>
+      <xi:include href="xml/ags_add_soundcard_editor_jack.xml"/>
       <xi:include href="xml/ags_blink_cell_pattern_cursor.xml"/>
       <xi:include href="xml/ags_change_indicator.xml"/>
       <xi:include href="xml/ags_change_tact.xml"/>
       <xi:include href="xml/ags_display_tact.xml"/>
+      <xi:include href="xml/ags_remove_sequencer_editor_jack.xml"/>
+      <xi:include href="xml/ags_remove_soundcard_editor_jack.xml"/>
+      <xi:include href="xml/ags_resize_editor.xml"/>
       <xi:include href="xml/ags_scroll_on_play.xml"/>
       <xi:include href="xml/ags_simple_file_read.xml"/>
       <xi:include href="xml/ags_simple_file_write.xml"/>

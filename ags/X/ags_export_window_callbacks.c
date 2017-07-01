@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,7 +79,7 @@ ags_export_window_add_export_soundcard_callback(GtkWidget *button,
   gtk_container_add((GtkContainer *) alignment,
 		    (GtkWidget *) remove_button);
     
-  g_signal_connect(G_OBJECT(remove_button), "clicked\0",
+  g_signal_connect(G_OBJECT(remove_button), "clicked",
 		   G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
 
   /* show all */
@@ -105,6 +105,8 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 
   AgsMutexManager *mutex_manager;
 
+  gchar *str;
+  
   gdouble delay_factor;
   gdouble delay;
 
@@ -134,11 +136,13 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   pthread_mutex_unlock(soundcard_mutex);
 
   /* update duration */
+  str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
+					window->navigation->bpm->adjustment->value,
+					delay,
+					delay_factor);
   gtk_label_set_text(export_window->duration,
-		     ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
-						     window->navigation->bpm->adjustment->value,
-						     delay,
-						     delay_factor));
+		     str);
+  g_free(str);
 }
 
 void
@@ -249,7 +253,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 						    GTK_DIALOG_MODAL,
 						    GTK_MESSAGE_QUESTION,
 						    GTK_BUTTONS_OK_CANCEL,
-						    "Replace existing file(s)?\0");
+						    "Replace existing file(s)?");
       response = gtk_dialog_run(dialog);
       gtk_widget_destroy((GtkWidget *) dialog);
 
@@ -287,7 +291,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
 	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-	g_message("found machine to play!\0");
+	g_message("found machine to play!");
 
 	ags_machine_set_run_extended(machine,
 				     TRUE,
@@ -345,28 +349,28 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	format = 0;
 
 	if(!g_ascii_strncasecmp(str,
-				"wav\0",
+				"wav",
 				4)){
 	  format = AGS_EXPORT_OUTPUT_FORMAT_WAV;
 	}else if(!g_ascii_strncasecmp(str,
-				      "flac\0",
+				      "flac",
 				      5)){
 	  format = AGS_EXPORT_OUTPUT_FORMAT_FLAC;
 	}else if(!g_ascii_strncasecmp(str,
-				      "ogg\0",
+				      "ogg",
 				      4)){
 	  format = AGS_EXPORT_OUTPUT_FORMAT_OGG;
 	}
 
 	g_object_set(G_OBJECT(export_output),
-		     "format\0", format,
+		     "format", format,
 		     NULL);
 	
 	task = g_list_prepend(task,
 			      export_output);
 	
 	if(AGS_EXPORT_SOUNDCARD(child_start->data)->soundcard == window->soundcard){
-	  g_signal_connect(export_thread, "stop\0",
+	  g_signal_connect(export_thread, "stop",
 			   G_CALLBACK(ags_export_window_stop_callback), export_window);
 	}
 
@@ -398,7 +402,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
 	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-	printf("found machine to stop!\n\0");
+	printf("found machine to stop!\n");
     
 	ags_machine_set_run(machine,
 			    FALSE);

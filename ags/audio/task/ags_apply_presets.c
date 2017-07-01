@@ -41,6 +41,8 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch.h>
 
+#include <ags/i18n.h>
+
 void ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets);
 void ags_apply_presets_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_presets_init(AgsApplyPresets *apply_presets);
@@ -112,7 +114,7 @@ ags_apply_presets_get_type()
     };
 
     ags_type_apply_presets = g_type_register_static(AGS_TYPE_TASK,
-						    "AgsApplyPresets\0",
+						    "AgsApplyPresets",
 						    &ags_apply_presets_info,
 						    0);
 
@@ -153,9 +155,9 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of apply presets\0",
-				   "The scope of apply presets task\0",
+  param_spec = g_param_spec_object("scope",
+				   i18n_pspec("scope of apply presets"),
+				   i18n_pspec("The scope of apply presets task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -173,9 +175,9 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_uint("samplerate\0",
-				 "samplerate\0",
-				 "The samplerate to apply\0",
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -196,9 +198,9 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_uint("buffer-size\0",
-				 "buffer size\0",
-				 "The buffer size to apply\0",
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size to apply"),
 				 0,
 				 65535,
 				 0,
@@ -218,9 +220,9 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_uint("format\0",
-				 "format\0",
-				 "The format to apply\0",
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -400,7 +402,7 @@ ags_apply_presets_launch(AgsTask *task)
 				   (AgsAudioSignal *) apply_presets->scope);
   }else{
     if(apply_presets->scope != NULL){
-      g_warning("ags_apply_presets_launch() - unsupported scope %s\0", G_OBJECT_TYPE_NAME(apply_presets->scope));
+      g_warning("ags_apply_presets_launch() - unsupported scope %s", G_OBJECT_TYPE_NAME(apply_presets->scope));
     }else{
       g_warning("ags_apply_presets_launch() - unsupported scope (null)0");
     }
@@ -438,7 +440,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 
   /* reset audio loop frequency */
   g_object_set(G_OBJECT(main_loop),
-	       "frequency\0", freq,
+	       "frequency", freq,
 	       NULL);
     
   /* reset export thread frequency */
@@ -447,7 +449,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   while((export_thread = ags_thread_find_type(export_thread,
 					      AGS_TYPE_EXPORT_THREAD)) != NULL){
     g_object_set(export_thread,
-		 "frequency\0", freq,
+		 "frequency", freq,
 		 NULL);
 
     /* iterate */
@@ -460,7 +462,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   while((soundcard_thread = ags_thread_find_type(soundcard_thread,
 						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
     g_object_set(soundcard_thread,
-		 "frequency\0", freq,
+		 "frequency", freq,
 		 NULL);
 
     /* iterate */
@@ -490,9 +492,9 @@ ags_apply_presets_audio(AgsApplyPresets *apply_presets,
 			AgsAudio *audio)
 {
   g_object_set(audio,
-	       "samplerate\0", apply_presets->samplerate,
-	       "buffer-size\0", apply_presets->buffer_size,
-	       "format\0", apply_presets->format,
+	       "samplerate", apply_presets->samplerate,
+	       "buffer-size", apply_presets->buffer_size,
+	       "format", apply_presets->format,
 	       NULL);
 }
 
@@ -501,9 +503,9 @@ ags_apply_presets_channel(AgsApplyPresets *apply_presets,
 			  AgsChannel *channel)
 {
   g_object_set(channel,
-	       "samplerate\0", apply_presets->samplerate,
-	       "buffer-size\0", apply_presets->buffer_size,
-	       "format\0", apply_presets->format,
+	       "samplerate", apply_presets->samplerate,
+	       "buffer-size", apply_presets->buffer_size,
+	       "format", apply_presets->format,
 	       NULL);
 }
 
@@ -512,9 +514,9 @@ ags_apply_presets_audio_signal(AgsApplyPresets *apply_presets,
 			       AgsAudioSignal *audio_signal)
 {
   g_object_set(audio_signal,
-	       "samplerate\0", apply_presets->samplerate,
-	       "buffer-size\0", apply_presets->buffer_size,
-	       "format\0", apply_presets->format,
+	       "samplerate", apply_presets->samplerate,
+	       "buffer-size", apply_presets->buffer_size,
+	       "format", apply_presets->format,
 	       NULL);
 }
 

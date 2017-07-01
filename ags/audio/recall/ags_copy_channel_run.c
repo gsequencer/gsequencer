@@ -98,7 +98,7 @@ ags_copy_channel_run_get_type()
     };
 
     ags_type_copy_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-						       "AgsCopyChannelRun\0",
+						       "AgsCopyChannelRun",
 						       &ags_copy_channel_run_info,
 						       0);
 
@@ -159,10 +159,10 @@ ags_copy_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run)
 {
-  AGS_RECALL(copy_channel_run)->name = "ags-copy\0";
+  AGS_RECALL(copy_channel_run)->name = "ags-copy";
   AGS_RECALL(copy_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(copy_channel_run)->xml_type = "ags-copy-channel-run\0";
+  AGS_RECALL(copy_channel_run)->xml_type = "ags-copy-channel-run";
   AGS_RECALL(copy_channel_run)->port = NULL;
 
   AGS_RECALL(copy_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
@@ -259,9 +259,9 @@ ags_copy_channel_run_new(AgsChannel *destination,
   AgsCopyChannelRun *copy_channel_run;
 
   copy_channel_run = (AgsCopyChannelRun *) g_object_new(AGS_TYPE_COPY_CHANNEL_RUN,
-							"destination\0", destination,
-							"source\0", source,
-							"soundcard\0", soundcard,
+							"destination", destination,
+							"source", source,
+							"soundcard", soundcard,
 							NULL);
 
   return(copy_channel_run);

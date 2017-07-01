@@ -109,7 +109,7 @@ ags_recall_channel_run_dummy_get_type()
     };    
 
     ags_type_recall_channel_run_dummy = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							       "AgsRecallChannelRunDummy\0",
+							       "AgsRecallChannelRunDummy",
 							       &ags_recall_channel_run_dummy_info,
 							       0);
 
@@ -181,7 +181,7 @@ ags_recall_channel_run_dummy_init(AgsRecallChannelRunDummy *recall_channel_run_d
   AGS_RECALL(recall_channel_run_dummy)->name = "ags-dummy";
   AGS_RECALL(recall_channel_run_dummy)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(recall_channel_run_dummy)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(recall_channel_run_dummy)->xml_type = "ags-recall-channel-run-dummy\0";
+  AGS_RECALL(recall_channel_run_dummy)->xml_type = "ags-recall-channel-run-dummy";
   AGS_RECALL(recall_channel_run_dummy)->port = NULL;
 
   AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_INPUT_ORIENTATED |
@@ -276,15 +276,15 @@ ags_recall_channel_run_dummy_read(AgsFile *file, xmlNode *node, AgsPlugin *plugi
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   gobject->recycling_dummy_child_type = g_type_from_name(xmlGetProp(node,
-								    "recycling-child-type\0"));
+								    "recycling-child-type"));
 }
 
 xmlNode*
@@ -299,22 +299,22 @@ ags_recall_channel_run_dummy_write(AgsFile *file, xmlNode *parent, AgsPlugin *pl
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-recall-channel-run-dummy\0");
+		    "ags-recall-channel-run-dummy");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", recall_channel_run_dummy,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", recall_channel_run_dummy,
 				   NULL));
 
   xmlNewProp(node,
-	     "recycling-child-type\0",
+	     "recycling-child-type",
 	     g_strdup(g_type_name(recall_channel_run_dummy->recycling_dummy_child_type)));
 
   xmlAddChild(parent,
@@ -343,7 +343,7 @@ ags_recall_channel_run_dummy_new(AgsChannel *source,
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
 
   recall_channel_run_dummy = (AgsRecallChannelRunDummy *) g_object_new(AGS_TYPE_RECALL_CHANNEL_RUN_DUMMY,
-								       "source\0", source,
+								       "source", source,
 								       NULL);
 
   AGS_RECALL(recall_channel_run_dummy)->child_type = child_type;

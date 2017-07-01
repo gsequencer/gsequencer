@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,18 +54,20 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_collection_mapper);
 void ags_track_collection_mapper_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_track_collection_mapper_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapper);
 void ags_track_collection_mapper_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
 void ags_track_collection_mapper_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
 void ags_track_collection_mapper_connect(AgsConnectable *connectable);
 void ags_track_collection_mapper_disconnect(AgsConnectable *connectable);
 void ags_track_collection_mapper_set_update(AgsApplicable *applicable, gboolean update);
@@ -120,7 +122,7 @@ ags_track_collection_mapper_get_type(void)
     };
 
     ags_type_track_collection_mapper = g_type_register_static(GTK_TYPE_TABLE,
-							      "AgsTrackCollectionMapper\0", &ags_track_collection_mapper_info,
+							      "AgsTrackCollectionMapper", &ags_track_collection_mapper_info,
 							      0);
 
     g_type_add_interface_static(ags_type_track_collection_mapper,
@@ -153,11 +155,11 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The tracks as xmlNode to parse.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_pointer("track\0",
-				    "assigned track\0",
-				    "The track which this track mapper is assigned with\0",
+  param_spec = g_param_spec_pointer("track",
+				    i18n_pspec("assigned track"),
+				    i18n_pspec("The track which this track mapper is assigned with"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TRACK,
@@ -166,13 +168,13 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
   /**
    * AgsTrackCollectionMapper:instrument:
    *
-   * The instruments as xmlNode to parse.
+   * The instruments as string to parse.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_string("instrument\0",
-				   "assigned instrument\0",
-				   "The instrument which this track mapper is assigned with\0",
+  param_spec = g_param_spec_string("instrument",
+				   i18n_pspec("assigned instrument"),
+				   i18n_pspec("The instrument which this track mapper is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -182,13 +184,13 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
   /**
    * AgsTrackCollectionMapper:sequence:
    *
-   * The sequences as xmlNode to parse.
+   * The sequences as string to parse.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_string("sequence\0",
-				   "assigned sequence\0",
-				   "The sequence which this track mapper is assigned with\0",
+  param_spec = g_param_spec_string("sequence",
+				   i18n_pspec("assigned sequence"),
+				   i18n_pspec("The sequence which this track mapper is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -227,8 +229,9 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
   track_collection_mapper->track = NULL;
 
   track_collection_mapper->notation = NULL;
-  
-  track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled\0");
+
+  /* enabled */
+  track_collection_mapper->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->enabled,
 		   0, 4,
@@ -236,6 +239,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* info box */
   track_collection_mapper->info = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->info,
@@ -244,24 +248,27 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* instrument */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "instrument: \0",
-				    "xalign\0", 0.0,
+				    "label", i18n("instrument: "),
+				    "xalign", 0.0,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
 		     GTK_WIDGET(label),
 		     TRUE, TRUE,
 		     0);
 
+  /* sequence */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "sequence: \0",
-				    "xalign\0", 0.0,
+				    "label", i18n("sequence: "),
+				    "xalign", 0.0,
 				    NULL);
   gtk_box_pack_start(GTK_BOX(track_collection_mapper->info),
 		     GTK_WIDGET(label),
 		     TRUE, TRUE,
 		     0);
-    
+
+  /* machine type */
   track_collection_mapper->machine_type = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->machine_type,
@@ -270,6 +277,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* audio channels */
   track_collection_mapper->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
   gtk_spin_button_set_value(track_collection_mapper->audio_channels,
 			    2.0);
@@ -280,6 +288,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* offset */
   track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 256.0 * (gdouble) AGS_NOTE_EDIT_MAX_CONTROLS, 1.0);
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->offset,
@@ -291,9 +300,9 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 
 void
 ags_track_collection_mapper_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
@@ -318,6 +327,8 @@ ags_track_collection_mapper_set_property(GObject *gobject,
   case PROP_INSTRUMENT:
     {
       GList *list, *list_start;
+
+      gchar *str;
       gchar *instrument;
 
       instrument = g_value_get_string(value);
@@ -326,39 +337,56 @@ ags_track_collection_mapper_set_property(GObject *gobject,
 	return;
       }
 
+      if(track_collection_mapper->instrument != NULL){
+	g_free(track_collection_mapper->instrument);
+      }
+      
       track_collection_mapper->instrument = g_strdup(instrument);
 
       list_start =
 	list = gtk_container_get_children((GtkContainer *) track_collection_mapper->info);
+
+      str = g_strdup_printf("%s: %s",
+			    i18n("instrument"),
+			    instrument);
       gtk_label_set_text(list->data,
-			 g_strdup_printf("instrument: %s\0",
-					 instrument));
+			 str);
 
       g_list_free(list_start);
+      g_free(str);
     }
     break;
   case PROP_SEQUENCE:
     {
       GList *list, *list_start;
-      gchar *sequence;
 
+      gchar *str;
+      gchar *sequence;
+      
       sequence = g_value_get_string(value);
 
       if(sequence == track_collection_mapper->sequence){
 	return;
       }
 
+      if(track_collection_mapper->sequence != NULL){
+	g_free(track_collection_mapper->sequence);
+      }
+      
       track_collection_mapper->sequence = g_strdup(sequence);
 
       list_start =
 	list = gtk_container_get_children((GtkContainer *) track_collection_mapper->info);
       list = list->next;
+
+      str = g_strdup_printf("%s: %s",
+			    i18n("sequence"),
+			    sequence);
       gtk_label_set_text(list->data,
-			 g_strdup_printf("sequence: %s\0",
-					 sequence));
+			 str);
 
       g_list_free(list_start);
-
+      g_free(str);
     }
     break;
   default:
@@ -369,9 +397,9 @@ ags_track_collection_mapper_set_property(GObject *gobject,
 
 void
 ags_track_collection_mapper_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec)
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsTrackCollectionMapper *track_collection_mapper;
 
@@ -379,13 +407,19 @@ ags_track_collection_mapper_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_TRACK:
-    g_value_set_pointer(value, g_list_copy(track_collection_mapper->track));
+    {
+      g_value_set_pointer(value, g_list_copy(track_collection_mapper->track));
+    }
     break;
   case PROP_INSTRUMENT:
-    g_value_set_string(value, track_collection_mapper->instrument);
+    {
+      g_value_set_string(value, track_collection_mapper->instrument);
+    }
     break;
   case PROP_SEQUENCE:
-    g_value_set_string(value, track_collection_mapper->sequence);
+    {
+      g_value_set_string(value, track_collection_mapper->sequence);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -430,13 +464,21 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   AgsApplicationContext *application_context;
 
+  xmlNode *clipboard;
+  
+  GList *notation, *imported_notation;
+  
   gchar *machine_type;
   
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
+
+  if(!gtk_toggle_button_get_active(track_collection_mapper->enabled)){
+    return;
+  }  
   
   midi_import_wizard = (AgsMidiImportWizard *) gtk_widget_get_ancestor((GtkWidget *) track_collection_mapper,
 								       AGS_TYPE_MIDI_IMPORT_WIZARD);
-  window = (AgsWindow *) midi_import_wizard->parent;
+  window = (AgsWindow *) midi_import_wizard->main_window;
 
   application_context = (AgsApplicationContext *) window->application_context;
   
@@ -447,22 +489,46 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   /* create machine */
   machine_type = gtk_combo_box_text_get_active_text(track_collection_mapper->machine_type);
   
-  if(g_ascii_strcasecmp(machine_type,
-			g_type_name(AGS_TYPE_DRUM))){
+  if(!g_ascii_strcasecmp(machine_type,
+			 g_type_name(AGS_TYPE_DRUM))){
     machine = (AgsMachine *) ags_drum_new(window->soundcard);
-  }else if(g_ascii_strcasecmp(machine_type,
-			      g_type_name(AGS_TYPE_MATRIX))){
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_MATRIX))){
     machine = (AgsMachine *) ags_matrix_new(window->soundcard);
-  }else if(g_ascii_strcasecmp(machine_type,
-			      g_type_name(AGS_TYPE_FFPLAYER))){
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_FFPLAYER))){
     machine = (AgsMachine *) ags_ffplayer_new(window->soundcard);
-  }else if(g_ascii_strcasecmp(machine_type,
-			      g_type_name(AGS_TYPE_SYNTH))){
+  }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_SYNTH))){
     machine = (AgsMachine *) ags_synth_new(window->soundcard);
   }else{
-    g_warning("unknown machine type\0");
+    g_warning("unknown machine type");
   }
 
+  ags_audio_set_audio_channels(machine->audio,
+			       gtk_spin_button_get_value_as_int(track_collection_mapper->audio_channels));
+  ags_audio_set_pads(machine->audio,
+		     AGS_TYPE_OUTPUT, 1);
+  ags_audio_set_pads(machine->audio,
+		     AGS_TYPE_INPUT, 128);
+
+  /* apply notation */
+  imported_notation = track_collection_mapper->notation;
+  notation = machine->audio->notation;
+
+  ags_notation_add_all_to_selection(imported_notation->data);
+  clipboard = ags_notation_copy_selection(imported_notation->data);
+  
+  while(notation != NULL){
+    ags_notation_insert_from_clipboard(notation->data,
+				       clipboard,
+				       0, 0,
+				       0, 0);
+    
+    notation = notation->next;
+  }
+
+  /* add audio */  
   add_audio = ags_add_audio_new(window->soundcard,
 				machine->audio);
   ags_task_thread_append_task(task_thread,
@@ -497,7 +563,7 @@ ags_track_collection_mapper_reset(AgsApplicable *applicable)
  *
  * Returns: the next matching #GList
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
@@ -528,7 +594,7 @@ ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collectio
  *
  * Maps XML tracks to #AgsNotation
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper)
@@ -545,18 +611,20 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
+  guint default_length;
   guint i;
   gboolean pattern;
   
   track_collection = (AgsTrackCollection *) gtk_widget_get_ancestor((GtkWidget *) track_collection_mapper,
 								    AGS_TYPE_TRACK_COLLECTION);
+
   track = track_collection_mapper->track;
 
   /* map notation */
   notation_start =
     notation = NULL;
 
-  audio_channels = (guint) gtk_spin_button_get_value(track_collection_mapper->audio_channels);
+  audio_channels = 1;
   
   for(i = 0; i < audio_channels; i++){
     current_notation = ags_notation_new(NULL,
@@ -569,6 +637,12 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   
   n_key_on = 0;
   n_key_off = 0;
+
+  default_length = track_collection->default_length;
+
+  if(default_length == 0){
+    default_length = 1;
+  }
   
   while(track != NULL){
     current = track->data;
@@ -579,55 +653,57 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
     while(child != NULL){
       if(child->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp(xmlGetProp(child,
-				  "event\0"),
-		       "note-on\0",
+				  "event"),
+		       "note-on",
 		       8)){
 	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
 	    (guint) round(g_ascii_strtod(xmlGetProp(child,
-						    "delta-time\0"),
+						    "delta-time"),
 					 NULL) / track_collection->bpm) -
 	    track_collection->first_offset;
 	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
-						  "note\0"),
+						  "note"),
 				       NULL,
 				       10);
 	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
-							 "velocity\0"),
+							 "velocity"),
 					      NULL,
 					      10);
+
+	  notation = notation_start;
 	  
 	  while(notation != NULL){
 	    note = ags_note_new();
 	    note->x[0] = x;
-	    note->x[1] = x + 1;
+	    note->x[1] = x + default_length;
 	    note->y = y;
 	    ags_complex_set(&(note->attack),
 			    velocity);
 
 	    ags_notation_add_note(notation->data,
-				  ags_note_duplicate(note),
+				  note,
 				  FALSE);
 	    
 	    notation = notation->next;
 	  }
 
-	  g_object_unref(note);
+	  //	  g_object_unref(note);
 	  n_key_on++;
 	}else if(!xmlStrncmp(xmlGetProp(child,
-					"event\0"),
-			     "note-off\0",
+					"event"),
+			     "note-off",
 			     9)){	  
 	  x = (AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS / AGS_MIDI_DEFAULT_BEATS) *
 	    (guint) round(g_ascii_strtod(xmlGetProp(child,
-						    "delta-time\0"),
+						    "delta-time"),
 					 NULL) / track_collection->bpm) -
 	    track_collection->first_offset;
 	  y = (guint) g_ascii_strtoull(xmlGetProp(child,
-						  "note\0"),
+						  "note"),
 				       NULL,
 				       10);
 	  velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
-							 "velocity\0"),
+							 "velocity"),
 					      NULL,
 					      10);
 	  
@@ -637,7 +713,13 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
 	    if(list != NULL){
 	      note = list->data;
-	      note->x[1] = x;
+
+	      if(note->x[0] == x){
+		note->x[1] = x + 1;
+	      }else{
+		note->x[1] = x;
+	      }
+	      
 	      note->y = y;
 	      ags_complex_set(&(note->release),
 			      velocity);
@@ -657,19 +739,14 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   }
 
   /* populate machine_type */
-  if(n_key_off > 0){
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_FFPLAYER));
+  gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				 g_type_name(AGS_TYPE_FFPLAYER));
 
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_SYNTH));
-  }else{
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_DRUM));
+  gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				 g_type_name(AGS_TYPE_DRUM));
     
-    gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
-				   g_type_name(AGS_TYPE_MATRIX));
-  }
+  gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				 g_type_name(AGS_TYPE_MATRIX));
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(track_collection_mapper->machine_type),
 			   0);
@@ -682,7 +759,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
  *
  * Returns: a new #AgsTrackCollectionMapper
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsTrackCollectionMapper*
 ags_track_collection_mapper_new()

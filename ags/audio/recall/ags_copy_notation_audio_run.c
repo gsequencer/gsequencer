@@ -26,6 +26,8 @@
 
 #include <ags/audio/recall/ags_copy_notation_audio.h>
 
+#include <ags/i18n.h>
+
 void ags_copy_notation_audio_run_class_init(AgsCopyNotationAudioRunClass *copy_notation_audio_run);
 void ags_copy_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_notation_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -42,6 +44,7 @@ void ags_copy_notation_audio_run_connect(AgsConnectable *connectable);
 void ags_copy_notation_audio_run_disconnect(AgsConnectable *connectable);
 void ags_copy_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_copy_notation_audio_run_dispose(GObject *gobject);
 void ags_copy_notation_audio_run_finalize(GObject *gobject);
 
 void ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall);
@@ -104,7 +107,7 @@ ags_copy_notation_audio_run_get_type()
     };
 
     ags_type_copy_notation_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-							      "AgsCopyNotationAudioRun\0",
+							      "AgsCopyNotationAudioRun",
 							      &ags_copy_notation_audio_run_info,
 							      0);
     
@@ -135,12 +138,13 @@ ags_copy_notation_audio_run_class_init(AgsCopyNotationAudioRunClass *copy_notati
   gobject->set_property = ags_copy_notation_audio_run_set_property;
   gobject->get_property = ags_copy_notation_audio_run_get_property;
 
+  gobject->dispose = ags_copy_notation_audio_run_dispose;
   gobject->finalize = ags_copy_notation_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("count_beats_audio_run\0",
-				   "assigned AgsCountBeatsAudioRun\0",
-				   "The AgsCountBeatsAudioRun which emits beat signal\0",
+  param_spec = g_param_spec_object("count_beats_audio_run",
+				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
+				   i18n_pspec("The AgsCountBeatsAudioRun which emits beat signal"),
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -259,15 +263,35 @@ ags_copy_notation_audio_run_get_property(GObject *gobject,
 }
 
 void
+ags_copy_notation_audio_run_dispose(GObject *gobject)
+{
+  AgsCopyNotationAudioRun *copy_notation_audio_run;
+
+  copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(gobject);
+
+  /* count beats audio run */
+  if(copy_notation_audio_run->count_beats_audio_run != NULL){
+    g_object_unref(copy_notation_audio_run->count_beats_audio_run);
+
+    copy_notation_audio_run->count_beats_audio_run = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_copy_notation_audio_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_copy_notation_audio_run_finalize(GObject *gobject)
 {
   AgsCopyNotationAudioRun *copy_notation_audio_run;
 
   copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(gobject);
 
-  if(copy_notation_audio_run->count_beats_audio_run != NULL)
+  /* count beats audio run */
+  if(copy_notation_audio_run->count_beats_audio_run != NULL){
     g_object_unref(copy_notation_audio_run->count_beats_audio_run);
-
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_notation_audio_run_parent_class)->finalize(gobject);
 }
@@ -302,7 +326,7 @@ ags_copy_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
 
   g_object_ref(G_OBJECT(delay_audio_run));
   copy_notation_audio_run->tic_alloc_input_handler =
-    g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input\0",
+    g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input",
 		     G_CALLBACK(ags_copy_notation_audio_run_tic_alloc_input_callback), copy_notation_audio_run);
 }
 
@@ -359,7 +383,7 @@ ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "count_beats_audio_run\0", count_beats_audio_run,
+	       "count_beats_audio_run", count_beats_audio_run,
 	       NULL);
 }
 
@@ -434,12 +458,12 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
 
 	while(recycling != last_recycling->next){
 	  if((AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL & (copy_notation_audio->flags)) != 0){
-	    audio_signal = ags_audio_signal_new_with_length((GObject *) copy_notation_audio->soundcard,
+	    audio_signal = ags_audio_signal_new_with_length((GObject *) AGS_RECALL(copy_notation_audio)->soundcard,
 							    (GObject *) recycling,
 							    (GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id,
 							    length);
 	  }else{
-	    audio_signal = ags_audio_signal_new((GObject *) copy_notation_audio->soundcard,
+	    audio_signal = ags_audio_signal_new((GObject *) AGS_RECALL(copy_notation_audio)->soundcard,
 						(GObject *) recycling,
 						(GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id);
 	  }
@@ -476,7 +500,7 @@ ags_copy_notation_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
   AgsCopyNotationAudioRun *copy_notation_audio_run;
 
   copy_notation_audio_run = (AgsCopyNotationAudioRun *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO_RUN,
-								     "count_beats_audio_run\0", count_beats_audio_run,
+								     "count_beats_audio_run", count_beats_audio_run,
 								     NULL);
 
   return(copy_notation_audio_run);

@@ -40,6 +40,8 @@
 
 #include <ags/thread/file/ags_thread_file_xml.h>
 
+#include <ags/i18n.h>
+
 void ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thread_application_context);
 void ags_thread_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
@@ -57,6 +59,9 @@ void ags_thread_application_context_disconnect(AgsConnectable *connectable);
 AgsThread* ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_thread_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+GList* ags_thread_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+void ags_thread_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					       GList *worker);
 void ags_thread_application_context_finalize(GObject *gobject);
 
 void ags_thread_application_context_load_config(AgsApplicationContext *application_context);
@@ -116,7 +121,7 @@ ags_thread_application_context_get_type()
     };
 
     ags_type_thread_application_context = g_type_register_static(AGS_TYPE_APPLICATION_CONTEXT,
-								 "AgsThreadApplicationContext\0",
+								 "AgsThreadApplicationContext",
 								 &ags_thread_application_context_info,
 								 0);
 
@@ -154,11 +159,11 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 0.4
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("autosave-thread\0",
-				   "thread pool of thread application context\0",
-				   "The thread pool which this thread application context assigned to\0",
+  param_spec = g_param_spec_object("autosave-thread",
+				   i18n_pspec("thread pool of thread application context"),
+				   i18n_pspec("The thread pool which this thread application context assigned to"),
 				   AGS_TYPE_AUTOSAVE_THREAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -171,11 +176,11 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 0.4
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("thread-pool\0",
-				   "thread pool of thread application context\0",
-				   "The thread pool which this thread application context assigned to\0",
+  param_spec = g_param_spec_object("thread-pool",
+				   i18n_pspec("thread pool of thread application context"),
+				   i18n_pspec("The thread pool which this thread application context assigned to"),
 				   AGS_TYPE_THREAD_POOL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -206,6 +211,8 @@ ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrenc
   concurrency_provider->get_main_loop = ags_thread_application_context_get_main_loop;
   concurrency_provider->get_task_thread = ags_thread_application_context_get_task_thread;
   concurrency_provider->get_thread_pool = ags_thread_application_context_get_thread_pool;
+  concurrency_provider->get_worker = ags_thread_application_context_get_worker;
+  concurrency_provider->set_worker = ags_thread_application_context_set_worker;
 }
 
 void
@@ -219,7 +226,7 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
   generic_main_loop = (AgsGenericMainLoop *) ags_generic_main_loop_new((GObject *) thread_application_context);
   AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop = (GObject *) generic_main_loop;
   g_object_set(thread_application_context,
-	       "main-loop\0", generic_main_loop,
+	       "main-loop", generic_main_loop,
 	       NULL);
 
   g_object_ref(generic_main_loop);
@@ -236,7 +243,10 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
 
   /* AgsAutosaveThread */
   thread_application_context->autosave_thread = NULL;
-  
+
+  /* AgsWorkerThread */
+  thread_application_context->worker = NULL;
+
   /* AgsThreadPool */
   thread_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread)->thread_pool;
 }
@@ -379,6 +389,19 @@ ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurren
   return((AgsThreadPool *) AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
 }
 
+GList*
+ags_thread_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker);
+}
+
+void
+ags_thread_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+					  GList *worker)
+{
+  AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
+}
+
 void
 ags_thread_application_context_finalize(GObject *gobject)
 {
@@ -408,11 +431,11 @@ ags_thread_application_context_load_config(AgsApplicationContext *application_co
   
   model = ags_config_get_value(config,
 			       AGS_CONFIG_THREAD,
-			       "model\0");
+			       "model");
     
   if(model != NULL){
     if(!g_ascii_strncasecmp(model,
-			    "single-threaded\0",
+			    "single-threaded",
 			    16)){
       //TODO:JK: implement me
 	
@@ -460,16 +483,16 @@ ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **appl
   file->application_context = (GObject *) gobject;
 
   g_object_set(G_OBJECT(file),
-	       "application-context\0", gobject,
+	       "application-context", gobject,
 	       NULL);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
   
   /* properties */
@@ -490,13 +513,13 @@ ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **appl
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-thread\0",
+      if(!xmlStrncmp("ags-thread",
 		     child->name,
 		     11)){
 	ags_file_read_thread(file,
 			     child,
 			     (AgsThread **) &(AGS_APPLICATION_CONTEXT(gobject)->main_loop));
-      }else if(!xmlStrncmp("ags-thread-pool\0",
+      }else if(!xmlStrncmp("ags-thread-pool",
 			   child->name,
 			   16)){
 	ags_file_read_thread_pool(file,
@@ -520,20 +543,20 @@ ags_thread_application_context_write(AgsFile *file, xmlNode *parent, GObject *ap
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-application-context\0");
+		    "ags-application-context");
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", application_context,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", application_context,
 				   NULL));
 
   xmlNewProp(node,
 	     AGS_FILE_CONTEXT_PROP,
-	     "thread\0");
+	     "thread");
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -541,7 +564,7 @@ ags_thread_application_context_write(AgsFile *file, xmlNode *parent, GObject *ap
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", ((~AGS_APPLICATION_CONTEXT_CONNECTED) & (AGS_APPLICATION_CONTEXT(application_context)->flags))));
+	     g_strdup_printf("%x", ((~AGS_APPLICATION_CONTEXT_CONNECTED) & (AGS_APPLICATION_CONTEXT(application_context)->flags))));
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
@@ -575,7 +598,7 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
 			  AGS_CONFIG_GENERIC,
 			  8)){
     if(!g_ascii_strncasecmp(key,
-			    "autosave-thread\0",
+			    "autosave-thread",
 			    15)){
       AgsAutosaveThread *autosave_thread;
 
@@ -587,7 +610,7 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
       autosave_thread = (AgsAutosaveThread *) thread_application_context->autosave_thread;
 
       if(!g_ascii_strncasecmp(value,
-			      "true\0",
+			      "true",
 			      5)){
 	ags_thread_start((AgsThread *) autosave_thread);
       }else{
@@ -598,15 +621,15 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
 				AGS_CONFIG_THREAD,
 				7)){
     if(!g_ascii_strncasecmp(key,
-			    "model\0",
+			    "model",
 			    6)){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(key,
-				  "lock-global\0",
+				  "lock-global",
 				  11)){
       //TODO:JK: implement me
     }else if(!g_ascii_strncasecmp(key,
-				  "lock-parent\0",
+				  "lock-parent",
 				  11)){
       //TODO:JK: implement me
     }

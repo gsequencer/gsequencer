@@ -39,6 +39,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_output_collection_editor_class_init(AgsOutputCollectionEditorClass *output_collection_editor);
 void ags_output_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_output_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -106,7 +108,7 @@ ags_output_collection_editor_get_type(void)
     };
 
     ags_type_output_collection_editor = g_type_register_static(GTK_TYPE_TABLE,
-							       "AgsOutputCollectionEditor\0",
+							       "AgsOutputCollectionEditor",
 							       &ags_output_collection_editor_info,
 							       0);
     
@@ -144,9 +146,9 @@ ags_output_collection_editor_class_init(AgsOutputCollectionEditorClass *output_c
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_gtype("channel-type\0",
-				  "assigned channel type\0",
-				  "The channel type which this channel output collection editor is assigned with\0",
+  param_spec = g_param_spec_gtype("channel-type",
+				  i18n_pspec("assigned channel type"),
+				  i18n_pspec("The channel type which this channel output collection editor is assigned with"),
 				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -175,7 +177,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
   GtkAlignment *alignment;
   GtkLabel *label;
   
-  g_signal_connect_after(GTK_WIDGET(output_collection_editor), "parent-set\0",
+  g_signal_connect_after(GTK_WIDGET(output_collection_editor), "parent-set",
 			 G_CALLBACK(ags_output_collection_editor_parent_set_callback), output_collection_editor);
 
   output_collection_editor->channel_type = G_TYPE_NONE;
@@ -197,7 +199,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first line\0");
+  label = (GtkLabel *) gtk_label_new(i18n("first line"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -221,7 +223,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("count\0");
+  label = (GtkLabel *) gtk_label_new(i18n("count"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -245,7 +247,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("soundcard\0");
+  label = (GtkLabel *) gtk_label_new(i18n("soundcard"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -267,7 +269,7 @@ ags_output_collection_editor_init(AgsOutputCollectionEditor *output_collection_e
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("audio channel\0");
+  label = (GtkLabel *) gtk_label_new(i18n("audio channel"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -295,7 +297,9 @@ ags_output_collection_editor_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_CHANNEL_TYPE:
-    output_collection_editor->channel_type = g_value_get_gtype(value);
+    {
+      output_collection_editor->channel_type = g_value_get_gtype(value);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -315,7 +319,9 @@ ags_output_collection_editor_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_CHANNEL_TYPE:
-    g_value_set_gtype(value, output_collection_editor->channel_type);
+    {
+      g_value_set_gtype(value, output_collection_editor->channel_type);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -331,7 +337,7 @@ ags_output_collection_editor_connect(AgsConnectable *connectable)
   /* AgsOutputCollectionEditor */
   output_collection_editor = AGS_OUTPUT_COLLECTION_EDITOR(connectable);
 
-  g_signal_connect_after(G_OBJECT(output_collection_editor->soundcard), "changed\0",
+  g_signal_connect_after(G_OBJECT(output_collection_editor->soundcard), "changed",
 			 G_CALLBACK(ags_output_collection_editor_soundcard_callback), output_collection_editor);
 }
 
@@ -344,7 +350,7 @@ ags_output_collection_editor_disconnect(AgsConnectable *connectable)
   output_collection_editor = AGS_OUTPUT_COLLECTION_EDITOR(connectable);
 
   g_object_disconnect(G_OBJECT(output_collection_editor->soundcard),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_output_collection_editor_soundcard_callback),
 		      output_collection_editor,
 		      NULL);
@@ -582,7 +588,7 @@ ags_output_collection_editor_new(GType channel_type)
   AgsOutputCollectionEditor *output_collection_editor;
   
   output_collection_editor = (AgsOutputCollectionEditor *) g_object_new(AGS_TYPE_OUTPUT_COLLECTION_EDITOR,
-									"channel_type\0", channel_type,
+									"channel_type", channel_type,
 									NULL);
   
   return(output_collection_editor);

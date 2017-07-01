@@ -98,7 +98,7 @@ ags_buffer_audio_signal_get_type()
     };
 
     ags_type_buffer_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							  "AgsBufferAudioSignal\0",
+							  "AgsBufferAudioSignal",
 							  &ags_buffer_audio_signal_info,
 							  0);
 
@@ -164,10 +164,6 @@ ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal)
 void
 ags_buffer_audio_signal_finalize(GObject *gobject)
 {
-  if(AGS_RECALL_AUDIO_SIGNAL(gobject)->destination != NULL){
-    g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->destination);
-  }
-  
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_audio_signal_parent_class)->finalize(gobject); 
 }
@@ -274,7 +270,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 				     (GObject *) parent_recall_id);
   
   g_object_set(buffer_audio_signal,
-	       "destination\0", destination,
+	       "destination", destination,
 	       NULL);  
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
@@ -295,8 +291,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   pthread_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
-  g_message("buffer %x to %x\0", destination, parent_recall_id);
-  g_message("creating destination\0");
+  g_message("buffer %x to %x", destination, parent_recall_id);
+  g_message("creating destination");
 #endif
   
   /* call parent */
@@ -465,7 +461,7 @@ ags_buffer_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsBufferAudioSignal *buffer_audio_signal;
 
   buffer_audio_signal = (AgsBufferAudioSignal *) g_object_new(AGS_TYPE_BUFFER_AUDIO_SIGNAL,
-							      "source\0", audio_signal,
+							      "source", audio_signal,
 							      NULL);
 
   return(buffer_audio_signal);

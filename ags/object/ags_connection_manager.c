@@ -21,6 +21,7 @@
 
 void ags_connection_manager_class_init(AgsConnectionManagerClass *connection_manager);
 void ags_connection_manager_init (AgsConnectionManager *connection_manager);
+void ags_connection_manager_dispose(GObject *gobject);
 void ags_connection_manager_finalize(GObject *gobject);
 
 /**
@@ -56,7 +57,7 @@ ags_connection_manager_get_type (void)
     };
 
     ags_type_connection_manager = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsConnectionManager\0",
+						  "AgsConnectionManager",
 						  &ags_connection_manager_info,
 						  0);
   }
@@ -75,6 +76,7 @@ ags_connection_manager_class_init(AgsConnectionManagerClass *connection_manager)
   /* GObjectClass */
   gobject = (GObjectClass *) connection_manager;
 
+  gobject->dispose = ags_connection_manager_dispose;
   gobject->finalize = ags_connection_manager_finalize;
 }
 
@@ -82,6 +84,24 @@ void
 ags_connection_manager_init(AgsConnectionManager *connection_manager)
 {
   connection_manager->connection = NULL;
+}
+
+void
+ags_connection_manager_dispose(GObject *gobject)
+{
+  AgsConnectionManager *connection_manager;
+
+  connection_manager = AGS_CONNECTION_MANAGER(gobject);
+
+  if(connection_manager->connection != NULL){
+    g_list_free_full(connection_manager->connection,
+		     g_object_unref);
+
+    connection_manager->connection = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_connection_manager_parent_class)->dispose(gobject);
 }
 
 void
@@ -96,6 +116,7 @@ ags_connection_manager_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_connection_manager_parent_class)->finalize(gobject);
 }
 

@@ -40,7 +40,7 @@ ags_concurrency_provider_get_type()
 
   if(!ags_type_concurrency_provider){
     ags_type_concurrency_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
-								  "AgsConcurrencyProvider\0",
+								  "AgsConcurrencyProvider",
 								  sizeof(AgsConcurrencyProviderInterface),
 								  (GClassInitFunc) ags_concurrency_provider_class_init,
 								  0, NULL, 0);
@@ -143,3 +143,47 @@ ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_pro
   return(concurrency_provider_interface->get_thread_pool(concurrency_provider));
 }
 
+/**
+ * ags_concurrency_provider_get_worker:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ *
+ * Get workers of application context.
+ *
+ * Returns: the #GList-struct containing workers
+ * 
+ * Since: 0.7.122.8
+ */
+GList*
+ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider)
+{
+  AgsConcurrencyProviderInterface *concurrency_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider), NULL);
+  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
+  g_return_val_if_fail(concurrency_provider_interface->get_worker, NULL);
+
+  return(concurrency_provider_interface->get_worker(concurrency_provider));
+}
+
+/**
+ * ags_concurrency_provider_set_worker:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ * @worker: the #GList-struct containing workers
+ * 
+ * Set workers of application context.
+ * 
+ * Since: 0.7.122.8
+ */
+void
+ags_concurrency_provider_set_worker(AgsConcurrencyProvider *concurrency_provider,
+				    GList *worker)
+{
+  AgsConcurrencyProviderInterface *concurrency_provider_interface;
+
+  g_return_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider));
+  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
+  g_return_if_fail(concurrency_provider_interface->set_worker);
+
+  concurrency_provider_interface->set_worker(concurrency_provider,
+					     worker);
+}

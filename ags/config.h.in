@@ -3,6 +3,9 @@
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
 
+/* Disable if you don't want libinstpatch */
+#undef AGS_WITH_LIBINSTPATCH
+
 /* OSS enabled */
 #undef AGS_WITH_OSS
 
@@ -16,6 +19,10 @@
 
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
+
+/* Define to 1 if translation of program messages to the user's native
+   language is requested. */
+#undef ENABLE_NLS
 
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
@@ -36,8 +43,20 @@
 /* Atk 2.12 available */
 #undef HAVE_ATK_2_12
 
+/* Define to 1 if you have the Mac OS X function CFLocaleCopyCurrent in the
+   CoreFoundation framework. */
+#undef HAVE_CFLOCALECOPYCURRENT
+
+/* Define to 1 if you have the Mac OS X function CFPreferencesCopyAppValue in
+   the CoreFoundation framework. */
+#undef HAVE_CFPREFERENCESCOPYAPPVALUE
+
 /* Define to 1 if you have the `clock_gettime' function. */
 #undef HAVE_CLOCK_GETTIME
+
+/* Define if the GNU dcgettext() function is already present or preinstalled.
+   */
+#undef HAVE_DCGETTEXT
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
@@ -60,14 +79,17 @@
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
+/* Define if the GNU gettext() function is already present or preinstalled. */
+#undef HAVE_GETTEXT
+
 /* GLib 2.44 available */
 #undef HAVE_GLIB_2_44
 
 /* GLib 2.6 available */
 #undef HAVE_GLIB_2_6
 
-/* Define to 1 if you have the <gmp.h> header file. */
-#undef HAVE_GMP_H
+/* Define if you have the iconv() function and it works. */
+#undef HAVE_ICONV
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H

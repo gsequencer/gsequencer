@@ -27,6 +27,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -44,6 +45,7 @@
 #include <ags/audio/task/ags_append_recall.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -52,6 +54,8 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -62,13 +66,19 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
 					     guint audio_channels, guint audio_channels_old,
 					     AgsPatternEdit *pattern_edit)
 {
+  AgsWindow *window;
   AgsEditor *editor;
   AgsEditorChild *editor_child;
 
   GList *list;
   GList *tabs;
   GList *notation;
+
   guint i;
+
+  gdk_threads_enter();
+  
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pattern_edit);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
@@ -85,27 +95,36 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
     list = list->next;
   }
   
+  if(editor_child == NULL){
+    gdk_threads_leave();
+    
+    return;
+  }
+
   if(audio_channels_old < audio_channels){
     notation = g_list_nth(audio->notation,
-			  audio_channels_old - 1);
+			  audio_channels_old);
 
     for(i = audio_channels_old; i < audio_channels; i++){
       ags_notebook_insert_tab(editor_child->notebook,
 			      i);
       tabs = editor_child->notebook->tabs;
-      notation = notation->next;
       AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tabs->data)->toggle,
 				   TRUE);
+
+      notation = notation->next;
     }
 
     gtk_widget_show_all((GtkWidget *) editor_child->notebook);
   }else{
     for(i = audio_channels; i < audio_channels_old; i++){
       ags_notebook_remove_tab(editor_child->notebook,
-			      i);
+			      audio_channels);
     }
   }
+
+  gdk_threads_leave();
 }
 
 void
@@ -114,10 +133,8 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
 				   guint pads, guint pads_old,
 				   AgsPatternEdit *pattern_edit)
 {
+  AgsWindow *window;
   AgsEditor *editor;
-
-  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
-						 AGS_TYPE_EDITOR);
 
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
@@ -129,6 +146,13 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
     }
   }
 
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pattern_edit);
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+
   if(AGS_IS_PATTERN_EDIT(pattern_edit)){
     ags_pattern_edit_set_map_height(pattern_edit,
 				    pads * pattern_edit->control_height);
@@ -138,6 +162,8 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
   }
   
   gtk_widget_queue_draw((GtkWidget *) editor->current_meter);
+
+  gdk_threads_leave();
 }
 
 gboolean
@@ -411,7 +437,7 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     i = 0;
 
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+					    i)) != -1){
       /* retrieve notation */
       pthread_mutex_lock(audio_mutex);
 
@@ -439,7 +465,7 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
       i++;
     }
 
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
   }
   void ags_pattern_edit_drawing_area_button_release_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
@@ -535,7 +561,7 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     y = (guint) floor((double) y / (double) (pattern_edit->control_height));
 
 #ifdef AGS_DEBUG
-    g_message("%d, %d\0", x, y);
+    g_message("%d, %d", x, y);
 #endif
     
     /* select notes */
@@ -840,7 +866,7 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     note_x1 = (note_x * tact) + (note_offset_x1 * tact);
 
 #ifdef AGS_DEBUG
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
 #endif
   }
   void ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cairo_t *cr){
@@ -1154,6 +1180,8 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   auto void ags_pattern_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
   void ags_pattern_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel){
+    AgsWindow *window;
+    
     GObject *soundcard;
     AgsAudio *audio;
 
@@ -1171,13 +1199,35 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     
     GList *tasks;
 
+    gboolean no_soundcard;
+    
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *soundcard_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
+    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pattern_edit);
+
+    application_context = (AgsApplicationContext *) window->application_context;
+
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    no_soundcard = FALSE;
+
+    pthread_mutex_lock(application_mutex);
+
+    if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+      no_soundcard = TRUE;
+    }
+
+    pthread_mutex_unlock(application_mutex);
+
+    if(no_soundcard){
+      g_message("No soundcard available");
+      
+      return;
+    }
 
     /* lookup channel mutex */
     pthread_mutex_lock(application_mutex);
@@ -1217,13 +1267,6 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   
     pthread_mutex_unlock(application_mutex);
 
-    /* get application_context */
-    pthread_mutex_lock(soundcard_mutex);
-
-    application_context = (AgsApplicationContext *) ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-
-    pthread_mutex_unlock(soundcard_mutex);
-
     /* get threads */
     pthread_mutex_lock(application_mutex);
 
@@ -1243,7 +1286,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     /* init channel for playback */
     init_channel = ags_init_channel_new(channel, FALSE,
 					TRUE, FALSE, FALSE);
-    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+    g_signal_connect_after(G_OBJECT(init_channel), "launch",
 			   G_CALLBACK(ags_pattern_edit_init_channel_launch_callback), NULL);
     tasks = g_list_prepend(tasks, init_channel);
     
@@ -1437,7 +1480,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
 	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
 
-	fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+	fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
       }
       break;
     case GDK_KEY_Delete:
@@ -1561,7 +1604,7 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 				     AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
-  g_message("launch\0");
+  g_message("launch");
 #endif
   
   if(AGS_PLAYBACK(channel->playback) == NULL ||

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,8 @@
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
 #include <ags/audio/recall/ags_envelope_channel.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
@@ -34,6 +36,7 @@
 #include <ags/audio/ags_recall_channel_run.h>
 
 #include <stdlib.h>
+#include <complex.h>
 
 void ags_envelope_audio_signal_class_init(AgsEnvelopeAudioSignalClass *envelope_audio_signal);
 void ags_envelope_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -45,6 +48,7 @@ void ags_envelope_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_co
 void ags_envelope_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_envelope_audio_signal_finalize(GObject *gobject);
 
+void ags_envelope_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_envelope_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 					       AgsRecallID *recall_id,
@@ -95,7 +99,7 @@ ags_envelope_audio_signal_get_type()
     };
 
     ags_type_envelope_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							    "AgsEnvelopeAudioSignal\0",
+							    "AgsEnvelopeAudioSignal",
 							    &ags_envelope_audio_signal_info,
 							    0);
 
@@ -127,6 +131,7 @@ ags_envelope_audio_signal_class_init(AgsEnvelopeAudioSignalClass *envelope_audio
   /* AgsRecallClass */
   recall = (AgsRecallClass *) envelope_audio_signal;
 
+  recall->run_init_pre = ags_envelope_audio_signal_run_init_pre;
   recall->run_inter = ags_envelope_audio_signal_run_inter;  
   recall->duplicate = ags_envelope_audio_signal_duplicate;
 }
@@ -152,13 +157,15 @@ ags_envelope_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectab
 void
 ags_envelope_audio_signal_init(AgsEnvelopeAudioSignal *envelope_audio_signal)
 {
-  AGS_RECALL(envelope_audio_signal)->name = "ags-envelope\0";
+  AGS_RECALL(envelope_audio_signal)->name = "ags-envelope";
   AGS_RECALL(envelope_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(envelope_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(envelope_audio_signal)->xml_type = "ags-envelope-audio-signal\0";
+  AGS_RECALL(envelope_audio_signal)->xml_type = "ags-envelope-audio-signal";
   AGS_RECALL(envelope_audio_signal)->port = NULL;
 
   AGS_RECALL(envelope_audio_signal)->child_type = G_TYPE_NONE;
+
+  envelope_audio_signal->frame_count = 0;
 }
 
 void
@@ -214,44 +221,6 @@ ags_envelope_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_envelope_audio_signal_parent_class)->finalize(gobject);
 }
 
-void
-ags_envelope_audio_signal_run_inter(AgsRecall *recall)
-{
-  AgsEnvelopeChannel *envelope_channel;
-  AgsEnvelopeAudioSignal *envelope_audio_signal;
-  AgsAudioSignal *source;
-  GList *stream_source;
-  gboolean audio_enveloped, channel_enveloped;
-  guint buffer_size;
-  guint i;
-  GValue audio_value = {0,};
-  GValue channel_value = {0,};
-
-  AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter(recall);
-
-  envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
-
-  source = AGS_RECALL_AUDIO_SIGNAL(envelope_audio_signal)->source;
-  stream_source = source->stream_current;
-  buffer_size = source->buffer_size;
-
-  if(stream_source == NULL){
-    ags_recall_done(recall);
-    return;
-  }
-
-  /* check channel */
-  envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
-
-  //FIXME:JK: access ports safe
-  ags_audio_signal_envelope(source,
-			    envelope_channel->attack->port_value.ags_port_double,
-			    envelope_channel->decay->port_value.ags_port_double,
-			    envelope_channel->sustain->port_value.ags_port_double,
-			    envelope_channel->release->port_value.ags_port_double,
-			    envelope_channel->ratio->port_value.ags_port_double);
-}
-
 AgsRecall*
 ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 				    AgsRecallID *recall_id,
@@ -264,6 +233,316 @@ ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 													    n_params, parameter);
 
   return((AgsRecall *) envelope);
+}
+
+void
+ags_envelope_audio_signal_run_init_pre(AgsRecall *recall)
+{
+  AgsEnvelopeChannel *envelope_channel;
+  AgsEnvelopeAudioSignal *envelope_audio_signal;
+
+  AgsAudioSignal *source;
+  AgsNote *note;
+
+  gdouble delay;
+  gdouble fixed_length;
+  guint buffer_size;
+  gboolean use_note_length, use_fixed_length;
+  
+  GValue value = {0,};
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_init_pre(recall);
+
+  /*  */
+  envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+  envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
+  
+  source = AGS_RECALL_AUDIO_SIGNAL(envelope_audio_signal)->source;
+  note = source->note;
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(source->soundcard));
+  buffer_size = source->buffer_size;
+
+  /* get use note length port */
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(envelope_channel->use_note_length,
+		     &value);
+  
+  use_note_length = g_value_get_boolean(&value);
+  g_value_unset(&value);
+
+  /* get use fixed length port */
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(envelope_channel->use_fixed_length,
+		     &value);
+  
+  use_fixed_length = g_value_get_boolean(&value);
+  g_value_unset(&value);
+  
+  /* set frame count */
+  if(use_note_length){
+    envelope_audio_signal->frame_count = (note->x[1] - note->x[0]) * (delay * buffer_size);
+  }else if(use_fixed_length){
+    g_value_init(&value,
+		 G_TYPE_DOUBLE);
+
+    ags_port_safe_read(envelope_channel->fixed_length,
+		       &value);
+
+    fixed_length = g_value_get_double(&value);
+    g_value_unset(&value);
+
+    envelope_audio_signal->frame_count = fixed_length * (delay * buffer_size);
+  }else{
+    envelope_audio_signal->frame_count = AGS_RECALL_AUDIO_SIGNAL(recall)->source->frame_count;
+  }
+}
+
+void
+ags_envelope_audio_signal_run_inter(AgsRecall *recall)
+{
+  AgsEnvelopeAudioSignal *envelope_audio_signal;
+
+  AgsAudioSignal *source;
+  AgsNote *note;
+  
+  AgsComplex *attack;
+  AgsComplex *decay;
+  AgsComplex *sustain;
+  AgsComplex *release;  
+  AgsComplex *ratio;  
+
+  GList *stream_source;
+
+  gdouble current_volume, current_ratio;
+
+  guint frame_count;
+  guint buffer_size;
+
+  guint i, j;
+
+  GValue audio_value = {0,};
+  GValue channel_value = {0,};
+
+  auto gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+							     guint x1, gdouble y1);
+  auto gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+							      guint start_x, guint current_x,
+							      guint length);
+    
+  gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+							guint x1, gdouble y1){
+    if(x1 - x0 == 0){
+      return(1.0);
+    }else{
+      return((y1 - y0) / (x1 - x0));
+    }
+  }
+
+  gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+							 guint start_x, guint current_x,
+							 guint length){
+    if(current_x - start_x == 0){
+      return(volume);
+    }else{
+      return(volume + ratio * (length / (current_x - start_x)));
+    }
+  }
+
+  AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter(recall);
+
+  envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
+
+  source = AGS_RECALL_AUDIO_SIGNAL(envelope_audio_signal)->source;
+
+  stream_source = source->stream_current;
+
+  if(stream_source == NULL){
+    ags_recall_done(recall);
+    return;
+  }
+
+  /* initialize some control values */
+  frame_count = envelope_audio_signal->frame_count;
+
+  if(source->note != NULL &&
+     (AGS_NOTE_ENVELOPE & (AGS_NOTE(source->note)->flags)) != 0){
+    gdouble x0, y0;
+    gdouble x1, y1;
+    guint start_position;
+    guint start_frame, first_frame, buffer_size;
+    guint current_frame, current_buffer_size;
+    guint offset, prev_offset;
+    
+    note = source->note;
+
+    attack = &(note->attack);
+    decay = &(note->decay);
+    sustain = &(note->sustain);
+    release = &(note->release);
+
+    ratio = &(note->ratio);
+
+    /* get offsets */
+    start_position = g_list_position(source->stream_beginning,
+				       source->stream_current);
+
+    if(start_position == 0){
+      start_frame = 0;
+      first_frame = source->first_frame;
+      buffer_size = source->buffer_size - source->first_frame;
+    }else{
+      start_frame = start_position * source->buffer_size - source->first_frame;
+      first_frame = 0;
+      buffer_size = source->buffer_size;
+    }
+
+    /* attack */
+    x0 = 0.0;
+    y0 = ratio[0][1];
+
+    x1 = attack[0][0];
+    y1 = attack[0][1] + ratio[0][1];
+
+    offset = x1 * frame_count;
+    current_frame = first_frame;
+    
+    if(offset >= start_frame){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
+	}else{
+	  current_buffer_size = x1 * frame_count;
+	}
+      }
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, start_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
+    }
+    
+    /* decay */
+    x0 = *attack[0];
+    y0 = *attack[1] + ratio[0][1];
+
+    x1 = *decay[0];
+    y1 = *decay[1] + ratio[0][1];
+
+    prev_offset = offset;
+    offset += (x1 * frame_count);
+
+    if(offset >= start_frame &&
+       prev_offset < start_frame + buffer_size){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
+	}else{
+	  current_buffer_size = x1 * frame_count;
+	}
+      }
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, prev_offset + current_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
+    }
+
+    /* sustain */
+    x0 = *decay[0];
+    y0 = *decay[1] + ratio[0][1];
+
+    x1 = *sustain[0];
+    y1 = *sustain[1] + ratio[0][1];
+
+    prev_offset = offset;
+    offset += (x1 * frame_count);
+
+    if(offset >= start_frame &&
+       prev_offset < start_frame + buffer_size){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
+	}else{
+	  current_buffer_size = x1 * frame_count;
+	}
+      }
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, prev_offset + current_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
+    }
+    
+    /* release */
+    x0 = *sustain[0];
+    y0 = *sustain[1] + ratio[0][1];
+
+    x1 = *release[0];
+    y1 = *release[1] + ratio[0][1];
+
+    prev_offset = offset;
+    offset += (x1 * frame_count);
+    
+    if(offset >= start_frame &&
+       prev_offset < start_frame + buffer_size){
+      if(current_frame + x1 * frame_count > buffer_size){
+	current_buffer_size = buffer_size - current_frame;
+      }else{
+	if(x1 * frame_count > buffer_size){
+	  current_buffer_size = buffer_size;
+	}else{
+	  current_buffer_size = x1 * frame_count;
+	}
+      }
+      
+      current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								    x1 * frame_count, y1);
+      current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+								      0, prev_offset + current_frame,
+								      x1 * frame_count);
+      ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+				     ags_audio_buffer_util_format_from_soundcard(source->format),
+				     current_buffer_size,
+				     current_volume,
+				     current_ratio);
+
+      current_frame += current_buffer_size;
+    }
+  }
 }
 
 /**
@@ -282,7 +561,7 @@ ags_envelope_audio_signal_new(AgsAudioSignal *source)
   AgsEnvelopeAudioSignal *envelope_audio_signal;
 
   envelope_audio_signal = (AgsEnvelopeAudioSignal *) g_object_new(AGS_TYPE_ENVELOPE_AUDIO_SIGNAL,
-								  "source\0", source,
+								  "source", source,
 								  NULL);
 
   return(envelope_audio_signal);

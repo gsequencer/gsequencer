@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,11 +28,11 @@
 #include "ags_indicator.h"
 
 #define AGS_TYPE_HINDICATOR                (ags_hindicator_get_type())
-#define AGS_HINDICATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INDICATOR, AgsHIndicator))
-#define AGS_HINDICATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_INDICATOR, AgsHIndicatorClass))
-#define AGS_IS_HINDICATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_INDICATOR))
-#define AGS_IS_HINDICATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_INDICATOR))
-#define AGS_HINDICATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_INDICATOR, AgsHIndicatorClass))
+#define AGS_HINDICATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HINDICATOR, AgsHIndicator))
+#define AGS_HINDICATOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_HINDICATOR, AgsHIndicatorClass))
+#define AGS_IS_HINDICATOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_HINDICATOR))
+#define AGS_IS_HINDICATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_HINDICATOR))
+#define AGS_HINDICATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_HINDICATOR, AgsHIndicatorClass))
 
 typedef struct _AgsHIndicator AgsHIndicator;
 typedef struct _AgsHIndicatorClass AgsHIndicatorClass;
@@ -52,4 +52,3 @@ GType ags_hindicator_get_type(void);
 AgsHIndicator* ags_hindicator_new();
 
 #endif /*__AGS_HINDICATOR_H__*/
-

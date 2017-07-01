@@ -19,14 +19,20 @@
 
 #include <ags/X/task/ags_add_bulk_member.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_add_bulk_member_class_init(AgsAddBulkMemberClass *add_bulk_member);
 void ags_add_bulk_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -75,7 +81,7 @@ ags_add_bulk_member_get_type()
     };
 
     ags_type_add_bulk_member = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsAddBulkMember\0",
+						 "AgsAddBulkMember",
 						 &ags_add_bulk_member_info,
 						 0);
 
@@ -153,14 +159,48 @@ ags_add_bulk_member_finalize(GObject *gobject)
 void
 ags_add_bulk_member_launch(AgsTask *task)
 {
+  AgsWindow *window;
+
   AgsEffectBridge *effect_bridge;
   AgsAddBulkMember *add_bulk_member;
+
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
 
   AgsChannel *channel;
 
   gboolean found_ports;
   
+  pthread_mutex_t *application_mutex;
+    
   add_bulk_member = AGS_ADD_BULK_MEMBER(task);
+
+  /* lock gdk threads */
+  gdk_threads_enter();
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) add_bulk_member->effect_bulk);
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
+						      AGS_TYPE_GUI_THREAD);
+  /*  */
+  gdk_threads_enter();
 
   gtk_table_attach(AGS_EFFECT_BULK(add_bulk_member->effect_bulk)->table,
 		   (GtkWidget *) add_bulk_member->bulk_member,
@@ -173,6 +213,11 @@ ags_add_bulk_member_launch(AgsTask *task)
 
   /* find ports */
   ags_bulk_member_find_port(add_bulk_member->bulk_member);
+
+  gdk_threads_leave();
+
+  /* unlock gdk threads */
+  gdk_threads_leave();
 }
 
 /**

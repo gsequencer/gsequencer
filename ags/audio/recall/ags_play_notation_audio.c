@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,7 +40,7 @@ void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
 static gpointer ags_play_notation_audio_parent_class = NULL;
 static AgsPluginInterface *ags_play_notation_parent_plugin_interface;
 
-static const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation\0";
+static const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation";
 static const gchar *ags_play_notation_audio_specifier[] = {
 };
 static const gchar *ags_play_notation_audio_control_port[] = {
@@ -71,7 +71,7 @@ ags_play_notation_audio_get_type()
     };    
 
     ags_type_play_notation_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-							  "AgsPlayNotationAudio\0",
+							  "AgsPlayNotationAudio",
 							  &ags_play_notation_audio_info,
 							  0);
 
@@ -110,10 +110,10 @@ ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
 {
   GList *port;
 
-  AGS_RECALL(play_notation_audio)->name = "ags-play-notation\0";
+  AGS_RECALL(play_notation_audio)->name = "ags-play-notation";
   AGS_RECALL(play_notation_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_notation_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_notation_audio)->xml_type = "ags-play-notation-audio\0";
+  AGS_RECALL(play_notation_audio)->xml_type = "ags-play-notation-audio";
 
   port = NULL;
 

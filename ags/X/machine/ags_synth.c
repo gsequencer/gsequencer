@@ -53,6 +53,7 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
+#include <ags/audio/task/ags_clear_audio_signal.h>
 #include <ags/audio/task/ags_apply_synth.h>
 
 #include <ags/widget/ags_expander_set.h>
@@ -69,7 +70,11 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <math.h>
+
+#include <ags/i18n.h>
 
 void ags_synth_class_init(AgsSynthClass *synth);
 void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -141,7 +146,7 @@ ags_synth_get_type(void)
     };
     
     ags_type_synth = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsSynth\0", &ags_synth_info,
+					    "AgsSynth", &ags_synth_info,
 					    0);
     
     g_type_add_interface_static(ags_type_synth,
@@ -215,7 +220,7 @@ ags_synth_init(AgsSynth *synth)
   GtkLabel *label;
   GtkFrame *frame;
 
-  g_signal_connect_after((GObject *) synth, "parent_set\0",
+  g_signal_connect_after((GObject *) synth, "parent_set",
 			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
 
   audio = AGS_MACHINE(synth)->audio;
@@ -229,10 +234,10 @@ ags_synth_init(AgsSynth *synth)
   AGS_MACHINE(synth)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(synth)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_audio_channels",
 			 G_CALLBACK(ags_synth_set_audio_channels), synth);
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads",
 			 G_CALLBACK(ags_synth_set_pads), synth);
 
   //  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
@@ -242,7 +247,7 @@ ags_synth_init(AgsSynth *synth)
   synth->flags = 0;
  
   synth->name = NULL;
-  synth->xml_type = "ags-synth\0";
+  synth->xml_type = "ags-synth";
 
   synth->mapped_input_pad = 0;
   synth->mapped_output_pad = 0;
@@ -261,10 +266,10 @@ ags_synth_init(AgsSynth *synth)
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) vbox, FALSE, FALSE, 0);
 
-  synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("auto update\0"));
+  synth->auto_update = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->auto_update, FALSE, FALSE, 0);
 
-  synth->update = (GtkButton *) gtk_button_new_with_label(g_strdup("update\0"));
+  synth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
 
@@ -273,8 +278,8 @@ ags_synth_init(AgsSynth *synth)
 
   
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "lower\0",
-				    "xalign\0", 0.0,
+				    "label", i18n("lower"),
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -293,8 +298,8 @@ ags_synth_init(AgsSynth *synth)
 
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "loop start\0",
-				    "xalign\0", 0.0,
+				    "label", i18n("loop start"),
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -313,8 +318,8 @@ ags_synth_init(AgsSynth *synth)
 
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "label\0", "loop end\0",
-				    "xalign\0", 0.0,
+				    "label", i18n("loop end"),
+				    "xalign", 0.0,
 				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -352,13 +357,13 @@ ags_synth_connect(AgsConnectable *connectable)
   /* AgsSynth */
   synth = AGS_SYNTH(connectable);
 
-  g_signal_connect((GObject *) synth->lower, "value-changed\0",
+  g_signal_connect((GObject *) synth->lower, "value-changed",
 		   G_CALLBACK(ags_synth_lower_callback), synth);
 
-  g_signal_connect((GObject *) synth->auto_update, "toggled\0",
+  g_signal_connect((GObject *) synth->auto_update, "toggled",
 		   G_CALLBACK(ags_synth_auto_update_callback), synth);
 
-  g_signal_connect((GObject *) synth->update, "clicked\0",
+  g_signal_connect((GObject *) synth->update, "clicked",
 		   G_CALLBACK(ags_synth_update_callback), (gpointer) synth);
 }
 
@@ -377,19 +382,19 @@ ags_synth_disconnect(AgsConnectable *connectable)
   synth = AGS_SYNTH(connectable);
 
   g_object_disconnect((GObject *) synth->lower,
-		      "value-changed\0",
+		      "value-changed",
 		      G_CALLBACK(ags_synth_lower_callback),
 		      synth,
 		      NULL);
 
   g_object_disconnect((GObject *) synth->auto_update,
-		      "toggled\0",
+		      "toggled",
 		      G_CALLBACK(ags_synth_auto_update_callback),
 		      synth,
 		      NULL);
   
   g_object_disconnect((GObject *) synth->update,
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_synth_update_callback),
 		      (gpointer) synth,
 		      NULL);
@@ -445,11 +450,11 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   /* fix wrong flag */
@@ -468,7 +473,7 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			     NULL,
 			     ags_file_read_machine_resolve_audio,
 			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
 			     G_CALLBACK(ags_synth_read_resolve_audio), gobject);
       
       break;
@@ -480,17 +485,17 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   /*  */
   gtk_spin_button_set_value(gobject->lower,
 			    g_ascii_strtod(xmlGetProp(node,
-						      "lower\0"),
+						      "lower"),
 					   NULL));
 
   gtk_spin_button_set_value(gobject->loop_start,
 			    g_ascii_strtod(xmlGetProp(node,
-						      "loop-begin\0"),
+						      "loop-begin"),
 					   NULL));
 
   gtk_spin_button_set_value(gobject->loop_end,
 			    g_ascii_strtod(xmlGetProp(node,
-						      "loop-end\0"),
+						      "loop-end"),
 					   NULL));
 }
 
@@ -502,10 +507,10 @@ ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
 
   synth = AGS_SYNTH(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
 			 G_CALLBACK(ags_synth_set_audio_channels), synth);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
 			 G_CALLBACK(ags_synth_set_pads), synth);
 
   if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
@@ -529,31 +534,31 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-synth\0");
+		    "ags-synth");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", synth,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", synth,
 				   NULL));
 
   xmlNewProp(node,
-	     "lower\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->lower)));
+	     "lower",
+	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->lower)));
 
   xmlNewProp(node,
-	     "loop-begin\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->loop_start)));
+	     "loop-begin",
+	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->loop_start)));
 
   xmlNewProp(node,
-	     "loop-end\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->loop_end)));
+	     "loop-end",
+	     g_strdup_printf("%f", gtk_spin_button_get_value(synth->loop_end)));
 
   xmlAddChild(parent,
 	      node);
@@ -585,7 +590,8 @@ ags_synth_update(AgsSynth *synth)
   
   AgsAudio *audio;
   AgsChannel *channel;
-  
+
+  AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
   AgsMutexManager *mutex_manager;
@@ -596,7 +602,8 @@ ags_synth_update(AgsSynth *synth)
   
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;
-
+  GList *task;
+  
   guint output_lines;
   guint wave;
   guint attack, frame_count;
@@ -607,7 +614,9 @@ ags_synth_update(AgsSynth *synth)
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *application_mutex;
-    
+
+  gdk_threads_enter();
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -634,7 +643,7 @@ ags_synth_update(AgsSynth *synth)
 					 (GObject *) audio);
   
   pthread_mutex_unlock(application_mutex);
-  
+
   /*  */
   start_frequency = (gdouble) gtk_spin_button_get_value_as_float(synth->lower);
 
@@ -694,7 +703,7 @@ ags_synth_update(AgsSynth *synth)
   
   g_list_free(input_pad_start);
 
-  /* write output */
+  /* clear output */
   input_pad_start = 
     input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
@@ -704,7 +713,46 @@ ags_synth_update(AgsSynth *synth)
   output_lines = audio->output_lines;
 
   pthread_mutex_unlock(audio_mutex);
+
+  task = NULL;
+
+  while(channel != NULL){
+    AgsAudioSignal *template;
+    
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
   
+    pthread_mutex_unlock(application_mutex);
+
+    /* clear task */
+    pthread_mutex_lock(channel_mutex);
+
+    template = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+    pthread_mutex_unlock(channel_mutex);
+
+    clear_audio_signal = ags_clear_audio_signal_new(template);
+    task = g_list_prepend(task,
+			  clear_audio_signal);
+    
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
+  
+  /* write output */
+  pthread_mutex_lock(audio_mutex);
+  
+  channel = audio->output;
+
+  pthread_mutex_unlock(audio_mutex);
+
   while(input_pad != NULL){
     /* do it so */
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
@@ -723,14 +771,18 @@ ags_synth_update(AgsSynth *synth)
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
-
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(apply_synth));
+    task = g_list_prepend(task,
+			  apply_synth);
 
     input_pad = input_pad->next;
   }
   
   g_list_free(input_pad_start);
+  
+  gdk_threads_leave();
+
+  ags_task_thread_append_tasks(task_thread,
+			       g_list_reverse(task));
 }
 
 /**
@@ -752,7 +804,7 @@ ags_synth_new(GObject *soundcard)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
-	       "soundcard\0", soundcard,
+	       "soundcard", soundcard,
 	       NULL);
 
   return(synth);

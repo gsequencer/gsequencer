@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <libxml/tree.h>
@@ -44,6 +45,8 @@ struct _AgsTrackCollection
 
   guint first_offset;
   gdouble bpm;
+
+  guint default_length;
   
   GType child_type;
   guint child_parameter_count;

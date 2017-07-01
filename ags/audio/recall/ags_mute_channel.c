@@ -25,6 +25,8 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_mute_channel_class_init(AgsMuteChannelClass *mute_channel);
 void ags_mute_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mute_channel_mutable_interface_init(AgsMutableInterface *mutable);
@@ -41,6 +43,7 @@ void ags_mute_channel_get_property(GObject *gobject,
 void ags_mute_channel_connect(AgsConnectable *connectable);
 void ags_mute_channel_disconnect(AgsConnectable *connectable);
 void ags_mute_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_mute_channel_dispose(GObject *gobject);
 void ags_mute_channel_finalize(GObject *gobject);
 
 void ags_mute_channel_set_muted(AgsMutable *mutable, gboolean muted);
@@ -103,7 +106,7 @@ ags_mute_channel_get_type()
     };
 
     ags_type_mute_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsMuteChannel\0",
+						   "AgsMuteChannel",
 						   &ags_mute_channel_info,
 						   0);
 
@@ -160,12 +163,20 @@ ags_mute_channel_class_init(AgsMuteChannelClass *mute_channel)
   gobject->set_property = ags_mute_channel_set_property;
   gobject->get_property = ags_mute_channel_get_property;
 
+  gobject->dispose = ags_mute_channel_dispose;
   gobject->finalize = ags_mute_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("muted\0",
-				   "mute channel\0",
-				   "Mute the channel\0",
+  /**
+   * AgsMuteChannel:muted:
+   *
+   * The mute port.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("muted",
+				   i18n_pspec("mute channel"),
+				   i18n_pspec("Mute the channel"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -178,23 +189,24 @@ ags_mute_channel_init(AgsMuteChannel *mute_channel)
 {
   GList *port;
 
-  AGS_RECALL(mute_channel)->name = "ags-mute\0";
+  AGS_RECALL(mute_channel)->name = "ags-mute";
   AGS_RECALL(mute_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(mute_channel)->xml_type = "ags-mute-channel\0";
+  AGS_RECALL(mute_channel)->xml_type = "ags-mute-channel";
 
   port = NULL;
 
   /* muted */
   mute_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", "ags-mute\0",
-				     "specifier\0", "./muted[0]\0",
-				     "control-port\0", "1/1\0",
-				     "port-value-is-pointer\0", FALSE,
-				     "port-value-type\0", G_TYPE_FLOAT,
-				     "port-value-size\0", sizeof(gfloat),
-				     "port-value-length\0", 1,
+				     "plugin-name", "ags-mute",
+				     "specifier", "./muted[0]",
+				     "control-port", "1/1",
+				     "port-value-is-pointer", FALSE,
+				     "port-value-type", G_TYPE_FLOAT,
+				     "port-value-size", sizeof(gfloat),
+				     "port-value-length", 1,
 				     NULL);
+  g_object_ref(mute_channel->muted);
 
   mute_channel->muted->port_value.ags_port_float = (float) FALSE;
 
@@ -203,6 +215,7 @@ ags_mute_channel_init(AgsMuteChannel *mute_channel)
 
   /* add to port */
   port = g_list_prepend(port, mute_channel->muted);
+  g_object_ref(mute_channel->muted);
 
   /* set port */
   AGS_RECALL(mute_channel)->port = port;
@@ -300,15 +313,33 @@ ags_mute_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"muted[0]\0",
+		"muted[0]",
 		9)){
       g_object_set(G_OBJECT(plugin),
-		   "muted\0", AGS_PORT(port->data),
+		   "muted", AGS_PORT(port->data),
 		   NULL);
     }
 
     port = port->next;
   }
+}
+
+void
+ags_mute_channel_dispose(GObject *gobject)
+{
+  AgsMuteChannel *mute_channel;
+
+  mute_channel = AGS_MUTE_CHANNEL(gobject);
+
+  /* muted */
+  if(mute_channel->muted != NULL){
+    g_object_unref(G_OBJECT(mute_channel->muted));
+
+    mute_channel->muted = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_mute_channel_parent_class)->dispose(gobject);
 }
 
 void
@@ -318,6 +349,7 @@ ags_mute_channel_finalize(GObject *gobject)
 
   mute_channel = AGS_MUTE_CHANNEL(gobject);
 
+  /* muted */
   if(mute_channel->muted != NULL){
     g_object_unref(G_OBJECT(mute_channel->muted));
   }

@@ -56,6 +56,8 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_plugin_interface_init(AgsPluginInterface *plugin);
@@ -97,7 +99,7 @@ GtkMenu* ags_machine_popup_new(AgsMachine *machine);
  * #AgsMachine is a composite widget to act as base class to visualize #AgsAudio.
  */
 
-#define AGS_DEFAULT_MACHINE "ags-default-machine\0"
+#define AGS_DEFAULT_MACHINE "ags-default-machine"
 
 enum{
   RESIZE_AUDIO_CHANNELS,
@@ -110,6 +112,7 @@ enum{
 enum{
   PROP_0,
   PROP_AUDIO,
+  PROP_MACHINE_NAME,
 };
 
 static gpointer ags_machine_parent_class = NULL;
@@ -146,7 +149,7 @@ ags_machine_get_type(void)
     };
 
     ags_type_machine = g_type_register_static(GTK_TYPE_HANDLE_BOX,
-					      "AgsMachine\0", &ags_machine_info,
+					      "AgsMachine", &ags_machine_info,
 					      0);
     
     g_type_add_interface_static(ags_type_machine,
@@ -186,13 +189,29 @@ ags_machine_class_init(AgsMachineClass *machine)
    * 
    * Since: 0.3
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "assigned audio\0",
-				   "The audio it is assigned to\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned to"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO,
+				  param_spec);
+
+  /**
+   * AgsMachine:machine-name:
+   *
+   * The machine's name.
+   * 
+   * Since: 0.8.7
+   */
+  param_spec = g_param_spec_string("machine-name",
+				   i18n_pspec("machine name"),
+				   i18n_pspec("The machine's name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MACHINE_NAME,
 				  param_spec);
 
   /* GtkWidgetClass */
@@ -218,7 +237,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * audio.
    */
   machine_signals[RESIZE_AUDIO_CHANNELS] =
-    g_signal_new("resize-audio-channels\0",
+    g_signal_new("resize-audio-channels",
 		 G_TYPE_FROM_CLASS(machine),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, resize_audio_channels),
@@ -240,7 +259,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * audio.
    */
   machine_signals[RESIZE_PADS] =
-    g_signal_new("resize-pads\0",
+    g_signal_new("resize-pads",
 		 G_TYPE_FROM_CLASS(machine),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, resize_pads),
@@ -258,7 +277,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::map-recall should be used to add the machine's default recall.
    */
   machine_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+    g_signal_new("map-recall",
                  G_TYPE_FROM_CLASS (machine),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsMachineClass, map_recall),
@@ -274,7 +293,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::find-port as recall should be mapped
    */
   machine_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(machine),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, find_port),
@@ -313,9 +332,8 @@ ags_machine_init(AgsMachine *machine)
 {
   GtkVBox *vbox;
   GtkFrame *frame;
-  GtkMenuToolButton *menu_tool_button;
 
-  machine->name = NULL;
+  machine->machine_name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;
   machine->build_id = AGS_MACHINE_DEFAULT_BUILD_ID;
@@ -340,13 +358,15 @@ ags_machine_init(AgsMachine *machine)
 
   machine->audio = ags_audio_new(NULL);
   g_object_ref(G_OBJECT(machine->audio));
+
+  machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine = (GObject *) machine;
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
 			 G_CALLBACK(ags_machine_set_audio_channels_callback), machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
 			 G_CALLBACK(ags_machine_set_pads_callback), machine);
   
   machine->play = NULL;
@@ -365,16 +385,17 @@ ags_machine_init(AgsMachine *machine)
   machine->popup = ags_machine_popup_new(machine);
   g_object_ref(machine->popup);
   
-  menu_tool_button = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							"label\0", "machine\0",
-							"menu\0", machine->popup,
-							NULL);
+  machine->menu_tool_button = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								 "label", "machine",
+								 "menu", machine->popup,
+								 NULL);
   gtk_frame_set_label_widget(frame,
-			     (GtkWidget *) menu_tool_button);
+			     (GtkWidget *) machine->menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
   machine->connection_editor = NULL;
   machine->midi_dialog = NULL;
+  machine->envelope_dialog = NULL;
 
   machine->application_context = NULL;
 }
@@ -466,7 +487,7 @@ ags_machine_set_property(GObject *gobject,
 	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
 				   audio->audio_channels, g_list_length(line));
 	      g_object_set(G_OBJECT(pad->data),
-			   "channel\0", output,
+			   "channel", output,
 			   NULL);
 
 	      g_list_free(line);
@@ -482,7 +503,7 @@ ags_machine_set_property(GObject *gobject,
 	      /* add pad */
 	      for(; i < audio->output_pads; i++){
 		pad = g_object_new(machine->output_pad_type,
-				   "channel\0", output,
+				   "channel", output,
 				   NULL);
 		gtk_container_add(machine->output,
 				  GTK_WIDGET(pad));
@@ -516,7 +537,7 @@ ags_machine_set_property(GObject *gobject,
 	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->input_line_type,
 				   audio->audio_channels, g_list_length(line));
 	      g_object_set(G_OBJECT(pad->data),
-			   "channel\0", input,
+			   "channel", input,
 			   NULL);
 
 	      g_list_free(line);
@@ -532,7 +553,7 @@ ags_machine_set_property(GObject *gobject,
 	      /* add pad */
 	      for(; i < audio->input_pads; i++){
 		pad = g_object_new(machine->input_pad_type,
-				   "channel\0", input,
+				   "channel", input,
 				   NULL);
 		gtk_container_add(machine->input,
 				  GTK_WIDGET(pad));
@@ -563,7 +584,7 @@ ags_machine_set_property(GObject *gobject,
 
 	    for(i = 0; i < audio->output_pads; i++){
 	      pad = g_object_new(machine->output_pad_type,
-				 "channel\0", channel,
+				 "channel", channel,
 				 NULL);
 	      gtk_container_add(machine->output,
 				GTK_WIDGET(pad));	  
@@ -579,7 +600,7 @@ ags_machine_set_property(GObject *gobject,
 
 	    for(i = 0; i < audio->input_pads; i++){
 	      pad = g_object_new(machine->input_pad_type,
-				 "channel\0", channel,
+				 "channel", channel,
 				 NULL);
 	      gtk_container_add(machine->output,
 				GTK_WIDGET(pad));
@@ -593,6 +614,34 @@ ags_machine_set_property(GObject *gobject,
       }else{
 	machine->audio = NULL;
       }
+    }
+    break;
+  case PROP_MACHINE_NAME:
+    {
+      gchar *machine_name;
+      gchar *str;
+      
+      machine_name = g_value_get_string(value);
+
+      if(machine_name == machine->machine_name){
+	return;
+      }
+
+      if(machine->machine_name != NULL){
+	g_free(machine->machine_name);
+      }
+
+      machine->machine_name = g_strdup(machine_name);
+
+      /* update UI */
+      str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
+			": ",
+			machine_name,
+			NULL);
+      
+      g_object_set(machine->menu_tool_button,
+		   "label", str,
+		   NULL);
     }
     break;
   default:
@@ -613,7 +662,14 @@ ags_machine_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_AUDIO:
-    g_value_set_object(value, machine->audio);
+    {
+      g_value_set_object(value, machine->audio);
+    }
+    break;
+  case PROP_MACHINE_NAME:
+    {
+      g_value_set_string(value, machine->machine_name);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -625,7 +681,8 @@ void
 ags_machine_connect(AgsConnectable *connectable)
 {
   AgsMachine *machine;
-  GList *pad_list;
+
+  GList *list_start, *list;
 
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
@@ -643,7 +700,7 @@ ags_machine_connect(AgsConnectable *connectable)
   }else{
     //    machine->flags &= ~AGS_MACHINE_PREMAPPED_RECALL;
 #ifdef AGS_DEBUG
-    g_message("find port\0");
+    g_message("find port");
 #endif
     
     ags_machine_find_port(machine);
@@ -654,48 +711,101 @@ ags_machine_connect(AgsConnectable *connectable)
   }
   
   if(machine->play != NULL){
-    g_signal_connect(G_OBJECT(machine->play), "clicked\0",
+    g_signal_connect(G_OBJECT(machine->play), "clicked",
 		     G_CALLBACK(ags_machine_play_callback), (gpointer) machine);
   }
 
   /* GtkWidget */
-  //  g_signal_connect(G_OBJECT (machine), "button_press_event\0",
+  //  g_signal_connect(G_OBJECT (machine), "button_press_event",
   //		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
 
   /* AgsPad - input */
   if(machine->input != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
 
-    while(pad_list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   /* AgsPad - output */
   if(machine->output != NULL){
-    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
     
-    while(pad_list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+    while(list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
       
-      pad_list = pad_list->next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   /* audio */
-  g_signal_connect_after(machine->audio, "tact\0",
+  g_signal_connect_after(machine->audio, "tact",
 			 G_CALLBACK(ags_machine_tact_callback), machine);
 
-  g_signal_connect_after(machine->audio, "done\0",
+  g_signal_connect_after(machine->audio, "done",
 			 G_CALLBACK(ags_machine_done_callback), machine);
 }
 
 void
 ags_machine_disconnect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
+
+  GList *list_start, *list;
+
+  /* AgsMachine */
+  machine = AGS_MACHINE(connectable);
+
+  if((AGS_MACHINE_CONNECTED & (machine->flags)) == 0){
+    return;
+  }
+
+  machine->flags &= (~AGS_MACHINE_CONNECTED);
+
+  if(machine->bridge != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(machine->bridge));
+  }
+
+  /* AgsPad - input */
+  if(machine->input != NULL){
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+    while(list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+  }
+
+  /* AgsPad - output */
+  if(machine->output != NULL){
+    list_start =
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    
+    while(list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+  }
+
   //TODO:JK: implement me
+  g_signal_handlers_disconnect_by_data(machine->audio,
+				       machine);
 }
 
 
@@ -781,8 +891,8 @@ ags_machine_finalize(GObject *gobject)
     gtk_widget_destroy((GtkWidget *) machine->rename);
   }
   
-  if(machine->name != NULL){
-    g_free(machine->name);
+  if(machine->machine_name != NULL){
+    g_free(machine->machine_name);
   }
   
   if(machine->audio != NULL){
@@ -888,7 +998,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
 	  pad = g_object_new(machine->input_pad_type,
-			     "channel\0", channel,
+			     "channel", channel,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->input,
 			     (GtkWidget *) pad,
@@ -938,7 +1048,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
 	  pad = g_object_new(machine->output_pad_type,
-			     "channel\0", channel,
+			     "channel", channel,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->output,
 			     (GtkWidget *) pad,
@@ -967,6 +1077,14 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     }
 
     /* show all */
+    if(audio_channels_old == 0){
+      list_input_pad_start = 
+	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
+      
+      list_output_pad_start = 
+	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
+    }
+    
     if(gtk_widget_get_visible((GtkWidget *) machine)){
       if(audio_channels_old == 0){
 	/* AgsInput */
@@ -1056,7 +1174,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
 
-	list_input_pad->next = list_input_pad_next;
+	list_input_pad = list_input_pad_next;
       }
 
       /* AgsOutput */
@@ -1065,7 +1183,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	gtk_widget_destroy(GTK_WIDGET(list_output_pad->data));
 
-	list_output_pad->next = list_output_pad_next;
+	list_output_pad = list_output_pad_next;
       }
     }else{
       /* AgsInput */
@@ -1182,7 +1300,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 
 	  /* instantiate pad */
 	  pad = g_object_new(machine->input_pad_type,
-			     "channel\0", channel,
+			     "channel", channel,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->input,
 			     (GtkWidget *) pad, FALSE, FALSE, 0);
@@ -1229,7 +1347,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 
 	  /* instantiate pad */
 	  pad = g_object_new(machine->output_pad_type,
-			     "channel\0", channel,
+			     "channel", channel,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->output, (GtkWidget *) pad, FALSE, FALSE, 0);
 
@@ -1261,27 +1379,31 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
     GList *list, *list_next;
 
     /* input - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-    list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_INPUT){
+      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+      list = g_list_nth(list, pads);
 
-    while(list != NULL){
-      list_next = list->next;
+      while(list != NULL){
+	list_next = list->next;
 
-      gtk_widget_destroy(GTK_WIDGET(list->data));
+	gtk_widget_destroy(GTK_WIDGET(list->data));
 
-      list = list_next;
+	list = list_next;
+      }
     }
-
+    
     /* output - destroy AgsPad's */
-    list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-    list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_OUTPUT){
+      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+      list = g_list_nth(list, pads);
 
-    while(list != NULL){
-      list_next = list->next;
+      while(list != NULL){
+	list_next = list->next;
 
-      gtk_widget_destroy(GTK_WIDGET(list->data));
+	gtk_widget_destroy(GTK_WIDGET(list->data));
 
-      list = list_next;
+	list = list_next;
+      }
     }
   }
 
@@ -1453,7 +1575,7 @@ AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
 {
   while(list != NULL){
-    if(!g_strcmp0(AGS_MACHINE(list->data)->name, name))
+    if(!g_strcmp0(AGS_MACHINE(list->data)->machine_name, name))
       return((AgsMachine *) list->data);
 
     list = list->next;
@@ -1503,6 +1625,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+
+  gboolean no_soundcard;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_loop_mutex;
@@ -1513,12 +1637,28 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  no_soundcard = FALSE;
   
+  pthread_mutex_lock(application_mutex);
+
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  if(no_soundcard){
+    g_message("No soundcard available");
+    
+    return;
+  }
+
   /* get threads */
   pthread_mutex_lock(application_mutex);
 
   audio_loop = (AgsAudioLoop *) application_context->main_loop;
-
+  
   pthread_mutex_unlock(application_mutex);
 
   /* lookup audio loop mutex */
@@ -1575,12 +1715,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       AgsGuiThread *gui_thread;
       AgsTaskCompletion *task_completion;
 
-      pthread_mutex_lock(audio_loop_mutex);
-      
       gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
 							 AGS_TYPE_GUI_THREAD);
-
-      pthread_mutex_unlock(audio_loop_mutex);
 
       /* start soundcard */
       start_soundcard = ags_start_soundcard_new(window->application_context);
@@ -1589,7 +1725,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
       /* task completion */
       task_completion = ags_task_completion_new((GObject *) start_soundcard,
 						NULL);
-      g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
+      g_signal_connect_after(G_OBJECT(task_completion), "complete",
 			     G_CALLBACK(ags_machine_start_complete_callback), machine);
       ags_connectable_connect(AGS_CONNECTABLE(task_completion));
 
@@ -1660,7 +1796,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "NULL\0",
+		     0, "NULL",
 		     1, NULL,
 		     -1);
 
@@ -1671,7 +1807,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
       if(list->data != machine){
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
-			   0, g_strdup_printf("%s: %s\0", 
+			   0, g_strdup_printf("%s: %s", 
 					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
 					      ags_soundcard_get_device(AGS_SOUNDCARD(list->data))),
 			   1, list->data,
@@ -1708,7 +1844,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "NULL\0",
+		     0, "NULL",
 		     1, NULL,
 		     -1);
 
@@ -1719,9 +1855,9 @@ ags_machine_get_possible_links(AgsMachine *machine)
       if(list->data != machine){
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
-			   0, g_strdup_printf("%s: %s\0", 
+			   0, g_strdup_printf("%s: %s", 
 					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
-					      AGS_MACHINE(list->data)->name),
+					      AGS_MACHINE(list->data)->machine_name),
 			   1, list->data,
 			   -1);
       }
@@ -1750,7 +1886,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) machine),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
@@ -1758,15 +1894,15 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "create\0", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "overwrite\0", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
 
   return(file_chooser);
 }
@@ -1866,14 +2002,14 @@ ags_machine_copy_pattern(AgsMachine *machine)
     guint bank_0, bank_1, k;
     
     /* create root node */
-    notation_node = xmlNewNode(NULL, BAD_CAST "notation\0");
+    notation_node = xmlNewNode(NULL, BAD_CAST "notation");
 
-    xmlNewProp(notation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
-    xmlNewProp(notation_node, BAD_CAST "type\0", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
-    xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
-    xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-    xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup("0\0"));
-    xmlNewProp(notation_node, BAD_CAST "audio-channel\0", BAD_CAST g_strdup_printf("%u\0", current->audio_channel));
+    xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
+    xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+    xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+    xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+    xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup("0"));
+    xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST g_strdup_printf("%u", current->audio_channel));
 
     bank_0 = machine->bank_0;
     bank_1 = machine->bank_1;
@@ -1886,15 +2022,15 @@ ags_machine_copy_pattern(AgsMachine *machine)
 
       for(k = 0; k < pattern->dim[2]; k++){
 	if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
-	  current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note\0", NULL);
+	  current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
 	  
-	  xmlNewProp(current_note, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", k));
-	  xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", k + 1));
+	  xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", k));
+	  xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", k + 1));
 
 	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
-	    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", machine->audio->input_pads - current->pad - 1));
+	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", machine->audio->input_pads - current->pad - 1));
 	  }else{
-	    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", current->pad));
+	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current->pad));
 	  }
 	  
 	  if(x_boundary > k){
@@ -1920,8 +2056,8 @@ ags_machine_copy_pattern(AgsMachine *machine)
       current = current->next;
     }
 
-    xmlNewProp(notation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
-    xmlNewProp(notation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
+    xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
+    xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
 
     return(notation_node);
   }
@@ -1930,7 +2066,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
   clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
   /* create root node */
-  audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+  audio_node = xmlNewNode(NULL, BAD_CAST "audio");
   xmlDocSetRootElement(clipboard, audio_node);
 
   audio = machine->audio;
@@ -1974,7 +2110,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
   }
   
   /* write to clipboard */
-  xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+  xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
   gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			 buffer, size);
   gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -2004,7 +2140,7 @@ ags_machine_new(GObject *soundcard)
   g_value_init(&value, G_TYPE_OBJECT);
   g_value_set_object(&value, soundcard);
   g_object_set_property(G_OBJECT(machine->audio),
-			"soundcard\0", &value);
+			"soundcard", &value);
   g_value_unset(&value);
 
   return(machine);
@@ -2029,55 +2165,55 @@ ags_machine_popup_new(AgsMachine *machine)
 
   popup = (GtkMenu *) gtk_menu_new();
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move up\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("move up"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move down\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("move down"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("hide\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("hide"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("show\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("show"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("destroy\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("destroy"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("rename\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("rename"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
   
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("properties\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("properties"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
   list_start = 
     list = gtk_container_get_children((GtkContainer *) popup);
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_move_up_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_move_down_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_hide_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_show_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_destroy_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_rename_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_properties_activate_callback), (gpointer) machine);
 
   g_list_free(list_start);
@@ -2101,7 +2237,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
   GtkMenu *edit;
   GtkMenuItem *item;
   
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("edit\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("edit"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
   gtk_widget_show((GtkWidget *) item);
 
@@ -2112,24 +2248,36 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
   gtk_widget_show((GtkWidget *) edit);
 
   if((AGS_MACHINE_POPUP_COPY_PATTERN & edit_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("copy pattern\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("copy pattern"));
     gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
     
-    g_signal_connect((GObject*) item, "activate\0",
+    g_signal_connect((GObject*) item, "activate",
 		     G_CALLBACK(ags_machine_popup_copy_pattern_callback), (gpointer) machine);
 
     gtk_widget_show((GtkWidget *) item);
   }
   
   if((AGS_MACHINE_POPUP_PASTE_PATTERN & edit_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("paste pattern\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("paste pattern"));
     gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
 
-    g_signal_connect((GObject*) item, "activate\0",
+    g_signal_connect((GObject*) item, "activate",
 		     G_CALLBACK(ags_machine_popup_paste_pattern_callback), (gpointer) machine);
 
     gtk_widget_show((GtkWidget *) item);
   }
+
+  if((AGS_MACHINE_POPUP_ENVELOPE & edit_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("envelope"));
+    gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate",
+		     G_CALLBACK(ags_machine_popup_envelope_callback), (gpointer) machine);
+
+    gtk_widget_show((GtkWidget *) item);
+  }
+
+  gtk_widget_show_all(machine->popup);
 }
 
 /**
@@ -2149,7 +2297,7 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
 
   gchar *str;
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("connection\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("connection"));
   gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
   gtk_widget_show((GtkWidget *) item);
 
@@ -2160,22 +2308,24 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
   gtk_widget_show((GtkWidget *) connection);
 
   if((AGS_MACHINE_POPUP_CONNECTION_EDITOR & connection_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("audio connection\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("audio connection"));
     gtk_menu_shell_append((GtkMenuShell *) connection, (GtkWidget*) item);
     
-    g_signal_connect((GObject*) item, "activate\0",
+    g_signal_connect((GObject*) item, "activate",
 		     G_CALLBACK(ags_machine_popup_connection_editor_callback), (gpointer) machine);
 
     gtk_widget_show((GtkWidget *) item);
   }
 
   if((AGS_MACHINE_POPUP_MIDI_DIALOG & connection_options) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("MIDI dialog\0"));
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("MIDI dialog"));
     gtk_menu_shell_append((GtkMenuShell *) connection, (GtkWidget*) item);
     
-    g_signal_connect((GObject*) item, "activate\0",
+    g_signal_connect((GObject*) item, "activate",
 		     G_CALLBACK(ags_machine_popup_midi_dialog_callback), (gpointer) machine);
 
     gtk_widget_show((GtkWidget *) item);
   }
+
+  gtk_widget_show_all(machine->popup);
 }

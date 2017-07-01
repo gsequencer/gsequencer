@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,9 @@
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
 #include <stdlib.h>
+#include <complex.h>
+
+#include <ags/i18n.h>
 
 void ags_note_class_init(AgsNoteClass *note);
 void ags_note_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -38,7 +41,7 @@ void ags_note_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_note_connect(AgsConnectable *connectable);
 void ags_note_disconnect(AgsConnectable *connectable);
-void ags_note_finalize(GObject *object);
+void ags_note_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_note
@@ -91,7 +94,7 @@ ags_note_get_type()
     };
 
     ags_type_note = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsNote\0",
+					   "AgsNote",
 					   &ags_note_info,
 					   0);
     
@@ -118,6 +121,7 @@ ags_note_class_init(AgsNoteClass *note)
 
   gobject->finalize = ags_note_finalize;
 
+  /* properties */
   /**
    * AgsNote:x0:
    *
@@ -125,9 +129,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("x0\0",
-				 "offset x0\0",
-				 "The first x offset\0",
+  param_spec = g_param_spec_uint("x0",
+				 i18n_pspec("offset x0"),
+				 i18n_pspec("The first x offset"),
 				 0,
 				 65535,
 				 0,
@@ -143,9 +147,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("x1\0",
-				 "offset x1\0",
-				 "The last x offset\0",
+  param_spec = g_param_spec_uint("x1",
+				 i18n_pspec("offset x1"),
+				 i18n_pspec("The last x offset"),
 				 0,
 				 65535,
 				 0,
@@ -161,9 +165,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("y\0",
-				 "offset y\0",
-				 "The y offset\0",
+  param_spec = g_param_spec_uint("y",
+				 i18n_pspec("offset y"),
+				 i18n_pspec("The y offset"),
 				 0,
 				 65535,
 				 0,
@@ -179,9 +183,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_double("stream-delay\0",
-				   "delay of stream\0",
-				   "The delay of the stream\0",
+  param_spec = g_param_spec_double("stream-delay",
+				   i18n_pspec("delay of stream"),
+				   i18n_pspec("The delay of the stream"),
 				   0.0,
 				   65535.0,
 				   0.0,
@@ -197,9 +201,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_uint("stream-attack\0",
-				 "offset stream-attack\0",
-				 "The first x offset\0",
+  param_spec = g_param_spec_uint("stream-attack",
+				 i18n_pspec("offset stream-attack"),
+				 i18n_pspec("The first x offset"),
 				 0,
 				 65535,
 				 0,
@@ -215,9 +219,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("attack\0",
-				  "envelope's attack\0",
-				  "The envelope's attack\0",
+  param_spec = g_param_spec_boxed("attack",
+				  i18n_pspec("envelope's attack"),
+				  i18n_pspec("The envelope's attack"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -231,9 +235,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("decay\0",
-				  "envelope's decay\0",
-				  "The envelope's decay\0",
+  param_spec = g_param_spec_boxed("decay",
+				  i18n_pspec("envelope's decay"),
+				  i18n_pspec("The envelope's decay"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -247,9 +251,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("sustain\0",
-				  "envelope's sustain\0",
-				  "The envelope's sustain\0",
+  param_spec = g_param_spec_boxed("sustain",
+				  i18n_pspec("envelope's sustain"),
+				  i18n_pspec("The envelope's sustain"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -263,9 +267,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.2
    */
-  param_spec = g_param_spec_boxed("release\0",
-				  "envelope's release\0",
-				  "The envelope's release\0",
+  param_spec = g_param_spec_boxed("release",
+				  i18n_pspec("envelope's release"),
+				  i18n_pspec("The envelope's release"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -279,9 +283,9 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 0.7.42
    */
-  param_spec = g_param_spec_boxed("ratio\0",
-				  "envelope's ratio\0",
-				  "The envelope's ratio\0",
+  param_spec = g_param_spec_boxed("ratio",
+				  i18n_pspec("envelope's ratio"),
+				  i18n_pspec("The envelope's ratio"),
 				  AGS_TYPE_COMPLEX,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -299,6 +303,8 @@ ags_note_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_note_init(AgsNote *note)
 {
+  complex z;
+  
   note->flags = 0;
 
   note->x[0] = 0;
@@ -307,18 +313,26 @@ ags_note_init(AgsNote *note)
 
   note->stream_delay = 0.0;
   note->stream_attack = 0;
-  
-  ags_complex_set(&(note->attack),
-		  1.0);
-  ags_complex_set(&(note->decay),
-		  1.0);
-  ags_complex_set(&(note->sustain),
-		  1.0);  
-  ags_complex_set(&(note->release),
-		  1.0);
 
+  z = 0.25 + I * 1.0;
+  ags_complex_set(&(note->attack),
+		  z);
+
+  z = 0.25 + I * 1.0;
+  ags_complex_set(&(note->decay),
+		  z);
+
+  z = 0.25 + I * 1.0;
+  ags_complex_set(&(note->sustain),
+		  z);
+
+  z = 0.25 + I * 1.0;
+  ags_complex_set(&(note->release),
+		  z);
+
+  z = I * 1.0;
   ags_complex_set(&(note->ratio),
-		  1.0);
+		  z);
   
   note->name = NULL;
   note->frequency = 440.0;
@@ -327,13 +341,29 @@ ags_note_init(AgsNote *note)
 void
 ags_note_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsNote *note;
+
+  note = AGS_NOTE(connectable);
+
+  if((AGS_NOTE_CONNECTED & (note->flags)) != 0){
+    return;
+  }
+
+  note->flags |= AGS_NOTE_CONNECTED;
 }
 
 void
 ags_note_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsNote *note;
+
+  note = AGS_NOTE(connectable);
+
+  if((AGS_NOTE_CONNECTED & (note->flags)) == 0){
+    return;
+  }
+
+  note->flags &= (~AGS_NOTE_CONNECTED);
 }
 
 void
@@ -478,8 +508,16 @@ ags_note_get_property(GObject *gobject,
 void
 ags_note_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsNote *note;
 
+  note = AGS_NOTE(gobject);
+
+  /* name */
+  if(note->name != NULL){
+    free(note->name);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_note_parent_class)->finalize(gobject);
 }
 
@@ -896,11 +934,11 @@ ags_note_new_with_offset(guint x0, guint x1,
   AgsNote *note;
 
   note = (AgsNote *) g_object_new(AGS_TYPE_NOTE,
-				  "x0\0", x0,
-				  "x1\0", x1,
-				  "y\0", y,
-				  "stream-delay\0", stream_delay,
-				  "stream-attack\0", stream_attack,
+				  "x0", x0,
+				  "x1", x1,
+				  "y", y,
+				  "stream-delay", stream_delay,
+				  "stream-attack", stream_attack,
 				  NULL);
 
   return(note);

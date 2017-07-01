@@ -28,6 +28,8 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <ags/i18n.h>
+
 void ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer);
 void ags_clear_buffer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_clear_buffer_init(AgsClearBuffer *clear_buffer);
@@ -88,7 +90,7 @@ ags_clear_buffer_get_type()
     };
 
     ags_type_clear_buffer = g_type_register_static(AGS_TYPE_TASK,
-							 "AgsClearBuffer\0",
+							 "AgsClearBuffer",
 							 &ags_clear_buffer_info,
 							 0);
 
@@ -125,9 +127,9 @@ ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer)
    * 
    * Since: 0.7.124
    */
-  param_spec = g_param_spec_object("device\0",
-				   "device of change device\0",
-				   "The device of change device task\0",
+  param_spec = g_param_spec_object("device",
+				   i18n_pspec("device of change device"),
+				   i18n_pspec("The device of change device task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -282,7 +284,7 @@ ags_clear_buffer_launch(AgsTask *task)
       }
       break;
     default:
-      g_warning("ags_clear_buffer_launch(): unsupported word size\0");
+      g_warning("ags_clear_buffer_launch(): unsupported word size");
 
       return;
     }
@@ -332,7 +334,7 @@ ags_clear_buffer_launch(AgsTask *task)
       }
       break;
     default:    
-      g_warning("ags_clear_buffer_launch(): unsupported word size\0");
+      g_warning("ags_clear_buffer_launch(): unsupported word size");
     
       return;
     }

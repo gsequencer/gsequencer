@@ -33,8 +33,10 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_editor.h>
+#include <ags/X/ags_automation_editor.h>
 #include <ags/X/editor/ags_pattern_edit.h>
 #include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_automation_edit.h>
 
 #include <fontconfig/fontconfig.h>
 
@@ -87,7 +89,7 @@ ags_scroll_on_play_get_type()
     };
     
     ags_type_scroll_on_play = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsScrollOnPlay\0",
+						     "AgsScrollOnPlay",
 						     &ags_scroll_on_play_info,
 						     0);
 
@@ -162,6 +164,7 @@ ags_scroll_on_play_launch(AgsTask *task)
 {
   AgsMachine *machine;
   AgsEditor *editor;
+  AgsAutomationEditor *automation_editor;
   
   AgsCountBeatsAudioRun *count_beats_audio_run;
   
@@ -177,14 +180,34 @@ ags_scroll_on_play_launch(AgsTask *task)
   scroll_on_play = AGS_SCROLL_ON_PLAY(task);
 
   gdk_threads_enter();
+
+  if(AGS_IS_EDITOR(scroll_on_play->editor)){
+    editor = AGS_EDITOR(scroll_on_play->editor);
+    automation_editor = NULL;
+  }else if(AGS_IS_AUTOMATION_EDITOR(scroll_on_play->editor)){
+    editor = NULL;
+    automation_editor = AGS_AUTOMATION_EDITOR(scroll_on_play->editor);
+
+    //TODO:JK: implement me
+
+    return;
+  }else{
+    return;
+  }
+
+  if(editor != NULL){
+    editor_child = editor->editor_child;
+  }else{
+    editor_child = automation_editor->automation_editor_child;
+  }
   
-  editor = AGS_EDITOR(scroll_on_play->editor);
-
-  editor_child = editor->editor_child;
-
   while(editor_child != NULL){    
-    machine = AGS_EDITOR_CHILD(editor_child->data)->machine;
-
+    if(editor != NULL){
+      machine = AGS_EDITOR_CHILD(editor_child->data)->machine;
+    }else{
+      machine = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->machine;
+    }
+    
     if(machine == NULL){
       editor_child = editor_child->next;
       
@@ -209,168 +232,170 @@ ags_scroll_on_play_launch(AgsTask *task)
     }
 
     count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
-    
-    if(AGS_IS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
-      AgsNoteEdit *note_edit;
 
-      note_edit = AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
+    if(editor != NULL){
+      if(AGS_IS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
+	AgsNoteEdit *note_edit;
 
-      control_width = note_edit->control_unit.control_width;
+	note_edit = AGS_NOTE_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
+
+	control_width = note_edit->control_unit.control_width;
       
-      position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
+	position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
 
-      /* scroll */
-      note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+	/* scroll */
+	note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
 
-      if(position - control_width > 0){
-	value = (position - control_width);
-      }else{
-	value = 0.0;
-      }
-
-      if(position - control_width > 0){
-	gtk_range_set_value(GTK_RANGE(note_edit->hscrollbar),
-			    value);
-	gtk_adjustment_set_value(note_edit->ruler->adjustment,
-				 (value) /
-				 note_edit->control_current.control_width);
-	gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
-      }
-      
-      /*  */
-      if(position - control_width > 0){
-	note_edit->control_current.x0 = ((guint) round((double) value)) % note_edit->control_current.control_width;
-
-	if(note_edit->control_current.x0 != 0){
-	  note_edit->control_current.x0 = note_edit->control_current.control_width - note_edit->control_current.x0;
+	if(position - control_width > 0){
+	  value = (position - control_width);
+	}else{
+	  value = 0.0;
 	}
+
+	if(position - control_width > 0){
+	  gtk_range_set_value(GTK_RANGE(note_edit->hscrollbar),
+			      value);
+	  gtk_adjustment_set_value(note_edit->ruler->adjustment,
+				   (value) /
+				   note_edit->control_current.control_width);
+	  gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
+	}
+      
+	/*  */
+	if(position - control_width > 0){
+	  note_edit->control_current.x0 = ((guint) round((double) value)) % note_edit->control_current.control_width;
+
+	  if(note_edit->control_current.x0 != 0){
+	    note_edit->control_current.x0 = note_edit->control_current.control_width - note_edit->control_current.x0;
+	  }
 	
-	note_edit->control_current.x1 = (note_edit->width - note_edit->control_current.x0) % note_edit->control_current.control_width;
+	  note_edit->control_current.x1 = (note_edit->width - note_edit->control_current.x0) % note_edit->control_current.control_width;
 
-	note_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(note_edit->control_current.control_width));
+	  note_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(note_edit->control_current.control_width));
 
-	note_edit->control_unit.x0 = ((guint)round((double) value)) % note_edit->control_unit.control_width;
+	  note_edit->control_unit.x0 = ((guint)round((double) value)) % note_edit->control_unit.control_width;
 
-	if(note_edit->control_unit.x0 != 0){
-	  note_edit->control_unit.x0 = note_edit->control_unit.control_width - note_edit->control_unit.x0;
+	  if(note_edit->control_unit.x0 != 0){
+	    note_edit->control_unit.x0 = note_edit->control_unit.control_width - note_edit->control_unit.x0;
+	  }
+      
+	  note_edit->control_unit.x1 = (note_edit->width - note_edit->control_unit.x0) % note_edit->control_unit.control_width;
+      
+	  note_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (note_edit->control_unit.control_width));
+	  note_edit->control_unit.stop_x = note_edit->control_unit.nth_x + (note_edit->width - note_edit->control_unit.x0 - note_edit->control_unit.x1) / note_edit->control_unit.control_width;
 	}
       
-	note_edit->control_unit.x1 = (note_edit->width - note_edit->control_unit.x0) % note_edit->control_unit.control_width;
-      
-	note_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (note_edit->control_unit.control_width));
-	note_edit->control_unit.stop_x = note_edit->control_unit.nth_x + (note_edit->width - note_edit->control_unit.x0 - note_edit->control_unit.x1) / note_edit->control_unit.control_width;
-      }
-      
-      note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+	note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 
-      /*  */
-      if(GTK_WIDGET_VISIBLE(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
-	cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+	/*  */
+	if(GTK_WIDGET_VISIBLE(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
+	  cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
 
-	cairo_surface_flush(cairo_get_target(cr));
-	cairo_push_group(cr);
+	  cairo_surface_flush(cairo_get_target(cr));
+	  cairo_push_group(cr);
 
-	ags_note_edit_draw_segment(note_edit, cr);
-	ags_note_edit_draw_notation(note_edit, cr);
+	  ags_note_edit_draw_segment(note_edit, cr);
+	  ags_note_edit_draw_notation(note_edit, cr);
 
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr);
+	  cairo_pop_group_to_source(cr);
+	  cairo_paint(cr);
 
-	/* draw fader */
-	cairo_push_group(cr);
+	  /* draw fader */
+	  cairo_push_group(cr);
 
-	cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
-	ags_note_edit_draw_scroll(note_edit, cr,
-				  position);
+	  cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+	  ags_note_edit_draw_scroll(note_edit, cr,
+				    position);
 
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr);
+	  cairo_pop_group_to_source(cr);
+	  cairo_paint(cr);
 
-	cairo_surface_mark_dirty(cairo_get_target(cr));
-	cairo_destroy(cr);
-      }
-    }else if(AGS_IS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
-      AgsPatternEdit *pattern_edit;
+	  cairo_surface_mark_dirty(cairo_get_target(cr));
+	  cairo_destroy(cr);
+	}
+      }else if(AGS_IS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
+	AgsPatternEdit *pattern_edit;
 
-      pattern_edit = AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
+	pattern_edit = AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
 
-      position = (count_beats_audio_run->notation_counter) * (pattern_edit->control_unit.control_width);
+	position = (count_beats_audio_run->notation_counter) * (pattern_edit->control_unit.control_width);
 
-      control_width = pattern_edit->control_unit.control_width;
+	control_width = pattern_edit->control_unit.control_width;
 
-      /* scroll */
-      pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
+	/* scroll */
+	pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_HORIZONTALLY;
 	
-      if(position - control_width > 0){
-	value = (position - control_width);
-      }else{
-	value = 0.0;
-      }
-
-      if(position - control_width > 0){
-	gtk_range_set_value(GTK_RANGE(pattern_edit->hscrollbar),
-			    value);
-	gtk_adjustment_set_value(pattern_edit->ruler->adjustment,
-				 (value) /
-				 pattern_edit->control_current.control_width);
-
-	gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
-      }
-      
-      /*  */
-      if(position - control_width > 0){
-	pattern_edit->control_current.x0 = ((guint) round((double) value)) % pattern_edit->control_current.control_width;
-
-	if(pattern_edit->control_current.x0 != 0){
-	  pattern_edit->control_current.x0 = pattern_edit->control_current.control_width - pattern_edit->control_current.x0;
+	if(position - control_width > 0){
+	  value = (position - control_width);
+	}else{
+	  value = 0.0;
 	}
+
+	if(position - control_width > 0){
+	  gtk_range_set_value(GTK_RANGE(pattern_edit->hscrollbar),
+			      value);
+	  gtk_adjustment_set_value(pattern_edit->ruler->adjustment,
+				   (value) /
+				   pattern_edit->control_current.control_width);
+
+	  gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
+	}
+      
+	/*  */
+	if(position - control_width > 0){
+	  pattern_edit->control_current.x0 = ((guint) round((double) value)) % pattern_edit->control_current.control_width;
+
+	  if(pattern_edit->control_current.x0 != 0){
+	    pattern_edit->control_current.x0 = pattern_edit->control_current.control_width - pattern_edit->control_current.x0;
+	  }
 	
-	pattern_edit->control_current.x1 = (pattern_edit->width - pattern_edit->control_current.x0) % pattern_edit->control_current.control_width;
+	  pattern_edit->control_current.x1 = (pattern_edit->width - pattern_edit->control_current.x0) % pattern_edit->control_current.control_width;
 
-	pattern_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(pattern_edit->control_current.control_width));
+	  pattern_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(pattern_edit->control_current.control_width));
 
-	pattern_edit->control_unit.x0 = ((guint)round((double) value)) % pattern_edit->control_unit.control_width;
+	  pattern_edit->control_unit.x0 = ((guint)round((double) value)) % pattern_edit->control_unit.control_width;
 
-	if(pattern_edit->control_unit.x0 != 0){
-	  pattern_edit->control_unit.x0 = pattern_edit->control_unit.control_width - pattern_edit->control_unit.x0;
+	  if(pattern_edit->control_unit.x0 != 0){
+	    pattern_edit->control_unit.x0 = pattern_edit->control_unit.control_width - pattern_edit->control_unit.x0;
+	  }
+      
+	  pattern_edit->control_unit.x1 = (pattern_edit->width - pattern_edit->control_unit.x0) % pattern_edit->control_unit.control_width;
+      
+	  pattern_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (pattern_edit->control_unit.control_width));
+	  pattern_edit->control_unit.stop_x = pattern_edit->control_unit.nth_x + (pattern_edit->width - pattern_edit->control_unit.x0 - pattern_edit->control_unit.x1) / pattern_edit->control_unit.control_width;
 	}
       
-	pattern_edit->control_unit.x1 = (pattern_edit->width - pattern_edit->control_unit.x0) % pattern_edit->control_unit.control_width;
-      
-	pattern_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (pattern_edit->control_unit.control_width));
-	pattern_edit->control_unit.stop_x = pattern_edit->control_unit.nth_x + (pattern_edit->width - pattern_edit->control_unit.x0 - pattern_edit->control_unit.x1) / pattern_edit->control_unit.control_width;
-      }
-      
-      pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
+	pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_HORIZONTALLY);
 
-      /*  */
-      if(GTK_WIDGET_VISIBLE(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
-	cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+	/*  */
+	if(GTK_WIDGET_VISIBLE(AGS_EDITOR_CHILD(editor_child->data)->edit_widget)){
+	  cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
 
-	cairo_surface_flush(cairo_get_target(cr));
-	cairo_push_group(cr);
+	  cairo_surface_flush(cairo_get_target(cr));
+	  cairo_push_group(cr);
 
-	ags_pattern_edit_draw_segment(pattern_edit, cr);
-	ags_pattern_edit_draw_notation(pattern_edit, cr);
+	  ags_pattern_edit_draw_segment(pattern_edit, cr);
+	  ags_pattern_edit_draw_notation(pattern_edit, cr);
 
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr);
+	  cairo_pop_group_to_source(cr);
+	  cairo_paint(cr);
 
-	/* draw fader */
-	cairo_push_group(cr);
+	  /* draw fader */
+	  cairo_push_group(cr);
 
-	cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
-	ags_pattern_edit_draw_scroll(pattern_edit, cr,
-				     position);
+	  cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+	  ags_pattern_edit_draw_scroll(pattern_edit, cr,
+				       position);
 
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr);
+	  cairo_pop_group_to_source(cr);
+	  cairo_paint(cr);
 
-	cairo_surface_mark_dirty(cairo_get_target(cr));
-	cairo_destroy(cr);
+	  cairo_surface_mark_dirty(cairo_get_target(cr));
+	  cairo_destroy(cr);
+	}
       }
     }
-    
+  
     editor_child = editor_child->next;
   }
   

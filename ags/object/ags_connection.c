@@ -29,6 +29,7 @@ void ags_connection_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
+void ags_connection_dispose(GObject *gobject);
 void ags_connection_finalize(GObject *gobject);
 
 /**
@@ -69,7 +70,7 @@ ags_connection_get_type (void)
     };
 
     ags_type_connection = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsConnection\0",
+						 "AgsConnection",
 						 &ags_connection_info,
 						 0);
   }
@@ -91,6 +92,7 @@ ags_connection_class_init(AgsConnectionClass *connection)
   gobject->set_property = ags_connection_set_property;
   gobject->get_property = ags_connection_get_property;
 
+  gobject->dispose = ags_connection_dispose;
   gobject->finalize = ags_connection_finalize;
 
   /* properties */
@@ -101,9 +103,9 @@ ags_connection_class_init(AgsConnectionClass *connection)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_object("data-object\0",
-				   "assigned data object\0",
-				   "The data object it is assigned with\0",
+  param_spec = g_param_spec_object("data-object",
+				   "assigned data object",
+				   "The data object it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,6 +179,23 @@ ags_connection_get_property(GObject *gobject,
 }
 
 void
+ags_connection_dispose(GObject *gobject)
+{
+  AgsConnection *connection;
+
+  connection = AGS_CONNECTION(gobject);
+
+  if(connection->data_object != NULL){
+    g_object_unref(connection->data_object);
+
+    connection->data_object = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_connection_parent_class)->dispose(gobject);
+}
+
+void
 ags_connection_finalize(GObject *gobject)
 {
   AgsConnection *connection;
@@ -186,6 +205,9 @@ ags_connection_finalize(GObject *gobject)
   if(connection->data_object != NULL){
     g_object_unref(connection->data_object);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_connection_parent_class)->finalize(gobject);
 }
 
 /**
@@ -210,7 +232,7 @@ ags_connection_find_type(GList *connection,
 
   while(connection != NULL){
     if(AGS_IS_CONNECTION(connection->data) &&
-       g_type_is_a(G_OBJECT_TYPE(connection->data),
+       g_type_is_a(G_OBJECT_TYPE(G_OBJECT(connection->data)),
 				 connection_type)){
       return(connection);
     }

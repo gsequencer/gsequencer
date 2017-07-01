@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/i18n.h>
+
 void ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio);
 void ags_remove_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_audio_init(AgsRemoveAudio *remove_audio);
@@ -83,7 +85,7 @@ ags_remove_audio_get_type()
     };
 
     ags_type_remove_audio = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsRemoveAudio\0",
+						   "AgsRemoveAudio",
 						   &ags_remove_audio_info,
 						   0);
     
@@ -120,9 +122,9 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of remove audio\0",
-				   "The soundcard of remove audio task\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard of remove audio"),
+				   i18n_pspec("The soundcard of remove audio task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,9 +138,9 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of remove audio\0",
-				   "The audio of remove audio task\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of remove audio"),
+				   i18n_pspec("The audio of remove audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -314,6 +316,7 @@ ags_remove_audio_launch(AgsTask *task)
   ags_soundcard_set_audio(AGS_SOUNDCARD(remove_audio->soundcard),
 			  list);
 
+  g_object_run_dispose(remove_audio->audio);
   g_object_unref(remove_audio->audio);
 }
 

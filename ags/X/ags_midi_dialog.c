@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/X/ags_window.h>
+
+#include <ags/i18n.h>
 
 void ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog);
 void ags_midi_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -77,6 +79,7 @@ enum{
 };
 
 static guint midi_dialog_signals[LAST_SIGNAL];
+static gpointer ags_midi_dialog_parent_class = NULL;
 
 GType
 ags_midi_dialog_get_type(void)
@@ -109,7 +112,7 @@ ags_midi_dialog_get_type(void)
     };
 
     ags_type_midi_dialog = g_type_register_static(GTK_TYPE_DIALOG,
-						  "AgsMidiDialog\0", &ags_midi_dialog_info,
+						  "AgsMidiDialog", &ags_midi_dialog_info,
 						  0);
 
     g_type_add_interface_static(ags_type_midi_dialog,
@@ -131,6 +134,8 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
   GtkWidgetClass *widget;
   GParamSpec *param_spec;
 
+  ags_midi_dialog_parent_class = g_type_class_peek_parent(midi_dialog);
+
   /* GObjectClass */
   gobject = (GObjectClass *) midi_dialog;
 
@@ -145,9 +150,9 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("machine\0",
-				   "assigned machine\0",
-				   "The machine which this machine editor is assigned with\0",
+  param_spec = g_param_spec_object("machine",
+				   i18n_pspec("assigned machine"),
+				   i18n_pspec("The machine which this machine editor is assigned with"),
 				   AGS_TYPE_MACHINE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -158,6 +163,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
   widget = (GtkWidgetClass *) midi_dialog;
 
   widget->show_all = ags_midi_dialog_show_all;
+  //  widget->delete_event = ags_midi_dialog_delete_event;
 }
 
 void
@@ -185,7 +191,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   GtkHBox *hbox;
   
   gtk_window_set_title((GtkWindow *) midi_dialog,
-		       g_strdup("MIDI connection\0"));
+		       g_strdup("MIDI connection"));
 
   midi_dialog->flags = 0;
 
@@ -210,7 +216,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   		     FALSE, FALSE,
   		     0);
   
-  label = (GtkLabel *) gtk_label_new("midi channel\0");
+  label = (GtkLabel *) gtk_label_new(i18n("midi channel"));
   gtk_box_pack_start((GtkBox *) hbox,
 		     GTK_WIDGET(label),
   		     FALSE, FALSE,
@@ -224,7 +230,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   
   /* playback */
   midi_dialog->playback = NULL;
-  //  midi_dialog->playback = (GtkCheckButton *) gtk_check_button_new_with_label("playback\0");
+  //  midi_dialog->playback = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("playback"));
   //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
   //		     GTK_WIDGET(midi_dialog->playback),
   //		     FALSE, FALSE,
@@ -232,7 +238,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   /* record */
   midi_dialog->record = NULL;
-  //  midi_dialog->record = (GtkCheckButton *) gtk_check_button_new_with_label("record\0");
+  //  midi_dialog->record = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("record"));
   //  gtk_box_pack_start((GtkBox *) midi_dialog->io_options,
   //		     GTK_WIDGET(midi_dialog->record),
   //		     FALSE, FALSE,
@@ -253,9 +259,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     0);
   
   /* audio start */
-  label = (GtkLabel *) gtk_label_new("audio start mapping\0");
+  label = (GtkLabel *) gtk_label_new(i18n("audio start mapping"));
   g_object_set(label,
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -275,9 +281,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
 
   /* audio end */
-  label = (GtkLabel *) gtk_label_new("audio end mapping\0");
+  label = (GtkLabel *) gtk_label_new(i18n("audio end mapping"));
   g_object_set(label,
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -297,9 +303,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
 
   /* midi start */
-  label = (GtkLabel *) gtk_label_new("midi start mapping\0");
+  label = (GtkLabel *) gtk_label_new(i18n("midi start mapping"));
   g_object_set(label,
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -319,9 +325,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
 
   /* midi end */
-  label = (GtkLabel *) gtk_label_new("midi end mapping\0");
+  label = (GtkLabel *) gtk_label_new(i18n("midi end mapping"));
   g_object_set(label,
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -355,9 +361,9 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     0);
   
   /* midi device */
-  label = (GtkLabel *) gtk_label_new("midi device\0");
+  label = (GtkLabel *) gtk_label_new(i18n("midi device"));
   g_object_set(label,
-	       "xalign\0", 0.0,
+	       "xalign", 0.0,
 	       NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
@@ -447,7 +453,9 @@ ags_midi_dialog_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MACHINE:
-    g_value_set_object(value, midi_dialog->machine);
+    {
+      g_value_set_object(value, midi_dialog->machine);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -467,15 +475,18 @@ ags_midi_dialog_connect(AgsConnectable *connectable)
   }
 
   midi_dialog->flags |= AGS_MIDI_DIALOG_CONNECTED;
-  
+
+  g_signal_connect((GObject *) midi_dialog, "delete-event",
+		   G_CALLBACK(ags_midi_dialog_delete_event), (gpointer) midi_dialog);
+
   /* applicable */
-  g_signal_connect((GObject *) midi_dialog->apply, "clicked\0",
+  g_signal_connect((GObject *) midi_dialog->apply, "clicked",
 		   G_CALLBACK(ags_midi_dialog_apply_callback), (gpointer) midi_dialog);
 
-  g_signal_connect((GObject *) midi_dialog->ok, "clicked\0",
+  g_signal_connect((GObject *) midi_dialog->ok, "clicked",
 		   G_CALLBACK(ags_midi_dialog_ok_callback), (gpointer) midi_dialog);
 
-  g_signal_connect((GObject *) midi_dialog->cancel, "clicked\0",
+  g_signal_connect((GObject *) midi_dialog->cancel, "clicked",
 		   G_CALLBACK(ags_midi_dialog_cancel_callback), (gpointer) midi_dialog);
 }
 
@@ -494,19 +505,19 @@ ags_midi_dialog_disconnect(AgsConnectable *connectable)
 
   /* applicable */
   g_object_disconnect((GObject *) midi_dialog->apply,
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_midi_dialog_apply_callback),
 		      (gpointer) midi_dialog,
 		      NULL);
 
   g_object_disconnect((GObject *) midi_dialog->ok,
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_midi_dialog_ok_callback),
 		      (gpointer) midi_dialog,
 		      NULL);
 
   g_object_disconnect((GObject *) midi_dialog->cancel,
-		      "clicked\0",
+		      "clicked",
 		      G_CALLBACK(ags_midi_dialog_cancel_callback),
 		      (gpointer) midi_dialog,
 		      NULL);
@@ -549,12 +560,12 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
   
   /* set properties */
   g_object_set(audio,
-	       "midi-channel\0", gtk_spin_button_get_value_as_int(midi_dialog->midi_channel),
-	       "audio-start-mapping\0", gtk_spin_button_get_value_as_int(midi_dialog->audio_start),
-	       "audio-end-mapping\0", gtk_spin_button_get_value_as_int(midi_dialog->audio_end),
-	       "midi-start-mapping\0", gtk_spin_button_get_value_as_int(midi_dialog->midi_start),
-	       "midi-end-mapping\0", gtk_spin_button_get_value_as_int(midi_dialog->midi_end),
-	       "sequencer\0", sequencer,
+	       "midi-channel", gtk_spin_button_get_value_as_int(midi_dialog->midi_channel),
+	       "audio-start-mapping", gtk_spin_button_get_value_as_int(midi_dialog->audio_start),
+	       "audio-end-mapping", gtk_spin_button_get_value_as_int(midi_dialog->audio_end),
+	       "midi-start-mapping", gtk_spin_button_get_value_as_int(midi_dialog->midi_start),
+	       "midi-end-mapping", gtk_spin_button_get_value_as_int(midi_dialog->midi_end),
+	       "sequencer", sequencer,
 	       NULL);
 }
 
@@ -591,12 +602,12 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
 
   /*  */
   g_object_get(audio,
-	       "midi-channel\0", &midi_channel,
-	       "audio-start-mapping\0", &audio_start,
-	       "audio-end-mapping\0", &audio_end,
-	       "midi-start-mapping\0", &midi_start,
-	       "midi-end-mapping\0", &midi_end,
-	       "sequencer\0", &sequencer,
+	       "midi-channel", &midi_channel,
+	       "audio-start-mapping", &audio_start,
+	       "audio-end-mapping", &audio_end,
+	       "midi-start-mapping", &midi_start,
+	       "midi-end-mapping", &midi_end,
+	       "sequencer", &sequencer,
 	       NULL);
   
   /* mapping */
@@ -663,6 +674,7 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   AgsAudio *audio;
 
   AgsMutexManager *mutex_manager;
+  
   AgsApplicationContext *application_context;
   
   GtkTreeIter iter;
@@ -692,7 +704,7 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   /* null device */
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "NULL\0",
+		     0, "NULL",
 		     1, NULL,
 		     -1);
 
@@ -760,7 +772,7 @@ ags_midi_dialog_new(AgsMachine *machine)
   AgsMidiDialog *midi_dialog;
 
   midi_dialog = (AgsMidiDialog *) g_object_new(AGS_TYPE_MIDI_DIALOG,
-					       "machine\0", machine,
+					       "machine", machine,
 					       NULL);
 
   return(midi_dialog);

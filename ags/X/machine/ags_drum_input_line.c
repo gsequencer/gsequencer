@@ -46,6 +46,8 @@
 #include <ags/audio/recall/ags_peak_channel_run.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_volume_channel_run.h>
+#include <ags/audio/recall/ags_envelope_channel.h>
+#include <ags/audio/recall/ags_envelope_channel_run.h>
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_copy_channel.h>
@@ -134,7 +136,7 @@ ags_drum_input_line_get_type()
     };
 
     ags_type_drum_input_line = g_type_register_static(AGS_TYPE_LINE,
-						      "AgsDrumInputLine\0", &ags_drum_input_line_info,
+						      "AgsDrumInputLine", &ags_drum_input_line_info,
 						      0);
 
     g_type_add_interface_static(ags_type_drum_input_line,
@@ -193,15 +195,15 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   GtkWidget *widget;
   GtkAdjustment *adjustment;
 
-  g_signal_connect_after((GObject *) drum_input_line, "parent_set\0",
+  g_signal_connect_after((GObject *) drum_input_line, "parent_set",
 			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
 
   /* volume indicator */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type\0", AGS_TYPE_VINDICATOR,
-					       "plugin-name\0", "ags-peak\0",
-					       "specifier\0", "./peak[0]\0",
-					       "control-port\0", "1/1\0",
+					       "widget-type", AGS_TYPE_VINDICATOR,
+					       "plugin-name", "ags-peak",
+					       "specifier", "./peak[0]",
+					       "control-port", "1/1",
 					       NULL);
   line_member->flags |= (AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE |
 			 AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE);
@@ -217,7 +219,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,
-	       "adjustment\0", adjustment,
+	       "adjustment", adjustment,
 	       NULL);
 
   gtk_widget_set_size_request(widget,
@@ -226,15 +228,15 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 
   //TODO:JK: fix me
   //  g_object_set(G_OBJECT(line_member),
-  //	       "port-data\0", (gpointer) &(adjustment->value),
+  //	       "port-data", (gpointer) &(adjustment->value),
   //	       NULL);
 
   /* volume control */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type\0", GTK_TYPE_VSCALE,
-					       "plugin-name\0", "ags-volume\0",
-					       "specifier\0", "./volume[0]\0",
-					       "control-port\0", "1/1\0",
+					       "widget-type", GTK_TYPE_VSCALE,
+					       "plugin-name", "ags-volume",
+					       "specifier", "./volume[0]",
+					       "control-port", "1/1",
 					       NULL);
   ags_expander_add(AGS_LINE(drum_input_line)->expander,
 		   GTK_WIDGET(line_member),
@@ -259,7 +261,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 			      -1, 100);
 
   //  g_object_set(G_OBJECT(line_member),
-  //	       "port-data\0", (gpointer) &(GTK_RANGE(widget)->adjustment->value),
+  //	       "port-data", (gpointer) &(GTK_RANGE(widget)->adjustment->value),
   //	       NULL);
 }
 
@@ -330,7 +332,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   AgsChannel *old_channel;
 
 #ifdef AGS_DEBUG
-  g_message("ags_drum_input_line_set_channel - channel: %u\0",
+  g_message("ags_drum_input_line_set_channel - channel: %u",
 	    channel->line);
 #endif
 
@@ -427,7 +429,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
   /* ags-peak */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-peak\0",
+			    "ags-peak",
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -436,42 +438,10 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  /* play - connect run_post */
-  list = ags_recall_template_find_type(source->play,
-				       AGS_TYPE_PEAK_CHANNEL_RUN);
-
-  if(list != NULL){
-    play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
-
-    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-    recall_handler->signal_name = "run-post\0";
-    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
-    recall_handler->data = (gpointer) line;
-
-    ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
-  }
-
-  /* recall - connect run_post */
-  list = ags_recall_template_find_type(source->recall,
-				       AGS_TYPE_PEAK_CHANNEL_RUN);
-
-  if(list != NULL){
-    recall_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
-
-    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-    recall_handler->signal_name = "run-post\0";
-    recall_handler->callback = G_CALLBACK(ags_line_output_port_run_post_callback);
-    recall_handler->data = (gpointer) line;
-
-    ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);
-  }
-
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-copy-pattern\0",
+			    "ags-copy-pattern",
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -496,7 +466,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
   /* ags-play */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-  			    "ags-play\0",
+  			    "ags-play",
   			    source->audio_channel, source->audio_channel + 1, 
   			    source->pad, source->pad + 1,
   			    (AGS_RECALL_FACTORY_INPUT |
@@ -523,7 +493,19 @@ ags_drum_input_line_map_recall(AgsLine *line,
   /* ags-volume */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-volume\0",
+			    "ags-volume",
+			    source->audio_channel, source->audio_channel + 1, 
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
+  /* ags-envelope */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-envelope",
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -535,7 +517,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
   /* ags-stream */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-stream\0",
+			    "ags-stream",
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -552,7 +534,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
   stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
 
   g_object_set(G_OBJECT(play_channel_run),
-	       "stream-channel-run\0", stream_channel_run,
+	       "stream-channel-run", stream_channel_run,
 	       NULL);
 
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->map_recall(line,
@@ -568,11 +550,11 @@ ags_drum_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 }
 
@@ -588,18 +570,18 @@ ags_drum_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-drum-input-line\0");
+		    "ags-drum-input-line");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", drum_input_line,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", drum_input_line,
 				   NULL));
 
   return(node);
@@ -621,7 +603,7 @@ ags_drum_input_line_new(AgsChannel *channel)
   AgsDrumInputLine *drum_input_line;
 
   drum_input_line = (AgsDrumInputLine *) g_object_new(AGS_TYPE_DRUM_INPUT_LINE,
-						      "channel\0", channel,
+						      "channel", channel,
 						      NULL);
 
   return(drum_input_line);

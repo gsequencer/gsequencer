@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -98,7 +98,7 @@ ags_buffer_channel_run_get_type()
     };
 
     ags_type_buffer_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							 "AgsBufferChannelRun\0",
+							 "AgsBufferChannelRun",
 							 &ags_buffer_channel_run_info,
 							 0);
 
@@ -164,10 +164,10 @@ ags_buffer_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_buffer_channel_run_init(AgsBufferChannelRun *buffer_channel_run)
 {
-  AGS_RECALL(buffer_channel_run)->name = "ags-buffer\0";
+  AGS_RECALL(buffer_channel_run)->name = "ags-buffer";
   AGS_RECALL(buffer_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(buffer_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(buffer_channel_run)->xml_type = "ags-buffer-channel-run\0";
+  AGS_RECALL(buffer_channel_run)->xml_type = "ags-buffer-channel-run";
   AGS_RECALL(buffer_channel_run)->port = NULL;
 
   AGS_RECALL(buffer_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;

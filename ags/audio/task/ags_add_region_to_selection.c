@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_to_selection);
 void ags_add_region_to_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_region_to_selection_init(AgsAddRegionToSelection *add_region_to_selection);
@@ -86,7 +88,7 @@ ags_add_region_to_selection_get_type()
     };
 
     ags_type_add_region_to_selection = g_type_register_static(AGS_TYPE_TASK,
-							      "AgsAddRegionToSelection\0",
+							      "AgsAddRegionToSelection",
 							      &ags_add_region_to_selection_info,
 							      0);
 
@@ -127,9 +129,9 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_object("notation\0",
-				   "notation of add note\0",
-				   "The notation of add note task\0",
+  param_spec = g_param_spec_object("notation",
+				   i18n_pspec("notation of add note"),
+				   i18n_pspec("The notation of add note task"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,9 +149,9 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_uint("x0\0",
-				 "offset x0\0",
-				 "The x0 offset\0",
+  param_spec = g_param_spec_uint("x0",
+				 i18n_pspec("offset x0"),
+				 i18n_pspec("The x0 offset"),
 				 0,
 				 65535,
 				 0,
@@ -168,9 +170,9 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_uint("x1\0",
-				 "offset x1\0",
-				 "The x1 offset\0",
+  param_spec = g_param_spec_uint("x1",
+				 i18n_pspec("offset x1"),
+				 i18n_pspec("The x1 offset"),
 				 0,
 				 65535,
 				 0,
@@ -190,9 +192,9 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_uint("y0\0",
-				 "offset y0\0",
-				 "The y0 offset\0",
+  param_spec = g_param_spec_uint("y0",
+				 i18n_pspec("offset y0"),
+				 i18n_pspec("The y0 offset"),
 				 0,
 				 65535,
 				 0,
@@ -212,9 +214,9 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec = g_param_spec_uint("y1\0",
-				 "offset y1\0",
-				 "The y1 offset\0",
+  param_spec = g_param_spec_uint("y1",
+				 i18n_pspec("offset y1"),
+				 i18n_pspec("The y1 offset"),
 				 0,
 				 65535,
 				 0,
@@ -234,9 +236,9 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    * Since: 0.7.117
 >>>>>>> master
    */
-  param_spec =  g_param_spec_boolean("replace-current-selection\0",
-				     "replace current selection\0",
-				     "Replace current selection of notation\0",
+  param_spec =  g_param_spec_boolean("replace-current-selection",
+				     i18n_pspec("replace current selection"),
+				     i18n_pspec("Replace current selection of notation"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

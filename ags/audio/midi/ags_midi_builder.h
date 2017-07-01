@@ -46,7 +46,7 @@ typedef struct _AgsMidiBuilderTrack AgsMidiBuilderTrack;
 
 typedef enum{
   AGS_MIDI_BUILDER_EOF            = 1,
-  AGS_MIDI_PARSER_EOT             = 1 << 1,
+  AGS_MIDI_BUILDER_EOT            = 1 << 1,
 }AgsMidiBuilderFlags;
 
 struct _AgsMidiBuilder
@@ -177,10 +177,12 @@ struct _AgsMidiBuilderHeader
 
 struct _AgsMidiBuilderTrack
 {
+  AgsMidiBuilder *midi_builder;
+  
   guint offset;
   gchar *track_name;
   
-  glong delta_time;
+  guint64 absolute_time;
 
   unsigned char *data;
   guint length;
@@ -195,12 +197,12 @@ AgsMidiBuilderTrack* ags_midi_builder_track_alloc();
 void ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track);
 
 GList* ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
-							      guint delta_time,
+							      guint64 absolute_time,
 							      gchar *track_name);
 void ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
 						unsigned char *buffer, guint length);
 unsigned char* ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
-							    guint delta_time);
+							    guint64 absolute_time);
 
 /* low-level IO */
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,

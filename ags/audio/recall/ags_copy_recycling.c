@@ -89,7 +89,7 @@ ags_copy_recycling_get_type()
     };
 
     ags_type_copy_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						     "AgsCopyRecycling\0",
+						     "AgsCopyRecycling",
 						     &ags_copy_recycling_info,
 						     0);
 
@@ -149,14 +149,14 @@ ags_copy_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInter
 void
 ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 {
-  AGS_RECALL(copy_recycling)->name = "ags-copy\0";
+  AGS_RECALL(copy_recycling)->name = "ags-copy";
   AGS_RECALL(copy_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(copy_recycling)->xml_type = "ags-copy-recycling\0";
+  AGS_RECALL(copy_recycling)->xml_type = "ags-copy-recycling";
   AGS_RECALL(copy_recycling)->port = NULL;
 
   AGS_RECALL(copy_recycling)->child_type = AGS_TYPE_COPY_AUDIO_SIGNAL;
-  AGS_RECALL_RECYCLING(copy_recycling)->flags |= AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION;
+  AGS_RECALL_RECYCLING(copy_recycling)->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION);
 }
 
 void
@@ -258,9 +258,9 @@ ags_copy_recycling_new(AgsRecycling *destination,
   AgsCopyRecycling *copy_recycling;
 
   copy_recycling = (AgsCopyRecycling *) g_object_new(AGS_TYPE_COPY_RECYCLING,
-						     "soundcard\0", soundcard,
-						     "destination\0", destination,
-						     "source\0", source,
+						     "soundcard", soundcard,
+						     "destination", destination,
+						     "source", source,
 						     NULL);
 
   return(copy_recycling);

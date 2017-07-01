@@ -91,7 +91,7 @@ ags_returnable_thread_get_type()
     };
 
     ags_type_returnable_thread = g_type_register_static(AGS_TYPE_THREAD,
-							"AgsReturnableThread\0",
+							"AgsReturnableThread",
 							&ags_returnable_thread_info,
 							0);
 
@@ -128,8 +128,17 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   returnable_thread->safe_run = NULL;
 
   /* signals */
+  /**
+   * AgsReturnableThread::safe-run:
+   * @returnable_thread: the #AgsReturnableThread
+   *
+   * The ::safe-run is invoked durin AgsThread::run as
+   * a context safe wrapper.
+   *
+   * Since: 0.7.122
+   */
   returnable_thread_signals[SAFE_RUN] =
-    g_signal_new("safe-run\0",
+    g_signal_new("safe-run",
 		 G_TYPE_FROM_CLASS (returnable_thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsReturnableThreadClass, safe_run),
@@ -190,7 +199,7 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 
 void
 ags_returnable_thread_finalize(GObject *gobject)
-{  
+{
   pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   free(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   
@@ -212,7 +221,7 @@ ags_returnable_thread_run(AgsThread *thread)
   GList *tmplist;
 
   gboolean unref_thread;
-  //  g_message("reset:0\0");
+  //  g_message("reset:0");
   
   /* retrieve some variables */
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
@@ -238,7 +247,7 @@ ags_returnable_thread_run(AgsThread *thread)
   }
 
   if(unref_thread){
-    g_object_unref(thread);
+    //    g_object_unref(thread);
   }
 }
 
@@ -285,7 +294,7 @@ ags_returnable_thread_resume(AgsThread *thread)
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
 {
-  returnable_thread->handler = g_signal_connect(G_OBJECT(returnable_thread), "safe-run\0",
+  returnable_thread->handler = g_signal_connect(G_OBJECT(returnable_thread), "safe-run",
 						G_CALLBACK(callback), returnable_thread);
 }
 

@@ -20,9 +20,13 @@
 #ifndef __AGS_AUDIO_H__
 #define __AGS_AUDIO_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_AUDIO                (ags_audio_get_type ())
 #define AGS_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO, AgsAudio))
@@ -48,6 +52,11 @@ typedef enum{
   AGS_AUDIO_RUNNING                     = 1 << 10,
   AGS_AUDIO_PLAYING                     = 1 << 11,
   AGS_AUDIO_CONNECTED                   = 1 << 12,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 13,
+  AGS_AUDIO_NO_OUTPUT                   = 1 << 14,
+  AGS_AUDIO_NO_INPUT                    = 1 << 15,
+  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 16,
+  AGS_AUDIO_SKIP_INPUT                  = 1 << 17,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -84,6 +93,8 @@ struct _AgsAudio
   guint midi_channel;
   
   GList *audio_connection;
+
+  GList *preset;
   
   AgsChannel *output;
   AgsChannel *input;
@@ -96,10 +107,13 @@ struct _AgsAudio
   GList *recall_id;
   GList *recycling_context;
 
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *play_mutex;
+
   GList *container;
   GList *recall;
   GList *play;
-
+  
   GList *recall_remove; //TODO:JK: verify deprecation
   GList *play_remove; //TODO:JK: verify deprecation
 
@@ -144,6 +158,11 @@ void ags_audio_add_audio_connection(AgsAudio *audio,
 				    GObject *audio_connection);
 void ags_audio_remove_audio_connection(AgsAudio *audio,
 				       GObject *audio_connection);
+
+void ags_audio_add_preset(AgsAudio *audio,
+			  GObject *preset);
+void ags_audio_remove_preset(AgsAudio *audio,
+			     GObject *preset);
 
 void ags_audio_add_notation(AgsAudio *audio,
 			      GObject *notation);

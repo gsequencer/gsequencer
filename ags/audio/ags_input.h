@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,6 +63,12 @@ gboolean ags_input_apply_synth(AgsInput *input,
 			       gdouble phase,
 			       gdouble volume,
 			       guint n_frames);
+
+gboolean ags_input_is_active(AgsInput *input,
+			     GObject *parent_recycling_context);
+
+AgsInput* ags_input_next_active(AgsInput *input,
+				GObject *parent_recycling_context);
 
 AgsInput* ags_input_new(GObject *audio);
 

@@ -74,7 +74,7 @@ ags_single_thread_get_type()
     };
 
     ags_type_single_thread = g_type_register_static(AGS_TYPE_THREAD,
-						    "AgsSingleThread\0",
+						    "AgsSingleThread",
 						    &ags_single_thread_info,
 						    0);
     

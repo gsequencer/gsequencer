@@ -30,6 +30,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
@@ -53,6 +54,8 @@
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
+
+#include <ags/i18n.h>
 
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -138,7 +141,7 @@ ags_pad_get_type(void)
     };
 
     ags_type_pad = g_type_register_static(GTK_TYPE_VBOX,
-					  "AgsPad\0", &ags_pad_info,
+					  "AgsPad", &ags_pad_info,
 					  0);
 
     g_type_add_interface_static(ags_type_pad,
@@ -176,9 +179,9 @@ ags_pad_class_init(AgsPadClass *pad)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel it is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -200,7 +203,7 @@ ags_pad_class_init(AgsPadClass *pad)
    * The ::set-channel signal notifies about changed channel.
    */
   pad_signals[SET_CHANNEL] =
-    g_signal_new("set-channel\0",
+    g_signal_new("set-channel",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, set_channel),
@@ -219,7 +222,7 @@ ags_pad_class_init(AgsPadClass *pad)
    * The ::resize-lines is emitted as count of lines pack is modified.
    */
   pad_signals[RESIZE_LINES] =
-    g_signal_new("resize-lines\0",
+    g_signal_new("resize-lines",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, resize_lines),
@@ -237,7 +240,7 @@ ags_pad_class_init(AgsPadClass *pad)
    * The ::map-recall as recall should be mapped
    */
   pad_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+    g_signal_new("map-recall",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, map_recall),
@@ -254,7 +257,7 @@ ags_pad_class_init(AgsPadClass *pad)
    * The ::find-port retrieves all associated ports
    */
   pad_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, find_port),
@@ -310,14 +313,14 @@ ags_pad_init(AgsPad *pad)
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
-  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("G\0");
+  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("G");
   gtk_toggle_button_set_active(pad->group, TRUE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->group, FALSE, FALSE, 0);
 
-  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label("M\0");
+  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label("M");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->mute, FALSE, FALSE, 0);
 
-  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label("S\0");
+  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label("S");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->solo, FALSE, FALSE, 0);
 
   pad->play = NULL;
@@ -396,13 +399,13 @@ ags_pad_connect(AgsConnectable *connectable)
   }
 
   /* GtkButton */
-  g_signal_connect_after((GObject *) pad->group, "clicked\0",
+  g_signal_connect_after((GObject *) pad->group, "clicked",
 			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
 
-  g_signal_connect_after((GObject *) pad->mute, "clicked\0",
+  g_signal_connect_after((GObject *) pad->mute, "clicked",
 			 G_CALLBACK(ags_pad_mute_clicked_callback), (gpointer) pad);
 
-  g_signal_connect_after((GObject *) pad->solo, "clicked\0",
+  g_signal_connect_after((GObject *) pad->solo, "clicked",
 			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
 
   /* AgsLine */
@@ -421,7 +424,32 @@ ags_pad_connect(AgsConnectable *connectable)
 void
 ags_pad_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsPad *pad;
+  GList *line_list, *line_list_start;
+
+  /* AgsPad */
+  pad = AGS_PAD(connectable);
+
+  if((AGS_PAD_CONNECTED & (pad->flags)) == 0){
+    return;
+  }
+  
+  pad->flags &= (~AGS_PAD_CONNECTED);
+
+  /* AgsLine */
+  line_list_start =  
+    line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+
+  while(line_list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_list->data));
+
+    line_list = line_list->next;
+  }
+
+  g_list_free(line_list_start);
+
+  g_signal_handlers_disconnect_by_data(pad->channel,
+				       pad);
 }
 
 gchar*
@@ -503,7 +531,7 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
     }
     
     g_object_set(G_OBJECT(line->data),
-		 "channel\0", current,
+		 "channel", current,
 		 NULL);
 
     /* iterate */
@@ -558,7 +586,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   pthread_mutex_t *channel_mutex;
 
 #ifdef AGS_DEBUG
-  g_message("ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
+  g_message("ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n", audio_channels, audio_channels_old);
 #endif
   
   /* get mutex manager */
@@ -584,8 +612,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 
 	/* instantiate line */
 	line = (AgsLine *) g_object_new(line_type,
-					"pad\0", pad,
-					"channel\0", channel,
+					"pad", pad,
+					"channel", channel,
 					NULL);
 
 	if(channel != NULL){
@@ -649,7 +677,7 @@ ags_pad_resize_lines(AgsPad *pad, GType line_type,
 {
   g_return_if_fail(AGS_IS_PAD(pad));
 
-  //  fprintf(stdout, "ags_pad_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
+  //  fprintf(stdout, "ags_pad_resize_lines: audio_channels = %u ; audio_channels_old = %u\n", audio_channels, audio_channels_old);
 
   g_object_ref((GObject *) pad);
   g_signal_emit(G_OBJECT(pad),
@@ -770,6 +798,7 @@ ags_pad_play(AgsPad *pad)
   
   GList *tasks;
 
+  gboolean no_soundcard;
   gboolean play_all;
 
   pthread_mutex_t *application_mutex;
@@ -783,7 +812,23 @@ ags_pad_play(AgsPad *pad)
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  no_soundcard = FALSE;
   
+  pthread_mutex_lock(application_mutex);
+
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    no_soundcard = TRUE;
+  }
+
+  pthread_mutex_unlock(application_mutex);
+
+  if(no_soundcard){
+    g_message("No soundcard available");
+    
+    return;
+  }
+
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
@@ -814,7 +859,7 @@ ags_pad_play(AgsPad *pad)
     /* init channel for playback */
     init_channel = ags_init_channel_new(channel, play_all,
 					TRUE, FALSE, FALSE);
-    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+    g_signal_connect_after(G_OBJECT(init_channel), "launch",
 			   G_CALLBACK(ags_pad_init_channel_launch_callback), pad);
     tasks = g_list_prepend(tasks, init_channel);
 
@@ -876,7 +921,7 @@ ags_pad_play(AgsPad *pad)
 
       task_completion = ags_task_completion_new((GObject *) start_soundcard,
 						NULL);
-      g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
+      g_signal_connect_after(G_OBJECT(task_completion), "complete",
 			     G_CALLBACK(ags_pad_start_complete_callback), pad);
       ags_connectable_connect(AGS_CONNECTABLE(task_completion));
       

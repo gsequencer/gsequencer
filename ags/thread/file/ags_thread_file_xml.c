@@ -85,11 +85,11 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   orig_flags = (guint) g_ascii_strtoull(xmlGetProp(node,
@@ -107,7 +107,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 		   ((~(AGS_THREAD_WAIT_0 |
 		       AGS_THREAD_WAIT_1 |
 		       AGS_THREAD_WAIT_2)) & (guint) g_ascii_strtoull(xmlGetProp(node,
-										 "sync-flags\0"),
+										 "sync-flags"),
 								      NULL,
 								      16)));
 
@@ -116,7 +116,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 						 NULL);
     ags_file_add_launch(file, (GObject *) file_launch);
-    g_signal_connect(G_OBJECT(file_launch), "start\0",
+    g_signal_connect(G_OBJECT(file_launch), "start",
 		     G_CALLBACK(ags_file_read_thread_start), gobject);
   }
 
@@ -126,7 +126,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "ags-thread-list\0",
+		     "ags-thread-list",
 		     16)){
 	GList *list;
 	
@@ -188,18 +188,18 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-thread\0");
+		    "ags-thread");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
  
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", thread,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", thread,
 				   NULL));
 
   xmlNewProp(node,
@@ -208,11 +208,11 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", g_atomic_int_get(&(thread->flags))));
+	     g_strdup_printf("%x", g_atomic_int_get(&(thread->flags))));
 
   xmlNewProp(node,
-	     "sync-flags\0",
-	     g_strdup_printf("%x\0", g_atomic_int_get(&(thread->sync_flags))));
+	     "sync-flags",
+	     g_strdup_printf("%x", g_atomic_int_get(&(thread->sync_flags))));
 
   /* add to parent */
   xmlAddChild(parent,
@@ -222,7 +222,7 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
   current = g_atomic_pointer_get(&(thread->children));
 
   child = xmlNewNode(NULL,
-		     "ags-thread-list\0");
+		     "ags-thread-list");
   xmlAddChild(node,
 	      child);
 
@@ -251,7 +251,7 @@ ags_file_read_thread_list(AgsFile *file, xmlNode *node, GList **thread)
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "ags-thread\0",
+		     "ags-thread",
 		     11)){
 	current = NULL;
 	ags_file_read_thread(file, child, &current);
@@ -267,11 +267,11 @@ ags_file_read_thread_list(AgsFile *file, xmlNode *node, GList **thread)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", list,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", list,
 				   NULL));
 }
 
@@ -286,18 +286,18 @@ ags_file_write_thread_list(AgsFile *file, xmlNode *parent, GList *thread)
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-thread-list\0");
+		    "ags-thread-list");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", list,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", list,
 				   NULL));
 
   xmlAddChild(parent,
@@ -334,16 +334,16 @@ ags_file_read_thread_pool(AgsFile *file, xmlNode *node, AgsThreadPool **thread_p
 
   //TODO:JK: implement me
   //  g_object_set(G_OBJECT(gobject),
-  //	       "ags-main\0", file->application_context,
+  //	       "ags-main", file->application_context,
   //	       NULL);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference", gobject,
 				   NULL));
 
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
@@ -362,23 +362,23 @@ ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-thread_pool\0");
+		    "ags-thread_pool");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", thread_pool,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", thread_pool,
 				   NULL));
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", thread_pool->flags));
+	     g_strdup_printf("%x", thread_pool->flags));
 }
 
 void
@@ -403,12 +403,12 @@ ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", (gchar *) xmlGetProp(node,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", (gchar *) xmlGetProp(node,
 													    (xmlChar *) AGS_FILE_ID_PROP)),
-				   "reference\0", gobject,
+				   "reference", gobject,
 				   NULL));
   
   gobject->flags = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
@@ -417,12 +417,12 @@ ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp)
 					    16);
 
   gobject->delay = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
-								 (xmlChar *) "delay\0"),
+								 (xmlChar *) "delay"),
 					    NULL,
 					    10);
   
   gobject->attack = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
-								  (xmlChar *) "attack\0"),
+								  (xmlChar *) "attack"),
 					     NULL,
 					     10);
 
@@ -444,37 +444,37 @@ ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    (xmlChar *) "ags-timestamp\0");
+		    (xmlChar *) "ags-timestamp");
   xmlNewProp(node,
 	     (xmlChar *) AGS_FILE_ID_PROP,
 	     (xmlChar *) id);
  
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", timestamp,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", timestamp,
 				   NULL));
   
   xmlNewProp(node,
 	     (xmlChar *) AGS_FILE_FLAGS_PROP,
-	     (xmlChar *) g_strdup_printf("%x\0", timestamp->flags));
+	     (xmlChar *) g_strdup_printf("%x", timestamp->flags));
 
   xmlNewProp(node,
-	     (xmlChar *) "delay\0",
-	     (xmlChar *) g_strdup_printf("%d\0", timestamp->delay));
+	     (xmlChar *) "delay",
+	     (xmlChar *) g_strdup_printf("%d", timestamp->delay));
 
   xmlNewProp(node,
-	     (xmlChar *) "attack\0",
-	     (xmlChar *) g_strdup_printf("%d\0", timestamp->attack));
+	     (xmlChar *) "attack",
+	     (xmlChar *) g_strdup_printf("%d", timestamp->attack));
 
   xmlAddChild(parent,
 	      node);
 
   xmlNodeAddContent(node,
-		    (xmlChar *) g_strdup_printf("%li\0", timestamp->timer.unix_time.time_val));
+		    (xmlChar *) g_strdup_printf("%li", timestamp->timer.unix_time.time_val));
 
   return(node);
 }
@@ -493,7 +493,7 @@ ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp)
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     (xmlChar *) "ags-timestamp\0",
+		     (xmlChar *) "ags-timestamp",
 		     14)){
 	current = NULL;
     
@@ -514,12 +514,12 @@ ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", (gchar *) xmlGetProp(node,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", (gchar *) xmlGetProp(node,
 													    (xmlChar *) AGS_FILE_ID_PROP)),
-				   "reference\0", list,
+				   "reference", list,
 				   NULL));
 }
 
@@ -533,7 +533,7 @@ ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp)
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    (xmlChar *) "ags-timestamp-list\0");
+		    (xmlChar *) "ags-timestamp-list");
 
   xmlNewProp(node,
 	     (xmlChar *) AGS_FILE_ID_PROP,
@@ -541,11 +541,11 @@ ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp)
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", timestamp,
+				   "application-context", file->application_context,
+				   "file", file,
+				   "node", node,
+				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
+				   "reference", timestamp,
 				   NULL));
 
   xmlAddChild(parent,

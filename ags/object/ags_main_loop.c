@@ -52,7 +52,7 @@ ags_main_loop_get_type()
 
   if(!main_loop_type){
     main_loop_type = g_type_register_static_simple(G_TYPE_INTERFACE,
-						   "AgsMainLoop\0",
+						   "AgsMainLoop",
 						   sizeof (AgsMainLoopInterface),
 						   (GClassInitFunc) ags_main_loop_class_init,
 						   0, NULL, 0);
@@ -76,7 +76,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    * Since: 0.7.46
    */
   main_loop_signals[INTERRUPT] = 
-    g_signal_new("interrupt\0",
+    g_signal_new("interrupt",
 		 G_TYPE_FROM_INTERFACE(interface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
@@ -98,7 +98,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    * Since: 0.7.46
    */
   main_loop_signals[MONITOR] =
-    g_signal_new("monitor\0",
+    g_signal_new("monitor",
 		 G_TYPE_FROM_INTERFACE(interface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
@@ -117,7 +117,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    * Since: 0.7.122.2
    */
   main_loop_signals[CHANGE_FREQUENCY] =
-    g_signal_new("change-frequency\0",
+    g_signal_new("change-frequency",
 		 G_TYPE_FROM_INTERFACE(interface),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, change_frequency),

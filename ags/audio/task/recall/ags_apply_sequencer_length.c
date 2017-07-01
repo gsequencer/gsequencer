@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequencer_length);
 void ags_apply_sequencer_length_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_sequencer_length_init(AgsApplySequencerLength *apply_sequencer_length);
@@ -94,7 +96,7 @@ ags_apply_sequencer_length_get_type()
     };
 
     ags_type_apply_sequencer_length = g_type_register_static(AGS_TYPE_TASK,
-							     "AgsApplySequencerLength\0",
+							     "AgsApplySequencerLength",
 							     &ags_apply_sequencer_length_info,
 							     0);
     
@@ -131,9 +133,9 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of set buffer size\0",
-				   "The scope of set buffer size\0",
+  param_spec = g_param_spec_object("scope",
+				   i18n_pspec("scope of set buffer size"),
+				   i18n_pspec("The scope of set buffer size"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,9 +149,9 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_double("sequencer-length\0",
-				   "sequencer length\0",
-				   "The sequence length to apply\0",
+  param_spec = g_param_spec_double("sequencer-length",
+				   i18n_pspec("sequencer length"),
+				   i18n_pspec("The sequence length to apply"),
 				   0,
 				   G_MAXDOUBLE,
 				   0,
@@ -300,7 +302,7 @@ ags_apply_sequencer_length_launch(AgsTask *task)
 
     ags_apply_sequencer_length_recall(apply_sequencer_length, recall);
   }else{
-    g_warning("AgsApplySequencerLength: Not supported scope\0");
+    g_warning("AgsApplySequencerLength: Not supported scope");
   }
 }
 

@@ -42,6 +42,8 @@
 
 #include <dssi.h>
 
+#include <ags/i18n.h>
+
 void ags_dssi_browser_class_init(AgsDssiBrowserClass *dssi_browser);
 void ags_dssi_browser_init(AgsDssiBrowser *dssi_browser);
 void ags_dssi_browser_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -94,7 +96,7 @@ ags_dssi_browser_get_type(void)
     };
 
     ags_type_dssi_browser = g_type_register_static(GTK_TYPE_VBOX,
-						   "AgsDssiBrowser\0", &ags_dssi_browser_info,
+						   "AgsDssiBrowser", &ags_dssi_browser_info,
 						   0);
 
     g_type_add_interface_static(ags_type_dssi_browser,
@@ -143,6 +145,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
   
   GList *list;
 
+  gchar *str;
   gchar **filenames, **filenames_start;
 
   dssi_manager = ags_dssi_manager_get_instance();
@@ -154,7 +157,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("filename: \0");
+  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -182,7 +185,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   free(filenames_start);
 
-  label = (GtkLabel *) gtk_label_new("effect: \0");
+  label = (GtkLabel *) gtk_label_new(i18n("effect: "));
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -202,8 +205,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "Label: \0",
+				    "xalign", 0.0,
+				    "label", i18n("Label: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
@@ -211,8 +214,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "Maker: \0",
+				    "xalign", 0.0,
+				    "label", i18n("Maker: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
@@ -220,8 +223,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "Copyright: \0",
+				    "xalign", 0.0,
+				    "label", i18n("Copyright: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
@@ -229,8 +232,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign\0", 0.0,
-				    "label\0", "Ports: \0",
+				    "xalign", 0.0,
+				    "label", i18n("Ports: "),
 				    NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
@@ -257,11 +260,11 @@ ags_dssi_browser_connect(AgsConnectable *connectable)
     list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
   list = list->next;
 
-  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+  g_signal_connect_after(G_OBJECT(list->data), "changed",
 			 G_CALLBACK(ags_dssi_browser_plugin_filename_callback), dssi_browser);
 
   list = list->next->next;
-  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+  g_signal_connect_after(G_OBJECT(list->data), "changed",
 			 G_CALLBACK(ags_dssi_browser_plugin_effect_callback), dssi_browser);
 
   g_list_free(list_start);
@@ -369,13 +372,13 @@ ags_dssi_browser_combo_box_controls_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
-				 "spin button\0");
+				 "spin button");
   gtk_combo_box_text_append_text(combo_box,
-				 "dial\0");
+				 "dial");
   gtk_combo_box_text_append_text(combo_box,
-				 "vertical scale\0");
+				 "vertical scale");
   gtk_combo_box_text_append_text(combo_box,
-				 "horizontal scale\0");
+				 "horizontal scale");
 
   gtk_combo_box_set_active((GtkComboBox *) combo_box,
 			   1);
@@ -410,8 +413,8 @@ ags_dssi_browser_new()
   AgsDssiBrowser *dssi_browser;
 
   dssi_browser = (AgsDssiBrowser *) g_object_new(AGS_TYPE_DSSI_BROWSER,
-						 "homogeneous\0", FALSE,
-						 "spacing\0", 0,
+						 "homogeneous", FALSE,
+						 "spacing", 0,
 						 NULL);
 
   return(dssi_browser);

@@ -54,7 +54,9 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_line_member.h>
+#include <ags/X/ags_effect_separator.h>
 
 #include <ags/X/task/ags_add_line_member.h>
 
@@ -66,6 +68,8 @@
 #include <unistd.h>
 
 #include <ladspa.h>
+
+#include <ags/i18n.h>
 
 void ags_effect_line_class_init(AgsEffectLineClass *effect_line);
 void ags_effect_line_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -167,7 +171,7 @@ ags_effect_line_get_type(void)
     };
 
     ags_type_effect_line = g_type_register_static(GTK_TYPE_VBOX,
-						  "AgsEffectLine\0", &ags_effect_line_info,
+						  "AgsEffectLine", &ags_effect_line_info,
 						  0);
 
     g_type_add_interface_static(ags_type_effect_line,
@@ -206,9 +210,9 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel it is assigned with"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -236,7 +240,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * Since: 0.7.42
    */
   effect_line_signals[ADD_EFFECT] =
-    g_signal_new("add-effect\0",
+    g_signal_new("add-effect",
 		 G_TYPE_FROM_CLASS(effect_line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectLineClass, add_effect),
@@ -257,7 +261,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * Since: 0.7.42
    */
   effect_line_signals[REMOVE_EFFECT] =
-    g_signal_new("remove-effect\0",
+    g_signal_new("remove-effect",
 		 G_TYPE_FROM_CLASS(effect_line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectLineClass, remove_effect),
@@ -277,7 +281,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * Since: 0.7.42
    */
   effect_line_signals[MAP_RECALL] =
-    g_signal_new("map-recall\0",
+    g_signal_new("map-recall",
                  G_TYPE_FROM_CLASS (effect_line),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsEffectLineClass, map_recall),
@@ -298,7 +302,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * Since: 0.7.8
    */
   effect_line_signals[FIND_PORT] =
-    g_signal_new("find-port\0",
+    g_signal_new("find-port",
 		 G_TYPE_FROM_CLASS(effect_line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectLineClass, find_port),
@@ -396,10 +400,10 @@ ags_effect_line_set_property(GObject *gobject,
       if(channel != NULL){
 	g_object_ref(channel);
 
-	g_signal_connect_after(channel, "add-effect\0",
+	g_signal_connect_after(channel, "add-effect",
 			       G_CALLBACK(ags_effect_line_add_effect_callback), effect_line);
 	
-	//	g_signal_connect_after(channel, "remove-effect\0",
+	//	g_signal_connect_after(channel, "remove-effect",
 	//		       G_CALLBACK(ags_effect_line_remove_effect_callback), effect_line);
       }
 
@@ -504,6 +508,9 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
   if(list_start != NULL){
     g_list_free(list_start);
   }
+
+  g_signal_handlers_disconnect_by_data(effect_line->channel,
+				       effect_line);
 }
 
 gchar*
@@ -580,7 +587,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 				  gchar *effect)
 {
   AgsLineMember *line_member;
-  GtkSeparator *separator;
+  AgsEffectSeparator *separator;
   GtkAdjustment *adjustment;
   
   AgsAddLineMember *add_line_member;
@@ -666,7 +673,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
     /* alloc handler */
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
-    recall_handler->signal_name = "run-post\0";
+    recall_handler->signal_name = "run-post";
     recall_handler->callback = G_CALLBACK(ags_effect_line_output_port_run_post_callback);
     recall_handler->data = (gpointer) effect_line;
 
@@ -696,7 +703,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
     /* alloc handler */
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
-    recall_handler->signal_name = "run-post\0";
+    recall_handler->signal_name = "run-post";
     recall_handler->callback = G_CALLBACK(ags_effect_line_output_port_run_post_callback);
     recall_handler->data = (gpointer) effect_line;
 
@@ -708,22 +715,20 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   pthread_mutex_unlock(channel_mutex);
 
   /* add separator */
-  separator = gtk_hseparator_new();
-  gtk_widget_set_size_request(separator,
-			      120, -1);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_FILENAME,
-		    filename);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_EFFECT,
-		    effect);
+  separator = ags_effect_separator_new();
+  g_object_set(separator,
+	       "text", effect,
+	       "filename", filename,
+	       "effect", effect,
+	       NULL);
+  
   gtk_table_attach(effect_line->table,
 		   (GtkWidget *) separator,
 		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
 		   y, y + 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_show(separator);
+  gtk_widget_show_all(separator);
 
   y++;
 
@@ -741,6 +746,9 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -784,20 +792,26 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
       }
       
       /* add line member */
+      plugin_name = g_strdup_printf("ladspa-%u",
+				    ladspa_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("ladspa-%u\0", ladspa_plugin->unique_id),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%u/%u\0",
-										     k,
-										     port_count),
-						   "steps\0", step_count,
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name", plugin_name,
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
+						   "steps", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
 
+      g_free(plugin_name);
+      g_free(control_port);
+      
       /* ladspa conversion */
       ladspa_conversion = NULL;
 
@@ -893,7 +907,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
       }
 
 #ifdef AGS_DEBUG
-      g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("ladspa bounds: %f %f", lower_bound, upper_bound);
 #endif
 	  
       gtk_table_attach(effect_line->table,
@@ -929,7 +943,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 			       gchar *effect)
 {
   AgsLineMember *line_member;
-  GtkSeparator *separator;
+  AgsEffectSeparator *separator;
   GtkAdjustment *adjustment;
 
   AgsAddLineMember *add_line_member;
@@ -1018,7 +1032,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
     /* alloc handler */
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
-    recall_handler->signal_name = "run-post\0";
+    recall_handler->signal_name = "run-post";
     recall_handler->callback = G_CALLBACK(ags_effect_line_output_port_run_post_callback);
     recall_handler->data = (gpointer) effect_line;
 
@@ -1045,7 +1059,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
     /* alloc handler */
     recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
 
-    recall_handler->signal_name = "run-post\0";
+    recall_handler->signal_name = "run-post";
     recall_handler->callback = G_CALLBACK(ags_effect_line_output_port_run_post_callback);
     recall_handler->data = (gpointer) effect_line;
 
@@ -1057,23 +1071,20 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   pthread_mutex_unlock(channel_mutex);
 
   /* add separator */
-  separator = gtk_hseparator_new();
-  gtk_widget_set_size_request(separator,
-			      120, -1);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_FILENAME,
-		    filename);
-  g_object_set_data(separator,
-		    AGS_EFFECT_LINE_SEPARATOR_EFFECT,
-		    effect);
+  separator = ags_effect_separator_new();
+  g_object_set(separator,
+	       "text", effect,
+	       "filename", filename,
+	       "effect", effect,
+	       NULL);
   gtk_table_attach(effect_line->table,
 		   (GtkWidget *) separator,
 		   0, AGS_EFFECT_LINE_COLUMNS_COUNT,
 		   y, y + 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_show(separator);
-
+  gtk_widget_show_all(separator);
+  
   y++;
 
   /* load ports */
@@ -1091,6 +1102,9 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1134,19 +1148,25 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       }
 
       /* add line member */
+      plugin_name = g_strdup_printf("lv2-<%s>",
+				    lv2_plugin->uri);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						   "widget-type\0", widget_type,
-						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
-						   "plugin-name\0", g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
-						   "control-port\0", g_strdup_printf("%u/%u\0",
-										     k,
-										     port_count),
-						   "steps\0", step_count,
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name", plugin_name,
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "control-port", control_port,
+						   "steps", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
 
       /* lv2 conversion */
       lv2_conversion = NULL;
@@ -1218,7 +1238,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       }
 
 #ifdef AGS_DEBUG
-      g_message("lv2 bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("lv2 bounds: %f %f", lower_bound, upper_bound);
 #endif
 	  
       gtk_table_attach(effect_line->table,
@@ -1409,27 +1429,37 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
     effect = AGS_RECALL_LADSPA(recall->data)->effect;
   }
 
+  /* destroy separator */
   control_start =
     control = gtk_container_get_children((GtkContainer *) effect_line->table);
 
   while(control != NULL){
-    if(GTK_IS_SEPARATOR(control->data) &&
-       !strcmp(filename,
-	       g_object_get_data(control->data,
-				 AGS_EFFECT_LINE_SEPARATOR_FILENAME)) &&
-       !strcmp(effect,
-	       g_object_get_data(control->data,
-				 AGS_EFFECT_LINE_SEPARATOR_EFFECT))){
-      gtk_widget_destroy(control->data);
+    gchar *separator_filename;
+    gchar *separator_effect;
+    
+    if(AGS_IS_EFFECT_SEPARATOR(control->data)){
+      g_object_get(control->data,
+		   "filename", &separator_filename,
+		   "effect", &separator_effect,
+		   NULL);
       
-      break;
+      if(separator_filename != NULL &&
+	 separator_effect != NULL &&
+	 !g_strcmp0(filename,
+		    separator_filename) &&
+	 !g_strcmp0(effect,
+		    separator_effect)){
+	gtk_widget_destroy(control->data);
+      
+	break;
+      }
     }
-
-    control->next;
+    
+    control = control->next;
   }
   
   g_list_free(control_start);
-  
+    
   /* destroy controls */
   port = AGS_RECALL(recall->data)->port;
   remove_specifier = NULL;
@@ -1656,7 +1686,7 @@ ags_effect_line_new(AgsChannel *channel)
   AgsEffectLine *effect_line;
 
   effect_line = (AgsEffectLine *) g_object_new(AGS_TYPE_EFFECT_LINE,
-					       "channel\0", channel,
+					       "channel", channel,
 					       NULL);
 
   return(effect_line);

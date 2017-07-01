@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/audio/ags_audio.h>
@@ -68,6 +69,7 @@ typedef enum{
 typedef enum{
   AGS_MACHINE_POPUP_COPY_PATTERN          = 1,
   AGS_MACHINE_POPUP_PASTE_PATTERN         = 1 <<  1,
+  AGS_MACHINE_POPUP_ENVELOPE              = 1 <<  2,
 }AgsMachineEditOptions;
 
 typedef enum{
@@ -88,7 +90,7 @@ struct _AgsMachine
   guint mapping_flags;
   guint connection_flags;
 
-  char *name;
+  char *machine_name;
 
   gchar *version;
   gchar *build_id;
@@ -117,12 +119,16 @@ struct _AgsMachine
   GList *port;
   gchar **automation_port;
 
+  GtkMenuToolButton *menu_tool_button;
   GtkMenu *popup;
+  
   GtkDialog *properties;
   GtkDialog *rename;
   GtkDialog *connection_editor;
   GtkDialog *midi_dialog;
-
+  GtkDialog *envelope_dialog;
+  GtkDialog *envelope_info;
+  
   GObject *application_context;
 };
 

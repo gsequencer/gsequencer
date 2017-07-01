@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signal);
 void ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -87,7 +89,7 @@ ags_volume_audio_signal_get_type()
     };
 
     ags_type_volume_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							  "AgsVolumeAudioSignal\0",
+							  "AgsVolumeAudioSignal",
 							  &ags_volume_audio_signal_info,
 							  0);
 
@@ -144,10 +146,10 @@ ags_volume_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectable
 void
 ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal)
 {
-  AGS_RECALL(volume_audio_signal)->name = "ags-volume\0";
+  AGS_RECALL(volume_audio_signal)->name = "ags-volume";
   AGS_RECALL(volume_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(volume_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(volume_audio_signal)->xml_type = "ags-volume-audio-signal\0";
+  AGS_RECALL(volume_audio_signal)->xml_type = "ags-volume-audio-signal";
   AGS_RECALL(volume_audio_signal)->port = NULL;
 }
 
@@ -222,40 +224,13 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     ags_port_safe_read(volume_channel->volume, &value);
 
     volume = g_value_get_float(&value);
-
-    for(i = 0; i < buffer_size; i++){
-      switch(AGS_RECALL_AUDIO_SIGNAL(recall)->source->format){
-      case AGS_SOUNDCARD_SIGNED_8_BIT:
-	{
-	  ((signed char *) buffer)[i] = (signed char) ((0xff) & (signed short) ((gdouble) volume * (gdouble) ((signed char *) buffer)[i]));
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_16_BIT:
-	{
-	  ((signed short *) buffer)[i] = (signed short) ((0xffff) & (signed long) ((gdouble) volume * (gdouble) ((signed short *) buffer)[i]));
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_24_BIT:
-	{
-	  ((signed long *) buffer)[i] = (signed long) ((0xffffff) & (signed long) ((gdouble) volume * (gdouble) ((signed long *) buffer)[i]));
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_32_BIT:
-	{
-	  ((signed long *) buffer)[i] = (signed long) ((0xffffffff) & (signed long long) ((gdouble) volume * (gdouble) ((signed long *) buffer)[i]));
-	}
-	break;
-      case AGS_SOUNDCARD_SIGNED_64_BIT:
-	{
-	  ((signed long long *) buffer)[i] = (signed long long) ((0xffffffffffffffff) & (signed long long) ((gdouble)volume * (gdouble)((signed long long *) buffer)[i]));
-	}
-	break;
-      default:
-	g_critical("unsupported soundcard format\0");
-      }
-    }
-
     g_value_unset(&value);
+
+    ags_audio_buffer_util_volume(buffer, 1,
+				 ags_audio_buffer_util_format_from_soundcard(AGS_RECALL_AUDIO_SIGNAL(recall)->source->format),
+				 buffer_size,
+				 volume);
+
   }else{
     ags_recall_done(recall);
   }

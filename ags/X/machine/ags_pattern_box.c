@@ -36,8 +36,6 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
-#include <ags/widget/ags_led.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
@@ -46,6 +44,8 @@
 #include <gdk/gdkkeysyms.h>
 
 #include <atk/atk.h>
+
+#include <ags/i18n.h>
 
 static GType ags_accessible_pattern_box_get_type(void);
 void ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box);
@@ -115,7 +115,7 @@ ags_pattern_box_get_type(void)
     };
     
     ags_type_pattern_box = g_type_register_static(GTK_TYPE_TABLE,
-						  "AgsPatternBox\0", &ags_pattern_box_info,
+						  "AgsPatternBox", &ags_pattern_box_info,
 						  0);
     
     g_type_add_interface_static(ags_type_pattern_box,
@@ -151,7 +151,7 @@ ags_accessible_pattern_box_get_type(void)
     };
     
     ags_type_accessible_pattern_box = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-							     "AgsAccessiblePatternBox\0", &ags_accesssible_pattern_box_info,
+							     "AgsAccessiblePatternBox", &ags_accesssible_pattern_box_info,
 							     0);
 
     g_type_add_interface_static(ags_type_accessible_pattern_box,
@@ -170,7 +170,7 @@ ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
 
   ags_pattern_box_parent_class = g_type_class_peek_parent(pattern_box);
 
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 
   /* GObjectClass */
   gobject = (GObjectClass *) pattern_box;
@@ -217,14 +217,16 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   AgsLed *led;
   GtkToggleButton *toggle_button;
   GtkRadioButton *radio_button;
+
+  gchar *str;
   
   guint i;
 
   g_object_set(pattern_box,
-	       "can-focus\0", TRUE,
-	       "n-columns\0", 2,
+	       "can-focus", TRUE,
+	       "n-columns", 2,
 	       "n-rows", 2,
-	       "homogeneous\0", FALSE,
+	       "homogeneous", FALSE,
 	       NULL);
   gtk_widget_set_events((GtkWidget *) pattern_box,
 			GDK_CONTROL_MASK
@@ -240,15 +242,22 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   
   /* led */
   pattern_box->active_led = 0;
-
-  pattern_box->led = (GtkHBox *) gtk_hbox_new(FALSE, 16);
+  pattern_box->hled_array = (GtkHBox *) ags_hled_array_new();
+  g_object_set(pattern_box->hled_array,
+	       "led-width", AGS_PATTERN_BOX_LED_DEFAULT_WIDTH,
+	       "led-height", AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT,
+	       "led-count", pattern_box->n_controls,
+	       NULL);
+  gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,
+			      pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, 10);
   gtk_table_attach((GtkTable *) pattern_box,
-		   (GtkWidget *) pattern_box->led,
+		   (GtkWidget *) pattern_box->hled_array,
 		   0, 1,
 		   0, 1,
 		   0, 0,
 		   0, 0);
-
+  gtk_widget_show_all(pattern_box->hled_array);
+  
   if(ags_pattern_box_led_queue_draw == NULL){
     ags_pattern_box_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 							   NULL,
@@ -258,16 +267,6 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   g_hash_table_insert(ags_pattern_box_led_queue_draw,
 		      pattern_box, ags_pattern_box_led_queue_draw_timeout);
   g_timeout_add(1000 / 30, (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
-
-  for(i = 0; i < pattern_box->n_controls; i++){
-    led = (AgsLed *) ags_led_new();
-    gtk_widget_set_size_request((GtkWidget *) led,
-				AGS_PATTERN_BOX_LED_DEFAULT_WIDTH, AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT);
-    gtk_box_pack_start((GtkBox *) pattern_box->led,
-		       (GtkWidget *) led,
-		       FALSE, FALSE,
-		       0);
-  }
 
   /* pattern */
   pattern_box->pattern = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -298,18 +297,26 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   for(i = 0; i < pattern_box->n_indices; i++){
     if(radio_button == NULL){
-      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup_printf("%d-%d\0",
-											      i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls));
+      str = g_strdup_printf("%d-%d",
+			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
+      radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL,
+									str);
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
 			 (GtkWidget *) radio_button,
 			 FALSE, FALSE,
 			 0);
+
+      g_free(str);
     }else{
+      str = g_strdup_printf("%d-%d",
+			    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls);
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
-			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup_printf("%d-%d\0",
-													    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls)),
+			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group,
+								       str),
 			 FALSE, FALSE,
 			 0);
+
+      g_free(str);
     }
   }
 }
@@ -339,16 +346,16 @@ ags_pattern_box_connect(AgsConnectable *connectable)
 
   pattern_box->flags |= AGS_PATTERN_BOX_CONNECTED;
 
-  g_signal_connect_after(G_OBJECT(pattern_box), "focus_in_event\0",
+  g_signal_connect_after(G_OBJECT(pattern_box), "focus_in_event",
 			 G_CALLBACK(ags_pattern_box_focus_in_callback), (gpointer) pattern_box);
 
-  g_signal_connect_after(G_OBJECT(pattern_box), "focus_out_event\0",
+  g_signal_connect_after(G_OBJECT(pattern_box), "focus_out_event",
 			 G_CALLBACK(ags_pattern_box_focus_out_callback), (gpointer) pattern_box);
   
-  g_signal_connect(G_OBJECT(pattern_box), "key_press_event\0",
+  g_signal_connect(G_OBJECT(pattern_box), "key_press_event",
 		   G_CALLBACK(ags_pattern_box_key_press_event), (gpointer) pattern_box);
 
-  g_signal_connect(G_OBJECT(pattern_box), "key_release_event\0",
+  g_signal_connect(G_OBJECT(pattern_box), "key_release_event",
 		   G_CALLBACK(ags_pattern_box_key_release_event), (gpointer) pattern_box);
 
   /* connect pattern */
@@ -356,7 +363,7 @@ ags_pattern_box_connect(AgsConnectable *connectable)
     list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked\0",
+    g_signal_connect(G_OBJECT(list->data), "clicked",
 		     G_CALLBACK(ags_pattern_box_pad_callback), (gpointer) pattern_box);
 
     list = list->next;
@@ -369,7 +376,7 @@ ags_pattern_box_connect(AgsConnectable *connectable)
     list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
   while(list != NULL){
-    g_signal_connect_after(G_OBJECT(list->data), "clicked\0",
+    g_signal_connect_after(G_OBJECT(list->data), "clicked",
 			   G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 		   
     list = list->next;
@@ -395,16 +402,16 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
   pattern_box->flags &= (~AGS_PATTERN_BOX_CONNECTED);
 
   g_object_disconnect(G_OBJECT(pattern_box),
-		      "focus_in_event\0",
+		      "focus_in_event",
 		      G_CALLBACK(ags_pattern_box_focus_in_callback),
 		      (gpointer) pattern_box,
-		      "focus_out_event\0",
+		      "focus_out_event",
 		      G_CALLBACK(ags_pattern_box_focus_out_callback),
 		      (gpointer) pattern_box,
-		      "key_press_event\0",
+		      "key_press_event",
 		      G_CALLBACK(ags_pattern_box_key_press_event),
 		      (gpointer) pattern_box,
-		      "key_release_event\0",
+		      "key_release_event",
 		      G_CALLBACK(ags_pattern_box_key_release_event),
 		      (gpointer) pattern_box,
 		      NULL);
@@ -415,7 +422,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_pattern_box_pad_callback),
 			(gpointer) pattern_box,
 			NULL);
@@ -431,7 +438,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked\0",
+			"clicked",
 			G_CALLBACK(ags_pattern_box_offset_callback),
 			(gpointer) pattern_box,
 			NULL);
@@ -598,12 +605,12 @@ ags_accessible_pattern_box_get_description(AtkAction *action,
 					   gint i)
 {
   static const gchar **actions = {
-    "move cursor left\0",
-    "move cursor right\0",
-    "decrement pattern index\0",
-    "increment pattern index\0",
-    "toggle audio pattern\0"
-    "copy pattern to clipboard\0",
+    "move cursor left",
+    "move cursor right",
+    "decrement pattern index",
+    "increment pattern index",
+    "toggle audio pattern"
+    "copy pattern to clipboard",
   };
 
   if(i >= 0 && i < 6){
@@ -618,12 +625,12 @@ ags_accessible_pattern_box_get_name(AtkAction *action,
 				    gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
-    "toggle\0",
-    "copy\0",
+    "left",
+    "right",
+    "up",
+    "down",
+    "toggle",
+    "copy",
   };
   
   if(i >= 0 && i < 6){
@@ -638,10 +645,10 @@ ags_accessible_pattern_box_get_keybinding(AtkAction *action,
 					  gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
+    "left",
+    "right",
+    "up",
+    "down",
     "space",
     "Ctrl+c",
   };
@@ -796,9 +803,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     AgsMutexManager *mutex_manager;
 
-    GList *list, *active;
+    GList *list_start, *list;
     guint active_led_new;
-    guint i;
 
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
@@ -832,82 +838,58 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     recall_id = ags_recall_id_find_parent_recycling_context(audio->recall_id,
 							    NULL);
 
-    if(recall_id == NULL){
-      pthread_mutex_unlock(audio_mutex);
-      
+    pthread_mutex_unlock(audio_mutex);
+    
+    if(recall_id == NULL){      
       gdk_threads_leave();
       
       return(TRUE);
     }
 
+    g_object_get(audio,
+		 "play", &list_start,
+		 NULL);
+
     play_count_beats_audio = NULL;
     play_count_beats_audio_run = NULL;
     
-    list = ags_recall_find_type(audio->play,
+    pthread_mutex_lock(audio->play_mutex);
+
+    list = ags_recall_find_type(list_start,
 				AGS_TYPE_COUNT_BEATS_AUDIO);
     
     if(list != NULL){
       play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
     }
     
-    list = ags_recall_find_type_with_recycling_context(audio->play,
+    list = ags_recall_find_type_with_recycling_context(list_start,
 						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 						       (GObject *) recall_id->recycling_context);
     
     if(list != NULL){
       play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
     }
-    
+
+    pthread_mutex_unlock(audio->play_mutex);
+
+    g_list_free(list_start);  
+
     if(play_count_beats_audio == NULL ||
-       play_count_beats_audio_run == NULL){
-      pthread_mutex_unlock(audio_mutex);
-      
+       play_count_beats_audio_run == NULL){      
       gdk_threads_leave();
       
       return(TRUE);
     }
 
     /* active led */
-    active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;
+    active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;      
+
     pattern_box->active_led = (guint) active_led_new;
-      
-    pthread_mutex_unlock(audio_mutex);
-    
-    /* offset */
-    list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
-    
-    for(i = 0; list != NULL; i++){
-      if(gtk_toggle_button_get_active(list->data)){
-	break;
-      }
 
-      list = list->next;
-    }
-
-    g_list_free(list);
-
-    /* led */
-    list = gtk_container_get_children((GtkContainer *) pattern_box->led);
-    active = NULL;
-    
-    for(i = 0; list != NULL; i++){
-      if(i == active_led_new){
-	active = list;
-	list = list->next;
-	
-	continue;
-      }
-
-      ags_led_unset_active(AGS_LED(list->data));
-      
-      list = list->next;
-    }
-
-    if(active != NULL){
-      ags_led_set_active(AGS_LED(active->data));
-    }
-    
-    g_list_free(list);
+    pattern_box->active_led = (guint) active_led_new;
+    ags_led_array_unset_all(pattern_box->hled_array);
+    ags_led_array_set_nth(pattern_box->hled_array,
+			  active_led_new);
         
     gdk_threads_leave();
     

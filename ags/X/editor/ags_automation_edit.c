@@ -99,7 +99,7 @@ ags_automation_edit_get_type(void)
     };
 
     ags_type_automation_edit = g_type_register_static(GTK_TYPE_TABLE,
-						      "AgsAutomationEdit\0", &ags_automation_edit_info,
+						      "AgsAutomationEdit", &ags_automation_edit_info,
 						      0);
     
     g_type_add_interface_static(ags_type_automation_edit,
@@ -135,7 +135,7 @@ ags_accessible_automation_edit_get_type(void)
     };
     
     ags_type_accessible_automation_edit = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-								 "AgsAccessibleAutomationEdit\0", &ags_accesssible_automation_edit_info,
+								 "AgsAccessibleAutomationEdit", &ags_accesssible_automation_edit_info,
 								 0);
 
     g_type_add_interface_static(ags_type_accessible_automation_edit,
@@ -152,7 +152,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
 {
   ags_automation_edit_parent_class = g_type_class_peek_parent(automation_edit);
 
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 }
 
 void
@@ -261,6 +261,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 void
 ags_automation_edit_connect(AgsConnectable *connectable)
 {
+  AgsAutomationEditor *automation_editor;
   AgsAutomationEdit *automation_edit;
 
   automation_edit = AGS_AUTOMATION_EDIT(connectable);
@@ -270,34 +271,46 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   }
   
   automation_edit->flags |= AGS_AUTOMATION_EDIT_CONNECTED;
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  if(automation_editor != NULL && automation_editor->selected_machine != NULL){
+    g_signal_connect_after(automation_editor->selected_machine->audio, "set-audio-channels",
+			   G_CALLBACK(ags_automation_edit_set_audio_channels_callback), automation_edit);
+
+    g_signal_connect_after(automation_editor->selected_machine->audio, "set-pads",
+			   G_CALLBACK(ags_automation_edit_set_pads_callback), automation_edit);
+  }
+
   
   /*  */
-  g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event\0",
+  g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event",
 			 G_CALLBACK (ags_automation_edit_drawing_area_expose_event), (gpointer) automation_edit);
 
-  g_signal_connect_after((GObject *) automation_edit->drawing_area, "configure_event\0",
+  g_signal_connect_after((GObject *) automation_edit->drawing_area, "configure_event",
 			 G_CALLBACK (ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
 
-  g_signal_connect((GObject *) automation_edit->drawing_area, "button_press_event\0",
+  g_signal_connect((GObject *) automation_edit->drawing_area, "button_press_event",
 		   G_CALLBACK (ags_automation_edit_drawing_area_button_press_event), (gpointer) automation_edit);
 
-  g_signal_connect((GObject *) automation_edit->drawing_area, "button_release_event\0",
+  g_signal_connect((GObject *) automation_edit->drawing_area, "button_release_event",
 		   G_CALLBACK (ags_automation_edit_drawing_area_button_release_event), (gpointer) automation_edit);
   
-  g_signal_connect((GObject *) automation_edit->drawing_area, "motion_notify_event\0",
+  g_signal_connect((GObject *) automation_edit->drawing_area, "motion_notify_event",
 		   G_CALLBACK (ags_automation_edit_drawing_area_motion_notify_event), (gpointer) automation_edit);
 
-  g_signal_connect((GObject *) automation_edit->drawing_area, "key_press_event\0",
+  g_signal_connect((GObject *) automation_edit->drawing_area, "key_press_event",
 		   G_CALLBACK(ags_automation_edit_drawing_area_key_press_event), (gpointer) automation_edit);
 
-  g_signal_connect((GObject *) automation_edit->drawing_area, "key_release_event\0",
+  g_signal_connect((GObject *) automation_edit->drawing_area, "key_release_event",
 		   G_CALLBACK(ags_automation_edit_drawing_area_key_release_event), (gpointer) automation_edit);
 
   /*  */
-  g_signal_connect_after((GObject *) automation_edit->vscrollbar, "value-changed\0",
+  g_signal_connect_after((GObject *) automation_edit->vscrollbar, "value-changed",
 			 G_CALLBACK (ags_automation_edit_vscrollbar_value_changed), (gpointer) automation_edit);
 
-  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed\0",
+  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
 			 G_CALLBACK (ags_automation_edit_hscrollbar_value_changed), (gpointer) automation_edit);
 }
 
@@ -594,21 +607,21 @@ ags_accessible_automation_edit_get_description(AtkAction *action,
 					       gint i)
 {
   static const gchar **actions = {
-    "move cursor left\0",
-    "move cursor right\0",
-    "move cursor up\0",
-    "move cursor down\0",
-    "move automation prev\0",
-    "move automation next\0",
-    "move cursor relative up\0",
-    "move cursor relative down\0",
-    "move cursor small left\0",
-    "move cursor small right\0",
-    "add acceleration\0",
-    "remove acceleration\0",
-    "copy automation to clipboard\0",
-    "cut automation to clipbaord\0",
-    "paste automation from clipboard\0",
+    "move cursor left",
+    "move cursor right",
+    "move cursor up",
+    "move cursor down",
+    "move automation prev",
+    "move automation next",
+    "move cursor relative up",
+    "move cursor relative down",
+    "move cursor small left",
+    "move cursor small right",
+    "add acceleration",
+    "remove acceleration",
+    "copy automation to clipboard",
+    "cut automation to clipbaord",
+    "paste automation from clipboard",
   };
 
   if(i >= 0 && i < 15){
@@ -623,21 +636,21 @@ ags_accessible_automation_edit_get_name(AtkAction *action,
 					gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
-    "prev\0",
-    "next\0",
-    "small-left\0",
-    "small-right\0",
-    "relative-up\0",
-    "relative-down\0",
-    "add\0",
-    "remove\0",
-    "copy\0",
-    "cut\0",
-    "paste\0",
+    "left",
+    "right",
+    "up",
+    "down",
+    "prev",
+    "next",
+    "small-left",
+    "small-right",
+    "relative-up",
+    "relative-down",
+    "add",
+    "remove",
+    "copy",
+    "cut",
+    "paste",
   };
   
   if(i >= 0 && i < 15){
@@ -652,18 +665,18 @@ ags_accessible_automation_edit_get_keybinding(AtkAction *action,
 					      gint i)
 {
   static const gchar **actions = {
-    "left\0",
-    "right\0",
-    "up\0",
-    "down\0",
+    "left",
+    "right",
+    "up",
+    "down",
     "Ctrl+up",
     "Ctrl+down",
-    "Shft+Left\0",
-    "Shft+Right\0",
-    "Shft+up\0",
-    "Schft+down\0",
+    "Shft+Left",
+    "Shft+Right",
+    "Shft+up",
+    "Schft+down",
     "space",
-    "Del\0"
+    "Del"
     "Ctrl+c"
     "Ctrl+x",
     "Ctrl+v",
@@ -779,7 +792,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
     automation_edit->ruler->scale_precision = 1.0 / tact;
   }
 
-  //  g_message("%d\0",
+  //  g_message("%d",
   //	    automation_edit->map_width);
 
   if((AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR & flags) != 0){

@@ -46,6 +46,7 @@ void ags_pattern_get_property(GObject *gobject,
 			      GParamSpec *param_spec);
 void ags_pattern_connect(AgsConnectable *connectable);
 void ags_pattern_disconnect(AgsConnectable *connectable);
+void ags_pattern_dispose(GObject *gobject);
 void ags_pattern_finalize(GObject *gobject);
 
 void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
@@ -115,7 +116,7 @@ ags_pattern_get_type (void)
     };
 
     ags_type_pattern = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsPattern\0",
+					      "AgsPattern",
 					      &ags_pattern_info,
 					      0);
 
@@ -148,6 +149,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   gobject->set_property = ags_pattern_set_property;
   gobject->get_property = ags_pattern_get_property;
 
+  gobject->dispose = ags_pattern_dispose;
   gobject->finalize = ags_pattern_finalize;
 
   /* properties */
@@ -158,9 +160,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("port\0",
-				   "port of pattern\0",
-				   "The port of pattern\0",
+  param_spec = g_param_spec_object("port",
+				   "port of pattern",
+				   "The port of pattern",
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,9 +176,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("first-index\0",
-				 "the first index\0",
-				 "The first index to select pattern\0",
+  param_spec = g_param_spec_uint("first-index",
+				 "the first index",
+				 "The first index to select pattern",
 				 0, 256,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -191,9 +193,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("second-index\0",
-				 "the second index\0",
-				 "The second index to select pattern\0",
+  param_spec = g_param_spec_uint("second-index",
+				 "the second index",
+				 "The second index to select pattern",
 				 0, 256,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -208,9 +210,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_uint("offset\0",
-				 "the offset\0",
-				 "The offset within the pattern\0",
+  param_spec = g_param_spec_uint("offset",
+				 "the offset",
+				 "The offset within the pattern",
 				 0, 65535,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -225,9 +227,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_boolean("current-bit\0",
-				    "current bit for offset\0",
-				    "The current bit for offset\0",
+  param_spec = g_param_spec_boolean("current-bit",
+				    "current bit for offset",
+				    "The current bit for offset",
 				    FALSE,
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -241,9 +243,9 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    * 
    * Since: 0.7.12
    */
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp of pattern\0",
-				   "The timestamp of pattern\0",
+  param_spec = g_param_spec_object("timestamp",
+				   "timestamp of pattern",
+				   "The timestamp of pattern",
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -307,32 +309,26 @@ ags_pattern_init(AgsPattern *pattern)
   
   pthread_mutex_unlock(application_mutex);
 
-  /*  */
+  /* base initialization */
+  pattern->flags = 0;
+
+  /* timestamp */
   pattern->timestamp = NULL;
 
+  /* dimension and pattern */
   pattern->dim[0] = 0;
   pattern->dim[1] = 0;
   pattern->dim[2] = 0;
 
   pattern->pattern = NULL;
 
+  /* port */
   pattern->port = NULL;
 
+  /* indices */
   pattern->i = 0;
   pattern->j = 0;
   pattern->bit = 0;
-}
-
-void
-ags_pattern_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_pattern_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -521,23 +517,95 @@ ags_pattern_get_property(GObject *gobject,
 }
 
 void
+ags_pattern_connect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(connectable);
+
+  if((AGS_PATTERN_CONNECTED & (pattern->flags)) != 0){
+    return;
+  }
+
+  pattern->flags |= AGS_PATTERN_CONNECTED;
+}
+
+void
+ags_pattern_disconnect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(connectable);
+
+  if((AGS_PATTERN_CONNECTED & (pattern->flags)) == 0){
+    return;
+  }
+
+  pattern->flags &= (~AGS_PATTERN_CONNECTED);
+}
+
+void
+ags_pattern_dispose(GObject *gobject)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(gobject);
+
+  /* timestamp */
+  if(pattern->timestamp != NULL){
+    g_object_run_dispose(G_OBJECT(pattern->timestamp));
+    
+    g_object_unref(G_OBJECT(pattern->timestamp));
+  }
+
+  /* port */
+  if(pattern->port != NULL){
+    g_object_unref(G_OBJECT(pattern->port));
+
+    pattern->port = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_pattern_parent_class)->dispose(gobject);
+}
+
+void
 ags_pattern_finalize(GObject *gobject)
 {
   AgsPattern *pattern;
+  
   guint i, j;
 
   pattern = AGS_PATTERN(gobject);
 
-  for(i = 0; i < pattern->dim[0]; i++){
-    for(j = 0; i < pattern->dim[1]; i++){
-      free(pattern->pattern[i][j]);
-    }
-
-    free(pattern->pattern[i]);
+  /* timestamp */
+  if(pattern->timestamp != NULL){
+    g_object_unref(G_OBJECT(pattern->timestamp));
   }
 
-  free(pattern->pattern);
+  /* pattern */
+  if(pattern->pattern != NULL){
+    for(i = 0; i < pattern->dim[0]; i++){
+      if(pattern->pattern[i] != NULL){
+	for(j = 0; j < pattern->dim[1]; j++){
+	  if(pattern->pattern[i][j] != NULL){
+	    free(pattern->pattern[i][j]);
+	  }
+	}
 
+	free(pattern->pattern[i]);
+      }
+    }
+
+    free(pattern->pattern);
+  }
+ 
+  /* port */
+  if(pattern->port != NULL){
+    g_object_unref(G_OBJECT(pattern->port));
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
 }
 
@@ -551,7 +619,7 @@ void
 ags_pattern_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
-	       "port\0", port,
+	       "port", port,
 	       NULL);
 }
 
@@ -561,7 +629,7 @@ ags_pattern_get_port(AgsPortlet *portlet)
   AgsPort *port;
 
   g_object_get(G_OBJECT(portlet),
-	       "port\0", &port,
+	       "port", &port,
 	       NULL);
 
   return((GObject *) port);
@@ -570,16 +638,17 @@ ags_pattern_get_port(AgsPortlet *portlet)
 GList*
 ags_pattern_list_safe_properties(AgsPortlet *portlet)
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   static GList *list = NULL;
 
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  
   pthread_mutex_lock(&mutex);
 
   if(list == NULL){
-    list = g_list_prepend(list, "first-index\0");
-    list = g_list_prepend(list, "second-index\0");
-    list = g_list_prepend(list, "offset\0");
-    list = g_list_prepend(list, "current-bit\0");
+    list = g_list_prepend(list, "first-index");
+    list = g_list_prepend(list, "second-index");
+    list = g_list_prepend(list, "offset");
+    list = g_list_prepend(list, "current-bit");
  }
 
   pthread_mutex_unlock(&mutex);
@@ -668,24 +737,23 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   // shrink
   if(pattern->dim[0] > dim0){
     for(i = dim0; i < pattern->dim[0]; i++){
-      for(j = 0; j < pattern->dim[1]; j++)
+      for(j = 0; j < pattern->dim[1]; j++){
 	free(pattern->pattern[i][j]);
+      }
 
       free(pattern->pattern[i]);
     }
 
     if(dim0 == 0){
       free(pattern->pattern);
-      ags_pattern_init(pattern);
+      
+      pattern->pattern = NULL;
+      pattern->dim[0] = 0;
+
       return;
     }else{
-      index0 = (guint ***) malloc((int) dim0 * sizeof(guint**));
-
-      for(i = 0; i < dim0; i++)
-	index0[i] = pattern->pattern[i];
-
-      free(pattern->pattern);
-      pattern->pattern = index0;
+      pattern->pattern = (guint ***) realloc(pattern->pattern,
+					     (int) dim0 * sizeof(guint **));
 
       pattern->dim[0] = dim0;
     }
@@ -697,9 +765,13 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 	for(j = dim1; j < pattern->dim[1]; j++){
 	  free(pattern->pattern[i][j]);
 	}
+
 	pattern->pattern[i] = NULL;
       }
 
+      pattern->dim[1] = 0;
+      
+      return;
     }else{
       for(i = 0; i < pattern->dim[0]; i++){
 	for(j = dim1; j < pattern->dim[1]; j++){
@@ -708,87 +780,105 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
       }
 
       for(i = 0; pattern->dim[0]; i++){
-	index1 = (guint **) malloc(dim1 * sizeof(guint*));
-
-	for(j = 0; j < dim1; j++){
-	  index1[j] = pattern->pattern[i][j];
-	}
-
-	free(pattern->pattern[i]);
-	pattern->pattern[i] = index1;
+	pattern->pattern[i] = (guint **) realloc(pattern->pattern[i],
+						 dim1 * sizeof(guint *));
       }
-    }
 
-    pattern->dim[1] = dim1;
+      pattern->dim[1] = dim1;
+    }
   }
 
   if(pattern->dim[2] > length){
-    for(i = 0; i < pattern->dim[0]; i++)
-      for(j = 0; j < pattern->dim[1]; j++){
-	bitmap = (guint *) malloc((int) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint));
-
-	for(k = 0; k < (guint) ceil((double) length / (double) (sizeof(guint) * 8)); k++)
-	  bitmap[k] = pattern->pattern[i][j][k];
-
-	free(pattern->pattern[i][j]);
-	pattern->pattern[i][j] = bitmap;
+    if(length == 0){
+      for(i = 0; i < pattern->dim[0]; i++){
+	for(j = 0; j < pattern->dim[1]; j++){
+      	  free(pattern->pattern[i][j]);
+	  
+	  pattern->pattern[i][j] = NULL;
+	}
       }
-  }else if(pattern->dim[2] < length){ // grow
-    for(i = 0; i < pattern->dim[0]; i++)
-      for(j = 0; j < pattern->dim[1]; j++){
-	bitmap = (guint *) malloc((int) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint));
 
-	for(k = 0; k < (guint) ceil((double) pattern->dim[2] / (double) (sizeof(guint) * 8)); k++)
-	  bitmap[k] = pattern->pattern[i][j][k];
-
-	free(pattern->pattern[i][j]);
-	pattern->pattern[i][j] = bitmap;
+      pattern->dim[2] = 0;
+    }else{
+      for(i = 0; i < pattern->dim[0]; i++){
+	for(j = 0; j < pattern->dim[1]; j++){
+	  pattern->pattern[i][j] = (guint *) realloc(pattern->pattern[i][j],
+						     (int) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint));
+	}
       }
+
+      pattern->dim[2] = length;
+    }
   }
 
-  pattern->dim[2] = length;
-  bitmap_size = (guint) ceil((double) pattern->dim[2] / (double) (sizeof(guint) * 8)) * sizeof(guint);
-
-  if(pattern->dim[1] < dim1){
-    for(i = 0; i < pattern->dim[0]; i++){
-      index1 = (guint**) malloc(dim1 * sizeof(guint*));
-
-      for(j = 0; j < pattern->dim[1]; j++)
-	index1[j] = pattern->pattern[i][j];
-
-      free(pattern->pattern[i]);
-      pattern->pattern[i] = index1;
-
-      for(j = pattern->dim[1]; j < dim1; j++){
-	pattern->pattern[i][j] = (guint*) malloc(bitmap_size);
-	memset(pattern->pattern[i][j], 0, bitmap_size);
-      }
+  // grow
+  bitmap_size = (int) ceil((double) pattern->dim[2] / (double) (sizeof(guint) * 8)) * sizeof(guint);
+    
+  if(pattern->dim[0] < dim0){
+    if(pattern->pattern == NULL){
+      pattern->pattern = (guint ***) malloc(dim0 * sizeof(guint **));
+    }else{
+      pattern->pattern = (guint ***) realloc(pattern->pattern,
+					     dim0 * sizeof(guint **));
     }
 
-    pattern->dim[1] = dim1;
-  }
-
-  if(pattern->dim[0] < dim0){
-    index0 = (guint***) malloc(dim0 * sizeof(guint**));
-
-    for(i = 0; i < pattern->dim[0]; i++)
-      index0[i] = pattern->pattern[i];
-
-    if(pattern->pattern != NULL)
-      free(pattern->pattern);
-
-    pattern->pattern = index0;
-
     for(i = pattern->dim[0]; i < dim0; i++){
-      pattern->pattern[i] = (guint**) malloc(pattern->dim[1] * sizeof(guint*));
+      pattern->pattern[i] = (guint **) malloc(pattern->dim[1] * sizeof(guint *));
 
       for(j = 0; j < pattern->dim[1]; j++){
-	pattern->pattern[i][j] = (guint*) malloc(bitmap_size);
-	memset(pattern->pattern[i][j], 0, bitmap_size);
+	if(bitmap_size == 0){
+	  pattern->pattern[i][j] = NULL;
+	}else{
+	  pattern->pattern[i][j] = (guint *) malloc(bitmap_size);
+	  memset(pattern->pattern[i][j], 0, bitmap_size);
+	}
       }
     }
 
     pattern->dim[0] = dim0;
+  }
+
+  if(pattern->dim[1] < dim1){  
+    for(i = 0; i < pattern->dim[0]; i++){
+      if(pattern->pattern[i] == NULL){
+	pattern->pattern[i] = (guint **) malloc(dim1 * sizeof(guint *));
+      }else{
+	pattern->pattern[i] = (guint **) realloc(pattern->pattern[i],
+						 dim1 * sizeof(guint *));
+      }
+
+      for(j = pattern->dim[1]; j < dim1; j++){
+	if(bitmap_size == 0){
+	  pattern->pattern[i][j] = NULL;
+	}else{
+	  pattern->pattern[i][j] = (guint *) malloc(bitmap_size);
+	  memset(pattern->pattern[i][j], 0, bitmap_size);
+	}
+      }
+    }
+
+    pattern->dim[1] = dim1;
+  }
+
+  if(pattern->dim[2] < length){
+    guint new_bitmap_size;
+    
+    new_bitmap_size = (int) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint);
+    
+    for(i = 0; i < pattern->dim[0]; i++){
+      for(j = 0; j < pattern->dim[1]; j++){
+	if(pattern->pattern[i][j] == NULL){
+	  pattern->pattern[i][j] = (guint *) malloc(new_bitmap_size);
+	  memset(pattern->pattern[i][j], 0, new_bitmap_size);
+	}else{
+	  pattern->pattern[i][j] =(guint *) realloc(pattern->pattern[i][j],
+						    new_bitmap_size);
+	  memset(pattern->pattern[i][j] + bitmap_size, 0, new_bitmap_size - bitmap_size);
+	}
+      }
+    }
+
+    pattern->dim[2] = length;
   }
 }
 

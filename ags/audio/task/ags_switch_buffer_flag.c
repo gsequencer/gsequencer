@@ -27,6 +27,8 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <ags/i18n.h>
+
 void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
 void ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag);
@@ -87,7 +89,7 @@ ags_switch_buffer_flag_get_type()
     };
 
     ags_type_switch_buffer_flag = g_type_register_static(AGS_TYPE_TASK,
-							 "AgsSwitchBufferFlag\0",
+							 "AgsSwitchBufferFlag",
 							 &ags_switch_buffer_flag_info,
 							 0);
 
@@ -124,9 +126,9 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
    * 
    * Since: 0.7.111
    */
-  param_spec = g_param_spec_object("device\0",
-				   "device of change device\0",
-				   "The device of change device task\0",
+  param_spec = g_param_spec_object("device",
+				   i18n_pspec("device of change device"),
+				   i18n_pspec("The device of change device task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

@@ -34,6 +34,8 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#include <ags/i18n.h>
+
 void ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread);
 void ags_sequencer_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread);
@@ -47,6 +49,7 @@ void ags_sequencer_thread_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_sequencer_thread_connect(AgsConnectable *connectable);
 void ags_sequencer_thread_disconnect(AgsConnectable *connectable);
+void ags_sequencer_thread_dispose(GObject *gobject);
 void ags_sequencer_thread_finalize(GObject *gobject);
 
 void ags_sequencer_thread_start(AgsThread *thread);
@@ -106,7 +109,7 @@ ags_sequencer_thread_get_type()
     };
 
     ags_type_sequencer_thread = g_type_register_static(AGS_TYPE_THREAD,
-						       "AgsSequencerThread\0",
+						       "AgsSequencerThread",
 						       &ags_sequencer_thread_info,
 						       0);
     
@@ -133,6 +136,7 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
   gobject->set_property = ags_sequencer_thread_set_property;
   gobject->get_property = ags_sequencer_thread_get_property;
 
+  gobject->dispose = ags_sequencer_thread_dispose;
   gobject->finalize = ags_sequencer_thread_finalize;
 
   /**
@@ -142,9 +146,9 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
    * 
    * Since: 0.7.121
    */
-  param_spec = g_param_spec_object("sequencer\0",
-				   "sequencer assigned to\0",
-				   "The AgsSequencer it is assigned to.\0",
+  param_spec = g_param_spec_object("sequencer",
+				   i18n_pspec("sequencer assigned to"),
+				   i18n_pspec("The AgsSequencer it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -163,7 +167,7 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
 
   /* signals */
   sequencer_thread_signals[INTERVAL_TIMEOUT] = 
-    g_signal_new("interval-timeout\0",
+    g_signal_new("interval-timeout",
 		 G_TYPE_FROM_CLASS(sequencer_thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSequencerThreadClass, interval_timeout),
@@ -199,22 +203,22 @@ ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread)
 
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate\0");
+			      "samplerate");
 
   if(str0 == NULL){
     str0 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate\0");
+				"samplerate");
   }
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size\0");
+			      "buffer-size");
 
   if(str1 == NULL){
     str1 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size\0");
+				"buffer-size");
   }
 
   if(str0 == NULL || str1 == NULL){
@@ -238,6 +242,7 @@ ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread)
 
   sequencer_thread->sequencer = NULL;
 
+  sequencer_thread->timestamp_thread = NULL;
   //  sequencer_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   //  ags_thread_add_child(thread, sequencer_thread->timestamp_thread);
 
@@ -319,7 +324,7 @@ ags_sequencer_thread_connect(AgsConnectable *connectable)
   ags_sequencer_thread_parent_connectable_interface->connect(connectable);
 
   audio_loop = ags_thread_get_toplevel(sequencer_thread);
-  g_signal_connect((GObject *) audio_loop, "stopped-all\0",
+  g_signal_connect((GObject *) audio_loop, "stopped-all",
 		   G_CALLBACK(ags_sequencer_stopped_all_callback), sequencer_thread);    
 }
 
@@ -332,11 +337,37 @@ ags_sequencer_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_sequencer_thread_dispose(GObject *gobject)
+{
+  AgsSequencerThread *sequencer_thread;
+
+  sequencer_thread = AGS_SEQUENCER_THREAD(gobject);
+
+  /* sequencer */
+  if(sequencer_thread->sequencer != NULL){
+    g_object_unref(sequencer_thread->sequencer);
+
+    sequencer_thread->sequencer = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_sequencer_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_sequencer_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_sequencer_thread_parent_class)->finalize(gobject);
+  AgsSequencerThread *sequencer_thread;
 
-  /* empty */
+  sequencer_thread = AGS_SEQUENCER_THREAD(gobject);
+
+  /* sequencer */
+  if(sequencer_thread->sequencer != NULL){
+    g_object_unref(sequencer_thread->sequencer);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_sequencer_thread_parent_class)->finalize(gobject);
 }
 
 void
@@ -364,7 +395,7 @@ ags_sequencer_thread_start(AgsThread *thread)
     ags_sequencer_record_init(sequencer,
 			    &(sequencer_thread->error));
 #ifdef AGS_DEBUG
-    g_message("ags_sequencer_record\0");
+    g_message("ags_sequencer_record");
 #endif
   }
 
@@ -393,7 +424,7 @@ ags_sequencer_thread_run(AgsThread *thread)
     param.sched_priority = AGS_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -406,7 +437,7 @@ ags_sequencer_thread_run(AgsThread *thread)
 			 &error);
     
     if(error != NULL){
-      g_warning("ags_sequencer_thread - %s\0", error->message);
+      g_warning("ags_sequencer_thread - %s", error->message);
     }
   }
 
@@ -499,7 +530,7 @@ ags_sequencer_thread_new(GObject *sequencer)
   AgsSequencerThread *sequencer_thread;
 
   sequencer_thread = (AgsSequencerThread *) g_object_new(AGS_TYPE_SEQUENCER_THREAD,
-							 "sequencer\0", sequencer,
+							 "sequencer", sequencer,
 							 NULL);
 
   return(sequencer_thread);

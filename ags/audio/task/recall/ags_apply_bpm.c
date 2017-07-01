@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm);
 void ags_apply_bpm_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_bpm_init(AgsApplyBpm *apply_bpm);
@@ -95,7 +97,7 @@ ags_apply_bpm_get_type()
     };
 
     ags_type_apply_bpm = g_type_register_static(AGS_TYPE_TASK,
-						"AgsApplyBpm\0",
+						"AgsApplyBpm",
 						&ags_apply_bpm_info,
 						0);
     
@@ -132,9 +134,9 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of set buffer size\0",
-				   "The scope of set buffer size\0",
+  param_spec = g_param_spec_object("scope",
+				   i18n_pspec("scope of set buffer size"),
+				   i18n_pspec("The scope of set buffer size"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -148,9 +150,9 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_double("bpm\0",
-				   "bpm\0",
-				   "The bpm to apply\0",
+  param_spec = g_param_spec_double("bpm",
+				   i18n_pspec("bpm"),
+				   i18n_pspec("The bpm to apply"),
 				   0,
 				   G_MAXDOUBLE,
 				   0,
@@ -307,7 +309,7 @@ ags_apply_bpm_launch(AgsTask *task)
 
     ags_apply_bpm_recall(apply_bpm, recall);
   }else{
-    g_warning("AgsApplyBpm: Not supported scope\0");
+    g_warning("AgsApplyBpm: Not supported scope");
   }
 }
 

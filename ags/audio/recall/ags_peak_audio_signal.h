@@ -38,6 +38,8 @@ typedef struct _AgsPeakAudioSignalClass AgsPeakAudioSignalClass;
 struct _AgsPeakAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  gdouble peak;
 };
 
 struct _AgsPeakAudioSignalClass

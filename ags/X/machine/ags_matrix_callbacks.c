@@ -21,8 +21,6 @@
 
 #include <ags/object/ags_application_context.h>
 
-#include <ags/widget/ags_led.h>
-
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -57,15 +55,25 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 {
   AgsWindow *window;
 
-  if(old_parent != NULL)
+  gchar *str;
+
+  if(old_parent != NULL){
     return;
+  }
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
 
-  AGS_MACHINE(matrix)->name = g_strdup_printf("Default %d\0",
-					      ags_window_find_machine_counter(window, AGS_TYPE_MATRIX)->counter);
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_MATRIX)->counter);
+
+  g_object_set(AGS_MACHINE(matrix),
+	       "machine-name", str,
+	       NULL);
+
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_MATRIX);
+
+  g_free(str);
 }
 
 void
@@ -328,19 +336,11 @@ ags_matrix_done_callback(AgsAudio *audio,
     playback = playback->next;
   }
 
+  gdk_threads_enter();  
+
   if(all_done){
-    GList *list, *list_start;
-    
-    /* unset led */
-    list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(matrix->cell_pattern->led));
-
-    while(list != NULL){
-      ags_led_unset_active(AGS_LED(list->data));
-	
-      list = list->next;
-    }
-
-    g_list_free(list_start);
+    ags_led_array_unset_all(matrix->cell_pattern->hled_array);
   }
+
+  gdk_threads_leave();
 }

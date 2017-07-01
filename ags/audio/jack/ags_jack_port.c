@@ -34,6 +34,7 @@
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_jack_port_class_init(AgsJackPortClass *jack_port);
 void ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -49,6 +50,7 @@ void ags_jack_port_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_jack_port_connect(AgsConnectable *connectable);
 void ags_jack_port_disconnect(AgsConnectable *connectable);
+void ags_jack_port_dispose(GObject *gobject);
 void ags_jack_port_finalize(GObject *gobject);
 
 /**
@@ -95,7 +97,7 @@ ags_jack_port_get_type()
     };
     
     ags_type_jack_port = g_type_register_static(G_TYPE_OBJECT,
-						"AgsJackPort\0",
+						"AgsJackPort",
 						&ags_jack_port_info,
 						0);
 
@@ -121,6 +123,7 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
   gobject->set_property = ags_jack_port_set_property;
   gobject->get_property = ags_jack_port_get_property;
 
+  gobject->dispose = ags_jack_port_dispose;
   gobject->finalize = ags_jack_port_finalize;
 
   /* properties */
@@ -131,9 +134,9 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    * 
    * Since: 0.7.1
    */
-  param_spec = g_param_spec_object("jack-client\0",
-				   "assigned JACK client\0",
-				   "The assigned JACK client.\0",
+  param_spec = g_param_spec_object("jack-client",
+				   i18n_pspec("assigned JACK client"),
+				   i18n_pspec("The assigned JACK client"),
 				   AGS_TYPE_JACK_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -147,10 +150,10 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    * 
    * Since: 0.7.65
    */
-  param_spec = g_param_spec_string("port-name\0",
-				   "port name\0",
-				   "The port name\0",
-				   "hw:0\0",
+  param_spec = g_param_spec_string("port-name",
+				   i18n_pspec("port name"),
+				   i18n_pspec("The port name"),
+				   "hw:0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_NAME,
@@ -269,13 +272,50 @@ ags_jack_port_get_property(GObject *gobject,
 void
 ags_jack_port_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsJackPort *jack_port;
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  if((AGS_JACK_PORT_CONNECTED & (jack_port->flags)) != 0){
+    return;
+  }
+
+  jack_port->flags |= AGS_JACK_PORT_CONNECTED;
 }
 
 void
 ags_jack_port_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsJackPort *jack_port;
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  if((AGS_JACK_PORT_CONNECTED & (jack_port->flags)) == 0){
+    return;
+  }
+
+  jack_port->flags &= (~AGS_JACK_PORT_CONNECTED);
+}
+
+void
+ags_jack_port_dispose(GObject *gobject)
+{
+  AgsJackPort *jack_port;
+
+  jack_port = AGS_JACK_PORT(gobject);
+
+  /* jack client */
+  if(jack_port->jack_client != NULL){
+    g_object_unref(jack_port->jack_client);
+
+    jack_port->jack_client = NULL;
+  }
+
+  /* name */
+  g_free(jack_port->name);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_jack_port_parent_class)->dispose(gobject);
 }
 
 void
@@ -285,12 +325,15 @@ ags_jack_port_finalize(GObject *gobject)
 
   jack_port = AGS_JACK_PORT(gobject);
 
+  /* jack client */
   if(jack_port->jack_client != NULL){
     g_object_unref(jack_port->jack_client);
   }
-  
+
+  /* name */
   g_free(jack_port->name);
-  
+
+  /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->finalize(gobject);
 }
 
@@ -348,7 +391,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
   }
 
   if(jack_port->jack_client == NULL){
-    g_warning("ags_jack_port.c - no assigned AgsJackClient\0");
+    g_warning("ags_jack_port.c - no assigned AgsJackClient");
     
     return;
   }
@@ -439,7 +482,7 @@ ags_jack_port_new(GObject *jack_client)
   AgsJackPort *jack_port;
 
   jack_port = (AgsJackPort *) g_object_new(AGS_TYPE_JACK_PORT,
-					   "jack-client\0", jack_client,
+					   "jack-client", jack_client,
 					   NULL);
 
   return(jack_port);

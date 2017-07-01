@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/machine/ags_dssi_bridge.h>
+
+void ags_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDssiBridge *dssi_bridge);
 
 void ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge);
 

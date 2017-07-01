@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 
 #include <ags/audio/midi/ags_midi_parser.h>
 
+#include <ags/X/ags_window.h>
+
 #include <ags/X/import/ags_track_collection.h>
 
 #include <libxml/tree.h>
@@ -38,6 +40,7 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
   case GTK_RESPONSE_REJECT:
     {
       if((AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION  & (midi_import_wizard->flags)) != 0){
+	/* show/hide */
 	midi_import_wizard->flags |= AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER;
 	midi_import_wizard->flags &= (~AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION);
 
@@ -67,13 +70,14 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
 
 	/* parse */
 	file = fopen(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(midi_import_wizard->file_chooser)),
-		     "r\0");
+		     "r");
 	
 	midi_parser = ags_midi_parser_new(file);
 	midi_doc = ags_midi_parser_parse_full(midi_parser);
+	xmlSaveFormatFileEnc("-", midi_doc, "UTF-8", 1);
 	
 	g_object_set(midi_import_wizard->track_collection,
-		     "midi-document\0", midi_doc,
+		     "midi-document", midi_doc,
 		      NULL);
 	ags_track_collection_parse((AgsTrackCollection *) midi_import_wizard->track_collection);
       }
@@ -83,13 +87,15 @@ ags_midi_import_wizard_response_callback(GtkWidget *wizard, gint response, gpoin
     {
       ags_applicable_apply(AGS_APPLICABLE(wizard));
     }
+  case GTK_RESPONSE_DELETE_EVENT:
+  case GTK_RESPONSE_CLOSE:
   case GTK_RESPONSE_CANCEL:
     {
-      gtk_widget_hide(wizard);
+      AGS_WINDOW(midi_import_wizard->main_window)->midi_import_wizard = NULL;
+      gtk_widget_destroy(wizard);
     }
     break;
   default:
-    g_warning("unknown response\0");
+    g_warning("unknown response");
   }
 }
-

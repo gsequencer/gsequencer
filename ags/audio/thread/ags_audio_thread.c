@@ -34,6 +34,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread);
 void ags_audio_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_thread_init(AgsAudioThread *audio_thread);
@@ -47,6 +49,7 @@ void ags_audio_thread_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_audio_thread_connect(AgsConnectable *connectable);
 void ags_audio_thread_disconnect(AgsConnectable *connectable);
+void ags_audio_thread_dispose(GObject *gobject);
 void ags_audio_thread_finalize(GObject *gobject);
 
 void ags_audio_thread_start(AgsThread *thread);
@@ -100,7 +103,7 @@ ags_audio_thread_get_type()
     };
 
     ags_type_audio_thread = g_type_register_static(AGS_TYPE_THREAD,
-						   "AgsAudioThread\0",
+						   "AgsAudioThread",
 						   &ags_audio_thread_info,
 						   0);
     
@@ -127,6 +130,7 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
   gobject->set_property = ags_audio_thread_set_property;
   gobject->get_property = ags_audio_thread_get_property;
 
+  gobject->dispose = ags_audio_thread_dispose;
   gobject->finalize = ags_audio_thread_finalize;
 
   /* properties */
@@ -137,9 +141,9 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard assigned to\0",
-				   "The AgsSoundcard it is assigned to.\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard assigned to"),
+				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -153,9 +157,9 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio assigned to\0",
-				   "The AgsAudio it is assigned to.\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio assigned to"),
+				   i18n_pspec("The AgsAudio it is assigned to"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -197,22 +201,22 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
 
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate\0");
+			      "samplerate");
 
   if(str0 == NULL){
     str0 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate\0");
+				"samplerate");
   }
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size\0");
+			      "buffer-size");
 
   if(str1 == NULL){
     str1 = ags_config_get_value(config,
 				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size\0");
+				"buffer-size");
   }
   
   if(str0 == NULL || str1 == NULL){
@@ -367,17 +371,69 @@ ags_audio_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_audio_thread_dispose(GObject *gobject)
+{
+  AgsAudioThread *audio_thread;
+
+  audio_thread = AGS_AUDIO_THREAD(gobject);
+
+  /* soundcard */
+  if(audio_thread->soundcard != NULL){
+    g_object_unref(audio_thread->soundcard);
+
+    audio_thread->soundcard = NULL;
+  }
+
+  /* audio */
+  if(audio_thread->audio != NULL){
+    g_object_unref(audio_thread->audio);
+
+    audio_thread->audio = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_audio_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_audio_thread_parent_class)->finalize(gobject);
+  AgsAudioThread *audio_thread;
 
-  /* empty */
+  audio_thread = AGS_AUDIO_THREAD(gobject);
+
+  /* soundcard */
+  if(audio_thread->soundcard != NULL){
+    g_object_unref(audio_thread->soundcard);
+  }
+
+  /* wakeup mutex and cond */
+  pthread_mutex_destroy(audio_thread->wakeup_mutex);
+  free(audio_thread->wakeup_mutex);
+  
+  pthread_mutex_destroy(audio_thread->wakeup_cond);
+  free(audio_thread->wakeup_cond);
+
+  /* sync mutex and cond */
+  pthread_mutex_destroy(audio_thread->done_mutex);
+  free(audio_thread->done_mutex);
+  
+  pthread_mutex_destroy(audio_thread->done_cond);
+  free(audio_thread->done_cond);
+
+  /* audio */
+  if(audio_thread->audio != NULL){
+    g_object_unref(audio_thread->audio);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_thread_parent_class)->finalize(gobject);
 }
 
 void
 ags_audio_thread_start(AgsThread *thread)
 {
-  g_message("audio thread start\0");
+  g_message("audio thread start");
   
   /* reset status */
   g_atomic_int_or(&(AGS_AUDIO_THREAD(thread)->flags),
@@ -416,7 +472,7 @@ ags_audio_thread_run(AgsThread *thread)
     param.sched_priority = AGS_RT_PRIORITY;
       
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
+      perror("sched_setscheduler failed");
     }
 
     g_atomic_int_or(&(thread->flags),
@@ -569,7 +625,7 @@ ags_audio_thread_stop(AgsThread *thread)
   AgsAudioThread *audio_thread;
   AgsThread *child;
 
-  g_message("audio thread stop\0");
+  g_message("audio thread stop");
   
   audio_thread = AGS_AUDIO_THREAD(thread);
 
@@ -741,8 +797,8 @@ ags_audio_thread_new(GObject *soundcard,
   AgsAudioThread *audio_thread;
 
   audio_thread = (AgsAudioThread *) g_object_new(AGS_TYPE_AUDIO_THREAD,
-						 "soundcard\0", soundcard,
-						 "audio\0", audio,
+						 "soundcard", soundcard,
+						 "audio", audio,
 						 NULL);
 
 

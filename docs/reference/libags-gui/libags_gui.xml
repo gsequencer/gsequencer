@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<book id="index">
+  <bookinfo>
+    <title>Advanced Gtk+ Sequencer UI Reference Manual</title>
+    <releaseinfo>
+      for libags_gui.
+      The latest version of this documentation can be found on-line at
+      <ulink role="online-location" url="http://nongnu.org/gsequencer/api/libags_gui/index.html">http://nongnu.org/gsequencer/api/libags_gui/</ulink>.
+    </releaseinfo>
+  </bookinfo>
+
+  <chapter>
+    <title>UI Widgets</title>
+    <xi:include href="xml/ags_cartesian.xml"/>
+    <xi:include href="xml/ags_container.xml"/>
+    <xi:include href="xml/ags_dial.xml"/>
+    <xi:include href="xml/ags_expander.xml"/>
+    <xi:include href="xml/ags_expander_set.xml"/>
+    <xi:include href="xml/ags_indicator.xml"/>
+    <xi:include href="xml/ags_hindicator.xml"/>
+    <xi:include href="xml/ags_vindicator.xml"/>
+    <xi:include href="xml/ags_led.xml"/>
+    <xi:include href="xml/ags_ruler.xml"/>
+    <xi:include href="xml/ags_led_array.xml"/>
+    <xi:include href="xml/ags_hled_array.xml"/>
+    <xi:include href="xml/ags_vled_array.xml"/>
+  </chapter>
+  
+  <chapter id="object-tree">
+    <title>Object Hierarchy</title>
+    <xi:include href="xml/tree_index.sgml"/>
+  </chapter>
+  <index id="api-index-full">
+    <title>API Index</title>
+    <xi:include href="xml/api-index-full.xml"><xi:fallback /></xi:include>
+  </index>
+  <index id="deprecated-api-index" role="deprecated">
+    <title>Index of deprecated API</title>
+    <xi:include href="xml/api-index-deprecated.xml"><xi:fallback /></xi:include>
+  </index>
+  <!-- enable this when you use gobject introspection annotations
+  <xi:include href="xml/annotation-glossary.xml"><xi:fallback /></xi:include>
+  -->
+</book>

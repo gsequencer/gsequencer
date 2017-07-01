@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,17 +19,23 @@
 
 #include <ags/audio/ags_input.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/file/ags_file_link.h>
 
 #include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_synth_generator.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch.h>
+
+#include <ags/i18n.h>
 
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -42,7 +48,8 @@ void ags_input_get_property(GObject *gobject,
 			    GValue *value,
 			    GParamSpec *param_spec);
 void ags_input_init (AgsInput *input);
-void ags_input_finalize (GObject *gobject);
+void ags_input_dispose(GObject *gobject);
+void ags_input_finalize(GObject *gobject);
 void ags_input_connect(AgsConnectable *connectable);
 void ags_input_disconnect(AgsConnectable *connectable);
 
@@ -62,6 +69,7 @@ static AgsConnectableInterface *ags_input_parent_connectable_interface;
 enum{
   PROP_0,
   PROP_FILE_LINK,
+  PROP_SYNTH_GENERATOR,
 };
 
 GType
@@ -89,7 +97,7 @@ ags_input_get_type (void)
     };
 
     ags_type_input = g_type_register_static(AGS_TYPE_CHANNEL,
-					    "AgsInput\0",
+					    "AgsInput",
 					    &ags_input_info,
 					    0);
 
@@ -114,6 +122,7 @@ ags_input_class_init(AgsInputClass *input)
   gobject->set_property = ags_input_set_property;
   gobject->get_property = ags_input_get_property;
 
+  gobject->dispose = ags_input_dispose;
   gobject->finalize = ags_input_finalize;
   
   /* properties */
@@ -124,13 +133,29 @@ ags_input_class_init(AgsInputClass *input)
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("file-link\0",
-				   "file link assigned to\0",
-				   "The file link to read from\0",
+  param_spec = g_param_spec_object("file-link",
+				   i18n_pspec("file link assigned to"),
+				   i18n_pspec("The file link to read from"),
 				   AGS_TYPE_FILE_LINK,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILE_LINK,
+				  param_spec);
+
+  /**
+   * AgsInput:synth-generator:
+   *
+   * An optional synth generator that might be used.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("synth-generator",
+				   i18n_pspec("the synth generator"),
+				   i18n_pspec("The synth generator to be used"),
+				   AGS_TYPE_SYNTH_GENERATOR,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_GENERATOR,
 				  param_spec);
 }
 
@@ -165,7 +190,6 @@ ags_input_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE_LINK:
     {
-      AgsAudioFile *audio_file;
       AgsFileLink *file_link;
 
       file_link = (AgsFileLink *) g_value_get_object(value);
@@ -183,6 +207,27 @@ ags_input_set_property(GObject *gobject,
       }
 
       input->file_link = (GObject *) file_link;
+    }
+    break;
+  case PROP_SYNTH_GENERATOR:
+    {
+      AgsFileLink *synth_generator;
+
+      synth_generator = (AgsFileLink *) g_value_get_object(value);
+
+      if(input->synth_generator == (GObject *) synth_generator){
+	return;
+      }
+      
+      if(input->synth_generator != NULL){
+	g_object_unref(G_OBJECT(input->synth_generator));
+      }
+
+      if(synth_generator != NULL){
+	g_object_ref(G_OBJECT(synth_generator));
+      }
+
+      input->synth_generator = (GObject *) synth_generator;
     }
     break;
   default:
@@ -203,12 +248,48 @@ ags_input_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILE_LINK:
-    g_value_set_object(value, input->file_link);
+    {
+      g_value_set_object(value, input->file_link);
+    }
+    break;
+  case PROP_SYNTH_GENERATOR:
+    {
+      g_value_set_object(value, input->synth_generator);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_input_dispose(GObject *gobject)
+{
+  AgsInput *input;
+
+  input = AGS_INPUT(gobject);
+
+  /* file link */
+  if(input->file_link != NULL){
+    g_object_run_dispose(G_OBJECT(input->file_link));
+
+    g_object_unref(G_OBJECT(input->file_link));
+    
+    input->file_link = NULL;
+  }
+
+  /* synth generator */
+  if(input->synth_generator != NULL){
+    g_object_run_dispose(G_OBJECT(input->synth_generator));
+
+    g_object_unref(G_OBJECT(input->synth_generator));
+    
+    input->synth_generator = NULL;
+  }
+
+  /* finalize */
+  G_OBJECT_CLASS(ags_input_parent_class)->dispose(gobject);
 }
 
 void
@@ -218,10 +299,17 @@ ags_input_finalize(GObject *gobject)
 
   input = AGS_INPUT(gobject);
 
+  /* file link */
   if(input->file_link != NULL){
     g_object_unref(G_OBJECT(input->file_link));
   }
 
+  /* synth generator */
+  if(input->synth_generator != NULL){
+    g_object_unref(G_OBJECT(input->synth_generator));
+  }
+
+  /* finalize */
   G_OBJECT_CLASS(ags_input_parent_class)->finalize(gobject);
 }
 
@@ -282,9 +370,9 @@ ags_input_open_file(AgsInput *input,
     success = TRUE;
     
     ipatch = g_object_new(AGS_TYPE_IPATCH,
-			  "soundcard\0", AGS_CHANNEL(input)->soundcard,
-			  "mode\0", AGS_IPATCH_READ,
-			  "filename\0", filename,
+			  "soundcard", AGS_CHANNEL(input)->soundcard,
+			  "mode", AGS_IPATCH_READ,
+			  "filename", filename,
 			  NULL);
 
     playable = AGS_PLAYABLE(ipatch);
@@ -345,13 +433,13 @@ ags_input_open_file(AgsInput *input,
   if(success){
     if(audio_signal != NULL){
       file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
-			       "filename\0", filename,
-			       "preset\0", preset,
-			       "instrument\0", instrument,
-			       "audio-channel\0", audio_channel,
+			       "filename", filename,
+			       "preset", preset,
+			       "instrument", instrument,
+			       "audio-channel", audio_channel,
 			       NULL);
       g_object_set(input,
-		   "file-link\0", file_link,
+		   "file-link", file_link,
 		   NULL);
     
       /* mark as template */
@@ -376,7 +464,196 @@ ags_input_apply_synth(AgsInput *input,
 		      gdouble volume,
 		      guint n_frames)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
   //TODO:JK: implement me
+}
+
+gboolean
+ags_input_is_active(AgsInput *input,
+		    GObject *recycling_context)
+{
+  AgsChannel *channel;
+  AgsRecycling *recycling, *end_region;
+  AgsAudioSignal *audio_signal;
+  AgsRecyclingContext *active_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  GList *list;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *input_mutex;
+  pthread_mutex_t *recycling_mutex;
+  
+  channel = input;
+
+  if(input == NULL ||
+     channel->first_recycling == NULL ||
+     recycling_context == NULL){
+    return(FALSE);
+  }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  input_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get recycling */
+  pthread_mutex_lock(input_mutex);
+
+  recycling = channel->first_recycling;
+  end_region = channel->last_recycling->next;
+
+  if(channel->link == NULL){
+    active_context = AGS_RECYCLING_CONTEXT(recycling_context)->parent;
+  }else{
+    active_context = recycling_context;
+  }
+  
+  pthread_mutex_unlock(input_mutex);
+
+  /* check if active */
+  while(recycling != end_region){
+    /* lookup mutex */
+    pthread_mutex_lock(application_mutex);
+  
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) recycling);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    pthread_mutex_lock(recycling_mutex);
+
+    list = recycling->audio_signal;
+
+    while(list != NULL){
+      audio_signal = list->data;
+      
+      if(audio_signal->recall_id != NULL &&
+	 AGS_RECALL_ID(audio_signal->recall_id)->recycling_context != NULL &&
+	 AGS_RECYCLING_CONTEXT(AGS_RECALL_ID(audio_signal->recall_id)->recycling_context)->parent == active_context){
+	pthread_mutex_unlock(recycling_mutex);
+      
+	return(TRUE);
+      }
+
+      list = list->next;
+    }
+
+    /* iterate */
+    recycling = recycling->next;
+    
+    pthread_mutex_unlock(recycling_mutex);  
+  }
+  
+  return(FALSE);
+}
+
+AgsInput*
+ags_input_next_active(AgsInput *input,
+		      GObject *recycling_context)
+{
+  AgsChannel *channel;
+  AgsRecycling *recycling, *end_region;
+  AgsAudioSignal *audio_signal;  
+  AgsRecyclingContext *active_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  GList *list;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *input_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  channel = input;
+  
+  if(input == NULL ||
+     recycling_context == NULL){
+    return(NULL);
+  }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* check if active */
+  while(channel != NULL){
+    /* lookup mutex */
+    pthread_mutex_lock(application_mutex);
+  
+    input_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get recycling */
+    pthread_mutex_lock(input_mutex);
+
+    recycling = channel->first_recycling;
+    end_region = channel->last_recycling->next;
+  
+    if(channel->link == NULL){
+      active_context = AGS_RECYCLING_CONTEXT(recycling_context)->parent;
+    }else{
+      active_context = recycling_context;
+    }
+    
+    pthread_mutex_unlock(input_mutex);
+    
+    /* check recycling */
+    while(recycling != end_region){
+      /* lookup mutex */
+      pthread_mutex_lock(application_mutex);
+  
+      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) recycling);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* check audio signal */
+      pthread_mutex_lock(recycling_mutex);
+
+      list = recycling->audio_signal;
+
+      while(list != NULL){
+	audio_signal = list->data;
+      
+	if(audio_signal->recall_id != NULL &&
+	   AGS_RECALL_ID(audio_signal->recall_id)->recycling_context != NULL &&
+	   AGS_RECYCLING_CONTEXT(AGS_RECALL_ID(audio_signal->recall_id)->recycling_context)->parent == active_context){
+	  pthread_mutex_unlock(recycling_mutex);
+      
+	  return(channel);
+	}
+
+	list = list->next;
+      }
+
+      /* iterate */
+      recycling = recycling->next;
+    
+      pthread_mutex_unlock(recycling_mutex);  
+    }
+
+    /* iterate */
+    pthread_mutex_lock(input_mutex);
+
+    channel = channel->next_pad;
+    
+    pthread_mutex_unlock(input_mutex);
+  }
+  
+  return(NULL);
 }
 
 /**
@@ -395,7 +672,7 @@ ags_input_new(GObject *audio)
   AgsInput *input;
 
   input = (AgsInput *) g_object_new(AGS_TYPE_INPUT,
-				    "audio\0", audio,
+				    "audio", audio,
 				    NULL);
 
   return(input);

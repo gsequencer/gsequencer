@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
+#include <ags/i18n.h>
+
 void ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard);
 void ags_add_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_soundcard_init(AgsAddSoundcard *add_soundcard);
@@ -85,7 +87,7 @@ ags_add_soundcard_get_type()
     };
 
     ags_type_add_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						    "AgsAddSoundcard\0",
+						    "AgsAddSoundcard",
 						    &ags_add_soundcard_info,
 						    0);
 
@@ -121,9 +123,9 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "application context of add soundcard\0",
-				   "The application context of add soundcard task\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("application context of add soundcard"),
+				   i18n_pspec("The application context of add soundcard task"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -137,9 +139,9 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "soundcard of add soundcard\0",
-				   "The soundcard of add soundcard task\0",
+  param_spec = g_param_spec_object("soundcard",
+				   i18n_pspec("soundcard of add soundcard"),
+				   i18n_pspec("The soundcard of add soundcard task"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

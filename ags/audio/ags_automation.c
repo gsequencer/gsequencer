@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,10 +35,14 @@
 
 #include <ags/config.h>
 
+#include <pthread.h>
+
 #include <stdlib.h>
 
 #include <math.h>
 #include <errno.h>
+
+#include <ags/i18n.h>
 
 void ags_automation_class_init(AgsAutomationClass *automation);
 void ags_automation_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -54,7 +58,8 @@ void ags_automation_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_automation_connect(AgsConnectable *connectable);
 void ags_automation_disconnect(AgsConnectable *connectable);
-void ags_automation_finalize(GObject *object);
+void ags_automation_dispose(GObject *gobject);
+void ags_automation_finalize(GObject *gobject);
 
 void ags_automation_set_port(AgsPortlet *portlet, GObject *port);
 GObject* ags_automation_get_port(AgsPortlet *portlet);
@@ -72,9 +77,9 @@ void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name,
  * #AgsAutomation acts as a container of #AgsAcceleration.
  */
 
-#define AGS_AUTOMATION_CLIPBOARD_VERSION "0.4.3\0"
-#define AGS_AUTOMATION_CLIPBOARD_TYPE "AgsAutomationClipboardXml\0"
-#define AGS_AUTOMATION_CLIPBOARD_FORMAT "AgsAutomationNativePiano\0"
+#define AGS_AUTOMATION_CLIPBOARD_VERSION "0.4.3"
+#define AGS_AUTOMATION_CLIPBOARD_TYPE "AgsAutomationClipboardXml"
+#define AGS_AUTOMATION_CLIPBOARD_FORMAT "AgsAutomationNativePiano"
 
 enum{
   PROP_0,
@@ -126,7 +131,7 @@ ags_automation_get_type()
     };
 
     ags_type_automation = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsAutomation\0",
+						 "AgsAutomation",
 						 &ags_automation_info,
 						 0);
 
@@ -155,6 +160,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
   gobject->set_property = ags_automation_set_property;
   gobject->get_property = ags_automation_get_property;
 
+  gobject->dispose = ags_automation_dispose;
   gobject->finalize = ags_automation_finalize;
 
   /* properties */
@@ -163,11 +169,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of automation\0",
-				   "The audio of automation\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of automation"),
+				   i18n_pspec("The audio of automation"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -180,11 +186,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's line.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_uint("line\0",
-				  "line of effect\0",
-				  "The numerical line of effect\0",
+  param_spec =  g_param_spec_uint("line",
+				  i18n_pspec("line of effect"),
+				  i18n_pspec("The numerical line of effect"),
 				  0,
 				  65535,
 				  0,
@@ -198,11 +204,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's assigned channel type.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_gtype("channel-type\0",
-				   "channel type to apply\0",
-				   "The channel type to apply\0",
+  param_spec =  g_param_spec_gtype("channel-type",
+				   i18n_pspec("channel type to apply"),
+				   i18n_pspec("The channel type to apply"),
 				   G_TYPE_NONE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -215,11 +221,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's assigned control name.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_string("control-name\0",
-				    "control name\0",
-				    "The control name\0",
+  param_spec =  g_param_spec_string("control-name",
+				    i18n_pspec("control name"),
+				    i18n_pspec("The control name"),
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -233,9 +239,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_object("port\0",
-				   "port of automation\0",
-				   "The port of automation\0",
+  param_spec = g_param_spec_object("port",
+				   i18n_pspec("port of automation"),
+				   i18n_pspec("The port of automation"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -247,11 +253,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's steps.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_uint("steps\0",
-				  "steps of effect\0",
-				  "The steps of effect\0",
+  param_spec =  g_param_spec_uint("steps",
+				  i18n_pspec("steps of effect"),
+				  i18n_pspec("The steps of effect"),
 				  0,
 				  65535,
 				  0,
@@ -265,11 +271,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's upper.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_double("upper\0",
-				    "upper of effect\0",
-				    "The upper of effect\0",
+  param_spec =  g_param_spec_double("upper",
+				    i18n_pspec("upper of effect"),
+				    i18n_pspec("The upper of effect"),
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -283,11 +289,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's lower.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_double("lower\0",
-				    "lower of effect\0",
-				    "The lower of effect\0",
+  param_spec =  g_param_spec_double("lower",
+				    i18n_pspec("lower of effect"),
+				    i18n_pspec("The lower of effect"),
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -302,11 +308,11 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's default-value.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.0
    */
-  param_spec =  g_param_spec_double("default-value\0",
-				    "default value of effect\0",
-				    "The default value of effect\0",
+  param_spec =  g_param_spec_double("default-value",
+				    i18n_pspec("default value of effect"),
+				    i18n_pspec("The default value of effect"),
 				    -65535.0,
 				    65535.0,
 				    0,
@@ -315,7 +321,22 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  PROP_DEFAULT_VALUE,
 				  param_spec);
 
-    
+
+  /**
+   * AgsAutomation:acceleration:
+   *
+   * The acceleration list.
+   * 
+   * Since: 0.7.122.8
+   */
+  param_spec = g_param_spec_pointer("acceleration",
+				    i18n_pspec("acceleration"),
+				    i18n_pspec("The acceleration"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ACCELERATION,
+				  param_spec);
+
   /**
    * AgsAutomation:current-accelerations:
    *
@@ -323,9 +344,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("current-accelerations\0",
-				    "current accelerations for offset\0",
-				    "The current accelerations for offset\0",
+  param_spec = g_param_spec_pointer("current-accelerations",
+				    i18n_pspec("current accelerations for offset"),
+				    i18n_pspec("The current accelerations for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CURRENT_ACCELERATIONS,
@@ -338,9 +359,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_pointer("next-accelerations\0",
-				    "next accelerations for offset\0",
-				    "The next accelerations for offset\0",
+  param_spec = g_param_spec_pointer("next-accelerations",
+				    i18n_pspec("next accelerations for offset"),
+				    i18n_pspec("The next accelerations for offset"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NEXT_ACCELERATIONS,
@@ -353,9 +374,9 @@ ags_automation_class_init(AgsAutomationClass *automation)
    * 
    * Since: 0.7.56
    */
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp of automation\0",
-				   "The timestamp of automation\0",
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp of automation"),
+				   i18n_pspec("The timestamp of automation"),
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -432,13 +453,51 @@ ags_automation_init(AgsAutomation *automation)
 void
 ags_automation_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAutomation *automation;
+
+  GList *list;
+  
+  automation = AGS_AUTOMATION(connectable);
+
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) != 0){
+    return;
+  }
+
+  automation->flags |= AGS_AUTOMATION_CONNECTED;
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_automation_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAutomation *automation;
+
+  GList *list;
+
+  automation = AGS_AUTOMATION(connectable);
+
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) == 0){
+    return;
+  }
+
+  automation->flags &= (~AGS_AUTOMATION_CONNECTED);
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
@@ -727,19 +786,103 @@ ags_automation_get_property(GObject *gobject,
 }
 
 void
+ags_automation_dispose(GObject *gobject)
+{
+  AgsAutomation *automation;
+
+  GList *list;
+  
+  automation = AGS_AUTOMATION(gobject);
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
+
+    automation->timestamp = NULL;
+  }
+
+  /* audio */
+  if(automation->audio != NULL){
+    g_object_unref(automation->audio);
+
+    automation->audio = NULL;
+  }
+
+  /* source function */
+  if(automation->source_function != NULL){
+    g_object_run_dispose(automation->source_function);
+    
+    g_object_unref(automation->source_function);
+
+    automation->source_function = NULL;
+  }
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    g_object_run_dispose(G_OBJECT(list->data));
+
+    list = list->next;
+  }
+  
+  g_list_free_full(automation->acceleration,
+		   g_object_unref);
+  g_list_free(automation->selection);
+
+  automation->acceleration = NULL;
+  automation->selection = NULL;
+
+  /* port */
+  if(automation->port != NULL){
+    g_object_unref(automation->port);
+
+    automation->port = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_automation_parent_class)->dispose(gobject);
+}
+
+void
 ags_automation_finalize(GObject *gobject)
 {
   AgsAutomation *automation;
 
   automation = AGS_AUTOMATION(gobject);
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
+  }
   
+  /* audio */
   if(automation->audio != NULL){
     g_object_unref(automation->audio);
   }
+
+  /* control name */
+  if(automation->control_name != NULL){
+    free(automation->control_name);
+  }
+
+  /* source function */
+  if(automation->source_function != NULL){
+    g_object_unref(automation->source_function);
+  }
   
+  /* acceleration */
   g_list_free_full(automation->acceleration,
 		   g_object_unref);
 
+  g_list_free(automation->selection);
+
+  /* port */
+  if(automation->port != NULL){
+    g_object_unref(automation->port);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
 }
 
@@ -747,7 +890,7 @@ void
 ags_automation_set_port(AgsPortlet *portlet, GObject *port)
 {
   g_object_set(G_OBJECT(portlet),
-	       "port\0", port,
+	       "port", port,
 	       NULL);
 }
 
@@ -757,7 +900,7 @@ ags_automation_get_port(AgsPortlet *portlet)
   GObject *port;
 
   g_object_get(G_OBJECT(portlet),
-	       "port\0", &port,
+	       "port", &port,
 	       NULL);
 
   return(port);
@@ -766,9 +909,20 @@ ags_automation_get_port(AgsPortlet *portlet)
 GList*
 ags_automation_list_safe_properties(AgsPortlet *portlet)
 {
-  //TODO:JK: implement me
+  static GList *list = NULL;
 
-  return(NULL);
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
+  if(list == NULL){
+    list = g_list_prepend(list, "current-accelerations");
+    list = g_list_prepend(list, "next-accelerations");
+  }
+
+  pthread_mutex_unlock(&mutex);
+
+  return(list);
 }
 
 void
@@ -819,7 +973,7 @@ ags_automation_find_port(GList *automation,
  *
  * Returns: Next match.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
@@ -864,7 +1018,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
  *
  * Adds a acceleration to automation.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_automation_add_acceleration(AgsAutomation *automation,
@@ -914,7 +1068,7 @@ ags_automation_add_acceleration(AgsAutomation *automation,
  *
  * Returns: %TRUE if successfully removed acceleration.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
@@ -956,7 +1110,7 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
  *
  * Returns: the selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_get_selection(AgsAutomation *automation)
@@ -973,7 +1127,7 @@ ags_automation_get_selection(AgsAutomation *automation)
  *
  * Returns: %TRUE if selected
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 gboolean
 ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration)
@@ -1004,7 +1158,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
  *
  * Returns: the matching acceleration.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 AgsAcceleration*
 ags_automation_find_point(AgsAutomation *automation,
@@ -1047,7 +1201,7 @@ ags_automation_find_point(AgsAutomation *automation,
  *
  * Returns: the matching acceleration as #GList.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_find_region(AgsAutomation *automation,
@@ -1100,7 +1254,7 @@ ags_automation_find_region(AgsAutomation *automation,
  *
  * Clear selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_automation_free_selection(AgsAutomation *automation)
@@ -1132,7 +1286,7 @@ ags_automation_free_selection(AgsAutomation *automation)
  *
  * Select acceleration at position.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 void
 ags_automation_add_point_to_selection(AgsAutomation *automation,
@@ -1179,7 +1333,7 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
  *
  * Remove acceleration at position of selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
@@ -1257,7 +1411,7 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
  *
  * Remove acceleration within region of selection.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */ 
 void
 ags_automation_remove_region_from_selection(AgsAutomation *automation,
@@ -1313,7 +1467,7 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
  *
  * Returns: the selection as XML.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 xmlNode*
 ags_automation_copy_selection(AgsAutomation *automation)
@@ -1327,14 +1481,14 @@ ags_automation_copy_selection(AgsAutomation *automation)
   selection = automation->selection;
 
   /* create root node */
-  automation_node = xmlNewNode(NULL, BAD_CAST "automation\0");
+  automation_node = xmlNewNode(NULL, BAD_CAST "automation");
 
-  xmlNewProp(automation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
-  xmlNewProp(automation_node, BAD_CAST "type\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_TYPE);
-  xmlNewProp(automation_node, BAD_CAST "version\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_VERSION);
-  xmlNewProp(automation_node, BAD_CAST "format\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_FORMAT);
-  xmlNewProp(automation_node, "control-name\0", automation->control_name);
-  xmlNewProp(automation_node, "line\0", g_strdup_printf("%u\0", automation->line));
+  xmlNewProp(automation_node, BAD_CAST "program", BAD_CAST "ags");
+  xmlNewProp(automation_node, BAD_CAST "type", BAD_CAST AGS_AUTOMATION_CLIPBOARD_TYPE);
+  xmlNewProp(automation_node, BAD_CAST "version", BAD_CAST AGS_AUTOMATION_CLIPBOARD_VERSION);
+  xmlNewProp(automation_node, BAD_CAST "format", BAD_CAST AGS_AUTOMATION_CLIPBOARD_FORMAT);
+  xmlNewProp(automation_node, "control-name", automation->control_name);
+  xmlNewProp(automation_node, "line", g_strdup_printf("%u", automation->line));
 
   selection = automation->selection;
 
@@ -1348,10 +1502,10 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
   while(selection != NULL){
     acceleration = AGS_ACCELERATION(selection->data);
-    current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration\0", NULL);
+    current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration", NULL);
 
-    xmlNewProp(current_acceleration, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", acceleration->x));
-    xmlNewProp(current_acceleration, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%f\0", acceleration->y));
+    xmlNewProp(current_acceleration, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", acceleration->x));
+    xmlNewProp(current_acceleration, BAD_CAST "y", BAD_CAST g_strdup_printf("%f", acceleration->y));
 
     if(y_boundary > acceleration->y){
       y_boundary = acceleration->y;
@@ -1360,8 +1514,8 @@ ags_automation_copy_selection(AgsAutomation *automation)
     selection = selection->next;
   }
 
-  xmlNewProp(automation_node, BAD_CAST "x-boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
-  xmlNewProp(automation_node, BAD_CAST "y-boundary\0", BAD_CAST g_strdup_printf("%f\0", y_boundary));
+  xmlNewProp(automation_node, BAD_CAST "x-boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
+  xmlNewProp(automation_node, BAD_CAST "y-boundary", BAD_CAST g_strdup_printf("%f", y_boundary));
   
   return(automation_node);
 }
@@ -1374,7 +1528,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
  *
  * Returns: the selection as XML.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 xmlNode*
 ags_automation_cut_selection(AgsAutomation *automation)
@@ -1440,13 +1594,13 @@ ags_automation_merge_clipboard(xmlNode *audio_node,
     while(child != NULL){
       if(child->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp(child->name,
-		       "acceleration\0",
+		       "acceleration",
 		       13)){
 	  if(!xmlStrcmp(xmlGetProp(child,
-				   "x\0"),
+				   "x"),
 			x) &&
 	     !xmlStrcmp(xmlGetProp(child,
-				   "y\0"),
+				   "y"),
 			y)){
 	    return(TRUE);
 	  }
@@ -1469,14 +1623,14 @@ ags_automation_merge_clipboard(xmlNode *audio_node,
   while(find_automation != NULL){
     if(find_automation->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(find_automation->name,
-		     "automation\0",
+		     "automation",
 		     11)){
 	if(!xmlStrcmp(xmlGetProp(find_automation,
-				 "line\0"),
+				 "line"),
 		      xmlGetProp(automation_node,
 				 "line")) &&
 	   !xmlStrcmp(xmlGetProp(find_automation,
-				 "control-name\0"),
+				 "control-name"),
 		      xmlGetProp(automation_node,
 				 "control-name"))){
 	  break;
@@ -1500,13 +1654,13 @@ ags_automation_merge_clipboard(xmlNode *audio_node,
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "acceleration\0",
+		     "acceleration",
 		     13)){
 	if(!ags_automation_merge_clipboard_find_acceleration(find_automation,
 							     xmlGetProp(child,
-									"x\0"),
+									"x"),
 							     xmlGetProp(child,
-									"y\0"))){
+									"y"))){
 	  xmlAddChild(find_automation,
 		      xmlCopyNode(child,
 				  1));
@@ -1606,9 +1760,9 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
     }
     
     for(; node != NULL; node = node->next){
-      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration\0", node->name, 5)){
+      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 5)){
 	/* retrieve x0 offset */
-	x = xmlGetProp(node, "x\0");
+	x = xmlGetProp(node, "x");
 
 	if(x == NULL)
 	  continue;
@@ -1625,7 +1779,7 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 	}
 	
 	/* retrieve y offset */
-	y = xmlGetProp(node, "y\0");
+	y = xmlGetProp(node, "y");
 
 	if(y == NULL)
 	  continue;
@@ -1679,7 +1833,7 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 	acceleration->y = y_val;
 
 #ifdef AGS_DEBUG
-	g_message("adding acceleration at: [%u|%f]\n\0", x_val, y_val);
+	g_message("adding acceleration at: [%u|%f]\n", x_val, y_val);
 #endif
 	
 	ags_automation_add_acceleration(automation,
@@ -1692,27 +1846,27 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
   }
   
   while(automation_node != NULL){
-    if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation\0", automation_node->name, 9))
+    if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation", automation_node->name, 9))
       break;
 
     automation_node = automation_node->next;
   }
 
   if(automation_node != NULL){
-    program = xmlGetProp(automation_node, "program\0");
+    program = xmlGetProp(automation_node, "program");
 
-    if(!xmlStrncmp("ags\0", program, 4)){
-      version = xmlGetProp(automation_node, "version\0");
-      type = xmlGetProp(automation_node, "type\0");
-      format = xmlGetProp(automation_node, "format\0");
+    if(!xmlStrncmp("ags", program, 4)){
+      version = xmlGetProp(automation_node, "version");
+      type = xmlGetProp(automation_node, "type");
+      format = xmlGetProp(automation_node, "format");
 
-      if(!xmlStrncmp("AgsAutomationNativePiano\0", format, 22)){
+      if(!xmlStrncmp("AgsAutomationNativePiano", format, 22)){
 	AgsAcceleration *acceleration;
 	
-	base_frequency = xmlGetProp(automation_node, "base-frequency\0");
+	base_frequency = xmlGetProp(automation_node, "base-frequency");
 
-	x_boundary = xmlGetProp(automation_node, "x-boundary\0");
-	y_boundary = xmlGetProp(automation_node, "y-boundary\0");
+	x_boundary = xmlGetProp(automation_node, "x-boundary");
+	y_boundary = xmlGetProp(automation_node, "y-boundary");
 
 	ags_automation_insert_from_clipboard_version_0_4_3(automation,
 							   automation_node, version,
@@ -1740,7 +1894,7 @@ ags_automation_get_current(AgsAutomation *automation)
  *
  * Returns: a %NULL terminated string array
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 gchar**
 ags_automation_get_specifier_unique(GList *automation)
@@ -1789,7 +1943,7 @@ ags_automation_get_specifier_unique(GList *automation)
  *
  * Returns: Next matching #GList
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 GList*
 ags_automation_find_specifier(GList *automation,
@@ -1955,14 +2109,14 @@ ags_automation_get_value(AgsAutomation *automation,
       g_value_set_double(value,
 			 current);
     }else if(port->port_value_type == G_TYPE_POINTER){
-      g_warning("ags_automation.c - unsupported value type pointer\0");
+      g_warning("ags_automation.c - unsupported value type pointer");
     }else if(port->port_value_type == G_TYPE_OBJECT){
-      g_warning("ags_automation.c - unsupported value type object\0");
+      g_warning("ags_automation.c - unsupported value type object");
     }else{
-      g_warning("ags_automation.c - unknown type\0");
+      g_warning("ags_automation.c - unknown type");
     }
   }else{
-    g_warning("ags_automation.c - unsupported value type pointer\0");
+    g_warning("ags_automation.c - unsupported value type pointer");
   }
 
   return(ret_x);
@@ -1990,10 +2144,10 @@ ags_automation_new(GObject *audio,
   AgsAutomation *automation;
 
   automation = (AgsAutomation *) g_object_new(AGS_TYPE_AUTOMATION,
-					      "audio\0", audio,
-					      "line\0", line,
-					      "channel-type\0", channel_type,
-					      "control-name\0", control_name,
+					      "audio", audio,
+					      "line", line,
+					      "channel-type", channel_type,
+					      "control-name", control_name,
 					      NULL);
 
   return(automation);

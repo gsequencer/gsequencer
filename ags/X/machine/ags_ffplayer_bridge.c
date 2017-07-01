@@ -81,7 +81,7 @@ ags_ffplayer_bridge_get_type(void)
     };
 
     ags_type_ffplayer_bridge = g_type_register_static(AGS_TYPE_EFFECT_BRIDGE,
-						      "AgsFFPlayerBridge\0", &ags_ffplayer_bridge_info,
+						      "AgsFFPlayerBridge", &ags_ffplayer_bridge_info,
 						      0);
 
     g_type_add_interface_static(ags_type_ffplayer_bridge,
@@ -134,13 +134,13 @@ ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge)
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_pad_type = AGS_TYPE_FFPLAYER_INPUT_PAD;
   AGS_EFFECT_BRIDGE(ffplayer_bridge)->input_line_type = AGS_TYPE_FFPLAYER_INPUT_LINE;
 
-  frame = (GtkFrame *) gtk_frame_new("input bridge\0");
+  frame = (GtkFrame *) gtk_frame_new("input bridge");
   gtk_box_pack_start((GtkBox *) AGS_EFFECT_BRIDGE(ffplayer_bridge),
 		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
-  expander = (GtkExpander *) gtk_expander_new("show/hide\0");
+  expander = (GtkExpander *) gtk_expander_new("show/hide");
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) expander);
 
@@ -185,7 +185,7 @@ ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
     return;
   }
 
-  ags_ffplayer_bridge_parent_connectable_interface->connect(connectable);
+  ags_ffplayer_bridge_parent_connectable_interface->disconnect(connectable);
 
   //TODO:JK: implement me
 }
@@ -206,7 +206,7 @@ ags_ffplayer_bridge_new(AgsAudio *audio)
   AgsFFPlayerBridge *ffplayer_bridge;
 
   ffplayer_bridge = (AgsFFPlayerBridge *) g_object_new(AGS_TYPE_FFPLAYER_BRIDGE,
-						       "audio\0", audio,
+						       "audio", audio,
 						       NULL);
 
   return(ffplayer_bridge);

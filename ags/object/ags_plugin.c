@@ -47,7 +47,7 @@ ags_plugin_get_type()
     };
 
     ags_type_plugin = g_type_register_static(G_TYPE_INTERFACE,
-					     "AgsPlugin\0", &ags_plugin_info,
+					     "AgsPlugin", &ags_plugin_info,
 					     0);
   }
 

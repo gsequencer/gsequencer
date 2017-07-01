@@ -31,6 +31,8 @@
 #define _GNU_SOURCE
 #include <pthread.h>
 
+#include <time.h>
+
 #define AGS_TYPE_THREAD                (ags_thread_get_type())
 #define AGS_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD, AgsThread))
 #define AGS_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_THREAD, AgsThreadClass))
@@ -45,8 +47,8 @@
 
 #define AGS_THREAD_HERTZ_JIFFIE (1000.0)
 #define AGS_THREAD_YIELD_JIFFIE (2.0)
-#define AGS_THREAD_DEFAULT_JIFFIE (1000.0)
-#define AGS_THREAD_MAX_PRECISION (1000.0)
+#define AGS_THREAD_DEFAULT_JIFFIE (250.0)
+#define AGS_THREAD_MAX_PRECISION (250.0)
 
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 

@@ -94,7 +94,7 @@ ags_recall_dssi_run_get_type (void)
     };
 
     ags_type_recall_dssi_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-						      "AgsRecallDssiRun\0",
+						      "AgsRecallDssiRun",
 						      &ags_recall_dssi_run_info,
 						      0);
 
@@ -195,9 +195,11 @@ ags_recall_dssi_run_finalize(GObject *gobject)
   free(recall_dssi_run->event_count);    
 
   free(recall_dssi_run->ladspa_handle);
-  
-  AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi,
-											     recall_dssi_run->note);
+
+  if(recall_dssi_run->route_dssi_audio_run != NULL){
+    AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi,
+											       recall_dssi_run->note);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_recall_dssi_run_parent_class)->finalize(gobject);
@@ -257,7 +259,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 												   samplerate);
 
 #ifdef AGS_DEBUG
-    g_message("instantiate DSSI handle %d %d\0",
+    g_message("instantiate DSSI handle %d %d",
 	      recall_dssi->bank,
 	      recall_dssi->program);
 #endif
@@ -271,7 +273,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
     }
     
 #ifdef AGS_DEBUG
-    g_message("instantiate DSSI handle\0");
+    g_message("instantiate DSSI handle");
 #endif
 
   }
@@ -311,7 +313,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
       if(list == NULL){
 	port_data[i] = 0.0;
 
-	//	g_warning("didn't find port\0");
+	//	g_warning("didn't find port");
       }else{
 	port_data[i] = current->port_value.ags_port_ladspa;
       }
@@ -322,7 +324,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 						     recall_dssi->bank,
 						     recall_dssi->program);
 
-      //      g_message("b p %u %u\0", recall_dssi->bank, recall_dssi->program);
+      //      g_message("b p %u %u", recall_dssi->bank, recall_dssi->program);
     }
 
     /* reset port data */    
@@ -336,7 +338,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 	if(!g_strcmp0(specifier,
 		      current->specifier)){
 	  current->port_value.ags_port_ladspa = port_data[i];
-	  //	  g_message("%s %f\0", current->specifier, port_data[i]);
+	  //	  g_message("%s %f", current->specifier, port_data[i]);
 	
 	  break;
 	}
@@ -388,7 +390,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
      (AGS_NOTE(recall_dssi_run->note)->x[1] <= count_beats_audio_run->notation_counter &&
       (AGS_NOTE_FEED & (AGS_NOTE(recall_dssi_run->note)->flags)) == 0) ||
      AGS_NOTE(recall_dssi_run->note)->x[0] > count_beats_audio_run->notation_counter){
-    //    g_message("done\0");
+    //    g_message("done");
     
     for(i = 0; i < i_stop; i++){
       /* deactivate */
@@ -425,7 +427,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   if(recall_dssi_run->input != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(recall_dssi_run->input, (guint) recall_dssi->input_lines, 0,
 						audio_signal->stream_current->data, 1, 0,
-						(guint) audio_signal->buffer_size, copy_mode_in);
+						(guint) buffer_size, copy_mode_in);
   }
   
   /* process data */
@@ -456,7 +458,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     
     ags_audio_buffer_util_copy_buffer_to_buffer(audio_signal->stream_current->data, 1, 0,
 						recall_dssi_run->output, (guint) recall_dssi->output_lines, 0,
-						(guint) audio_signal->buffer_size, copy_mode_out);
+						(guint) buffer_size, copy_mode_out);
   }
 }
 
@@ -527,7 +529,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 	
 	for(j = 0; j < j_stop; j++){
 #ifdef AGS_DEBUG
-	  g_message("connecting port[%d]: %d/%d - %f\0", j, i, port_count, current->port_value.ags_port_ladspa);
+	  g_message("connecting port[%d]: %d/%d - %f", j, i, port_count, current->port_value.ags_port_ladspa);
 #endif
 	  port_pointer = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
 	  
@@ -569,7 +571,7 @@ ags_recall_dssi_run_new(AgsAudioSignal *audio_signal)
   AgsRecallDssiRun *recall_dssi_run;
 
   recall_dssi_run = (AgsRecallDssiRun *) g_object_new(AGS_TYPE_RECALL_DSSI_RUN,
-						      "source\0", audio_signal,
+						      "source", audio_signal,
 						      NULL);
 
   return(recall_dssi_run);

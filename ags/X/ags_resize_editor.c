@@ -37,6 +37,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
 
+#include <ags/i18n.h>
+
 void ags_resize_editor_class_init(AgsResizeEditorClass *resize_editor);
 void ags_resize_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_resize_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -92,7 +94,7 @@ ags_resize_editor_get_type(void)
     };
 
     ags_type_resize_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
-						    "AgsResizeEditor\0",
+						    "AgsResizeEditor",
 						    &ags_resize_editor_info,
 						    0);
     
@@ -156,7 +158,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("audio channels\0");
+  label = (GtkLabel *) gtk_label_new(i18n("audio channels"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -183,7 +185,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("outputs\0");
+  label = (GtkLabel *) gtk_label_new(i18n("outputs"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -210,7 +212,7 @@ ags_resize_editor_init(AgsResizeEditor *resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("inputs\0");
+  label = (GtkLabel *) gtk_label_new(i18n("inputs"));
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 

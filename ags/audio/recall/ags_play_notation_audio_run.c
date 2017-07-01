@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,8 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notation_audio_run);
 void ags_play_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_notation_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -57,6 +59,7 @@ void ags_play_notation_audio_run_get_property(GObject *gobject,
 					      guint prop_id,
 					      GValue *value,
 					      GParamSpec *param_spec);
+void ags_play_notation_audio_run_dispose(GObject *gobject);
 void ags_play_notation_audio_run_finalize(GObject *gobject);
 void ags_play_notation_audio_run_connect(AgsConnectable *connectable);
 void ags_play_notation_audio_run_disconnect(AgsConnectable *connectable);
@@ -94,6 +97,7 @@ enum{
   PROP_0,
   PROP_DELAY_AUDIO_RUN,
   PROP_COUNT_BEATS_AUDIO_RUN,
+  PROP_NOTATION,
 };
 
 static gpointer ags_play_notation_audio_run_parent_class = NULL;
@@ -138,7 +142,7 @@ ags_play_notation_audio_run_get_type()
     };
 
     ags_type_play_notation_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-							      "AgsPlayNotationAudioRun\0",
+							      "AgsPlayNotationAudioRun",
 							      &ags_play_notation_audio_run_info,
 							      0);
 
@@ -173,25 +177,56 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
   gobject->set_property = ags_play_notation_audio_run_set_property;
   gobject->get_property = ags_play_notation_audio_run_get_property;
 
+  gobject->dispose = ags_play_notation_audio_run_dispose;
   gobject->finalize = ags_play_notation_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("delay-audio-run\0",
-				   "assigned AgsDelayAudioRun\0",
-				   "the AgsDelayAudioRun which emits notation_alloc_input signal\0",
+  /**
+   * AgsPlayNotationAudioRun:delay-audio-run:
+   *
+   * The delay audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("delay-audio-run",
+				   i18n_pspec("assigned AgsDelayAudioRun"),
+				   i18n_pspec("the AgsDelayAudioRun which emits notation_alloc_input signal"),
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
-  param_spec = g_param_spec_object("count-beats-audio-run\0",
-				   "assigned AgsCountBeatsAudioRun\0",
-				   "the AgsCountBeatsAudioRun which just counts\0",
+  /**
+   * AgsPlayNotationAudioRun:count-beats-audio-run:
+   *
+   * The count beats audio run dependency.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("count-beats-audio-run",
+				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
+				   i18n_pspec("the AgsCountBeatsAudioRun which just counts"),
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_COUNT_BEATS_AUDIO_RUN,
+				  param_spec);
+
+  /**
+   * AgsPlayNotationAudioRun:notation:
+   *
+   * The notation containing the notes.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("notation",
+				   i18n_pspec("assigned AgsNotation"),
+				   i18n_pspec("The AgsNotation containing notes"),
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -231,10 +266,10 @@ ags_play_notation_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  AGS_RECALL(play_notation_audio_run)->name = "ags-play-notation\0";
+  AGS_RECALL(play_notation_audio_run)->name = "ags-play-notation";
   AGS_RECALL(play_notation_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_notation_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(play_notation_audio_run)->xml_type = "ags-play-notation-audio-run\0";
+  AGS_RECALL(play_notation_audio_run)->xml_type = "ags-play-notation-audio-run";
   AGS_RECALL(play_notation_audio_run)->port = NULL;
 
   play_notation_audio_run->delay_audio_run = NULL;
@@ -280,7 +315,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
 	    g_object_disconnect(G_OBJECT(play_notation_audio_run->delay_audio_run),
-				"notation-alloc-input\0",
+				"notation-alloc-input",
 				G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback),
 				play_notation_audio_run,
 				NULL);
@@ -298,7 +333,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 				    ags_recall_dependency_new((GObject *) delay_audio_run));
 	}else{
 	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
-	    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input\0",
+	    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 			     G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);
 	  }
 	}
@@ -346,6 +381,27 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       play_notation_audio_run->count_beats_audio_run = count_beats_audio_run;
     }
     break;
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(play_notation_audio_run->notation == notation){
+	return;
+      }
+
+      if(play_notation_audio_run->notation != NULL){
+	g_object_unref(play_notation_audio_run->notation);
+      }
+
+      if(notation != NULL){
+	g_object_ref(notation);
+      }
+
+      play_notation_audio_run->notation = notation;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -373,10 +429,47 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
       g_value_set_object(value, G_OBJECT(play_notation_audio_run->count_beats_audio_run));
     }
     break;
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, play_notation_audio_run->notation);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   };
+}
+
+void
+ags_play_notation_audio_run_dispose(GObject *gobject)
+{
+  AgsPlayNotationAudioRun *play_notation_audio_run;
+
+  play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
+
+  /* delay audio run */
+  if(play_notation_audio_run->delay_audio_run != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->delay_audio_run));
+
+    play_notation_audio_run->delay_audio_run = NULL;
+  }
+
+  /* count beats audio run */
+  if(play_notation_audio_run->count_beats_audio_run != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->count_beats_audio_run));
+
+    play_notation_audio_run->count_beats_audio_run = NULL;
+  }
+
+  /* notation */
+  if(play_notation_audio_run->notation != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->notation));
+
+    play_notation_audio_run->notation = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_play_notation_audio_run_parent_class)->dispose(gobject);
 }
 
 void
@@ -386,14 +479,22 @@ ags_play_notation_audio_run_finalize(GObject *gobject)
 
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
+  /* delay audio run */
   if(play_notation_audio_run->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(play_notation_audio_run->delay_audio_run));
   }
 
+  /* count beats audio run */
   if(play_notation_audio_run->count_beats_audio_run != NULL){
     g_object_unref(G_OBJECT(play_notation_audio_run->count_beats_audio_run));
   }
 
+  /* notation */
+  if(play_notation_audio_run->notation != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio_run->notation));
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_play_notation_audio_run_parent_class)->finalize(gobject);
 }
 
@@ -434,9 +535,8 @@ ags_play_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
   ags_play_notation_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* connect */
-  g_signal_connect(G_OBJECT(play_notation_audio_run->delay_audio_run), "notation-alloc-input\0",
-		   G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);
-  
+  g_signal_connect(G_OBJECT(play_notation_audio_run->delay_audio_run), "notation-alloc-input",
+		   G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);  
 }
 
 void
@@ -455,7 +555,7 @@ ags_play_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_co
 
   if(play_notation_audio_run->delay_audio_run != NULL){
     g_object_disconnect(G_OBJECT(play_notation_audio_run->delay_audio_run),
-			"notation-alloc-input\0",
+			"notation-alloc-input",
 			G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback),
 			play_notation_audio_run,
 			NULL);
@@ -478,7 +578,7 @@ ags_play_notation_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin
   while(iter != NULL){
     if(iter->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list\0",
+		     "ags-dependency-list",
 		     19)){
 	xmlNode *dependency_node;
 
@@ -487,15 +587,15 @@ ags_play_notation_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin
 	while(dependency_node != NULL){
 	  if(dependency_node->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(dependency_node->name,
-			   "ags-dependency\0",
+			   "ags-dependency",
 			   15)){
 	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							   "file\0", file,
-							   "node\0", dependency_node,
-							   "reference\0", G_OBJECT(plugin),
+							   "file", file,
+							   "node", dependency_node,
+							   "reference", G_OBJECT(plugin),
 							   NULL);
 	      ags_file_add_lookup(file, (GObject *) file_lookup);
-	      g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+	      g_signal_connect(G_OBJECT(file_lookup), "resolve",
 			       G_CALLBACK(ags_play_notation_audio_run_read_resolve_dependency), G_OBJECT(plugin));
 	    }
 	  }
@@ -526,7 +626,7 @@ ags_play_notation_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plu
 
   /* write dependencies */
   child = xmlNewNode(NULL,
-		     "ags-dependency-list\0");
+		     "ags-dependency-list");
 
   xmlNewProp(child,
 	     AGS_FILE_ID_PROP,
@@ -541,7 +641,7 @@ ags_play_notation_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plu
     id = ags_id_generator_create_uuid();
 
     dependency_node = xmlNewNode(NULL,
-				 "ags-dependency\0");
+				 "ags-dependency");
 
     xmlNewProp(dependency_node,
 	       AGS_FILE_ID_PROP,
@@ -551,12 +651,12 @@ ags_play_notation_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plu
 		dependency_node);
 
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file\0", file,
-						 "node\0", dependency_node,
-						 "reference\0", list->data,
+						 "file", file,
+						 "node", dependency_node,
+						 "reference", list->data,
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+    g_signal_connect(G_OBJECT(file_lookup), "resolve",
 		     G_CALLBACK(ags_play_notation_audio_run_write_resolve_dependency), G_OBJECT(plugin));
 
     list = list->next;
@@ -631,8 +731,8 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "delay-audio-run\0", delay_audio_run,
-	       "count-beats-audio-run\0", count_beats_audio_run,
+	       "delay-audio-run", delay_audio_run,
+	       "count-beats-audio-run", count_beats_audio_run,
 	       NULL);
 }
 
@@ -678,6 +778,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   gboolean reset_current;
   guint notation_counter;
+  guint input_pads;
   guint audio_channel;
   guint samplerate;
   guint i;
@@ -688,7 +789,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   pthread_mutex_t *recycling_mutex;
 
   if(delay != 0.0){
-    //    g_message("d %f\0", delay);
+    //    g_message("d %f", delay);
     return;
   }
 
@@ -709,12 +810,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   /* samplerate */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate\0");
+			     "samplerate");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate\0");
+			       "samplerate");
   }
   
   if(str != NULL){  
@@ -778,11 +879,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   current_position = notation->notes; // start_loop
   notation_counter = play_notation_audio_run->count_beats_audio_run->notation_counter;
 
-  if(play_notation_audio_run->offset != NULL &&
-     notation_counter > AGS_NOTE(play_notation_audio_run->offset->data)->x[0]){
-    current_position = play_notation_audio_run->offset;
-  }
-  
+  input_pads = audio->input_pads;
+
   pthread_mutex_unlock(audio_mutex);
 
   reset_current = FALSE;
@@ -804,7 +902,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       reset_current = TRUE;
       
       if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-	selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
+	selected_channel = ags_channel_pad_nth(channel, input_pads - note->y - 1);
       }else{
 	selected_channel = ags_channel_pad_nth(channel, note->y);
       }
@@ -857,7 +955,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       pthread_mutex_unlock(channel_mutex);
 	
 #ifdef AGS_DEBUG	
-      g_message("playing[%u|%u]: %u | %u\n\0", audio_channel, selected_channel->pad, note->x[0], note->y);
+      g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
 #endif
 
       while(recycling != selected_channel->last_recycling->next){
@@ -874,7 +972,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 					    (GObject *) recycling,
 					    (GObject *) child_recall_id);
 	g_object_set(audio_signal,
-		     "note\0", note,
+		     "note", note,
 		     NULL);
 	  
 	if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
@@ -911,7 +1009,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
-	g_object_unref(audio_signal);
+	//	g_object_unref(audio_signal);
 
 	/* iterate */
 	recycling = recycling->next;
@@ -928,15 +1026,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
     pthread_mutex_unlock(audio_mutex);
   }
-
-  pthread_mutex_lock(audio_mutex);
-
-  if(reset_current &&
-     current_position != NULL){
-    play_notation_audio_run->offset = current_position->prev;
-  }
-  
-  pthread_mutex_unlock(audio_mutex);
 }
 
 void
@@ -952,8 +1041,8 @@ ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
   xmlNewProp(file_lookup->node,
-	     "xpath\0",
-  	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
+	     "xpath",
+  	     g_strdup_printf("xpath=//*[@id='%s']", id));
 }
 
 void
@@ -964,17 +1053,17 @@ ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
   gchar *xpath;
 
   xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath\0");
+			       "xpath");
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
     g_object_set(G_OBJECT(recall),
-		 "delay-audio-run\0", id_ref->ref,
+		 "delay-audio-run", id_ref->ref,
 		 NULL);
   }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
     g_object_set(G_OBJECT(recall),
-		 "count-beats-audio-run\0", id_ref->ref,
+		 "count-beats-audio-run", id_ref->ref,
 		 NULL);
   }
 }

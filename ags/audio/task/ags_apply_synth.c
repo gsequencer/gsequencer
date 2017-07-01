@@ -32,6 +32,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_apply_synth_class_init(AgsApplySynthClass *apply_synth);
 void ags_apply_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_synth_init(AgsApplySynth *apply_synth);
@@ -102,7 +104,7 @@ ags_apply_synth_get_type()
     };
 
     ags_type_apply_synth = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsApplySynth\0",
+						  "AgsApplySynth",
 						  &ags_apply_synth_info,
 						  0);
 
@@ -139,9 +141,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("start-channel\0",
-				   "start channel of apply synth\0",
-				   "The start channel of apply synth task\0",
+  param_spec = g_param_spec_object("start-channel",
+				   i18n_pspec("start channel of apply synth"),
+				   i18n_pspec("The start channel of apply synth task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -155,9 +157,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("count\0",
-				 "count of channels\0",
-				 "The count of channels to apply\0",
+  param_spec = g_param_spec_uint("count",
+				 i18n_pspec("count of channels"),
+				 i18n_pspec("The count of channels to apply"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -173,9 +175,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("attack\0",
-				 "attack of audio data\0",
-				 "The attack of audio data\0",
+  param_spec = g_param_spec_uint("attack",
+				 i18n_pspec("attack of audio data"),
+				 i18n_pspec("The attack of audio data"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -191,9 +193,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("frame-count\0",
-				 "frame count of audio data\0",
-				 "The frame count of audio data\0",
+  param_spec = g_param_spec_uint("frame-count",
+				 i18n_pspec("frame count of audio data"),
+				 i18n_pspec("The frame count of audio data"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -209,9 +211,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("frequency\0",
-				 "frequency of wave\0",
-				 "The frequency of wave\0",
+  param_spec = g_param_spec_uint("frequency",
+				 i18n_pspec("frequency of wave"),
+				 i18n_pspec("The frequency of wave"),
 				 0.0,
 				 G_MAXDOUBLE,
 				 0.0,
@@ -227,9 +229,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("phase\0",
-				 "phase of wave\0",
-				 "The phase of wave\0",
+  param_spec = g_param_spec_uint("phase",
+				 i18n_pspec("phase of wave"),
+				 i18n_pspec("The phase of wave"),
 				 0.0,
 				 G_MAXDOUBLE,
 				 0.0,
@@ -245,9 +247,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("start-frequency\0",
-				 "start frequency\0",
-				 "The start frequency\0",
+  param_spec = g_param_spec_uint("start-frequency",
+				 i18n_pspec("start frequency"),
+				 i18n_pspec("The start frequency"),
 				 0.0,
 				 G_MAXDOUBLE,
 				 0.0,
@@ -263,9 +265,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("volume\0",
-				 "volume of wave\0",
-				 "The volume of wave\0",
+  param_spec = g_param_spec_uint("volume",
+				 i18n_pspec("volume of wave"),
+				 i18n_pspec("The volume of wave"),
 				 0.0,
 				 G_MAXDOUBLE,
 				 0.0,
@@ -281,9 +283,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("loop-start\0",
-				 "loop start of audio data\0",
-				 "The loop start of audio data\0",
+  param_spec = g_param_spec_uint("loop-start",
+				 i18n_pspec("loop start of audio data"),
+				 i18n_pspec("The loop start of audio data"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -299,9 +301,9 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("loop-end\0",
-				 "loop end of audio data\0",
-				 "The loop end of audio data\0",
+  param_spec = g_param_spec_uint("loop-end",
+				 i18n_pspec("loop end of audio data"),
+				 i18n_pspec("The loop end of audio data"),
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -590,7 +592,7 @@ ags_apply_synth_launch(AgsTask *task)
 			    offset, frame_count);
       break;
     default:
-      g_warning("ags_apply_synth_launch_write: warning no wave selected\n\0");
+      g_warning("ags_apply_synth_launch_write: warning no wave selected\n");
     }
   }
 
@@ -601,7 +603,7 @@ ags_apply_synth_launch(AgsTask *task)
   wave = (gint) apply_synth->wave;
 
 #ifdef AGS_DEBUG
-  g_message("wave = %d\n\0", wave);
+  g_message("wave = %d\n", wave);
 #endif
   
   /* some settings */
@@ -621,6 +623,9 @@ ags_apply_synth_launch(AgsTask *task)
 
   factor = 1.0;
 
+  /* fill */
+  channel = apply_synth->start_channel;
+
   for(i = 0; channel != NULL && i < apply_synth->count; i++){
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 
@@ -633,10 +638,10 @@ ags_apply_synth_launch(AgsTask *task)
       }
       
       g_object_set(AGS_INPUT(channel)->synth_generator,
-		   "n-frames\0", frame_count,
-		   "frequency\0", frequency,
-		   "phase\0", phase,
-		   "volume\0", volume,
+		   "n-frames", frame_count,
+		   "frequency", frequency,
+		   "phase", phase,
+		   "volume", volume,
 		   NULL);
     }
     
@@ -657,7 +662,7 @@ ags_apply_synth_launch(AgsTask *task)
     last_frame_count = (current_frame_count - buffer_size - current_attack) % buffer_size;
 
     /* create AgsAudioSignal */
-    //    g_message("%d\0", current_stop);
+    //    g_message("%d", current_stop);
     
     if(audio_signal->length < current_stop){
       ags_audio_signal_stream_resize(audio_signal, current_stop);
@@ -665,14 +670,14 @@ ags_apply_synth_launch(AgsTask *task)
     
     audio_signal->loop_start = (guint) ((double) apply_synth->loop_start) * factor;
     audio_signal->loop_end = (guint) ((double) apply_synth->loop_end) * factor;
-
+    
     /* fill in the stream */
     stream = g_list_nth(audio_signal->stream_beginning, stream_start);
     
     if(stream != NULL){
       if(stream->next != NULL){
 #ifdef AGS_DEBUG
-	g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
+	g_message("freq = %u, phase = %u\n", current_frequency, current_phase[0]);
 #endif
 	ags_apply_synth_launch_write(stream,
 				     current_frequency, current_phase[0], volume,
@@ -694,7 +699,7 @@ ags_apply_synth_launch(AgsTask *task)
       for(j = 1; stream->next != NULL; j++){
 	current_phase[1] = (j * buffer_size + current_phase[0]) % (samplerate / current_frequency);
 #ifdef AGS_DEBUG
-	g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
+	g_message("freq = %u, phase = %u\n", current_frequency, current_phase[1]);
 #endif
       
 	ags_apply_synth_launch_write(stream,

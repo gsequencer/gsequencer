@@ -18,6 +18,8 @@
  */
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
@@ -47,6 +49,8 @@ void ags_copy_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connec
 void ags_copy_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_audio_signal_finalize(GObject *gobject);
 
+void ags_copy_audio_signal_run_init_pre(AgsRecall *recall);
+void ags_copy_audio_signal_run_pre(AgsRecall *recall);
 void ags_copy_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
@@ -97,7 +101,7 @@ ags_copy_audio_signal_get_type()
     };
 
     ags_type_copy_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsCopyAudioSignal\0",
+							"AgsCopyAudioSignal",
 							&ags_copy_audio_signal_info,
 							0);
 
@@ -129,6 +133,8 @@ ags_copy_audio_signal_class_init(AgsCopyAudioSignalClass *copy_audio_signal)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_audio_signal;
 
+  recall->run_init_pre = ags_copy_audio_signal_run_init_pre;
+  recall->run_pre = ags_copy_audio_signal_run_pre;
   recall->run_inter = ags_copy_audio_signal_run_inter;  
   recall->duplicate = ags_copy_audio_signal_duplicate;
 }
@@ -154,10 +160,10 @@ ags_copy_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableIn
 void
 ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal)
 {
-  AGS_RECALL(copy_audio_signal)->name = "ags-copy\0";
+  AGS_RECALL(copy_audio_signal)->name = "ags-copy";
   AGS_RECALL(copy_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(copy_audio_signal)->xml_type = "ags-copy-audio-signal\0";
+  AGS_RECALL(copy_audio_signal)->xml_type = "ags-copy-audio-signal";
   AGS_RECALL(copy_audio_signal)->port = NULL;
 
   AGS_RECALL(copy_audio_signal)->child_type = G_TYPE_NONE;
@@ -201,11 +207,113 @@ ags_copy_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connecta
 
 void
 ags_copy_audio_signal_finalize(GObject *gobject)
-{
-  /* empty */
-
+{  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
+}
+void
+ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
+{
+  GObject *soundcard;
+  AgsRecycling *recycling;
+  AgsAudioSignal *destination;
+  AgsRecallID *parent_recall_id;
+  AgsRecyclingContext *recycling_context;
+  
+  AgsCopyRecycling *copy_recycling;
+  AgsCopyAudioSignal *copy_audio_signal;
+
+  AgsMutexManager *mutex_manager;
+  
+  GList *stream;
+
+  gdouble delay;
+  guint attack;
+  guint length;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+  
+  copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
+  copy_recycling = AGS_COPY_RECYCLING(recall->parent);
+
+  soundcard = recall->soundcard;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* recycling */
+  recall->flags &= (~AGS_RECALL_PERSISTENT);
+  recycling = AGS_RECALL_RECYCLING(copy_recycling)->destination;
+
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* recycling context */
+  recycling_context = recall->recall_id->recycling_context;
+
+  parent_recall_id = ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->destination->recall_id,
+							  recycling_context->parent);
+
+  //TODO:JK: unclear
+  attack = 0;
+  delay = 0.0;
+
+  /* create new audio signal */
+  destination = ags_audio_signal_new((GObject *) soundcard,
+				     (GObject *) recycling,
+				     (GObject *) parent_recall_id);
+  
+  g_object_set(copy_audio_signal,
+	       "destination", destination,
+	       NULL);  
+  ags_recycling_create_audio_signal_with_defaults(recycling,
+						  destination,
+						  delay, attack);
+  length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
+  ags_audio_signal_stream_resize(destination,
+				 length);
+
+  ags_connectable_connect(AGS_CONNECTABLE(destination));
+  
+  destination->stream_current = destination->stream_beginning;
+
+  pthread_mutex_lock(recycling_mutex);
+
+  ags_recycling_add_audio_signal(recycling,
+				 destination);
+
+  pthread_mutex_unlock(recycling_mutex);
+
+#ifdef AGS_DEBUG
+  g_message("copy %x to %x", destination, parent_recall_id);
+  g_message("creating destination");
+#endif
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_copy_audio_signal_run_pre(AgsRecall *recall)
+{
+  AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_pre(recall);
+
+  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
+    void *buffer;
+
+    guint buffer_size;
+
+    buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->destination->stream_current->data;
+    buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->destination->buffer_size;
+
+    ags_audio_buffer_util_clear_buffer(buffer, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(AGS_RECALL_AUDIO_SIGNAL(recall)->destination->format));
+  }
 }
 
 void
@@ -230,17 +338,30 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
+
+  destination = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination;
   
   if(stream_source == NULL){
+    if(destination != NULL){
+      ags_recycling_remove_audio_signal(destination->recycling,
+					destination);
+      g_object_run_dispose(destination);
+      g_object_unref(destination);
+    }
+
     ags_recall_done(recall);
+
+    ags_recycling_remove_audio_signal(source->recycling,
+				      source);
+    g_object_unref(source);
+    
     return;
   }
 
   //FIXME:JK: attack probably needs to be removed
-  destination = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination;
 
   if(destination == NULL){
-    g_warning("no destination\0");
+    g_warning("no destination");
     return;
   }
 
@@ -370,9 +491,9 @@ ags_copy_audio_signal_new(AgsAudioSignal *destination,
   AgsCopyAudioSignal *copy_audio_signal;
 
   copy_audio_signal = (AgsCopyAudioSignal *) g_object_new(AGS_TYPE_COPY_AUDIO_SIGNAL,
-							  "destination\0", destination,
-							  "source\0", source,
-							  "soundcard\0", soundcard,
+							  "destination", destination,
+							  "source", source,
+							  "soundcard", soundcard,
 							  NULL);
 
   return(copy_audio_signal);

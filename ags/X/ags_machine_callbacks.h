@@ -45,6 +45,7 @@ int ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine
 
 int ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine);
 
 int ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine);

@@ -35,7 +35,7 @@ style "default_widget" = "default"
 	base[ACTIVE] = { 0.0, 0.0, 0.0 }
 
 	text[NORMAL] = { 0.87, 0.99, 1.0 }
-	text[ACTIVE] = { 0.13, 0.01, 0.0 }
+	text[NORMAL] = { 0.87, 0.99, 1.0 }
 }
 
 style "inverse_widget" = "default"
@@ -53,13 +53,19 @@ style "inverse_widget" = "default"
 	base[ACTIVE] = { 1.0, 1.0, 1.0 }
 
 	text[NORMAL] = { 0.13, 0.01, 0.0 }
-	text[ACTIVE] = { 0.87, 0.99, 1.0 }
+	text[NORMAL] = { 0.13, 0.01, 0.0 }
 }
 
 style "scale_widget" = "inverse_widget"
 {
 	fg[NORMAL] = { 0.75, 0.75, 1.0 }
 	fg[ACTIVE] = { 0.66, 0.87, 1.0 }
+}
+
+style "cartesian_widget" = "default_widget"
+{
+	base[NORMAL] = { 0.0, 0.0, 0.1 }
+	base[ACTIVE] = { 0.0, 0.0, 0.1 }
 }
 
 style "main_window" = "default_widget"
@@ -72,9 +78,14 @@ widget_class "AgsWindow*" style "main_window"
 widget_class "AgsAutomationWindow*" style "main_window"
 widget_class "GtkWindow*" style "main_window"
 widget_class "AgsPreferences*" style "main_window"
+widget_class "AgsMidiImportWizard*" style "main_window"
+widget_class "AgsMidiExportWizard*" style "main_window"
 widget_class "AgsExportWindow*" style "main_window"
 widget_class "AgsMachineEditor*" style "main_window"
 widget_class "AgsMidiDialog*" style "main_window"
+widget_class "AgsEnvelopeDialog*" style "main_window"
+widget_class "AgsCropNoteDialog*" style "main_window"
+widget_class "AgsMoveNoteDialog*" style "main_window"
 widget_class "AgsConnectionEditor*" style "main_window"
 widget_class "AgsMachineSelection*" style "main_window"
 widget_class "AgsPluginBrowser*" style "main_window"
@@ -94,6 +105,7 @@ widget_class "*AgsNaviation*" style "inverse_widget"
 widget_class "*GtkMenu*" style "inverse_widget"
 widget_class "*Gtk*Scale*" style "scale_widget"
 widget_class "*Gtk*Scrollbar*" style "inverse_widget"
+widget_class "*GtkTreeView" style "inverse_widget"
 widget_class "*GtkButton*" style "inverse_widget"
 widget_class "*GtkToggleButton*" style "inverse_widget"
 widget_class "*GtkRadioButton*" style "default_widget"
@@ -106,5 +118,7 @@ widget_class "*AgsDial*" style "inverse_widget"
 widget_class "*Ags*Indicator*" style "inverse_widget"
 widget_class "*GtkArrow" style "default_widget"
 widget_class "*GtkComboBox*" style "inverse_widget"
+
+widget_class "*AgsCartesian" style "cartesian_widget"
 
 widget "*.ags-navigation-expander" style "default_widget"

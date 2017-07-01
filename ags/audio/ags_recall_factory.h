@@ -43,6 +43,7 @@ typedef enum{
   AGS_RECALL_FACTORY_ADD       = 1 << 3,
   AGS_RECALL_FACTORY_PLAY      = 1 << 4,
   AGS_RECALL_FACTORY_RECALL    = 1 << 5,
+  AGS_RECALL_FACTORY_BULK      = 1 << 6,
 }AgsRecallFactoryCreateFlags;
 
 struct _AgsRecallFactory

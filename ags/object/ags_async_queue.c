@@ -46,7 +46,7 @@ ags_async_queue_get_type()
     };
     
     ags_type_async_queue = g_type_register_static(G_TYPE_INTERFACE,
-						  "AgsAsyncQueue\0", &ags_async_queue_info,
+						  "AgsAsyncQueue", &ags_async_queue_info,
 						  0);
   }
 

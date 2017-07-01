@@ -29,11 +29,22 @@
 
 #include <stdio.h>
 
+#include <ags/i18n.h>
+
 void ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency);
 void ags_recall_dependency_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_dependency_init(AgsRecallDependency *recall_dependency);
+void ags_recall_dependency_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_recall_dependency_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
 void ags_recall_dependency_connect(AgsConnectable *connectable);
 void ags_recall_dependency_disconnect(AgsConnectable *connectable);
+void ags_recall_dependency_dispose(GObject *gobject);
 void ags_recall_dependency_finalize(GObject *gobject);
 
 /**
@@ -48,6 +59,11 @@ void ags_recall_dependency_finalize(GObject *gobject);
  */
 
 static gpointer ags_recall_dependency_parent_class = NULL;
+
+enum{
+  PROP_0,
+  PROP_DEPENDENCY,
+};
 
 GType
 ags_recall_dependency_get_type(void)
@@ -74,7 +90,7 @@ ags_recall_dependency_get_type(void)
     };
 
     ags_type_recall_dependency = g_type_register_static(G_TYPE_OBJECT,
-							"AgsRecallDependency\0",
+							"AgsRecallDependency",
 							&ags_recall_dependency_info,
 							0);
     
@@ -90,11 +106,34 @@ void
 ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_recall_dependency_parent_class = g_type_class_peek_parent(recall_dependency);
 
   gobject = (GObjectClass *) recall_dependency;
+
+  gobject->set_property = ags_recall_dependency_set_property;
+  gobject->get_property = ags_recall_dependency_get_property;
+  
+  gobject->dispose = ags_recall_dependency_dispose;
   gobject->finalize = ags_recall_dependency_finalize;
+
+  /* properties */
+  /**
+   * AgsRecallDependency:dependency:
+   *
+   * The dependency.
+   * 
+   * Since: 0.7.122.7
+   */
+  param_spec = g_param_spec_object("dependency",
+				   i18n_pspec("dependency of recall"),
+				   i18n_pspec("A dependency of the recall"),
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEPENDENCY,
+				  param_spec);
 }
 
 void
@@ -107,24 +146,130 @@ ags_recall_dependency_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_recall_dependency_init(AgsRecallDependency *recall_dependency)
 {
+  recall_dependency->flags = 0;
+  
   recall_dependency->dependency = NULL;
+}
+
+void
+ags_recall_dependency_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
+  
+  switch(prop_id){
+  case PROP_DEPENDENCY:
+    {
+      AgsRecall *dependency;
+      
+      dependency = (AgsRecall *) g_value_get_object(value);
+      
+      if(recall_dependency->dependency == dependency){
+	return;
+      }
+	
+      if(recall_dependency->dependency != NULL){
+	g_object_unref(G_OBJECT(recall_dependency->dependency));
+      }
+
+      if(dependency != NULL){
+	g_object_ref(G_OBJECT(dependency));
+      }
+
+      recall_dependency->dependency = dependency;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
+ags_recall_dependency_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
+
+  switch(prop_id){
+  case PROP_DEPENDENCY:
+    {
+      g_value_set_object(value, recall_dependency->dependency);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
 }
 
 void
 ags_recall_dependency_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(connectable);
+
+  if((AGS_RECALL_DEPENDENCY_CONNECTED & (recall_dependency->flags)) != 0){
+    return;
+  }
+
+  recall_dependency->flags |= AGS_RECALL_DEPENDENCY_CONNECTED;
 }
 
 void
 ags_recall_dependency_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(connectable);
+
+  if((AGS_RECALL_DEPENDENCY_CONNECTED & (recall_dependency->flags)) == 0){
+    return;
+  }
+
+  recall_dependency->flags &= (~AGS_RECALL_DEPENDENCY_CONNECTED);
+}
+
+void
+ags_recall_dependency_dispose(GObject *gobject)
+{
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
+
+  /* dependency */
+  if(recall_dependency->dependency != NULL){
+    g_object_unref(recall_dependency->dependency);
+
+    recall_dependency->dependency = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_dependency_parent_class)->dispose(gobject);
 }
 
 void
 ags_recall_dependency_finalize(GObject *gobject)
 {
+  AgsRecallDependency *recall_dependency;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(gobject);
+
+  /* dependency */
+  if(recall_dependency->dependency != NULL){
+    g_object_unref(recall_dependency->dependency);
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_recall_dependency_parent_class)->finalize(gobject);
 }
 
@@ -240,7 +385,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       if(recall_list != NULL){
 	return(G_OBJECT(recall_list->data));
       }else{
-	g_warning("dependency not found!\0");
+	g_warning("dependency not found!");
       }
     }
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){
@@ -296,9 +441,8 @@ ags_recall_dependency_new(GObject *dependency)
   AgsRecallDependency *recall_dependency;
 
   recall_dependency = (AgsRecallDependency *) g_object_new(AGS_TYPE_RECALL_DEPENDENCY,
+							   "dependency", dependency,
 							   NULL);
-
-  recall_dependency->dependency = dependency;
 
   return(recall_dependency);
 }

@@ -39,6 +39,8 @@
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_audio_init(AgsAppendAudio *append_audio);
@@ -103,7 +105,7 @@ ags_append_audio_get_type()
     };
 
     ags_type_append_audio = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsAppendAudio\0",
+						   "AgsAppendAudio",
 						   &ags_append_audio_info,
 						   0);
 
@@ -140,9 +142,9 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio-loop\0",
-				   "audio loop of append audio\0",
-				   "The audio loop of append audio task\0",
+  param_spec = g_param_spec_object("audio-loop",
+				   i18n_pspec("audio loop of append audio"),
+				   i18n_pspec("The audio loop of append audio task"),
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -156,9 +158,9 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio\0",
-				   "audio of append audio\0",
-				   "The audio of append audio task\0",
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of append audio"),
+				   i18n_pspec("The audio of append audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -172,9 +174,9 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-playback\0",
-				     "do playback\0",
-				     "Do playback of audio\0",
+  param_spec =  g_param_spec_boolean("do-playback",
+				     i18n_pspec("do playback"),
+				     i18n_pspec("Do playback of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -188,9 +190,9 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-sequencer\0",
-				     "do sequencer\0",
-				     "Do sequencer of audio\0",
+  param_spec =  g_param_spec_boolean("do-sequencer",
+				     i18n_pspec("do sequencer"),
+				     i18n_pspec("Do sequencer of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -204,9 +206,9 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("do-notation\0",
-				     "do notation\0",
-				     "Do notation of audio\0",
+  param_spec =  g_param_spec_boolean("do-notation",
+				     i18n_pspec("do notation"),
+				     i18n_pspec("Do notation of audio"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -439,24 +441,24 @@ ags_append_audio_launch(AgsTask *task)
   
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "model\0");
+			      "model");
   
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope\0");
+			      "super-threaded-scope");
       
   if(!g_ascii_strncasecmp(str0,
-			  "super-threaded\0",
+			  "super-threaded",
 			  15)){
     if(!g_ascii_strncasecmp(str1,
-			    "audio\0",
+			    "audio",
 			    6) ||
        !g_ascii_strncasecmp(str1,
-			    "channel\0",
+			    "channel",
 			    8)){
       /* super threaded setup - channel */
       if(!g_ascii_strncasecmp(str1,
-			      "channel\0",
+			      "channel",
 			      8)){
 	AgsChannel *output;
 

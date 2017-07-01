@@ -99,7 +99,7 @@ ags_link_editor_get_type(void)
     };
 
     ags_type_link_editor = g_type_register_static(GTK_TYPE_HBOX,
-						  "AgsLinkEditor\0", &ags_link_editor_info,
+						  "AgsLinkEditor", &ags_link_editor_info,
 						  0);
 
     g_type_add_interface_static(ags_type_link_editor,
@@ -142,7 +142,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 {
   GtkCellRenderer *cell_renderer;
 
-  g_signal_connect_after((GObject *) link_editor, "parent_set\0",
+  g_signal_connect_after((GObject *) link_editor, "parent_set",
 			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
 
   link_editor->flags = 0;
@@ -160,7 +160,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(link_editor->combo),
 				 cell_renderer,
-				 "text\0", 0,
+				 "text", 0,
 				 NULL);
 
   /* link with line */
@@ -189,7 +189,7 @@ ags_link_editor_connect(AgsConnectable *connectable)
   link_editor->flags |= AGS_LINK_EDITOR_CONNECTED;
   
   /* GtkComboBox */
-  g_signal_connect(G_OBJECT(link_editor->combo), "changed\0",
+  g_signal_connect(G_OBJECT(link_editor->combo), "changed",
 		   G_CALLBACK(ags_link_editor_combo_callback), link_editor);
 }
 
@@ -208,7 +208,7 @@ ags_link_editor_disconnect(AgsConnectable *connectable)
 
   /* GtkComboBox */
   g_object_disconnect(G_OBJECT(link_editor->combo),
-		      "changed\0",
+		      "changed",
 		      G_CALLBACK(ags_link_editor_combo_callback),
 		      link_editor,
 		      NULL);
@@ -332,7 +332,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
 	
 	filename = g_strdup(str + 7);
 	
-	if(g_strcmp0(filename, "\0")){
+	if(g_strcmp0(filename, "")){
 	  open_single_file = ags_open_single_file_new(channel,
 						      soundcard,
 						      filename,
@@ -567,7 +567,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
       if(AGS_INPUT(channel)->file_link != NULL){
 	/* add file link */
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			   0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
+			   0, g_strdup_printf("file://%s", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
 			   1, NULL,
 			   -1);
 
@@ -590,7 +590,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
 	link_editor->flags &= (~AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER);
       }else{
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			   0, "file://\0",
+			   0, "file://",
 			   1, NULL,
 			   -1);
       }

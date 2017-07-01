@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/i18n.h>
+
 void ags_add_note_class_init(AgsAddNoteClass *add_note);
 void ags_add_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_note_init(AgsAddNote *add_note);
@@ -83,7 +85,7 @@ ags_add_note_get_type()
     };
 
     ags_type_add_note = g_type_register_static(AGS_TYPE_TASK,
-					       "AgsAddNote\0",
+					       "AgsAddNote",
 					       &ags_add_note_info,
 					       0);
 
@@ -120,9 +122,9 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("notation\0",
-				   "notation of add note\0",
-				   "The notation of add note task\0",
+  param_spec = g_param_spec_object("notation",
+				   i18n_pspec("notation of add note"),
+				   i18n_pspec("The notation of add note task"),
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,9 +138,9 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("note\0",
-				   "note of add note\0",
-				   "The note of add note task\0",
+  param_spec = g_param_spec_object("note",
+				   i18n_pspec("note of add note"),
+				   i18n_pspec("The note of add note task"),
 				   AGS_TYPE_NOTE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,9 +154,9 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    * 
    * Since: 0.7.117
    */
-  param_spec =  g_param_spec_boolean("use-selection-list\0",
-				     "use selection list\0",
-				     "Use selection list of notation\0",
+  param_spec =  g_param_spec_boolean("use-selection-list",
+				     i18n_pspec("use selection list"),
+				     i18n_pspec("Use selection list of notation"),
 				     FALSE,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

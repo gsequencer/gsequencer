@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,9 @@
 #ifndef __AGS_MENU_BAR_H__
 #define __AGS_MENU_BAR_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_MENU_BAR                (ags_menu_bar_get_type ())
@@ -35,13 +38,24 @@
 typedef struct _AgsMenuBar AgsMenuBar;
 typedef struct _AgsMenuBarClass AgsMenuBarClass;
 
+typedef enum{
+  AGS_MENU_BAR_CONNECTED        = 1,
+};
+
 struct _AgsMenuBar
 {
   GtkMenuBar menu_bar;
 
+  guint flags;
+  
   GtkMenu *file;
+
   GtkMenu *edit;
   GtkMenu *add;
+  GtkMenu *live;
+
+  GtkMenu *midi;
+  
   GtkMenu *help;
 };
 
@@ -61,6 +75,9 @@ GtkComboBox* ags_tact_combo_box_new();
 GtkMenu* ags_ladspa_bridge_menu_new();
 GtkMenu* ags_dssi_bridge_menu_new();
 GtkMenu* ags_lv2_bridge_menu_new();
+
+GtkMenu* ags_live_dssi_bridge_menu_new();
+GtkMenu* ags_live_lv2_bridge_menu_new();
 
 AgsMenuBar* ags_menu_bar_new();
 

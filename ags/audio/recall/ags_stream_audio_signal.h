@@ -38,6 +38,8 @@ typedef struct _AgsStreamAudioSignalClass AgsStreamAudioSignalClass;
 struct _AgsStreamAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  GObject *dispose_source;
 };
 
 struct _AgsStreamAudioSignalClass

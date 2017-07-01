@@ -12,6 +12,103 @@ ags (1.0.0)
 	* TODO:JK: extended AgsSoundProvider interface to provide plugin managers
 	* extended AgsServiceProvider interface to provide managers
 
+ags (0.8.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsMoveNoteDialog as additional editing tool
+	* implemented AgsCropNoteDialog as additional editing tool
+	* implmeneted missing ags_toolbar_disconnect() function
+
+ags (0.8.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsEnvelopeInfo plot
+	* enable grid lines of tree view
+	* added property AgsMachine:machine-name and thus did a small refactoring
+
+ags (0.8.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-envelope to apply ratio
+	* fixed various issues related to AgsEnvelopeDialog
+
+ags (0.8.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsPreset applicable to line ranges and store parameters
+	* implemented to persist AgsLiveDssiBridge and AgsLiveLv2Bridge
+	* implemented to store presets in AgsSimpleFile
+	* extended ags-copy-pattern to use preset scope ags-envelope
+	* extended AgsEnvelopeDialog to support presets and apply to pattern
+	* improved ags-envelope to read frame count once
+
+ags (0.8.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsAddSoundcardEditor and AgsAddSequencerEditor dereference to wrong type
+	* fixed not showing AgsPad as resize from 0
+	* fixed crash in AgsMeter as resize to 0
+	* fixed resize of AgsNotebook in AgsPatternEdit and AgsNoteEdit related resize to/from 0
+	* fixed shrink of AgsNotebook in AgsAutomationEdit
+
+ags (0.8.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiParser to don't skip length of status messages
+	* fixed libags-audio.h to not include removed header
+	* fixed Makefile.am to use correct symlink of gtk-doc
+
+ags (0.8.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags.rc to support AgsMidiExportWizard and AgsMidiImportWizard
+	* improved ags.rc to provide better color of active text
+	* improved Makefile.am
+	* added gettext support
+
+ags (0.8.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* optional libinstpatch dependency
+	* implemented AgsEnvelopeDialog
+	* refactored ags-envelope recall to use AgsComplex fields of AgsNote
+	* added AgsEnvelopeDialog to AgsDrum, AgsMatrix, AgsDssiBridge and AgsLv2Bridge
+	* added ags-envelope recall to ags_recall_factory.c
+	* fixed unavailable AgsMidiDialog as doing delete-event
+	* fixed functional test timed access to widget
+
+ags (0.8.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented MIDI import tracks
+	* implemented MIDI export tracks
+	* fixed AgsMidiBuilder serious problems
+	* fixed ags_midi_buffer_util_seek()
+	* fixed AgsMidiParser using wrong tempo and time signature allocation
+	* fixed ags_midi_buffer_util.c same issue as above with tempo and time signature
+
+ags (0.7.136)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved performance of AgsGuiThread to consume less power
+	* improved AgsMidiin to don't poll anymore in dedicated thread
+	* improved AgsLog to have a mutex and use it during splash-screen
+
+ags (0.7.135)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented Lv2 program interface
+	* implemented ags-play-dssi and ags-play-lv2 recall
+	* implemented AgsLiveDssiBridge and AgsLiveLv2Bridge
+	* fixed non-interleave lv2 audio data processing
+	* support NULL input
+
+ags (0.7.134)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* merge stable
+	* ?
+
 ags (0.7.133)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -87,6 +184,144 @@ ags (0.7.123)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed distorted sound by clearing buffer that just was memcpy to ring buffer
+
+ags (0.7.122.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL input
+	* fixed non-interleaved Lv2 audio data
+
+ags (0.7.122.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing ags_route_lv2_audio_run_dispose()
+	* fixed in ags-route-dssi use of parent ::finalize() during ::dispose()
+	* fixed switch buffer flag to be done during poll MIDI device
+
+ags (0.7.122.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed LIBADD nad LDADD of GSequencer system check automake file
+
+ags (0.7.122.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing length of pattern
+
+ags (0.7.122.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation to use previous value if range doesn't match
+	* added functional test to check editor workflow
+
+ags (0.7.122.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsEffectSeparator for AgsLine and AgsEffectLine
+	* removed gtk separator in AgsLine and AgsEffectLine
+	* disabled AgsDestroyWorker
+
+ags (0.7.122.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock as removing line member
+	* improved plugin browser to reset plugin type
+	* improved the speed of functional tests
+	* added functional test to check line member sanity
+
+ags (0.7.122.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsClearAudioSignal task
+	* fixed ags_synth_update() it didn't clear the buffers correctly
+	* added functional test to check link sanity
+
+ags (0.7.122.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory corruption of AgsFFPlayer destruction
+	* fixed some AgsConnectable::disconnect() of machines
+	* fixed potential infinite loop in ags_machine_resize_audio_channels()
+	* added functional test add and destroy machine
+	* added functional tests resize pads and audio channels
+
+ags (0.7.122.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing connect of AgsOscillator
+	* fixed noise creation in AgsSynth
+	* fixed SIGSEGV as adding plugin to AgsLine
+
+ags (0.7.122.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented notebook resize in automation editor
+	* fixed NULL pointer dereference in ags_matrix.c
+	* fixed resize pad to distinguish between input and output
+
+ags (0.7.122.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* stability improvements
+
+ags (0.7.122.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* decoupled gui thread
+
+ags (0.7.122.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixes to configuration in place
+	* fixes to audio connection editor
+
+ags (0.7.122.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented ags-play-pattern recall
+	* fixed broken optical feedback of peak
+	* removed auto-scroll feature because it costs too much performance
+
+ags (0.7.122.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented non-deterministic mode i.e. performance mode
+	* implemented ags_input_next_active() and ags_input_is_active()
+	* implemented restore and persist of AgsLv2Bridge preset
+	* disabled lv2 worker feature if not requested by plugin
+	* fixed memory leak related to AgsReturnableThread
+	* fixed crash related to notation offset cached
+	* note disabled some signals
+
+ags (0.7.122.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored ags-copy recall to instantiate like ags-buffer
+	* implemented LV2 presets
+	* implemented presets in AgsLv2Bridge
+	* implemented ags-prepare recall
+	* implemented AgsConditionManager to use with AgsThread tree lock functions
+	* implemented worker threads
+	* implemented destroy worker
+	* improved AgsDelayAudio port instantiation to use default values
+	* fixed using default values as no soundcard available
+	* fixed crash as no soundcard configured within GUI
+	* fixed AgsThread tree lock functions
+	* added more unit tests in ags_thread_test.c
+
+ags (0.7.122.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsHLedArray and AgsVLedArray
+	* implemented missing properties of AgsPlaybackDomain and AgsPlayback
+	* implemented GObject::dispose()
+	* refactored AgsCellPattern and AgsPatternBox to use AgsHLedArray
+	* fixed reference counting of libags, libags_audio
+	* fixed division by zero caused by AgsOscillator
+	* fixed serious memory corruption in ags_pattern_set_dim()
+	* fixed segmentation fault of AgsFFPlayer restore
+	* fixed missing connection menu of AgsLv2Bridge after restore
+	* extended unit tests
 
 ags (0.7.122.6)
 

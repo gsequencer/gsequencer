@@ -55,7 +55,7 @@ ags_playable_get_type()
     };
 
     ags_type_playable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsPlayable\0", &ags_playable_info,
+					       "AgsPlayable", &ags_playable_info,
 					       0);
   }
 
@@ -66,7 +66,7 @@ ags_playable_get_type()
 GQuark
 ags_playable_error_quark()
 {
-  return(g_quark_from_static_string("ags-playable-error-quark\0"));
+  return(g_quark_from_static_string("ags-playable-error-quark"));
 }
 
 void
@@ -574,12 +574,12 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     /* samplerate */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD,
-			       "samplerate\0");
+			       "samplerate");
 
     if(str == NULL){
       str = ags_config_get_value(config,
 				 AGS_CONFIG_SOUNDCARD_0,
-				 "samplerate\0");
+				 "samplerate");
     }
     
     if(str != NULL){
@@ -595,12 +595,12 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     /* buffer-size */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD,
-			       "buffer-size\0");
+			       "buffer-size");
 
     if(str == NULL){
       str = ags_config_get_value(config,
 				 AGS_CONFIG_SOUNDCARD_0,
-				 "buffer-size\0");
+				 "buffer-size");
     }
     
     if(str != NULL){
@@ -616,12 +616,12 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     /* format */
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD,
-			       "format\0");
+			       "format");
 
     if(str == NULL){
       str = ags_config_get_value(config,
 				 AGS_CONFIG_SOUNDCARD_0,
-				 "format\0");
+				 "format");
     }
     
     if(str != NULL){
@@ -671,8 +671,8 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   length = (guint) ceil((double)(resampled_frames) / (double)(buffer_size));
 
 #ifdef AGS_DEBUG
-  g_message("%d-%d %d %d\0", samplerate, target_samplerate, buffer_size, format);
-  g_message("ags_playable_read_audio_signal:\n  frames = %u\n  buffer_size = %u\n  length = %u\n\0", frames, buffer_size, length);
+  g_message("%d-%d %d %d", samplerate, target_samplerate, buffer_size, format);
+  g_message("ags_playable_read_audio_signal:\n  frames = %u\n  buffer_size = %u\n  length = %u\n", frames, buffer_size, length);
 #endif
   
   list = NULL;
@@ -685,9 +685,10 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 					NULL);
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
     g_object_set(audio_signal,
-		 "samplerate\0", target_samplerate,
-		 "buffer-size\0", buffer_size,
-		 "format\0", format,
+		 "samplerate", target_samplerate,
+		 "buffer-size", buffer_size,
+		 "format", format,
+		 "frame-count", resampled_frames,
 		 NULL);
     
     list = g_list_prepend(list, audio_signal);
@@ -713,7 +714,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 			       &error);
 
     if(error != NULL){
-      g_error("%s\0", error->message);
+      g_error("%s", error->message);
     }
 
     if(buffer != NULL){

@@ -35,7 +35,8 @@ typedef struct _AgsRecycling AgsRecycling;
 typedef struct _AgsRecyclingClass AgsRecyclingClass;
 
 typedef enum{
-  AGS_RECYCLING_MUTED           =  1,
+  AGS_RECYCLING_CONNECTED       = 1,
+  AGS_RECYCLING_MUTED           = 1 <<  1,
 }AgsRecyclingFlags;
 
 struct _AgsRecycling
@@ -88,6 +89,9 @@ gint ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region
 			    AgsRecycling *recycling);
 AgsRecycling* ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
 					      GObject *prev_channel);
+
+gboolean ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
+				 GObject *recall_id);
 
 AgsRecycling* ags_recycling_new(GObject *soundcard);
 

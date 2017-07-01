@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,12 +23,22 @@
 
 #include <stdlib.h>
 
+#include <ags/i18n.h>
+
 void ags_acceleration_class_init(AgsAccelerationClass *acceleration);
 void ags_acceleration_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_acceleration_init(AgsAcceleration *acceleration);
+void ags_acceleration_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_acceleration_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_acceleration_connect(AgsConnectable *connectable);
 void ags_acceleration_disconnect(AgsConnectable *connectable);
-void ags_acceleration_finalize(GObject *object);
+void ags_acceleration_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_acceleration
@@ -41,6 +51,12 @@ void ags_acceleration_finalize(GObject *object);
  */
 
 static gpointer ags_acceleration_parent_class = NULL;
+
+enum{
+  PROP_0,
+  PROP_X,
+  PROP_Y,
+};
 
 GType
 ags_acceleration_get_type()
@@ -67,7 +83,7 @@ ags_acceleration_get_type()
     };
 
     ags_type_acceleration = g_type_register_static(G_TYPE_OBJECT,
-						   "AgsAcceleration\0",
+						   "AgsAcceleration",
 						   &ags_acceleration_info,
 						   0);
     
@@ -83,12 +99,53 @@ void
 ags_acceleration_class_init(AgsAccelerationClass *acceleration)
 {
   GObjectClass *gobject;
-
+  GParamSpec *param_spec;
+  
   ags_acceleration_parent_class = g_type_class_peek_parent(acceleration);
 
   gobject = (GObjectClass *) acceleration;
 
+  gobject->set_property = ags_acceleration_set_property;
+  gobject->get_property = ags_acceleration_get_property;
+
   gobject->finalize = ags_acceleration_finalize;
+
+  /* properties */
+  /**
+   * AgsAcceleration:x:
+   *
+   * Acceleration offset x.
+   * 
+   * Since: 0.8.2
+   */
+  param_spec = g_param_spec_uint("x",
+				 i18n_pspec("offset x"),
+				 i18n_pspec("The x offset"),
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X,
+				  param_spec);
+
+  /**
+   * AgsAcceleration:y:
+   *
+   * Acceleration offset y.
+   * 
+   * Since: 0.8.2
+   */
+  param_spec = g_param_spec_uint("y",
+				 i18n_pspec("offset y"),
+				 i18n_pspec("The y offset"),
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y,
+				  param_spec);
 }
 
 void
@@ -109,23 +166,102 @@ ags_acceleration_init(AgsAcceleration *acceleration)
   acceleration->name = NULL;
 }
 
+
+void
+ags_acceleration_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAcceleration *acceleration;
+
+  acceleration = AGS_ACCELERATION(gobject);
+
+  switch(prop_id){
+  case PROP_X:
+    {
+      acceleration->x = g_value_get_uint(value);
+    }
+    break;
+  case PROP_Y:
+    {
+      acceleration->y = g_value_get_uint(value);
+    }
+    break;
+
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_acceleration_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAcceleration *acceleration;
+
+  acceleration = AGS_ACCELERATION(gobject);
+
+  switch(prop_id){
+  case PROP_X:
+    {
+      g_value_set_uint(value, acceleration->x);
+    }
+    break;
+  case PROP_Y:
+    {
+      g_value_set_uint(value, acceleration->y);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
 void
 ags_acceleration_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAcceleration *acceleration;
+
+  acceleration = AGS_ACCELERATION(connectable);
+
+  if((AGS_ACCELERATION_CONNECTED & (acceleration->flags)) != 0){
+    return;
+  }
+
+  acceleration->flags |= AGS_ACCELERATION_CONNECTED;
 }
 
 void
 ags_acceleration_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAcceleration *acceleration;
+
+  acceleration = AGS_ACCELERATION(connectable);
+
+  if((AGS_ACCELERATION_CONNECTED & (acceleration->flags)) == 0){
+    return;
+  }
+
+  acceleration->flags &= (~AGS_ACCELERATION_CONNECTED);
 }
 
 void
 ags_acceleration_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsAcceleration *acceleration;
 
+  acceleration = AGS_ACCELERATION(gobject);
+  
+  if(acceleration->name != NULL){
+    free(acceleration->name);
+  }
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_acceleration_parent_class)->finalize(gobject);
 }
 
@@ -137,7 +273,7 @@ ags_acceleration_finalize(GObject *gobject)
  *
  * Returns: the duplicated #AgsAcceleration.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsAcceleration*
 ags_acceleration_duplicate(AgsAcceleration *acceleration)
@@ -163,7 +299,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
  *
  * Returns: a new #AgsAcceleration
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsAcceleration*
 ags_acceleration_new()

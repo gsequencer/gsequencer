@@ -46,8 +46,6 @@ struct _AgsCopyNotationAudio
 
   guint flags;
 
-  GObject *soundcard;
-
   AgsNotation *notation;
   guint audio_channel;
 };

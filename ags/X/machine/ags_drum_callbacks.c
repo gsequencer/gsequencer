@@ -67,8 +67,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
-#define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
+#define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout"
+#define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall"
 
 void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
 
@@ -77,15 +77,24 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 {
   AgsWindow *window;
 
-  if(old_parent != NULL)
+  gchar *str;
+  
+  if(old_parent != NULL){
     return;
+  }
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
-  AGS_MACHINE(drum)->name = g_strdup_printf("Default %d\0",
-					    ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
+
+  g_object_set(AGS_MACHINE(drum),
+	       "machine-name", str,
+	       NULL);
+
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_DRUM);
+  g_free(str);
 }
 
 void
@@ -116,7 +125,11 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
+  if(drum->open_dialog != NULL){
+    return;
+  }
+  
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
@@ -125,21 +138,21 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   drum->open_dialog = (GtkWidget *) file_chooser;
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data(G_OBJECT(file_chooser), "create\0", (gpointer) check_button);
+  g_object_set_data(G_OBJECT(file_chooser), "create", (gpointer) check_button);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data(G_OBJECT(file_chooser), "overwrite\0", (gpointer) check_button);
+  g_object_set_data(G_OBJECT(file_chooser), "overwrite", (gpointer) check_button);
 
   gtk_widget_show_all(GTK_WIDGET(file_chooser));
 
-  g_signal_connect(G_OBJECT(file_chooser), "response\0",
+  g_signal_connect(G_OBJECT(file_chooser), "response",
 		   G_CALLBACK(ags_drum_open_response_callback), drum);
-  g_signal_connect(G_OBJECT(file_chooser), "response\0",
+  g_signal_connect(G_OBJECT(file_chooser), "response",
 		   G_CALLBACK(ags_machine_open_response_callback), drum);
 }
 
@@ -412,8 +425,6 @@ ags_drum_done_callback(AgsAudio *audio,
   GList *playback;
   gboolean all_done;
 
-  gdk_threads_enter();
-  
   playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   /* check unset */
@@ -427,21 +438,11 @@ ags_drum_done_callback(AgsAudio *audio,
 
     playback = playback->next;
   }
+  
+  gdk_threads_enter();  
 
   if(all_done){
-    GList *list, *list_start;
-
-    /* unset led */
-    list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led));
-
-    while(list != NULL){
-      ags_led_unset_active(AGS_LED(list->data));
-	
-      list = list->next;
-    }
-
-    g_list_free(list_start);
+    ags_led_array_unset_all(drum->pattern_box->hled_array);
   }
   
   gdk_threads_leave();

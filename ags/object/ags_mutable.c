@@ -45,7 +45,7 @@ ags_mutable_get_type()
     };
 
     ags_type_mutable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsMutable\0", &ags_mutable_info,
+					       "AgsMutable", &ags_mutable_info,
 					       0);
   }
 

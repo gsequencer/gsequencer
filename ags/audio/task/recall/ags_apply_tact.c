@@ -29,6 +29,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_apply_tact_class_init(AgsApplyTactClass *apply_tact);
 void ags_apply_tact_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_tact_init(AgsApplyTact *apply_tact);
@@ -95,7 +97,7 @@ ags_apply_tact_get_type()
     };
 
     ags_type_apply_tact = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsApplyTact\0",
+						 "AgsApplyTact",
 						 &ags_apply_tact_info,
 						 0);
     
@@ -132,9 +134,9 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("scope\0",
-				   "scope of set buffer size\0",
-				   "The scope of set buffer size\0",
+  param_spec = g_param_spec_object("scope",
+				   i18n_pspec("scope of set buffer size"),
+				   i18n_pspec("The scope of set buffer size"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -148,9 +150,9 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_double("tact\0",
-				   "tact\0",
-				   "The tact to apply\0",
+  param_spec = g_param_spec_double("tact",
+				   i18n_pspec("tact"),
+				   i18n_pspec("The tact to apply"),
 				   0,
 				   G_MAXDOUBLE,
 				   0,
@@ -307,7 +309,7 @@ ags_apply_tact_launch(AgsTask *task)
 
     ags_apply_tact_recall(apply_tact, recall);
   }else{
-    g_warning("AgsApplyTact: Not supported scope\0");
+    g_warning("AgsApplyTact: Not supported scope");
   }
 }
 

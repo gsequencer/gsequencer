@@ -26,6 +26,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -131,7 +132,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 						    channel->line,
 						    0, index1,
 						    j);
-    g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+    g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui",
 		     G_CALLBACK(ags_cell_pattern_refresh_gui_callback), cell_pattern);
 
     ags_task_thread_append_task(task_thread,
@@ -208,6 +209,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     
     GList *tasks;
 
+    gboolean no_soundcard;
+
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
@@ -216,6 +219,22 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    no_soundcard = FALSE;
+
+    pthread_mutex_lock(application_mutex);
+
+    if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+      no_soundcard = TRUE;
+    }
+
+    pthread_mutex_unlock(application_mutex);
+
+    if(no_soundcard){
+      g_message("No soundcard available");
+      
+      return;
+    }
 
     /* lookup channel mutex */
     pthread_mutex_lock(application_mutex);
@@ -254,7 +273,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     /* init channel for playback */
     init_channel = ags_init_channel_new(channel, FALSE,
 					TRUE, FALSE, FALSE);
-    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+    g_signal_connect_after(G_OBJECT(init_channel), "launch",
 			   G_CALLBACK(ags_cell_pattern_init_channel_launch_callback), NULL);
     tasks = g_list_prepend(tasks, init_channel);
     
@@ -391,7 +410,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 						      channel->line,
 						      0, index1,
 						      j);
-      g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+      g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui",
 		       G_CALLBACK(ags_cell_pattern_refresh_gui_callback), cell_pattern);
 
 
@@ -479,7 +498,9 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  g_message("launch\0");
+#ifdef AGS_DEBUG
+  g_message("launch");
+#endif
   
   if(AGS_PLAYBACK(channel->playback) == NULL ||
      AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){    

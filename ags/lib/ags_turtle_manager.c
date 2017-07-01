@@ -22,6 +22,7 @@
 
 void ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager);
 void ags_turtle_manager_init (AgsTurtleManager *turtle_manager);
+void ags_turtle_manager_dispose(GObject *gobject);
 void ags_turtle_manager_finalize(GObject *gobject);
 
 /**
@@ -57,9 +58,9 @@ ags_turtle_manager_get_type (void)
     };
 
     ags_type_turtle_manager = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsTurtleManager\0",
-						  &ags_turtle_manager_info,
-						  0);
+						     "AgsTurtleManager",
+						     &ags_turtle_manager_info,
+						     0);
   }
 
   return (ags_type_turtle_manager);
@@ -76,6 +77,7 @@ ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager)
   /* GObjectClass */
   gobject = (GObjectClass *) turtle_manager;
 
+  gobject->dispose = ags_turtle_manager_dispose;
   gobject->finalize = ags_turtle_manager_finalize;
 }
 
@@ -86,17 +88,42 @@ ags_turtle_manager_init(AgsTurtleManager *turtle_manager)
 }
 
 void
+ags_turtle_manager_dispose(GObject *gobject)
+{
+  AgsTurtleManager *turtle_manager;
+
+  GList *turtle;
+
+  turtle_manager = AGS_TURTLE_MANAGER(gobject);
+
+  turtle = turtle_manager->turtle;
+  turtle_manager->turtle = NULL;
+  
+  g_list_free_full(turtle,
+		   g_object_unref);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_turtle_manager_parent_class)->dispose(gobject);
+}
+
+void
 ags_turtle_manager_finalize(GObject *gobject)
 {
   AgsTurtleManager *turtle_manager;
+
   GList *turtle;
 
   turtle_manager = AGS_TURTLE_MANAGER(gobject);
 
   turtle = turtle_manager->turtle;
 
-  g_list_free_full(turtle,
-		   g_object_unref);
+  if(turtle != NULL){
+    g_list_free_full(turtle,
+		     g_object_unref);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_turtle_manager_parent_class)->finalize(gobject);
 }
 
 /**

@@ -38,6 +38,8 @@
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 
+#include <ags/i18n.h>
+
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_channel_init(AgsAppendChannel *append_channel);
@@ -99,7 +101,7 @@ ags_append_channel_get_type()
     };
 
     ags_type_append_channel = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsAppendChannel\0",
+						   "AgsAppendChannel",
 						   &ags_append_channel_info,
 						   0);
 
@@ -136,9 +138,9 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("audio-loop\0",
-				   "audio loop of append channel\0",
-				   "The audio loop of append channel task\0",
+  param_spec = g_param_spec_object("audio-loop",
+				   i18n_pspec("audio loop of append channel"),
+				   i18n_pspec("The audio loop of append channel task"),
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -152,9 +154,9 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_object("channel\0",
-				   "channel of append channel\0",
-				   "The channel of append channel task\0",
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("channel of append channel"),
+				   i18n_pspec("The channel of append channel task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -342,18 +344,18 @@ ags_append_channel_launch(AgsTask *task)
   
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "model\0");
+			      "model");
 
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope\0");
+			      "super-threaded-scope");
   
   if(!g_ascii_strncasecmp(str0,
-			  "super-threaded\0",
+			  "super-threaded",
 			  15)){
     /* super threaded setup */
     if(!g_ascii_strncasecmp(str1,
-			    "channel\0",
+			    "channel",
 			    8)){
       if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0){
 	g_atomic_int_or(&(AGS_CHANNEL_THREAD(AGS_PLAYBACK(channel->playback)->channel_thread[0])->flags),

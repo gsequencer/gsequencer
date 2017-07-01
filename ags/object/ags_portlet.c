@@ -47,7 +47,7 @@ ags_portlet_get_type()
     };
 
     ags_type_portlet = g_type_register_static(G_TYPE_INTERFACE,
-					      "AgsPortlet\0", &ags_portlet_info,
+					      "AgsPortlet", &ags_portlet_info,
 					      0);
   }
 

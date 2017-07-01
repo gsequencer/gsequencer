@@ -52,7 +52,7 @@ void ags_pad_start_complete_response(GtkWidget *dialog,
 				     gint response,
 				     AgsPad *pad);
 
-int
+void
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsLine *line;
@@ -86,7 +86,9 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
       line = AGS_LINE(list->data);
 
       if(!gtk_toggle_button_get_active(line->group)){
-	return(0);
+	g_list_free(list_start);
+	
+	return;
       }
 
       list = list->next;
@@ -95,11 +97,9 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
     g_list_free(list_start);
     gtk_toggle_button_set_active(pad->group, TRUE);
   }
-
-  return(0);
 }
 
-int
+void
 ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsWindow *window;
@@ -245,11 +245,9 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   ags_task_thread_append_tasks(task_thread,
 			       tasks);
-
-  return(0);
 }
 
-int
+void
 ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
@@ -281,10 +279,9 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
     g_list_free(list_start);
     machine->flags |= (AGS_MACHINE_SOLO);
-  }else
+  }else{
     machine->flags &= ~(AGS_MACHINE_SOLO);
-
-  return(0);
+  }
 }
 
 void
@@ -307,8 +304,8 @@ ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
 							 GTK_DIALOG_DESTROY_WITH_PARENT,
 							 GTK_MESSAGE_ERROR,
 							 GTK_BUTTONS_CLOSE,
-							 "Error: %s\0", soundcard_thread->error->message);
-    g_signal_connect(dialog, "response\0",
+							 "Error: %s", soundcard_thread->error->message);
+    g_signal_connect(dialog, "response",
 		     G_CALLBACK(ags_pad_start_complete_response), pad);
     gtk_widget_show_all((GtkWidget *) dialog);
   }
@@ -388,7 +385,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   pthread_mutex_unlock(channel_mutex);
   
 #ifdef AGS_DEBUG
-  g_message("launch\0");
+  g_message("launch");
 #endif
   
   while(channel != next_pad){
@@ -418,7 +415,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
       AgsAudioSignal *audio_signal;
       AgsRecallID *current_recall_id;
       
-      g_signal_connect_after(channel, "done\0",
+      g_signal_connect_after(channel, "done",
 			     G_CALLBACK(ags_line_channel_done_callback), AGS_LINE(list->data));
       
       /* add audio signal */

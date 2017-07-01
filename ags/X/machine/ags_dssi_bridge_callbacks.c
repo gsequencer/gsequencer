@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,9 +29,36 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
+
+void
+ags_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDssiBridge *dssi_bridge)
+{
+  AgsWindow *window;
+
+  gchar *str;
+
+  if(old_parent != NULL){
+    return;
+  }
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
+
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_DSSI_BRIDGE)->counter);
+
+  g_object_set(AGS_MACHINE(dssi_bridge),
+	       "machine-name", str,
+	       NULL);
+
+  ags_window_increment_machine_counter(window,
+				       AGS_TYPE_DSSI_BRIDGE);
+
+  g_free(str);
+}
 
 void
 ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge)
@@ -68,7 +95,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 
 
 #ifdef AGS_DEBUG
-    g_message("%d %d\0", bank, program);
+    g_message("%d %d", bank, program);
 #endif
     
     /* update ports */
@@ -95,7 +122,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		  GValue value = {0,};
 
 #ifdef AGS_DEBUG
-		  g_message("%s %f\0", specifier, dssi_bridge->port_values[i]);
+		  g_message("%s %f", specifier, dssi_bridge->port_values[i]);
 #endif
 		  
 		  g_value_init(&value,
@@ -130,7 +157,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
       specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
 
 #ifdef AGS_DEBUG
-      g_message("%s\0", specifier);
+      g_message("%s", specifier);
 #endif
       
       while(bulk_member != NULL){
@@ -168,7 +195,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	    ags_dial_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
-	    g_message(" --- %f\0", dssi_bridge->port_values[i]);
+	    g_message(" --- %f", dssi_bridge->port_values[i]);
 #endif
 	  }
 	

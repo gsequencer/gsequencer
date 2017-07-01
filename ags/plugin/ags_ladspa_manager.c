@@ -39,6 +39,7 @@
 
 void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
 void ags_ladspa_manager_init (AgsLadspaManager *ladspa_manager);
+void ags_ladspa_manager_dispose(GObject *gobject);
 void ags_ladspa_manager_finalize(GObject *gobject);
 
 /**
@@ -81,7 +82,7 @@ ags_ladspa_manager_get_type (void)
     };
 
     ags_type_ladspa_manager = g_type_register_static(G_TYPE_OBJECT,
-							"AgsLadspaManager\0",
+							"AgsLadspaManager",
 							&ags_ladspa_manager_info,
 							0);
   }
@@ -99,6 +100,7 @@ ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager)
   /* GObjectClass */
   gobject = (GObjectClass *) ladspa_manager;
 
+  gobject->dispose = ags_ladspa_manager_dispose;
   gobject->finalize = ags_ladspa_manager_finalize;
 }
 
@@ -110,16 +112,35 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
   if(ags_ladspa_default_path == NULL){
     ags_ladspa_default_path = (gchar **) malloc(3 * sizeof(gchar *));
 
-    ags_ladspa_default_path[0] = g_strdup("/usr/lib/ladspa\0");
-    ags_ladspa_default_path[1] = g_strdup("/usr/lib64/ladspa\0");
+    ags_ladspa_default_path[0] = g_strdup("/usr/lib/ladspa");
+    ags_ladspa_default_path[1] = g_strdup("/usr/lib64/ladspa");
     ags_ladspa_default_path[2] = NULL;
   }
+}
+
+void
+ags_ladspa_manager_dispose(GObject *gobject)
+{
+  AgsLadspaManager *ladspa_manager;
+
+  ladspa_manager = AGS_LADSPA_MANAGER(gobject);
+
+  if(ladspa_manager->ladspa_plugin != NULL){
+    g_list_free_full(ladspa_manager->ladspa_plugin,
+		     (GDestroyNotify) g_object_unref);
+
+    ladspa_manager->ladspa_plugin = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_ladspa_manager_parent_class)->dispose(gobject);
 }
 
 void
 ags_ladspa_manager_finalize(GObject *gobject)
 {
   AgsLadspaManager *ladspa_manager;
+  
   GList *ladspa_plugin;
 
   ladspa_manager = AGS_LADSPA_MANAGER(gobject);
@@ -128,6 +149,9 @@ ags_ladspa_manager_finalize(GObject *gobject)
 
   g_list_free_full(ladspa_plugin,
 		   (GDestroyNotify) g_object_unref);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_ladspa_manager_parent_class)->finalize(gobject);
 }
 
 /**
@@ -244,7 +268,7 @@ ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
     gchar *str;
     
     file = fopen(blacklist_filename,
-		 "r\0");
+		 "r");
 
     while(getline(&str, NULL, file) != -1){
       ladspa_manager->ladspa_plugin_blacklist = g_list_prepend(ladspa_manager->ladspa_plugin_blacklist,
@@ -282,17 +306,17 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
 
   pthread_mutex_lock(&(mutex));
 
-  path = g_strdup_printf("%s/%s\0",
+  path = g_strdup_printf("%s/%s",
 			 ladspa_path,
 			 filename);
   
-  g_message("ags_ladspa_manager.c loading - %s\0", path);
+  g_message("ags_ladspa_manager.c loading - %s", path);
 
   plugin_so = dlopen(path,
 		     RTLD_NOW);
 	
   if(plugin_so == NULL){
-    g_warning("ags_ladspa_manager.c - failed to load static object file\0");
+    g_warning("ags_ladspa_manager.c - failed to load static object file");
       
     dlerror();
     pthread_mutex_unlock(&(mutex));
@@ -301,7 +325,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
   }
 
   ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							 "ladspa_descriptor\0");
+							 "ladspa_descriptor");
     
   if(dlerror() == NULL && ladspa_descriptor){
     for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
@@ -359,7 +383,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 		     &error);
 
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
 
       ladspa_path++;
 
@@ -368,7 +392,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
-			  ".so\0") &&
+			  ".so") &&
 	 !g_list_find_custom(ladspa_manager->ladspa_plugin_blacklist,
 			     filename,
 			     strcmp)){

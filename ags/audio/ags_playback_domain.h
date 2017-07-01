@@ -40,22 +40,30 @@ typedef struct _AgsPlaybackDomain AgsPlaybackDomain;
 typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
 
 typedef enum{
-  AGS_PLAYBACK_DOMAIN_PLAYBACK                   = 1,
-  AGS_PLAYBACK_DOMAIN_SEQUENCER                  = 1 <<  1,
-  AGS_PLAYBACK_DOMAIN_NOTATION                   = 1 <<  2,
-  AGS_PLAYBACK_DOMAIN_SINGLE_THREADED            = 1 <<  3,
-  AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  4,
+  AGS_PLAYBACK_DOMAIN_CONNECTED                  = 1,
+  AGS_PLAYBACK_DOMAIN_PLAYBACK                   = 1 <<  1,
+  AGS_PLAYBACK_DOMAIN_SEQUENCER                  = 1 <<  2,
+  AGS_PLAYBACK_DOMAIN_NOTATION                   = 1 <<  3,
+  AGS_PLAYBACK_DOMAIN_SINGLE_THREADED            = 1 <<  4,
+  AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  5,
 }AgsPlaybackDomainFlags;
+
+typedef enum{
+  AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK,
+  AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER,
+  AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION,  
+}AgsPlaybackDomainScope;
 
 struct _AgsPlaybackDomain
 {
   GObject gobject;
 
   volatile guint flags;
+  
+  GObject *domain;
 
   AgsThread **audio_thread;
 
-  GObject *domain;
   GList *playback;
 };
 
@@ -66,6 +74,20 @@ struct _AgsPlaybackDomainClass
 
 GType ags_playback_domain_get_type();
 
+/* get and set */
+void ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
+					  AgsThread *thread,
+					  guint scope);
+AgsThread* ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
+						guint scope);
+
+/* add and remove */
+void ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
+				      GObject *playback);
+void ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
+					 GObject *playback);
+
+/* instance */
 AgsPlaybackDomain* ags_playback_domain_new();
 
 #endif /*__AGS_PLAYBACK_DOMAIN_H__*/

@@ -85,7 +85,7 @@ ags_stream_recycling_get_type()
     };
 
     ags_type_stream_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						       "AgsStreamRecycling\0",
+						       "AgsStreamRecycling",
 						       &ags_stream_recycling_info,
 						       0);
 
@@ -142,10 +142,10 @@ ags_stream_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_stream_recycling_init(AgsStreamRecycling *stream_recycling)
 {
-  AGS_RECALL(stream_recycling)->name = "ags-stream\0";
+  AGS_RECALL(stream_recycling)->name = "ags-stream";
   AGS_RECALL(stream_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(stream_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(stream_recycling)->xml_type = "ags-stream-recycling\0";
+  AGS_RECALL(stream_recycling)->xml_type = "ags-stream-recycling";
   AGS_RECALL(stream_recycling)->port = NULL;
 
   AGS_RECALL(stream_recycling)->child_type = AGS_TYPE_STREAM_AUDIO_SIGNAL;
@@ -223,7 +223,7 @@ ags_stream_recycling_new(AgsRecycling *recycling)
   AgsStreamRecycling *stream_recycling;
 
   stream_recycling = (AgsStreamRecycling *) g_object_new(AGS_TYPE_STREAM_RECYCLING,
-							 "source\0", recycling,
+							 "source", recycling,
 							 NULL);
 
   return(stream_recycling);

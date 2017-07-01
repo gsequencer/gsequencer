@@ -111,7 +111,7 @@ ags_panel_input_line_get_type()
     };
 
     ags_type_panel_input_line = g_type_register_static(AGS_TYPE_LINE,
-						       "AgsPanelInputLine\0", &ags_panel_input_line_info,
+						       "AgsPanelInputLine", &ags_panel_input_line_info,
 						       0);
 
     g_type_add_interface_static(ags_type_panel_input_line,
@@ -176,18 +176,18 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
 
-  panel_input_line->soundcard_connection = (GtkLabel *) gtk_label_new("(null)\0");
+  panel_input_line->soundcard_connection = (GtkLabel *) gtk_label_new("(null)");
   ags_expander_add(AGS_LINE(panel_input_line)->expander,
 		   GTK_WIDGET(panel_input_line->soundcard_connection),
 		   0, 0,
 		   1, 1);
 
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-					       "widget-type\0", GTK_TYPE_CHECK_BUTTON,
-					       "widget-label\0", "mute\0",
-					       "plugin-name\0", "ags-play\0",
-					       "specifier\0", "./muted[0]\0",
-					       "control-port\0", "2/2\0",
+					       "widget-type", GTK_TYPE_CHECK_BUTTON,
+					       "widget-label", "mute",
+					       "plugin-name", "ags-play",
+					       "specifier", "./muted[0]",
+					       "control-port", "2/2",
 					       NULL);
   ags_expander_add(AGS_LINE(panel_input_line)->expander,
 		   GTK_WIDGET(line_member),
@@ -264,7 +264,7 @@ ags_panel_input_line_show(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show(line);
 
-  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
+  //  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }
 
 void
@@ -272,7 +272,7 @@ ags_panel_input_line_show_all(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show_all(line);
 
-  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
+  //  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }
 
 void
@@ -300,7 +300,7 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     GObject *data_object;
 
     g_object_get(G_OBJECT(list->data),
-		 "data-object\0", &data_object,
+		 "data-object", &data_object,
 		 NULL);
 	    
     if(AGS_IS_SOUNDCARD(data_object)){
@@ -313,24 +313,24 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   if(list != NULL){
     audio_connection = list->data;
     
-    str = g_strdup_printf("%s:%s[%d]\0",
+    str = g_strdup_printf("%s:%s[%d]",
 			  G_OBJECT_TYPE_NAME(channel->soundcard),
 			  ags_soundcard_get_device(AGS_SOUNDCARD(channel->soundcard)),
 			  audio_connection->mapped_line);
     gtk_label_set_label(panel_input_line->soundcard_connection,
 			str);
 
-    g_signal_connect(audio_connection, "notify::data-object\0",
+    g_signal_connect(audio_connection, "notify::data-object",
 		     G_CALLBACK(ags_panel_input_line_notify_data_object_callback), panel_input_line);
 
-    g_signal_connect(audio_connection, "notify::mapped-line\0",
+    g_signal_connect(audio_connection, "notify::mapped-line",
 		     G_CALLBACK(ags_panel_input_line_notify_mapped_line_callback), panel_input_line);
     
     g_free(str);
   }
   
 #ifdef AGS_DEBUG
-  g_message("ags_panel_input_line_set_channel - channel: %u\0",
+  g_message("ags_panel_input_line_set_channel - channel: %u",
 	    channel->line);
 #endif
 }
@@ -360,7 +360,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
   /* ags-play */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-play-master\0",
+			    "ags-play-master",
 			    source->audio_channel, source->audio_channel + 1,
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT,
@@ -408,7 +408,7 @@ ags_panel_input_line_new(AgsChannel *channel)
   AgsPanelInputLine *panel_input_line;
 
   panel_input_line = (AgsPanelInputLine *) g_object_new(AGS_TYPE_PANEL_INPUT_LINE,
-							"channel\0", channel,
+							"channel", channel,
 							NULL);
 
   return(panel_input_line);

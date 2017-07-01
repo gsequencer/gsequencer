@@ -23,12 +23,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_complex.h>
-#include <ags/lib/ags_conversion.h>
-
 #include <pthread.h>
 
 #include <ladspa.h>
+
+#include <ags/lib/ags_complex.h>
+#include <ags/lib/ags_conversion.h>
 
 #define AGS_TYPE_PORT                (ags_port_get_type())
 #define AGS_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORT, AgsPort))
