@@ -92,7 +92,7 @@ ags_front_controller_get_type()
     };
     
     ags_type_front_controller = g_type_register_static(G_TYPE_OBJECT,
-						       "AgsFrontController\0",
+						       "AgsFrontController",
 						       &ags_front_controller_info,
 						       0);
   }
@@ -121,13 +121,19 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
   /**
    * AgsFrontController::authenticate:
    * @front_controller: the #AgsFrontController
+   * @authentication_module: the authentication module
+   * @login: the login
+   * @password: the password
+   * @certs: certificate
    * 
+   * Authenticate to the front controller.
    * 
+   * Returns: on success a new #AgsSecurityContext, otherwise %NULL
    * 
    * Since: 1.0.0
    */
   front_controller_signals[AUTHENTICATE] =
-    g_signal_new("authenticate\0",
+    g_signal_new("authenticate",
 		 G_TYPE_FROM_CLASS(front_controller),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, authenticate),
@@ -139,8 +145,21 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
+  /**
+   * AgsFrontController::do-request:
+   * @front_controller: the #AgsFrontController
+   * @security_context: the #AgsSecurityContext
+   * @context_path: the context path to access
+   * @user: the user's UUID
+   * @security_token: the security token
+   * @params: the #GParameter-struct
+   * 
+   * Do a request on the front controller.
+   * 
+   * Since: 1.0.0
+   */
   front_controller_signals[DO_REQUEST] =
-    g_signal_new("do-request\0",
+    g_signal_new("do-request",
 		 G_TYPE_FROM_CLASS(front_controller),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, do_request),
