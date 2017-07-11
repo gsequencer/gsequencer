@@ -161,7 +161,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
   param_spec =  g_param_spec_uint("first-x",
 				  i18n_pspec("move from x offset"),
 				  i18n_pspec("Move the notation from x offset"),
-				  -1 * AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
+				  0,
 				  AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -179,7 +179,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
   param_spec =  g_param_spec_uint("first-y",
 				  i18n_pspec("move with x padding"),
 				  i18n_pspec("Move the notation with x padding"),
-				  -1 * AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
+				  0,
 				  AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -197,7 +197,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
   param_spec =  g_param_spec_uint("move-x",
 				  i18n_pspec("move with move-x amount"),
 				  i18n_pspec("Move the notation by move-x amount"),
-				  -1 * AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
+				  0,
 				  AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -215,7 +215,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
   param_spec =  g_param_spec_uint("move-y",
 				  i18n_pspec("move with move-y amount"),
 				  i18n_pspec("Move the notation by move-y amount"),
-				  -1 * AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
+				  0,
 				  AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -458,9 +458,50 @@ ags_move_note_launch(AgsTask *task)
 {
   AgsMoveNote *move_note;
 
+  AgsNotation *notation;
+  
+  GList *selection;
+
+  guint first_x;
+  guint first_y;
+  guint move_x;
+  guint move_y;
+  
+  gboolean relative;
+  gboolean absolute;
+
   move_note = AGS_MOVE_NOTE(task);
 
-  //TODO:JK: implement me
+  /* get some properties */
+  notation = move_note->notation;
+
+  selection = move_note->selection;
+
+  first_x = move_note->first_x;
+  first_y = move_note->first_y;
+
+  move_x = move_note->move_x;
+  move_y = move_note->move_y;
+  
+  relative = move_note->relative;
+  absolute = move_note->absolute;
+
+  /* move */
+  while(selection != NULL){
+    if(relative){
+      AGS_NOTE(selection->data)->x[0] = AGS_NOTE(selection->data)->x[0] + move_x;
+      AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + move_x;
+
+      AGS_NOTE(selection->data)->y = AGS_NOTE(selection->data)->y + move_y;
+    }else if(absolute){
+      AGS_NOTE(selection->data)->x[0] = move_x + (AGS_NOTE(selection->data)->x[0] - first_x);
+      AGS_NOTE(selection->data)->x[1] = move_x + (AGS_NOTE(selection->data)->x[1] - first_x);
+
+      AGS_NOTE(selection->data)->y = move_y + (AGS_NOTE(selection->data)->y + first_y);
+    }
+
+    selection = selection->next;
+  }
 }
 
 /**

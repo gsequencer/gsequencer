@@ -34,7 +34,7 @@
 #define AGS_IS_CROP_NOTE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CROP_NOTE))
 #define AGS_CROP_NOTE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CROP_NOTE, AgsCropNoteClass))
 
-#define AGS_CROP_NOTE_DEFAULT_X_LENGTH (16 * 1200)
+#define AGS_CROP_NOTE_DEFAULT_X_LENGTH (16 * 16 * 1200)
 
 typedef struct _AgsCropNote AgsCropNote;
 typedef struct _AgsCropNoteClass AgsCropNoteClass;
@@ -47,7 +47,6 @@ struct _AgsCropNote
 
   GList *selection;
   
-  gint x_offset;
   guint x_padding;
   guint x_crop;
   
@@ -65,7 +64,7 @@ GType ags_crop_note_get_type();
 
 AgsCropNote* ags_crop_note_new(AgsNotation *notation,
 			       GList *selection,
-			       gint x_offset, guint x_padding, guint x_crop,
+			       guint x_padding, guint x_crop,
 			       gboolean absolute, gboolean in_place, gboolean do_resize);
 
 #endif /*__AGS_CROP_NOTE_H__*/

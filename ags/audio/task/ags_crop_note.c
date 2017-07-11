@@ -57,7 +57,6 @@ enum{
   PROP_0,
   PROP_NOTATION,
   PROP_SELECTION,
-  PROP_X_OFFSET,
   PROP_X_PADDING,
   PROP_X_CROP,
   PROP_ABSOLUTE,
@@ -152,24 +151,6 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
 				  param_spec);
 
   /**
-   * AgsCropNote:x-offset:
-   *
-   * Crop notation from x offset.
-   * 
-   * Since: 0.8.9
-   */
-  param_spec =  g_param_spec_int("x-offset",
-				 i18n_pspec("crop from x offset"),
-				 i18n_pspec("Crop the notation from x offset"),
-				 -1 * AGS_CROP_NOTE_DEFAULT_X_LENGTH,
-				 AGS_CROP_NOTE_DEFAULT_X_LENGTH,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_X_OFFSET,
-				  param_spec);
-
-  /**
    * AgsCropNote:x-padding:
    *
    * Crop notation with x padding.
@@ -179,7 +160,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
   param_spec =  g_param_spec_uint("x-padding",
 				  i18n_pspec("crop with x padding"),
 				  i18n_pspec("Crop the notation with x padding"),
-				  -1 * AGS_CROP_NOTE_DEFAULT_X_LENGTH,
+				  0,
 				  AGS_CROP_NOTE_DEFAULT_X_LENGTH,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -197,7 +178,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
   param_spec =  g_param_spec_uint("x-crop",
 				  i18n_pspec("crop with x-crop amount"),
 				  i18n_pspec("Crop the notation by x-crop amount"),
-				  -1 * AGS_CROP_NOTE_DEFAULT_X_LENGTH,
+				  0,
 				  AGS_CROP_NOTE_DEFAULT_X_LENGTH,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -275,7 +256,6 @@ ags_crop_note_init(AgsCropNote *crop_note)
 
   crop_note->selection = NULL;
   
-  crop_note->x_offset = 0;
   crop_note->x_padding = 0;
   crop_note->x_crop = 0;
 
@@ -333,11 +313,6 @@ ags_crop_note_set_property(GObject *gobject,
       crop_note->selection = g_list_copy(selection);
     }
     break;
-  case PROP_X_OFFSET:
-    {
-      crop_note->x_offset = g_value_get_int(value);
-    }
-  break;
   case PROP_X_PADDING:
     {
       crop_note->x_padding = g_value_get_uint(value);
@@ -389,11 +364,6 @@ ags_crop_note_get_property(GObject *gobject,
     {
       g_value_set_pointer(value,
 			  g_list_copy(crop_note->selection));
-    }
-    break;
-  case PROP_X_OFFSET:
-    {
-      g_value_set_int(value, crop_note->x_offset);
     }
     break;
   case PROP_X_PADDING:
@@ -456,16 +426,89 @@ ags_crop_note_launch(AgsTask *task)
 {
   AgsCropNote *crop_note;
 
+  AgsNotation *notation;
+  
+  GList *selection;
+
+  guint x_padding;
+  guint x_crop;
+  gint x_offset, x_prev;
+  
+  gboolean absolute;
+  gboolean in_place;
+  gboolean do_resize;
+  gboolean initial_run;
+  
   crop_note = AGS_CROP_NOTE(task);
 
-  //TODO:JK: implement me
+  /* get some properties */
+  notation = crop_note->notation;
+
+  selection = crop_note->selection;
+
+  x_padding = crop_note->x_padding;
+  x_crop = crop_note->x_crop;
+
+  absolute = crop_note->absolute;
+
+  in_place = crop_note->in_place;
+  do_resize = crop_note->do_resize;
+  
+  /* crop */
+  x_offset = 0;
+  x_prev = 0;
+
+  initial_run = TRUE;
+  
+  while(selection != NULL){
+    if(absolute){
+      if(in_place){
+	AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[0] + x_crop;
+      }else if(do_resize){
+	if(initial_run){
+	  x_offset = 0;
+	  x_prev = AGS_NOTE(selection->data)->x[0];
+
+	  initial_run = FALSE;
+	}else{
+	  if(AGS_NOTE(selection->data)->x[0] > x_prev){
+	    x_offset = (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
+	    x_prev = AGS_NOTE(selection->data)->x[0];
+	  }	  
+	}
+	
+	AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
+	AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[0] + x_crop;
+      }
+    }else{
+      if(in_place){
+	AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + x_crop;
+      }else if(do_resize){
+	if(initial_run){
+	  x_offset = 0;
+	  x_prev = AGS_NOTE(selection->data)->x[0];
+
+	  initial_run = FALSE;
+	}else{
+	  if(AGS_NOTE(selection->data)->x[0] > x_prev){
+	    x_offset = (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
+	    x_prev = AGS_NOTE(selection->data)->x[0];
+	  }	  
+	}
+
+	AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
+	AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[1] + x_crop;
+      }
+    }
+
+    selection = selection->next;
+  }
 }
 
 /**
  * ags_crop_note_new:
  * @notation: the #AgsNotation
  * @selection: the selection as #GList-struct
- * @x_offset: the x offset to crop from 
  * @x_padding: the x padding to use
  * @x_crop: the amout to crop
  * @absolute: if %TRUE from absolute position, otherwise relative
@@ -482,7 +525,7 @@ ags_crop_note_launch(AgsTask *task)
 AgsCropNote*
 ags_crop_note_new(AgsNotation *notation,
 		  GList *selection,
-		  gint x_offset, guint x_padding, guint x_crop,
+		  guint x_padding, guint x_crop,
 		  gboolean absolute, gboolean in_place, gboolean do_resize)
 {
   AgsCropNote *crop_note;
@@ -490,7 +533,6 @@ ags_crop_note_new(AgsNotation *notation,
   crop_note = (AgsCropNote *) g_object_new(AGS_TYPE_CROP_NOTE,
 					   "notation", notation,
 					   "selection", selection,
-					   "x-offset", x_offset,
 					   "x-padding", x_padding,
 					   "x-crop", x_crop,
 					   "absolute", absolute,

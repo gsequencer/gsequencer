@@ -34,7 +34,7 @@
 #define AGS_IS_MOVE_NOTE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MOVE_NOTE))
 #define AGS_MOVE_NOTE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MOVE_NOTE, AgsMoveNoteClass))
 
-#define AGS_MOVE_NOTE_DEFAULT_X_LENGTH (16 * 1200)
+#define AGS_MOVE_NOTE_DEFAULT_X_LENGTH (16 * 16 * 1200)
 
 typedef struct _AgsMoveNote AgsMoveNote;
 typedef struct _AgsMoveNoteClass AgsMoveNoteClass;
