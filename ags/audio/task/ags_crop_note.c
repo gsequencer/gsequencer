@@ -36,6 +36,7 @@ void ags_crop_note_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_crop_note_connect(AgsConnectable *connectable);
 void ags_crop_note_disconnect(AgsConnectable *connectable);
+void ags_crop_note_dispose(GObject *gobject);
 void ags_crop_note_finalize(GObject *gobject);
 
 void ags_crop_note_launch(AgsTask *task);
@@ -116,6 +117,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
   gobject->set_property = ags_crop_note_set_property;
   gobject->get_property = ags_crop_note_get_property;
 
+  gobject->dispose = ags_crop_note_dispose;
   gobject->finalize = ags_crop_note_finalize;
 
   /* properties */
@@ -414,11 +416,45 @@ ags_crop_note_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_crop_note_dispose(GObject *gobject)
+{
+  AgsCropNote *crop_note;
+
+  crop_note = AGS_CROP_NOTE(gobject);
+
+  if(crop_note->notation != NULL){
+    g_object_unref(crop_note->notation);
+
+    crop_note->notation = NULL;
+  }
+
+  if(crop_note->selection != NULL){
+    g_list_free(crop_note->selection);
+
+    crop_note->selection = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_crop_note_parent_class)->dispose(gobject);
+}
+
+void
 ags_crop_note_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_crop_note_parent_class)->finalize(gobject);
+  AgsCropNote *crop_note;
 
-  /* empty */
+  crop_note = AGS_CROP_NOTE(gobject);
+
+  if(crop_note->notation != NULL){
+    g_object_unref(crop_note->notation);
+  }
+
+  if(crop_note->selection != NULL){
+    g_list_free(crop_note->selection);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_crop_note_parent_class)->finalize(gobject);
 }
 
 void

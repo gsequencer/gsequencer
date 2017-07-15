@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,6 +40,7 @@ void ags_clear_audio_signal_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_clear_audio_signal_connect(AgsConnectable *connectable);
 void ags_clear_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_clear_audio_signal_dispose(GObject *gobject);
 void ags_clear_audio_signal_finalize(GObject *gobject);
 
 void ags_clear_audio_signal_launch(AgsTask *task);
@@ -231,11 +232,35 @@ ags_clear_audio_signal_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_clear_audio_signal_dispose(GObject *gobject)
+{
+  AgsClearAudioSignal *clear_audio_signal;
+
+  clear_audio_signal = AGS_CLEAR_AUDIO_SIGNAL(gobject);
+
+  if(clear_audio_signal->audio_signal != NULL){
+    g_object_unref(clear_audio_signal->audio_signal);
+
+    clear_audio_signal->audio_signal = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_clear_audio_signal_parent_class)->dispose(gobject);
+}
+
+void
 ags_clear_audio_signal_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_clear_audio_signal_parent_class)->finalize(gobject);
+  AgsClearAudioSignal *clear_audio_signal;
 
-  /* empty */
+  clear_audio_signal = AGS_CLEAR_AUDIO_SIGNAL(gobject);
+
+  if(clear_audio_signal->audio_signal != NULL){
+    g_object_unref(clear_audio_signal->audio_signal);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_clear_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
@@ -279,9 +304,8 @@ ags_clear_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsClearAudioSignal *clear_audio_signal;
 
   clear_audio_signal = (AgsClearAudioSignal *) g_object_new(AGS_TYPE_CLEAR_AUDIO_SIGNAL,
-							      NULL);
-  
-  clear_audio_signal->audio_signal = audio_signal;
+							    "audio-signal", audio_signal,
+							    NULL);
 
   return(clear_audio_signal);
 }

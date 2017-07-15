@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,7 @@ void ags_clear_buffer_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_clear_buffer_connect(AgsConnectable *connectable);
 void ags_clear_buffer_disconnect(AgsConnectable *connectable);
+void ags_clear_buffer_dispose(GObject *gobject);
 void ags_clear_buffer_finalize(GObject *gobject);
 
 void ags_clear_buffer_launch(AgsTask *task);
@@ -117,6 +118,7 @@ ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer)
   gobject->set_property = ags_clear_buffer_set_property;
   gobject->get_property = ags_clear_buffer_get_property;
 
+  gobject->dispose = ags_clear_buffer_dispose;
   gobject->finalize = ags_clear_buffer_finalize;
 
   /* properties */
@@ -234,11 +236,35 @@ ags_clear_buffer_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_clear_buffer_dispose(GObject *gobject)
+{
+  AgsClearBuffer *clear_buffer;
+
+  clear_buffer = AGS_CLEAR_BUFFER(gobject);
+
+  if(clear_buffer->device != NULL){
+    g_object_unref(clear_buffer->device);
+
+    clear_buffer->device = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_clear_buffer_parent_class)->dispose(gobject);
+}
+
+void
 ags_clear_buffer_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_clear_buffer_parent_class)->finalize(gobject);
+  AgsClearBuffer *clear_buffer;
 
-  /* empty */
+  clear_buffer = AGS_CLEAR_BUFFER(gobject);
+
+  if(clear_buffer->device != NULL){
+    g_object_unref(clear_buffer->device);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_clear_buffer_parent_class)->finalize(gobject);
 }
 
 void
@@ -373,9 +399,8 @@ ags_clear_buffer_new(GObject *device)
   AgsClearBuffer *clear_buffer;
 
   clear_buffer = (AgsClearBuffer *) g_object_new(AGS_TYPE_CLEAR_BUFFER,
-							    NULL);
-
-  clear_buffer->device = device;
+						 "device", device,
+						 NULL);
 
   return(clear_buffer);
 }
