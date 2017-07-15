@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,7 @@ void ags_add_audio_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_add_audio_connect(AgsConnectable *connectable);
 void ags_add_audio_disconnect(AgsConnectable *connectable);
+void ags_add_audio_dispose(GObject *gobject);
 void ags_add_audio_finalize(GObject *gobject);
 
 void ags_add_audio_launch(AgsTask *task);
@@ -112,6 +113,7 @@ ags_add_audio_class_init(AgsAddAudioClass *add_audio)
   gobject->set_property = ags_add_audio_set_property;
   gobject->get_property = ags_add_audio_get_property;
 
+  gobject->dispose = ags_add_audio_dispose;
   gobject->finalize = ags_add_audio_finalize;
 
   /* properties */
@@ -272,11 +274,45 @@ ags_add_audio_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_audio_dispose(GObject *gobject)
+{
+  AgsAddAudio *add_audio;
+
+  add_audio = AGS_ADD_AUDIO(gobject);
+
+  if(add_audio->soundcard != NULL){
+    g_object_unref(add_audio->soundcard);
+
+    add_audio->soundcard = NULL;
+  }
+
+  if(add_audio->audio != NULL){
+    g_object_unref(add_audio->audio);
+
+    add_audio->audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_audio_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_audio_parent_class)->finalize(gobject);
+  AgsAddAudio *add_audio;
 
-  /* empty */
+  add_audio = AGS_ADD_AUDIO(gobject);
+
+  if(add_audio->soundcard != NULL){
+    g_object_unref(add_audio->soundcard);
+  }
+
+  if(add_audio->audio != NULL){
+    g_object_unref(add_audio->audio);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_audio_parent_class)->finalize(gobject);
 }
 
 void
@@ -320,10 +356,9 @@ ags_add_audio_new(GObject *soundcard,
   AgsAddAudio *add_audio;
 
   add_audio = (AgsAddAudio *) g_object_new(AGS_TYPE_ADD_AUDIO,
+					   "soundcard", soundcard,
+					   "audio", audio,
 					   NULL);
-
-  add_audio->soundcard = soundcard;
-  add_audio->audio = audio;
 
   return(add_audio);
 }

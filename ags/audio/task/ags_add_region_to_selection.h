@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
+
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_ADD_REGION_TO_SELECTION                (ags_add_region_to_selection_get_type())

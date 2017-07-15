@@ -472,7 +472,7 @@ ags_crop_note_launch(AgsTask *task)
 	  initial_run = FALSE;
 	}else{
 	  if(AGS_NOTE(selection->data)->x[0] > x_prev){
-	    x_offset = (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
+	    x_offset += (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
 	    x_prev = AGS_NOTE(selection->data)->x[0];
 	  }	  
 	}
@@ -491,7 +491,7 @@ ags_crop_note_launch(AgsTask *task)
 	  initial_run = FALSE;
 	}else{
 	  if(AGS_NOTE(selection->data)->x[0] > x_prev){
-	    x_offset = (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
+	    x_offset += (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
 	    x_prev = AGS_NOTE(selection->data)->x[0];
 	  }	  
 	}

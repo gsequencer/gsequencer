@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_add_region_to_selection_get_property(GObject *gobject,
 					      GParamSpec *param_spec);
 void ags_add_region_to_selection_connect(AgsConnectable *connectable);
 void ags_add_region_to_selection_disconnect(AgsConnectable *connectable);
+void ags_add_region_to_selection_dispose(GObject *gobject);
 void ags_add_region_to_selection_finalize(GObject *gobject);
 
 void ags_add_region_to_selection_launch(AgsTask *task);
@@ -115,6 +116,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
   gobject->set_property = ags_add_region_to_selection_set_property;
   gobject->get_property = ags_add_region_to_selection_get_property;
 
+  gobject->dispose = ags_add_region_to_selection_dispose;
   gobject->finalize = ags_add_region_to_selection_finalize;
 
   /* properties */
@@ -249,9 +251,9 @@ ags_add_region_to_selection_init(AgsAddRegionToSelection *add_region_to_selectio
 
 void
 ags_add_region_to_selection_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec)
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsAddRegionToSelection *add_region_to_selection;
 
@@ -283,27 +285,27 @@ ags_add_region_to_selection_set_property(GObject *gobject,
     {
       add_region_to_selection->x0 = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_X1:
     {
       add_region_to_selection->x1 = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_Y0:
     {
       add_region_to_selection->y0 = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_Y1:
     {
       add_region_to_selection->y1 = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_REPLACE_CURRENT_SELECTION:
     {
       add_region_to_selection->replace_current_selection = g_value_get_boolean(value);
     }
-  break;
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -312,9 +314,9 @@ ags_add_region_to_selection_set_property(GObject *gobject,
 
 void
 ags_add_region_to_selection_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec)
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsAddRegionToSelection *add_region_to_selection;
 
@@ -374,11 +376,35 @@ ags_add_region_to_selection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_region_to_selection_dispose(GObject *gobject)
+{
+  AgsAddRegionToSelection *add_region_to_selection;
+
+  add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
+
+  if(add_region_to_selection->notation != NULL){
+    g_object_unref(add_region_to_selection->notation);
+
+    add_region_to_selection->notation = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_region_to_selection_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_region_to_selection_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_region_to_selection_parent_class)->finalize(gobject);
+  AgsAddRegionToSelection *add_region_to_selection;
 
-  /* empty */
+  add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
+
+  if(add_region_to_selection->notation != NULL){
+    g_object_unref(add_region_to_selection->notation);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_region_to_selection_parent_class)->finalize(gobject);
 }
 
 void
@@ -419,14 +445,13 @@ ags_add_region_to_selection_new(AgsNotation *notation,
   AgsAddRegionToSelection *add_region_to_selection;
 
   add_region_to_selection = (AgsAddRegionToSelection *) g_object_new(AGS_TYPE_ADD_REGION_TO_SELECTION,
+								     "notation", notation,
+								     "x0", x0,
+								     "y0", y0,
+								     "x1", x1,
+								     "y1", y1,
+								     "replace-current-selection", replace_current_selection,
 								     NULL);
-
-  add_region_to_selection->notation = notation;
-  add_region_to_selection->x0 = x0;
-  add_region_to_selection->y0 = y0;
-  add_region_to_selection->x1 = x1;
-  add_region_to_selection->y1 = y1;
-  add_region_to_selection->replace_current_selection = replace_current_selection;
 
   return(add_region_to_selection);
 }
