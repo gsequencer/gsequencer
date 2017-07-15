@@ -47,6 +47,7 @@ void ags_apply_synth_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_apply_synth_connect(AgsConnectable *connectable);
 void ags_apply_synth_disconnect(AgsConnectable *connectable);
+void ags_apply_synth_dispose(GObject *gobject);
 void ags_apply_synth_finalize(GObject *gobject);
 
 void ags_apply_synth_launch(AgsTask *task);
@@ -131,6 +132,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
   gobject->set_property = ags_apply_synth_set_property;
   gobject->get_property = ags_apply_synth_get_property;
 
+  gobject->dispose = ags_apply_synth_dispose;
   gobject->finalize = ags_apply_synth_finalize;
 
   /* properties */
@@ -517,11 +519,35 @@ ags_apply_synth_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_apply_synth_dispose(GObject *gobject)
+{
+  AgsApplySynth *apply_synth;
+
+  apply_synth = AGS_APPLY_SYNTH(gobject);
+
+  if(apply_synth->start_channel != NULL){
+    g_object_unref(apply_synth->start_channel);
+    
+    apply_synth->start_channel = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_synth_parent_class)->dispose(gobject);
+}
+
+void
 ags_apply_synth_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_apply_synth_parent_class)->finalize(gobject);
+  AgsApplySynth *apply_synth;
 
-  /* empty */
+  apply_synth = AGS_APPLY_SYNTH(gobject);
+
+  if(apply_synth->start_channel != NULL){
+    g_object_unref(apply_synth->start_channel);    
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_synth_parent_class)->finalize(gobject);
 }
 
 void
@@ -752,19 +778,19 @@ ags_apply_synth_new(AgsChannel *start_channel, guint count,
   AgsApplySynth *apply_synth;
 
   apply_synth = (AgsApplySynth *) g_object_new(AGS_TYPE_APPLY_SYNTH,
+					       "start-channel", start_channel,
+					       "count", count,
+					       "wave", wave,
+					       "attack", attack,
+					       "frame-count", frame_count,
+					       "frequency", frequency,
+					       "phase", phase,
+					       "start-frequency", start_frequency,
+					       "volume", volume,
+					       "loop-start", loop_start,
+					       "loop-end", loop_end,
 					       NULL);
 
-  apply_synth->start_channel = start_channel;
-  apply_synth->count = count;
-  apply_synth->wave = wave;
-  apply_synth->attack = attack;
-  apply_synth->frame_count = frame_count;
-  apply_synth->frequency = frequency;
-  apply_synth->phase = phase;
-  apply_synth->start_frequency = start_frequency;
-  apply_synth->volume = volume;
-  apply_synth->loop_start = loop_start;
-  apply_synth->loop_end = loop_end;
 
   return(apply_synth);
 }
