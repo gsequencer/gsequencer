@@ -257,26 +257,26 @@ ags_start_sequencer_finalize(GObject *gobject)
   AgsApplicationContext *application_context;
   AgsSequencer *sequencer;
 
-  //FIXME:JK: wrong location of code
-  application_context = AGS_START_SEQUENCER(gobject)->application_context;
-  
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-
-  sequencer_thread = ags_thread_find_type((AgsThread *) audio_loop,
-					  AGS_TYPE_SEQUENCER_THREAD);
-
-  while((sequencer_thread = ags_thread_find_type(sequencer_thread,
-						 AGS_TYPE_SEQUENCER_THREAD)) != NULL){
-    if(AGS_SEQUENCER_THREAD(sequencer_thread)->error != NULL){
-      g_error_free(AGS_SEQUENCER_THREAD(sequencer_thread)->error);
-      
-      AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
-    }
-
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
-  }
+  application_context = AGS_START_SEQUENCER(gobject)->application_context;  
 
   if(application_context != NULL){
+    //FIXME:JK: wrong location of code
+    audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+
+    sequencer_thread = ags_thread_find_type((AgsThread *) audio_loop,
+					    AGS_TYPE_SEQUENCER_THREAD);
+
+    while((sequencer_thread = ags_thread_find_type(sequencer_thread,
+						   AGS_TYPE_SEQUENCER_THREAD)) != NULL){
+      if(AGS_SEQUENCER_THREAD(sequencer_thread)->error != NULL){
+	g_error_free(AGS_SEQUENCER_THREAD(sequencer_thread)->error);
+      
+	AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
+      }
+
+      sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
+    }
+    
     g_object_unref(application_context);
   }
 

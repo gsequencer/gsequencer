@@ -210,7 +210,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FILENAME,
+				  PROP_SAMPLE,
 				  param_spec);
 
   /* AgsTask */

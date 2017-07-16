@@ -207,19 +207,37 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				  param_spec);
 
   /**
+   * AgsApplySynth:wave:
+   *
+   * The wave of wave.
+   * 
+   * Since: 0.8.9
+   */
+  param_spec = g_param_spec_uint("wave",
+				 i18n_pspec("wave"),
+				 i18n_pspec("The wave"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE,
+				  param_spec);
+
+  /**
    * AgsApplySynth:frequency:
    *
    * The frequency of wave.
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("frequency",
-				 i18n_pspec("frequency of wave"),
-				 i18n_pspec("The frequency of wave"),
-				 0.0,
-				 G_MAXDOUBLE,
-				 0.0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_double("frequency",
+				   i18n_pspec("frequency of wave"),
+				   i18n_pspec("The frequency of wave"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FREQUENCY,
 				  param_spec);
@@ -231,13 +249,13 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("phase",
-				 i18n_pspec("phase of wave"),
-				 i18n_pspec("The phase of wave"),
-				 0.0,
-				 G_MAXDOUBLE,
-				 0.0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_double("phase",
+				   i18n_pspec("phase of wave"),
+				   i18n_pspec("The phase of wave"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PHASE,
 				  param_spec);
@@ -249,13 +267,13 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("start-frequency",
-				 i18n_pspec("start frequency"),
-				 i18n_pspec("The start frequency"),
-				 0.0,
-				 G_MAXDOUBLE,
-				 0.0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_double("start-frequency",
+				   i18n_pspec("start frequency"),
+				   i18n_pspec("The start frequency"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_START_FREQUENCY,
 				  param_spec);
@@ -267,13 +285,13 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    * 
    * Since: 0.7.117
    */
-  param_spec = g_param_spec_uint("volume",
-				 i18n_pspec("volume of wave"),
-				 i18n_pspec("The volume of wave"),
-				 0.0,
-				 G_MAXDOUBLE,
-				 0.0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_double("volume",
+				   i18n_pspec("volume of wave"),
+				   i18n_pspec("The volume of wave"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_VOLUME,
 				  param_spec);

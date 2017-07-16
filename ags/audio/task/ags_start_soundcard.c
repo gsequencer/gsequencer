@@ -258,20 +258,21 @@ ags_start_soundcard_finalize(GObject *gobject)
   AgsApplicationContext *application_context;
   AgsSoundcard *soundcard;
 
-  //FIXME:JK: wrong location of code
   application_context = AGS_START_SOUNDCARD(gobject)->application_context;
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
-								 AGS_TYPE_SOUNDCARD_THREAD);
-
-  if(soundcard_thread->error != NULL){
-    g_error_free(soundcard_thread->error);
-
-    soundcard_thread->error = NULL;
-  }
 
   if(application_context != NULL){
+    //FIXME:JK: wrong location of code
+    audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+
+    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
+								   AGS_TYPE_SOUNDCARD_THREAD);
+
+    if(soundcard_thread->error != NULL){
+      g_error_free(soundcard_thread->error);
+
+      soundcard_thread->error = NULL;
+    }
+    
     g_object_unref(application_context);
   }
 
