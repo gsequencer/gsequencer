@@ -40,6 +40,7 @@ void ags_resize_audio_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_resize_audio_connect(AgsConnectable *connectable);
 void ags_resize_audio_disconnect(AgsConnectable *connectable);
+void ags_resize_audio_dispose(GObject *gobject);
 void ags_resize_audio_finalize(GObject *gobject);
 
 void ags_resize_audio_launch(AgsTask *task);
@@ -117,6 +118,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
   gobject->set_property = ags_resize_audio_set_property;
   gobject->get_property = ags_resize_audio_get_property;
 
+  gobject->dispose = ags_resize_audio_dispose;
   gobject->finalize = ags_resize_audio_finalize;
 
   /* properties */
@@ -322,11 +324,35 @@ ags_resize_audio_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_resize_audio_dispose(GObject *gobject)
+{
+  AgsResizeAudio *resize_audio;
+
+  resize_audio = AGS_RESIZE_AUDIO(gobject);
+
+  if(resize_audio->audio != NULL){
+    g_object_unref(resize_audio->audio);
+
+    resize_audio->audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_resize_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_resize_audio_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_resize_audio_parent_class)->finalize(gobject);
+  AgsResizeAudio *resize_audio;
 
-  /* empty */
+  resize_audio = AGS_RESIZE_AUDIO(gobject);
+
+  if(resize_audio->audio != NULL){
+    g_object_unref(resize_audio->audio);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_resize_audio_parent_class)->finalize(gobject);
 }
 
 void
@@ -405,12 +431,11 @@ ags_resize_audio_new(AgsAudio *audio,
   AgsResizeAudio *resize_audio;
 
   resize_audio = (AgsResizeAudio *) g_object_new(AGS_TYPE_RESIZE_AUDIO,
+						 "audio", audio,
+						 "output-pads", output_pads,
+						 "input-pads", input_pads,
+						 "audio-channels", audio_channels,
 						 NULL);
-
-  resize_audio->audio = audio;
-  resize_audio->output_pads = output_pads;
-  resize_audio->input_pads = input_pads;
-  resize_audio->audio_channels = audio_channels;
 
   return(resize_audio);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,6 +40,7 @@ void ags_start_soundcard_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_start_soundcard_connect(AgsConnectable *connectable);
 void ags_start_soundcard_disconnect(AgsConnectable *connectable);
+void ags_start_soundcard_dispose(GObject *gobject);
 void ags_start_soundcard_finalize(GObject *gobject);
 
 void ags_start_soundcard_launch(AgsTask *task);
@@ -114,6 +115,7 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
   gobject->set_property = ags_start_soundcard_set_property;
   gobject->get_property = ags_start_soundcard_get_property;
 
+  gobject->dispose = ags_start_soundcard_dispose;
   gobject->finalize = ags_start_soundcard_finalize;
 
   /* properties */
@@ -231,6 +233,23 @@ ags_start_soundcard_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_start_soundcard_dispose(GObject *gobject)
+{
+  AgsStartSoundcard *start_soundcard;
+
+  start_soundcard = AGS_START_SOUNDCARD(gobject);
+
+  if(start_soundcard->application_context != NULL){
+    g_object_unref(start_soundcard->application_context);
+
+    start_soundcard->application_context = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_start_soundcard_parent_class)->dispose(gobject);
+}
+
+void
 ags_start_soundcard_finalize(GObject *gobject)
 {
   AgsAudioLoop *audio_loop;
@@ -239,6 +258,7 @@ ags_start_soundcard_finalize(GObject *gobject)
   AgsApplicationContext *application_context;
   AgsSoundcard *soundcard;
 
+  //FIXME:JK: wrong location of code
   application_context = AGS_START_SOUNDCARD(gobject)->application_context;
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
@@ -251,6 +271,11 @@ ags_start_soundcard_finalize(GObject *gobject)
     soundcard_thread->error = NULL;
   }
 
+  if(application_context != NULL){
+    g_object_unref(application_context);
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_start_soundcard_parent_class)->finalize(gobject);
 }
 

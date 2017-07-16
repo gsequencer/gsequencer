@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
+
 #include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_SEEK_SOUNDCARD                (ags_seek_soundcard_get_type())

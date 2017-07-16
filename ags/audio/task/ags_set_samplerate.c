@@ -45,6 +45,7 @@ void ags_set_samplerate_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_set_samplerate_connect(AgsConnectable *connectable);
 void ags_set_samplerate_disconnect(AgsConnectable *connectable);
+void ags_set_samplerate_dispose(GObject *gobject);
 void ags_set_samplerate_finalize(GObject *gobject);
 
 void ags_set_samplerate_launch(AgsTask *task);
@@ -126,6 +127,7 @@ ags_set_samplerate_class_init(AgsSetSamplerateClass *set_samplerate)
   gobject->set_property = ags_set_samplerate_set_property;
   gobject->get_property = ags_set_samplerate_get_property;
 
+  gobject->dispose = ags_set_samplerate_dispose;
   gobject->finalize = ags_set_samplerate_finalize;
 
   /* properties */
@@ -272,11 +274,35 @@ ags_set_samplerate_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_set_samplerate_dispose(GObject *gobject)
+{
+  AgsSetSamplerate *set_samplerate;
+
+  set_samplerate = AGS_SET_SAMPLERATE(gobject);
+
+  if(set_samplerate->scope != NULL){
+    g_object_unref(set_samplerate->scope);
+
+    set_samplerate->scope = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_samplerate_parent_class)->dispose(gobject);
+}
+
+void
 ags_set_samplerate_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_set_samplerate_parent_class)->finalize(gobject);
+  AgsSetSamplerate *set_samplerate;
 
-  /* empty */
+  set_samplerate = AGS_SET_SAMPLERATE(gobject);
+
+  if(set_samplerate->scope != NULL){
+    g_object_unref(set_samplerate->scope);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_samplerate_parent_class)->finalize(gobject);
 }
 
 void

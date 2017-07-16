@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_set_input_device_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_set_input_device_connect(AgsConnectable *connectable);
 void ags_set_input_device_disconnect(AgsConnectable *connectable);
+void ags_set_input_device_dispose(GObject *gobject);
 void ags_set_input_device_finalize(GObject *gobject);
 
 void ags_set_input_device_launch(AgsTask *task);
@@ -114,6 +115,7 @@ ags_set_input_device_class_init(AgsSetInputDeviceClass *set_input_device)
   gobject->set_property = ags_set_input_device_set_property;
   gobject->get_property = ags_set_input_device_get_property;
 
+  gobject->dispose = ags_set_input_device_dispose;
   gobject->finalize = ags_set_input_device_finalize;
 
   /* properties */
@@ -270,11 +272,45 @@ ags_set_input_device_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_set_input_device_dispose(GObject *gobject)
+{
+  AgsSetInputDevice *set_input_device;
+
+  set_input_device = AGS_SET_INPUT_DEVICE(gobject);
+
+  if(set_input_device->sequencer != NULL){
+    g_object_unref(set_input_device->sequencer);
+
+    set_input_device->sequencer = NULL;
+  }
+
+  if(set_input_device->device != NULL){
+    g_free(set_input_device->device);
+
+    set_input_device->device = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_input_device_parent_class)->dispose(gobject);
+}
+
+void
 ags_set_input_device_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_set_input_device_parent_class)->finalize(gobject);
+  AgsSetInputDevice *set_input_device;
 
-  /* empty */
+  set_input_device = AGS_SET_INPUT_DEVICE(gobject);
+
+  if(set_input_device->sequencer != NULL){
+    g_object_unref(set_input_device->sequencer);
+  }
+
+  if(set_input_device->device != NULL){
+    g_free(set_input_device->device);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_input_device_parent_class)->finalize(gobject);
 }
 
 void
@@ -325,10 +361,9 @@ ags_set_input_device_new(GObject *sequencer,
   AgsSetInputDevice *set_input_device;
 
   set_input_device = (AgsSetInputDevice *) g_object_new(AGS_TYPE_SET_INPUT_DEVICE,
+							"sequencer", sequencer,
+							"device", device,
 							NULL);
-
-  set_input_device->sequencer = sequencer;
-  set_input_device->device = device;
 
   return(set_input_device);
 }
