@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_unref_audio_signal_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_unref_audio_signal_connect(AgsConnectable *connectable);
 void ags_unref_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_unref_audio_signal_dispose(GObject *gobject);
 void ags_unref_audio_signal_finalize(GObject *gobject);
 
 void ags_unref_audio_signal_launch(AgsTask *task);
@@ -110,6 +111,7 @@ ags_unref_audio_signal_class_init(AgsUnrefAudioSignalClass *unref_audio_signal)
   gobject->set_property = ags_unref_audio_signal_set_property;
   gobject->get_property = ags_unref_audio_signal_get_property;
 
+  gobject->dispose = ags_unref_audio_signal_dispose;
   gobject->finalize = ags_unref_audio_signal_finalize;
 
   /* properties */  
@@ -227,11 +229,35 @@ ags_unref_audio_signal_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_unref_audio_signal_dispose(GObject *gobject)
+{
+  AgsUnrefAudioSignal *unref_audio_signal;
+
+  unref_audio_signal = AGS_UNREF_AUDIO_SIGNAL(gobject);
+
+  if(unref_audio_signal->audio_signal != NULL){
+    g_object_unref(unref_audio_signal->audio_signal);
+
+    unref_audio_signal->audio_signal = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_unref_audio_signal_parent_class)->dispose(gobject);
+}
+
+void
 ags_unref_audio_signal_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_unref_audio_signal_parent_class)->finalize(gobject);
+  AgsUnrefAudioSignal *unref_audio_signal;
 
-  /* empty */
+  unref_audio_signal = AGS_UNREF_AUDIO_SIGNAL(gobject);
+
+  if(unref_audio_signal->audio_signal != NULL){
+    g_object_unref(unref_audio_signal->audio_signal);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_unref_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
@@ -251,9 +277,8 @@ ags_unref_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsUnrefAudioSignal *unref_audio_signal;
 
   unref_audio_signal = (AgsUnrefAudioSignal *) g_object_new(AGS_TYPE_UNREF_AUDIO_SIGNAL,
+							    "audio-signal", audio_signal,
 							    NULL);
-
-  unref_audio_signal->audio_signal = audio_signal;
 
   return(unref_audio_signal);
 }

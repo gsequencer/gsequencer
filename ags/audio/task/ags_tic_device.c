@@ -29,8 +29,17 @@
 void ags_tic_device_class_init(AgsTicDeviceClass *tic_device);
 void ags_tic_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_tic_device_init(AgsTicDevice *tic_device);
+void ags_tic_device_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_tic_device_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 void ags_tic_device_connect(AgsConnectable *connectable);
 void ags_tic_device_disconnect(AgsConnectable *connectable);
+void ags_tic_device_dispose(GObject *gobject);
 void ags_tic_device_finalize(GObject *gobject);
 
 void ags_tic_device_launch(AgsTask *task);
@@ -47,6 +56,11 @@ void ags_tic_device_launch(AgsTask *task);
 
 static gpointer ags_tic_device_parent_class = NULL;
 static AgsConnectableInterface *ags_tic_device_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_DEVICE,
+};
 
 GType
 ags_tic_device_get_type()
@@ -91,17 +105,40 @@ ags_tic_device_class_init(AgsTicDeviceClass *tic_device)
   GObjectClass *gobject;
   AgsTaskClass *task;
 
+  GParamSpec *param_spec;
+  
   ags_tic_device_parent_class = g_type_class_peek_parent(tic_device);
 
   /* gobject */
   gobject = (GObjectClass *) tic_device;
 
+  gobject->dispose = ags_tic_device_dispose;
   gobject->finalize = ags_tic_device_finalize;
 
   /* task */
   task = (AgsTaskClass *) tic_device;
 
+  gobject->set_property = ags_tic_device_set_property;
+  gobject->get_property = ags_tic_device_get_property;
+
   task->launch = ags_tic_device_launch;
+
+  /* properties */
+  /**
+   * AgsTicDevice:device:
+   *
+   * The assigned #GObject as device.
+   * 
+   * Since: 0.7.117
+   */
+  param_spec = g_param_spec_object("device",
+				   i18n_pspec("device to tic"),
+				   i18n_pspec("The device to tic"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVICE,
+				  param_spec);  
 }
 
 void
@@ -117,6 +154,66 @@ void
 ags_tic_device_init(AgsTicDevice *tic_device)
 {
   tic_device->device = NULL;
+}
+
+void
+ags_tic_device_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsTicDevice *tic_device;
+
+  tic_device = AGS_TIC_DEVICE(gobject);
+
+  switch(prop_id){
+  case PROP_DEVICE:
+    {
+      GObject *device;
+
+      device = (GObject *) g_value_get_object(value);
+
+      if(tic_device->device == (GObject *) device){
+	return;
+      }
+
+      if(tic_device->device != NULL){
+	g_object_unref(tic_device->device);
+      }
+
+      if(device != NULL){
+	g_object_ref(device);
+      }
+
+      tic_device->device = (GObject *) device;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_tic_device_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsTicDevice *tic_device;
+
+  tic_device = AGS_TIC_DEVICE(gobject);
+
+  switch(prop_id){
+  case PROP_DEVICE:
+    {
+      g_value_set_object(value, tic_device->device);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -136,11 +233,35 @@ ags_tic_device_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_tic_device_dispose(GObject *gobject)
+{
+  AgsTicDevice *tic_device;
+
+  tic_device = AGS_TIC_DEVICE(gobject);
+
+  if(tic_device->device != NULL){
+    g_object_unref(tic_device->device);
+
+    tic_device->device = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_tic_device_parent_class)->dispose(gobject);
+}
+
+void
 ags_tic_device_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_tic_device_parent_class)->finalize(gobject);
+  AgsTicDevice *tic_device;
 
-  /* empty */
+  tic_device = AGS_TIC_DEVICE(gobject);
+
+  if(tic_device->device != NULL){
+    g_object_unref(tic_device->device);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_tic_device_parent_class)->finalize(gobject);
 }
 
 void
@@ -183,9 +304,8 @@ ags_tic_device_new(GObject *device)
   AgsTicDevice *tic_device;
 
   tic_device = (AgsTicDevice *) g_object_new(AGS_TYPE_TIC_DEVICE,
+					     "device", device,
 					     NULL);
-
-  tic_device->device = device;
 
   return(tic_device);
 }

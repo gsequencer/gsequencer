@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,7 @@ void ags_apply_tact_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_apply_tact_connect(AgsConnectable *connectable);
 void ags_apply_tact_disconnect(AgsConnectable *connectable);
+void ags_apply_tact_dispose(GObject *gobject);
 void ags_apply_tact_finalize(GObject *gobject);
 
 void ags_apply_tact_launch(AgsTask *task);
@@ -124,6 +125,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
   gobject->set_property = ags_apply_tact_set_property;
   gobject->get_property = ags_apply_tact_get_property;
 
+  gobject->dispose = ags_apply_tact_dispose;
   gobject->finalize = ags_apply_tact_finalize;
 
   /* properties */
@@ -270,11 +272,35 @@ ags_apply_tact_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_apply_tact_dispose(GObject *gobject)
+{
+  AgsApplyTact *apply_tact;
+
+  apply_tact = AGS_APPLY_TACT(gobject);
+
+  if(apply_tact->scope != NULL){
+    g_object_unref(apply_tact->scope);
+
+    apply_tact->scope = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_tact_parent_class)->dispose(gobject);
+}
+
+void
 ags_apply_tact_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_apply_tact_parent_class)->finalize(gobject);
+  AgsApplyTact *apply_tact;
 
-  /* empty */
+  apply_tact = AGS_APPLY_TACT(gobject);
+
+  if(apply_tact->scope != NULL){
+    g_object_unref(apply_tact->scope);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_tact_parent_class)->finalize(gobject);
 }
 
 void
@@ -423,10 +449,9 @@ ags_apply_tact_new(GObject *scope,
   AgsApplyTact *apply_tact;
   
   apply_tact = (AgsApplyTact *) g_object_new(AGS_TYPE_APPLY_TACT,
+					     "scope", scope,
+					     "tact", tact,
 					     NULL);
   
-  apply_tact->scope = scope;
-  apply_tact->tact = tact;
-
   return(apply_tact);
 }
