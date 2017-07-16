@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,7 @@ void ags_open_sf2_sample_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_open_sf2_sample_connect(AgsConnectable *connectable);
 void ags_open_sf2_sample_disconnect(AgsConnectable *connectable);
+void ags_open_sf2_sample_dispose(GObject *gobject);
 void ags_open_sf2_sample_finalize(GObject *gobject);
 void ags_open_sf2_sample_launch(AgsTask *task);
 
@@ -128,6 +129,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
   gobject->set_property = ags_open_sf2_sample_set_property;
   gobject->get_property = ags_open_sf2_sample_get_property;
 
+  gobject->dispose = ags_open_sf2_sample_dispose;
   gobject->finalize = ags_open_sf2_sample_finalize;
 
   /* properties */
@@ -401,17 +403,61 @@ ags_open_sf2_sample_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_open_sf2_sample_dispose(GObject *gobject)
+{
+  AgsOpenSf2Sample *open_sf2_sample;
+
+  open_sf2_sample = AGS_OPEN_SF2_SAMPLE(gobject);
+
+  if(open_sf2_sample->channel != NULL){
+    g_object_unref(open_sf2_sample->channel);
+  }
+
+  if(open_sf2_sample->filename != NULL){
+    g_free(open_sf2_sample->filename);
+
+    open_sf2_sample->filename = NULL;
+  }
+
+  if(open_sf2_sample->preset != NULL){
+    g_free(open_sf2_sample->preset);
+
+    open_sf2_sample->preset = NULL;
+  }
+
+  if(open_sf2_sample->instrument != NULL){
+    g_free(open_sf2_sample->instrument);
+
+    open_sf2_sample->instrument = NULL;
+  }
+
+  if(open_sf2_sample->sample != NULL){
+    g_free(open_sf2_sample->sample);
+
+    open_sf2_sample->sample = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_open_sf2_sample_parent_class)->dispose(gobject);
+}
+
+void
 ags_open_sf2_sample_finalize(GObject *gobject)
 {
   AgsOpenSf2Sample *open_sf2_sample;
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(gobject);
 
+  if(open_sf2_sample->channel != NULL){
+    g_object_unref(open_sf2_sample->channel);
+  }
+  
   g_free(open_sf2_sample->filename);
   g_free(open_sf2_sample->preset);
   g_free(open_sf2_sample->instrument);
   g_free(open_sf2_sample->sample);
-  
+
+  /* call parent */
   G_OBJECT_CLASS(ags_open_sf2_sample_parent_class)->finalize(gobject);
 }
 
@@ -559,13 +605,12 @@ ags_open_sf2_sample_new(AgsChannel *channel,
   AgsOpenSf2Sample *open_sf2_sample;
 
   open_sf2_sample = (AgsOpenSf2Sample *) g_object_new(AGS_TYPE_OPEN_SF2_SAMPLE,
+						      "channel", channel,
+						      "filename", filename,
+						      "preset", preset,
+						      "instrument", instrument,
+						      "sample", sample,
 						      NULL);
-
-  open_sf2_sample->channel = channel;
-  open_sf2_sample->filename = filename;
-  open_sf2_sample->preset = preset;
-  open_sf2_sample->instrument = instrument;
-  open_sf2_sample->sample = sample;
 
   return(open_sf2_sample);
 }

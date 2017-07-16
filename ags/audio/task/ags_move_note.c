@@ -36,6 +36,7 @@ void ags_move_note_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_move_note_connect(AgsConnectable *connectable);
 void ags_move_note_disconnect(AgsConnectable *connectable);
+void ags_move_note_dispose(GObject *gobject);
 void ags_move_note_finalize(GObject *gobject);
 
 void ags_move_note_launch(AgsTask *task);
@@ -117,6 +118,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
   gobject->set_property = ags_move_note_set_property;
   gobject->get_property = ags_move_note_get_property;
 
+  gobject->dispose = ags_move_note_dispose;
   gobject->finalize = ags_move_note_finalize;
 
   /* properties */
@@ -446,11 +448,45 @@ ags_move_note_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_move_note_dispose(GObject *gobject)
+{
+  AgsMoveNote *move_note;
+
+  move_note = AGS_MOVE_NOTE(gobject);
+
+  if(move_note->notation != NULL){
+    g_object_unref(move_note->notation);
+
+    move_note->notation = NULL;
+  }
+
+  if(move_note->selection != NULL){
+    g_list_free(move_note->selection);
+
+    move_note->selection = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_move_note_parent_class)->dispose(gobject);
+}
+
+void
 ags_move_note_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_move_note_parent_class)->finalize(gobject);
+  AgsMoveNote *move_note;
 
-  /* empty */
+  move_note = AGS_MOVE_NOTE(gobject);
+
+  if(move_note->notation != NULL){
+    g_object_unref(move_note->notation);
+  }
+
+  if(move_note->selection != NULL){
+    g_list_free(move_note->selection);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_move_note_parent_class)->finalize(gobject);
 }
 
 void

@@ -36,6 +36,7 @@ void ags_remove_note_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_remove_note_connect(AgsConnectable *connectable);
 void ags_remove_note_disconnect(AgsConnectable *connectable);
+void ags_remove_note_dispose(GObject *gobject);
 void ags_remove_note_finalize(GObject *gobject);
 
 void ags_remove_note_launch(AgsTask *task);
@@ -112,6 +113,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
   gobject->set_property = ags_remove_note_set_property;
   gobject->get_property = ags_remove_note_get_property;
 
+  gobject->dispose = ags_remove_note_dispose;
   gobject->finalize = ags_remove_note_finalize;
 
   /* properties */
@@ -287,11 +289,35 @@ ags_remove_note_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_remove_note_dispose(GObject *gobject)
+{
+  AgsRemoveNote *remove_note;
+
+  remove_note = AGS_REMOVE_NOTE(gobject);
+
+  if(remove_note->notation != NULL){
+    g_object_unref(remove_note->notation);
+
+    remove_note->notation = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_note_parent_class)->dispose(gobject);
+}
+
+void
 ags_remove_note_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_remove_note_parent_class)->finalize(gobject);
+  AgsRemoveNote *remove_note;
 
-  /* empty */
+  remove_note = AGS_REMOVE_NOTE(gobject);
+
+  if(remove_note->notation != NULL){
+    g_object_unref(remove_note->notation);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_note_parent_class)->finalize(gobject);
 }
 
 void
@@ -325,11 +351,10 @@ ags_remove_note_new(AgsNotation *notation,
   AgsRemoveNote *remove_note;
 
   remove_note = (AgsRemoveNote *) g_object_new(AGS_TYPE_REMOVE_NOTE,
+					       "notation", notation,
+					       "x", x,
+					       "y", y,
 					       NULL);
-
-  remove_note->notation = notation;
-  remove_note->x = x;
-  remove_note->y = y;
 
   return(remove_note);
 }
