@@ -27,13 +27,13 @@ void ags_crop_note_class_init(AgsCropNoteClass *crop_note);
 void ags_crop_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_crop_note_init(AgsCropNote *crop_note);
 void ags_crop_note_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
 void ags_crop_note_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_crop_note_connect(AgsConnectable *connectable);
 void ags_crop_note_disconnect(AgsConnectable *connectable);
 void ags_crop_note_dispose(GObject *gobject);
@@ -90,9 +90,9 @@ ags_crop_note_get_type()
     };
 
     ags_type_crop_note = g_type_register_static(AGS_TYPE_TASK,
-					       "AgsCropNote",
-					       &ags_crop_note_info,
-					       0);
+						"AgsCropNote",
+						&ags_crop_note_info,
+						0);
 
     g_type_add_interface_static(ags_type_crop_note,
 				AGS_TYPE_CONNECTABLE,
@@ -177,13 +177,13 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    * 
    * Since: 0.8.9
    */
-  param_spec =  g_param_spec_uint("x-crop",
-				  i18n_pspec("crop with x-crop amount"),
-				  i18n_pspec("Crop the notation by x-crop amount"),
-				  0,
-				  AGS_CROP_NOTE_DEFAULT_X_LENGTH,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_int("x-crop",
+				 i18n_pspec("crop with x-crop amount"),
+				 i18n_pspec("Crop the notation by x-crop amount"),
+				 -1 * AGS_CROP_NOTE_DEFAULT_X_LENGTH,
+				 AGS_CROP_NOTE_DEFAULT_X_LENGTH,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_X_CROP,
 				  param_spec);
@@ -268,9 +268,9 @@ ags_crop_note_init(AgsCropNote *crop_note)
 
 void
 ags_crop_note_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec)
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
 {
   AgsCropNote *crop_note;
 
@@ -319,27 +319,27 @@ ags_crop_note_set_property(GObject *gobject,
     {
       crop_note->x_padding = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_X_CROP:
     {
-      crop_note->x_crop = g_value_get_uint(value);
+      crop_note->x_crop = g_value_get_int(value);
     }
-  break;
+    break;
   case PROP_ABSOLUTE:
     {
       crop_note->absolute = g_value_get_boolean(value);
     }
-  break;
+    break;
   case PROP_IN_PLACE:
     {
       crop_note->in_place = g_value_get_boolean(value);
     }
-  break;
+    break;
   case PROP_DO_RESIZE:
     {
       crop_note->do_resize = g_value_get_boolean(value);
     }
-  break;
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -348,9 +348,9 @@ ags_crop_note_set_property(GObject *gobject,
 
 void
 ags_crop_note_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec)
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
 {
   AgsCropNote *crop_note;
 
@@ -375,7 +375,7 @@ ags_crop_note_get_property(GObject *gobject,
     break;
   case PROP_X_CROP:
     {
-      g_value_set_uint(value, crop_note->x_crop);
+      g_value_set_int(value, crop_note->x_crop);
     }
     break;
   case PROP_ABSOLUTE:
@@ -463,11 +463,12 @@ ags_crop_note_launch(AgsTask *task)
   AgsCropNote *crop_note;
 
   AgsNotation *notation;
+  AgsNote *note;
   
   GList *selection;
 
   guint x_padding;
-  guint x_crop;
+  gint x_crop;
   gint x_offset, x_prev;
   
   gboolean absolute;
@@ -497,46 +498,61 @@ ags_crop_note_launch(AgsTask *task)
   initial_run = TRUE;
   
   while(selection != NULL){
+    note = ags_note_duplicate(AGS_NOTE(selection->data));
+    
     if(absolute){
       if(in_place){
-	AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[0] + x_crop;
+	note->x[1] = note->x[0] + x_crop;
       }else if(do_resize){
 	if(initial_run){
 	  x_offset = 0;
-	  x_prev = AGS_NOTE(selection->data)->x[0];
+	  x_prev = note->x[0];
 
 	  initial_run = FALSE;
 	}else{
-	  if(AGS_NOTE(selection->data)->x[0] > x_prev){
-	    x_offset += (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
-	    x_prev = AGS_NOTE(selection->data)->x[0];
+	  if(note->x[0] > x_prev){
+	    x_offset += (note->x[0] - x_prev) * x_padding;
+	    x_prev = note->x[0];
 	  }	  
 	}
 	
-	AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
-	AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[0] + x_crop;
+	note->x[0] = x_offset + note->x[0];
+	note->x[1] = x_offset + note->x[0] + x_crop;
       }
     }else{
       if(in_place){
-	AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + x_crop;
+	note->x[1] = note->x[1] + x_crop;
       }else if(do_resize){
 	if(initial_run){
 	  x_offset = 0;
-	  x_prev = AGS_NOTE(selection->data)->x[0];
+	  x_prev = note->x[0];
 
 	  initial_run = FALSE;
 	}else{
-	  if(AGS_NOTE(selection->data)->x[0] > x_prev){
-	    x_offset += (AGS_NOTE(selection->data)->x[0] - x_prev) * x_padding;
-	    x_prev = AGS_NOTE(selection->data)->x[0];
+	  if(note->x[0] > x_prev){
+	    x_offset += (note->x[0] - x_prev) * x_padding;
+	    x_prev = note->x[0];
 	  }	  
 	}
 
-	AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
-	AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[1] + x_crop;
+	note->x[0] = x_offset + note->x[0];
+	note->x[1] = x_offset + note->x[1] + x_crop;
       }
     }
 
+    /* remove old note */
+    ags_notation_remove_note(notation,
+			     selection->data,
+			     TRUE);
+    ags_notation_remove_note(notation,
+			     selection->data,
+			     FALSE);
+
+    /* add new note */
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
+    
     selection = selection->next;
   }
 }
@@ -561,7 +577,7 @@ ags_crop_note_launch(AgsTask *task)
 AgsCropNote*
 ags_crop_note_new(AgsNotation *notation,
 		  GList *selection,
-		  guint x_padding, guint x_crop,
+		  guint x_padding, gint x_crop,
 		  gboolean absolute, gboolean in_place, gboolean do_resize)
 {
   AgsCropNote *crop_note;

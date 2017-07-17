@@ -539,7 +539,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
     crop_note = ags_crop_note_new(notation->data,
 				  selection,
-				  x_crop, x_padding,
+				  x_padding, x_crop,
 				  absolute,
 				  in_place, do_resize);
     task = g_list_prepend(task,

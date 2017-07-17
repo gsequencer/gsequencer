@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.8.8\n"
+"Project-Id-Version: gsequencer 0.8.9\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-07-01 15:51+0200\n"
+"POT-Creation-Date: 2017-07-17 20:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -169,7 +169,7 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/X/ags_export_window.c:245 ags/X/editor/ags_toolbar.c:208
+#: ags/X/ags_export_window.c:245 ags/X/editor/ags_toolbar.c:209
 msgid "mode"
 msgstr ""
 
@@ -242,67 +242,67 @@ msgstr ""
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_machine.c:1897
+#: ags/X/ags_machine.c:1903
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:1902
+#: ags/X/ags_machine.c:1908
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:2168
+#: ags/X/ags_machine.c:2174
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:2171
+#: ags/X/ags_machine.c:2177
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:2174
+#: ags/X/ags_machine.c:2180
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:2177
+#: ags/X/ags_machine.c:2183
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:2180
+#: ags/X/ags_machine.c:2186
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:2183 ags/X/ags_machine_callbacks.c:295
+#: ags/X/ags_machine.c:2189 ags/X/ags_machine_callbacks.c:295
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:2186 ags/X/ags_machine_editor.c:198
+#: ags/X/ags_machine.c:2192 ags/X/ags_machine_editor.c:198
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:2240 ags/X/machine/ags_drum_input_pad.c:195
+#: ags/X/ags_machine.c:2246 ags/X/machine/ags_drum_input_pad.c:195
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:2251
+#: ags/X/ags_machine.c:2257
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2261
+#: ags/X/ags_machine.c:2267
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2271
+#: ags/X/ags_machine.c:2277
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:2300
+#: ags/X/ags_machine.c:2306
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2311
+#: ags/X/ags_machine.c:2317
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2321
+#: ags/X/ags_machine.c:2327
 msgid "MIDI dialog"
 msgstr ""
 
@@ -511,7 +511,7 @@ msgstr ""
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:191 ags/X/editor/ags_toolbar.c:199
+#: ags/X/editor/ags_automation_toolbar.c:191 ags/X/editor/ags_toolbar.c:200
 msgid "zoom"
 msgstr ""
 
@@ -600,51 +600,51 @@ msgstr ""
 msgid "shift piano"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:116
+#: ags/X/editor/ags_toolbar.c:117
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:125
+#: ags/X/editor/ags_toolbar.c:126
 msgid "edit notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:134
+#: ags/X/editor/ags_toolbar.c:135
 msgid "clear notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:144
+#: ags/X/editor/ags_toolbar.c:145
 msgid "select notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:155
+#: ags/X/editor/ags_toolbar.c:156
 msgid "copy notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:164
+#: ags/X/editor/ags_toolbar.c:165
 msgid "cut notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:172
+#: ags/X/editor/ags_toolbar.c:173
 msgid "paste notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:180
+#: ags/X/editor/ags_toolbar.c:181
 msgid "invert notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:184
+#: ags/X/editor/ags_toolbar.c:185
 msgid "tool"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:187
+#: ags/X/editor/ags_toolbar.c:188
 msgid "additional tools"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:379
+#: ags/X/editor/ags_toolbar.c:390
 msgid "move notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:382
+#: ags/X/editor/ags_toolbar.c:393
 msgid "crop notes"
 msgstr ""
 

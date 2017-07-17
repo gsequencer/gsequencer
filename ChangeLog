@@ -3,8 +3,8 @@ ags (0.8.9)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented move note task
 	* implmeneted crop note task
-	* TODO:JK: implemented all task's finalize function
-	* TODO:JK: improved all task's to use properties to instantiate
+	* implemented all task's finalize function
+	* improved all task's to use properties to instantiate
 
 ags (0.8.8)
 

@@ -155,6 +155,7 @@ ags_playback_new
 ags_notation_get_type
 ags_notation_find_near_timestamp
 ags_notation_add_note
+ags_notation_remove_note
 ags_notation_remove_note_at_position
 ags_notation_get_selection
 ags_notation_is_note_selected

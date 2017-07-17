@@ -35,6 +35,7 @@
 #define AGS_MOVE_NOTE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MOVE_NOTE, AgsMoveNoteClass))
 
 #define AGS_MOVE_NOTE_DEFAULT_X_LENGTH (16 * 16 * 1200)
+#define AGS_MOVE_NOTE_DEFAULT_Y_LENGTH (1024)
 
 typedef struct _AgsMoveNote AgsMoveNote;
 typedef struct _AgsMoveNoteClass AgsMoveNoteClass;
@@ -66,7 +67,7 @@ GType ags_move_note_get_type();
 AgsMoveNote* ags_move_note_new(AgsNotation *notation,
 			       GList *selection,
 			       guint first_x, guint first_y,
-			       guint move_x, guint move_y,
+			       gint move_x, gint move_y,
 			       gboolean relative, gboolean absolute);
 
 #endif /*__AGS_MOVE_NOTE_H__*/

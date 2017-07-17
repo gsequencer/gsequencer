@@ -48,7 +48,7 @@ struct _AgsCropNote
   GList *selection;
   
   guint x_padding;
-  guint x_crop;
+  gint x_crop;
   
   gboolean absolute;
   gboolean in_place;
@@ -64,7 +64,7 @@ GType ags_crop_note_get_type();
 
 AgsCropNote* ags_crop_note_new(AgsNotation *notation,
 			       GList *selection,
-			       guint x_padding, guint x_crop,
+			       guint x_padding, gint x_crop,
 			       gboolean absolute, gboolean in_place, gboolean do_resize);
 
 #endif /*__AGS_CROP_NOTE_H__*/

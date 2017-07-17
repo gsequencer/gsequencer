@@ -27,13 +27,13 @@ void ags_move_note_class_init(AgsMoveNoteClass *move_note);
 void ags_move_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_move_note_init(AgsMoveNote *move_note);
 void ags_move_note_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
 void ags_move_note_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_move_note_connect(AgsConnectable *connectable);
 void ags_move_note_disconnect(AgsConnectable *connectable);
 void ags_move_note_dispose(GObject *gobject);
@@ -91,9 +91,9 @@ ags_move_note_get_type()
     };
 
     ags_type_move_note = g_type_register_static(AGS_TYPE_TASK,
-					       "AgsMoveNote",
-					       &ags_move_note_info,
-					       0);
+						"AgsMoveNote",
+						&ags_move_note_info,
+						0);
 
     g_type_add_interface_static(ags_type_move_note,
 				AGS_TYPE_CONNECTABLE,
@@ -196,17 +196,17 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    * 
    * Since: 0.8.9
    */
-  param_spec =  g_param_spec_uint("move-x",
-				  i18n_pspec("move with move-x amount"),
-				  i18n_pspec("Move the notation by move-x amount"),
-				  0,
-				  AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_int("move-x",
+				i18n_pspec("move with move-x amount"),
+				i18n_pspec("Move the notation by move-x amount"),
+				-1 * AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
+				AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
+				0,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MOVE_X,
 				  param_spec);
-
+  
   /**
    * AgsMoveNote:move-y:
    *
@@ -214,13 +214,13 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    * 
    * Since: 0.8.9
    */
-  param_spec =  g_param_spec_uint("move-y",
-				  i18n_pspec("move with move-y amount"),
-				  i18n_pspec("Move the notation by move-y amount"),
-				  0,
-				  AGS_MOVE_NOTE_DEFAULT_X_LENGTH,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_int("move-y",
+				 i18n_pspec("move with move-y amount"),
+				 i18n_pspec("Move the notation by move-y amount"),
+				 -1 * AGS_MOVE_NOTE_DEFAULT_Y_LENGTH,
+				 AGS_MOVE_NOTE_DEFAULT_Y_LENGTH,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MOVE_Y,
 				  param_spec);
@@ -290,9 +290,9 @@ ags_move_note_init(AgsMoveNote *move_note)
 
 void
 ags_move_note_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec)
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
 {
   AgsMoveNote *move_note;
 
@@ -339,34 +339,34 @@ ags_move_note_set_property(GObject *gobject,
     break;
   case PROP_FIRST_X:
     {
-      move_note->first_x = g_value_get_int(value);
+      move_note->first_x = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_FIRST_Y:
     {
       move_note->first_y = g_value_get_uint(value);
     }
-  break;
+    break;
   case PROP_MOVE_X:
     {
-      move_note->move_x = g_value_get_uint(value);
+      move_note->move_x = g_value_get_int(value);
     }
-  break;
+    break;
   case PROP_MOVE_Y:
     {
-      move_note->move_y = g_value_get_uint(value);
+      move_note->move_y = g_value_get_int(value);
     }
-  break;
+    break;
   case PROP_RELATIVE:
     {
       move_note->relative = g_value_get_boolean(value);
     }
-  break;
+    break;
   case PROP_ABSOLUTE:
     {
       move_note->absolute = g_value_get_boolean(value);
     }
-  break;
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -375,9 +375,9 @@ ags_move_note_set_property(GObject *gobject,
 
 void
 ags_move_note_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec)
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
 {
   AgsMoveNote *move_note;
 
@@ -495,13 +495,14 @@ ags_move_note_launch(AgsTask *task)
   AgsMoveNote *move_note;
 
   AgsNotation *notation;
+  AgsNote *note;
   
   GList *selection;
 
   guint first_x;
   guint first_y;
-  guint move_x;
-  guint move_y;
+  gint move_x;
+  gint move_y;
   
   gboolean relative;
   gboolean absolute;
@@ -524,17 +525,32 @@ ags_move_note_launch(AgsTask *task)
 
   /* move */
   while(selection != NULL){
+    note = ags_note_duplicate(AGS_NOTE(selection->data));
+
     if(relative){
-      AGS_NOTE(selection->data)->x[0] = AGS_NOTE(selection->data)->x[0] + move_x;
-      AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + move_x;
+      note->x[0] = note->x[0] + move_x;
+      note->x[1] = note->x[1] + move_x;
 
-      AGS_NOTE(selection->data)->y = AGS_NOTE(selection->data)->y + move_y;
+      note->y = note->y + move_y;
     }else if(absolute){
-      AGS_NOTE(selection->data)->x[0] = move_x + (AGS_NOTE(selection->data)->x[0] - first_x);
-      AGS_NOTE(selection->data)->x[1] = move_x + (AGS_NOTE(selection->data)->x[1] - first_x);
+      note->x[0] = move_x + (note->x[0] - first_x);
+      note->x[1] = move_x + (note->x[1] - first_x);
 
-      AGS_NOTE(selection->data)->y = move_y + (AGS_NOTE(selection->data)->y + first_y);
+      note->y = move_y + (note->y + first_y);
     }
+
+    /* remove old note */
+    ags_notation_remove_note(notation,
+			     selection->data,
+			     TRUE);
+    ags_notation_remove_note(notation,
+			     selection->data,
+			     FALSE);
+
+    /* add new note */
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
 
     selection = selection->next;
   }
@@ -562,7 +578,7 @@ AgsMoveNote*
 ags_move_note_new(AgsNotation *notation,
 		  GList *selection,
 		  guint first_x, guint first_y,
-		  guint move_x, guint move_y,
+		  gint move_x, gint move_y,
 		  gboolean relative, gboolean absolute)
 {
   AgsMoveNote *move_note;
