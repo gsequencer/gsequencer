@@ -346,14 +346,19 @@ ags_remove_audio_launch(AgsTask *task)
   }
   
   /* remove audio */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(remove_audio->soundcard));
-  list = g_list_remove(list,
-		       remove_audio->audio);
-  ags_soundcard_set_audio(AGS_SOUNDCARD(remove_audio->soundcard),
-			  list);
-
+  if(remove_audio->soundcard != NULL){
+    list = ags_soundcard_get_audio(AGS_SOUNDCARD(remove_audio->soundcard));
+    list = g_list_remove(list,
+			 remove_audio->audio);
+    ags_soundcard_set_audio(AGS_SOUNDCARD(remove_audio->soundcard),
+			    list);
+  }
+  
   g_object_run_dispose(remove_audio->audio);
-  g_object_unref(remove_audio->audio);
+
+  if(remove_audio->soundcard != NULL){
+    g_object_unref(remove_audio->audio);
+  }
 }
 
 /**

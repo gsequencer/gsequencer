@@ -1,3 +1,8 @@
+ags (0.8.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed orphaned AgsAudio after removing all soundcards to add again
+
 ags (0.8.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
