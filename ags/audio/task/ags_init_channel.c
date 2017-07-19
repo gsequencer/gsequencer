@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,7 @@ void ags_init_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_init_channel_connect(AgsConnectable *connectable);
 void ags_init_channel_disconnect(AgsConnectable *connectable);
+void ags_init_channel_dispose(GObject *gobject);
 void ags_init_channel_finalize(GObject *gobject);
 
 void ags_init_channel_launch(AgsTask *task);
@@ -121,6 +122,7 @@ ags_init_channel_class_init(AgsInitChannelClass *init_channel)
   gobject->set_property = ags_init_channel_set_property;
   gobject->get_property = ags_init_channel_get_property;
 
+  gobject->dispose = ags_init_channel_dispose;
   gobject->finalize = ags_init_channel_finalize;
 
   /* properties */
@@ -363,11 +365,35 @@ ags_init_channel_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_init_channel_dispose(GObject *gobject)
+{
+  AgsInitChannel *init_channel;
+
+  init_channel = AGS_INIT_CHANNEL(gobject);
+
+  if(init_channel->channel != NULL){
+    g_object_unref(init_channel->channel);
+
+    init_channel->channel = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_init_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_init_channel_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_init_channel_parent_class)->finalize(gobject);
+  AgsInitChannel *init_channel;
 
-  /* empty */
+  init_channel = AGS_INIT_CHANNEL(gobject);
+
+  if(init_channel->channel != NULL){
+    g_object_unref(init_channel->channel);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_init_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -659,14 +685,12 @@ ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
   AgsInitChannel *init_channel;
 
   init_channel = (AgsInitChannel *) g_object_new(AGS_TYPE_INIT_CHANNEL,
+						 "channel", channel,
+						 "play-pad", play_pad,
+						 "do-playback", do_playback,
+						 "do-sequencer", do_sequencer,
+						 "do-notation", do_notation,
 						 NULL);
-
-  init_channel->channel = channel;
-  init_channel->play_pad = play_pad;
-
-  init_channel->do_playback = do_playback;
-  init_channel->do_sequencer = do_sequencer;
-  init_channel->do_notation = do_notation;
 
   return(init_channel);
 }

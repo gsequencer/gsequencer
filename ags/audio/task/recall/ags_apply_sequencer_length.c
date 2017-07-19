@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,7 @@ void ags_apply_sequencer_length_get_property(GObject *gobject,
 					     GParamSpec *param_spec);
 void ags_apply_sequencer_length_connect(AgsConnectable *connectable);
 void ags_apply_sequencer_length_disconnect(AgsConnectable *connectable);
+void ags_apply_sequencer_length_dispose(GObject *gobject);
 void ags_apply_sequencer_length_finalize(GObject *gobject);
 
 void ags_apply_sequencer_length_recall(AgsApplySequencerLength *apply_sequencer_length, AgsRecall *recall);
@@ -123,6 +124,7 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
   gobject->set_property = ags_apply_sequencer_length_set_property;
   gobject->get_property = ags_apply_sequencer_length_get_property;
 
+  gobject->dispose = ags_apply_sequencer_length_dispose;
   gobject->finalize = ags_apply_sequencer_length_finalize;
 
   /* properties */
@@ -269,11 +271,35 @@ ags_apply_sequencer_length_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_apply_sequencer_length_dispose(GObject *gobject)
+{
+  AgsApplySequencerLength *apply_sequencer_length;
+
+  apply_sequencer_length = AGS_APPLY_SEQUENCER_LENGTH(gobject);
+  
+  if(apply_sequencer_length->scope != NULL){
+    g_object_unref(apply_sequencer_length->scope);
+
+    apply_sequencer_length->scope = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_sequencer_length_parent_class)->dispose(gobject);
+}
+
+void
 ags_apply_sequencer_length_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_apply_sequencer_length_parent_class)->finalize(gobject);
+  AgsApplySequencerLength *apply_sequencer_length;
 
-  /* empty */
+  apply_sequencer_length = AGS_APPLY_SEQUENCER_LENGTH(gobject);
+
+  if(apply_sequencer_length->scope != NULL){
+    g_object_unref(apply_sequencer_length->scope);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_sequencer_length_parent_class)->finalize(gobject);
 }
 
 void
@@ -395,10 +421,9 @@ ags_apply_sequencer_length_new(GObject *scope,
   AgsApplySequencerLength *apply_sequencer_length;
 
   apply_sequencer_length = (AgsApplySequencerLength *) g_object_new(AGS_TYPE_APPLY_SEQUENCER_LENGTH,
+								    "scope", scope,
+								    "sequencer-length", length,
 								    NULL);
-
-  apply_sequencer_length->scope = scope;
-  apply_sequencer_length->length = length;
 
   return(apply_sequencer_length);
 }

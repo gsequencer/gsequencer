@@ -40,6 +40,7 @@ void ags_seek_soundcard_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_seek_soundcard_connect(AgsConnectable *connectable);
 void ags_seek_soundcard_disconnect(AgsConnectable *connectable);
+void ags_seek_soundcard_dispose(GObject *gobject);
 void ags_seek_soundcard_finalize(GObject *gobject);
 
 void ags_seek_soundcard_launch(AgsTask *task);
@@ -116,6 +117,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
   gobject->set_property = ags_seek_soundcard_set_property;
   gobject->get_property = ags_seek_soundcard_get_property;
 
+  gobject->dispose = ags_seek_soundcard_dispose;
   gobject->finalize = ags_seek_soundcard_finalize;
 
   /* properties */
@@ -289,11 +291,35 @@ ags_seek_soundcard_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_seek_soundcard_dispose(GObject *gobject)
+{
+  AgsSeekSoundcard *seek_soundcard;
+
+  seek_soundcard = AGS_SEEK_SOUNDCARD(gobject);
+  
+  if(seek_soundcard->soundcard != NULL){
+    g_object_unref(seek_soundcard->soundcard);
+
+    seek_soundcard->soundcard = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_seek_soundcard_parent_class)->dispose(gobject);
+}
+
+void
 ags_seek_soundcard_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_seek_soundcard_parent_class)->finalize(gobject);
+  AgsSeekSoundcard *seek_soundcard;
 
-  /* empty */
+  seek_soundcard = AGS_SEEK_SOUNDCARD(gobject);
+  
+  if(seek_soundcard->soundcard != NULL){
+    g_object_unref(seek_soundcard->soundcard);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_seek_soundcard_parent_class)->finalize(gobject);
 }
 
 void
@@ -372,11 +398,10 @@ ags_seek_soundcard_new(GObject *soundcard,
   AgsSeekSoundcard *seek_soundcard;
 
   seek_soundcard = (AgsSeekSoundcard *) g_object_new(AGS_TYPE_SEEK_SOUNDCARD,
+						     "soundcard", soundcard,
+						     "steps", steps,
+						     "move-forward", move_forward,
 						     NULL);
-
-  seek_soundcard->soundcard = soundcard;
-  seek_soundcard->steps = steps;
-  seek_soundcard->move_forward = move_forward;
 
   return(seek_soundcard);
 }

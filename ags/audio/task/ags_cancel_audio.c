@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,7 @@ void ags_cancel_audio_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_cancel_audio_connect(AgsConnectable *connectable);
 void ags_cancel_audio_disconnect(AgsConnectable *connectable);
+void ags_cancel_audio_dispose(GObject *gobject);
 void ags_cancel_audio_finalize(GObject *gobject);
 
 void ags_cancel_audio_launch(AgsTask *task);
@@ -121,6 +122,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
   gobject->set_property = ags_cancel_audio_set_property;
   gobject->get_property = ags_cancel_audio_get_property;
 
+  gobject->dispose = ags_cancel_audio_dispose;
   gobject->finalize = ags_cancel_audio_finalize;
 
   /* properties */
@@ -333,11 +335,35 @@ ags_cancel_audio_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_cancel_audio_dispose(GObject *gobject)
+{
+  AgsCancelAudio *cancel_audio;
+
+  cancel_audio = AGS_CANCEL_AUDIO(gobject);
+
+  if(cancel_audio->audio != NULL){
+    g_object_unref(cancel_audio->audio);
+    
+    cancel_audio->audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_cancel_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_cancel_audio_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_cancel_audio_parent_class)->finalize(gobject);
+  AgsCancelAudio *cancel_audio;
 
-  /* empty */
+  cancel_audio = AGS_CANCEL_AUDIO(gobject);
+
+  if(cancel_audio->audio != NULL){
+    g_object_unref(cancel_audio->audio);    
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_cancel_audio_parent_class)->finalize(gobject);
 }
 
 void

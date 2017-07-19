@@ -44,6 +44,7 @@ void ags_apply_bpm_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_apply_bpm_connect(AgsConnectable *connectable);
 void ags_apply_bpm_disconnect(AgsConnectable *connectable);
+void ags_apply_bpm_dispose(GObject *gobject);
 void ags_apply_bpm_finalize(GObject *gobject);
 
 void ags_apply_bpm_launch(AgsTask *task);
@@ -124,6 +125,7 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
   gobject->set_property = ags_apply_bpm_set_property;
   gobject->get_property = ags_apply_bpm_get_property;
 
+  gobject->dispose = ags_apply_bpm_dispose;
   gobject->finalize = ags_apply_bpm_finalize;
 
   /* properties */
@@ -270,11 +272,31 @@ ags_apply_bpm_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_apply_bpm_dispose(GObject *gobject)
+{
+  AgsApplyBpm *apply_bpm;
+
+  if(apply_bpm->scope != NULL){
+    g_object_unref(apply_bpm->scope);
+
+    apply_bpm->scope = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_bpm_parent_class)->dispose(gobject);
+}
+
+void
 ags_apply_bpm_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_apply_bpm_parent_class)->finalize(gobject);
+  AgsApplyBpm *apply_bpm;
 
-  /* empty */
+  if(apply_bpm->scope != NULL){
+    g_object_unref(apply_bpm->scope);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_bpm_parent_class)->finalize(gobject);
 }
 
 void
@@ -422,10 +444,9 @@ ags_apply_bpm_new(GObject *scope,
   AgsApplyBpm *apply_bpm;
 
   apply_bpm = (AgsApplyBpm *) g_object_new(AGS_TYPE_APPLY_BPM,
+					   "scope", scope,
+					   "bpm", bpm,
 					   NULL);
-
-  apply_bpm->scope = scope;
-  apply_bpm->bpm = bpm;
 
   return(apply_bpm);
 }

@@ -41,6 +41,7 @@ void ags_change_soundcard_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_change_soundcard_connect(AgsConnectable *connectable);
 void ags_change_soundcard_disconnect(AgsConnectable *connectable);
+void ags_change_soundcard_dispose(GObject *gobject);
 void ags_change_soundcard_finalize(GObject *gobject);
 
 void ags_change_soundcard_launch(AgsTask *task);
@@ -117,6 +118,7 @@ ags_change_soundcard_class_init(AgsChangeSoundcardClass *change_soundcard)
   gobject->set_property = ags_change_soundcard_set_property;
   gobject->get_property = ags_change_soundcard_get_property;
 
+  gobject->dispose = ags_change_soundcard_dispose;
   gobject->finalize = ags_change_soundcard_finalize;
 
   /* properties */
@@ -321,11 +323,55 @@ ags_change_soundcard_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_change_soundcard_dispose(GObject *gobject)
+{
+  AgsChangeSoundcard *change_soundcard;
+
+  change_soundcard = AGS_CHANGE_SOUNDCARD(gobject);
+
+  if(change_soundcard->application_context != NULL){
+    g_object_unref(change_soundcard->application_context);
+
+    change_soundcard->application_context = NULL;
+  }
+
+  if(change_soundcard->new_soundcard != NULL){
+    g_object_unref(change_soundcard->new_soundcard);
+
+    change_soundcard->new_soundcard = NULL;
+  }
+
+  if(change_soundcard->old_soundcard != NULL){
+    g_object_unref(change_soundcard->old_soundcard);
+
+    change_soundcard->old_soundcard = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_change_soundcard_parent_class)->dispose(gobject);
+}
+
+void
 ags_change_soundcard_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_change_soundcard_parent_class)->finalize(gobject);
+  AgsChangeSoundcard *change_soundcard;
 
-  /* empty */
+  change_soundcard = AGS_CHANGE_SOUNDCARD(gobject);
+
+  if(change_soundcard->application_context != NULL){
+    g_object_unref(change_soundcard->application_context);
+  }
+
+  if(change_soundcard->new_soundcard != NULL){
+    g_object_unref(change_soundcard->new_soundcard);
+  }
+
+  if(change_soundcard->old_soundcard != NULL){
+    g_object_unref(change_soundcard->old_soundcard);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_change_soundcard_parent_class)->finalize(gobject);
 }
 
 void
@@ -432,12 +478,10 @@ ags_change_soundcard_new(AgsApplicationContext *application_context,
   AgsChangeSoundcard *change_soundcard;
 
   change_soundcard = (AgsChangeSoundcard *) g_object_new(AGS_TYPE_CHANGE_SOUNDCARD,
+							 "application-context", application_context,
+							 "new-soundcard", new_soundcard,
+							 "old-soundcard", old_soundcard,
 							 NULL);
-
-  change_soundcard->application_context = application_context;
-  
-  change_soundcard->new_soundcard = new_soundcard;
-  change_soundcard->old_soundcard = old_soundcard;
   
   return(change_soundcard);
 }

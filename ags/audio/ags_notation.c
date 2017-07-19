@@ -928,6 +928,35 @@ ags_notation_add_note(AgsNotation *notation,
 }
 
 /**
+ * ags_notation_remove_note:
+ * @notation: an #AgsNotation
+ * @note: the #AgsNote to remove
+ * @use_selection_list: if %TRUE remove from selection, else from default notation
+ *
+ * Removes a note from notation.
+ *
+ * Since: 0.8.9
+ */
+void
+ags_notation_remove_note(AgsNotation *notation,
+			 AgsNote *note,
+			 gboolean use_selection_list)
+{
+  if(!AGS_IS_NOTATION(notation) ||
+     !AGS_IS_NOTE(note)){
+    return;
+  }
+  
+  if(!use_selection_list){
+    notation->notes = g_list_remove(notation->notes,
+				    note);
+  }else{
+    notation->selection = g_list_remove(notation->selection,
+					note);
+  }
+}
+
+/**
  * ags_notation_remove_note_at_position:
  * @notation: an #AgsNotation
  * @x: offset

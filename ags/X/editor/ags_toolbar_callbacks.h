@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,7 +20,9 @@
 #ifndef __AGS_TOOLBAR_CALLBACKS_H__
 #define __AGS_TOOLBAR_CALLBACKS_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/editor/ags_toolbar.h>

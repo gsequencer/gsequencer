@@ -41,6 +41,7 @@ void ags_append_recall_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_append_recall_connect(AgsConnectable *connectable);
 void ags_append_recall_disconnect(AgsConnectable *connectable);
+void ags_append_recall_dispose(GObject *gobject);
 void ags_append_recall_finalize(GObject *gobject);
 
 void ags_append_recall_launch(AgsTask *task);
@@ -116,6 +117,7 @@ ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
   gobject->set_property = ags_append_recall_set_property;
   gobject->get_property = ags_append_recall_get_property;
 
+  gobject->dispose = ags_append_recall_dispose;
   gobject->finalize = ags_append_recall_finalize;
 
   /* properties */
@@ -276,11 +278,45 @@ ags_append_recall_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_append_recall_dispose(GObject *gobject)
+{
+  AgsAppendRecall *append_recall;
+
+  append_recall = AGS_APPEND_RECALL(gobject);
+
+  if(append_recall->audio_loop != NULL){
+    g_object_unref(append_recall->audio_loop);
+
+    append_recall->audio_loop = NULL;
+  }
+
+  if(append_recall->playback != NULL){
+    g_object_unref(append_recall->playback);
+
+    append_recall->playback = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_recall_parent_class)->dispose(gobject);
+}
+
+void
 ags_append_recall_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_append_recall_parent_class)->finalize(gobject);
+  AgsAppendRecall *append_recall;
 
-  /* empty */
+  append_recall = AGS_APPEND_RECALL(gobject);
+
+  if(append_recall->audio_loop != NULL){
+    g_object_unref(append_recall->audio_loop);
+  }
+
+  if(append_recall->playback != NULL){
+    g_object_unref(append_recall->playback);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_recall_parent_class)->finalize(gobject);
 }
 
 void
@@ -313,10 +349,9 @@ ags_append_recall_new(GObject *audio_loop,
   AgsAppendRecall *append_recall;
 
   append_recall = (AgsAppendRecall *) g_object_new(AGS_TYPE_APPEND_RECALL,
+						   "audio-loop", audio_loop,
+						   "playback", playback,
 						   NULL);
-  
-  append_recall->audio_loop = audio_loop;
-  append_recall->playback = playback;
 
   return(append_recall);
 }

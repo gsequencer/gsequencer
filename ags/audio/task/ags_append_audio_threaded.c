@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,7 @@ void ags_append_audio_threaded_get_property(GObject *gobject,
 					    GParamSpec *param_spec);
 void ags_append_audio_threaded_connect(AgsConnectable *connectable);
 void ags_append_audio_threaded_disconnect(AgsConnectable *connectable);
+void ags_append_audio_threaded_dispose(GObject *gobject);
 void ags_append_audio_threaded_finalize(GObject *gobject);
 
 void ags_append_audio_threaded_launch(AgsTask *task);
@@ -119,6 +120,7 @@ ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_t
   gobject->set_property = ags_append_audio_threaded_set_property;
   gobject->get_property = ags_append_audio_threaded_get_property;
 
+  gobject->dispose = ags_append_audio_threaded_dispose;
   gobject->finalize = ags_append_audio_threaded_finalize;
 
   /* properties */
@@ -280,11 +282,45 @@ ags_append_audio_threaded_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_append_audio_threaded_dispose(GObject *gobject)
+{
+  AgsAppendAudioThreaded *append_audio_threaded;
+
+  append_audio_threaded = AGS_APPEND_AUDIO_THREADED(gobject);
+
+  if(append_audio_threaded->audio_loop != NULL){
+    g_object_unref(append_audio_threaded->audio_loop);
+
+    append_audio_threaded->audio_loop = NULL;
+  }
+
+  if(append_audio_threaded->playback != NULL){
+    g_object_unref(append_audio_threaded->playback);
+
+    append_audio_threaded->playback = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_audio_threaded_parent_class)->dispose(gobject);
+}
+
+void
 ags_append_audio_threaded_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_append_audio_threaded_parent_class)->finalize(gobject);
+  AgsAppendAudioThreaded *append_audio_threaded;
 
-  /* empty */
+  append_audio_threaded = AGS_APPEND_AUDIO_THREADED(gobject);
+
+  if(append_audio_threaded->audio_loop != NULL){
+    g_object_unref(append_audio_threaded->audio_loop);
+  }
+
+  if(append_audio_threaded->playback != NULL){
+    g_object_unref(append_audio_threaded->playback);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_audio_threaded_parent_class)->finalize(gobject);
 }
 
 void
@@ -308,10 +344,9 @@ ags_append_audio_threaded_new(GObject *audio_loop,
   AgsAppendAudioThreaded *append_audio_threaded;
 
   append_audio_threaded = (AgsAppendAudioThreaded *) g_object_new(AGS_TYPE_APPEND_AUDIO_THREADED,
+								  "audio-loop", audio_loop,
+								  "playback", playback,
 								  NULL);
-  
-  append_audio_threaded->audio_loop = audio_loop;
-  append_audio_threaded->playback = playback;
 
   return(append_audio_threaded);
 }

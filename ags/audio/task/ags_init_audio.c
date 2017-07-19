@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,6 +45,7 @@ void ags_init_audio_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_init_audio_connect(AgsConnectable *connectable);
 void ags_init_audio_disconnect(AgsConnectable *connectable);
+void ags_init_audio_dispose(GObject *gobject);
 void ags_init_audio_finalize(GObject *gobject);
 
 void ags_init_audio_launch(AgsTask *task);
@@ -122,6 +123,7 @@ ags_init_audio_class_init(AgsInitAudioClass *init_audio)
   gobject->set_property = ags_init_audio_set_property;
   gobject->get_property = ags_init_audio_get_property;
 
+  gobject->dispose = ags_init_audio_dispose;
   gobject->finalize = ags_init_audio_finalize;
 
   /* properties */
@@ -333,11 +335,35 @@ ags_init_audio_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_init_audio_dispose(GObject *gobject)
+{
+  AgsInitAudio *init_audio;
+  
+  init_audio = AGS_INIT_AUDIO(gobject);
+
+  if(init_audio->audio != NULL){
+    g_object_unref(init_audio->audio);
+    
+    init_audio->audio = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_init_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_init_audio_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_init_audio_parent_class)->finalize(gobject);
+  AgsInitAudio *init_audio;
+  
+  init_audio = AGS_INIT_AUDIO(gobject);
 
-  /* empty */
+  if(init_audio->audio != NULL){
+    g_object_unref(init_audio->audio);    
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_init_audio_parent_class)->finalize(gobject);
 }
 
 void
@@ -441,13 +467,11 @@ ags_init_audio_new(AgsAudio *audio,
   AgsInitAudio *init_audio;
 
   init_audio = (AgsInitAudio *) g_object_new(AGS_TYPE_INIT_AUDIO,
+					     "audio", audio,
+					     "do-playback", do_playback,
+					     "do-sequencer", do_sequencer,
+					     "do-notation", do_notation,
 					     NULL);
-
-  init_audio->audio = audio;
-
-  init_audio->do_playback = do_playback;
-  init_audio->do_sequencer = do_sequencer;
-  init_audio->do_notation = do_notation;
 
   return(init_audio);
 }

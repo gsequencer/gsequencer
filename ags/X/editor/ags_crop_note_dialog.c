@@ -24,11 +24,15 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
+
+#include <ags/audio/task/ags_crop_note.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
@@ -457,16 +461,19 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   AgsEditor *editor;
   AgsMachine *machine;
 
+  AgsCropNote *crop_note;  
+
   AgsAudio *audio;
 
   AgsMutexManager *mutex_manager;
-  
+  AgsTaskThread *task_thread;
+
   AgsApplicationContext *application_context;
 
   GList *notation;
   GList *selection;
-
-  gint x_offset;
+  GList *task;
+  
   guint x_padding;
   guint x_crop;
   
@@ -505,6 +512,13 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+  /* get task thread */
+  pthread_mutex_lock(application_mutex);
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
 
@@ -518,39 +532,27 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
   notation = audio->notation;
 
+  task = NULL;
+
   while(notation != NULL){
-    selection = AGS_NOTATION(notation->data);
+    selection = AGS_NOTATION(notation->data)->selection;
 
-    x_offset = 0;
-    
-    while(selection != NULL){
-      if(absolute){
-	if(in_place){
-	  AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[0] + x_crop;
-	}else if(do_resize){
-	  AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
-	  AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[0] + x_crop;
-
-	  x_offset += x_padding;
-	}
-      }else{
-	if(in_place){
-	  AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + x_crop;
-	}else if(do_resize){
-	  AGS_NOTE(selection->data)->x[0] = x_offset + AGS_NOTE(selection->data)->x[0];
-	  AGS_NOTE(selection->data)->x[1] = x_offset + AGS_NOTE(selection->data)->x[1] + x_crop;
-
-	  x_offset += x_padding;
-	}
-      }
-
-      selection = selection->next;
-    }
+    crop_note = ags_crop_note_new(notation->data,
+				  selection,
+				  x_padding, x_crop,
+				  absolute,
+				  in_place, do_resize);
+    task = g_list_prepend(task,
+			  crop_note);
 
     notation = notation->next;
   }
   
   pthread_mutex_unlock(audio_mutex);
+
+  /* append tasks */
+  ags_task_thread_append_tasks(task_thread,
+			       task);
 }
 
 void

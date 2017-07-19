@@ -24,11 +24,15 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
+
+#include <ags/audio/task/ags_move_note.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
@@ -244,7 +248,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 		     0);
 
   /* move x - spin button */
-  move_note_dialog->move_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+  move_note_dialog->move_x = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_MOVE_NOTE_DIALOG_MAX_X,
 									      AGS_MOVE_NOTE_DIALOG_MAX_X,
 									      1.0);
   gtk_spin_button_set_value(move_note_dialog->move_x,
@@ -269,7 +273,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 		     0);
 
   /* move y - spin button */
-  move_note_dialog->move_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+  move_note_dialog->move_y = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_MOVE_NOTE_DIALOG_MAX_Y,
 									      AGS_MOVE_NOTE_DIALOG_MAX_Y,
 									      1.0);
   gtk_spin_button_set_value(move_note_dialog->move_y,
@@ -457,14 +461,18 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   AgsEditor *editor;
   AgsMachine *machine;
 
+  AgsMoveNote *move_note;
+  
   AgsAudio *audio;
 
   AgsMutexManager *mutex_manager;
+  AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
 
   GList *notation;
   GList *selection;
+  GList *task;
 
   guint first_x;
   guint first_y;
@@ -502,6 +510,13 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get task thread */
+  pthread_mutex_lock(application_mutex);
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -541,32 +556,31 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
       notation = notation->next;
     }
   }
-  
+
+  /* create move note task */
   notation = audio->notation;
 
+  task = NULL;
+  
   while(notation != NULL){
-    selection = AGS_NOTATION(notation->data);
+    selection = AGS_NOTATION(notation->data)->selection;
     
-    while(selection != NULL){
-      if(relative){
-	AGS_NOTE(selection->data)->x[0] = AGS_NOTE(selection->data)->x[0] + move_x;
-	AGS_NOTE(selection->data)->x[1] = AGS_NOTE(selection->data)->x[1] + move_x;
-
-	AGS_NOTE(selection->data)->y = AGS_NOTE(selection->data)->y + move_y;
-      }else if(absolute){
-	AGS_NOTE(selection->data)->x[0] = move_x + (AGS_NOTE(selection->data)->x[0] - first_x);
-	AGS_NOTE(selection->data)->x[1] = move_x + (AGS_NOTE(selection->data)->x[1] - first_x);
-
-	AGS_NOTE(selection->data)->y = move_y + (AGS_NOTE(selection->data)->y + first_y);
-      }
-
-      selection = selection->next;
-    }
-
+    move_note = ags_move_note_new(notation->data,
+				  selection,
+				  first_x, first_y,
+				  move_x, move_y,
+				  relative, absolute);
+    task = g_list_prepend(task,
+			  move_note);
+    
     notation = notation->next;
   }
 
   pthread_mutex_unlock(audio_mutex);
+
+  /* append tasks */
+  ags_task_thread_append_tasks(task_thread,
+			       task);
 }
 
 void

@@ -106,6 +106,9 @@ void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,
 			   gboolean use_selection_list);
 
+void ags_notation_remove_note(AgsNotation *notation,
+			      AgsNote *note,
+			      gboolean use_selection_list);
 gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
 					      guint x, guint y);
 

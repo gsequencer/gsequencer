@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_add_soundcard_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_add_soundcard_connect(AgsConnectable *connectable);
 void ags_add_soundcard_disconnect(AgsConnectable *connectable);
+void ags_add_soundcard_dispose(GObject *gobject);
 void ags_add_soundcard_finalize(GObject *gobject);
 
 void ags_add_soundcard_launch(AgsTask *task);
@@ -114,6 +115,7 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
   gobject->set_property = ags_add_soundcard_set_property;
   gobject->get_property = ags_add_soundcard_get_property;
 
+  gobject->dispose = ags_add_soundcard_dispose;
   gobject->finalize = ags_add_soundcard_finalize;
 
   /**
@@ -274,11 +276,45 @@ ags_add_soundcard_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_soundcard_dispose(GObject *gobject)
+{
+  AgsAddSoundcard *add_soundcard;
+
+  add_soundcard = AGS_ADD_SOUNDCARD(gobject);
+
+  if(add_soundcard->application_context != NULL){
+    g_object_unref(add_soundcard->application_context);
+
+    add_soundcard->application_context = NULL;
+  }
+
+  if(add_soundcard->soundcard != NULL){
+    g_object_unref(add_soundcard->soundcard);
+
+    add_soundcard->soundcard = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_soundcard_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_soundcard_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_soundcard_parent_class)->finalize(gobject);
+  AgsAddSoundcard *add_soundcard;
 
-  /* empty */
+  add_soundcard = AGS_ADD_SOUNDCARD(gobject);
+
+  if(add_soundcard->application_context != NULL){
+    g_object_unref(add_soundcard->application_context);
+  }
+
+  if(add_soundcard->soundcard != NULL){
+    g_object_unref(add_soundcard->soundcard);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_soundcard_parent_class)->finalize(gobject);
 }
 
 void
@@ -311,11 +347,9 @@ ags_add_soundcard_new(AgsApplicationContext *application_context,
   AgsAddSoundcard *add_soundcard;
 
   add_soundcard = (AgsAddSoundcard *) g_object_new(AGS_TYPE_ADD_SOUNDCARD,
+						   "application-context", application_context,
+						   "soundcard", soundcard,
 						   NULL);
-
-  add_soundcard->application_context = application_context;
-
-  add_soundcard->soundcard = soundcard;
 
   return(add_soundcard);
 }

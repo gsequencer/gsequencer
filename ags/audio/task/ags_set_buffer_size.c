@@ -45,6 +45,7 @@ void ags_set_buffer_size_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_set_buffer_size_connect(AgsConnectable *connectable);
 void ags_set_buffer_size_disconnect(AgsConnectable *connectable);
+void ags_set_buffer_size_dispose(GObject *gobject);
 void ags_set_buffer_size_finalize(GObject *gobject);
 
 void ags_set_buffer_size_launch(AgsTask *task);
@@ -126,6 +127,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
   gobject->set_property = ags_set_buffer_size_set_property;
   gobject->get_property = ags_set_buffer_size_get_property;
 
+  gobject->dispose = ags_set_buffer_size_dispose;
   gobject->finalize = ags_set_buffer_size_finalize;
 
   /* properties */
@@ -272,11 +274,35 @@ ags_set_buffer_size_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_set_buffer_size_dispose(GObject *gobject)
+{
+  AgsSetBufferSize *set_buffer_size;
+
+  set_buffer_size = AGS_SET_BUFFER_SIZE(gobject);
+
+  if(set_buffer_size->scope != NULL){
+    g_object_unref(set_buffer_size->scope);
+
+    set_buffer_size->scope = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_buffer_size_parent_class)->dispose(gobject);
+}
+
+void
 ags_set_buffer_size_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_set_buffer_size_parent_class)->finalize(gobject);
+  AgsSetBufferSize *set_buffer_size;
 
-  /* empty */
+  set_buffer_size = AGS_SET_BUFFER_SIZE(gobject);
+
+  if(set_buffer_size->scope != NULL){
+    g_object_unref(set_buffer_size->scope);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_buffer_size_parent_class)->finalize(gobject);
 }
 
 void
@@ -460,10 +486,9 @@ ags_set_buffer_size_new(GObject *scope,
   AgsSetBufferSize *set_buffer_size;
 
   set_buffer_size = (AgsSetBufferSize *) g_object_new(AGS_TYPE_SET_BUFFER_SIZE,
+						      "scope", scope,
+						      "buffer-size", buffer_size,
 						      NULL);
-
-  set_buffer_size->scope = scope;
-  set_buffer_size->buffer_size = buffer_size;
 
   return(set_buffer_size);
 }

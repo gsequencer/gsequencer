@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 
 #include <ags/X/editor/ags_move_note_dialog.h>
@@ -224,6 +225,7 @@ ags_toolbar_init(AgsToolbar *toolbar)
 void
 ags_toolbar_connect(AgsConnectable *connectable)
 {
+  AgsWindow *window;
   AgsToolbar *toolbar;
 
   toolbar = AGS_TOOLBAR(connectable);
@@ -233,6 +235,15 @@ ags_toolbar_connect(AgsConnectable *connectable)
   }
 
   toolbar->flags |= AGS_TOOLBAR_CONNECTED;
+
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_WINDOW));
+
+  g_object_set(toolbar->move_note,
+	       "main-window", window,
+	       NULL);
+  g_object_set(toolbar->crop_note,
+	       "main-window", window,
+	       NULL);
   
   /* tool */
   g_signal_connect_after((GObject *) toolbar->position, "toggled",

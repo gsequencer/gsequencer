@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_remove_point_from_selection_get_property(GObject *gobject,
 						  GParamSpec *param_spec);
 void ags_remove_point_from_selection_connect(AgsConnectable *connectable);
 void ags_remove_point_from_selection_disconnect(AgsConnectable *connectable);
+void ags_remove_point_from_selection_dispose(GObject *gobject);
 void ags_remove_point_from_selection_finalize(GObject *gobject);
 
 void ags_remove_point_from_selection_launch(AgsTask *task);
@@ -112,6 +113,7 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
   gobject->set_property = ags_remove_point_from_selection_set_property;
   gobject->get_property = ags_remove_point_from_selection_get_property;
 
+  gobject->dispose = ags_remove_point_from_selection_dispose;
   gobject->finalize = ags_remove_point_from_selection_finalize;
 
   /* properties */
@@ -287,11 +289,31 @@ ags_remove_point_from_selection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_remove_point_from_selection_dispose(GObject *gobject)
+{
+  AgsRemovePointFromSelection *remove_point_from_selection;
+
+  if(remove_point_from_selection->notation != NULL){
+    g_object_unref(remove_point_from_selection->notation);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_point_from_selection_parent_class)->dispose(gobject);
+}
+
+void
 ags_remove_point_from_selection_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_remove_point_from_selection_parent_class)->finalize(gobject);
+  AgsRemovePointFromSelection *remove_point_from_selection;
 
-  /* empty */
+  if(remove_point_from_selection->notation != NULL){
+    g_object_unref(remove_point_from_selection->notation);
+
+    remove_point_from_selection->notation = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_point_from_selection_parent_class)->finalize(gobject);
 }
 
 void
@@ -325,11 +347,10 @@ ags_remove_point_from_selection_new(AgsNotation *notation,
   AgsRemovePointFromSelection *remove_point_from_selection;
 
   remove_point_from_selection = (AgsRemovePointFromSelection *) g_object_new(AGS_TYPE_REMOVE_POINT_FROM_SELECTION,
+									     "notation", notation,
+									     "x", x,
+									     "y", y,
 									     NULL);
-
-  remove_point_from_selection->notation = notation;
-  remove_point_from_selection->x = x;
-  remove_point_from_selection->y = y;
 
   return(remove_point_from_selection);
 }

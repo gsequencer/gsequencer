@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_save_file_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_save_file_connect(AgsConnectable *connectable);
 void ags_save_file_disconnect(AgsConnectable *connectable);
+void ags_save_file_dispose(GObject *gobject);
 void ags_save_file_finalize(GObject *gobject);
 
 void ags_save_file_launch(AgsTask *task);
@@ -110,6 +111,7 @@ ags_save_file_class_init(AgsSaveFileClass *save_file)
   gobject->set_property = ags_save_file_set_property;
   gobject->get_property = ags_save_file_get_property;
 
+  gobject->dispose = ags_save_file_dispose;
   gobject->finalize = ags_save_file_finalize;
 
   /* properties */
@@ -227,11 +229,35 @@ ags_save_file_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_save_file_dispose(GObject *gobject)
+{
+  AgsSaveFile *save_file;
+
+  save_file = AGS_SAVE_FILE(gobject);
+
+  if(save_file->file != NULL){
+    g_object_unref(save_file->file);
+
+    save_file->file = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_save_file_parent_class)->dispose(gobject);
+}
+
+void
 ags_save_file_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_save_file_parent_class)->finalize(gobject);
+  AgsSaveFile *save_file;
 
-  /* empty */
+  save_file = AGS_SAVE_FILE(gobject);
+
+  if(save_file->file != NULL){
+    g_object_unref(save_file->file);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_save_file_parent_class)->finalize(gobject);
 }
 
 void
@@ -267,9 +293,8 @@ ags_save_file_new(AgsFile *file)
   AgsSaveFile *save_file;
 
   save_file = (AgsSaveFile *) g_object_new(AGS_TYPE_SAVE_FILE,
+					   "file", file,
 					   NULL);
-  g_object_ref(file);
-  save_file->file = file;
 
   return(save_file);
 }

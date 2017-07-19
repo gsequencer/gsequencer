@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,6 +54,7 @@ void ags_append_audio_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_append_audio_connect(AgsConnectable *connectable);
 void ags_append_audio_disconnect(AgsConnectable *connectable);
+void ags_append_audio_dispose(GObject *gobject);
 void ags_append_audio_finalize(GObject *gobject);
 
 void ags_append_audio_launch(AgsTask *task);
@@ -132,6 +133,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
   gobject->set_property = ags_append_audio_set_property;
   gobject->get_property = ags_append_audio_get_property;
 
+  gobject->dispose = ags_append_audio_dispose;
   gobject->finalize = ags_append_audio_finalize;
 
   /* properties */
@@ -386,11 +388,45 @@ ags_append_audio_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_append_audio_dispose(GObject *gobject)
+{
+  AgsAppendAudio *append_audio;
+
+  append_audio = AGS_APPEND_AUDIO(gobject);
+
+  if(append_audio->audio_loop != NULL){
+    g_object_unref(append_audio->audio_loop);
+
+    append_audio->audio_loop = NULL;
+  }
+
+  if(append_audio->audio != NULL){
+    g_object_unref(append_audio->audio);
+
+    append_audio->audio = NULL;
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_append_audio_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_append_audio_parent_class)->finalize(gobject);
+  AgsAppendAudio *append_audio;
 
-  /* empty */
+  append_audio = AGS_APPEND_AUDIO(gobject);
+
+  if(append_audio->audio_loop != NULL){
+    g_object_unref(append_audio->audio_loop);
+  }
+
+  if(append_audio->audio != NULL){
+    g_object_unref(append_audio->audio);
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_audio_parent_class)->finalize(gobject);
 }
 
 void
@@ -659,14 +695,12 @@ ags_append_audio_new(GObject *audio_loop,
   AgsAppendAudio *append_audio;
 
   append_audio = (AgsAppendAudio *) g_object_new(AGS_TYPE_APPEND_AUDIO,
+						 "audio-loop", audio_loop,
+						 "audio", audio,
+						 "do-playback", do_playback,
+						 "do-sequencer", do_sequencer,
+						 "do-notation", do_notation,
 						 NULL);
-
-  append_audio->audio_loop = audio_loop;
-  append_audio->audio = audio;
-
-  append_audio->do_playback = do_playback;
-  append_audio->do_sequencer = do_sequencer;
-  append_audio->do_notation = do_notation;
   
   return(append_audio);
 }
